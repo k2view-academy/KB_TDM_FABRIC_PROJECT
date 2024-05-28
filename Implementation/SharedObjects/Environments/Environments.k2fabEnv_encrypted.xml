@@ -1,0 +1,805 @@
+<FabEnvironmentsManager xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      
+    <Name>Environments</Name>
+      
+    <EnvironmentsList>
+            
+        <Environment enabled="true" name="Production">
+                  
+            <Comments/>
+                  
+            <DbInterfacesList>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="BILLING_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>BILLING_DB</dbScheme>
+                              
+                    <dbUser>BILLING_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:HA1ckbyL0dA55bUG50CShuVy2HIKAqUP8a6vZp670ec7eudIpw3LzRqQ6ic=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/BILLING_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>CRM_DB</dbScheme>
+                              
+                    <dbUser>CRM_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:xp2wFgBJet1byO1nNdsp2CB9FNYjjgay7n42ZoE1FawwiMJzh519Dg==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="POSTGRESQL_ADMIN" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>postgres</dbScheme>
+                              
+                    <dbUser>postgres</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:RvXQIuo97fzc8Efmo8tC7pF1DTh2pOZpBByJfEFV/gcVUZ1jGdh2QA==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+        
+                <DbInterface active="false" dbType="genericdb" k2StudioObjectName="TAR_CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort>5433</dbPort>
+                              
+                    <dbScheme>TAR_CRM_DB</dbScheme>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:postgresql://:5433/TAR_CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TDM" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TDMDB</dbScheme>
+                              
+                    <dbUser>tdm</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:WuD4EiFqUYBW8qXhKUpVpOFPNXJ+C3E225BfoSPw/Bb8AKs=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="COLLECTION_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>COLLECTION_DB</dbScheme>
+                              
+                    <dbUser>COLLECTION_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:7KqXy1u2biMjZqQGYohXU54UogNxQgoKruv18ambGDmS0057dHYeVWmS7kTgmXU=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="ORDERS_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>ORDERS_DB</dbScheme>
+                              
+                    <dbUser>ORDERS_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:as7iFCPYvOyCL2VJc8+pLr478z/byPbzINq/vMSJ/c2jouX1SYkeeyK85g==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/ORDERS_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+        
+                <DbInterface active="false" dbType="genericdb" k2StudioObjectName="TAR_ORDERS_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_ORDERS_DB</dbScheme>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:postgresql://:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                      
+            </DbInterfacesList>
+                  
+            <GlobalsList>
+      </GlobalsList>
+                  
+            <GenericInterfacesList>
+                        
+        
+                <GenericInterface enabled="false" type="CUSTOM" version="">
+                              
+                    <Name>AI_DB_External</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="Host">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Port">
+                                          
+                            <Value>5432</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value>postgres</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Data">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ioprovider">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TechType">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="testConnectionState">
+                                          
+                            <Value>ok</Value>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
+                
+        </Environment>
+            
+        <Environment enabled="true" name="UAT">
+                  
+            <Comments/>
+                  
+            <DbInterfacesList>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="BILLING_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_BILLING_DB</dbScheme>
+                              
+                    <dbUser>TAR_BILLING_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:tXzV5WxZ+kagiS20xQ0AJueV1MAbbFo9d7wilKd2cX0gn51YnDhkBvPrTYbYuU/B</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_CRM_DB</dbScheme>
+                              
+                    <dbUser>TAR_CRM_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:QJdG06BJZpxiSRrB7aYzJ8hcc2wUkSy+8wFwVA0JY9PPr0M1Tzg/xyOjTXA=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="POSTGRESQL_ADMIN" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>postgres</dbScheme>
+                              
+                    <dbUser>postgres</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:LkFtT1WvrgYATCcdMup0O8SW8x3OelSPS43Gzk4POFACH0FXbdx/Ig==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TAR_BILLING_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_BILLING_DB</dbScheme>
+                              
+                    <dbUser>TAR_BILLING_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:oflSHTJyaFBsWFQHM/vBdGCGZgDPf48tvC1vhUNQhDps6vVn5EXaN/1mwC8yTCBi</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TAR_CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_CRM_DB</dbScheme>
+                              
+                    <dbUser>TAR_CRM_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:nPFe3IWCCyxOu7ks3NLv9mJOiDqQpVsoQzb8x3mGSK90mGu01z9t+fLZStY=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TDM" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TDMDB</dbScheme>
+                              
+                    <dbUser>tdm</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:C1IZPyk2T5dwsEBeT8jPqiOqcsKjVjtkEWKTnRFSbYveBfY=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="COLLECTION_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_COLLECTION_DB</dbScheme>
+                              
+                    <dbUser>TAR_COLLECTION_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:poiJgWj0i+frzS5ww9TIOZGDh2uIhtmwDJDp3aFvOUbj/ss+H628qopFaaETcCSCN3v8</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_COLLECTION_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="ORDERS_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_ORDERS_DB</dbScheme>
+                              
+                    <dbUser>TAR_ORDERS_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:0XpLDuBPQHba7Y0iW4a0wUu5gB7kE9f4fAZ0QsVaVrM8N1H7J18pWL7GpDfsb0A=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TAR_COLLECTION_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_COLLECTION_DB</dbScheme>
+                              
+                    <dbUser>TAR_COLLECTION_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:k8GEMHdqOwZGbXrV24X6tr8nWO1B6sTHED+xtUOBxkP6uS1b3DydPnUDfw4nC4S4Hd7P</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_COLLECTION_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TAR_ORDERS_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_ORDERS_DB</dbScheme>
+                              
+                    <dbUser>TAR_ORDERS_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:ohUd14kKnYVMEKwvoLV0H22+dxaIfBZb2rNR+yNyqqx1ycB29MrzhbfG1XU0VfY=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                      
+            </DbInterfacesList>
+                  
+            <GlobalsList>
+      </GlobalsList>
+                  
+            <GenericInterfacesList>
+                        
+        
+                <GenericInterface enabled="false" type="CUSTOM" version="">
+                              
+                    <Name>AI_DB_External</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="Host">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Port">
+                                          
+                            <Value>5432</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Data">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ioprovider">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TechType">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
+                
+        </Environment>
+            
+        <Environment enabled="true" name="Synthetic">
+                  
+            <Comments/>
+                  
+            <DbInterfacesList>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="BILLING_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>BILLING_DB</dbScheme>
+                              
+                    <dbUser>BILLING_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:cUp59GTHTZhHlZONsTpdL9oowanUJCFNQHJUaHH6D8PwGVMhDsVXps61QOI=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/BILLING_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>CRM_DB</dbScheme>
+                              
+                    <dbUser>CRM_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:4ClpbvaiigByKLq1Er7gl4NrnzWEpVZ24BECyP7b+KLwc7ffYTlNcg==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="POSTGRESQL_ADMIN" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>postgres</dbScheme>
+                              
+                    <dbUser>postgres</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:lwBlm/98FRnRfSCTi19kOXxMnnFn9f5PvsFfo3nASiuac2OsQlSBug==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+        
+                <DbInterface active="false" dbType="genericdb" k2StudioObjectName="TAR_CRM_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_CRM_DB</dbScheme>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:postgresql://:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TDM" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TDMDB</dbScheme>
+                              
+                    <dbUser>tdm</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:EXSD/cMeyTrSDIIRcneFvaBFWRWT/wBREdHUJrGTphFwEE8=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="COLLECTION_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>COLLECTION_DB</dbScheme>
+                              
+                    <dbUser>COLLECTION_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:vhRIG8Rs5HxNudaI49zoYTz+BP1yjXKZqUZQtuOAf90d6Cw6C1kPckiy9BbqpRI=</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="ORDERS_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost>postgres-service</dbHost>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>ORDERS_DB</dbScheme>
+                              
+                    <dbUser>ORDERS_USER</dbUser>
+                              
+                    <dbPasswordEncrypted>~encsMK0~AAABj74iX6M=:7NZBmj9d0+G2xoMh6Z7T6QhbYzOpiRJA34U+8v0I2ydVfd3JadkCIfhTpw==</dbPasswordEncrypted>
+                              
+                    <connString>jdbc:postgresql://postgres-service:5432/ORDERS_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+        
+                <DbInterface active="false" dbType="genericdb" k2StudioObjectName="TAR_ORDERS_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme>TAR_ORDERS_DB</dbScheme>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:postgresql://:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                      
+            </DbInterfacesList>
+                  
+            <GlobalsList>
+      </GlobalsList>
+                  
+            <GenericInterfacesList>
+                        
+        
+                <GenericInterface enabled="false" type="CUSTOM" version="">
+                              
+                    <Name>AI_DB_External</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="Host">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Port">
+                                          
+                            <Value>5432</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Data">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ioprovider">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TechType">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
+                
+        </Environment>
+            
+  
+    </EnvironmentsList>
+    
+</FabEnvironmentsManager>
