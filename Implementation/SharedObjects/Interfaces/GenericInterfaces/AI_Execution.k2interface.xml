@@ -3,19 +3,19 @@
     <Name>AI_Execution</Name>
     <Properties>
         <Property name="ProtocolType">
-            <Value>HTTPS</Value>
+            <Value>HTTP</Value>
         </Property>
         <Property name="HOST">
             <Value>local</Value>
         </Property>
         <Property name="PORT">
-            <Value>443</Value>
+            <Value>80</Value>
         </Property>
         <Property name="Path">
             <Value></Value>
         </Property>
         <Property name="AuthenticationType">
-            <Value>Bearer</Value>
+            <Value>None</Value>
         </Property>
         <Property name="User">
             <Value></Value>
