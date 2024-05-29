@@ -9,11 +9,6 @@
             "name": "table",
             "const": [
                 {
-                    "SEQUENCE_NAME": "CUSTOMER_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "CRM_DB",
-                    "INITIATE_VALUE_OR_FLOW": "CustomerIdInit"
-                },
-                {
                     "SEQUENCE_NAME": "CONTRACT_ID_SEQ",
                     "SEQUENCE_REDIS_OR_DB": "CRM_DB",
                     "INITIATE_VALUE_OR_FLOW": "ContractIdInit"
@@ -37,41 +32,6 @@
                     "SEQUENCE_NAME": "ACTIVITY_ID_SEQ",
                     "SEQUENCE_REDIS_OR_DB": "CRM_DB",
                     "INITIATE_VALUE_OR_FLOW": "ActivityIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "BALANCE_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
-                    "INITIATE_VALUE_OR_FLOW": "BalanceIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "INVOICE_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
-                    "INITIATE_VALUE_OR_FLOW": "InvoiceIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "PAYMENT_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
-                    "INITIATE_VALUE_OR_FLOW": "PaymentIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "OFFER_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
-                    "INITIATE_VALUE_OR_FLOW": "OfferIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "SUBSCRIBER_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
-                    "INITIATE_VALUE_OR_FLOW": "SubscriberIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "ORDER_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "ORDERS_DB",
-                    "INITIATE_VALUE_OR_FLOW": "OrderIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "COLLECTION_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "COLLECTION_DB",
-                    "INITIATE_VALUE_OR_FLOW": "CollectionIdInit"
                 }
             ],
             "schema": {
