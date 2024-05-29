@@ -502,7 +502,7 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_BILLING_DB" dbType="genericdb" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_BILLING_DB" dbType="genericdb" active="false">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
@@ -513,7 +513,7 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="false">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
@@ -568,7 +568,7 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="false">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_COLLECTION_DB</dbScheme>
@@ -579,7 +579,7 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="false">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_ORDERS_DB</dbScheme>
