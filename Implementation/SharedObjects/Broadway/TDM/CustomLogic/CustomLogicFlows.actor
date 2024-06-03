@@ -7,38 +7,7 @@
     "inputs": [
         {
             "name": "table",
-            "const": [
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getNYCustomers",
-                    "DESCRIPTION": "Get all Customers that live in New York",
-                    "DIRECT_FLOW": false
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getAll5GCustomers",
-                    "DESCRIPTION": "Get all Customers who have a contract of 5G",
-                    "DIRECT_FLOW": false
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getCustomersBySQL",
-                    "DESCRIPTION": "Get Customers based on provided sql",
-                    "DIRECT_FLOW": false
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getEntitiesByState",
-                    "DESCRIPTION": "Get Customers based on input state(s)",
-                    "DIRECT_FLOW": true
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getAIGeneratedEntites",
-                    "DESCRIPTION": "Get AI Generated Customers",
-                    "DIRECT_FLOW": false
-                }
-            ],
+            "const": [],
             "schema": {
                 "type": "array",
                 "items": {
