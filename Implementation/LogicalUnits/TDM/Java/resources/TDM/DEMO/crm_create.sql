@@ -235,4 +235,10 @@ CREATE TABLE IF NOT EXISTS public.devicestable2017 (
 
 ALTER TABLE public.devicestable2017 OWNER TO "CRM_USER";
 
+CREATE TABLE IF NOT EXISTS public.contract_offer_mapping (
+contract_ref_id bigint,
+ offer_ref_id bigint,
+ offer_contract_description character varying(200) DEFAULT NULL::character varying);
+ 
+ALTER TABLE public.contract_offer_mapping OWNER TO "CRM_USER";
 
