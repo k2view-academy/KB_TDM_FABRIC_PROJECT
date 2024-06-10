@@ -93,8 +93,7 @@
 			"monitor_desc": "PII Fields",
 			"input_parameters": {
 			    "field_name_exclude_list": [
-                    "^(?i)[a-z]+_?ID$",
-                    "*_id"
+                    "^(?i)[a-z]+_?ID$"
 			    ],
 			    "field_type_exclude_list": [
 			    ]
