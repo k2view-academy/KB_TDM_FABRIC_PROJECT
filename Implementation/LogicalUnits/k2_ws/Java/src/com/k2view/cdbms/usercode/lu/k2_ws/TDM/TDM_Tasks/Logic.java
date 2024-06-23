@@ -654,6 +654,9 @@ public class Logic extends WebServiceUserCode {
             clone_ind=false;
         }
         if ("TRAINING".equalsIgnoreCase(task_type)) {
+            if("TABLES".equalsIgnoreCase(selection_method)){
+                return wrapWebServiceResults("FAILED", "AI-based training is not supported for Table-Level tasks", null);
+            }
 		postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses, "Training Data Subset", "training_ai", -1, "Exporting Data Subset", "export_entities", -2);
 	   }
        if ("Load".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
@@ -836,6 +839,9 @@ public class Logic extends WebServiceUserCode {
             clone_ind = false;
         }
 		if ("TRAINING".equalsIgnoreCase(task_type)) {
+            if("TABLES".equalsIgnoreCase(selection_method)){
+                return wrapWebServiceResults("FAILED", "AI-based training is not supported for Table-Level tasks", null);
+            }
 			postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses, "Training Data Subset", "training_ai", -1, "Exporting Data Subset", "export_entities", -2);
 		}
         if ("Load".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
