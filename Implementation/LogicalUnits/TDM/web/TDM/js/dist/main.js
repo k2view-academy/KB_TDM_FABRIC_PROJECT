@@ -957,7 +957,6 @@ function FabricWidget(props) {
       saveRef(data);
       // save it in task Data
     };
-
     var disposeWidget = function disposeWidget(ref) {
       if (!ref) {
         return;
@@ -2583,7 +2582,7 @@ var task_fetchData = /*#__PURE__*/function () {
   };
 }();
 var invokeFabricWebService = /*#__PURE__*/function () {
-  var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3(path, body, method) {
+  var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3(path, body, method, force) {
     return regenerator_default.a.wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
         case 0:
@@ -2594,9 +2593,15 @@ var invokeFabricWebService = /*#__PURE__*/function () {
           return _context3.abrupt("return", JSON.parse(JSON.stringify(exampleAPIs[path].result)));
         case 2:
           if (!(window.k2api && window.k2api.invokeFabricWebService)) {
+            _context3.next = 7;
+            break;
+          }
+          if (!force) {
             _context3.next = 5;
             break;
           }
+          return _context3.abrupt("return", task_fetchData(path, body, method));
+        case 5:
           if (runningRequests[path]) {
             clearTimeout(runningRequests[path]);
           }
@@ -2625,15 +2630,15 @@ var invokeFabricWebService = /*#__PURE__*/function () {
               }, _callee2, null, [[0, 7]]);
             })), 100);
           }));
-        case 5:
+        case 7:
           throw new Error('window.k2api is not defined');
-        case 6:
+        case 8:
         case "end":
           return _context3.stop();
       }
     }, _callee3);
   }));
-  return function invokeFabricWebService(_x4, _x5, _x6) {
+  return function invokeFabricWebService(_x4, _x5, _x6, _x7) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -2654,7 +2659,7 @@ var getActiveBEs = /*#__PURE__*/function () {
   };
 }();
 var getEnvironments = /*#__PURE__*/function () {
-  var _ref5 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5(be_name) {
+  var _ref5 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5(be_name, force) {
     return regenerator_default.a.wrap(function _callee5$(_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
@@ -2662,22 +2667,21 @@ var getEnvironments = /*#__PURE__*/function () {
             _context5.next = 2;
             break;
           }
-          return _context5.abrupt("return", invokeFabricWebService('environmentsbyuserandbe', {
+          return _context5.abrupt("return", invokeFabricWebService('userEnvironments', {
             be_name: be_name
-          }, 'GET'));
+          }, 'GET', force));
         case 2:
-          return _context5.abrupt("return", invokeFabricWebService('userEnvironments', {}, 'GET'));
+          return _context5.abrupt("return", invokeFabricWebService('userEnvironments', {}, 'GET', force));
         case 3:
         case "end":
           return _context5.stop();
       }
     }, _callee5);
   }));
-  return function getEnvironments(_x7) {
+  return function getEnvironments(_x8, _x9) {
     return _ref5.apply(this, arguments);
   };
 }();
-invokeFabricWebService('userEnvironments', {}, 'GET');
 var task_getDataGenerationParams = /*#__PURE__*/function () {
   var _ref6 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee6(taskId, luList) {
     var body;
@@ -2698,7 +2702,7 @@ var task_getDataGenerationParams = /*#__PURE__*/function () {
       }
     }, _callee6);
   }));
-  return function getDataGenerationParams(_x8, _x9) {
+  return function getDataGenerationParams(_x10, _x11) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -2719,7 +2723,7 @@ var getTrainingModels = /*#__PURE__*/function () {
       }
     }, _callee7);
   }));
-  return function getTrainingModels(_x10, _x11, _x12, _x13) {
+  return function getTrainingModels(_x12, _x13, _x14, _x15) {
     return _ref7.apply(this, arguments);
   };
 }();
@@ -2738,7 +2742,7 @@ var getCustomLogicFlows = /*#__PURE__*/function () {
       }
     }, _callee8);
   }));
-  return function getCustomLogicFlows(_x14, _x15) {
+  return function getCustomLogicFlows(_x16, _x17) {
     return _ref8.apply(this, arguments);
   };
 }();
@@ -2757,7 +2761,7 @@ var getCustomLogicParams = /*#__PURE__*/function () {
       }
     }, _callee9);
   }));
-  return function getCustomLogicParams(_x16, _x17) {
+  return function getCustomLogicParams(_x18, _x19) {
     return _ref9.apply(this, arguments);
   };
 }();
@@ -2773,7 +2777,7 @@ var getPreExecutionProcess = /*#__PURE__*/function () {
       }
     }, _callee10);
   }));
-  return function getPreExecutionProcess(_x18) {
+  return function getPreExecutionProcess(_x20) {
     return _ref10.apply(this, arguments);
   };
 }();
@@ -2789,7 +2793,7 @@ var getPostExecutionProcess = /*#__PURE__*/function () {
       }
     }, _callee11);
   }));
-  return function getPostExecutionProcess(_x19) {
+  return function getPostExecutionProcess(_x21) {
     return _ref11.apply(this, arguments);
   };
 }();
@@ -2805,7 +2809,7 @@ var getTaskPostExecutionProcess = /*#__PURE__*/function () {
       }
     }, _callee12);
   }));
-  return function getTaskPostExecutionProcess(_x20) {
+  return function getTaskPostExecutionProcess(_x22) {
     return _ref12.apply(this, arguments);
   };
 }();
@@ -2821,7 +2825,7 @@ var getTaskPreExecutionProcess = /*#__PURE__*/function () {
       }
     }, _callee13);
   }));
-  return function getTaskPreExecutionProcess(_x21) {
+  return function getTaskPreExecutionProcess(_x23) {
     return _ref13.apply(this, arguments);
   };
 }();
@@ -2837,7 +2841,7 @@ var getTaskTables = /*#__PURE__*/function () {
       }
     }, _callee14);
   }));
-  return function getTaskTables(_x22) {
+  return function getTaskTables(_x24) {
     return _ref14.apply(this, arguments);
   };
 }();
@@ -2853,7 +2857,7 @@ var getTaskVariables = /*#__PURE__*/function () {
       }
     }, _callee15);
   }));
-  return function getTaskVariables(_x23) {
+  return function getTaskVariables(_x25) {
     return _ref15.apply(this, arguments);
   };
 }();
@@ -2901,7 +2905,7 @@ var task_getEnvironmentOwners = /*#__PURE__*/function () {
       }
     }, _callee18);
   }));
-  return function getEnvironmentOwners(_x24) {
+  return function getEnvironmentOwners(_x26) {
     return _ref18.apply(this, arguments);
   };
 }();
@@ -2917,7 +2921,7 @@ var getEnvironmentByID = /*#__PURE__*/function () {
       }
     }, _callee19);
   }));
-  return function getEnvironmentByID(_x25) {
+  return function getEnvironmentByID(_x27) {
     return _ref19.apply(this, arguments);
   };
 }();
@@ -2933,7 +2937,7 @@ var getEnvironmentUserRole = /*#__PURE__*/function () {
       }
     }, _callee20);
   }));
-  return function getEnvironmentUserRole(_x26) {
+  return function getEnvironmentUserRole(_x28) {
     return _ref20.apply(this, arguments);
   };
 }();
@@ -2951,7 +2955,7 @@ var getFabricRolesByUser = /*#__PURE__*/function () {
       }
     }, _callee21);
   }));
-  return function getFabricRolesByUser(_x27) {
+  return function getFabricRolesByUser(_x29) {
     return _ref21.apply(this, arguments);
   };
 }();
@@ -2969,7 +2973,7 @@ var checkAIInstallation = /*#__PURE__*/function () {
       }
     }, _callee22);
   }));
-  return function checkAIInstallation(_x28) {
+  return function checkAIInstallation(_x30) {
     return _ref22.apply(this, arguments);
   };
 }();
@@ -2990,7 +2994,7 @@ var getTableByBeAndEnv = /*#__PURE__*/function () {
       }
     }, _callee23);
   }));
-  return function getTableByBeAndEnv(_x29, _x30) {
+  return function getTableByBeAndEnv(_x31, _x32) {
     return _ref23.apply(this, arguments);
   };
 }();
@@ -3009,7 +3013,7 @@ var getTableVersions = /*#__PURE__*/function () {
       }
     }, _callee24);
   }));
-  return function getTableVersions(_x31, _x32) {
+  return function getTableVersions(_x33, _x34) {
     return _ref24.apply(this, arguments);
   };
 }();
@@ -3027,7 +3031,7 @@ var getGlobalVariables = /*#__PURE__*/function () {
       }
     }, _callee25);
   }));
-  return function getGlobalVariables(_x33) {
+  return function getGlobalVariables(_x35) {
     return _ref25.apply(this, arguments);
   };
 }();
@@ -3049,7 +3053,7 @@ var task_getLogicalUnits = /*#__PURE__*/function () {
       }
     }, _callee26);
   }));
-  return function getLogicalUnits(_x34, _x35) {
+  return function getLogicalUnits(_x36, _x37) {
     return _ref26.apply(this, arguments);
   };
 }();
@@ -3065,7 +3069,7 @@ var getTaskLogicalUnits = /*#__PURE__*/function () {
       }
     }, _callee27);
   }));
-  return function getTaskLogicalUnits(_x36) {
+  return function getTaskLogicalUnits(_x38) {
     return _ref27.apply(this, arguments);
   };
 }();
@@ -3081,7 +3085,7 @@ var getParameters = /*#__PURE__*/function () {
       }
     }, _callee28);
   }));
-  return function getParameters(_x37, _x38) {
+  return function getParameters(_x39, _x40) {
     return _ref28.apply(this, arguments);
   };
 }();
@@ -3101,7 +3105,7 @@ var getTableParameters = /*#__PURE__*/function () {
       }
     }, _callee29);
   }));
-  return function getTableParameters(_x39, _x40, _x41) {
+  return function getTableParameters(_x41, _x42, _x43) {
     return _ref29.apply(this, arguments);
   };
 }();
@@ -3117,7 +3121,7 @@ var getEntitiesCount = /*#__PURE__*/function () {
       }
     }, _callee30);
   }));
-  return function getEntitiesCount(_x42, _x43, _x44) {
+  return function getEntitiesCount(_x44, _x45, _x46) {
     return _ref30.apply(this, arguments);
   };
 }();
@@ -3133,7 +3137,7 @@ var task_deleteTask = /*#__PURE__*/function () {
       }
     }, _callee31);
   }));
-  return function deleteTask(_x45, _x46) {
+  return function deleteTask(_x47, _x48) {
     return _ref31.apply(this, arguments);
   };
 }();
@@ -3155,7 +3159,7 @@ var saveTaskAPI = /*#__PURE__*/function () {
       }
     }, _callee32);
   }));
-  return function saveTaskAPI(_x47) {
+  return function saveTaskAPI(_x49) {
     return _ref32.apply(this, arguments);
   };
 }();
@@ -3179,7 +3183,7 @@ var getVersionsForLoad = /*#__PURE__*/function () {
       }
     }, _callee33);
   }));
-  return function getVersionsForLoad(_x48, _x49, _x50, _x51, _x52, _x53, _x54) {
+  return function getVersionsForLoad(_x50, _x51, _x52, _x53, _x54, _x55, _x56) {
     return _ref33.apply(this, arguments);
   };
 }();
@@ -3201,7 +3205,7 @@ var getGenerationExecutions = /*#__PURE__*/function () {
       }
     }, _callee34);
   }));
-  return function getGenerationExecutions(_x55, _x56, _x57, _x58, _x59) {
+  return function getGenerationExecutions(_x57, _x58, _x59, _x60, _x61) {
     return _ref34.apply(this, arguments);
   };
 }();
@@ -4755,7 +4759,7 @@ var ReferenceTables_styles_templateObject, ReferenceTables_styles_templateObject
 
 var ReferenceTables_styles_Container = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject || (ReferenceTables_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    border-left: 2px solid #ccc;\n    padding-left: 25px;\n    display: flex;\n    flex-direction: column;\n    gap: 17px;\n"])));
 var TablesContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject2 || (ReferenceTables_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    gap: 7px;\n    align-items:center;\n    height: 269px;\n"])));
-var SourceTablesContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject3 || (ReferenceTables_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 260px;\n    background-color: #f2f2f2;\n    padding: 10px 20px 30px 20px;\n    height: -webkit-fill-available;\n"])));
+var SourceTablesContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject3 || (ReferenceTables_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 260px;\n    background-color: #f2f2f2;\n    padding: 10px 20px 30px 20px;\n    height: calc(100% - 40px);\n    height: -webkit-fill-available;\n"])));
 var SourceTables = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject4 || (ReferenceTables_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    margin-top: 10px;\n    overflow-y: auto;\n    height: calc(100% - 30px);\n"])));
 var MoveTablesButton = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject5 || (ReferenceTables_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    width: 27px;\n    height: 27px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer;\n    border-radius: 3px;\n    background-color: #1483f3;\n"])));
 var SelectedTables = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject6 || (ReferenceTables_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    flex-grow: 1;\n    height: 269px;\n"])));
@@ -5798,7 +5802,7 @@ function DataSourceSettingsForm(props) {
         }
       });
       saveForm({
-        generateParams: copyGenerationParams
+        dataGenerationParams: copyGenerationParams
       });
     }
   }, [saveForm, dataGenerationParams]);
@@ -6040,19 +6044,21 @@ function EntityList(props) {
     if (value && value.split(',').length > (maxToCopy || 0)) {
       return "The number of entities cannot exceed ".concat(maxToCopy, " entities.");
     }
-    var pattern = new RegExp('^((\\s*\\w\\s*|-)+(?:,(\\s*\\w\\s*|-)+){0,' + ((maxToCopy || 1000000000) - 1) + '})?$');
-    if (!pattern.test(value || '')) {
-      return 'The entity ID must consist of letters, numbers or a dash only. Other characters are not supported.';
-    }
+    // const pattern = new RegExp(
+    //     '^((\\s*\\w\\s*|-)+(?:,(\\s*\\w\\s*|-)+){0,' +
+    //         ((maxToCopy || 1000000000) - 1) +
+    //         '})?$'
+    // );
+    // if (!pattern.test(value || '')) {
+    //     return 'The entity ID must consist of letters, numbers or a dash only. Other characters are not supported.';
+    // }
     return true;
   };
-
-  // useEffect(() => {
-  //   return () => {
-  //     unregister('selection_param_value');
-  //   };
-  // }, []);
-
+  Object(react["useEffect"])(function () {
+    return function () {
+      unregister('selection_param_value');
+    };
+  }, []);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(DataSubset_styles_Container, {
     children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TextArea, EntityList_objectSpread(EntityList_objectSpread({}, register('selection_param_value', {
       value: selection_param_value,
@@ -7294,16 +7300,16 @@ function Rule(props) {
   }, [rule, onChange]);
   var onComboValueChange = Object(react["useCallback"])(function (value) {
     if (Array.isArray(value)) {
-      rule.value = value.map(function (it) {
+      rule.data = value.map(function (it) {
         return it.value;
       });
     } else {
-      rule.value = value.value;
+      rule.data = value.value;
     }
     onChange();
   }, [rule, onChange]);
   var onValueChange = Object(react["useCallback"])(function (value) {
-    rule.value = value;
+    rule.data = value;
     onChange();
   }, [rule, onChange]);
   var getRuleByType = Object(react["useCallback"])(function () {
@@ -7312,13 +7318,13 @@ function Rule(props) {
     }
     if (chosenParam !== null && chosenParam !== void 0 && chosenParam.COMBO_INDICATOR) {
       var tempValue = undefined;
-      if (Array.isArray(rule.value)) {
+      if (Array.isArray(rule.data)) {
         tempValue = chosenParam.valid_values.filter(function (it) {
-          return rule.value.indexOf(it.value) >= 0;
+          return rule.data.indexOf(it.value) >= 0;
         });
       } else {
         tempValue = chosenParam.valid_values.find(function (it) {
-          return rule.value === it.value;
+          return rule.data === it.value;
         });
       }
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
@@ -7336,7 +7342,7 @@ function Rule(props) {
           name: "rule_number_".concat(groupIndex, "_").concat(ruleIndex),
           title: '',
           onChange: onValueChange,
-          value: rule.value,
+          value: rule.data,
           type: InputTypes.number,
           mandatory: true,
           width: '300px',
@@ -7351,13 +7357,13 @@ function Rule(props) {
         name: "rule_text_".concat(groupIndex, "_").concat(ruleIndex),
         title: '',
         onChange: onValueChange,
-        value: rule.value,
+        value: rule.data,
         type: InputTypes.text,
         mandatory: true,
         width: '300px'
       });
     }
-  }, [chosenParam, rule.value, rule.field, rule.condition, chosenCondition, onValueChange, onComboValueChange]);
+  }, [chosenParam, rule.data, rule.field, rule.condition, chosenCondition, onValueChange, onComboValueChange]);
   var removeGroup = Object(react["useCallback"])(function (index) {
     if (!parentGroup || !parentGroup.rules || parentGroup.rules.length === 0) {
       return;
@@ -7455,7 +7461,7 @@ function QueryBuilder(props) {
     group === null || group === void 0 ? void 0 : group.rules.push({
       condition: '',
       field: '',
-      value: undefined,
+      data: undefined,
       operator: 'AND',
       validValues: []
     });
@@ -7544,7 +7550,7 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
     field = rule.field || '';
   }
   var condition = rule.condition;
-  var data = rule.value;
+  var data = rule.data;
   if (type === 1) {
     if (rule.condition !== 'IS NULL' && rule.condition !== 'IS NOT NULL') {
       if (rule.original_type === 'text') {
@@ -7573,7 +7579,7 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
     data = "'" + data + "'";
     if (rule.type === "number") {
       field = field + "::numeric[] ";
-      data = rule.value;
+      data = rule.data;
     }
   }
   var table = rule.table;
@@ -7593,7 +7599,7 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
     return '( ' + prefix + field + ' ' + condition + ' )';
   } else if (rule.condition === 'IN' || rule.condition === 'NOT IN') {
     if (type !== 1) {
-      data = rule.value;
+      data = rule.data;
     }
     if (Array.isArray(data)) {
       var newData = [];
@@ -7631,19 +7637,19 @@ var computeQuery = function computeQuery(group, parametersList, type, resultValu
         }
       } else {
         var data;
-        if (!group.rules[i].value && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
+        if (!group.rules[i].data && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
           return {
             v: ''
           };
         }
         if (group.rules[i].type === 'real') {
-          if (group.rules[i].value.toLocaleString().indexOf('.') <= 0) {
-            data = group.rules[i].value.toFixed(1);
+          if (group.rules[i].data.toLocaleString().indexOf('.') <= 0) {
+            data = group.rules[i].data.toFixed(1);
           } else {
-            data = group.rules[i].value;
+            data = group.rules[i].data;
           }
         } else if (group.rules[i].type === 'integer') {
-          data = Math.floor(group.rules[i].value);
+          data = Math.floor(group.rules[i].data);
         } else if (group.rules[i].type === 'combo') {
           var paramFound = parametersList === null || parametersList === void 0 ? void 0 : parametersList.find(function (it) {
             return it.name === group.rules[i].field;
@@ -7652,15 +7658,15 @@ var computeQuery = function computeQuery(group, parametersList, type, resultValu
             var validValues = paramFound.valid_values.map(function (it) {
               return it.label;
             });
-            if (validValues && validValues.length > 0 && validValues.indexOf(group.rules[i].value) < 0 && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
+            if (validValues && validValues.length > 0 && validValues.indexOf(group.rules[i].data) < 0 && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
               return {
                 v: ''
               };
             }
           }
-          data = group.rules[i].value;
+          data = group.rules[i].data;
         } else {
-          data = group.rules[i].value;
+          data = group.rules[i].data;
         }
         if (!data) {
           data = '';
@@ -7696,7 +7702,7 @@ var getSelectionParamValue = function getSelectionParamValue(filter, parametersL
       } else if (['IS NULL', 'IS NOT NULL'].indexOf(rule.condition) >= 0) {
         validStatement = true;
         return true;
-      } else if (!rule.value) {
+      } else if (!rule.data) {
         return false;
       }
       validStatement = true;
@@ -8487,7 +8493,7 @@ var PeriodUnitType = /*#__PURE__*/function (PeriodUnitType) {
   PeriodUnitType["Do_Not_Retain"] = "Do Not Retain";
   return PeriodUnitType;
 }({});
-var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourceType, source_type, retention_period_value, reserve_retention_period_value) {
+var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourceType, source_type, retention_period_value, retention_period_type, reserve_retention_period_value) {
   var AuthService = getService('AuthService');
   var prevDataSourceType = Object(usehooks["c" /* usePrevious */])(dataSourceType);
   var previousSource_type = Object(usehooks["c" /* usePrevious */])(source_type);
@@ -8594,6 +8600,11 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
     updatePeriods(true);
   }, [periodsData]);
   Object(react["useEffect"])(function () {
+    if (retention_period_type === 'reset') {
+      updatePeriods();
+    }
+  }, [retention_period_type]);
+  Object(react["useEffect"])(function () {
     function fetchReservationPeriodsData() {
       return _fetchReservationPeriodsData.apply(this, arguments);
     }
@@ -8653,7 +8664,6 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
 
   // need to add code for tester
 };
-
 /* harmony default export */ var Main_usePeriods = (usePeriods_usePeriods);
 // CONCATENATED MODULE: ./src/components/Periods/index.tsx
 
@@ -10218,7 +10228,7 @@ function TargetForm(props) {
             case 0:
               _context.prev = 0;
               _context.next = 3;
-              return apis_task.getEnvironments();
+              return apis_task.getEnvironments(undefined, true);
             case 3:
               data = _context.sent;
               ai_env = data.find(function (it) {
@@ -10777,7 +10787,6 @@ function SchedulerForm(props) {
           hideSeconds: false // Whether to show/hide the seconds time picker
         }
       },
-
       'cron-format': {
         name: 'format',
         value: "quartz (Currently only compatible with 'quartz' and defaults to 'quartz')"
@@ -11626,6 +11635,9 @@ function TaskTitleForm(props) {
     _useState2 = slicedToArray_default()(_useState, 2),
     taskTitleLocal = _useState2[0],
     setTaskTitleLocal = _useState2[1];
+  Object(react["useEffect"])(function () {
+    setTaskTitleLocal(task_title || '');
+  }, [task_title]);
   var taskTitleChange = Object(react["useCallback"])(function (taskTitle) {
     setTaskTitleLocal(taskTitle);
     saveForm({
@@ -11702,7 +11714,7 @@ var uniqueByField = function uniqueByField(data, field) {
 
 
 
-var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, saveForm, initTask, dataSourceType, source_type, selected_logical_units_names, task_id, be_id, source_environment_id, environment_id) {
+var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, saveForm, initTask, dataSourceType, source_type, selected_logical_units_names, be_type, be_id, source_environment_id, environment_id) {
   var toast = hooks_useToast();
   var _useState = Object(react["useState"])([]),
     _useState2 = slicedToArray_default()(_useState, 2),
@@ -11755,17 +11767,21 @@ var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, sav
       return;
     }
     if (be_id) {
-      getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id);
+      if (be_type === 'source' || source_environment_id) {
+        getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id);
+      }
     }
-  }, [source_environment_id, be_id, initFinished, dataSourceType]);
+  }, [source_environment_id, be_id, initFinished, dataSourceType, be_type]);
   Object(react["useEffect"])(function () {
     if (!initFinished) {
       return;
     }
     if (be_id) {
-      getLogicalUnits(be_id, setTargetLogicalUnits, environment_id);
+      if (be_type === 'target' || environment_id) {
+        getLogicalUnits(be_id, setTargetLogicalUnits, environment_id);
+      }
     }
-  }, [environment_id, be_id, initFinished, dataSourceType]);
+  }, [environment_id, be_id, initFinished, dataSourceType, be_type]);
   Object(react["useEffect"])(function () {
     var temp = (sourceLogicalUnits || []).concat(targetLogicalUnits || []);
     var allLus = uniqueByField(temp, 'lu_id').filter(function (it) {
@@ -11785,7 +11801,9 @@ var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, sav
     });
     if (removedLus.length > 0 && !initTask) {
       if (dataSourceType !== 'data_source' || source_type !== 'tables') {
-        toast.warning("The selected env does not contain the ".concat(removedLus, " ").concat(removedLus.length === 1 ? 'system' : 'systems', "."), true);
+        if (be_type === 'source' && source_environment_id || be_type === 'target' && environment_id) {
+          toast.warning("The selected env does not contain the ".concat(removedLus, " ").concat(removedLus.length === 1 ? 'system' : 'systems', "."), true);
+        }
       }
     }
     if (selected_logical_units_names && selected_logical_units_names.length > 0) {
@@ -11876,6 +11894,9 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
   defaultValues.forEach(function (field) {
     taskData[field] = apiData[field];
   });
+  if (taskData.selection_method === 'CLONE') {
+    taskData.selection_method = SelectionMethodEnum.L;
+  }
   Object.keys(fieldsMapper).forEach(function (field) {
     taskData[fieldsMapper[field]] = apiData[field];
   });
@@ -12015,8 +12036,14 @@ var updateTaskType = function updateTaskType(taskData, data) {
     }
   } else if (taskData.reserve_ind && !taskData.load_entity) {
     data.task_type = 'RESERVE';
+    data.source_environment_id = taskData.environment_id;
+    data.source_env_name = taskData.environment_name;
+    data.source_environment_name = taskData.environment_name;
   } else if (taskData.delete_before_load && !taskData.load_entity) {
     data.task_type = 'DELETE';
+    data.source_environment_id = taskData.environment_id;
+    data.source_env_name = taskData.environment_name;
+    data.source_environment_name = taskData.environment_name;
   } else if (taskData.load_entity) {
     data.task_type = 'LOAD';
   }
@@ -12027,6 +12054,7 @@ var prepareDataForSave = function prepareDataForSave(taskData, logicalUnits, cop
   fieldsToCopy.forEach(function (key) {
     data[key] = taskData[key];
   });
+  data.generateParams = taskData.dataGenerationParams;
   updateTaskType(taskData, data);
   if (data.globals && data.globals.length > 0) {
     data.task_globals = true;
@@ -12034,7 +12062,9 @@ var prepareDataForSave = function prepareDataForSave(taskData, logicalUnits, cop
     data.task_globals = false;
   }
   data.copy = copy;
-  data.source_env_name = taskData.source_environment_name;
+  if (data.task_type !== 'RESERVE' && data.task_type !== 'DELETE') {
+    data.source_env_name = taskData.source_environment_name;
+  }
   var selectedLogicalUnits = logicalUnits.filter(function (it) {
     return ((taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units) || []).indexOf(it.lu_id) >= 0;
   });
@@ -12940,6 +12970,7 @@ var useGenerationParams_useGenerationParams = function useGenerationParams(saveF
                 newValueAdded = true;
               } else {
                 if (data[key].value !== undefined) {
+                  newValueAdded = true;
                   data[key].editor.value = data[key].value;
                 } else {
                   data[key].editor.value = data[key].default;
@@ -12977,7 +13008,6 @@ var useGenerationParams_useGenerationParams = function useGenerationParams(saveF
 
   // need to add code for tester
 };
-
 /* harmony default export */ var Main_useGenerationParams = (useGenerationParams_useGenerationParams);
 // CONCATENATED MODULE: ./src/containers/Task/Main/index.tsx
 
@@ -13104,8 +13134,8 @@ function TaskMain(props) {
   }, [setValue, clearErrors, setFailedComp, failedComp, currentStep]);
   var _useInit = Main_useInit(saveForm, taskData),
     initFinished = _useInit.initFinished;
-  var allLogicalUnits = Main_useLogicalUnits(initFinished, saveForm, initTask, taskData === null || taskData === void 0 ? void 0 : taskData.dataSourceType, taskData === null || taskData === void 0 ? void 0 : taskData.source_type, taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units_names, taskData === null || taskData === void 0 ? void 0 : taskData.task_id, taskData === null || taskData === void 0 ? void 0 : taskData.be_id, taskData === null || taskData === void 0 ? void 0 : taskData.source_environment_id, taskData === null || taskData === void 0 ? void 0 : taskData.environment_id);
-  Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.reserve_retention_period_value);
+  var allLogicalUnits = Main_useLogicalUnits(initFinished, saveForm, initTask, taskData === null || taskData === void 0 ? void 0 : taskData.dataSourceType, taskData === null || taskData === void 0 ? void 0 : taskData.source_type, taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units_names, taskData === null || taskData === void 0 ? void 0 : taskData.be_type, taskData === null || taskData === void 0 ? void 0 : taskData.be_id, taskData === null || taskData === void 0 ? void 0 : taskData.source_environment_id, taskData === null || taskData === void 0 ? void 0 : taskData.environment_id);
+  Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.retention_period_type, taskData.reserve_retention_period_value);
   Main_useRoles(saveForm, taskData);
   Main_useGenerationParams(saveForm, taskData.task_id, taskData.selected_logical_units_names, taskData.generateParams);
   var onReset = Object(react["useCallback"])(function () {
@@ -13168,7 +13198,14 @@ function TaskMain(props) {
     }
     if (currentStep === 'test_data_store') {
       saveForm({
-        version_ind: false
+        version_ind: false,
+        retention_period_type: 'reset'
+      });
+    }
+    if (currentStep === 'task_title') {
+      saveForm({
+        task_description: '',
+        task_title: ''
       });
     }
     if (currentStep === 'target') {
