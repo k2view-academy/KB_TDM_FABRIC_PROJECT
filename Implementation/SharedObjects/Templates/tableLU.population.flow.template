@@ -1,342 +1,124 @@
-{
-	"levels": [
-		{
-			"stages": [
-				{
-					"name": "Input",
-					"dependsOnList": [],
-					"isLast": 0,
-					"actors": [
-						{
-							"name": "PopulationArgs",
-							"actorType": {
-								"parentType": "PopulationArgs",
-								"readOnly": true,
-								"inputs": [
-								  {{#each inputArgs}}
-									{
-										"name": "{{this}}",
-										"schema": {}
-									}{{#if @last}}{{^}},{{/if}}
-								  {{/each}}
-								],
-								"outputs": []
-							}
-						},
-						{
-							"name": "SyncDeleteMode",
-							"actorType": {
-								"parentType": "SyncDeleteMode",
-								"inputs": [
-									{
-										"name": "table",
-										"const": null
-									}
-								],
-								"outputs": []
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"stages": [
-				{
-					"name": "Source",
-					"dependsOnList": [],
-					"isLast": 0,
-					"actors": [
-                        {
-                            "name": "Get Sync Source Data Indicator",
-                            "condition": "value",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetSyncSourceDataIndicator"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-						{
-							"name": "Query",
-							"actorType": {
-								"parentType": "SourceDbQuery",
-								"inputs": [
-									{
-										"name": "interface",
-										"const": "{{sourceInterface}}"
-									},
-									{
-										"name": "sql",
-										"const": "{{{sourceQuery}}}"
-									}
-								],
-								"outputs": [{{#if sourceQueryOutputs}}
-									{
-										"name": "result",
-										"schema": {
-											"type": "object",
-											"properties": {
-												{{#each sourceQueryOutputs}}"{{this}}": {
-													"type": {}
-												}{{#if @last}}{{^}},{{/if}}
-												{{/each}}
-											}
-										}
-									}{{/if}}
-								]
-							}
-                       },
-                        {
-                            "name": "Get SEQ_CACHE_INTERFACE",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SEQ_CACHE_INTERFACE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get MASKING_CACHE_TTL",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "MASKING_CACHE_TTL",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-					]
-				}
-			]
-		},
-		{
-			"stages": [
-				{
-					"name": "Mask Data Based On Catalog",
-					"dependsOnList": [],
-					"isLast": 0,
-					"actors": [
-                        {
-                            "name": "Catalog Masking Mapper",
-                            "actorType": {
-                                "parentType": "CatalogMaskingMapper",
-                                "inputs": [
-                                    {
-                                        "name": "dataPlatform",
-                                        "const": "{{sourceInterface}}"
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "dataset",
-                                        "const": "{{sourceTable}}"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": "{{sourceSchema}}"
-                                    },
-                                    {
-                                        "name": "ttl",
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-		},
-		{
-			"stages": [
-				{
-					"name": "LU Table",
-					"dependsOnList": [],
-					"isLast": 1,
-					"actors": [
-						{
-							"name": "{{luTable}}",
-							"actorType": {
-								"parentType": "DbLoad",
-								"inputs": [
-									{
-										"name": "interface",
-										"const": "fabric"
-									},
-									{
-										"name": "schema",
-										"const": null
-									},
-									{
-										"name": "table",
-										"const": null
-									},
-									{
-										"name": "fields",
-										"const": [
-											{{#each luTableColumns}}
-											"{{this}}"{{#if @last}}{{^}},{{/if}}
-											{{/each}}
-										]
-									},
-									{
-										"name": "keys",
-										"const": [
-											{{#each luTableKeys}}
-											"{{this}}"{{#if @last}}{{^}},{{/if}}
-											{{/each}}
-										]
-									},
-									{
-										"name": "dialect",
-										"const": "sqlite"
-									}{{#if luTableColumns}},{{/if}}
-									{{#each luTableColumns}}
-									{
-										"name": "{{this}}",
-										"schema": {}
-									}{{#if @last}}{{^}},{{/if}}
-									{{/each}}
-								],
-								"outputs": []
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"stages": [
-				{
-					"name": "Post Load",
-					"dependsOnList": [],
-					"isLast": 0,
-					"actors": []
-				}
-			]
-		}
-	],
-	"connections": [
-		{
-			"leftPort": {
-				"actor": "PopulationArgs",
-				"name": "parent_rows"
-			},
-			"rightPort": {
-				"actor": "Query",
-				"name": "parent_rows"
-			}
-		},
-		{
-			"leftPort": {
-				"actor": "Catalog Masking Mapper",
-				"name": "values"
-			},
-			"rightPort": {
-				"actor": "{{luTable}}",
-				"name": "params"
-			},
-			"iterate": "Iterate"
-		},
-		{
-			"leftPort": {
-				"actor": "Query",
-				"name": "result"
-			},
-			"rightPort": {
-				"actor": "Catalog Masking Mapper",
-				"name": "values"
-			 
-			}
-		},
-		{
-			"leftPort": {
-              "actor": "Get SEQ_CACHE_INTERFACE",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking Mapper",
-                "name": "interface"
-            }
-        },
-		{
-            "leftPort": {
-                "actor": "Get MASKING_CACHE_TTL",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking Mapper",
-                "name": "ttl"
-            }
-        },
-        {
-            "leftPort": {											   
-				"actor": "flowArgs",
-				"name": "schema"
-			},
-			"rightPort": {
-				"actor": "{{luTable}}",
-				"name": "schema"
-			}
-		},
-		{
-			"leftPort": {
-				"actor": "flowArgs",
-				"name": "table"
-			},
-			"rightPort": {
-				"actor": "{{luTable}}",
-				"name": "table"
-			}
-		},
-		{
-			"leftPort": {
-				"actor": "flowArgs",
-				"name": "table"
-			},
-			"rightPort": {
-				"actor": "SyncDeleteMode",
-				"name": "table"
-			}
-		}{{#if inputArgs}},{{/if}}
-		{{#each inputArgs}}
-		{
-			"leftPort": {
-				"actor": "flowArgs",
-				"name": "{{this}}"
-			},
-			"rightPort": {
-				"actor": "PopulationArgs",
-				"name": "{{this}}"
-			 
-			}
-		}{{#if @last}}{{^}},{{/if}}
-		{{/each}}
-	]
-}
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true{{#if inputArgs}}
+        in:{{#each inputArgs}}
+          {{this}}:
+            external: {{this}}
+            schema: any
+            mandatory: false{{/each}}{{/if}}
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      Get Sync Source Data Indicator:
+        parent: InnerFlow
+        condition: value
+        in:
+          flowName:
+            const: GetSyncSourceDataIndicator
+        out:
+          value:
+            schema: boolean
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: {{#if sourceInterface}}{{sourceInterface}}{{else}}null{{/if}}
+          sql:
+            const: {{#if sourceQuery}}{{{sourceQuery}}}{{else}}null{{/if}}{{#if streamSyncEnabled}}
+          stream_sync_enabled:
+            const: {{streamSyncEnabled}}{{/if}}
+          parent_rows:
+            link: PopulationArgs/parent_rows{{#if sourceQueryOutputs}}
+        out:
+          result:
+            schema: '#ref'{{/if}}
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Mask Data Based On Catalog:
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: {{sourceInterface}}
+          schema:
+            const: {{sourceSchema}}
+          dataset:
+            const: {{sourceTable}}
+          ttl:
+            link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
+          values:
+            link: Query/result
+  LU Table:
+    last: 1
+    actors:
+      {{luTable}}:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            {{#each luTableColumns}}
+            - {{this}}
+            {{/each}}
+          keys:
+            const:
+            {{#each luTableKeys}}
+            - {{this}}
+            {{/each}}
+          dialect:
+            const: sqlite
+          {{#each luTableColumns}}
+          {{this}}:
+            schema: any
+          {{/each}}
+          params:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+  Post Load: {
+    }
+{{#if sourceQueryOutputs}}schemas:
+  Query.out.result:
+    type: object
+    properties:
+      {{#each sourceQueryOutputs}}
+      {{this}}:
+        type: {
+          }
+      {{/each}}
+{{/if}}
