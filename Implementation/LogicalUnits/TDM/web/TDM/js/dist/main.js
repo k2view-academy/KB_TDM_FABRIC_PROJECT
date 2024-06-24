@@ -3934,7 +3934,7 @@ function DataGenerationParameters(props) {
     });
   }, [saveForm]);
   Object(react["useEffect"])(function () {
-    if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester' && sourceUserRole && !sourceUserRole.allow_read) {
+    if (sourceUserRole && sourceUserRole.userType === 'tester' && !sourceUserRole.allow_read) {
       saveForm({
         synthetic_type: 'generated_data'
       });
@@ -3957,7 +3957,7 @@ function DataGenerationParameters(props) {
             value: "new_data",
             selectedValue: synthetic_type,
             title: 'Generate new data',
-            disabled: (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester' && sourceUserRole && !sourceUserRole.allow_read
+            disabled: sourceUserRole && sourceUserRole.userType === 'tester' && !sourceUserRole.allow_read
           }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
             onChange: syntheticTypeChange,
             name: "synthetic_type",
@@ -4532,7 +4532,7 @@ function SelectTrainingModels(props) {
     });
   }, [saveForm]);
   Object(react["useEffect"])(function () {
-    if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester' && sourceUserRole && !sourceUserRole.allow_read || disableGeneration) {
+    if (sourceUserRole && sourceUserRole.userType === 'tester' && !sourceUserRole.allow_read || disableGeneration) {
       saveForm({
         synthetic_type: 'generated_data'
       });
@@ -4560,7 +4560,7 @@ function SelectTrainingModels(props) {
             value: "new_data",
             selectedValue: synthetic_type,
             title: 'Generate new data',
-            disabled: (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester' && sourceUserRole && !sourceUserRole.allow_read || disableGeneration
+            disabled: sourceUserRole && sourceUserRole.userType === 'tester' && !sourceUserRole.allow_read || disableGeneration
           }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
             onChange: syntheticTypeChange,
             name: "synthetic_type",
@@ -6393,10 +6393,20 @@ function useTable_objectSpread(target) { for (var i = 1; i < arguments.length; i
 
 
 
+
+
 var SelectDataVerioning_useTable_useTable = function useTable(selected_version_task_exe_id, saveForm) {
   var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  var _useContext = Object(react["useContext"])(TaskContext),
+    taskData = _useContext.taskData;
+  var toast = hooks_useToast();
+  var maxToCopy = taskData.maxToCopy;
   var setVersioningData = Object(react["useCallback"])(function (data) {
     var version_datetime = new Date(data.version_datetime);
+    if (data.num_of_succeeded_entities > maxToCopy) {
+      toast.error('The number of entities exceeds the number of entities in the read write permission');
+      return;
+    }
     saveForm({
       selected_version_task_name: data.version_name,
       selected_version_datetime: moment_default()(version_datetime).format('YYYYMMDDHHmmss'),
@@ -8357,16 +8367,18 @@ function DataSubsetForm(props) {
         return it.value !== 'L' && it.value !== 'ALL';
       });
     }
-    if (!((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'tester' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_random_entity_selection) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_random_entity_selection) && (userRole || sourceUserRole))) {
+    if (!((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_random_entity_selection) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_random_entity_selection) && (userRole || sourceUserRole))) {
       result = result.filter(function (it) {
         return it.value !== 'R';
       });
     }
-    if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester') {
-      result = result.filter(function (it) {
-        return it.value !== 'ALL';
-      });
-    }
+
+    // if (systemUserRole?.type === 'tester') {
+    //     result = result.filter(
+    //         (it: any) => it.value !== 'ALL'
+    //     );
+    // }
+
     var found = result.find(function (it) {
       return it.value === 'ALL';
     });
@@ -8856,7 +8868,7 @@ function TestDataStoreForm(props) {
         title: "Create data snapshot (version)",
         value: version_ind && !(sync_mode === 'OFF' && dataSourceType === 'data_source'),
         onChange: onDataVersioningchange,
-        disabled: !((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'tester' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_entity_versioning) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_entity_versioning) && (userRole || sourceUserRole)) || sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || dataSourceType === 'data_source' && source_type === 'tables' || retention_period_type === 'Do Not Retain'
+        disabled: !((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_entity_versioning) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_entity_versioning) && (userRole || sourceUserRole)) || sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || dataSourceType === 'data_source' && source_type === 'tables' || retention_period_type === 'Do Not Retain'
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(RetentionPeriodContainer, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Periods, {
           disabled: sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data',
@@ -10251,7 +10263,7 @@ function TargetForm(props) {
       }));
       return _fetchData.apply(this, arguments);
     }
-    if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester') {
+    if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'admin') {
       fetchData();
     }
     if (dataSourceType !== 'data_source' && dataSourceType !== undefined) {
@@ -11516,7 +11528,7 @@ function AdvancedForm(props) {
     }, {
       name: 'Task variables'
     }];
-    if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'tester' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_task_scheduling) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_task_scheduling) && (userRole || sourceUserRole)) {
+    if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || userRole && userRole.userType === 'owner' || sourceUserRole && sourceUserRole.userType === 'owner' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_task_scheduling) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_task_scheduling) && (userRole || sourceUserRole)) {
       result.push({
         name: 'Scheduler',
         icon: clock_icon
@@ -12458,6 +12470,7 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
           case 4:
             data = _context2.sent;
             updateData = defineProperty_default()({}, isSource ? 'sourceUserRole' : 'userRole', data.userRole);
+            updateData[isSource ? 'sourceUserRole' : 'userRole'].userType = 'tester';
             temp_data = {};
             updateTaskType(taskData, temp_data);
             task_type = temp_data.task_type;
@@ -12483,7 +12496,7 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
               }
             }
             saveForm(updateData);
-          case 15:
+          case 16:
           case "end":
             return _context2.stop();
         }
@@ -12558,7 +12571,8 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
                 allowed_task_scheduling: true,
                 allowed_replace_sequences: true,
                 allow_read: true,
-                allow_write: true
+                allow_write: true,
+                userType: 'owner'
               }), defineProperty_default()(_saveForm, "maxToCopy", 9007199254740992), defineProperty_default()(_saveForm, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', true), _saveForm));
             } else {
               saveForm(defineProperty_default()({}, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', false));
@@ -12585,7 +12599,8 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
           allowed_task_scheduling: true,
           allowed_replace_sequences: true,
           allow_read: true,
-          allow_write: true
+          allow_write: true,
+          userType: 'admin'
         },
         userRole: {
           allowed_random_entity_selection: true,
@@ -12596,7 +12611,8 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
           allowed_task_scheduling: true,
           allowed_replace_sequences: true,
           allow_read: true,
-          allow_write: true
+          allow_write: true,
+          userType: 'admin'
         },
         maxToCopy: 9007199254740992
       });
