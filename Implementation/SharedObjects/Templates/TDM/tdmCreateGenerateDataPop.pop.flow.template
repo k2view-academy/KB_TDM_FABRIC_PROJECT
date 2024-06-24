@@ -362,6 +362,13 @@
                                     {
                                         "name": "mtable",
                                         "schema": {}
+                                    },
+                                    {
+                                        "name": "donNotNormalizeGeneratedValue",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []

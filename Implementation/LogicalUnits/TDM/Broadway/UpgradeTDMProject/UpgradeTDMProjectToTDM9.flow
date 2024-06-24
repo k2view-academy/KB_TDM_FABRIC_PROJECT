@@ -37,12 +37,29 @@ stages:
             const: RemoveOldSharedJavaFiles
   Stage 6:
     actors:
-      UpgradeProjectLUs1:
+      Upgrade Project LUs:
         parent: InnerFlow
         in:
           flowName:
             const: UpgradeProjectLUs
-          rebuildMainTablePopulationFlow:
-            external: rebuildMainTablePopulationFlow
-            schema: boolean
-            mandatory: false
+  Stage 7:
+    actors:
+      Update TDM Globals Files:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTDMGlobalsFile
+  Stage 8:
+    actors:
+      TDMDB Upgrade Scripts:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDBUpgradeScripts
+  Stage 9:
+    actors:
+      Upgrade Distinct Values:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeDistinctValues

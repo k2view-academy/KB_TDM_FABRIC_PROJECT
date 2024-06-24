@@ -176,7 +176,7 @@ public class SharedLogic {
 
                     String sql = "update " + TDMDB_SCHEMA + ".task_execution_entities SET lu_name=?, entity_id=?, target_entity_id=?, creation_date=?, entity_end_time=?, entity_start_time=?, env_id=?, execution_status=?, id_type=?, fabric_execution_id=?, iid=?, source_env=?, fabric_get_time=?, total_processing_time=?, clone_no=? " +
 							"WHERE task_execution_id = ?";
-                    db(TDM).execute(sql, luName, refTableName, refTableName, startTime, endTime, startTime, environment_id, FAILED, "REFERENCE", batchID, refTableName, sourceEnv, null, null, "NO_CLONE_ID",taskExecutionID);
+                    db(TDM).execute(sql, luName, refTableName, refTableName, startTime, endTime, startTime, environment_id, FAILED, "REFERENCE", batchID, refTableName, sourceEnv, null, null, "0",taskExecutionID);
                     db(TDM).execute("update " + TDMDB_SCHEMA + ".task_execution_entities set total_processing_time = EXTRACT(EPOCH FROM(entity_end_time-entity_start_time)) " +
                             "where task_execution_id = ? and entity_id = ? ", taskExecutionID, refTableName);
 

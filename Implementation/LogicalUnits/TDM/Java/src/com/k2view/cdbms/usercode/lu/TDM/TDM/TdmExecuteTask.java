@@ -1232,7 +1232,7 @@ public class TdmExecuteTask {
         globals.put("TDM_TASK_ID", "" + TASK_ID.get(taskProperties));
         globals.put("TDM_TASK_EXE_ID", "" + TASK_EXECUTION_ID.get(taskProperties));
         globals.put("execution_id", "" + TASK_EXECUTION_ID.get(taskProperties));
-        globals.put("clone_id", "NO_CLONE_ID");
+        globals.put("clone_id", "0");
         globals.put("TDM_REPLACE_SEQUENCES", cloneInd ? true : REPLACE_SEQUENCES.get(taskProperties));
         globals.put("enable_sequences", cloneInd ? true : REPLACE_SEQUENCES.get(taskProperties));
         globals.put("TASK_TYPE", TASK_TYPE.get(taskProperties).toString().toUpperCase());

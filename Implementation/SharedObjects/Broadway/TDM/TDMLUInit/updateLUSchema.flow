@@ -619,10 +619,6 @@ stages:
         in:
           flowName:
             const: copyGlobalsTDM
-          TDM_LIBRARY_PAHT:
-            external: TDM_LIBRARY_PAHT
-            schema: string
-            mandatory: false
           LU_PATH:
             external: LU_PATH
             schema: string

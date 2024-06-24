@@ -115,7 +115,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "JavaScript1",
+                            "name": "JSON ?",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "JavaScript",
@@ -508,7 +508,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "JSON ?",
                 "name": "paramValue"
             },
             "path": [

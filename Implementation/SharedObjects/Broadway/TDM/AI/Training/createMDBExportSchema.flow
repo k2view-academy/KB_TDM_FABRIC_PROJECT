@@ -147,7 +147,7 @@ stages:
           sql:
             const: |-
               insert into ${@TDMDB_SCHEMA}.tdm_general_parameters (param_name,param_value)
-              values (${param_name}}, ${param_value})
+              values (${param_name}, ${param_value})
               ON CONFLICT (param_name) DO UPDATE
               SET param_value=${param_value};
           param_name:

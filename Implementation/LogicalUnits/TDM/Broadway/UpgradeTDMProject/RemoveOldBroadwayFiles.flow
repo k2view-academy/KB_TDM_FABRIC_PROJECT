@@ -1,6 +1,6 @@
 tags: TDM,UpgradeTDMProject
 stages:
-  Stage 1:
+  Get Params:
     actors:
       Get Project Folder:
         parent: SysEnv
@@ -23,7 +23,7 @@ stages:
         in:
           format:
             const: SharedObjects/Broadway/TDM/TDMImplementorActors
-  Stage 8:
+  Create New Folder:
     actors:
       Create Folder if it does not exist:
         parent: md
@@ -41,7 +41,8 @@ stages:
             - Broadway
             - Broadway/TDM
             - Broadway/TDM/TDMTemplates
-  Stage 5:
+            - Broadway/TDM/CustomLogic
+  Get Files:
     actors:
       Source Folder:
         parent: Const
@@ -74,7 +75,7 @@ stages:
         out:
           table:
             schema: '#ref'
-  Stage 2:
+  Prepare Path:
     actors:
       Format File Old Location:
         parent: StringFormat
@@ -109,7 +110,7 @@ stages:
               iterate: Iterate
             schema: string
             mandatory: false
-  Stage 3:
+  Move Files:
     last: 1
     actors:
       Error Handler:
@@ -140,7 +141,7 @@ stages:
             link: Format File New Location/string
   Stage 4:
     last: 1
-  Stage 6:
+  Get All Files To Remove:
     actors:
       List of Files to be Deleted:
         parent: ConstStrings
@@ -375,7 +376,7 @@ stages:
             - getTableSequenceMapping.actor
             - createDeleteTableFlows.flow
             - getTableSequenceMapping.flow
-  Stage 10:
+  Get Path File To Remove:
     actors:
       Format File/Directory Name:
         parent: StringFormat
@@ -393,7 +394,8 @@ stages:
               iterate: Iterate
             schema: string
             mandatory: false
-  Stage 7:
+  'Remove File ':
+    last: 1
     actors:
       Delete File or Folder:
         parent: LuFunction
@@ -402,6 +404,46 @@ stages:
             const: deleteFile
           fileName:
             link: Format File%2FDirectory Name/string
+            schema: string
+            mandatory: false
+  Special Files Cases:
+    actors:
+      Special Cases:
+        parent: ConstStrings
+        in:
+          strings:
+            const:
+            - TDM/GenerateData/TDMGenerateOrchestrator.flow
+            - TDM/TDMOrchestrator.flow
+            - TDM/Reserve/TDMReserveOrchestrator.flow
+            - TDM/Reserve/TDMReserveOrchestrator.flow
+            - TDM/Reference
+  Locate Special File:
+    actors:
+      Special Cases Format File/Directory Name1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectFolder}/Implementation/SharedObjects/Broadway/${toBeDeleted}
+          projectFolder:
+            link: Get Project Folder/value
+            schema: string
+            mandatory: false
+          toBeDeleted:
+            link:
+              path: Special Cases/strings
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Delete Special Files:
+    actors:
+      Delete File or Folder Special Cases:
+        parent: LuFunction
+        in:
+          functionName:
+            const: deleteFile
+          fileName:
+            link: Special Cases Format File%2FDirectory Name1/string
             schema: string
             mandatory: false
 schemas:

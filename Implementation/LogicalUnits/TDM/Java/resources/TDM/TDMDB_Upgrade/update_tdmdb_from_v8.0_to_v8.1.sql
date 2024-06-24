@@ -140,9 +140,6 @@ DECLARE
 
 BEGIN
 	recNum := 0;
-    
-    --insert into ${@schema}.activities (date, entity, description) values(now(), 'update_root_info', 'start updating root info');
-    --commit;
 
 	EXECUTE $_$DECLARE curs cursor WITH HOLD for 
 				select e.CTID as RECID, e.task_execution_id, e.lu_name, e.entity_id, e.target_entity_id,
@@ -222,6 +219,7 @@ BEGIN
 		END IF;
 	END LOOP;
 	CLOSE curr_cursor;
+END;
 $BODY$;
 
 call ${@schema}.update_root_info('${@schema}');

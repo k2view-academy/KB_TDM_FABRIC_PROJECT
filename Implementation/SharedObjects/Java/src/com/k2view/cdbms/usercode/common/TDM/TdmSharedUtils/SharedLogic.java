@@ -138,9 +138,9 @@ public class SharedLogic {
 		
 		String rootLUs = "" + db(TDM).fetch(rootLUsSql, beID).firstValue();
 		
-		String paramsSql = !Util.isEmpty(whereStmt) ? whereStmt : "";
+		String paramsSql = !Util.isEmpty(whereStmt) ? whereStmt + ")" : "";
 		paramsSql = paramsSql.replaceAll("FROM " , "FROM " + TDMDB_SCHEMA + ".");
-		paramsSql = paramsSql.replaceAll("WHERE ", "WHERE ROOT_LU_NAME = ANY('" + rootLUs + "') AND SOURCE_ENVIRONMENT = '" + sourceEnv + "' AND ");
+		paramsSql = paramsSql.replaceAll("WHERE ", "WHERE ROOT_LU_NAME = ANY('" + rootLUs + "') AND SOURCE_ENVIRONMENT = '" + sourceEnv + "' AND (");
         if(AI_ENVIRONMENT.equals(sourceEnv) && cloneInd ){
             paramsSql = "SELECT distinct '" + sourceEnv + "'||'" + separator + "'||" + "root_iid as entity_id FROM (" + paramsSql + ") p";
         }else{
@@ -496,14 +496,17 @@ public class SharedLogic {
 		        "WHERE e.task_execution_id = ? AND e.lu_name = ? " +
 		        "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ? " +
 		        "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
-		        "AND t.source_env = ?";
+                "AND e.source_env = t.source_env " +   
+		        "AND t.source_env = ? " +
+                "LINIT 1";
         if("true".equalsIgnoreCase(deleteOnly)) {
             rootEntityIdSql = "SELECT e.root_lu_name, e.root_entity_id " +
                 "FROM " + TDMDB_SCHEMA + ".task_execution_entities e, " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid t " +
                 "WHERE e.task_execution_id = ? AND e.lu_name = ? " +
                 "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ? " +
                 "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
-                "AND t.target_env = ?";
+                "AND t.target_env = ? " +
+                "LIMIT 1";
         }
 		
 		Object parenLUName = db(TDM).fetch(parentLuSql, taskExecId, luId).firstValue();

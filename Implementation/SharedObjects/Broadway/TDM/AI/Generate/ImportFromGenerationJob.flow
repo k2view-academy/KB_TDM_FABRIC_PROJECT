@@ -233,7 +233,8 @@ stages:
         parent: FabricGet
         in:
           luType:
-            const: Customer
+            const: null
+            external: luName
           iid:
             const: null
             link:

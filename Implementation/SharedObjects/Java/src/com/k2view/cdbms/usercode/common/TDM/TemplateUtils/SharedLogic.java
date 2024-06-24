@@ -843,48 +843,48 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	}
     @out(name = "columns", type = List.class, desc = "")
 	public static List<Map<String, String>> getDbTablesColsAsSqlite(String dbInterfaceName, String catalogSchema, String table) throws Exception {
-            ResultSet rs = null;
-            ResultSet rs1 = null;
-            String[] types = {"TABLE"};
-            String targetTableName = table;
-            
-            try {
-                DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-                
-                String[] dbSchemaType = getDBCollection(md, catalogSchema);
-                String catalog = dbSchemaType[0];
-                String schema = dbSchemaType[1];
-                log.info("getDbTablesColsAsSqlite - dbInterfaceName: " + dbInterfaceName + ", Catalog: " + catalog + ", Schema: " + schema);
-                rs = md.getTables(catalog, schema, "%", types);
-                
-                while (rs.next()) {
-                    if (table.equalsIgnoreCase(rs.getString(3))) {
-                        targetTableName = rs.getString(3);
-                        log.info("getDbTablesColsAsSqlite - tableName: " + targetTableName);
-                        break;
-                    }
+        ResultSet rs = null;
+        ResultSet rs1 = null;
+        String[] types = { "TABLE" };
+        String targetTableName = table;
+
+        try {
+            DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
+
+            String[] dbSchemaType = getDBCollection(md, catalogSchema);
+            String catalog = dbSchemaType[0];
+            String schema = dbSchemaType[1];
+            //log.info("getDbTablesColsAsSqlite - dbInterfaceName: " + dbInterfaceName + ", Catalog: " + catalog
+            //        + ", Schema: " + schema);
+            rs = md.getTables(catalog, schema, "%", types);
+
+            while (rs.next()) {
+                if (table.equalsIgnoreCase(rs.getString(3))) {
+                    targetTableName = rs.getString(3);
+                    //log.info("getDbTablesColsAsSqlite - tableName: " + targetTableName);
+                    break;
                 }
-                            
-                rs1 = md.getColumns(catalog, schema, targetTableName, null);
-                List<Map<String, String>> al = new ArrayList<>();
-                while (rs1.next()) {
-                    int DataType = rs1.getInt("DATA_TYPE");
-                    String ColumnType = toSqliteType(DataType);
-                    Map<String, String> map = new HashMap<>();
-                    map.put("column_name", rs1.getString("COLUMN_NAME"));
-                    map.put("column_type", ColumnType);
-                    al.add(map);
-                }
-                        
-                                     
-                return al;
-            } finally {
-                if (rs != null)
-                    rs.close();
-                 if (rs1 != null)
-                    rs1.close();
             }
+
+            rs1 = md.getColumns(catalog, schema, targetTableName, null);
+            List<Map<String, String>> al = new ArrayList<>();
+            while (rs1.next()) {
+                int DataType = rs1.getInt("DATA_TYPE");
+                String ColumnType = toSqliteType(DataType);
+                Map<String, String> map = new HashMap<>();
+                map.put("column_name", rs1.getString("COLUMN_NAME"));
+                map.put("column_type", ColumnType);
+                al.add(map);
+            }
+
+            return al;
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (rs1 != null)
+                rs1.close();
         }
+    }
 
     public static String toSqliteType(int sqlColumnType) {
         switch (sqlColumnType) {

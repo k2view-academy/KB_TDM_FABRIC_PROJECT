@@ -316,7 +316,7 @@ stages:
   Do Not Truncate:
     else: true
     dependsOn: Create DB tables
-  Add TTL for Masking Tables for PG:
+  Get Cluster ID of System DB:
     actors:
       In Case Of PG System DB:
         parent: EqualsIgnoreCase
@@ -328,21 +328,6 @@ stages:
           b:
             const: postgres
             schema: string
-      ErrorHandler1:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: true
-                log: true
-                flowName: ''
-                number_of_retries: ''
-                retry_interval: ''
       Set Cluster ID:
         parent: JavaScript
         in:
@@ -360,8 +345,23 @@ stages:
         out:
           result:
             schema: string
-  Stage 1:
+  Add TTL for Masking Tables for PG:
     actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Add TTL for Masking Cache Table:
         parent: DbCommand
         in:
