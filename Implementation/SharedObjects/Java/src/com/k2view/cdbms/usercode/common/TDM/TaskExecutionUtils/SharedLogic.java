@@ -339,19 +339,14 @@ public class SharedLogic {
 		//log.info("fnStopTaskExecution - task_execution_id: " + task_execution_id);
         try {
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-            String sql = "select fabric_execution_id, execution_status, l.lu_id, l.task_type, u.lu_name " +
+            String sql = "select fabric_execution_id, execution_status, l.lu_id, l.task_type, " +
+            "case when  selection_method = 'TABLES' then 'TDM_TableLevel' else u.lu_name end as lu_name " +
             "from " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units u, " + schema + ".tasks t where task_execution_id = ? " +
             "and (fabric_execution_id is not null) and UPPER(execution_status) IN " +
             "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
-            "and selection_method != 'TABLES' and l.task_id = u.task_id and l.lu_id = u.lu_id and l.task_id = t.task_id " +
-            "union all " +
-            "select fabric_execution_id, execution_status, l.lu_id, l.task_type, 'TDM_TableLevel' as lu_name " +
-            "from " + schema + ".task_execution_list l, " + schema + ".tasks t where task_execution_id = ? " +
-            "and (fabric_execution_id is not null) and UPPER(execution_status) IN " +
-            "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
-            "and selection_method = 'TABLES'";
-
-            batchIdList = db(TDM).fetch(sql, task_execution_id, task_execution_id);
+            "and (selection_method = 'TABLES' or (l.task_id = u.task_id and l.lu_id = u.lu_id)) and l.task_id = t.task_id";
+            log.info("AAAA - sql: " + sql);
+            batchIdList = db(TDM).fetch(sql, task_execution_id);
 
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
                             " start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +

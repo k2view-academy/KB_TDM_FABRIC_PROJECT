@@ -2,6 +2,8 @@
 <TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>task_ref_exe_stats</Name>
   <ID>tbl_task_ref_exe_stats</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="task_execution_id" id="task_execution_id" index="0" datatype="integer" mandatory="true" />
     <Column name="task_ref_table_id" id="task_ref_table_id" index="1" datatype="integer" />
@@ -22,7 +24,7 @@
   </IndexesList>
   <EnrichmentList>
   </EnrichmentList>
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" deleteMode="">
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
     <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
   <TriggersList>

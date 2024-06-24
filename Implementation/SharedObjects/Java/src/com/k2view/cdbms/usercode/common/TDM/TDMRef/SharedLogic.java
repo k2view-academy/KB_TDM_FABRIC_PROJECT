@@ -43,7 +43,7 @@ public class SharedLogic {
 
 	@out(name = "batchID", type = String.class, desc = "")
 	public static String fnTdmReference(String taskExecutionID, String taskType) throws Exception {
-        log.info("-- START Reference JOB for Task Type: " + taskType + " Task Execution ID: " + taskExecutionID + "---");
+        //log.info("-- START Reference JOB for Task Type: " + taskType + " Task Execution ID: " + taskExecutionID + "---");
         Timestamp startTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc'").firstValue());
         fabric().execute("set TDM_TASK_EXE_ID = " + taskExecutionID);
         //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -54,7 +54,7 @@ public class SharedLogic {
         String refQuery = "Select ES.* from " + TASK_REF_EXE_STATS + " ES, " + TASKS + " T where execution_status  in ('" + WAITING + "', '" + PENDING + "', '" + RESUME + "', '" + STOPPED + "') " +
                 "and ES.TASK_ID = T.TASK_ID and lower(T.TASK_TYPE) = ? and ES.TASK_EXECUTION_ID = ? order by task_execution_id, task_id";
         
-        log.info("VVVV - refQuery: " + refQuery);
+        //log.info("VVVV - refQuery: " + refQuery);
         refTabLst = db(TDM).fetch(refQuery, taskType, taskExecutionID);
         
         int refCount = 0;
@@ -63,7 +63,7 @@ public class SharedLogic {
             refCount++;
             Object taskRefTableID = row.get("task_ref_table_id");
             Object refTableName = row.get("ref_table_name");
-            log.info("fnTdmReference - refTableName: " + refTableName);
+            //log.info("fnTdmReference - refTableName: " + refTableName);
         
             if (taskRefTableID != null && taskExecutionID != null) {
         
@@ -73,7 +73,7 @@ public class SharedLogic {
         
                 String execStatus = "" + row.get("execution_status");
         
-                log.info("fnTdmReference - execution_status: " + execStatus);
+                //log.info("fnTdmReference - execution_status: " + execStatus);
         
                 Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, l.data_center_name as dc_name, e.environment_name as target_env_name,e.environment_id as environment_id, t.version_ind, " +
                                 "t.retention_period_type, t.retention_period_value, t.selection_method " +
@@ -150,7 +150,7 @@ public class SharedLogic {
                             fabric().execute("batch_cancel '" + uid + "';");
                             break;
                         case RESUME:
-                            log.info("Resuming uid: " + uid);
+                            //log.info("Resuming uid: " + uid);
                             if (!"".equals(uid)) {
                                 db(TDM).execute("UPDATE " + TASK_REF_EXE_STATS + " set execution_status=? where task_execution_id = ? " +
                                         "and execution_status = 'resume' and ref_table_name = ?", RUNNING, taskExecutionID, refTableName);
@@ -176,7 +176,7 @@ public class SharedLogic {
 
                     String sql = "update " + TDMDB_SCHEMA + ".task_execution_entities SET lu_name=?, entity_id=?, target_entity_id=?, creation_date=?, entity_end_time=?, entity_start_time=?, env_id=?, execution_status=?, id_type=?, fabric_execution_id=?, iid=?, source_env=?, fabric_get_time=?, total_processing_time=?, clone_no=? " +
 							"WHERE task_execution_id = ?";
-                    db(TDM).execute(sql, luName, refTableName, refTableName, startTime, endTime, startTime, environment_id, FAILED, "REFERENCE", batchID, refTableName, sourceEnv, null, null, "NO_CLONE_ID",taskExecutionID);
+                    db(TDM).execute(sql, luName, refTableName, refTableName, startTime, endTime, startTime, environment_id, FAILED, "REFERENCE", batchID, refTableName, sourceEnv, null, null, "0",taskExecutionID);
                     db(TDM).execute("update " + TDMDB_SCHEMA + ".task_execution_entities set total_processing_time = EXTRACT(EPOCH FROM(entity_end_time-entity_start_time)) " +
                             "where task_execution_id = ? and entity_id = ? ", taskExecutionID, refTableName);
 
@@ -226,21 +226,7 @@ public class SharedLogic {
         return batchID;
     }
 
-	// @desc("Get the data of table as Json Array")
-	// @out(name = "tableRecords", type = JSONArray.class, desc = "")
-	// public static JSONArray fnGetTableInJson(String interfaceName, String schemaName, String tableName, int recordsCount,String TaskExeID) throws Exception {
-	// 	JSONArray tableRecords = new JSONArray();
-	// 	try (Connection conn = getConnection(interfaceName)) {
-	// 		DatabaseMetaData metaData = conn.getMetaData();
-	// 		String ConnType = metaData.getDatabaseProductName();
-	// 		Statement select = conn.createStatement();
-	// 		ResultSet refTableRS = select.executeQuery("Select * from " + schemaName + "." + tableName);
-	// 		int colsCount = refTableRS.getMetaData().getColumnCount();
-	// 		tableRecords = createJsonArrayFromTableRecords(TaskExeID, tableName, refTableRS, colsCount, recordsCount);
-	// 	}
 
-	// 	return tableRecords;
-	// }
 	@out(name = "result", type = String.class, desc = "")
 	public static String fnGetDBConnector(String interfaceName) throws Exception {
 		String result;

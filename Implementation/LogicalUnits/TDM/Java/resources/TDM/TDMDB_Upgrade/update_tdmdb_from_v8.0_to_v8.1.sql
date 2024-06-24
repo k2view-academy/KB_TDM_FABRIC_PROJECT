@@ -53,15 +53,47 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values
     CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (lu_name, field_name)
 );
 
-CREATE OR REPLACE PROCEDURE ${@schema}.update_params_tables(schemaName text)
+CREATE OR REPLACE PROCEDURE ${@schema}.update_params_columns(schemaName text)
 LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
 	rec record;
 	curs cursor for select table_name, column_name from  information_schema.columns 
 			where table_schema = '${@schema}' 
+			and table_name like '%_params' and column_name like '%.%'
+			order by table_name;
+	currTableName text = '';
+	tableFullName text;
+
+BEGIN
+
+	open curs;
+	LOOP
+		fetch from curs into rec;
+		exit when not found;
+		
+		tableFullName := schemaName || '.' || rec.table_name;
+										
+		EXECUTE format('ALTER TABLE ' || tableFullName || ' ALTER COLUMN "'|| rec.column_name || '" TYPE TEXT[] USING "' || rec.column_name||'"::TEXT[]');
+	END LOOP;
+	CLOSE curs;
+END;
+$BODY$;
+
+ALTER PROCEDURE ${@schema}.update_params_columns(IN TEXT)
+    OWNER TO tdm;
+
+call ${@schema}.update_params_columns('${@schema}');
+drop procedure ${@schema}.update_params_columns(IN TEXT);
+
+CREATE OR REPLACE PROCEDURE ${@schema}.update_params_tables(schemaName text)
+LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	rec record;
+	curs cursor for select table_name from  information_schema.columns 
+			where table_schema = '${@schema}' 
 			and table_name like '%_params'
-            and column_name not in ('entity_id', 'source_environment', 'root_iid', 'root_lu_name')
 			order by table_name;
 	currTableName text = '';
 	tableFullName text;
@@ -80,8 +112,7 @@ BEGIN
 			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD COLUMN IF NOT EXISTS root_iid text');
 			currTableName := rec.table_name;
 		END IF;
-								
-		EXECUTE format('ALTER TABLE ' || tableFullName || ' ALTER COLUMN "'|| rec.column_name || '" TYPE TEXT[] USING "' || rec.column_name||'"::TEXT[]');
+
 	END LOOP;
 	CLOSE curs;
 END;
@@ -109,9 +140,6 @@ DECLARE
 
 BEGIN
 	recNum := 0;
-    
-    --insert into ${@schema}.activities (date, entity, description) values(now(), 'update_root_info', 'start updating root info');
-    --commit;
 
 	EXECUTE $_$DECLARE curs cursor WITH HOLD for 
 				select e.CTID as RECID, e.task_execution_id, e.lu_name, e.entity_id, e.target_entity_id,
@@ -191,8 +219,6 @@ BEGIN
 		END IF;
 	END LOOP;
 	CLOSE curr_cursor;
-    --insert into ${@schema}.activities (date, entity, description) values(now(), 'update_root_info', 'end updating root info');
-    --commit;
 END;
 $BODY$;
 

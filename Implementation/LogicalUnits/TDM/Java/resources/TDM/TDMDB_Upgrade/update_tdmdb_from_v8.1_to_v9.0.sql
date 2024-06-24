@@ -146,14 +146,13 @@ ALTER TABLE ${@schema}.task_ref_tables ADD COLUMN IF NOT EXISTS version_task_nam
 ALTER TABLE ${@schema}.task_ref_tables ADD COLUMN IF NOT EXISTS gui_filter text;
 ALTER TABLE ${@schema}.task_ref_tables ADD COLUMN IF NOT EXISTS filter_parameters text;
 
-ALTER TABLE ${@schema}.tasks_post_exe_process RENAME TO tasks_exe_process;
-ALTER TABLE ${@schema}.tasks_exe_process
-ADD COLUMN process_type TEXT;
+ALTER TABLE IF EXISTS ${@schema}.tasks_post_exe_process RENAME TO tasks_exe_process;
+ALTER TABLE ${@schema}.tasks_exe_process ADD COLUMN IF NOT EXISTS process_type TEXT;
+
 UPDATE ${@schema}.tasks_exe_process SET process_type='post';
 
-ALTER TABLE ${@schema}.tdm_be_post_exe_process RENAME TO tdm_be_exe_process;
-ALTER TABLE ${@schema}.tdm_be_exe_process
-ADD COLUMN process_type TEXT;
+ALTER TABLE IF EXISTS ${@schema}.tdm_be_post_exe_process RENAME TO tdm_be_exe_process;
+ALTER TABLE ${@schema}.tdm_be_exe_process ADD COLUMN IF NOT EXISTS process_type TEXT;
 
 UPDATE ${@schema}.tdm_be_exe_process SET process_type='post';
 
@@ -165,7 +164,7 @@ ADD COLUMN IF NOT EXISTS tot_num_of_processed_pre_executions numeric(10,0),
 ADD COLUMN IF NOT EXISTS tot_num_of_succeeded_pre_executions numeric(10,0),
 ADD COLUMN IF NOT EXISTS tot_num_of_failed_pre_executions numeric(10,0);
 
-ALTER INDEX ${@schema}.post_exe_process_id_seq RENAME TO exe_process_id_seq;
+ALTER INDEX IF EXISTS ${@schema}.post_exe_process_id_seq RENAME TO exe_process_id_seq;
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_ai_gen_iid_mapping (
  task_execution_id bigint,
@@ -179,9 +178,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_ai_gen_iid_mapping (
  CONSTRAINT gen_mapping_pkey PRIMARY KEY (lu_name,generated_iid, imported_lui,root_lu_name,root_generated_iid,root_imported_lui)
 );
 
-ALTER TABLE ${@schema}.tdm_params_distinct_values DROP CONSTRAINT tdm_params_distinct_values_pkey;
+ALTER TABLE ${@schema}.tdm_params_distinct_values DROP CONSTRAINT IF EXISTS tdm_params_distinct_values_pkey;
 truncate table ${@schema}.tdm_params_distinct_values;
-ALTER TABLE ${@schema}.tdm_params_distinct_values ADD column source_environment text NOT NULL;
+ALTER TABLE ${@schema}.tdm_params_distinct_values ADD COLUMN IF NOT EXISTS source_environment text NOT NULL;
 ALTER TABLE ${@schema}.tdm_params_distinct_values ADD CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (source_environment, lu_name, field_name);
 
 ALTER TABLE ${@schema}.product_logical_units

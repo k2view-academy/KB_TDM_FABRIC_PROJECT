@@ -1232,7 +1232,7 @@ public class TdmExecuteTask {
         globals.put("TDM_TASK_ID", "" + TASK_ID.get(taskProperties));
         globals.put("TDM_TASK_EXE_ID", "" + TASK_EXECUTION_ID.get(taskProperties));
         globals.put("execution_id", "" + TASK_EXECUTION_ID.get(taskProperties));
-        globals.put("clone_id", "NO_CLONE_ID");
+        globals.put("clone_id", "0");
         globals.put("TDM_REPLACE_SEQUENCES", cloneInd ? true : REPLACE_SEQUENCES.get(taskProperties));
         globals.put("enable_sequences", cloneInd ? true : REPLACE_SEQUENCES.get(taskProperties));
         globals.put("TASK_TYPE", TASK_TYPE.get(taskProperties).toString().toUpperCase());
@@ -1317,7 +1317,7 @@ public class TdmExecuteTask {
             globals.put("TDM_REPLACE_SEQUENCES", "true");
         }
 
-        if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties))) {
+        if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties).toString())) {
             globals.put("enable_masking", "true");
         } else {
             //TDM 9.0 - Check if the environment settings was changed since the task was created

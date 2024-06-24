@@ -36,6 +36,8 @@ import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.get
 
 import static java.lang.Math.min;
 
+import java.io.File;
+
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
     private static final Map<String, Integer> PERMISSION_GROUPS = new HashMap() {{
@@ -136,9 +138,9 @@ public class SharedLogic {
 		
 		String rootLUs = "" + db(TDM).fetch(rootLUsSql, beID).firstValue();
 		
-		String paramsSql = !Util.isEmpty(whereStmt) ? whereStmt : "";
+		String paramsSql = !Util.isEmpty(whereStmt) ? whereStmt + ")" : "";
 		paramsSql = paramsSql.replaceAll("FROM " , "FROM " + TDMDB_SCHEMA + ".");
-		paramsSql = paramsSql.replaceAll("WHERE ", "WHERE ROOT_LU_NAME = ANY('" + rootLUs + "') AND SOURCE_ENVIRONMENT = '" + sourceEnv + "' AND ");
+		paramsSql = paramsSql.replaceAll("WHERE ", "WHERE ROOT_LU_NAME = ANY('" + rootLUs + "') AND SOURCE_ENVIRONMENT = '" + sourceEnv + "' AND (");
         if(AI_ENVIRONMENT.equals(sourceEnv) && cloneInd ){
             paramsSql = "SELECT distinct '" + sourceEnv + "'||'" + separator + "'||" + "root_iid as entity_id FROM (" + paramsSql + ") p";
         }else{
@@ -494,14 +496,17 @@ public class SharedLogic {
 		        "WHERE e.task_execution_id = ? AND e.lu_name = ? " +
 		        "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ? " +
 		        "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
-		        "AND t.source_env = ?";
+                "AND e.source_env = t.source_env " +   
+		        "AND t.source_env = ? " +
+                "LINIT 1";
         if("true".equalsIgnoreCase(deleteOnly)) {
             rootEntityIdSql = "SELECT e.root_lu_name, e.root_entity_id " +
                 "FROM " + TDMDB_SCHEMA + ".task_execution_entities e, " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid t " +
                 "WHERE e.task_execution_id = ? AND e.lu_name = ? " +
                 "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ? " +
                 "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
-                "AND t.target_env = ?";
+                "AND t.target_env = ? " +
+                "LIMIT 1";
         }
 		
 		Object parenLUName = db(TDM).fetch(parentLuSql, taskExecId, luId).firstValue();
@@ -1634,4 +1639,30 @@ public class SharedLogic {
 			throw new RuntimeException(e);
 		}
 	}
+
+    public static void deleteFile(String fileName)
+    {
+        File file = new File(fileName);
+        if (file.isDirectory()) {
+            deleteDirectory(file);
+            file.delete();
+        } else {
+            file.delete();
+        }
+    }
+    private static void deleteDirectory(File file)
+    {
+        // store all the paths of files and folders present
+        // inside directory
+        for (File subfile : file.listFiles()) {
+            // if it is a subfolder,e.g Rohan and Ritik,
+            //  recursively call function to empty subfolder
+            if (subfile.isDirectory()) {
+                deleteDirectory(subfile);
+            }
+            // delete files and empty subfolders
+            subfile.delete();
+        }
+    }
+
 }

@@ -381,6 +381,22 @@ public class Logic extends WebServiceUserCode {
 				    rs.close();
                 }
             }
+
+            if (result.size() == 0) {
+                List<Map<String, Object>> tableList  = new ArrayList<>();
+                rs = md.getTables(null, null, "%", types);
+                while (rs.next()) {
+                    String tableName = rs.getString("TABLE_NAME");
+                    Map<String, Object> tableData = getTableLastExecution(tableName, "main", dbInterfaceName, envName);
+                    tableData.put("tableName", tableName);
+				    tableList.add(tableData);
+			    }
+                if (tableList.size() > 0) {
+                    Map <String, Object> tablesMap = new HashMap<>();
+                    tablesMap.put("main", tableList);
+                    result.add(tablesMap);
+                }
+            }
            
 		} finally {
             if (rs != null) {
@@ -462,70 +478,4 @@ public class Logic extends WebServiceUserCode {
 		return response;
     }
 
-    public static Map<Integer, Set<String>> fnGetTablesOrder(Set<String> tableList, String dbInterfaceName, String dbSchemaName) throws Exception {
-        DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-        Map <String, Set<String>> tableChildren = new HashMap<>();
-
-        for (String tableName : tableList) {
-            ResultSet exportedKeys = md.getExportedKeys(null, dbSchemaName, tableName);
-
-            tableChildren.put(tableName, new HashSet<>());
-            while (exportedKeys.next()) {
-                String childTable = exportedKeys.getString("FKTABLE_NAME");
-                if (tableList.contains(childTable)) {
-                    tableChildren.get(tableName).add(childTable);
-                }
-            }
-
-            if (exportedKeys != null) {
-                exportedKeys.close();
-            }
-        }
-
-        Map <String, Set<String>> tableChildrenBck = new HashMap<>(tableChildren);
-        //tableChildrenBck = tableChildren;
-        Map<String, Integer> visited = new HashMap<>();
-        // Add leaf nodes (tables without incoming FKs)
-
-        for (String tableName : tableChildrenBck.keySet()) {
-            if (tableChildrenBck.get(tableName).isEmpty()) {
-                visited.put(tableName, 0);
-                tableChildren.remove(tableName);
-            }
-        }
-        while(tableChildren != null && !tableChildren.isEmpty()) {
-            Map <String, Set<String>> tableChildrenBck2 = new HashMap<>(tableChildren);
-            for (String tableName : tableChildrenBck2.keySet()) {
-                Set<String> remainingTables = new HashSet<>(tableChildren.get(tableName));
-                Integer order = 0;
-                for (String childTable : remainingTables) {
-                    if (visited.get(childTable) != null) {
-                        Integer tableOrder = visited.get(childTable);
-                        if (order < tableOrder + 1) {
-                            order = tableOrder + 1;
-                        }
-                        tableChildren.get(tableName).remove(childTable);
-                    }
-                }
-                if (tableChildren.get(tableName).size() == 0) {
-                    visited.put(tableName, order);
-                    tableChildren.remove(tableName);
-                }
-            }
-
-        }
-        Map<Integer, Set<String>> result = new HashMap<>();
-        for(Map.Entry<String, Integer> entry : visited.entrySet()) {
-            String tableName = entry.getKey();
-            Integer order = entry.getValue();
-            if(result.get(order) != null) {
-                result.get(order).add(tableName);
-            } else {
-                Set<String> set = new HashSet<>();
-                set.add(tableName);
-                result.put(order, set);
-            }
-        }
-        return result;
-    }
 }

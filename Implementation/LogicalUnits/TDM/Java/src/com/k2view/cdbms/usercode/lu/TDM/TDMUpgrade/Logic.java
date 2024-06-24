@@ -7,6 +7,8 @@ package com.k2view.cdbms.usercode.lu.TDM.TDMUpgrade;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
@@ -95,4 +97,73 @@ public class Logic extends UserCode {
 		}
 	}
 	
+    public static void mergeSharedGlobalFiles(String SharedJavaLocation) throws Exception {
+        //File mainGlobalsFile = new File(SharedJavaLocation + "/SharedGlobals.java");
+        //File tdmGlobalsFile = new File(SharedJavaLocation + "/TDM/SharedGlobals.java");
+        String newSharedGlobal = "/////////////////////////////////////////////////////////////////////////\n" +
+        "// Shared Globals\n" +
+        "/////////////////////////////////////////////////////////////////////////\n" +
+        "\n" +
+        "package com.k2view.cdbms.usercode.common;\n" +
+        "\n" +
+        "import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;\n" +
+        "\n" +
+        "public class SharedGlobals {\n" +
+        "\n";
+
+        Scanner tdmGlobalsFile = new Scanner(new File(SharedJavaLocation + "/TDM/SharedGlobals.java"));
+        StringBuffer tdmBuffer = new StringBuffer();
+        //Reading lines of the file and appending them to StringBuffer
+        while (tdmGlobalsFile.hasNextLine()) {
+            tdmBuffer.append(tdmGlobalsFile.nextLine() + "\n");
+        }
+        String tdmFileContents = tdmBuffer.toString();
+        //closing the Scanner object
+        tdmGlobalsFile.close();
+
+        Scanner mainGlobalsFile = new Scanner(new File(SharedJavaLocation + "/SharedGlobals.java"));
+        String candidateLines = "";
+
+        while (mainGlobalsFile.hasNextLine()) {
+            String line = mainGlobalsFile.nextLine()+System.lineSeparator();
+            String currentGlobal = "";
+            if (line.contains("@desc") ||  line.contains("@category")) {
+                candidateLines += line;
+            } else if (line.contains("public static")) {
+                candidateLines += line;
+                int startIndex = "public static String ".length();
+                if (line.contains("public static final String ")) {
+                    startIndex = "public static".length();
+                }
+                currentGlobal = line.substring(startIndex, line.indexOf("="));
+                if (tdmFileContents.contains(currentGlobal)) {
+                    String temp = (tdmFileContents.substring(tdmFileContents.indexOf(currentGlobal)));
+                    String toReplace = temp.substring(0, temp.indexOf(";\n"));
+                    tdmFileContents = tdmFileContents.replace(toReplace + ";\n", line.substring(startIndex));
+                    candidateLines = "";
+                } else {
+                    newSharedGlobal += candidateLines;
+                    candidateLines = "";
+                }
+            } else if (line.trim().isEmpty()) {
+                candidateLines += line;
+            } else {
+                candidateLines = "";
+            }
+        }
+        //closing the Scanner object
+        mainGlobalsFile.close();
+        newSharedGlobal += "\n}\n";
+        //log.info("New Globals: \n\n\n" + newSharedGlobal + "\n\n\n");
+
+
+        FileWriter fwTdm = new FileWriter(SharedJavaLocation + "/TDM/SharedGlobals.java", false);
+        fwTdm.write(tdmFileContents);
+        fwTdm.close();
+
+        FileWriter fwMain = new FileWriter(SharedJavaLocation + "/SharedGlobals.java", false);
+        fwMain.write(newSharedGlobal);
+        fwMain.close();
+    }
+
 }

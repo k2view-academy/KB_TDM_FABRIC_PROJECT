@@ -1,502 +1,307 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Input",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_execution_id": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "SyncDeleteMode",
-                            "actorType": {
-                                "parentType": "SyncDeleteMode",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "deleteMode",
-                                        "const": "All"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Source",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Query",
-                            "actorType": {
-                                "parentType": "SourceDbQuery",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "Select Distinct te.task_execution_id,\r\n  t.task_id,\r\n  t.selection_method,\r\n  t.selection_param_value,\r\n  t.parameters,\r\n  t.load_entity,\r\n  t.delete_before_load,\r\n  t.task_type,\r\n  t.task_title As task_name,\r\n  t.source_env_name As source_env,\r\n  e.environment_name As target_env,\r\n  Case When t.be_id = -1 Then 'NO BE' Else b.be_name End As be_name,\r\n  Case When t.refresh_reference_data = False Then 'false' Else 'true'\r\n  End As refresh_reference_data,\r\n  Case When t.replace_sequences = False Then 'false' Else 'true'\r\n  End As replace_sequences,\r\n  t.scheduler,\r\n  split_part(t.task_created_by, '##', 1) as task_created_by,\r\n  Case When t.version_ind = False Then 'false' Else 'true' End As version_ind,\r\n  t.selected_version_task_exe_id,\r\n  t.selected_ref_version_task_exe_id,\r\n  t.selected_subset_task_exe_id,\r\n  t.retention_period_type,\r\n  t.retention_period_value,\r\n  t.sync_mode As task_sync_mode,\r\n  e.sync_mode As env_sync_mode,\r\n  t.scheduling_end_date,\r\n  Case\r\n    When t.task_type = 'LOAD' And t.selection_method = 'GENERATE' And\r\n    t.delete_before_load = False Then 'Generate and load entity'\r\n    When t.task_type = 'GENERATE' Then 'Generate entity'\r\n    When t.task_type = 'LOAD' And t.load_entity = True And\r\n    t.delete_before_load = False Then 'Load entity'\r\n    When t.task_type = 'LOAD' And t.load_entity = True And\r\n    t.delete_before_load = True Then 'Load and delete entity'\r\n    When t.task_type = 'LOAD' And t.load_entity = False And\r\n    t.delete_before_load = True Then 'Delete entity'\r\n    When t.task_type = 'RESERVE' And t.reserve_ind = True Then 'Reserve entity'\r\n    Else 'Extract entity' End As operation_mode,\r\n  Case When t.reserve_ind = False Then 'false' Else 'true' End As reserve_ind,\r\n  reserve_retention_period_type,\r\n  reserve_retention_period_value,\r\n  Case When t.clone_ind = False Then 'false' Else 'true' End As clone_ind\r\nFrom @TDMDB_SCHEMA@.tasks t,\r\n  @TDMDB_SCHEMA@.task_execution_list te,\r\n  @TDMDB_SCHEMA@.environments e,\r\n  @TDMDB_SCHEMA@.business_entities b\r\nWhere t.task_id = te.task_id And e.environment_id = t.environment_id And\r\n  (t.be_id = -1 or b.be_id = t.be_id)\r\nOrder By te.task_execution_id ;"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_execution_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "task_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "selection_method": {
-                                                        "type": "string"
-                                                    },
-                                                    "selection_param_value": {
-                                                        "type": "string"
-                                                    },
-                                                    "parameters": {
-                                                        "type": "string"
-                                                    },
-                                                    "load_entity": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "delete_before_load": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "task_type": {
-                                                        "type": "string"
-                                                    },
-                                                    "task_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "source_env": {
-                                                        "type": "string"
-                                                    },
-                                                    "target_env": {
-                                                        "type": "string"
-                                                    },
-                                                    "be_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "refresh_reference_data": {
-                                                        "type": "string"
-                                                    },
-                                                    "replace_sequences": {
-                                                        "type": "string"
-                                                    },
-                                                    "scheduler": {
-                                                        "type": "string"
-                                                    },
-                                                    "task_created_by": {
-                                                        "type": "string"
-                                                    },
-                                                    "version_ind": {
-                                                        "type": "string"
-                                                    },
-                                                    "selected_version_task_exe_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "selected_ref_version_task_exe_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "selected_subset_task_exe_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "retention_period_type": {
-                                                        "type": "string"
-                                                    },
-                                                    "retention_period_value": {
-                                                        "type": "integer"
-                                                    },
-                                                    "task_sync_mode": {
-                                                        "type": "string"
-                                                    },
-                                                    "env_sync_mode": {
-                                                        "type": "string"
-                                                    },
-                                                    "scheduling_end_date": {
-                                                        "type": "date"
-                                                    },
-                                                    "operation_mode": {
-                                                        "type": "string"
-                                                    },
-                                                    "reserve_ind": {
-                                                        "type": "string"
-                                                    },
-                                                    "reserve_retention_period_type": {
-                                                        "type": "string"
-                                                    },
-                                                    "reserve_retention_period_value": {
-                                                        "type": "integer"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "LU Table",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "tasks",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "task_execution_id",
-                                            "task_id",
-                                            "selection_method",
-                                            "load_entity",
-                                            "delete_before_load",
-                                            "task_type",
-                                            "task_name",
-                                            "source_env",
-                                            "target_env",
-                                            "be_name",
-                                            "refresh_reference_data",
-                                            "replace_sequences",
-                                            "scheduler",
-                                            "task_created_by",
-                                            "version_ind",
-                                            "selected_version_task_exe_id",
-                                            "selected_ref_version_task_exe_id",
-                                            "selected_subset_task_exe_id",
-                                            "retention_period_type",
-                                            "retention_period_value",
-                                            "task_sync_mode",
-                                            "env_sync_mode",
-                                            "scheduling_end_date",
-                                            "operation_mode",
-                                            "reserve_ind",
-                                            "reserve_retention_period_type",
-                                            "reserve_retention_period_value",
-                                            "selection_param_value",
-                                            "parameters",
-                                            "clone_ind"
-                                        ]
-                                    },
-                                    {
-                                        "name": "keys",
-                                        "const": [
-                                            "task_id"
-                                        ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "sqlite"
-                                    },
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "task_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "selection_method",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "selection_param_value",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "parameters",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "load_entity",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "delete_before_load",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "task_type",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "task_name",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "source_env",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "target_env",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "be_name",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "refresh_reference_data",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "replace_sequences",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "scheduler",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "task_created_by",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "retention_period_type",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "retention_period_value",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "task_sync_mode",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "scheduling_end_date",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "operation_mode",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "reserve_ind",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "reserve_retention_period_type",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "reserve_retention_period_value",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "version_ind",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "env_sync_mode",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "selected_version_task_exe_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "selected_ref_version_task_exe_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "selected_subset_task_exe_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "clone_ind",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Post Load",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Query",
-                "name": "parent_rows"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "tasks",
-                "name": "params"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TASK_EXECUTION_ID"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "TASK_EXECUTION_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "SyncDeleteMode",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "tasks",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "tasks",
-                "name": "table"
-            }
-        }
-    ]
-}
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          TASK_EXECUTION_ID:
+            external: TASK_EXECUTION_ID
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+          deleteMode:
+            const: All
+  Source:
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              Select Distinct te.task_execution_id,
+                t.task_id,
+                t.selection_method,
+                t.selection_param_value,
+                t.parameters,
+                t.load_entity,
+                t.delete_before_load,
+                t.task_type,
+                t.task_title As task_name,
+                t.source_env_name As source_env,
+                e.environment_name As target_env,
+                Case When t.be_id = -1 Then 'NO BE' Else b.be_name End As be_name,
+                Case When t.refresh_reference_data = False Then 'false' Else 'true'
+                End As refresh_reference_data,
+                Case When t.replace_sequences = False Then 'false' Else 'true'
+                End As replace_sequences,
+                t.scheduler,
+                split_part(t.task_created_by, '##', 1) as task_created_by,
+                Case When t.version_ind = False Then 'false' Else 'true' End As version_ind,
+                t.selected_version_task_exe_id,
+                t.selected_ref_version_task_exe_id,
+                t.selected_subset_task_exe_id,
+                t.retention_period_type,
+                t.retention_period_value,
+                t.sync_mode As task_sync_mode,
+                e.sync_mode As env_sync_mode,
+                t.scheduling_end_date,
+                Case
+                  When t.task_type = 'LOAD' And t.selection_method = 'GENERATE' And
+                  t.delete_before_load = False Then 'Generate and load entity'
+                  When t.task_type = 'GENERATE' Then 'Generate entity'
+                  When t.task_type = 'LOAD' And t.load_entity = True And
+                  t.delete_before_load = False Then 'Load entity'
+                  When t.task_type = 'LOAD' And t.load_entity = True And
+                  t.delete_before_load = True Then 'Load and delete entity'
+                  When t.task_type = 'LOAD' And t.load_entity = False And
+                  t.delete_before_load = True Then 'Delete entity'
+                  When t.task_type = 'RESERVE' And t.reserve_ind = True Then 'Reserve entity'
+                  Else 'Extract entity' End As operation_mode,
+                Case When t.reserve_ind = False Then 'false' Else 'true' End As reserve_ind,
+                reserve_retention_period_type,
+                reserve_retention_period_value,
+                Case When t.clone_ind = False Then 'false' Else 'true' End As clone_ind
+              From @TDMDB_SCHEMA@.tasks t FULL OUTER JOIN @TDMDB_SCHEMA@.business_entities b ON (t.be_id = -1 or b.be_id = t.be_id),
+                @TDMDB_SCHEMA@.task_execution_list te,
+                @TDMDB_SCHEMA@.environments e
+              Where t.task_id = te.task_id And e.environment_id = t.environment_id
+              Order By te.task_execution_id ;
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+  Stage 1: {
+    }
+  LU Table:
+    last: 1
+    actors:
+      tasks:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - task_execution_id
+            - task_id
+            - selection_method
+            - load_entity
+            - delete_before_load
+            - task_type
+            - task_name
+            - source_env
+            - target_env
+            - be_name
+            - refresh_reference_data
+            - replace_sequences
+            - scheduler
+            - task_created_by
+            - version_ind
+            - selected_version_task_exe_id
+            - selected_ref_version_task_exe_id
+            - selected_subset_task_exe_id
+            - retention_period_type
+            - retention_period_value
+            - task_sync_mode
+            - env_sync_mode
+            - scheduling_end_date
+            - operation_mode
+            - reserve_ind
+            - reserve_retention_period_type
+            - reserve_retention_period_value
+            - selection_param_value
+            - parameters
+            - clone_ind
+          keys:
+            const:
+            - task_id
+          dialect:
+            const: sqlite
+          task_execution_id:
+            schema: any
+            mandatory: false
+          task_id:
+            schema: any
+            mandatory: false
+          selection_method:
+            schema: any
+            mandatory: false
+          selection_param_value:
+            schema: any
+            mandatory: false
+          parameters:
+            schema: any
+            mandatory: false
+          load_entity:
+            schema: any
+            mandatory: false
+          delete_before_load:
+            schema: any
+            mandatory: false
+          task_type:
+            schema: any
+            mandatory: false
+          task_name:
+            schema: any
+            mandatory: false
+          source_env:
+            schema: any
+            mandatory: false
+          target_env:
+            schema: any
+            mandatory: false
+          be_name:
+            schema: any
+            mandatory: false
+          refresh_reference_data:
+            schema: any
+            mandatory: false
+          replace_sequences:
+            schema: any
+            mandatory: false
+          scheduler:
+            schema: any
+            mandatory: false
+          task_created_by:
+            schema: any
+            mandatory: false
+          retention_period_type:
+            schema: any
+            mandatory: false
+          retention_period_value:
+            schema: any
+            mandatory: false
+          task_sync_mode:
+            schema: any
+            mandatory: false
+          scheduling_end_date:
+            schema: any
+            mandatory: false
+          operation_mode:
+            schema: any
+            mandatory: false
+          reserve_ind:
+            schema: any
+            mandatory: false
+          reserve_retention_period_type:
+            schema: any
+            mandatory: false
+          reserve_retention_period_value:
+            schema: any
+            mandatory: false
+          version_ind:
+            schema: any
+            mandatory: false
+          env_sync_mode:
+            schema: any
+            mandatory: false
+          selected_version_task_exe_id:
+            schema: any
+            mandatory: false
+          selected_ref_version_task_exe_id:
+            schema: any
+            mandatory: false
+          selected_subset_task_exe_id:
+            schema: any
+            mandatory: false
+          clone_ind:
+            schema: any
+          params:
+            link:
+              path: Query/result
+              iterate: Iterate
+  Post Load: {
+    }
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string
+  Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: integer
+        task_id:
+          type: integer
+        selection_method:
+          type: string
+        selection_param_value:
+          type: string
+        parameters:
+          type: string
+        load_entity:
+          type: boolean
+        delete_before_load:
+          type: boolean
+        task_type:
+          type: string
+        task_name:
+          type: string
+        source_env:
+          type: string
+        target_env:
+          type: string
+        be_name:
+          type: string
+        refresh_reference_data:
+          type: string
+        replace_sequences:
+          type: string
+        scheduler:
+          type: string
+        task_created_by:
+          type: string
+        version_ind:
+          type: string
+        selected_version_task_exe_id:
+          type: integer
+        selected_ref_version_task_exe_id:
+          type: integer
+        selected_subset_task_exe_id:
+          type: integer
+        retention_period_type:
+          type: string
+        retention_period_value:
+          type: integer
+        task_sync_mode:
+          type: string
+        env_sync_mode:
+          type: string
+        scheduling_end_date:
+          type: date
+        operation_mode:
+          type: string
+        reserve_ind:
+          type: string
+        reserve_retention_period_type:
+          type: string
+        reserve_retention_period_value:
+          type: integer
+        clone_ind:
+          type: string
