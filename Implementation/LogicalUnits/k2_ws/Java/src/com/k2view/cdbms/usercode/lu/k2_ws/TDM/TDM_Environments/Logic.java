@@ -3177,6 +3177,49 @@ public class Logic extends WebServiceUserCode {
 				map.put("mask_sensitive_data", env.get("mask_sensitive_data"));
 		        map.put("environment_sync_mode", env.get("sync_mode"));
 				result.add(map);
+                // After processing userEnvs, manually add AI and Synthetic environments if they are not already present
+                boolean foundAI = false;
+                boolean foundSynthetic = false;
+
+                for (Map<String, Object> res : result) {
+                    String environment_name = (String) res.get("environment_name");
+                    if ("AI".equals(environment_name)) {
+                        foundAI = true;
+                    } else if ("Synthetic".equals(environment_name)) {
+                        foundSynthetic = true;
+                    }
+                }
+
+                if (!foundAI) {
+                    Map<String, Object> aiEnv = new HashMap<>();
+                    aiEnv.put("synthetic_indicator", "AI");
+                    aiEnv.put("environment_id", -2);
+                    aiEnv.put("role_id", -2);
+                    aiEnv.put("assignment_type", "all");
+                    aiEnv.put("environment_sync_mode", "OFF");
+                    aiEnv.put("permission", "");
+                    aiEnv.put("allowed_refresh_reference_data", false);
+                    aiEnv.put("environment_type", "BOTH");
+                    aiEnv.put("environment_name", "AI");
+                    aiEnv.put("mask_sensitive_data", false);
+                    result.add(aiEnv);
+                }
+
+                if (!foundSynthetic) {
+                    Map<String, Object> syntheticEnv = new HashMap<>();
+                    syntheticEnv.put("synthetic_indicator", "RuleBased");
+                    syntheticEnv.put("environment_id", -1);
+                    syntheticEnv.put("role_id", -1);
+                    syntheticEnv.put("assignment_type", "all");
+                    syntheticEnv.put("environment_sync_mode", "FORCE");
+                    syntheticEnv.put("permission", "");
+                    syntheticEnv.put("allowed_refresh_reference_data", false);
+                    syntheticEnv.put("environment_type", "SOURCE");
+                    syntheticEnv.put("environment_name", "Synthetic");
+                    syntheticEnv.put("mask_sensitive_data", false);
+                    result.add(syntheticEnv);
+                }
+
 			}
 		} catch(Exception e){
 			message=e.getMessage();
