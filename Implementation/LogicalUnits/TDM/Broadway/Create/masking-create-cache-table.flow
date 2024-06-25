@@ -328,6 +328,21 @@ stages:
           b:
             const: postgres
             schema: string
+      Error Handler For Checking if PG:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Set Cluster ID:
         parent: JavaScript
         in:
@@ -345,8 +360,29 @@ stages:
         out:
           result:
             schema: string
+      Check if System DB is PG and k2masking is in it:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: cql select schema_name FROM information_schema.schemata where schema_name
+              = 'k2masking'
+        out:
+          result:
+            schema: string
   Add TTL for Masking Tables for PG:
     actors:
+      SYSTEM_DB is PG & Includes k2masking?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check if System DB is PG and k2masking is in it/result
+            schema: string
+          b:
+            const: k2masking
+            schema: string
       Error Handler:
         parent: ErrorHandler
         error: result

@@ -585,6 +585,16 @@ public class TdmExecuteTask {
     
     private static String executeTableLevelBatch(Map<String, Object> taskProperties, Boolean tableLevelInd) throws Exception {
         try {
+
+            //TDM 9.0 - HF1, check if the Table Level already ran or not
+            String filter = "TableLevelJob iid=?, taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties);
+
+            Object batchId = fabric().fetch("batch_list status='ALL' filter = '" + filter + "'").firstRow().get("Id");
+
+            if (batchId != null) {
+                return null;
+            }
+
             String taskType = TASK_TYPE.get(taskProperties).toString().toLowerCase();
             if ("extract".equals(taskType)) {
                 setGlobalsForTask("extract", taskProperties);
@@ -1317,7 +1327,7 @@ public class TdmExecuteTask {
             globals.put("TDM_REPLACE_SEQUENCES", "true");
         }
 
-        if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties).toString())) {
+        if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties))) {
             globals.put("enable_masking", "true");
         } else {
             //TDM 9.0 - Check if the environment settings was changed since the task was created

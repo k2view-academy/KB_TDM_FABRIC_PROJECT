@@ -213,7 +213,7 @@ public class SharedLogic {
                 res = UserCode.db(TDM).fetch(cloningData_sql, role_id).firstValue();
                 if (res == null)
                     errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
-            } else if ("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole)
+            } else if ("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole && (version_ind == null || !version_ind))
                 errorMessages.put("selectionMethod", "The User has no permissions to run 'Load ALL' on the task's source environment. Only admin and owner users are allowed to execute 'Load ALL'");
         }
 

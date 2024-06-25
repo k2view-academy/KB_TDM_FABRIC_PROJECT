@@ -6409,6 +6409,7 @@ var SelectDataVerioning_useTable_useTable = function useTable(selected_version_t
     }
     saveForm({
       selected_version_task_name: data.version_name,
+      selected_version_succeeded_entities: data.num_of_succeeded_entities,
       selected_version_datetime: moment_default()(version_datetime).format('YYYYMMDDHHmmss'),
       selected_version_task_exe_id: data.task_execution_id
     });
@@ -13417,42 +13418,54 @@ function TaskMain(props) {
             return _context2.abrupt("return", false);
           case 14:
             result = null;
+            if (!(taskData.version_ind && taskData.selected_version_task_name)) {
+              _context2.next = 20;
+              break;
+            }
+            if (!((taskData.selected_version_succeeded_entities || 0) > (taskData.maxToCopy || 0))) {
+              _context2.next = 20;
+              break;
+            }
+            toast.error('The number of entities exceeds the number of entities in the read write permission');
+            onClickStep('target_data_subset');
+            return _context2.abrupt("return", false);
+          case 20:
             dataForSave = prepareDataForSave(taskData, allLogicalUnits, copy);
             if (true) {
-              _context2.next = 19;
+              _context2.next = 24;
               break;
             }
             console.log(dataForSave);
             return _context2.abrupt("return");
-          case 19:
+          case 24:
             setSaveInProgress(true);
-            _context2.prev = 20;
-            _context2.next = 23;
+            _context2.prev = 25;
+            _context2.next = 28;
             return apis_task.saveTaskAPI(dataForSave);
-          case 23:
+          case 28:
             result = _context2.sent;
             toast.success("Task # ".concat(taskData.task_title, " Is Updated Successfully"));
             if (!openTask) {
               openTasks(true);
             }
-            _context2.next = 32;
+            _context2.next = 37;
             break;
-          case 28:
-            _context2.prev = 28;
-            _context2.t0 = _context2["catch"](20);
+          case 33:
+            _context2.prev = 33;
+            _context2.t0 = _context2["catch"](25);
             console.log(_context2.t0);
             toast.error("Task # ".concat(taskData.task_id || '', " Failed to Update : ").concat(_context2.t0.message));
-          case 32:
-            _context2.prev = 32;
+          case 37:
+            _context2.prev = 37;
             setSaveInProgress(false);
-            return _context2.finish(32);
-          case 35:
+            return _context2.finish(37);
+          case 40:
             return _context2.abrupt("return", result);
-          case 36:
+          case 41:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[20, 28, 32, 35]]);
+      }, _callee2, null, [[25, 33, 37, 40]]);
     }));
     return function (_x) {
       return _ref2.apply(this, arguments);
