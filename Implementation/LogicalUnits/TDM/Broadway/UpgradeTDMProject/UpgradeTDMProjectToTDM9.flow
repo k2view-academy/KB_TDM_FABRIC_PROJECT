@@ -1,0 +1,65 @@
+tags: UpgradeTDMProject
+stages:
+  Stage 1:
+    actors:
+      Remove Old WS Java Files:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveOldWSJavaFiles
+  Stage 2:
+    actors:
+      Remove Old WS Graphit Files:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveOldWSGraphitFiles
+  Stage 3:
+    actors:
+      Remove Old Shared Templates Files:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveOldSharedTemplatesFiles
+  Stage 4:
+    actors:
+      Remove Old Broadway Files:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveOldBroadwayFiles
+  Stage 5:
+    actors:
+      Remove Old Shared Java Files:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveOldSharedJavaFiles
+  Stage 6:
+    actors:
+      Upgrade Project LUs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeProjectLUs
+  Stage 7:
+    actors:
+      Update TDM Globals Files:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTDMGlobalsFile
+  Stage 8:
+    actors:
+      TDMDB Upgrade Scripts:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDBUpgradeScripts
+  Stage 9:
+    actors:
+      Upgrade Distinct Values:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeDistinctValues

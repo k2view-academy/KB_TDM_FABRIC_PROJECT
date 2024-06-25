@@ -1,0 +1,124 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true{{#if inputArgs}}
+        in:{{#each inputArgs}}
+          {{this}}:
+            external: {{this}}
+            schema: any
+            mandatory: false{{/each}}{{/if}}
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      Get Sync Source Data Indicator:
+        parent: InnerFlow
+        condition: value
+        in:
+          flowName:
+            const: GetSyncSourceDataIndicator
+        out:
+          value:
+            schema: boolean
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: {{#if sourceInterface}}{{sourceInterface}}{{else}}null{{/if}}
+          sql:
+            const: {{#if sourceQuery}}{{{sourceQuery}}}{{else}}null{{/if}}{{#if streamSyncEnabled}}
+          stream_sync_enabled:
+            const: {{streamSyncEnabled}}{{/if}}
+          parent_rows:
+            link: PopulationArgs/parent_rows{{#if sourceQueryOutputs}}
+        out:
+          result:
+            schema: '#ref'{{/if}}
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Mask Data Based On Catalog:
+    actors:
+      Catalog Masking Mapper:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: {{sourceInterface}}
+          schema:
+            const: {{sourceSchema}}
+          dataset:
+            const: {{sourceTable}}
+          ttl:
+            link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
+          values:
+            link: Query/result
+  LU Table:
+    last: 1
+    actors:
+      {{luTable}}:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            {{#each luTableColumns}}
+            - {{this}}
+            {{/each}}
+          keys:
+            const:
+            {{#each luTableKeys}}
+            - {{this}}
+            {{/each}}
+          dialect:
+            const: sqlite
+          {{#each luTableColumns}}
+          {{this}}:
+            schema: any
+          {{/each}}
+          params:
+            link:
+              path: Catalog Masking Mapper/values
+              iterate: Iterate
+  Post Load: {
+    }
+{{#if sourceQueryOutputs}}schemas:
+  Query.out.result:
+    type: object
+    properties:
+      {{#each sourceQueryOutputs}}
+      {{this}}:
+        type: {
+          }
+      {{/each}}
+{{/if}}
