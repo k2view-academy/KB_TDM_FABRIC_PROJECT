@@ -498,7 +498,7 @@ public class SharedLogic {
 		        "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
                 "AND e.source_env = t.source_env " +   
 		        "AND t.source_env = ? " +
-                "LINIT 1";
+                "LIMIT 1";
         if("true".equalsIgnoreCase(deleteOnly)) {
             rootEntityIdSql = "SELECT e.root_lu_name, e.root_entity_id " +
                 "FROM " + TDMDB_SCHEMA + ".task_execution_entities e, " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid t " +
