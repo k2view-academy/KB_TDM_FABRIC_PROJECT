@@ -934,10 +934,6 @@ function FabricWidget(props) {
     _useState2 = slicedToArray_default()(_useState, 2),
     widgetRefData = _useState2[0],
     setWidgetRefData = _useState2[1];
-  var _useState3 = Object(react["useState"])(null),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    stateData = _useState4[0],
-    setStateData = _useState4[1];
   var refclickAway = Object(usehooks["a" /* useClickAway */])(function () {
     var editors = widgetRefData === null || widgetRefData === void 0 ? void 0 : widgetRefData.getValues();
     if (editors.length >= 0) {
@@ -953,7 +949,6 @@ function FabricWidget(props) {
     var _window, _window$k2widgets;
     var onWidgetLoad = function onWidgetLoad(data) {
       setWidgetRefData(data);
-      setStateData(data.state);
       saveRef(data);
       // save it in task Data
     };
@@ -964,15 +959,15 @@ function FabricWidget(props) {
       console.log('============');
       console.log(ref.getValues());
       console.log('============');
-      var editors = ref.getValues();
-      if (editors.length >= 0) {
-        updateValues(editors.map(function (it) {
-          return {
-            value: it.value,
-            name: it.name
-          };
-        }));
-      }
+      // const editors: any = ref.getValues();
+      // // if (editors.length >= 0) {
+      // //     updateValues(
+      // //         editors.map((it: any) => ({
+      // //             value: it.value,
+      // //             name: it.name,
+      // //         }))
+      // //     );
+      // // }
     };
     (_window = window) === null || _window === void 0 ? void 0 : (_window$k2widgets = _window.k2widgets) === null || _window$k2widgets === void 0 ? void 0 : _window$k2widgets.createWidget(ref.current, 'plugins', onWidgetLoad, disposeWidget, {
       plugins: !Array.isArray(editor) ? [editor] : editor,
@@ -1010,11 +1005,6 @@ function FabricWidget(props) {
       }
     }
   }, [editor, widgetRefData]);
-  Object(react["useEffect"])(function () {
-    if (!stateData) {
-      return;
-    }
-  }, [stateData]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
     ref: refclickAway,
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
@@ -5808,21 +5798,23 @@ function DataSourceSettingsForm(props) {
   }, [saveForm, dataGenerationParams]);
   var updateChosenParams = Object(react["useCallback"])(function (data) {
     var updateData = {};
+    var copyDataGenerationParams = JSON.parse(JSON.stringify(dataGenerationParams));
+    var copyGenerateChosenParams = toConsumableArray_default()(generateChosenParams);
     if (data.action === 'add') {
-      if (generateChosenParams.length === 0) {
-        dataGenerationParams[data.key].order = 1;
+      if (copyGenerateChosenParams.length === 0) {
+        copyDataGenerationParams[data.key].order = 1;
       } else {
-        var key = generateChosenParams[generateChosenParams.length - 1];
-        dataGenerationParams[data.key].order = dataGenerationParams[key].order + 1;
+        var key = copyGenerateChosenParams[copyGenerateChosenParams.length - 1];
+        copyDataGenerationParams[data.key].order = copyDataGenerationParams[key].order + 1;
       }
-      updateData.generateParams = DataSourceSettings_objectSpread({}, dataGenerationParams);
-      updateData.generateChosenParams = [].concat(toConsumableArray_default()(generateChosenParams), [data.key]);
+      updateData.dataGenerationParams = copyDataGenerationParams;
+      updateData.generateChosenParams = [].concat(toConsumableArray_default()(copyGenerateChosenParams), [data.key]);
     } else {
-      dataGenerationParams[data.key].editor.value = dataGenerationParams[data.key].default;
-      dataGenerationParams[data.key].value = dataGenerationParams[data.key].default;
-      dataGenerationParams[data.key].order = 99999999;
-      updateData.generateParams = DataSourceSettings_objectSpread({}, dataGenerationParams);
-      updateData.generateChosenParams = generateChosenParams.filter(function (key) {
+      copyDataGenerationParams[data.key].editor.value = copyDataGenerationParams[data.key].default;
+      copyDataGenerationParams[data.key].value = copyDataGenerationParams[data.key].default;
+      copyDataGenerationParams[data.key].order = 99999999;
+      updateData.dataGenerationParams = copyDataGenerationParams;
+      updateData.generateChosenParams = copyGenerateChosenParams.filter(function (key) {
         return key !== data.key;
       });
     }
@@ -6393,20 +6385,10 @@ function useTable_objectSpread(target) { for (var i = 1; i < arguments.length; i
 
 
 
-
-
 var SelectDataVerioning_useTable_useTable = function useTable(selected_version_task_exe_id, saveForm) {
   var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData;
-  var toast = hooks_useToast();
-  var maxToCopy = taskData.maxToCopy;
   var setVersioningData = Object(react["useCallback"])(function (data) {
     var version_datetime = new Date(data.version_datetime);
-    if (data.num_of_succeeded_entities > maxToCopy) {
-      toast.error('The number of entities exceeds the number of entities in the read write permission');
-      return;
-    }
     saveForm({
       selected_version_task_name: data.version_name,
       selected_version_succeeded_entities: data.num_of_succeeded_entities,
@@ -8373,13 +8355,13 @@ function DataSubsetForm(props) {
         return it.value !== 'R';
       });
     }
-
-    // if (systemUserRole?.type === 'tester') {
-    //     result = result.filter(
-    //         (it: any) => it.value !== 'ALL'
-    //     );
-    // }
-
+    if (sync_mode !== 'OFF' || !version_ind) {
+      if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester') {
+        result = result.filter(function (it) {
+          return it.value !== 'ALL';
+        });
+      }
+    }
     var found = result.find(function (it) {
       return it.value === 'ALL';
     });
@@ -10194,7 +10176,8 @@ function TargetForm(props) {
     clearErrors = _useContext.clearErrors,
     errors = _useContext.errors,
     taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
+    saveForm = _useContext.saveForm,
+    unregister = _useContext.unregister;
   var authService = getService('AuthService');
   var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
   var be_name = taskData.be_name,
@@ -10219,16 +10202,13 @@ function TargetForm(props) {
     synthetic_type = taskData.synthetic_type,
     generation_type = taskData.generation_type,
     maxToCopy = taskData.maxToCopy,
-    userRole = taskData.userRole;
+    userRole = taskData.userRole,
+    deleteWarning = taskData.deleteWarning;
   var toast = hooks_useToast();
-  var _useState = Object(react["useState"])(undefined),
+  var _useState = Object(react["useState"])(false),
     _useState2 = slicedToArray_default()(_useState, 2),
-    deleteWarning = _useState2[0],
-    setDeleteWarning = _useState2[1];
-  var _useState3 = Object(react["useState"])(false),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    disableAI = _useState4[0],
-    setDisableAI = _useState4[1];
+    disableAI = _useState2[0],
+    setDisableAI = _useState2[1];
   Object(react["useEffect"])(function () {
     function fetchData() {
       return _fetchData.apply(this, arguments);
@@ -10276,11 +10256,15 @@ function TargetForm(props) {
   }, []);
   Object(react["useEffect"])(function () {
     if (deleteWarning === undefined) {
-      setDeleteWarning(false);
+      saveForm({
+        deleteWarning: false
+      });
       return;
     }
     if (!delete_before_load && dataSourceType === 'data_source' && source_type === 'tables' && deleteWarning === false) {
-      setDeleteWarning(true);
+      saveForm({
+        deleteWarning: true
+      });
       toast.warning('The load activity may cause data duplication or a violation of unique constraints');
     }
   }, [delete_before_load]);
@@ -10339,10 +10323,13 @@ function TargetForm(props) {
   }, [selection_method]);
   Object(react["useEffect"])(function () {
     if (version_ind) {
-      saveForm({
-        load_entity: true,
-        delete_before_load: true
-      });
+      var updateData = {
+        load_entity: true
+      };
+      if (deleteWarning === undefined) {
+        updateData.delete_before_load = true;
+      }
+      saveForm(updateData);
     }
   }, [version_ind]);
   var actionChange = Object(react["useCallback"])(function (action, value) {
@@ -10412,6 +10399,11 @@ function TargetForm(props) {
       });
     }
   }, []);
+  Object(react["useEffect"])(function () {
+    if (!clone_ind) {
+      unregister('num_of_clones');
+    }
+  }, [clone_ind]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Target_styles_Wrapper, {
     children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Target_styles_Container, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Target_styles_Title, {
@@ -10489,7 +10481,7 @@ function TargetForm(props) {
                       name: "clone_ind",
                       value: !delete_before_load && load_entity ? clone_ind : false
                     }), clone_ind && !delete_before_load && load_entity ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Target_objectSpread(Target_objectSpread({}, register('num_of_entities', {
+                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Target_objectSpread(Target_objectSpread({}, register('num_of_clones', {
                         required: 'Populate number of clones',
                         min: {
                           value: 1,
@@ -10502,7 +10494,7 @@ function TargetForm(props) {
                       })), {}, {
                         disabled: !load_entity || delete_before_load,
                         width: "160px",
-                        name: "num_of_entities",
+                        name: "num_of_clones",
                         mandatory: true,
                         min: 1,
                         max: maxToCopy,
@@ -11899,11 +11891,18 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
     postExecutionProcesses: [],
     preExecutionProcesses: [],
     task_globals: false,
-    generateParams: {}
+    dataGenerationParams: {},
+    generateChosenParams: []
   };
   if (!apiData) {
     return taskData;
   }
+  if (taskData.delete_before_load) {
+    taskData.deleteWarning = false;
+  } else {
+    taskData.deleteWarning = true;
+  }
+  taskData.dataGenerationParams = apiData.generateParams;
   defaultValues.forEach(function (field) {
     taskData[field] = apiData[field];
   });
@@ -12063,10 +12062,13 @@ var updateTaskType = function updateTaskType(taskData, data) {
 };
 var prepareDataForSave = function prepareDataForSave(taskData, logicalUnits, copy) {
   var data = {};
-  var fieldsToCopy = ['task_id', 'be_id', 'postExecutionProcesses', 'preExecutionProcesses', 'environment_id', 'environment_name', 'source_environment_id', 'scheduler', 'num_of_entities', 'selection_method', 'selection_param_value', 'task_title', 'parameters', 'scheduling_end_date', 'version_ind', 'retention_period_value', 'retention_period_type', 'reserve_retention_period_type', 'reserve_retention_period_value', 'reserve_ind', 'load_entity', 'clone_ind', 'delete_before_load', 'reserve_note', 'selected_version_task_name', 'selected_version_datetime', 'selected_version_task_exe_id', 'tableList', 'filterout_reserved', 'mask_sensitive_data', 'replace_sequences', 'task_description', 'sync_mode', 'tableList', 'globals', 'reference', 'selected_ref_version_task_name', 'selected_ref_version_task_exe_id', 'selected_ref_version_datetime', 'task_globals', 'generateParams', 'selected_subset_task_exe_id', 'custom_logic_lu_name'];
+  var fieldsToCopy = ['task_id', 'be_id', 'postExecutionProcesses', 'preExecutionProcesses', 'environment_id', 'environment_name', 'source_environment_id', 'scheduler', 'num_of_entities', 'selection_method', 'selection_param_value', 'task_title', 'parameters', 'scheduling_end_date', 'version_ind', 'retention_period_value', 'retention_period_type', 'reserve_retention_period_type', 'reserve_retention_period_value', 'reserve_ind', 'load_entity', 'clone_ind', 'delete_before_load', 'reserve_note', 'selected_version_task_name', 'selected_version_datetime', 'selected_version_task_exe_id', 'filterout_reserved', 'mask_sensitive_data', 'replace_sequences', 'task_description', 'sync_mode', 'globals', 'reference', 'selected_ref_version_task_name', 'selected_ref_version_task_exe_id', 'selected_ref_version_datetime', 'task_globals', 'selected_subset_task_exe_id', 'custom_logic_lu_name'];
   fieldsToCopy.forEach(function (key) {
     data[key] = taskData[key];
   });
+  if (taskData.tables_selected) {
+    data.tableList = taskData.tableList;
+  }
   data.generateParams = taskData.dataGenerationParams;
   updateTaskType(taskData, data);
   if (data.globals && data.globals.length > 0) {
@@ -12978,40 +12980,38 @@ var useGenerationParams_useGenerationParams = function useGenerationParams(saveF
         case 2:
           data = _context.sent;
           updateData = {};
-          if (generateParams) {
-            selectedParams = [];
-            Object.keys(data || {}).forEach(function (key) {
-              var newValueAdded = false;
-              if (generateParams && generateParams[key] && generateParams[key].value !== undefined) {
-                data[key].editor.value = generateParams[key].value;
+          selectedParams = [];
+          Object.keys(data || {}).forEach(function (key) {
+            var newValueAdded = false;
+            if (generateParams && generateParams[key] && generateParams[key].value !== undefined) {
+              data[key].editor.value = generateParams[key].value;
+              newValueAdded = true;
+            } else {
+              if (data[key].value !== undefined) {
                 newValueAdded = true;
+                data[key].editor.value = data[key].value;
               } else {
-                if (data[key].value !== undefined) {
-                  newValueAdded = true;
-                  data[key].editor.value = data[key].value;
-                } else {
-                  data[key].editor.value = data[key].default;
-                }
+                data[key].editor.value = data[key].default;
               }
-              if (generateParams && generateParams[key] && generateParams[key].order) {
-                data[key].order = generateParams[key].order;
-              }
-              if ((newValueAdded || data[key].mandatory) && data[key].order < 99999999) {
-                selectedParams.push({
-                  key: key,
-                  order: data[key].order
-                });
-              }
-            });
-            updateData.generateChosenParams = selectedParams.sort(function (a, b) {
-              return (a.order || 99999999) - (b.order || 99999999);
-            }).map(function (it) {
-              return it.key;
-            });
-          }
+            }
+            if (generateParams && generateParams[key] && generateParams[key].order) {
+              data[key].order = generateParams[key].order;
+            }
+            if ((newValueAdded || data[key].mandatory) && data[key].order < 99999999) {
+              selectedParams.push({
+                key: key,
+                order: data[key].order
+              });
+            }
+          });
+          updateData.generateChosenParams = selectedParams.sort(function (a, b) {
+            return (a.order || 99999999) - (b.order || 99999999);
+          }).map(function (it) {
+            return it.key;
+          });
           updateData.dataGenerationParams = data;
           saveForm(updateData);
-        case 7:
+        case 9:
         case "end":
           return _context.stop();
       }
@@ -13141,6 +13141,9 @@ function TaskMain(props) {
     if (failedComp === currentStep) {
       setFailedComp('');
     }
+    if (Object.keys(data).indexOf('delete_before_load') >= 0) {
+      debugger;
+    }
     setTaskData(function (previousTaskData) {
       return Main_objectSpread(Main_objectSpread({}, previousTaskData), data);
     });
@@ -13154,7 +13157,7 @@ function TaskMain(props) {
   var allLogicalUnits = Main_useLogicalUnits(initFinished, saveForm, initTask, taskData === null || taskData === void 0 ? void 0 : taskData.dataSourceType, taskData === null || taskData === void 0 ? void 0 : taskData.source_type, taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units_names, taskData === null || taskData === void 0 ? void 0 : taskData.be_type, taskData === null || taskData === void 0 ? void 0 : taskData.be_id, taskData === null || taskData === void 0 ? void 0 : taskData.source_environment_id, taskData === null || taskData === void 0 ? void 0 : taskData.environment_id);
   Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.retention_period_type, taskData.reserve_retention_period_value);
   Main_useRoles(saveForm, taskData);
-  Main_useGenerationParams(saveForm, taskData.task_id, taskData.selected_logical_units_names, taskData.generateParams);
+  Main_useGenerationParams(saveForm, taskData.task_id, taskData.selected_logical_units_names, taskData.dataGenerationParams);
   var onReset = Object(react["useCallback"])(function () {
     if (currentStep === 'source_data_subset' || currentStep === 'target_data_subset') {
       if (taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables') {

@@ -1563,11 +1563,11 @@ public class Logic extends UserCode {
 		    String query = "SELECT " + newSelClause + " FROM "  + TDMDB_SCHEMA + "." + tableName +
 		        " p, "  + TDMDB_SCHEMA + ".task_execution_entities t WHERE p.root_lu_name = t.root_lu_name " +
 		        "AND p.root_iid = t.root_entity_id and p.entity_id = t.iid AND t.task_execution_id = ? " +
-		        "AND t.lu_name = ?";
+		        "AND t.lu_name = ? AND p.source_environment = ?";
 		    
 		    Db.Rows tableRecords;
 		
-		    tableRecords = db(TDM).fetch(query, taskExecId, luName);
+		    tableRecords = db(TDM).fetch(query, taskExecId, luName, srcEnv);
 		
 		    List<String> columnNames = tableRecords.getColumnNames();
 		

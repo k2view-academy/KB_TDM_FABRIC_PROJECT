@@ -1,7 +1,5 @@
 package com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 
-//import com.google.gson.Gson;
-
 import com.k2view.cdbms.lut.LUType;
 import com.k2view.cdbms.lut.LudbJobs;
 import com.k2view.cdbms.shared.Db;
@@ -12,7 +10,6 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
-//import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
@@ -141,6 +138,8 @@ public class SharedLogic {
 		String paramsSql = !Util.isEmpty(whereStmt) ? whereStmt + ")" : "";
 		paramsSql = paramsSql.replaceAll("FROM " , "FROM " + TDMDB_SCHEMA + ".");
 		paramsSql = paramsSql.replaceAll("WHERE ", "WHERE ROOT_LU_NAME = ANY('" + rootLUs + "') AND SOURCE_ENVIRONMENT = '" + sourceEnv + "' AND (");
+        paramsSql = paramsSql.replaceAll("INTERSECT ", ") INTERSECT ");
+        paramsSql = paramsSql.replaceAll("UNION ", ") UNION ");
         if(AI_ENVIRONMENT.equals(sourceEnv) && cloneInd ){
             paramsSql = "SELECT distinct '" + sourceEnv + "'||'" + separator + "'||" + "root_iid as entity_id FROM (" + paramsSql + ") p";
         }else{
