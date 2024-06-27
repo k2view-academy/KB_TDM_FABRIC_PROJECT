@@ -52,8 +52,10 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from Billing.TAR_invoice"
+                                        "const": "select distinct invoice_id from Billing.TAR_invoice"
                                     }
+                                           
+										 
                                 ],
                                 "outputs": [
                                     {

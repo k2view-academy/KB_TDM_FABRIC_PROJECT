@@ -23,7 +23,7 @@
 						{
                             "name": "issued_date",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }

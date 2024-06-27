@@ -258,7 +258,8 @@
 									{
                                         "name": "keys",
                                         "const": [
-                                            "balance_id"
+                                            "balance_id",
+											"subscriber_id"
 											
                                         ]
                                     },

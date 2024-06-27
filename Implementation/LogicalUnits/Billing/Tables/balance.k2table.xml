@@ -3,12 +3,12 @@
   <Name>balance</Name>
   <ID>tbl_balance</ID>
   <Columns>
-    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="TEXT" />
-    <Column name="balance_id" id="balance_id" index="1" datatype="TEXT" mandatory="true" />
-    <Column name="balance_ref_id" id="balance_ref_id" index="2" datatype="TEXT" />
-    <Column name="available_amount" id="available_amount" index="3" datatype="TEXT" />
-    <Column name="reset_amount" id="reset_amount" index="4" datatype="TEXT" />
-    <Column name="reset_date" id="reset_date" index="5" datatype="TEXT" />
+    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="INTEGER" />
+    <Column name="balance_id" id="balance_id" index="1" datatype="INTEGER" mandatory="true" />
+    <Column name="balance_ref_id" id="balance_ref_id" index="2" datatype="INTEGER" />
+    <Column name="available_amount" id="available_amount" index="3" datatype="INTEGER" />
+    <Column name="reset_amount" id="reset_amount" index="4" datatype="INTEGER" />
+    <Column name="reset_date" id="reset_date" index="5" datatype="DATETIME" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="balance_id" />
@@ -21,7 +21,7 @@
   <TriggersList>
   </TriggersList>
   <BasedOn>
-    <Source interface="BILLING_DB" schema="public" table="balance" timestamp="2024-03-24">
+    <Source interface="BILLING_DB" schema="public" table="balance" timestamp="2024-06-25">
       <ColumnsList>subscriber_id,balance_id,balance_ref_id,available_amount,reset_amount,reset_date</ColumnsList>
     </Source>
   </BasedOn>

@@ -1,7 +1,6 @@
 {
     "tags": [
-        "Generate Data",
-        "GeneratorFlows"
+        "Generate Data"
     ],
     "levels": [
         {
@@ -22,17 +21,21 @@
                                     }
                                 ],
                                 "outputs": [
+									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "subscriber_id": {
+                                            "properties":
+												{
+												"subscriber_id": {
                                                     "type": "any"
-                                                }
+                                                 } 
+												
+												
                                             }
-                                        }
-                                    }
+										}
+									}
                                 ]
                             }
                         },
@@ -73,14 +76,16 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Set Parent & Sequential Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+					
+						
+						{
                             "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -99,19 +104,20 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						,
+						
+						
+                        
+ 						{
                             "name": "balance_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                    {
+                                     {
                                         "name": "maskingId",
                                         "const": "balance_id"
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
                                     },
                                     {
                                         "name": "flowName",
@@ -130,6 +136,10 @@
                                         "const": true
                                     },
                                     {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
                                         "name": "TTL",
                                         "const": 0
                                     },
@@ -144,16 +154,16 @@
                                         }
                                     },
                                     {
-                                        "const": "Gen_BALANCE_ID_SEQ",
                                         "name": "sequenceId",
+                                        "const": "Gen_BALANCE_ID_SEQ",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM",
                                         "name": "sequenceInterface",
+                                        "const": "TDM",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -170,16 +180,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "1",
                                         "name": "initialValue",
+                                        "const": "1",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": 1,
                                         "name": "increment",
+                                        "const": 1,
                                         "schema": {
                                             "type": "number"
                                         },
@@ -194,20 +204,24 @@
                                         }
                                     }
                                 ]
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Build Parent & Sequential Fields Maps",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "Build SUBSCRIBER_ID Map",
                             "actorType": {
                                 "parentType": "MapBuild",
@@ -234,8 +248,13 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						,
+						
+						
+						
+ 						{
                             "name": "Build balance_id Map",
                             "actorType": {
                                 "parentType": "MapBuild",
@@ -262,12 +281,15 @@
                                     }
                                 ]
                             }
-                        }
+                         } 
+						
+
+						
                     ]
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Merge Maps & Call Catalog Generator",
@@ -275,6 +297,7 @@
                     "isLast": 0,
                     "actors": [
                         {
+							
                             "name": "Merge Parent & Sequential Felds Maps",
                             "actorType": {
                                 "parentType": "MapMerge",
@@ -285,17 +308,27 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "SUBSCRIBER_ID": {
+												
+												"SUBSCRIBER_ID": {
                                                     "type": "string"
-                                                },
-                                                "balance_id": {
+                                                 } 
+												
+												,
+												
+						
+												
+												"balance_id": {
                                                     "type": "string"
-                                                }
+                                                 } 
+												
+
+												
                                             }
                                         }
                                     }
                                 ]
                             }
+                            
                         },
                         {
                             "name": "Catalog Generator Record",
@@ -321,6 +354,13 @@
                                     {
                                         "name": "mtable",
                                         "schema": {}
+                                    },
+                                    {
+                                        "name": "donNotNormalizeGeneratedValue",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []
@@ -330,7 +370,7 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "If Catalog Returns Nothing",
@@ -472,7 +512,7 @@
                             "actorType": {
                                 "parentType": "MapMerge",
                                 "inputs": [
-                                    {
+                                {
                                         "name": "mapType",
                                         "const": "TreeMapIgnoreCase"
                                     }
@@ -486,8 +526,9 @@
         }
     ],
     "connections": [
-        {
-            "leftPort": {
+		
+		{
+			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -498,18 +539,8 @@
             "path": [
                 "subscriber_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get SEQ_CACHE_INTERFACE",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Generator Record",
-                "name": "interface"
-            }
-        },
-        {
+		},
+		{
             "leftPort": {
                 "actor": "SUBSCRIBER_ID",
                 "name": "value"
@@ -518,18 +549,8 @@
                 "actor": "Build SUBSCRIBER_ID Map",
                 "name": "value"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "balance_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Build balance_id Map",
-                "name": "value"
-            }
-        },
-        {
+		},
+		{
             "leftPort": {
                 "actor": "Build SUBSCRIBER_ID Map",
                 "name": "map"
@@ -539,8 +560,24 @@
                 "name": "maps"
             },
             "arrayPosition": 0
-        },
+         } 
+		
+        
+        
+		
+		,
+		
         {
+            "leftPort": {
+                "actor": "balance_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build balance_id Map",
+                "name": "value"
+            }
+		},
+		{
             "leftPort": {
                 "actor": "Build balance_id Map",
                 "name": "map"
@@ -550,6 +587,66 @@
                 "name": "maps"
             },
             "arrayPosition": 1
+         } 
+		
+        
+
+        
+		
+         ,
+         
+		{
+            "leftPort": {
+                "actor": "reset_date",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "reset_date"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "balance_ref_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "balance_ref_id"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "available_amount",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "available_amount"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "reset_amount",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "reset_amount"
+            }
+         } 
+		
+        
+		 ,
+		{
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Generator Record",
+                "name": "interface"
+            }
         },
         {
             "leftPort": {
@@ -633,5 +730,6 @@
                 "name": "result"
             }
         }
+
     ]
 }

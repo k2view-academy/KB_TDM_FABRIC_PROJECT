@@ -15,7 +15,7 @@
                         {
                             "name": "reset_date",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -23,7 +23,7 @@
 						{
                             "name": "balance_ref_id",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "RandomNumber",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -31,7 +31,7 @@
 						{
                             "name": "available_amount",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "RandomNumber",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -39,7 +39,7 @@
 						{
                             "name": "reset_amount",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "RandomNumber",
                                 "inputs": [],
                                 "outputs": []
                             }

@@ -13,6 +13,14 @@
                     "actors": [
                         
                         {
+                            "name": "offer_ref_id",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
                             "name": "offer_description",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
@@ -23,7 +31,7 @@
 						{
                             "name": "from_date",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -31,15 +39,7 @@
 						{
                             "name": "to_date",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
-                            "name": "offer_ref_id",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -59,6 +59,22 @@
                     "actors": [
                         
                         {
+                            "name": "Build offer_ref_id Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "offer_ref_id"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
                             "name": "Build offer_description Map",
                             "actorType": {
                                 "parentType": "MapBuild",
@@ -105,22 +121,6 @@
                                 ],
                                 "outputs": []
                             }
-                         }, 
-						{
-                            "name": "Build offer_ref_id Map",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "offer_ref_id"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                          } 
 						
 						
@@ -152,6 +152,27 @@
         
         {
             "leftPort": {
+                "actor": "offer_ref_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build offer_ref_id Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build offer_ref_id Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
                 "actor": "offer_description",
                 "name": "value"
             },
@@ -169,7 +190,7 @@
                 "actor": "Merge Maps",
                 "name": "maps"
             },
-            "arrayPosition": 0
+            "arrayPosition": 1
         },
         {
             "leftPort": {
@@ -190,7 +211,7 @@
                 "actor": "Merge Maps",
                 "name": "maps"
             },
-            "arrayPosition": 1
+            "arrayPosition": 2
         },
         {
             "leftPort": {
@@ -205,27 +226,6 @@
         {
             "leftPort": {
                 "actor": "Build to_date Map",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Maps",
-                "name": "maps"
-            },
-            "arrayPosition": 2
-        },
-        {
-            "leftPort": {
-                "actor": "offer_ref_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Build offer_ref_id Map",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Build offer_ref_id Map",
                 "name": "map"
             },
             "rightPort": {

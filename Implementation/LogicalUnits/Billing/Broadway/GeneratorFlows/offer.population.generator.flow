@@ -1,7 +1,6 @@
 {
     "tags": [
-        "Generate Data",
-        "GeneratorFlows"
+        "Generate Data"
     ],
     "levels": [
         {
@@ -22,17 +21,21 @@
                                     }
                                 ],
                                 "outputs": [
+									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "subscriber_id": {
+                                            "properties":
+												{
+												"subscriber_id": {
                                                     "type": "any"
-                                                }
+                                                 } 
+												
+												
                                             }
-                                        }
-                                    }
+										}
+									}
                                 ]
                             }
                         },
@@ -73,14 +76,16 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Set Parent & Sequential Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+					
+						
+						{
                             "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -99,13 +104,18 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						,
+						
+						
+                        
+ 						{
                             "name": "offer_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                    {
+                                     {
                                         "name": "maskingId",
                                         "const": "offer_id"
                                     },
@@ -122,8 +132,12 @@
                                         "const": true
                                     },
                                     {
+                                        "name": "useExecutionId",
+                                        "const": true
+                                    },
+                                    {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": "POSTGRESQL_ADMIN"
                                     },
                                     {
                                         "name": "TTL",
@@ -140,16 +154,16 @@
                                         }
                                     },
                                     {
-                                        "const": "Gen_OFFER_ID_SEQ",
                                         "name": "sequenceId",
+                                        "const": "Gen_OFFER_ID_SEQ",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM",
                                         "name": "sequenceInterface",
+                                        "const": "TDM",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -166,16 +180,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "1",
                                         "name": "initialValue",
+                                        "const": "1",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": 1,
                                         "name": "increment",
+                                        "const": 1,
                                         "schema": {
                                             "type": "number"
                                         },
@@ -190,20 +204,24 @@
                                         }
                                     }
                                 ]
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Build Parent & Sequential Fields Maps",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "Build SUBSCRIBER_ID Map",
                             "actorType": {
                                 "parentType": "MapBuild",
@@ -230,8 +248,13 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						,
+						
+						
+						
+ 						{
                             "name": "Build offer_id Map",
                             "actorType": {
                                 "parentType": "MapBuild",
@@ -258,12 +281,15 @@
                                     }
                                 ]
                             }
-                        }
+                         } 
+						
+
+						
                     ]
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Merge Maps & Call Catalog Generator",
@@ -271,6 +297,7 @@
                     "isLast": 0,
                     "actors": [
                         {
+							
                             "name": "Merge Parent & Sequential Felds Maps",
                             "actorType": {
                                 "parentType": "MapMerge",
@@ -281,17 +308,27 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "SUBSCRIBER_ID": {
+												
+												"SUBSCRIBER_ID": {
                                                     "type": "string"
-                                                },
-                                                "offer_id": {
+                                                 } 
+												
+												,
+												
+						
+												
+												"offer_id": {
                                                     "type": "string"
-                                                }
+                                                 } 
+												
+
+												
                                             }
                                         }
                                     }
                                 ]
                             }
+                            
                         },
                         {
                             "name": "Catalog Generator Record",
@@ -317,6 +354,13 @@
                                     {
                                         "name": "mtable",
                                         "schema": {}
+                                    },
+                                    {
+                                        "name": "donNotNormalizeGeneratedValue",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []
@@ -326,7 +370,7 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "If Catalog Returns Nothing",
@@ -439,145 +483,6 @@
         {
             "stages": [
                 {
-                    "name": "Override catalog values",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "MTable Description",
-                            "actorType": {
-                                "parentType": "MTableRandom",
-                                "inputs": [
-                                    {
-                                        "name": "mtable",
-                                        "const": "OfferContractMapping"
-                                    },
-                                    {
-                                        "name": "contract_ref_id",
-                                        "const": "105",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "remark": "Select the Contract ref id for Contract Offer Mapping",
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "contract_ref_id": {
-                                                    "type": "string"
-                                                },
-                                                "offer_ref_id": {
-                                                    "type": "string"
-                                                },
-                                                "offer_contract_description": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Override catalog values 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "DESCRIPTION",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "OFFER REF ID",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create a Map",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "MapCreate1",
-                            "actorType": {
-                                "parentType": "MapCreate",
-                                "inputs": [
-                                    {
-                                        "name": "OFFER_DESCRIPTION",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "OFFER_REF_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Merge All Fields",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -607,7 +512,7 @@
                             "actorType": {
                                 "parentType": "MapMerge",
                                 "inputs": [
-                                    {
+                                {
                                         "name": "mapType",
                                         "const": "TreeMapIgnoreCase"
                                     }
@@ -621,8 +526,9 @@
         }
     ],
     "connections": [
-        {
-            "leftPort": {
+		
+		{
+			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -633,18 +539,8 @@
             "path": [
                 "subscriber_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get SEQ_CACHE_INTERFACE",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Generator Record",
-                "name": "interface"
-            }
-        },
-        {
+		},
+		{
             "leftPort": {
                 "actor": "SUBSCRIBER_ID",
                 "name": "value"
@@ -653,18 +549,8 @@
                 "actor": "Build SUBSCRIBER_ID Map",
                 "name": "value"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "offer_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Build offer_id Map",
-                "name": "value"
-            }
-        },
-        {
+		},
+		{
             "leftPort": {
                 "actor": "Build SUBSCRIBER_ID Map",
                 "name": "map"
@@ -674,8 +560,24 @@
                 "name": "maps"
             },
             "arrayPosition": 0
-        },
+         } 
+		
+        
+        
+		
+		,
+		
         {
+            "leftPort": {
+                "actor": "offer_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build offer_id Map",
+                "name": "value"
+            }
+		},
+		{
             "leftPort": {
                 "actor": "Build offer_id Map",
                 "name": "map"
@@ -685,6 +587,66 @@
                 "name": "maps"
             },
             "arrayPosition": 1
+         } 
+		
+        
+
+        
+		
+         ,
+         
+		{
+            "leftPort": {
+                "actor": "offer_ref_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "offer_ref_id"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "offer_description",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "offer_description"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "from_date",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "from_date"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "to_date",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "to_date"
+            }
+         } 
+		
+        
+		 ,
+		{
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Generator Record",
+                "name": "interface"
+            }
         },
         {
             "leftPort": {
@@ -750,79 +712,12 @@
         },
         {
             "leftPort": {
-                "actor": "MTable Description",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "DESCRIPTION",
-                "name": "value"
-            },
-            "path": [
-                "offer_contract_description"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "MTable Description",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "OFFER REF ID",
-                "name": "value"
-            },
-            "path": [
-                "offer_ref_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "DESCRIPTION",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "MapCreate1",
-                "name": "OFFER_DESCRIPTION"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "OFFER REF ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "MapCreate1",
-                "name": "OFFER_REF_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "MapCreate1",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Maps of all Fields",
-                "name": "maps"
-            },
-            "arrayPosition": 2
-        },
-        {
-            "leftPort": {
                 "actor": "flowArgs",
                 "name": "parent_row"
             },
             "rightPort": {
                 "actor": "parent_row",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "contract_ref_id"
-            },
-            "rightPort": {
-                "actor": "MTable Description",
-                "name": "contract_ref_id"
             }
         },
         {
@@ -835,5 +730,6 @@
                 "name": "result"
             }
         }
+
     ]
 }

@@ -258,7 +258,8 @@
 									{
                                         "name": "keys",
                                         "const": [
-                                            "offer_id"
+                                            "offer_id",
+											"subscriber_id"
 											
                                         ]
                                     },
