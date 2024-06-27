@@ -57,23 +57,6 @@
                     "isLast": 0,
                     "actors": [
 						
-						{
-                            "name": "Check if Entity has not failed 1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "failed"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-						},
                         {
                             "name": "load_balance",
                             "actorType": {
@@ -139,23 +122,6 @@
                     "isLast": 0,
                     "actors": [
 						
-						{
-                            "name": "Check if Entity has not failed 2",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "failed"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-						},
                         {
                             "name": "load_payment",
                             "actorType": {
@@ -201,26 +167,6 @@
     "connections": [
 		
 		
-		{
-            "leftPort": {
-                "actor": "Get Entity Status 1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check if Entity has not failed 1",
-                "name": "a"
-            }
-        },
 		
-		{
-            "leftPort": {
-                "actor": "Get Entity Status 2",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check if Entity has not failed 2",
-                "name": "a"
-            }
-        }
 	]
 }

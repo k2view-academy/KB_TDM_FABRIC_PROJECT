@@ -1,7 +1,6 @@
 {
     "tags": [
-        "Generate Data",
-        "GeneratorFlows"
+        "Generate Data"
     ],
     "levels": [
         {
@@ -22,17 +21,21 @@
                                     }
                                 ],
                                 "outputs": [
+									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "invoice_id": {
+                                            "properties":
+												{
+												"invoice_id": {
                                                     "type": "any"
-                                                }
+                                                 } 
+												
+												
                                             }
-                                        }
-                                    }
+										}
+									}
                                 ]
                             }
                         },
@@ -73,14 +76,16 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Set Parent & Sequential Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+					
+						
+						{
                             "name": "INVOICE_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -99,19 +104,20 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						,
+						
+						
+                        
+ 						{
                             "name": "payment_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                    {
+                                     {
                                         "name": "maskingId",
                                         "const": "payment_id"
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
                                     },
                                     {
                                         "name": "flowName",
@@ -130,6 +136,10 @@
                                         "const": true
                                     },
                                     {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
                                         "name": "TTL",
                                         "const": 0
                                     },
@@ -144,16 +154,16 @@
                                         }
                                     },
                                     {
-                                        "const": "Gen_PAYMENT_ID_SEQ",
                                         "name": "sequenceId",
+                                        "const": "Gen_PAYMENT_ID_SEQ",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM",
                                         "name": "sequenceInterface",
+                                        "const": "TDM",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -170,16 +180,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "1",
                                         "name": "initialValue",
+                                        "const": "1",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": 1,
                                         "name": "increment",
+                                        "const": 1,
                                         "schema": {
                                             "type": "number"
                                         },
@@ -194,20 +204,24 @@
                                         }
                                     }
                                 ]
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Build Parent & Sequential Fields Maps",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "Build INVOICE_ID Map",
                             "actorType": {
                                 "parentType": "MapBuild",
@@ -234,8 +248,13 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						,
+						
+						
+						
+ 						{
                             "name": "Build payment_id Map",
                             "actorType": {
                                 "parentType": "MapBuild",
@@ -262,12 +281,15 @@
                                     }
                                 ]
                             }
-                        }
+                         } 
+						
+
+						
                     ]
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Merge Maps & Call Catalog Generator",
@@ -275,6 +297,7 @@
                     "isLast": 0,
                     "actors": [
                         {
+							
                             "name": "Merge Parent & Sequential Felds Maps",
                             "actorType": {
                                 "parentType": "MapMerge",
@@ -285,17 +308,27 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "INVOICE_ID": {
+												
+												"INVOICE_ID": {
                                                     "type": "string"
-                                                },
-                                                "payment_id": {
+                                                 } 
+												
+												,
+												
+						
+												
+												"payment_id": {
                                                     "type": "string"
-                                                }
+                                                 } 
+												
+
+												
                                             }
                                         }
                                     }
                                 ]
                             }
+                            
                         },
                         {
                             "name": "Catalog Generator Record",
@@ -321,6 +354,13 @@
                                     {
                                         "name": "mtable",
                                         "schema": {}
+                                    },
+                                    {
+                                        "name": "donNotNormalizeGeneratedValue",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []
@@ -330,7 +370,7 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "If Catalog Returns Nothing",
@@ -402,24 +442,7 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "amount": {
-                                                    "type": "string"
-                                                },
-                                                "issued_date": {
-                                                    "type": "date"
-                                                },
-                                                "payment_id": {
-                                                    "type": "integer"
-                                                },
-                                                "invoice_id": {
-                                                    "type": "integer"
-                                                },
-                                                "status": {
-                                                    "type": "string"
-                                                }
-                                            }
+                                            "type": "object"
                                         }
                                     }
                                 ]
@@ -450,170 +473,7 @@
                                         "const": null
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "amount": {
-                                                    "type": "string"
-                                                },
-                                                "issued_date": {
-                                                    "type": "date"
-                                                },
-                                                "payment_id": {
-                                                    "type": "integer"
-                                                },
-                                                "invoice_id": {
-                                                    "type": "integer"
-                                                },
-                                                "status": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Override masking",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Payment amount",
-                            "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "minimum": "integer",
-                                                "maximum": "integer"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "uniform",
-                                            "round": true,
-                                            "type": "integer",
-                                            "minimum": 10,
-                                            "maximum": 1000
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "STATUS",
-                            "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "weights": "array"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "weighted",
-                                            "round": false,
-                                            "type": "string",
-                                            "weights": [
-                                                [
-                                                    30,
-                                                    "Closed"
-                                                ],
-                                                [
-                                                    40,
-                                                    "Open"
-                                                ],
-                                                [
-                                                    50,
-                                                    "New"
-                                                ]
-                                            ]
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "MapCreate1",
-                            "actorType": {
-                                "parentType": "MapCreate",
-                                "inputs": [
-                                    {
-                                        "name": "amount",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "status",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "amount": {
-                                                    "type": "integer"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -652,36 +512,12 @@
                             "actorType": {
                                 "parentType": "MapMerge",
                                 "inputs": [
-                                    {
+                                {
                                         "name": "mapType",
                                         "const": "TreeMapIgnoreCase"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "amount": {
-                                                    "type": "string"
-                                                },
-                                                "invoice_id": {
-                                                    "type": "string"
-                                                },
-                                                "issued_date": {
-                                                    "type": "date"
-                                                },
-                                                "payment_id": {
-                                                    "type": "integer"
-                                                },
-                                                "status": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -690,8 +526,9 @@
         }
     ],
     "connections": [
-        {
-            "leftPort": {
+		
+		{
+			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -702,18 +539,8 @@
             "path": [
                 "invoice_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get SEQ_CACHE_INTERFACE",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Generator Record",
-                "name": "interface"
-            }
-        },
-        {
+		},
+		{
             "leftPort": {
                 "actor": "INVOICE_ID",
                 "name": "value"
@@ -722,18 +549,8 @@
                 "actor": "Build INVOICE_ID Map",
                 "name": "value"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "payment_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Build payment_id Map",
-                "name": "value"
-            }
-        },
-        {
+		},
+		{
             "leftPort": {
                 "actor": "Build INVOICE_ID Map",
                 "name": "map"
@@ -743,8 +560,24 @@
                 "name": "maps"
             },
             "arrayPosition": 0
-        },
+         } 
+		
+        
+        
+		
+		,
+		
         {
+            "leftPort": {
+                "actor": "payment_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build payment_id Map",
+                "name": "value"
+            }
+		},
+		{
             "leftPort": {
                 "actor": "Build payment_id Map",
                 "name": "map"
@@ -754,6 +587,56 @@
                 "name": "maps"
             },
             "arrayPosition": 1
+         } 
+		
+        
+
+        
+		
+         ,
+         
+		{
+            "leftPort": {
+                "actor": "amount",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "amount"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "issued_date",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "issued_date"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "status",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "status"
+            }
+         } 
+		
+        
+		 ,
+		{
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Generator Record",
+                "name": "interface"
+            }
         },
         {
             "leftPort": {
@@ -819,53 +702,12 @@
         },
         {
             "leftPort": {
-                "actor": "Payment amount",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "MapCreate1",
-                "name": "amount"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "STATUS",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "MapCreate1",
-                "name": "status"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "MapCreate1",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Maps of all Fields",
-                "name": "maps"
-            },
-            "arrayPosition": 2
-        },
-        {
-            "leftPort": {
                 "actor": "flowArgs",
                 "name": "parent_row"
             },
             "rightPort": {
                 "actor": "parent_row",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "payment_status"
-            },
-            "rightPort": {
-                "actor": "STATUS",
-                "name": "distribution"
             }
         },
         {
@@ -878,5 +720,6 @@
                 "name": "result"
             }
         }
+
     ]
 }

@@ -260,7 +260,8 @@
 									{
                                         "name": "keys",
                                         "const": [
-                                            "invoice_id"
+                                            "invoice_id",
+											"subscriber_id"
 											
                                         ]
                                     },

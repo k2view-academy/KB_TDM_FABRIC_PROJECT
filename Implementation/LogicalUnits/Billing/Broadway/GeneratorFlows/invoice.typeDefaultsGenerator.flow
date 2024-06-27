@@ -15,7 +15,7 @@
                         {
                             "name": "issued_date",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -23,7 +23,7 @@
 						{
                             "name": "balance",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "RandomNumber",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -31,7 +31,7 @@
 						{
                             "name": "due_date",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -39,7 +39,7 @@
 						{
                             "name": "invoice_image",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "EmptyBlob",
                                 "inputs": [],
                                 "outputs": []
                             }

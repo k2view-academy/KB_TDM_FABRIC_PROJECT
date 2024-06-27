@@ -84,7 +84,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select subscriber_id    From public.subscriber"
+                                        "const": "Select subscriber_id  ,  subscriber_id    From public.subscriber"
                                     }
                                 ],
                                 "outputs": [
@@ -140,6 +140,8 @@
                                         "name": "fields",
                                         "const": [
                                             "subscriber_id"
+											 , 
+											"subscriber_id"
 											 
 											
                                         ]
@@ -148,6 +150,11 @@
                                         "name": "dialect",
                                         "const": "sqlite"
                                     },
+									{
+                                        "name": "subscriber_id",
+                                        "schema": {}
+                                    }
+									 , 
 									{
                                         "name": "subscriber_id",
                                         "schema": {}

@@ -4,7 +4,7 @@
   <ID>tbl_subscriber</ID>
   <EntityId>subscriber_id</EntityId>
   <Columns>
-    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="TEXT" mandatory="true" />
+    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="INTEGER" mandatory="true" />
     <Column name="msisdn" id="msisdn" index="1" datatype="TEXT" />
     <Column name="imsi" id="imsi" index="2" datatype="TEXT" />
     <Column name="sim" id="sim" index="3" datatype="TEXT" />
@@ -24,7 +24,7 @@
   <TriggersList>
   </TriggersList>
   <BasedOn>
-    <Source interface="BILLING_DB" schema="public" table="subscriber" timestamp="2024-03-24">
+    <Source interface="BILLING_DB" schema="public" table="subscriber" timestamp="2024-06-25">
       <ColumnsList>subscriber_id,msisdn,imsi,sim,first_name,last_name,subscriber_type,vip_status</ColumnsList>
     </Source>
   </BasedOn>

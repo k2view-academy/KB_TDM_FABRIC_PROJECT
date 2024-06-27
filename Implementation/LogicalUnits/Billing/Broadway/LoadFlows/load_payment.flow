@@ -257,7 +257,8 @@
 									{
                                         "name": "keys",
                                         "const": [
-                                            "payment_id"
+                                            "payment_id",
+											"invoice_id"
 											
                                         ]
                                     },

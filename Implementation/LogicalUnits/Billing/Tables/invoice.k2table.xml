@@ -3,13 +3,13 @@
   <Name>invoice</Name>
   <ID>tbl_invoice</ID>
   <Columns>
-    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="TEXT" />
-    <Column name="invoice_id" id="invoice_id" index="1" datatype="TEXT" mandatory="true" />
-    <Column name="issued_date" id="issued_date" index="2" datatype="TEXT" />
-    <Column name="due_date" id="due_date" index="3" datatype="TEXT" />
+    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="INTEGER" />
+    <Column name="invoice_id" id="invoice_id" index="1" datatype="INTEGER" mandatory="true" />
+    <Column name="issued_date" id="issued_date" index="2" datatype="DATETIME" />
+    <Column name="due_date" id="due_date" index="3" datatype="DATETIME" />
     <Column name="status" id="status" index="4" datatype="TEXT" />
-    <Column name="balance" id="balance" index="5" datatype="TEXT" />
-    <Column name="invoice_image" id="invoice_image" index="6" datatype="TEXT" />
+    <Column name="balance" id="balance" index="5" datatype="INTEGER" />
+    <Column name="invoice_image" id="invoice_image" index="6" datatype="BLOB" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="invoice_id" />
@@ -22,7 +22,7 @@
   <TriggersList>
   </TriggersList>
   <BasedOn>
-    <Source interface="BILLING_DB" schema="public" table="invoice" timestamp="2024-03-24">
+    <Source interface="BILLING_DB" schema="public" table="invoice" timestamp="2024-06-25">
       <ColumnsList>subscriber_id,invoice_id,issued_date,due_date,status,balance,invoice_image</ColumnsList>
     </Source>
   </BasedOn>

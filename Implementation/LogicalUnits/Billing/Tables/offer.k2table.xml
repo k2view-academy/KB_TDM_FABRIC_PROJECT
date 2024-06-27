@@ -3,12 +3,12 @@
   <Name>offer</Name>
   <ID>tbl_offer</ID>
   <Columns>
-    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="TEXT" />
-    <Column name="offer_id" id="offer_id" index="1" datatype="TEXT" mandatory="true" />
-    <Column name="offer_ref_id" id="offer_ref_id" index="2" datatype="TEXT" />
+    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="INTEGER" />
+    <Column name="offer_id" id="offer_id" index="1" datatype="INTEGER" mandatory="true" />
+    <Column name="offer_ref_id" id="offer_ref_id" index="2" datatype="INTEGER" />
     <Column name="offer_description" id="offer_description" index="3" datatype="TEXT" />
-    <Column name="from_date" id="from_date" index="4" datatype="TEXT" />
-    <Column name="to_date" id="to_date" index="5" datatype="TEXT" />
+    <Column name="from_date" id="from_date" index="4" datatype="DATETIME" />
+    <Column name="to_date" id="to_date" index="5" datatype="DATETIME" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="offer_id" />
@@ -21,7 +21,7 @@
   <TriggersList>
   </TriggersList>
   <BasedOn>
-    <Source interface="BILLING_DB" schema="public" table="offer" timestamp="2024-03-24">
+    <Source interface="BILLING_DB" schema="public" table="offer" timestamp="2024-06-25">
       <ColumnsList>subscriber_id,offer_id,offer_ref_id,offer_description,from_date,to_date</ColumnsList>
     </Source>
   </BasedOn>

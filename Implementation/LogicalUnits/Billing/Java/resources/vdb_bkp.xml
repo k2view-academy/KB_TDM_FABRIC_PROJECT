@@ -8,7 +8,7 @@
   </LuLazyDataUpdate>
   <EventsList>
   </EventsList>
-  <IidFinderProp enabled="true">
+  <IidFinderProp enabled="false">
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
   </IidFinderProp>
@@ -74,7 +74,7 @@
       <Node name="subscriber" pos="120 306" viewType="Table" />
       <Node name="balance" pos="505 81" viewType="Table" />
       <Node name="invoice" pos="505 306" viewType="Table" />
-      <Node name="payment" pos="889 356" viewType="Table" />
+      <Node name="payment" pos="890 356" viewType="Table" />
       <Node name="offer" pos="505 531" viewType="Table" />
     </Graph>
   </DiagramGraph>
