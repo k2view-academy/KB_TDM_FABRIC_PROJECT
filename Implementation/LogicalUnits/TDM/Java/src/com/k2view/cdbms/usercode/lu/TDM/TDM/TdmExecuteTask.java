@@ -1335,8 +1335,8 @@ public class TdmExecuteTask {
             globals.put("TDM_REPLACE_SEQUENCES", "true");
         }
 
-        if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties))) {
-            globals.put("enable_masking", "true");
+        if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties).toString())){
+			globals.put("enable_masking", "true");
         } else {
             //TDM 9.0 - Check if the environment settings was changed since the task was created
             Object sensitiveDataInd = Util.rte(() ->db(TDM).fetch("select mask_sensitive_data from " + TDMDB_SCHEMA + ".environments where environment_id = ?", 
