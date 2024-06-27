@@ -10401,7 +10401,7 @@ function TargetForm(props) {
   }, []);
   Object(react["useEffect"])(function () {
     if (!clone_ind) {
-      unregister('num_of_clones');
+      unregister('num_of_entities');
     }
   }, [clone_ind]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Target_styles_Wrapper, {
@@ -10481,7 +10481,7 @@ function TargetForm(props) {
                       name: "clone_ind",
                       value: !delete_before_load && load_entity ? clone_ind : false
                     }), clone_ind && !delete_before_load && load_entity ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Target_objectSpread(Target_objectSpread({}, register('num_of_clones', {
+                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Target_objectSpread(Target_objectSpread({}, register('num_of_entities', {
                         required: 'Populate number of clones',
                         min: {
                           value: 1,
@@ -10494,7 +10494,7 @@ function TargetForm(props) {
                       })), {}, {
                         disabled: !load_entity || delete_before_load,
                         width: "160px",
-                        name: "num_of_clones",
+                        name: "num_of_entities",
                         mandatory: true,
                         min: 1,
                         max: maxToCopy,
@@ -12985,11 +12985,13 @@ var useGenerationParams_useGenerationParams = function useGenerationParams(saveF
             var newValueAdded = false;
             if (generateParams && generateParams[key] && generateParams[key].value !== undefined) {
               data[key].editor.value = generateParams[key].value;
+              data[key].value = generateParams[key].value;
               newValueAdded = true;
             } else {
               if (data[key].value !== undefined) {
                 newValueAdded = true;
                 data[key].editor.value = data[key].value;
+                data[key].value = data[key].value;
               } else {
                 data[key].editor.value = data[key].default;
               }
