@@ -602,8 +602,11 @@ public class SharedLogic {
 		String rootLUsList = db(TDM).fetch("select ARRAY_AGG(lu_name) from " + TDMDB_SCHEMA +
 			".product_logical_units where lu_parent_id is null and be_id = ?", beID).firstValue().toString();
 		String paramsQuery = whereStmt.replaceAll("WHERE ", "WHERE root_lu_name = ANY('" + rootLUsList + "') AND source_environment = '" +
-				sourceEnvName + "' AND ");
+				sourceEnvName + "' AND (");
 		paramsQuery = paramsQuery.replaceAll("FROM " , "FROM " + TDMDB_SCHEMA + ".");
+        paramsQuery = paramsQuery.replaceAll("INTERSECT ", ") INTERSECT ");
+        paramsQuery = paramsQuery.replaceAll("UNION ", ") UNION ");
+        paramsQuery += ")";
 		
 		String userID = sessionUser().name();
 		//String srcEnvID = "" + db(TDM).fetch("select environment_id from "+ TDMDB_SCHEMA + ".environments where environment_name = ? and environment_status = 'Active'", sourceEnv).firstValue();

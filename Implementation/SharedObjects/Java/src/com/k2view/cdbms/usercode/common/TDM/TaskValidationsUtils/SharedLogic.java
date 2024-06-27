@@ -293,7 +293,7 @@ public class SharedLogic {
             }
             String val = String.valueOf(versionMap.get("allow_doNotDelete"));
             if (inputValue == -1 && "false".equalsIgnoreCase(val)) {
-                errorMessages.put(validationMsg, userType + " cannot use DO NOT DELETE mode");
+                errorMessages.put(validationMsg, userType + " is not permitted to set unlimited retention period (Do not Delete) in the task. Update the retention period for the task (defined in the TDM Data Store task's component)");
                 return errorMessages;
             }
         }

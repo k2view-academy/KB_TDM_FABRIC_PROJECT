@@ -50,6 +50,8 @@ public class TdmExecuteTask {
     public static String separator = "";
     public static String sessionGlobals = "";
 
+    public static String OriginalSyncMode = "";
+
     enum TASK_TYPES {
         GENERATE(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_extract_globals.sql"))),
                 (taskProperties) -> new Object[]{SOURCE_ENVIRONMENT_ID.get(taskProperties), TASK_ID.get(taskProperties), TASK_ID.get(taskProperties), SOURCE_ENVIRONMENT_ID.get(taskProperties)}),
@@ -102,6 +104,7 @@ public class TdmExecuteTask {
             Long taskExecutionID = (Long) taskProperties.get("task_execution_id");
             Long luID = (Long) LU_ID.get(taskProperties);
             Long processID = (Long) taskProperties.get("process_id");
+            OriginalSyncMode = SYNC_MODE.get(taskProperties);
             //log.info("tdmExecuteTask - taskExecutionID: " + taskExecutionID + ", luID: " + luID + ", processID: " + processID);
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             try {
@@ -604,7 +607,7 @@ public class TdmExecuteTask {
            
             String batchCommand = "BATCH " + TABLE_LEVEL_LU + ".(?) fabric_command=? with async=true";
             String broadwayCommand = "broadway " + TABLE_LEVEL_LU + ".TableLevelJob iid=?, " + 
-                "taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties) +",syncMode=\"" + SYNC_MODE.get(taskProperties) + 
+                "taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties) +",syncMode=\"" + OriginalSyncMode + 
                 "\", taskType=" + taskType + ", deleteBeforeLoad=" + DELETE_BEFORE_LOAD.get(taskProperties) +
                 ", tableLevelInd=" + tableLevelInd;
 
@@ -749,7 +752,7 @@ public class TdmExecuteTask {
         Boolean stillRunning = true;
 
         if (jobSts == null || jobSts.isEmpty()) {
-            log.info("JOB NOT RUNNING");
+            //log.info("JOB NOT RUNNING");
             stillRunning = false;
         }
         //log.info("RunExecutionsJob - numberOfPending: " + numberOfPending + ", numberOFRunning: " + numberOFRunning);
@@ -1011,7 +1014,7 @@ public class TdmExecuteTask {
                             entityInclusion = "SELECT entity_id FROM (" + subQuery + ") AS ALIAS1";
                         }
                     }
-                    log.info("getEntityInclusion: entityInclusion For R: " + entityInclusion);
+                    //log.info("getEntityInclusion: entityInclusion For R: " + entityInclusion);
                     break;
                 case "P": // In case the task has criteria based on parameters
                     entityId = getEntityIDSelect("entity_id");
@@ -1130,14 +1133,19 @@ public class TdmExecuteTask {
                         luName = LU_NAME.get(taskProperties).toString();
                     }
                     String customLogicFlow = "" + SELECTION_PARAM_VALUE.get(taskProperties);
+
+                    Map<String,Object> globals = Json.get().fromJson(sessionGlobals, Map.class);
+                    globals.put("environment", env);
                     
+                    String globalsJson = Json.get().toJson(globals);
+
                     Map<String, String> BFCmdAndInterface = getCustomLogicBatch(luName, customLogicFlow,
                             "" + TASK_EXECUTION_ID.get(taskProperties), LU_ID.get(taskProperties), dcName,
                             Long.parseLong("" + NUM_OF_ENTITIES.get(taskProperties).toString()), PARAMETERS.get(taskProperties),
-                            sessionGlobals, cloneInd);
+                            globalsJson, cloneInd);
                     entityInclusion = BFCmdAndInterface.get("batchQuery");
                     entityInclusions.put(INTERFACE, BFCmdAndInterface.get("batchInterface"));
-                    log.info("getEntityInclusion: entityInclusion For C: " + entityInclusion);
+                    //log.info("getEntityInclusion: entityInclusion For C: " + entityInclusion);
                     break;
 
                 // TDM 8.0 - New selection method - Generate Synthetic
