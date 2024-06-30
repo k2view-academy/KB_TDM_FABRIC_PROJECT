@@ -53,7 +53,7 @@ public class StatsLoader implements Actor {
         statsInput.forEach((key, value) -> {
             if (key.toString().startsWith(DbCommand.STATS_EXECUTION_ROWS_EFFECTED + "_")) {
                 TableStats tableStats = stats.computeIfAbsent(getTableName(key.toString(), DbCommand.STATS_EXECUTION_ROWS_EFFECTED + "_"), o -> new TableStats());
-                tableStats.affected = (Long) value;
+                tableStats.affected = Math.abs((Long) value);
             } else if (key.toString().startsWith(DbCommand.STATS_EXECUTIONS_COUNT + "_")) {
                 TableStats tableStats = stats.computeIfAbsent(getTableName(key.toString(), DbCommand.STATS_EXECUTIONS_COUNT + "_"), o -> new TableStats());
                 tableStats.exec = (Long) value;
