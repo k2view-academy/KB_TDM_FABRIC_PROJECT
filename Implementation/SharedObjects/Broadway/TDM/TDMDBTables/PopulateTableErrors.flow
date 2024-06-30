@@ -82,15 +82,20 @@ stages:
               var str = '';
               var obj = {};
               for (var key in inputs) {
-                str = input1[key];
-                str = str.replace(/[^\x20-\x7F]/g,"");
-                obj[key] = str;
+                str = inputs[key];
+                if (str != null) {
+                  str = str.toString().replace(/[^\x20-\x7F]/g,"");
+                  obj[key] = str;
+                }
               }
               obj;
           inputs:
             link: Get the Error Fields/inputs/params
-            schema: any
+            schema: '#ref'
             mandatory: false
+        out:
+          result:
+            schema: '#ref'
   Format the actor's parameters:
     actors:
       Get TDMDB Schema:
@@ -214,41 +219,11 @@ schemas:
         type: string
       ignoreNulls:
         type: boolean
+      batch:
+        type: boolean
       params:
         type: object
-        properties:
-          PATIENT_ID:
-            type: string
-          SSN:
-            type: string
-          FIRST_NAME:
-            type: string
-          LAST_NAME:
-            type: string
-          ADDRESS:
-            type: string
-          CITY:
-            type: string
-          ZIP:
-            type: string
-          STATE:
-            type: string
-          COUNTRY:
-            type: string
-          DATE1: {
-            }
-          ATTR_LIST:
-            type: string
-          PATIENT_CODE:
-            type: string
-      PATIENT_ID:
-        type: integer
-      DATE1:
-        type: string
-      ATTR_LIST:
-        type: string
-      PATIENT_CODE:
-        type: string
+        properties: null
   Get the Error Fields.out.additional:
     type: object
     properties:
@@ -258,3 +233,9 @@ schemas:
         type: string
       sql:
         type: string
+  Remove none ASC Characters.in.inputs:
+    type: object
+    properties: null
+  Remove none ASC Characters.out.result:
+    type: object
+    properties: null

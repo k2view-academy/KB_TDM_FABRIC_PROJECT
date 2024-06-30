@@ -1334,7 +1334,7 @@ public class TdmExecuteTask {
             globals.put("enable_sequences", "true");
             globals.put("TDM_REPLACE_SEQUENCES", "true");
         }
-
+        
         if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties).toString())){
 			globals.put("enable_masking", "true");
         } else {
