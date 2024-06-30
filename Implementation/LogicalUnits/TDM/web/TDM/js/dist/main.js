@@ -10190,7 +10190,7 @@ function TargetForm(props) {
     reserve_retention_period_value = taskData.reserve_retention_period_value,
     reserve_note = taskData.reserve_note,
     clone_ind = taskData.clone_ind,
-    num_of_entities = taskData.num_of_entities,
+    num_of_clones = taskData.num_of_clones,
     target_env = taskData.target_env,
     reservationPeriodTypes = taskData.reservationPeriodTypes,
     maxReservationPeriod = taskData.maxReservationPeriod,
@@ -10343,9 +10343,9 @@ function TargetForm(props) {
   var entityCloneChange = Object(react["useCallback"])(function (value) {
     saveForm({
       clone_ind: value || false,
-      num_of_entities: undefined
+      num_of_clones: undefined
     });
-    clearErrors('num_of_entities');
+    clearErrors('num_of_clones');
   }, [saveForm, clearErrors]);
   var reserveNoteChange = Object(react["useCallback"])(function (value) {
     saveForm({
@@ -10354,7 +10354,7 @@ function TargetForm(props) {
   }, [saveForm]);
   var numberOfCloneChange = Object(react["useCallback"])(function (value) {
     saveForm({
-      num_of_entities: value
+      num_of_clones: value
     });
   }, [saveForm]);
   var targetEnvTypeChange = Object(react["useCallback"])(function (value) {
@@ -10401,7 +10401,7 @@ function TargetForm(props) {
   }, []);
   Object(react["useEffect"])(function () {
     if (!clone_ind) {
-      unregister('num_of_entities');
+      unregister('num_of_clones');
     }
   }, [clone_ind]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Target_styles_Wrapper, {
@@ -10481,7 +10481,7 @@ function TargetForm(props) {
                       name: "clone_ind",
                       value: !delete_before_load && load_entity ? clone_ind : false
                     }), clone_ind && !delete_before_load && load_entity ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Target_objectSpread(Target_objectSpread({}, register('num_of_entities', {
+                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Target_objectSpread(Target_objectSpread({}, register('num_of_clones', {
                         required: 'Populate number of clones',
                         min: {
                           value: 1,
@@ -10494,13 +10494,13 @@ function TargetForm(props) {
                       })), {}, {
                         disabled: !load_entity || delete_before_load,
                         width: "160px",
-                        name: "num_of_entities",
+                        name: "num_of_clones",
                         mandatory: true,
                         min: 1,
                         max: maxToCopy,
                         placeholder: 'Number of clones',
                         type: InputTypes.number,
-                        value: num_of_entities,
+                        value: num_of_clones,
                         onChange: numberOfCloneChange,
                         title: "",
                         error: (_errors$num_of_entiti = errors.num_of_entities) === null || _errors$num_of_entiti === void 0 ? void 0 : _errors$num_of_entiti.message
@@ -11906,6 +11906,9 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
   defaultValues.forEach(function (field) {
     taskData[field] = apiData[field];
   });
+  if (taskData.clone_ind) {
+    taskData.num_of_clones = apiData.num_of_entities;
+  }
   if (taskData.selection_method === 'CLONE') {
     taskData.selection_method = SelectionMethodEnum.L;
   }
@@ -12068,6 +12071,9 @@ var prepareDataForSave = function prepareDataForSave(taskData, logicalUnits, cop
   });
   if (taskData.tables_selected) {
     data.tableList = taskData.tableList;
+  }
+  if (taskData.clone_ind) {
+    data.num_of_entities = taskData.num_of_clones;
   }
   data.generateParams = taskData.dataGenerationParams;
   updateTaskType(taskData, data);
