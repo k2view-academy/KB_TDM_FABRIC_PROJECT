@@ -384,7 +384,7 @@ public class TdmExecuteTask {
             // TDM 8.1 Call function to set TTL
             //Calculate retention date + set TTL
 
-            //Check if param table exists and create it, and if it exists, check if its structure is correct
+            //Check if param table does not exist and create it, and if it exists, check if its structure is correct
             //It will check only if it is not a versioning task
             if("false".equalsIgnoreCase(VERSION_IND.get(taskProperties))) {
                 fnCreateUpdateLUParams(luName);
@@ -451,6 +451,12 @@ public class TdmExecuteTask {
             reserveInd = false;
         }
 
+
+        //Check if param table does not exist and create it, and if it exists, check if its structure is correct
+        //It will be check only if the task may get new data from source and it is not a versioning task
+        if(!"OFF".equalsIgnoreCase(syncMode) && "false".equalsIgnoreCase(VERSION_IND.get(taskProperties))) {
+            fnCreateUpdateLUParams(luName);
+        }
         //log.info(" entity inclusion: " + entityInclusionOverride);
         // TDM 7.4 - For Custom Logic the source DB is Cassandra
         //TDM 8.1 - TDMDB is used for all entity list tables.
@@ -481,11 +487,6 @@ public class TdmExecuteTask {
         //log.info("Starting batch command: " + batchCommand);
         //log.info("Starting broadway command: " + broadwayCommand);
 
-        //Check if param table exists and create it, and if it exists, check if its structure is correct
-        //It will be check only if the task may get new data from source and it is not a versioning task
-        if(!"OFF".equalsIgnoreCase(syncMode) && "false".equalsIgnoreCase(VERSION_IND.get(taskProperties))) {
-            fnCreateUpdateLUParams(luName);
-        }
         String batchID = "" + fabric().fetch(batchCommand, entityInclusionOverride, broadwayCommand).firstValue();
         ExecutionInfo.put("fabric_execution_id", batchID);
         return ExecutionInfo;
@@ -577,7 +578,7 @@ public class TdmExecuteTask {
                 + ", syncMode=FORCE";
         //log.info("batchCommand: " + batchCommand + " ,broadwayCommand: " + broadwayCommand);
 
-        //Check if param table exists and create it, and if it exists, check if its structure is correct
+        //Check if param table does not exist and create it, and if it exists, check if its structure is correct
         fnCreateUpdateLUParams(luName);
 
         String batchID = (String) fabric().fetch(batchCommand, entityInclusionOverride, broadwayCommand).firstValue();
@@ -703,7 +704,7 @@ public class TdmExecuteTask {
                 ", loadIndicator='" + loadIndicator + "'" +
                 ", LuID='" + LuID +"'" ;
 
-        //Check if param table exists and create it, and if it exists, check if its structure is correct
+        //Check if param table does not exist and create it, and if it exists, check if its structure is correct
         fnCreateUpdateLUParams(luName);
 
         Db.Rows rows = fabric().fetch(broadwayCommand);
@@ -1334,7 +1335,7 @@ public class TdmExecuteTask {
             globals.put("enable_sequences", "true");
             globals.put("TDM_REPLACE_SEQUENCES", "true");
         }
-        
+
         if ("true".equalsIgnoreCase(MASK_SENSITIVE_DATA.get(taskProperties).toString())){
 			globals.put("enable_masking", "true");
         } else {
