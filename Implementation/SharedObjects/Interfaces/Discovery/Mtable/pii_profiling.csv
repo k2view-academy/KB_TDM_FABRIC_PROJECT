@@ -72,3 +72,4 @@ name,pii
 "TSN",true
 "USERNAME",true
 "VIDEO",true
+CITY,true
