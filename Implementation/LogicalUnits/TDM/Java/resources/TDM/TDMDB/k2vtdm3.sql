@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     delete_before_load boolean NOT NULL DEFAULT false,
     replace_sequences boolean,
     scheduler character varying(200),
-    task_created_by character varying(200),
+    task_created_by text,
     task_creation_date timestamp without time zone,
     task_last_updated_date timestamp without time zone,
     task_last_updated_by character varying(200),
