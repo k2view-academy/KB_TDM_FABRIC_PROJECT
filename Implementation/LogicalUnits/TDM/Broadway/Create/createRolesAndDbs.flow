@@ -225,6 +225,7 @@
                         },
                         {
                             "name": "Create DBS",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -235,6 +236,164 @@
                                     {
                                         "name": "sql",
                                         "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CRM_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"CRM_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"CRM_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "COLLECTION_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"COLLECTION_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"COLLECTION_USER\";\r\n"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "BILLING_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"BILLING_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"BILLING_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ORDERS_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"ORDERING_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"ORDERS_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TAR_CRM_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_CRM_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_CRM_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TAR_COLLECTION_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_COLLECTION\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_COLLECTION_USER\";\r\n"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TAR_BILLING_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_BILLING_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_BILLING_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TAR_ORDERING_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_ORDERING\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_ORDERING_USER\" ;\r\n"
                                     }
                                 ],
                                 "outputs": []
