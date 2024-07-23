@@ -1,240 +1,455 @@
-tags: Create
-stages:
-  Test Connection:
-    actors:
-      Check If PostgreSQL Admin Interface  Connection:
-        parent: DbCommand
-        in:
-          interface:
-            const: fabric
-          sql:
-            const: test_connection interface=${POSTGRESQL_ADMIN}
-          POSTGRESQL_ADMIN:
-            const: POSTGRESQL_ADMIN
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
-  Check Admin Interface:
-    actors:
-      Check If Admin Interface is Active:
-        parent: assertTrue
-        in:
-          message:
-            const: The Admin interface of Postgres is not active, cannot create the
-              TDM DB
-          condition:
-            link: Check If PostgreSQL Admin Interface  Connection/result/active
-      Check If Admin Interface Is Valid:
-        parent: assertTrue
-        in:
-          message:
-            const: The Admin interface of Postgres is not valid, cannot create the
-              TDM DB
-          condition:
-            link: Check If PostgreSQL Admin Interface  Connection/result/passed
-  Create Roles & Databases:
-    actors:
-      Get  SQL Resource File To Create CRM DB Tables and Functions:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/DEMO/roles.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
-      Get  SQL Resource File To Create BILLING DB Tables and Functions:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/DEMO/dbs.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
-  Execute Create Sql Statements For Roles&Dbs:
-    actors:
-      DB Error Handler:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
-              conditions:
-                standardType: UNIQUE_CONSTRAINT
-              actions:
-                suppress: false
-                log: true
-                flowName: ''
-      Create ROLES:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: null
-            link: Get  SQL Resource File To Create CRM DB Tables and Functions/result
-      Create DBS:
-        parent: DbCommand
-        disabled: true
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: null
-            link: Get  SQL Resource File To Create BILLING DB Tables and Functions/result
-  CRM:
-    actors:
-      CREATE CRM_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: |
-              CREATE DATABASE "CRM_DB" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER CRM_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "CRM_DB" OWNER TO "CRM_USER";
-      CREATE TAR_CRM_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "TAR_CRM_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER TAR_CRM_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "TAR_CRM_DB" OWNER TO "TAR_CRM_USER";
-  BILLING:
-    actors:
-      CREATE BILLING_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "BILLING_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER BILLING_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "BILLING_DB" OWNER TO "BILLING_USER";
-      CREATE TAR_BILLING_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "TAR_BILLING_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER TAR_BILLING_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "TAR_BILLING_DB" OWNER TO "TAR_BILLING_USER";
-  ORDERS:
-    actors:
-      CREATE ORDERS_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "ORDERS_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER ORDERS_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "ORDERS_DB" OWNER TO "ORDERS_USER";
-      CREATE TAR_ORDERS_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "TAR_ORDERS_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER TAR_ORDERS_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "TAR_ORDERS_DB" OWNER TO "TAR_ORDERS_USER";
-  COLLECTION:
-    actors:
-      CREATE COLLECTION_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "COLLECTION_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER COLLECTION_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "COLLECTION_DB" OWNER TO "COLLECTION_USER";
-      CREATE TAR_COLLECTION_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "TAR_COLLECTION_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1;
-      ALTER TAR_COLLECTION_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: ALTER DATABASE "TAR_COLLECTION_DB" OWNER TO "TAR_COLLECTION_USER";
-schemas:
-  Check If PostgreSQL Admin Interface  Connection.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        interface:
-          type: string
-        type:
-          type: string
-        environment:
-          type: string
-        active:
-          type: boolean
-        passed:
-          type: boolean
-        error_message:
-          type: string
+{
+    "tags": [
+        "Create"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Test Connection",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check If PostgreSQL Admin Interface  Connection",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "test_connection interface=${POSTGRESQL_ADMIN}"
+                                    },
+                                    {
+                                        "const": "POSTGRESQL_ADMIN",
+                                        "name": "POSTGRESQL_ADMIN",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "interface": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "environment": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "passed": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "error_message": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check Admin Interface",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check If Admin Interface is Active",
+                            "actorType": {
+                                "parentType": "assertTrue",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "The Admin interface of Postgres is not active, cannot create the TDM DB"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Check If Admin Interface Is Valid",
+                            "actorType": {
+                                "parentType": "assertTrue",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "The Admin interface of Postgres is not valid, cannot create the TDM DB"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Roles & Databases",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get  SQL Resource File To Create CRM DB Tables and Functions",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/DEMO/roles.sql",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get  SQL Resource File To Create BILLING DB Tables and Functions",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/DEMO/dbs.sql",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Execute Create Sql Statements For Roles&Dbs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DB Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
+                                                "conditions": {
+                                                    "standardType": "UNIQUE_CONSTRAINT"
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create ROLES",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create DBS",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CRM_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"CRM_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"CRM_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "COLLECTION_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"COLLECTION_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"COLLECTION_USER\";\r\n"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "BILLING_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"BILLING_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"BILLING_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ORDERS_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"ORDERS_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"ORDERS_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TAR_CRM_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_CRM_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_CRM_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TAR_COLLECTION_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_COLLECTION_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_COLLECTION_USER\";\r\n"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TAR_BILLING_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_BILLING_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_BILLING_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TAR_ORDERS_DB",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE DATABASE \"TAR_ORDERS_DB\" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_ORDERS_USER\";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Check If PostgreSQL Admin Interface  Connection",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check If Admin Interface is Active",
+                "name": "condition"
+            },
+            "path": [
+                "active"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Check If PostgreSQL Admin Interface  Connection",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check If Admin Interface Is Valid",
+                "name": "condition"
+            },
+            "path": [
+                "passed"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To Create CRM DB Tables and Functions",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create ROLES",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To Create BILLING DB Tables and Functions",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create DBS",
+                "name": "sql"
+            }
+        }
+    ]
+}
