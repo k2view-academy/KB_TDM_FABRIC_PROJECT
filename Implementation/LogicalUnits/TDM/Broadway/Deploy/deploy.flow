@@ -280,6 +280,30 @@
         {
             "stages": [
                 {
+                    "name": "Add Role",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Web Role",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "AddWebRole"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Create PG DB Tables",
                     "dependsOnList": [],
                     "isLast": 0,
