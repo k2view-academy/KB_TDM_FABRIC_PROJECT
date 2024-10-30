@@ -80,7 +80,7 @@
                                 "inputs": [
                                     {
                                         "name": "substring",
-                                        "const": "_k2v_user"
+                                        "const": "_k2v_"
                                     }
                                 ],
                                 "outputs": []
