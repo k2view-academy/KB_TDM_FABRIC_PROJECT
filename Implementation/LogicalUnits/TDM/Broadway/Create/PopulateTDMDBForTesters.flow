@@ -94,11 +94,10 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "INSERT INTO public.permission_groups_mapping(\r\n\tdescription,\
+            const: "INSERT INTO public.permission_groups_mapping(\n\tdescription,\
               \ fabric_role, permission_group, created_by, updated_by, creation_date,\
-              \ update_date)\r\n\tVALUES ('Initial mapping for admin user',${k2v_user}\
-              \ ,'admin', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\r\
-              \n\t"
+              \ update_date)\n\tVALUES ('Initial mapping for tester user',${k2v_user}\
+              \ ,'tester', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\n"
           k2v_user:
             link: DbCommand/result/name
             schema: string
