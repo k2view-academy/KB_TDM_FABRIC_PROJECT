@@ -239,7 +239,7 @@ stages:
             schema: string
             mandatory: false
           training_image:
-            const: europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-training-task:1.0.5
+            const: europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-training-task:2.1.1_2
             schema: string
             mandatory: false
           id:

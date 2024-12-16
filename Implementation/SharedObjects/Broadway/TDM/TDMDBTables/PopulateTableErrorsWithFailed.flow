@@ -1,160 +1,36 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Call Error Flow",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Populate Table Errors",
-                            "actorType": {
-                                "parentType": "PopulateTableErrors",
-                                "inputs": [
-                                    {
-                                        "name": "error_category",
-                                        "const": "Entity Failed"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Entity Status to Failure",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "ENTITY_STATUS",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "failed",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Populate Task Execution Entities",
-                            "actorType": {
-                                "parentType": "PopulateTaskExecutionEntities_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "idType",
-                                        "const": "ENTITY"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Populate TDM Sequence Mapping",
-                            "actorType": {
-                                "parentType": "PopulateTdmSeqMapping_Actor",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Commit",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "commit;"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "error"
-            },
-            "rightPort": {
-                "actor": "Populate Table Errors",
-                "name": "error"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Call Error Flow:
+    actors:
+      Populate Table Errors:
+        parent: PopulateTableErrors
+        in:
+          error_category:
+            const: Entity Failed
+          fabricSessionName:
+            const: fabric
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          error:
+            external: error
+      Set Entity Status to Failure:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Populate Task Execution Entities:
+        parent: PopulateTaskExecutionEntities_Actor
+        in:
+          idType:
+            const: ENTITY

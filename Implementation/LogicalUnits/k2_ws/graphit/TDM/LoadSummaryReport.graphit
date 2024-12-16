@@ -10,11 +10,12 @@
     {
       "name": "result",
       "sessionProvider": "fabric",
+      "collapsed": true,
       "children": [
         {
           "name": "General Info",
           "type": "sql",
-          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution ,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  T.TARGET_ENV AS target_env,\n  Case When SELECTION_METHOD = 'TABLES' Then '' Else T.BE_NAME END AS be_name,\n  T.TASK_TYPE AS task_type,\n  Case When T.selection_method = 'ALL' Then 'ALL'\n    When T.selection_method = 'L' Then 'Entity List'\n    When T.selection_method = 'R' Then 'Randon Selection'\n    When T.selection_method = 'TABLES' Then 'Table Level only'\n    When T.selection_method = 'CLONE' Then 'Entity Clone'\n    When T.selection_method = 'C' Then 'Custom Logic'\n    When T.selection_method = 'GEN' Then 'Generate Synthetic' Else 'Parameters'\n  End As selection_method,\n  T.TASK_SYNC_MODE AS task_sync_mode,\n  T.ENV_SYNC_MODE AS env_sync_mode,\n  T.OPERATION_MODE AS operation_mode,\n  Case When T.selection_method = 'S' Then 'true' Else T.REPLACE_SEQUENCES\n  End As replace_sequences,\n  T.VERSION_IND AS version_ind,\n  T.SELECTED_VERSION_TASK_EXE_ID AS selected_version_task_exe_id,\n  T.SELECTED_SUBSET_TASK_EXE_ID AS selected_subset_task_exe_id,\n  T.SCHEDULER As scheduling_parameters,\n  T.SCHEDULING_END_DATE As schedule_expiration_date,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID",
+          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution ,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  T.TARGET_ENV AS target_env,\n  Case When SELECTION_METHOD = 'TABLES' Then '' Else T.BE_NAME END AS be_name,\n  T.TASK_TYPE AS task_type,\n  Case When T.selection_method = 'ALL' Then 'ALL'\n    When T.selection_method = 'L' Then 'Entity List'\n    When T.selection_method = 'R' Then 'Randon Selection'\n    When T.selection_method = 'TABLES' Then 'Table Level only'\n    When T.selection_method = 'CLONE' Then 'Entity Clone'\n    When T.selection_method = 'C' Then 'Custom Logic'\n    When T.selection_method = 'GEN' Then 'Generate Synthetic' Else 'Parameters'\n  End As selection_method,\n  T.TASK_SYNC_MODE AS task_sync_mode,\n  T.ENV_SYNC_MODE AS env_sync_mode,\n  T.OPERATION_MODE AS operation_mode,\n  Case When T.selection_method = 'S' Then 'true' Else T.REPLACE_SEQUENCES\n  End As replace_sequences,\n  T.VERSION_IND AS version_ind,\n  T.SELECTED_VERSION_TASK_EXE_ID AS selected_version_task_exe_id,\n  T.SELECTED_SUBSET_TASK_EXE_ID AS selected_subset_task_exe_id,\n  T.SCHEDULER As scheduling_parameters,\n  T.SCHEDULING_END_DATE As schedule_expiration_date,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value,\n  T.EXECUTION_MODE\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID",
           "sessionProvider": "fabric"
         },
         {
@@ -63,17 +64,20 @@
               "name": "Selection Method",
               "type": "function",
               "code": "var sm = selection_method; \nsm;",
+              "collapsed": true,
               "children": [
                 {
                   "name": "Generate Selection Method",
                   "type": "condition",
                   "code": "sm == 'GENERATE' ",
+                  "collapsed": true,
                   "children": [
                     {
                       "name": "Generate Params",
                       "type": "sql",
                       "code": "select PARAM_NAME,PARAM_VALUE from TDM.TDM_GENERATE_TASK_FIELD_MAPPINGS;",
                       "sessionProvider": "fabric",
+                      "collapsed": true,
                       "children": [
                         {
                           "name": "param_name",
@@ -106,13 +110,13 @@
                         {
                           "name": "param_name",
                           "type": "function",
-                          "code": "var parsedData = JSON.parse(params);\nvar par = parsedData.inputs;\nvar result={};\nfor (var p in par){ \n\tresult[p] = par[p].name;\n}\nresult;",
+                          "code": "var result = {};\nif (params) {\n    var parsedData = JSON.parse(params);\n    var par = parsedData.inputs;\n    for (var p in par) { \n        result[p] = par[p].name;\n    }\n}\nresult;",
                           "one": true
                         },
                         {
                           "name": "param_value",
                           "type": "function",
-                          "code": "var parsedData = JSON.parse(params);\nvar par = parsedData.inputs;\nvar result={};\nfor (var p in par){ \n\tresult[p] = par[p].value;\n}\nresult;",
+                          "code": "var result={};\nif (params) {\n\tvar parsedData = JSON.parse(params);\n\tvar par = parsedData.inputs;\n  \tfor (var p in par){ \n      \tresult[p] = par[p].value;\n\t}\n}\nresult;",
                           "one": true
                         }
                       ]
@@ -123,7 +127,6 @@
                   "name": "Parameters Selection Method",
                   "type": "condition",
                   "code": "sm == 'P' || sm == 'PR'",
-                  "collapsed": true,
                   "children": [
                     {
                       "name": "parameters",
@@ -131,7 +134,6 @@
                       "code": "Select selection_param_value as sql_query from TDM.tasks;",
                       "sessionProvider": "fabric",
                       "one": true,
-                      "collapsed": true,
                       "children": [
                         {
                           "name": "param_name",
@@ -234,6 +236,7 @@
         },
         {
           "name": "List of Tables",
+          "collapsed": true,
           "children": [
             {
               "name": "Number of Copied Tables",

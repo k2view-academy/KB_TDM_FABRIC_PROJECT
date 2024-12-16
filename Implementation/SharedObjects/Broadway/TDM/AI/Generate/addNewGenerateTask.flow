@@ -72,7 +72,10 @@ stages:
               \  \"table_generation\": {\r\n    \"batch_size\": 256,\r\n    \"main_entity_table_n_samples\"\
               : ${numOfEntities}\r\n  },\r\n  \"special_column_generation\": {\r\n\
               \    \"batch_size\": 256,\r\n    \"temperature\": 0.8\r\n  },\r\n  \"\
-              schemas\": [\"${schema}\"]\r\n}"
+              schemas\": [\"${schema}\"],\r\n  \"logical_relations\": {\r\n    \"\
+              root_table_n_rows_for_memory_estimation_for_fully_joined_table\": 20,\r\
+              \n    \"ram_safety_factor_for_fully_joined_table\": 0.4,\r\n    \"group_proximity_intersection_weight\"\
+              : 0.9\r\n  },\r\n  \"random_state\": 42,\r\n  \"verbose\": true\r\n}"
           trainingTaskID:
             link: trainingTaskId/value
             schema: string

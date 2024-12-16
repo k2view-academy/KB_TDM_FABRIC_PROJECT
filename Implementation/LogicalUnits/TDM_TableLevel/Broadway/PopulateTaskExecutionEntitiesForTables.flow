@@ -1,415 +1,125 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Prepare the Data",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Task Execution ID",
-                            "actorType": {
-                                "parentType": "getLUVariable_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "luName",
-                                        "const": "TDM_TableLevel"
-                                    },
-                                    {
-                                        "name": "variableName",
-                                        "const": "TDM_TASK_EXE_ID"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Timing of Processing Start",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID_START_DATETIME",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Now1",
-                            "actorType": {
-                                "parentType": "Now",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Calculate Fabric Get Duration and Total Duration",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Source Entity ID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Target Entity ID",
-                            "minHeight": 123,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Entity Status",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "ENTITY_STATUS",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Format the Current Time",
-                            "actorType": {
-                                "parentType": "DateFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "yyyy-MMM-dd HH:mm:ss.SSS"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Calculate Total Processing Duration",
-                            "actorType": {
-                                "parentType": "DateDuration",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Load Data to Entities table",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Add Entity to Entities Table",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID, FABRIC_GET_TIME,\r\nTOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID, ROOT_LU_NAME) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType}, \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid}, \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime}, ${entityEndTime}, ${version_task_execution_id},${subset_task_execution_id}, ${fabticTime}, \r\n${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}\r\nFROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "taskexecutionId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "sourceEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "executionStatus",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "entityStartTime",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "entityEndTime",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "fabticTime",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    {
-                                        "name": "totalTime",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    {
-                                        "const": "REFERENCE",
-                                        "name": "idType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "const": "0",
-                                        "name": "cloneNo",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "const": "@TDMDB_SCHEMA@",
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "rootEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "TDM_TableLevel",
-                                        "name": "rootLUName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "0",
-                                        "name": "version_task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "0",
-                                        "name": "subset_task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Task Execution ID",
-                "name": "variableValue"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "taskexecutionId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Timing of Processing Start",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Calculate Total Processing Duration",
-                "name": "from"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Timing of Processing Start",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "entityStartTime"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Now1",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Format the Current Time",
-                "name": "date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Now1",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Calculate Total Processing Duration",
-                "name": "to"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Source Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "sourceEntityId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Target Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "targetEntityId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Target Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Target Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "rootEntityId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Entity Status",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "executionStatus"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format the Current Time",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "entityEndTime"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Calculate Total Processing Duration",
-                "name": "millis"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "totalTime"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "luName"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Prepare the Data:
+    actors:
+      Get Timing of Processing Start:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IID_START_DATETIME
+            default: false
+      Now:
+        parent: Now
+  Calculate Fabric Get Duration and Total Duration:
+    actors:
+      Get Source Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+      Get Target Entity ID:
+        parent: FabricSetRead
+        height: 123
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      Get Entity Status:
+        parent: FabricSetRead
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+      Format the Current Time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyy-MMM-dd HH:mm:ss.SSS
+          date:
+            link: Now/date
+      Calculate Total Processing Duration:
+        parent: DateDuration
+        in:
+          from:
+            link: Get Timing of Processing Start/result
+          to:
+            link: Now/date
+  Load Data to Entities table:
+    actors:
+      Add Entity to Entities Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE,
+              FABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID, FABRIC_GET_TIME,
+              TOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID, ROOT_LU_NAME)
+              (SELECT  ${taskExecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType},
+              COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid},
+              CASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,
+              Now(), ${entityStartTime}, ${entityEndTime}, ${version_task_execution_id},${subset_task_execution_id}, ${fabticTime},
+              ${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}
+              FROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS E
+              WHERE TASK_EXECUTION_ID = ${taskExecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1)
+              ON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}
+          luName:
+            external: luName
+            schema: string
+          sourceEntityId:
+            link: Get Source Entity ID/result
+            schema: string
+          targetEntityId:
+            link: Get Target Entity ID/result
+            schema: string
+          executionStatus:
+            link: Get Entity Status/result
+            schema: string
+          iid:
+            link: Get Target Entity ID/result
+            schema: string
+          entityStartTime:
+            link: Get Timing of Processing Start/result
+            schema: string
+          entityEndTime:
+            link: Format the Current Time/string
+            schema: string
+          fabticTime:
+            schema: number
+          totalTime:
+            link: Calculate Total Processing Duration/millis
+            schema: number
+          idType:
+            const: REFERENCE
+            schema: string
+          cloneNo:
+            const: '0'
+            schema: string
+          schema:
+            const: '@TDMDB_SCHEMA@'
+            schema: string
+            mandatory: false
+          rootEntityId:
+            link: Get Target Entity ID/result
+            schema: string
+            mandatory: false
+          rootLUName:
+            const: TDM_TableLevel
+            schema: string
+            mandatory: false
+          version_task_execution_id:
+            const: '0'
+            schema: string
+            mandatory: false
+          subset_task_execution_id:
+            const: '0'
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+  Stage 1: {
+    }

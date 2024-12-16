@@ -5,6 +5,8 @@
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
 import com.k2view.cdbms.lut.DbInterface;
+import com.k2view.cdbms.lut.LUType;
+import com.k2view.cdbms.lut.LudbColumn;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.Utils;
 import com.k2view.cdbms.shared.user.UserCode;
@@ -14,6 +16,7 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
 import com.k2view.cdbms.usercode.lu.TDM.TdmTaskScheduler;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Json;
+import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
 
@@ -53,9 +56,22 @@ public class Logic extends UserCode {
 	public static final String RESUME = "resume";
 	public static final String TASK_EXECUTION_LIST = TDMDB_SCHEMA + ".task_execution_list";
     public static final String FAILED = "failed";
-    public  static final String COMPLETED = "completed";
+    public static final String COMPLETED = "completed";
 	public static final String PAUSED = "paused";
-	
+    public static final Long maxNumOfValues = Optional.ofNullable(getGlobal("COMBO_MAX_COUNT", "TDM")).map(Long::parseLong).orElse(0L); 
+
+    public static final String insertDistintValuesSql = "INSERT INTO " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
+		        "(SOURCE_ENVIRONMENT, LU_NAME, FIELD_NAME, NUMBER_OF_VALUES, FIELD_VALUES, IS_NUMERIC, MIN_VALUE, MAX_VALUE, FIELD_TYPE ) " +
+		        "VALUES (?, ?, ? ,?, string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "'), ?, ?, ?,?)";
+		    
+    public static final String updateDistintValuesSql = "UPDATE " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES SET " +
+		    "NUMBER_OF_VALUES = ?, FIELD_VALUES = string_to_array(?, '" +  TDM_PARAMETERS_SEPARATOR + "'), IS_NUMERIC = ?, MIN_VALUE = ?, MAX_VALUE = ?, FIELD_TYPE=? " +
+		    "WHERE source_environment = ? AND lu_name = ? AND field_name = ?";
+
+    public static final String getDistinctValuesSql = "SELECT source_environment, lu_name, field_name, number_of_values, " +
+    "array_to_string(field_values, '" + TDM_PARAMETERS_SEPARATOR + "') as field_values, is_numeric, min_value, max_value , field_type " +
+    "from " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES WHERE source_environment = ? and lu_name = ? and (number_of_values <= ? or is_numeric = true)";
+
 	@out(name = "instanceId", type = String.class, desc = "")
 	@out(name = "envName", type = String.class, desc = "")
 	public static Object fnGetSplittedID(String entityID, String idType, String envID) throws Exception {
@@ -69,15 +85,17 @@ public class Logic extends UserCode {
 		return res;
 	}
 
-
 	@desc("check whether task of EXTRACT type has finished its migrate.\r\n" +
 			"if yes - update TASK_EXECUTION_LIST with the status and migration information.\r\n" +
 			"It will also clean redis for load tasks.")
 	@type(UserJob)
 	public static void fnCheckMigrateAndUpdateTDMDB() throws Exception {
 		// TDM 5.1- fix the query- check the task_type instead of the fabric_execution_id, since a reference only task does not have the fabric_execution_id (= migrate id)
-		String selectFromTaskExecutionListSql = "Select tel.fabric_execution_id, tel.task_id, tel.lu_id, tlu.lu_name, task_type," +
-				"tel.process_id, tpost.process_name, tpost.process_type, tel.task_execution_id, tel.parent_lu_id from " + TDMDB_SCHEMA + ".task_execution_list tel\n" +
+		String selectFromTaskExecutionListSql = "Select tel.fabric_execution_id, tel.task_id, tel.lu_id, " +
+                "tlu.lu_name, tel.task_type, tel.process_id, tpost.process_name, tpost.process_type, " + 
+                "tel.task_execution_id, tel.parent_lu_id, t.execution_mode, tel.be_id, t.clone_ind " +
+                "from " + TDMDB_SCHEMA + ".task_execution_list tel " +
+                "left join " + TDMDB_SCHEMA + ".tasks t on tel.task_id = t.task_id " + 
 				"left join " + TDMDB_SCHEMA + ".tasks_logical_units tlu on tel.task_id = tlu.task_id And tel.lu_id = tlu.lu_id " +
 				"left join " + TDMDB_SCHEMA + ".tasks_exe_process tpost On tel.task_id = tpost.task_id " +
 				"and tel.process_id = tpost.process_id Where Lower(tel.execution_status) = 'running'";
@@ -110,9 +128,19 @@ public class Logic extends UserCode {
 				Long luID = 0L;
 				Long parentLuID = 0L;
 				Long processID = 0L;
+                String total="0";
+                String failed="0";
+                String copied="0";
 				String luName = "";
 				String taskType = "";
                 String processType = "";
+
+                //TDM 9.1 - Params Coupling
+                Boolean paramsCoupling = isParamsCoupling();
+
+                //TDM 9.2 - Vertical Execution
+                Boolean verticalExecution = false;
+                
 				try {
 					// TDM 5.1- add a check if row[0] is null (will be null for reference only tasks)
 					String batchID = null;
@@ -138,6 +166,11 @@ public class Logic extends UserCode {
 					if (row.get("parent_lu_id") != null) {
 						parentLuID = (Long)row.get("parent_lu_id");
 					}
+
+                    // TDM 9.2 - Vertical Execution
+                    String executionMode = fnGetTaskExecutionMode(row.get("execution_mode").toString(), taskType, 
+                        Long.parseLong(row.get("be_id").toString()), Boolean.parseBoolean(row.get("clone_ind").toString()));
+                    verticalExecution = "VERTICAL".equalsIgnoreCase(executionMode) ? true : false;
 					// TDM 5.1- Tali- Fix- get the selection_method from TASKS. If this selection_method is REF- do not call the migrate_summary command, 
 					//but check the reference status instead
 		
@@ -194,11 +227,6 @@ public class Logic extends UserCode {
 								}
 							} // if(totNoOfRefTables > 0)
 						}//if (refSummaryStats != null)
-						//Add reference tables to TASK_EXECUTION_ENTITIES
-						//log.info("Calling fnTdmUpdateTaskExecutionEntities for reference only task");
-						//if(luID > 0){
-						//	fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
-						//}
 					}// if(selectionMethod != null && selectionMethod.equals(TABLES))
 					else // the task contains entities (but can still have reference tables in addition to the entities)
 					{
@@ -244,8 +272,8 @@ public class Logic extends UserCode {
 									log.error("The task execution ID: " + taskExecutionID + ", of LU: " + luName + "was " + status + " from outside TDM, failing it");
 									status = FAILED;
 								}
-								String total = "" + batchStats.get("Total");
-								String failed = "" + batchStats.get("Failed");
+								total = "" + batchStats.get("Total");
+								failed = "" + batchStats.get("Failed");
 								
 								// TDM 7.5 - if the total is zero for a root LU, then set the status of the task to failed
 								if (Long.parseLong(total) == 0 && parentLuID == 0) {
@@ -262,7 +290,7 @@ public class Logic extends UserCode {
 								}
 								
 								//log.info("fnCheckMigrateAndUpdateTDMDB - total: " + total + ", failed: " + failed);
-								String copied = "" + batchStats.get("Succeeded");//String.valueOf(Integer.parseInt(total) - Integer.parseInt(failed));
+								copied = "" + batchStats.get("Succeeded");//String.valueOf(Integer.parseInt(total) - Integer.parseInt(failed));
 		
 								String start_time = "" + batchStats.get("Start time");
 								String end_time = "";
@@ -334,20 +362,7 @@ public class Logic extends UserCode {
 		
 									} // end of if the task has reference tables
 								}//if (refSummaryStats != null)
-								
-/*								// Taha - 16-Sep-19 - TDM5.6.0 - Add entries to TDM table TASK_EXECUTION_ENTITIES
-								//log.info("fnCheckMigrateAndUpdateTDMDB - Calling fnTdmUpdateTaskExecutionEntities for LU_NAME: " + luName);
-								//TDM 7.0, For Load tasks, the task_execution_entities table is populated by the BF, therefore handling only Extract tasks
-								if ("extract".equalsIgnoreCase(taskType)) {
-									fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
-								}
-								
-								//TDM 6.1.1 - 20-may-20 - Insert the migrate errors to the TDM DB Error table
-								//log.info("fnCheckMigrateAndUpdateTDMDB - Calling fnUpdateTaskErrorsDetails for LU_NAME: " + luName);
-								//TDM 7.0, For Load tasks, the error details table is populated by the BF, therefore handling only Extract tasks
-								if ("extract".equalsIgnoreCase(taskType) && !Util.isEmpty(luName)) {
-									fnUpdateTaskErrorsDetails(taskExecutionID, luName, batchID);
-								}*/
+
 								//log.info("fnCheckMigrateAndUpdateTDMDB - finished updating TASK_EXECUTION_ENTITIES");
 								if(processID != null && processID != 0){
 									num_of_processed_ref_tables=null;
@@ -377,18 +392,39 @@ public class Logic extends UserCode {
 									failed= "" + num.get("failed");
 
 								}
+                                //log.info("verticalExecution: " + verticalExecution);
+                                // TDM 9.2 - in case of vertical execution, the statistics of the child LUs will be taken from task_execution_entities.
+                                if (verticalExecution && parentLuID != 0) {
+                                    //log.info("Handling Vertical for luName: " + luName);
+                                    String childStatsSql = "SELECT count(*)  as total, " + 
+                                            "coalesce(sum(case when execution_status = 'completed' then 1 else 0 end), 0) as copied, " +
+                                            "coalesce(sum(case when execution_status = 'failed' then 1 else 0 end), 0) as failed " +
+                                            "FROM " + TDMDB_SCHEMA + ".task_execution_entities " +
+                                            "WHERE task_execution_id = ? AND lu_name = ? AND id_type = 'ENTITY'";
 
+                                    Db.Row childStats = db(TDM).fetch(childStatsSql, taskExecutionID, luName).firstRow();
+                                    total = "" + childStats.get("total");
+                                    copied= "" + childStats.get("copied");
+									failed= "" + childStats.get("failed");
+                                    //log.info("Vertical results: total: " + total + ", copied: " + copied);
+
+                                }
+
+                                
 								db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, //taskStartDate.toString(),  -- no need to set the start time
 										taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables,
 										taskID, taskExecutionID, luID, processID});
 
-								//log.info("fnCheckMigrateAndUpdateTDMDB - Updated the status");
-								
 								// TDM 8.1 Update TDMDB table TDM_PARAMS_DISTINCT_VALUES
+                                // TDM 9.1 Params Coupling 
 								if (luID != 0 && processID == 0 && "completed".equalsIgnoreCase(status)) {
-									fnUpdateParamDistinctValues(srcEnv, luName, taskExecutionID);
+                                    if(paramsCoupling) {
+                                        fnUpdateParamCouplingDistinctValues(srcEnv, luName, taskExecutionID);
+                                    }else{
+                                        fnUpdateParamDistinctValues(srcEnv, luName, taskExecutionID);
+                                    }
 								}
-		
+                                
 							} // end of if status is not running
 						}// end if ( (batchStats).contains("\"Level\" : \"Cluster\"") )
 					} // end of else (if the selection method is not 'REF')
@@ -396,7 +432,7 @@ public class Logic extends UserCode {
 					log.error("Task Failed");
 					log.error(e.getMessage(),e);
 					status = FAILED;
-					db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, "0", "0", "0", //taskStartDate.toString(), -- No need to set the start time
+					db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, //taskStartDate.toString(), -- No need to set the start time
 							taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID});
 					throw e;
 				}
@@ -587,106 +623,6 @@ public class Logic extends UserCode {
 		ludb().execute(updateSql2);
 	}
 
-
-	// @desc("This enrichment function updates TASK_EXECUTION_LIST table for ended tasks")
-	// public static void fnUpdateTaskSummaryTable() throws Exception {
-	// 	// TDM 6.0 - New Enrichment function
-	// 	String taskExecId = "" + fabric().fetch("SELECT iid(?)", TDM).firstValue();
-			
-	// 	//String taskId = "" + fabric().fetch("select distinct task_id from task_execution_list").firstValue();
-	// 	//log.info("fnUpdateTaskSummaryTable - taskID: " + taskId);
-	// 	String executionStatus = "completed";
-	// 	String startExecTime = "";
-	// 	String endExecTime = "";
-	// 	int totProcessedRootEnt = 0;
-	// 	int totCopiedRootEnt = 0;
-	// 	int totFailedRootEnt = 0;
-	// 	int totProcessedRefTabs = 0;
-	// 	int totCopiedRefTabs = 0;
-	// 	int totFailedRefTabs = 0;
-	// 	String versionExeID = "";
-	// 	String expDate = "";
-	// 	String updateDate = "";
-		
-	// 	totProcessedRootEnt = (int)fabric().fetch("select count(*) from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES)").firstValue();
-	// 	totCopiedRootEnt = (int)fabric().fetch("select count(*) from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID " +
-	// 						"from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status = 'completed' " +
-	// 						"EXCEPT Select be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES " +
-	// 						"where root_entity_status <> 'completed')").firstValue();
-	// 	totFailedRootEnt  = (int)fabric().fetch("select count(*) from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES  where root_entity_status <> 'completed')").firstValue();
-		
-	// 	totProcessedRefTabs = (int)fabric().fetch("select count(distinct entity_id) from TDM.task_execution_entities t where t.ID_Type = 'REFERENCE'").firstValue();
-	// 	totCopiedRefTabs = (int)fabric().fetch("select count(distinct entity_id) from TDM.task_execution_entities t where t.ID_Type = 'REFERENCE' and t.Execution_Status = 'completed' and not exists (select 1 from TDM.task_execution_entities t2 where t2.entity_id = t.entity_id  and ifNull(t2.Execution_Status, 'failed') <> 'completed')").firstValue();
-	// 	totFailedRefTabs = (int)fabric().fetch("select count(distinct entity_id) from TDM.task_execution_entities t where t.ID_Type = 'REFERENCE' and ifNull(t.Execution_Status, 'failed') <> 'completed'").firstValue();
-		
-	// 	int totNumOfProcessedPostExecutions = (int) fabric().fetch("select count(*) from TDM.task_execution_list where task_execution_id = ? and process_id > 0", taskExecId).firstValue();
-	// 	int totNumOfSucceededPostExecutions = (int) fabric().fetch("select count(*) from TDM.task_execution_list where task_execution_id = ? and process_id > 0 and execution_status ='completed'", taskExecId).firstValue();
-	// 	int totNumOfFailedPostExecutions = (int) fabric().fetch("select count(*) from TDM.task_execution_list where task_execution_id = ? and process_id > 0 and execution_status !='completed'", taskExecId).firstValue();
-		
-	// 	String rootTaskStatus = "" + fabric().fetch("select execution_status from TDM.task_execution_list where parent_lu_name is null").firstValue();
-		
-	// 	if ((totCopiedRootEnt == 0 && totCopiedRefTabs == 0) || ("failed".equalsIgnoreCase(rootTaskStatus)) ) {
-	// 		executionStatus = "failed";
-	// 	}
-		
-	// 	//TDM 7 - in case the task was stopped the summary status should be updated to stopped
-	// 	int numOfStoppedLUs = (int)fabric().fetch("select count(*) from TDM.task_execution_list where execution_status = 'stopped'").firstValue();
-		
-	// 	if (numOfStoppedLUs > 0) {
-	// 		executionStatus = "stopped";
-	// 	}
-		
-	// 	startExecTime = "" + fabric().fetch("select min(start_execution_time) from task_execution_list").firstValue();
-	// 	endExecTime = "" + fabric().fetch("select max(end_execution_time) from task_execution_list").firstValue();
-		
-	// 	versionExeID = "" + fabric().fetch("select version_task_execution_id from task_execution_list").firstValue();
-	// 	expDate = "" + fabric().fetch("select max(expiration_date) from task_execution_list").firstValue();
-		
-	// 	updateDate = Instant.now().toString();
-	// 	//log.info("Setting Dates - start_execution_time: " + startExecTime + ". end_execution_time: " + endExecTime +
-	// 	//		 ", version_datetime: <" + versionDateTime + ">, expiration_date: <" + versionExpDate + ">, update_date: " + updateDate);
-		
-	// 	String sqlUpdateTaskSummaryTable = "update " + TDMDB_SCHEMA + ".task_execution_summary set execution_status = ?, " +
-	// 			"tot_num_of_processed_root_entities = ?, tot_num_of_copied_root_entities = ?, tot_num_of_failed_root_entities = ?, " +
-	// 			"tot_num_of_processed_ref_tables = ?, tot_num_of_copied_ref_tables = ?, tot_num_of_failed_ref_tables = ?, " +
-	// 			"tot_num_of_processed_post_executions = ?, tot_num_of_succeeded_post_executions = ?, tot_num_of_failed_post_executions = ?, update_date = ?";
-		
-	// 	ArrayList<Object> paramList = new ArrayList<>();
-	// 	paramList.add(executionStatus);
-	// 	paramList.add(totProcessedRootEnt);
-	// 	paramList.add(totCopiedRootEnt);
-	// 	paramList.add(totFailedRootEnt);
-	// 	paramList.add(totProcessedRefTabs);
-	// 	paramList.add(totCopiedRefTabs);
-	// 	paramList.add(totFailedRefTabs);
-	// 	paramList.add(totNumOfProcessedPostExecutions);
-	// 	paramList.add(totNumOfSucceededPostExecutions);
-	// 	paramList.add(totNumOfFailedPostExecutions);
-	// 	paramList.add(updateDate);
-
-	// 	if (!"null".equals(startExecTime) && !"".equals(startExecTime)) {
-	// 		sqlUpdateTaskSummaryTable += ", start_execution_time = ?";
-	// 		paramList.add(startExecTime);
-	// 	}
-	// 	if (!"null".equals(endExecTime) && !"".equals(endExecTime)) {
-	// 		sqlUpdateTaskSummaryTable += ", end_execution_time = ?";
-	// 		paramList.add(endExecTime);
-	// 	}
-	// 	if (!"0".equals(versionExeID) && !"null".equalsIgnoreCase(versionExeID)) {
-	// 		sqlUpdateTaskSummaryTable += ", version_task_execution_id = ?";
-	// 		paramList.add(versionExeID);
-	// 	}
-	// 	if (!"null".equals(expDate) && !"".equals(expDate)) {
-	// 		sqlUpdateTaskSummaryTable += ", expiration_date = ?";
-	// 		paramList.add(expDate);
-	// 	}
-	// 	sqlUpdateTaskSummaryTable += " where task_execution_id = ?";
-	// 	paramList.add(taskExecId);
-	// 	Object[] params = paramList.toArray();
-		
-	// 	db(TDM).execute(sqlUpdateTaskSummaryTable,params);
-	// }
-
     @desc("This function updates TASK_EXECUTION_SUMMARY table for ended tasks")
 	public static void fnUpdateTaskSummaryTableBasedOnTDMDB(String taskExecId) throws Exception {
 
@@ -713,7 +649,7 @@ public class Logic extends UserCode {
 				" where t2.task_execution_id = t1.task_execution_id and t2.id_type = 'ENTITY' and t2.root_entity_id = t1.root_entity_id and t2.execution_status <> 'completed')) entList";
 
 		String getTotFailedRootIdsSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? " +
-				" and execution_status <> 'completed') entList";
+				" and execution_status <> 'completed' and id_type = 'ENTITY') entList";
 
 		String getTotProcessedTablesSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'REFERENCE') entList";
 
@@ -1312,23 +1248,16 @@ public class Logic extends UserCode {
 					sqlStr.insert(sqlStr.indexOf("<entity_id>") + "<entity_id>".length(), insertCloseStr);
 					sql_part1 = select + " " + sqlStr.toString();
 				}
-		
-				if (versionInd.equals("true")) {
-					//Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp> according to supplied query format
+                sql_part1 = query_format;
 					sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
 					sql_part1 = sql_part1.replace("<entity_id>", qry_entity_col);
-					if("0".equalsIgnoreCase(versionExeID)) {
-						sql_part1 = sql_part1.replace("<task_execution_id>", "'" + taskExecutionId + "'");
-					}else{
-						sql_part1 = sql_part1.replace("<task_execution_id>", "'" + versionExeID + "'");
+                if (versionInd.equals("true")) {
+                    String taskId = "0".equalsIgnoreCase(versionExeID) ? taskExecutionId : versionExeID;
+                    sql_part1 = sql_part1.replace("<task_execution_id>", "'" + taskId + "'");
 					}
-					modified_sql = sql_part1.replace("'", "''") + sql_part2;
-				} else {
-					//Modify entities to be in the format of <source_env>_<entity_id>  according to supplied query format
-					sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
-					sql_part1 = sql_part1.replace("<entity_id>", qry_entity_col);
-					modified_sql = sql_part1.replace("'", "''") + sql_part2;
-				}
+                // Escape single quotes and build the final query
+                modified_sql = select + " " + sql_part1.replace("'", "''") + sql_part2;
+
 			}
 			//No query format --> modify query by using || concatenation operator
 			else {
@@ -1498,6 +1427,7 @@ public class Logic extends UserCode {
 		return result;
 
     }
+
     public static String addSeparators(String entityID) throws Exception {
         Object[] separators = fnGetIIdSeparatorsFromTDM();
         String open = (String) separators[0];
@@ -1505,17 +1435,189 @@ public class Logic extends UserCode {
         entityID = !Util.isEmpty(open) ? open + entityID : entityID;
         return !Util.isEmpty(close) ? entityID + close : entityID;
     }
-	public static void fnUpdateParamDistinctValues(String srcEnv, String luName, String taskExecId) throws Exception {
-		//log.info("Starting fnUpdateParamDistinctValues - luName: " + luName);
-		Long maxNumOfValues = Long.parseLong(getGlobal("COMBO_MAX_COUNT", "TDM"));
-		String insertDistintValuesSql = "INSERT INTO " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
-		        "(SOURCE_ENVIRONMENT, LU_NAME, FIELD_NAME, NUMBER_OF_VALUES, FIELD_VALUES, IS_NUMERIC, MIN_VALUE, MAX_VALUE) " +
-		        "VALUES (?, ?, ? ,?, string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "'), ?, ?, ?)";
-		    
-		 String updateDistintValuesSql = "UPDATE " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES SET " +
-		    "NUMBER_OF_VALUES = ?, FIELD_VALUES = string_to_array(?, '" +  TDM_PARAMETERS_SEPARATOR + "'), IS_NUMERIC = ?, MIN_VALUE = ?, MAX_VALUE = ? " +
-		    "WHERE source_environment = ? AND lu_name = ? AND field_name = ?";
-		
+
+    public static String fnGetParamType(String luName, String col) throws Exception{
+        Map<String, Object> mapListInputs = new HashMap<>();
+		mapListInputs.put("lu_name",luName);
+		mapListInputs.put("param_name",col);
+        String table_name = "";
+        String column_name = "";
+        String column_type = "";
+        LUType luType = null;
+		try {
+			List<Map<String, Object>> mapList;
+			mapList = MtableLookup("LuParamsMapping", mapListInputs, MTable.Feature.caseInsensitive);
+            for(Map<String,Object> map : mapList ) {
+                table_name=map.get("lu_table").toString().trim();
+                column_name=map.get("lu_table_field").toString().toLowerCase().trim();
+            }
+            List<HashMap<String, String>> tableData = new ArrayList<HashMap<String, String>>();
+            if (luName == null || Util.isEmpty(luName)) {
+                luType = getLuType();
+            } else {
+                luType = LUType.getTypeByName(luName);
+            }
+                
+            // Get columns for the specified table
+            HashMap<String, LudbColumn> originalColumns = new HashMap<>(luType.ludbObjects.get(table_name).getLudbObjectColumns());
+
+            // Create a new map with lower case keys to handle issue if mtable returns param all caps 
+            HashMap<String, LudbColumn> columns = new HashMap<>();
+            for (Map.Entry<String, LudbColumn> entry : originalColumns.entrySet()) {
+                columns.put(entry.getKey().toLowerCase(), entry.getValue());
+            }
+        
+            if (column_name != null && !Util.isEmpty(column_name)) {
+                // If column name is found , find and return its type else retun empty string
+                if (columns.containsKey(column_name)) {
+                    LudbColumn columnData = columns.get(column_name);
+                    column_type =  columnData.columnType;
+                }
+            }
+        }catch(Exception e){
+            log.error(e.getMessage());
+            throw new RuntimeException("Failed to get " + luName + " ,column type for column " + column_name + " in table " + table_name );
+        }
+        return column_type;
+
+    }
+
+    public static Map<String, Map<String, Object>> fnGetParamDistinctValues(String srcEnv, String luName)throws Exception {
+        Map<String, Map<String, Object>> disitnctValuesMap = new HashMap<>();
+        try{
+            Db.Rows distinctValues = db(TDM).fetch(getDistinctValuesSql, srcEnv, luName.toUpperCase(), maxNumOfValues);
+            for (Db.Row row: distinctValues) {
+                Map<String, Object> fieldData = new HashMap<>();
+                fieldData.put("numberOfValues", Long.parseLong(row.get("number_of_values").toString()));
+                fieldData.put("isNumeric", Boolean.parseBoolean(row.get("is_numeric").toString()));
+                fieldData.put("minValue", row.get("min_value").toString());
+                fieldData.put("maxValue", row.get("max_value").toString());
+                String value = row.get("field_values").toString();
+                value = value.replace("{", "");
+                value = value.replace("}", "");
+                HashSet<String> values = new HashSet<String>();
+                if (!value.isEmpty() && !"".equals(value)) {
+                    values = new HashSet<String>(Arrays.stream(value.split(TDM_PARAMETERS_SEPARATOR)).collect(Collectors.toSet()));
+                }
+                fieldData.put("fieldValues", values);
+                fieldData.put("newField", false);
+                fieldData.put("fieldType", row.get("field_type").toString());
+                disitnctValuesMap.put(row.get("field_name").toString(), fieldData);
+            }
+            if (distinctValues != null) {
+                distinctValues.close();
+            }
+        }catch(Exception e){
+            log.error(e);
+            throw new RuntimeException("Failed to get TDMDB table TDM_PARAMS_DISTINCT_VALUES");
+        }
+        return disitnctValuesMap ;
+    }
+
+    public static Map<String, Map<String, Object>> fnReturnDistinctMapValues(String query , String luName,Map<String, Map<String, Object>> disitnctValuesMap)throws Exception{
+        Db.Rows tableRecords;
+        try{
+            tableRecords = db(TDM).fetch(query);
+            List<String> columnNames = tableRecords.getColumnNames();
+            for (Db.Row row : tableRecords) {
+                for (String columnName : columnNames) {
+                    if (row.get(columnName) != null) {
+                        String value = row.get(columnName).toString();
+                        value = value.replace("{", "");
+                        value = value.replace("}", "");
+                        String col = columnName.split("\\.")[1];
+                        String columnType = "";
+                        if(isParamsCoupling()){
+                            columnType = fnGetParamType(luName, col);
+                        }
+                        HashSet<String> values = new HashSet<String>(Arrays.stream(value.split(TDM_PARAMETERS_SEPARATOR)).collect(Collectors.toSet()));
+                        disitnctValuesMap = fnUpdateDistinctFieldData(columnName, columnType, disitnctValuesMap, values);
+                    }
+                }
+            }
+            if (tableRecords != null) {
+                tableRecords.close();
+            }
+        }catch(Exception e){
+            log.error(e);
+            throw new RuntimeException(e.getMessage());
+        }
+        return disitnctValuesMap;
+    }
+    
+    public static void fnInsertValuestoDistinctParamsTable(String srcEnv , String luName,Map<String, Map<String, Object>> disitnctValuesMap){
+        try{
+            for (String key : disitnctValuesMap.keySet()) {
+                Map<String, Object> fieldinfo = disitnctValuesMap.get(key);
+                Long numberOfValues = Long.parseLong(fieldinfo.get("numberOfValues").toString());
+                Boolean isNumeric  = Boolean.parseBoolean(fieldinfo.get("isNumeric").toString());
+                String minValue = fieldinfo.get("minValue").toString();
+                String maxValue = fieldinfo.get("maxValue").toString();
+                String fieldType = fieldinfo.get("fieldType").toString();
+                HashSet<String> valuesSet = (HashSet<String>)fieldinfo.get("fieldValues");
+                Boolean newField  = Boolean.parseBoolean(fieldinfo.get("newField").toString());
+                String newFieldvalues= String.join(TDM_PARAMETERS_SEPARATOR, valuesSet);
+                if (newField) {
+                    db(TDM).execute(insertDistintValuesSql, srcEnv, luName.toUpperCase(), key,
+                        numberOfValues, newFieldvalues, isNumeric, minValue, maxValue,fieldType);
+                } else {
+                    db(TDM).execute(updateDistintValuesSql, numberOfValues, newFieldvalues, isNumeric, 
+                        minValue, maxValue,fieldType, srcEnv, luName.toUpperCase(), key);
+                }
+            }
+        }catch(Exception e){
+            log.error(e);
+            throw new RuntimeException("Failed to insert/update TDM_PARAMS_DISTINCT_VALUE");
+        }
+    }
+
+	public static void fnUpdateParamCouplingDistinctValues(String srcEnv, String luName, String taskExecId) throws Exception {
+        //log.info("Starting fnUpdateParamCouplingDistinctValues - luName: " + luName);
+        // TDM 9.1 adding params coupling mode fetching data based on MDB_Exported schema		
+        String sql = "broadway " + luName + ".GetTablesAndFieldsNames sourceEnv = " + srcEnv + " ,luName = " +  luName + " RESULT_STRUCTURE=COLUMN";
+        try{
+            Map<String, Map<String, Object>> disitnctValuesMap=fnGetParamDistinctValues(srcEnv,luName);
+            Db.Rows tableRows = fabric().fetch(sql);
+            for(Db.Row tableRow : tableRows ){
+                if (tableRow != null && !tableRow.isEmpty()) { 
+                    String field = "";
+                    String column = "";
+                    Map<?, ?> maps = ParamConvertor.toMap(tableRow.get("map"));
+                    for (Map.Entry<?, ?> entry : maps.entrySet()) {
+                        String tableName = entry.getKey().toString();
+                        LinkedHashSet<String> columnsSet = (LinkedHashSet<String>) entry.getValue();
+                        String[] columnsArr = new String[columnsSet.size()];
+                        int idx = 0;
+                        for (String col : columnsSet) {
+                            field = col.split(TDM_PARAMETERS_SEPARATOR)[0];
+                            column = col.split(TDM_PARAMETERS_SEPARATOR)[1];
+                            columnsArr[idx] = "string_agg(" + column + "::text, '" + TDM_PARAMETERS_SEPARATOR + "') as \"" + field + "\"";
+                            idx++;
+                        }
+                        String newSelClause = String.join(",", columnsArr);
+                        String query = "SELECT " + newSelClause + " FROM "  + luName.toLowerCase() + "." + tableName +
+                            " p INNER JOIN " +luName.toLowerCase()+ ".fabric_tdm_root r ON p.__iid=r.__iid INNER JOIN " + TDMDB_SCHEMA + ".task_execution_entities t ON r.__iid=t.entity_id" +
+                            " WHERE r.source_env=t.source_env AND r.task_execution_id::text=t.task_execution_id" +
+                            " AND t.task_execution_id = '" + taskExecId +
+                            "' AND t.lu_name = '" + luName + "' AND r.source_env = '" + srcEnv + "' AND t.execution_status = 'completed'";
+
+                        disitnctValuesMap = fnReturnDistinctMapValues(query,luName,disitnctValuesMap);
+                    }
+                }
+            }
+            fnInsertValuestoDistinctParamsTable(srcEnv,luName,disitnctValuesMap);
+        }catch(Exception e){
+            String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
+                                        "ERROR_CATEGORY, ERROR_MESSAGE) " +
+                                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            db(TDM).execute(insertSql, taskExecId, luName, " ", " ", " ", "fnUpdateParamCouplingDistinctValues failed", e.getMessage());
+            log.error(e);
+            throw new RuntimeException("Failed to update TDMDB table TDM_PARAMS_DISTINCT_VALUES for param coupling mode");
+        }
+    }
+    
+    public static void fnUpdateParamDistinctValues(String srcEnv, String luName, String taskExecId) throws Exception {
+		//log.info("Starting fnUpdateParamDistinctValues - luName: " + luName);		
 		String sql = "select table_name, '\"' || array_to_string(array_agg(column_name), '\",\"') || '\"' as columns " +
 		        " FROM information_schema.columns where table_schema = '" + TDMDB_SCHEMA + "'" +
 		        " and table_name = '" + luName.toLowerCase() + "_params' and column_name like '%.%'" +
@@ -1523,87 +1625,33 @@ public class Logic extends UserCode {
 		        " where lu_name = ? and number_of_values > ? and is_numeric = false and source_environment=?)" +
 		        " group by table_name" +
 		        " order by table_name";
-		
 		// TDM 8.1 - Get the existing distinct values of the LU's Parameters
-		Map<String, Map<String, Object>> disitnctValuesMap = new HashMap<>();
-		String getDistinctValuesSql = "SELECT source_environment, lu_name, field_name, number_of_values, " +
-		        "array_to_string(field_values, '" + TDM_PARAMETERS_SEPARATOR + "') as field_values, is_numeric, min_value, max_value " +
-		        "from " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES WHERE source_environment = ? and lu_name = ? and (number_of_values <= ? or is_numeric = true)";
-		Db.Rows distinctValues = db(TDM).fetch(getDistinctValuesSql, srcEnv, luName.toUpperCase(), maxNumOfValues);
-		for (Db.Row row: distinctValues) {
-		    Map<String, Object> fieldData = new HashMap<>();
-		    fieldData.put("numberOfValues", Long.parseLong(row.get("number_of_values").toString()));
-		    fieldData.put("isNumeric", Boolean.parseBoolean(row.get("is_numeric").toString()));
-		    fieldData.put("minValue", row.get("min_value").toString());
-		
-		    fieldData.put("maxValue", row.get("max_value").toString());
-		    String value = row.get("field_values").toString();
-		    value = value.replace("{", "");
-		    value = value.replace("}", "");
-		    HashSet<String> values = new HashSet<String>();
-		    if (!value.isEmpty() && !"".equals(value)) {
-		        values = new HashSet<String>(Arrays.stream(value.split(TDM_PARAMETERS_SEPARATOR)).collect(Collectors.toSet()));
-		    }
-		    fieldData.put("fieldValues", values);
-		    fieldData.put("newField", false);
-		    disitnctValuesMap.put(row.get("field_name").toString(), fieldData);
-		}
-		if (distinctValues != null) {
-		    distinctValues.close();
-		}
-		    
-		Db.Row tableRow = db(TDM).fetch(sql, luName.toUpperCase(), maxNumOfValues,srcEnv).firstRow();
-		if (tableRow != null && !tableRow.isEmpty()) {
-		    String tableName = tableRow.get("table_name").toString();
-		    String[] columnsArr = tableRow.get("columns").toString().split(",");
-		    for (int idx = 0; idx < columnsArr.length; idx++) {
-		        columnsArr[idx] = "array_to_string(" + columnsArr[idx] + ", '" + TDM_PARAMETERS_SEPARATOR + "') as " + columnsArr[idx];
-		    }
-		    String newSelClause = String.join(",", columnsArr);
-		    String query = "SELECT " + newSelClause + " FROM "  + TDMDB_SCHEMA + "." + tableName +
-		        " p, "  + TDMDB_SCHEMA + ".task_execution_entities t WHERE p.root_lu_name = t.root_lu_name " +
-		        "AND p.root_iid = t.root_entity_id and p.entity_id = t.iid AND t.task_execution_id = ? " +
-		        "AND t.lu_name = ? AND p.source_environment = ?";
-		    
-		    Db.Rows tableRecords;
-		
-		    tableRecords = db(TDM).fetch(query, taskExecId, luName, srcEnv);
-		
-		    List<String> columnNames = tableRecords.getColumnNames();
-		
-		    for (Db.Row row : tableRecords) {
-		        for (String columnName : columnNames) {
-		            if (row.get(columnName) != null) {
-		                String value = row.get(columnName).toString();
-		                value = value.replace("{", "");
-		                value = value.replace("}", "");
-		                HashSet<String> values = new HashSet<String>(Arrays.stream(value.split(TDM_PARAMETERS_SEPARATOR)).collect(Collectors.toSet()));
-		                disitnctValuesMap = fnUpdateDistinctFieldData(columnName , disitnctValuesMap, values);
-		            }
-		        }
-		    }
+        try{
+            Map<String, Map<String, Object>> disitnctValuesMap=fnGetParamDistinctValues(srcEnv,luName);    
+            Db.Row tableRow = db(TDM).fetch(sql, luName.toUpperCase(), maxNumOfValues,srcEnv).firstRow();
+            if (tableRow != null && !tableRow.isEmpty()) {
+                String tableName = tableRow.get("table_name").toString();
+                String[] columnsArr = tableRow.get("columns").toString().split(",");
+                for (int idx = 0; idx < columnsArr.length; idx++) {
+                    columnsArr[idx] = "array_to_string(" + columnsArr[idx] + ", '" + TDM_PARAMETERS_SEPARATOR + "') as " + columnsArr[idx];
+                }
+                String newSelClause = String.join(",", columnsArr);
+                String query = "SELECT " + newSelClause + " FROM "  + TDMDB_SCHEMA + "." + tableName +
+                    " p, "  + TDMDB_SCHEMA + ".task_execution_entities t WHERE p.root_lu_name = t.root_lu_name " +
+                    "AND p.root_iid = t.root_entity_id and p.entity_id = t.iid AND t.task_execution_id = '" + taskExecId +
+                    "' AND t.lu_name = '" + luName + "' AND p.source_environment = '" + srcEnv + "' AND t.execution_status = 'completed'";
 
-		    if (tableRecords != null) {
-		        tableRecords.close();
-		    }
-		    for (String key : disitnctValuesMap.keySet()) {
-		        Map<String, Object> fieldinfo = disitnctValuesMap.get(key);
-		        Long numberOfValues = Long.parseLong(fieldinfo.get("numberOfValues").toString());
-		        Boolean isNumeric  = Boolean.parseBoolean(fieldinfo.get("isNumeric").toString());
-		        String minValue = fieldinfo.get("minValue").toString();
-		        String maxValue = fieldinfo.get("maxValue").toString();
-		        HashSet<String> valuesSet = (HashSet<String>)fieldinfo.get("fieldValues");
-		        Boolean newField  = Boolean.parseBoolean(fieldinfo.get("newField").toString());
-		        String newFieldvalues= String.join(TDM_PARAMETERS_SEPARATOR, valuesSet);
-		        if (newField) {
-		            db(TDM).execute(insertDistintValuesSql, srcEnv, luName.toUpperCase(), key,
-		                numberOfValues, newFieldvalues, isNumeric, minValue, maxValue);
-		        } else {
-		            db(TDM).execute(updateDistintValuesSql, numberOfValues, newFieldvalues, isNumeric, 
-		                minValue, maxValue, srcEnv, luName.toUpperCase(), key);
-		        }
-		    }
+                disitnctValuesMap = fnReturnDistinctMapValues(query,luName,disitnctValuesMap);
+                fnInsertValuestoDistinctParamsTable(srcEnv,luName,disitnctValuesMap);
+            }
+            //log.info("Finished fnUpdateParamDistinctValues");	
+        }catch(Exception e){
+            String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
+            "ERROR_CATEGORY, ERROR_MESSAGE) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            db(TDM).execute(insertSql, taskExecId, luName, " ", " ", " ", "fnUpdateParamDistinctValues failed", e.getMessage());
+            log.error(e);
+            throw new RuntimeException("Failed to update TDMDB table TDM_PARAMS_DISTINCT_VALUES");
         }
-		//log.info("Finished fnUpdateParamDistinctValues");	
-	}
+    }
 }

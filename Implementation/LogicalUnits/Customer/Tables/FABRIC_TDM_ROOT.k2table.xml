@@ -1,16 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>FABRIC_TDM_ROOT</Name>
   <ID>tbl_FABRIC_TDM_ROOT</ID>
-  <EntityId>tblCol_e8decb7400b7436299d5bcbb45e2c6b8</EntityId>
+  <EntityId>k2_tdm_eid</EntityId>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
-    <Column name="k2_tdm_eid" id="tblCol_e8decb7400b7436299d5bcbb45e2c6b8" index="0" datatype="text" />
-    <Column name="source_env" id="tblCol_fcc1c717e14e44fba3181b3f4a456354" index="1" datatype="text" />
-    <Column name="IID" id="tblCol_2108d9693f114111ae320111c0d1b1c8" index="2" datatype="text" />
+    <Column name="k2_tdm_eid" id="k2_tdm_eid" index="0" datatype="text" />
+    <Column name="source_env" id="source_env" index="1" datatype="text" />
+    <Column name="IID" id="IID" index="2" datatype="text" />
     <Column name="task_execution_id" id="task_execution_id" index="3" datatype="text" />
   </Columns>
-  <IndexesList />
-  <EnrichmentList />
-  <LazyDataUpdate syncMethod="TimeInterval" performEvery="00:00:00" />
-  <TriggersList />
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="IID" />
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="TimeInterval" performEvery="00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
 </TableObject>

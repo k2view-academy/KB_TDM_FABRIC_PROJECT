@@ -5,11 +5,11 @@
         "stats"
     ],
     "doc": [
-        "Populate public.task_exe_stats_detailed table with the statistics given by StatsReader actor"
+        "Populate task_exe_stats_detailed table with the statistics given by StatsReader actor"
     ],
     "inputs": [
         {
-            "const": "",
+            "const": "TDM",
             "name": "interface",
             "schema": {
                 "type": "string"
@@ -28,7 +28,7 @@
             "doc": [
                 "The interface to use.",
                 "This can be a jdbc URL or a reference to an interface defined in the container.",
-                "Make sure there is the table public.task_exe_stats_detailed was created."
+                "Make sure there is the table task_exe_stats_detailed was created."
             ]
         },
         {

@@ -8,18 +8,39 @@ stages:
           key:
             const: TDM_DEPLOY_ENVIRONMENTS
             default: false
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
   If True:
     dependsOn: Check Flag For Deploy Envs
     actors:
-      'True':
-        parent: EqualsIgnoreCase
+      JavaScript1:
+        parent: JavaScript
         condition: result
         in:
-          b:
-            const: 'true'
-            schema: string
-          a:
+          script:
+            const: |-
+              var result = true;
+              if (deployFlag != "true" || projectDir == null || projectDir == "") {
+                  result = false;
+              }
+              result;
+          deployFlag:
             link: TDM_DEPLOY_ENVIRONMENTS/result
+            schema: string
+            mandatory: false
+          projectDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
     split: '--------------------'
   If Flase:
     else: true
@@ -41,14 +62,6 @@ stages:
           value:
             const: DEPLOY ENVIRONMENTS FROM FILE '
             schema: string
-        out:
-          value:
-            schema: string
-      PROJECT_DIR:
-        parent: SysEnv
-        in:
-          name:
-            const: PROJECT_DIR
         out:
           value:
             schema: string
@@ -107,9 +120,16 @@ stages:
         in:
           flowName:
             const: TDMDB
-  Populate TDMDBF - Testers:
+  Craete Web Role:
     actors:
-      PopulateTDMDBForTesters1:
+      Add Web Role:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: AddWebRole
+  Populate TDMDB For Testers:
+    actors:
+      PopulateTDMDBForTesters:
         parent: InnerFlow
         in:
           flowName:
@@ -118,21 +138,7 @@ stages:
             external: is_first_deploy
             schema: boolean
             mandatory: false
-  Craete Web Role:
-    actors:
-      Add Web Role:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: AddWebRole
-  Create K2System If Relevant:
-    actors:
-      create K2system Schema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createK2systemSchema
-  Create PGDB Tables:
+  Create PGDBS:
     actors:
       craetePGDBS:
         parent: InnerFlow
@@ -143,28 +149,13 @@ stages:
             external: is_first_deploy
             schema: boolean
             mandatory: false
-  Populate PGDBS:
+  Create K2System If Relevant:
     actors:
-      populatePGDBS:
+      create K2system Schema:
         parent: InnerFlow
         in:
           flowName:
-            const: populatePGDBS
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
-  'Populate TDMDB ':
-    actors:
-      populateTDMDB:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: PopulateTDMDBForTesters
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
+            const: createK2systemSchema
   Get Globals For k2masking:
     actors:
       SEQ_CACHE_INTERFACE:
@@ -211,6 +202,13 @@ stages:
             link: SEQ_DO_TRUNCATE/result
             schema: boolean
             mandatory: false
+  Check If Upgrade TDM version Needed:
+    actors:
+      TDMDBUpgradeScripts1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDBUpgradeScripts
   End:
     actors:
       Finished Deploy Activities:

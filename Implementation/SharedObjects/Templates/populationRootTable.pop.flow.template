@@ -111,7 +111,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const":  "delete from {{__LU_NAME}}.{{SOURCE_TABLE}}"
+                                        "const":  "delete from {{__LU_NAME}}.{{{SOURCE_TABLE}}}"
                                     },
                                     {
                                         "name": "table",
@@ -272,7 +272,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from {{SOURCE_SCHEMA}}.{{SOURCE_TABLE}}"
+                                        "const": "select * from {{SOURCE_SCHEMA}}.{{{SOURCE_TABLE}}}"
                                     },
                                     {
                                         "name": "rowsGeneratorDistribution",
@@ -300,7 +300,7 @@
                                     },
                                     {
                                         "name": "table",
-                                        "const": "{{SOURCE_TABLE}}"
+                                        "const": "{{{SOURCE_TABLE}}}"
                                     }   
                                 ],
                                 "outputs": [
@@ -405,7 +405,7 @@
                                     },
                                     {
                                         "name": "dataset",
-                                        "const": "{{SOURCE_TABLE}}"
+                                        "const": "{{{SOURCE_TABLE}}}"
                                     },
                                     {
                                         "name": "ttl",

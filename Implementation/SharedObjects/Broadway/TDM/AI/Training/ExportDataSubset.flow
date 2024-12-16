@@ -47,13 +47,56 @@ stages:
           value:
             const: |-
               {
+                "skip_logical_relations": false,
+                "numeric_normalisation_min_val": -1,
+                "numeric_normalisation_max_val": 1,
+                "high_cardinality_column_ratio_threshold": 0.2,
+                "categorical_cardinality_column_ratio_threshold": 0.1,
+                "categorical_force_if_nunique_lt": 10,
+                "categorical_reject_gte_nunique_values": 150,
+                "logical_relations": {
+                 "prevalence_threshold_eq": 0.98,
+                 "prevalence_threshold_1_1": 0.98,
+                 "prevalence_threshold_1_n": 0.85,
+                 "lt_random_pairs_percent_threshold": 20,
+                 "cut_off_threshold": 10,
+                 "sig_level": 0.01,
+                 "correlation_strength": "strong",
+                 "logical_relations_root_table_sampling": 1000,
+                 "logical_relations_training_rows_sampling": 200000,
+                 "root_table_n_rows_for_fully_joined_table": null,
+                 "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
+                 "ram_safety_factor_for_fully_joined_table": 0.4,
+                 "meaningful_less_than_comparison_threshold": 0.5,
+                 "set_forming_threshold": 0.12,
+                 "border_tolerance": 0.25,
+                 "dense_1_to_n_threshold": 3,
+                 "logical_relations_overrides": {
+                    "groups": [],
+                    "participation": []
+                  }
+                },
+                "logical_relations_table_training": {
+                  "n_epochs": 3,
+                  "batch_size": 8,
+                  "n_gradient_accumulation_steps": 1,
+                  "train_size": 0.8,
+                  "early_stopping_patience": 5,
+                  "early_stopping_threshold": 0
+                },
+                "logical_relations_table_generation": {
+                  "batch_size": 64,
+                  "n_samples": 10000
+                },
                 "table_training": {
                   "n_epochs": 2,
                   "batch_size": 8,
                   "n_gradient_accumulation_steps": 1,
-                  "train_size":0.8,
-                  "early_stopping_patience":5,
-                  "early_stopping_threshold":0.0
+                  "train_size": 0.8,
+                  "early_stopping_patience": 5,
+                  "early_stopping_threshold": 0,
+                  "root_table_sampling": null,
+                  "output_max_length": null
                 },
                 "special_column_training": {
                   "n_epochs": 5,
@@ -68,11 +111,13 @@ stages:
                   "embedding_dim": 128,
                   "rnn_size": 128,
                   "rnn_layers": 1,
-                  "dropout": 0.0,
+                  "dropout": 0,
                   "bidirectional": false,
                   "gradient_clipping_max_norm": 5
                 },
-                "special_column_ratio_threshold": 0.05
+                "special_column_ratio_threshold": 0.05,
+                "random_state": 42,
+                "verbose": true
               }
             schema: string
         out:
@@ -82,7 +127,7 @@ stages:
         parent: InnerFlow
         in:
           flowName:
-            const: getMappingAndSpecialColumns
+            const: getCategoricalAndSpecialColumns
           luName:
             external: luName
             schema: string
@@ -91,6 +136,8 @@ stages:
           specialFields:
             schema: '#ref'
           mappingTables:
+            schema: '#ref'
+          categoricalFields:
             schema: '#ref'
       Set LuType:
         parent: FabricSet
@@ -148,7 +195,11 @@ stages:
               }else{
                   newParams.mapping_table_columns = {};
                   }
-
+              if(categoricalFields!=null) {
+                  newParams.categorical_table_columns = categoricalFields;
+              }else{
+                  newParams.categorical_table_columns = {};
+                  }
               newParams;
               //JSON.stringify(newParams);
           execParams:
@@ -162,6 +213,10 @@ stages:
           mappingTable:
             link: getMappingAndSpecialColumns1/mappingTables
             schema: '#ref'
+            mandatory: false
+          categoricalFields:
+            link: getMappingAndSpecialColumns1/categoricalFields
+            schema: any
             mandatory: false
         out:
           result:
@@ -295,7 +350,7 @@ stages:
             mandatory: false
           K2SCHEMA_NAME:
             link: Getk2SystemSchemaName/result
-            schema: any
+            schema: string
             mandatory: false
   End:
     actors:
@@ -326,6 +381,21 @@ schemas:
         active:
           type: string
   getMappingAndSpecialColumns1.out.mappingTables:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        table_name:
+          type: string
+        column_name:
+          type: string
+        indicator:
+          type: string
+        active:
+          type: string
+  getMappingAndSpecialColumns1.out.categoricalFields:
     type: array
     items:
       type: object

@@ -1,0 +1,82 @@
+tags: TDM
+stages:
+  Set Path to Tables:
+    actors:
+      LU Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${LU_PATH}Tables/
+          LU_PATH:
+            external: LU_PATH
+            schema: string
+            mandatory: false
+  Check if root table exists:
+    actors:
+      ls TDM Root table:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: LU Folder/string
+          path:
+            const: .
+          pattern:
+            const: FABRIC_TDM_ROOT*
+        out:
+          result:
+            schema: '#ref'
+  Init Did not run:
+    transactional: false
+    dependsOn: Check if root table exists
+    actors:
+      IsNull1:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: ls TDM Root table/result/name
+      'True':
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean
+    split: '--------------------'
+  Init already ran:
+    else: true
+    transactional: false
+    dependsOn: Check if root table exists
+    actors:
+      'False':
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean
+schemas:
+  ls TDM Root table.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

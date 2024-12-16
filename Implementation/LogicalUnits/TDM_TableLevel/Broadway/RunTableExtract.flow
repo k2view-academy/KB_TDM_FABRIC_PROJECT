@@ -1,0 +1,285 @@
+stages:
+  Get List of Columns and Types:
+    actors:
+      Get List of Table's Fields:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableFields
+          dbInterfaceName:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          SchemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  'Prepare SqliteTable ':
+    actors:
+      Prepare SqliteTable & Inseet Command:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PrepareSqliteTable
+          TableColums:
+            link: Get List of Table's Fields/result
+            schema: '#ref'
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          SqliteInsertStatement:
+            schema: string
+  Get TDM_REF_UPD_SIZE:
+    actors:
+      Get Commit Size:
+        parent: FabricSetRead
+        height: 123
+        in:
+          key:
+            const: TDM_REF_UPD_SIZE
+            default: false
+        out:
+          result:
+            schema: integer
+      Init record count:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.count = 0;
+        out:
+          result:
+            schema: integer
+  Get Source Data:
+    transactional: false
+    actors:
+      Get Data from Source:
+        parent: InnerFlow
+        height: 251
+        in:
+          flowName:
+            const: GetSourceData
+          innerFlowClose:
+            const: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Set Target Environment:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: setTargetEnv
+  Load Data:
+    transactional: false
+    actors:
+      Insert Record to Sqlite Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link: Prepare SqliteTable & Inseet Command/SqliteInsertStatement
+          params:
+            link:
+              path: Get Data from Source/result
+              iterate: Iterate
+      Update Counter:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "flowArgs.count++;\r\n"
+              script: flowArgs.count++;
+        out:
+          result:
+            schema: integer
+  Update Count In case of Extract:
+    last: 1
+    transactional: false
+    actors:
+      Update Count?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              if (taskAction.toUpperCase() == 'EXTRACT' && currentCount % updateSize == 0) {
+                  true;
+              } else
+              {
+                  false;
+              }
+          currentCount:
+            link: Update Counter/result
+            schema: integer
+            mandatory: false
+          updateSize:
+            link: Get Commit Size/result
+            schema: integer
+            mandatory: false
+          taskAction:
+            external: taskAction
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Update Table's Total Count1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset number_of_processed_records\
+              \ = ${recCount}\r\nwhere task_execution_id = ${taskExeId} \r\nand task_ref_table_id\
+              \ = ${tableId}"
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          recCount:
+            link: Update Counter/result
+            schema: integer
+            mandatory: false
+  Get Number of Loaded Records:
+    transactional: false
+    actors:
+      Update Total Count?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              if (taskAction.toUpperCase() == 'EXTRACT') {
+                  true;
+              } else
+              {
+                  false;
+              }
+          currentCount:
+            schema: integer
+            mandatory: false
+          updateSize:
+            schema: integer
+            mandatory: false
+          taskAction:
+            external: taskAction
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Get Last  Count:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.count
+        out:
+          result:
+            schema: integer
+  'Update number of Processed ':
+    actors:
+      Update Table's Total Count11:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset number_of_processed_records\
+              \ = ${recCount}\r\nwhere task_execution_id = ${taskExeId} \r\nand task_ref_table_id\
+              \ = ${tableId}"
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          recCount:
+            link: Get Last  Count/result
+            schema: integer
+            mandatory: false
+schemas:
+  Get List of Table's Fields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+  Prepare SqliteTable & Inseet Command.in.TableColums:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+  Get Data from Source.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string

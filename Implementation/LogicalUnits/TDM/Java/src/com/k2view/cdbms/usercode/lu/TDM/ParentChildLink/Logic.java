@@ -108,7 +108,7 @@ public class Logic extends UserCode {
 		*/
 
 		//Get the task type in order to know if it is a load or extract task
-		String sql = "SELECT LOAD_ENTITY, DELETE_BEFORE_LOAD, TASK_TYPE, REPLACE_SEQUENCES, CLONE_IND FROM TASKS";
+		String sql = "SELECT TASK_TYPE, REPLACE_SEQUENCES, CLONE_IND FROM TASKS";
 		String taskType = "";
 		String replaceSeq = "false";
 		Db.Rows rootList = null;
@@ -134,7 +134,7 @@ public class Logic extends UserCode {
 					insertChildSql = "insert or replace into TASK_EXECUTION_LINK_ENTITIES (LU_NAME,PARENT_LU_NAME,TARGET_ENTITY_ID,ENTITY_ID, " +
 							"PARENT_ENTITY_ID,BE_ROOT_ENTITY_ID,TARGET_ROOT_ENTITY_ID,EXECUTION_STATUS,TARGET_PARENT_ID,ROOT_LU_NAME," +
 							"VERSION_TASK_EXECUTION_ID,IID)" +
-							"select distinct t.lu_name, r.lu_type_1, t.target_entity_id, t.entity_id, t2.iid, t.root_entity_id, t.root_entity_id," +
+							"select distinct t.lu_name, r.lu_type_1, t.target_entity_id, t.entity_id, t2.iid, t.root_entity_id, t2.target_entity_id," +
 							"t.execution_status,r.lu_type1_eid,t.root_lu_name,t.version_task_execution_id,t.iid " +
 							"from task_execution_entities t, tdm_lu_type_rel_tar_eid r, task_execution_entities t2, task_execution_list l " +
 							"where t.lu_name = r.lu_type_2 and t.target_entity_id = r.lu_type2_eid and " +

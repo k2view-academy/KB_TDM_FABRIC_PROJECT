@@ -80,7 +80,14 @@ stages:
           string:
             link: Replace3/string
   Stage 8:
+    dependsOn: Stage 7
     actors:
+      Schema is Not Null?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            external: value
       Replace5:
         parent: Replace
         in:
@@ -91,18 +98,32 @@ stages:
             external: SOURCE_SCHEMA
           string:
             link: Replace4/string
+    split: '--------------------'
+  Schema is NULL:
+    else: true
+    dependsOn: Stage 7
+    actors:
+      Replace7:
+        parent: Replace
+        in:
+          search:
+            const: '{{SOURCE_SCHEMA}}.'
+          string:
+            link: Replace4/string
   Stage 9:
     actors:
       Replace6:
         parent: Replace
         in:
           search:
-            const: '{{SOURCE_TABLE}}'
+            const: '{{{SOURCE_TABLE}}}'
           replace:
             const: null
             external: SOURCE_TABLE
           string:
-            link: Replace5/string
+            link:
+            - Replace5/string
+            - Replace7/string
       LU Folder:
         parent: StringFormat
         in:
@@ -113,15 +134,7 @@ stages:
             schema: string
             mandatory: false
   Stage 11:
-    dependsOn: Stage 9
     actors:
-      IsNull1:
-        parent: IsNull
-        condition: result
-        in:
-          value:
-            external: POPULATION_FLOW_NAME
-            schema: string
       StringFormat1:
         parent: StringFormat
         in:
@@ -131,21 +144,6 @@ stages:
             external: TABLE_NAME
             schema: string
             mandatory: false
-    split: '--------------------'
-  Stage 12:
-    else: true
-    dependsOn: Stage 9
-    actors:
-      Const2:
-        parent: Const
-        in:
-          value:
-            const: null
-            external: POPULATION_FLOW_NAME
-            schema: string
-        out:
-          value:
-            schema: string
   Stage 10:
     actors:
       FileWrite1:
@@ -157,9 +155,7 @@ stages:
           stream:
             link: Replace6/string
           path:
-            link:
-            - StringFormat1/string
-            - Const2/value
+            link: StringFormat1/string
 schemas:
   Const1.out.value:
     type: array

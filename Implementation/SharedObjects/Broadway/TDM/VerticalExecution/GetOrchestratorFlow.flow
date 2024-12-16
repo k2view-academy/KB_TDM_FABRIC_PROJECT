@@ -1,0 +1,63 @@
+tags: TDM
+stages:
+  Orchestrators List:
+    actors:
+      List Of Orchestrators:
+        parent: ConstTable
+        in:
+          table:
+            const:
+            - task_action: EXTRACT
+              orchestrator_flow: TDMExtractOrchestrator
+            - task_action: LOAD
+              orchestrator_flow: TDMOrchestrator
+            - task_action: DELETE
+              orchestrator_flow: TDMOrchestrator
+            schema: '#ref'
+        out:
+          table:
+            schema: '#ref'
+  Find Orchestrator:
+    actors:
+      Orchestrator Based on Task Action:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - task_action
+          lookupData:
+            const: null
+            link: List Of Orchestrators/table
+            schema: '#ref'
+          task_action:
+            external: taskAction
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: result
+schemas:
+  List Of Orchestrators.in.table:
+    type: array
+    items:
+      type: object
+      properties:
+        task_action:
+          type: string
+        orchestrator_flow:
+          type: string
+  List Of Orchestrators.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        task_action:
+          type: string
+        orchestrator_flow:
+          type: string
+  Orchestrator Based on Task Action.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }

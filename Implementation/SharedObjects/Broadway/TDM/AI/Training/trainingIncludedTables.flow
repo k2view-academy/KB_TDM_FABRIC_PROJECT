@@ -1,0 +1,147 @@
+tags: TDM
+stages:
+  Check For Included Columns:
+    actors:
+      Lu Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: luName
+  Check For Excluded Columns:
+    actors:
+      AITableFieldsInclusion:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: AITableFieldsInclusion
+          lu_name:
+            link: Lu Name/value
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          active:
+            const: 'true'
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          included:
+            const: 'true'
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Columns Is Valid:
+    dependsOn: Check For Excluded Columns
+    actors:
+      'NotNull   ':
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: AITableFieldsInclusion/result
+    split: '--------------------'
+  'Else  ':
+    else: true
+    dependsOn: Check For Excluded Columns
+  Check if column exits:
+    dependsOn: Columns Is Valid
+    actors:
+      NotNull column:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: AITableFieldsInclusion/result/column_name
+              iterate: Iterate
+      Format Columns:
+        parent: StringFormat
+        in:
+          format:
+            const: ${tableName}.${columnName}
+          tableName:
+            link:
+              path: AITableFieldsInclusion/result/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          columnName:
+            link:
+              path: AITableFieldsInclusion/result/column_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Only Tables:
+    else: true
+    dependsOn: Columns Is Valid
+    actors:
+      Table:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: AITableFieldsInclusion/result/table_name
+              iterate: Iterate
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Do Nothing       ':
+    dependsOn: 'Else  '
+  Merge:
+    last: 1
+    dependsOn:
+    - Only Tables
+    - Check if column exits
+    actors:
+      Columns:
+        parent: StringBuild
+        in:
+          input:
+            link:
+            - path: Format Columns/string
+              pos: 0
+            - path: Table/value
+              pos: 0
+    split: '--------------------'
+  'Do Nothing     ':
+    last: 1
+    dependsOn: 'Do Nothing       '
+  Result:
+    actors:
+      All Fields:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: Columns/string
+              pos: 0
+        out:
+          string:
+            external: tables
+schemas:
+  AITableFieldsInclusion.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        table_name:
+          type: string
+        column_name:
+          type: string
+        included:
+          type: string
+        excluded:
+          type: string
+        active:
+          type: string

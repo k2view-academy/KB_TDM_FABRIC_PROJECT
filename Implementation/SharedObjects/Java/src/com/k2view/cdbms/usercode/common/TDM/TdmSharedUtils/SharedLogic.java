@@ -1,8 +1,9 @@
 package com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 
-import com.k2view.cdbms.lut.LUType;
-import com.k2view.cdbms.lut.LudbJobs;
+import com.google.gson.*;
+import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.Db;
+import com.k2view.cdbms.shared.LUTypeFactoryImpl;
 import com.k2view.cdbms.shared.Utils;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
@@ -10,26 +11,28 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.mtable.MTable;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_REF_UPD_SIZE;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIDListForMigration;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.getDBCollection;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.toSqliteType;
 
 import static java.lang.Math.min;
 
@@ -64,6 +67,14 @@ public class SharedLogic {
             "FROM " + TDMDB_SCHEMA + ".product_logical_units a " +
             "INNER JOIN children b ON a.lu_parent_id = b.lu_id) " +
             "SELECT  string_agg('''' ||  unnest || '''' , ',') FROM children ,unnest(string_to_array(children.lu_name, ',')); ";
+	public static final String MAP_LU_NAME = "lu_name";
+	public static final String MAP_LU_TABLE = "lu_table";
+	public static final String MAP_LU_TABLE_FIELD = "lu_table_field";
+	public static final String MAP_PARAM_NAME = "param_name";
+	public static boolean inTest = false;
+	public static Map<String, List<Map<String, Object>>> allTables = new HashMap<>();
+	private static HashMap<String, String> luShortMap = new HashMap<>();
+    private static HashMap<String, String> tdmSeparators = new HashMap<>();
 
     public static void setBroadwayActorFlags(String key, String value) throws SQLException {
         //TDM 7.1 - Masking and Sequence Broadway Actors have special flags to enable/disable them, and they need
@@ -120,9 +131,430 @@ public class SharedLogic {
         return objects;
     }
 
-	@out(name = "result", type = String.class, desc = "")
-	public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv,Boolean cloneInd) throws Exception {
+	public interface Rule {}
+
+	public class ParameterType implements Rule {
+		Rules group;
+		String operator;
+	}
+
+	public class Rules {
+		List<Rule> rules;
+		String operator;
+	}
+
+	public interface ComplexString {
+		List<String> getList();
+	}
+
+	public static class ComplexStringImpl implements ComplexString {
+		String str;
+
+		public ComplexStringImpl(String str) {
+			this.str = str;
+		}
+
+		@Override
+		public String toString() {
+			return str;
+		}
+
+		@Override
+		public List<String> getList() {
+			String[] arr = str.split(",");
+			List<String> list = new ArrayList<>();
+			for (int i= 0; i < arr.length; i++) {
+				list.add(arr[i].trim());
+			}
+			return list;
+		}
+	}
+
+	public static class ComplexListStringImpl implements ComplexString {
+		List<String> list;
+
+		public ComplexListStringImpl(List list) {
+			this.list = list;
+		}
+
+		@Override
+		public List<String> getList() {
+			return list;
+		}
+	}
+
+	public class RuleDetail implements Rule {
+		String condition;
+		String field;
+		String operator;
+		List<Object> validValues;
+		String type;
+		ComplexString data;
+		String table;
+	}
+
+	public static class InterfaceAdapter implements JsonDeserializer {
+		public Rule deserialize(JsonElement jsonElement, Type type,
+							 JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			Object prim = jsonObject.get("group");
+			if (prim == null) {
+				return jsonDeserializationContext.deserialize(jsonElement, RuleDetail.class);
+			} else {
+				return jsonDeserializationContext.deserialize(jsonElement, ParameterType.class);
+			}
+		}
+	}
+
+	public static class InterfaceStringAdapter implements JsonDeserializer {
+		public ComplexString deserialize(JsonElement jsonElement, Type type,
+								JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			if (jsonElement.isJsonPrimitive() ) {
+				return new ComplexStringImpl(jsonElement.getAsString()) ;
+			}
+			return new ComplexListStringImpl(jsonDeserializationContext.deserialize(jsonElement, List.class));
+		}
+	}
+
+	public static class MatchQuery {
+		String sql;
+		Set<String> lus;
+
+		public MatchQuery(String sql, Set<String> lus) {
+			this.sql = sql;
+			this.lus = lus;
+		}
+	}
+
+	public static MatchQuery getListOfMatchingEntitiesQuery(Long beID, String sourceEnv, ParameterType res, boolean analysisCount)  {
+		StringBuffer ret = new StringBuffer(" ( ");
+		Set<LuTable> usedTables = new HashSet<>();
+		Set<String> lus = new HashSet<>();
+		processGroup(res, ret, usedTables, lus,analysisCount);
+		expandSql(beID, sourceEnv, usedTables, ret, lus);
+		ret.append(" )");
+		MatchQuery mq = new MatchQuery(ret.toString(), lus);
+		return mq;
+	}
+
+	private static void processGroup(ParameterType res, StringBuffer ret, Set<LuTable> usedTables, Set<String> lus,boolean analysisCount)  {
+		Rules group = res.group;
+		String prevOperator = "";
+		boolean isList = false;
+		for (Rule r : group.rules) {
+			if (r instanceof RuleDetail) {
+				RuleDetail rule = (RuleDetail) r;
+				//  and ad.state = 'NY'
+				if (rule.condition.contains("IN")) {
+					isList = true;
+				} else {
+					isList = false;
+				}
+				Map<String, Object> map = getMap(rule.field);
+                boolean isUnaryOp = false ;
+                if(rule.condition.contains("NULL")){
+                    isUnaryOp = true;
+                }
+				if (problematic(rule.condition)) {
+					ret.append(prevOperator).append(formatValue(rule.data, rule.type, isList,analysisCount,isUnaryOp)).append(" ").
+							append(rule.condition).append(" ").append(reMap(map)).append(" \n    ");
+				} else {
+					ret.append(prevOperator).append(reMap(map)).append(" ").
+							append(rule.condition).append(" ").append(formatValue(rule.data, rule.type, isList,analysisCount,isUnaryOp)).append(" \n    ");
+				}
+				prevOperator = " " + rule.operator + " ";
+				usedTables.add(getTableName(map));
+				lus.add(map.get(MAP_LU_NAME).toString());
+			} else {
+				ParameterType rule = (ParameterType) r;
+				StringBuffer ret1 = new StringBuffer();
+				processGroup(rule, ret1, usedTables, lus,analysisCount);
+				ret.append(prevOperator).append(" ( ").append(ret1).append(" )");
+				prevOperator = " " + rule.operator + " ";
+			}
+		}
+	}
+
+	private static boolean problematic(String condition) {
+		// These 4 asymmetric (<, >, <=, >=) that cause reverse of operators; others (like IN) do not.
+		return condition.contains("<") || condition.equalsIgnoreCase(">") ;
+	}
+
+	static void expandSql(Long beID, String sourceEnv, Set<LuTable> usedTables, StringBuffer ret, Set<String> usedLu) {
+		StringBuffer prep = new StringBuffer("select distinct be1.root_iid as iid from \n");
+		processLUs(beID, sourceEnv, usedLu, prep);
+		StringBuffer ret1 = processTableDependencies(usedTables);
+		processUsedTables(usedTables, prep);
+		prep.append("\n  where \n");
+		prep.append(ret1);
+		ret.insert(0, prep);
+		ret.append("\n");
+	}
+
+	private static void processLUs(Long beID, String sourceEnv, Set<String> usedLu, StringBuffer prep) {
+		int i = 1;
+		boolean first = true;
+		for (String 	luName : usedLu) {
+			// Customer.tdm_be_iids be1
+			//    INNER JOIN Customer.fabric_tdm_root root1 ON be1.be_id = 1 and root1.iid =  be1.iid  and root1.source_env = 'Production'
+			//
+			if (!first) {
+				prep.append("\n INNER JOIN ");
+			}
+			prep.append("   ").append(luName).append(".tdm_be_iids be" ).append(i);
+			if (!first) {
+				prep.append(" ON be1.be_id = be").append(i).append(".be_id ").append("and be1.root_iid = be").append(i).append(".root_iid");
+			}
+
+			prep.append("\n INNER JOIN  ").append(luName).append(".fabric_tdm_root root" ).append(i).append(" ON ");
+			if (first) {
+				prep.append(" be1.be_id = '").append(beID).append("' AND ");
+			}
+			prep.append("root").append(i).append(".__iid =  be").append(i).append(".__iid and root").
+					append(i).append(".source_env = '").append(sourceEnv).append( "'");
+			luShortMap.put(luName, "be"+i);
+			i ++;
+			first = false;
+		}
+	}
+
+	private static void processUsedTables(Set<LuTable> usedTables, StringBuffer prep) {
+		for (LuTable table : usedTables) {
+			prep.append("\n INNER JOIN ").append(table.luName).append(".").append(table.luTable);
+			prep.append(" ON ").append(getLuShort(table.luName)).append(".__iid = ").append(table.luName).append(".").append(table.luTable).append(".__iid ");
+		}
+	}
 				
+	private static String getLuShort(String luName) {
+		return luShortMap.get(luName);
+	}
+
+	private static StringBuffer processTableDependencies(Set<LuTable> usedTables) {
+		StringBuffer prep = new StringBuffer();
+		if (inTest) {
+			return prep;
+		}
+		boolean first = true;
+		List<LuTable> addedTables = new ArrayList<>();
+		for (LuTable table1 : usedTables) {
+			for (LuTable table2 : usedTables) {
+				if (table1 == table2) {
+					// skip same tables
+					continue;
+				}
+				if (!table1.luName.equals(table2.luName)) {
+					// skip non same LU
+					continue;
+				}
+				UserCode.log.info("processTableDependencies LU {} for {} and {} ", table1.luName, table1.luTable, table2.luTable);
+				LUType luType = LUTypeFactoryImpl.getInstance().getTypeByName(table1.luName);
+				List<String> path = buildParentTablePath(luType, table1, table2);
+				UserCode.log.info("processTableDependencies path {}", path);
+				if (!Util.isEmpty(path)) {
+					Map<String, Map<String, List<LudbRelationInfo>>> rel = luType.getLudbPhysicalRelations();
+					for (int i = 1 ; i < path.size(); i ++) {
+						TableObject tableParent = (TableObject) luType.ludbObjects.get(path.get(i-1));
+						TableObject tableChild = (TableObject) luType.ludbObjects.get(path.get(i));
+						UserCode.log.info("processTableDependencies for from  {} to {} ",  path.get(i-1), path.get(i));
+
+						List<LudbRelationInfo> childRelations = rel.get(tableParent.k2StudioObjectName).get(tableChild.k2StudioObjectName);
+						for (LudbRelationInfo childRelation : childRelations) {
+							if (!first) {
+								prep.append(" AND ");
+							}
+							prep.append(table1.luName).append(".").
+									append(tableParent.ludbObjectName).append(".").
+									append(childRelation.from.get("column")).append("=").
+									append(table1.luName).append(".").
+									append(tableChild.ludbObjectName).append(".").
+									append(childRelation.to.get("column")).append("\n");
+							UserCode.log.info("processTableDependencies SQL :: \n {} ", prep);
+							addedTables.add(new LuTable(table1.luName, tableParent.ludbObjectName.toUpperCase()));
+							first = false;
+						}
+					}
+				}
+			}
+		}
+		if (!first) {
+			prep.append(" AND ");
+			UserCode.log.info("processTableDependencies SQL :: \n {} ", prep);
+		}
+		for (LuTable lt : addedTables) {
+			if (! usedTables.contains(lt)) {
+				usedTables.add(lt);
+				UserCode.log.info("added used table {} ", lt);
+			}
+		}
+		return prep;
+	}
+
+	/**
+	 * Find the parent path fom table1 to table2, if such exists
+	 *
+	 * @param luType
+	 * @param table1
+	 * @param table2
+	 * @return path, if exists; empty list otherwise,
+	 * list of strings - table names starting with table1, ending with table2;
+	 * Each next name is the direct parent table of the previous table.
+	 */
+	private static List<String> buildParentTablePath(LUType luType, LuTable table1, LuTable table2) {
+		List<String> path = new ArrayList<>();
+		TableObject table1Obj = (TableObject) luType.ludbObjects.get(table1.luTable);
+		buildPath(luType, table2, table1.luTable, path);
+		return path;
+	}
+
+	private static boolean buildPath(LUType luType, LuTable table2, String table1, List<String> res) {
+        try{
+            TableObject table1Obj = (TableObject) luType.ludbObjects.get(table1);
+            if (table1Obj.isRootObject()) {
+                UserCode.log.info("buildPath stop on root object {}", table1Obj.ludbObjectName);
+                return false;
+            }
+            if (table1Obj.ludbObjectName.equalsIgnoreCase(table2.luTable)) {
+                res.add(table2.luTable);
+                UserCode.log.info("buildPath stop on table2.luTable {}", table2.luTable);
+                return true;
+            }
+            Map<String, List<LudbRelationInfo>> map = luType.ludbOppositePhysicalRelations.get(table1);
+            for (String parent : map.keySet()) {
+                UserCode.log.info("buildPath iterate on table2.luTable {}",  parent);
+                boolean res1 = buildPath(luType, table2, parent, res);
+                if (res1) {
+                    UserCode.log.info("buildPath ADDED on table1 {}",  table1);
+                    res.add(table1);
+                    return true;
+                }
+            }
+            return false;
+        }catch (Exception e){
+            throw new RuntimeException("No FK relation has been identified, unable to build path between tables " + table2.luTable + " and " + table1 + " the implementation must be fixed.");
+        }
+	}
+
+	static LuTable getTableName(Map<String, Object> map) {
+		return new LuTable( map.get(MAP_LU_NAME).toString(), map.get(MAP_LU_TABLE).toString().toUpperCase());
+	}
+
+	static CharSequence reMap(Map<String, Object> map) {
+		StringBuffer str = new StringBuffer();
+		str.append(map.get(MAP_LU_NAME)).append(".").append(map.get(MAP_LU_TABLE)).append(".").append(map.get(MAP_LU_TABLE_FIELD));
+		return str;
+	}
+
+	static Map<String, Object> getMap(String field) {
+		String columns [] = field.split("\\.");
+		Map<String, Object> mapListInputs = new HashMap<>();
+		mapListInputs.put(MAP_LU_NAME,columns[0]);
+		mapListInputs.put(MAP_PARAM_NAME,columns[1]);
+		try {
+			List<Map<String, Object>> mapList;
+			if (!inTest) {
+				 mapList = MtableLookup("LuParamsMapping", mapListInputs, MTable.Feature.caseInsensitive);
+			} else {
+				mapList = localMap("LuParamsMapping", mapListInputs, MTable.Feature.caseInsensitive);
+			}
+			return mapList.get(0);
+		} catch (Exception e) {
+			UserCode.log.error("Failed to process MTable LuParamsMapping " + mapListInputs, e);
+		}
+		return null;
+	}
+
+	private static List<Map<String, Object>> localMap(String luParamsMapping, Map<String, Object> mapListInputs, MTable.Feature feature) {
+		List<Map<String, Object>> list = allTables.get(luParamsMapping);
+		List<Map<String, Object>> mapList = new ArrayList<>();
+		if (list != null) {
+			Map<String, Object> map = new CaseInsensitiveMap<>();
+			for (Map<String, Object> rowMap : list) {
+				boolean res = true;
+				for (String key : mapListInputs.keySet()) {
+					if (!mapListInputs.get(key).toString().equalsIgnoreCase(rowMap.get(key).toString())) {
+						res = false;
+					}
+				}
+				if (res) {
+					mapList.add(rowMap);
+				}
+			}
+		}
+		return mapList;
+	}
+
+	public static void setMap(String name, List<String> columns, List<List<String>> data) {
+		List<Map<String, Object>> list = new ArrayList<>();
+		for (List<String>row : data) {
+			int i  = 0;
+			Map<String, Object> map = new CaseInsensitiveMap<>();
+			for (String col : columns) {
+				map.put(col, row.get(i));
+				i ++;
+			}
+			list.add(map);
+		}
+		allTables.put(name,list);
+	}
+
+	static CharSequence formatValue(ComplexString value, String type, boolean isList,boolean analysisCount,boolean isUnaryOp) {
+        if (value == null) {
+            return "";
+        }
+        
+        String wrap = "'";
+        if (type.equalsIgnoreCase("integer") || type.equalsIgnoreCase("real")
+                || type.equalsIgnoreCase("number")) {
+            wrap = "";
+        }
+        
+        StringBuffer buff = new StringBuffer();
+        boolean first = true;
+        if (isList) {
+            buff.append("(");
+        }
+        
+        for (int i = 0; i < value.getList().size(); i++) {
+            if (!first) {
+                buff.append(", ");
+            }
+            // Replace special characters
+            String val = value.getList().get(i);
+            if(!analysisCount){
+                val = val.replace("'", "'''").replace("\\\\", "\\").replace("\\\\", "");
+            }else{
+                val = val.replace("'", "''").replace("\\\\", "\\").replace("\\\\", "");
+            }
+
+            if(!isUnaryOp){
+            buff.append(wrap).append(val).append(wrap);
+            }
+            first = false;
+        }
+        
+        if (isList) {
+            buff.append(")");
+        }
+        
+        return buff;
+    }
+    
+
+	@out(name = "result", type = String.class, desc = "")
+	public static String generateListOfMatchingEntitiesQuery(Long beID, Boolean paramsCoupling, String json, String whereStmt, String sourceEnv,Boolean cloneInd,boolean analysisCount) throws Exception {
+		if (paramsCoupling) {
+			Gson gson = new Gson().newBuilder().registerTypeAdapter(Rule.class, new InterfaceAdapter()).
+					registerTypeAdapter(ComplexString.class, new InterfaceStringAdapter()).create();
+			ParameterType res = gson.fromJson(json, ParameterType.class);
+			MatchQuery matchQuery = getListOfMatchingEntitiesQuery(beID, sourceEnv, res,analysisCount);
+            Set <String> lus = matchQuery.lus;
+            Object result = fabric().fetch("broadway TDM.CheckIfSchemasExists lus=?", lus).firstValue();
+            if(result!=null){
+                throw new RuntimeException(result.toString());
+            }
+            UserCode.log.info(matchQuery.sql);
+			return matchQuery.sql;
+		}
         String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'iid_separator'").firstValue();
         //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
         String separator = "_";
@@ -149,82 +581,6 @@ public class SharedLogic {
 		//UserCode.log.info("generateListOfMatchingEntitiesQuery - paramsSql: " + paramsSql);
 		return paramsSql;
 	}
-
-
-    private static String createViewSql(String luRelationsView, String setTypesQuery, String getParamsSql) {
-        return "DO $$ " +
-                "DECLARE " +
-                "type_var text; " +
-                "BEGIN " +
-                "IF NOT EXISTS (SELECT 1 FROM pg_matviews WHERE matviewname =  '" + luRelationsView + "'" +
-                ") THEN " + setTypesQuery +
-                "CREATE MATERIALIZED VIEW " + TDMDB_SCHEMA + ".\"" + luRelationsView + "\" AS SELECT * FROM  ( " + getParamsSql + " ) AS mergedTables;" +
-                "END IF; " +
-                "END $$ ";
-    }
-
-    private static String getParamsSql(String sourceEnv, String rootLu, String rootLuStrL, String jsonTypeName, String childrenList, Long beID) {
-
-        String str = "IN(" + childrenList.replace("'", "''") + ")";
-		// TDM 7.5.1 - Fix the query to support hierarchy with more than 2 levels
-        return "WITH RECURSIVE relations AS(" +
-            "SELECT lu_type_1, lu_type_2, entity_id as lu_type1_eid, lu_type2_eid, entity_id as root_id," +
-            TDMDB_SCHEMA + ".param_values('" + rootLu +"',entity_id,lower(base.lu_type_1) || '_params','" + sourceEnv + "'," +
-            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'),'" + str + "', 'lu_type1_eid', '-1', '" + TDMDB_SCHEMA + "')::text as p1," +
-            TDMDB_SCHEMA + ".param_values('" + rootLu + "',entity_id,lower(base.lu_type_2) || '_params','" + sourceEnv + "'," +
-            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
-            "'" + str + "', 'lu_type2_eid'" +
-            ",base.lu_type_2, '" + TDMDB_SCHEMA + "')::text as p2 " +
-            "FROM ( " +
-            "SELECT entity_id, '" + rootLu + "'::text as lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid " +
-            "FROM " + TDMDB_SCHEMA + "." + rootLu + "_params " +
-            " LEFT JOIN (SELECT * FROM " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid WHERE lu_type_1= '" + rootLu + "' AND source_env='" + sourceEnv +
-            "' AND lu_type_2 IN(" + childrenList + ") AND version_name='' " +
-			" AND (EXISTS (SELECT 1 FROM information_schema.columns WHERE " +
-            "columns.table_name::name = (lower(tdm_lu_type_relation_eid.lu_type_2::text) || '_params'::text) " +
-            "AND columns.column_name::name <> 'entity_id'::name AND columns.column_name::name <> 'source_environment'::name LIMIT 1)) " +
-            " AND (EXISTS (SELECT 1 FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = " + beID + " AND lu_name = lu_type_2 AND lu_parent_name = lu_type_1)) )" +
-            " AS rel_base ON " + rootLu + "_params.entity_id=rel_base.lu_type1_eid" +
-            " WHERE source_environment='" + sourceEnv + "') AS base " +
-            " UNION ALL" +
-            " SELECT a.lu_type_1, a.lu_type_2, a.lu_type1_eid, a.lu_type2_eid, root_id," +
-            TDMDB_SCHEMA + ".param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_1) || '_params','" + sourceEnv +"'," +
-            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid', '-1', '" + TDMDB_SCHEMA + "')::text as p1," +
-            TDMDB_SCHEMA + ".param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
-            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
-            "'" + str + "', 'lu_type2_eid'" +
-            ",a.lu_type_2, '" + TDMDB_SCHEMA + "')::text as p2 " +
-            "FROM " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid a " +
-            "INNER JOIN relations b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND source_env='" + sourceEnv +
-            "' AND a.lu_type_2 IN("+ childrenList +")  AND b.lu_type_2 IN(" + childrenList + ") AND a.lu_type_1 IN(" + childrenList +
-            ") AND b.lu_type_1 IN("+ childrenList +") " +
-             " AND (EXISTS (SELECT 1 FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = " + beID + " AND lu_name = a.lu_type_2 AND lu_parent_name = a.lu_type_1)) " +
-            " AND (EXISTS (SELECT 1 FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = " + beID + " AND lu_name = b.lu_type_2 AND lu_parent_name = b.lu_type_1)) ) " +
-			" SELECT * FROM ( " +
-            " SELECT root_id AS " + rootLuStrL + "_root_id, (json_populate_recordset(null::" + TDMDB_SCHEMA + ".\"" + jsonTypeName +"\", json_agg(path))).*" +
-            " FROM (" +
-            " SELECT root_id, " + TDMDB_SCHEMA + ".json_append((replace(string_agg(p1, ', '), '}, {', ','))::json, (replace(string_agg(p2, ', '), '}, {', ','))::json, '{}') AS path " + 
-			" from relations GROUP BY root_id) colsMerged GROUP BY root_id) AS final";
-    }
-
-    private static String getSetTypesQuery(String sourceEnv, String rootLu, String json_type_name, String childrenList) {
-		// TDM 7.5.1 - Change the creation of the TYPE to make it match simpler
-		String[] paramTablesArray = childrenList.split(",");
-        for (int i = 0; i < paramTablesArray.length; i++) {
-            String tableName = paramTablesArray[i].toLowerCase();
-            tableName = tableName.substring(0,tableName.length() - 1) + "_params'";
-            paramTablesArray[i] = tableName;
-        }
-		String paramTablesList = String.join(",", paramTablesArray);
-        return " " +
-                "DROP TYPE IF EXISTS " + TDMDB_SCHEMA + ".\"" + json_type_name + "\";" +
-	            "select ' CREATE type " + TDMDB_SCHEMA + ".\"" + json_type_name + "\" AS (' || string_agg(concat('\"' || column_name || '\"', ' TEXT[]'), ',')  || ');' into type_var " +
-                "from information_schema.columns where table_name in (" + paramTablesList + ") AND column_name <> 'source_environment' AND column_name <> 'entity_id' ; " +
-                "IF type_var IS NOT NULL " +
-                "THEN EXECUTE type_var;" +
-                "ELSE EXECUTE ' CREATE type " + TDMDB_SCHEMA + ".\"" + json_type_name + "\" AS (" + rootLu + "_dummy text);';" +
-                "END IF; ";
-    }
 
 	public static void fnTdmUpdateTaskExecutionEntities(String taskExecutionId, Long luId, String luName) throws Exception {
 		// TALI- 5-May-20- add a select of selection_method  + fabric_Execution_uid columns.
@@ -598,36 +954,40 @@ public class SharedLogic {
 	}
 	
 	public static String fnGetUserPermissionGroup(String userName) {
-		try {
-			String fabricRoles = "";
-			if (userName == null || "".equals(userName) || userName.equalsIgnoreCase(sessionUser().name())) {
+        try {
+            String fabricRoles = "";
+            if (userName == null || "".equals(userName) || userName.equalsIgnoreCase(sessionUser().name())) {
                 Set<String> roles = new HashSet<>(sessionUser().roles());
                 roles.remove("Everybody");
-				fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, roles);
-										
-			} else {
-                List<String> roles=new ArrayList<>();
+                fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, roles);
+            } else {
+                List<String> roles = new ArrayList<>();
                 if (userName.contains("##")) {
                     String[] userData = userName.split("##");
-                    String tmpRole = userData[1].substring(1, userData[1].length() - 1);
-                    roles.addAll(Arrays.asList((tmpRole).split(",")));
+                    String rolePart = userData[1];    
+                    if (rolePart.contains(TDM_PARAMETERS_SEPARATOR)) {
+                        String[] roleGroups = rolePart.split(TDM_PARAMETERS_SEPARATOR);
+                        for (String roleGroup : roleGroups) {
+                            roles.addAll(Arrays.asList(roleGroup.split(",")));
+                        }
+                    } else {
+                        roles.addAll(Arrays.asList(rolePart.split(",")));
+                    }
                 } else {
-				    final String user = userName;
-				    
-				    fabric().fetch("list users;").
-				    forEach(r -> {
-					    if(user.equals(r.get("user"))) {
-						    roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
-				    	}   
-				    });
+                    final String user = userName;
+                    fabric().fetch("list users;").forEach(r -> {
+                        if (user.equals(r.get("user"))) {
+                            roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
+                        }
+                    });
                 }
-				fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, roles);
-			}
+                fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, roles);
+            }
             return fnGetPermissionGroupByRoles(fabricRoles);
-    } catch (Throwable t) {
-			throw new RuntimeException( t.getMessage());
-		}
-	}
+        } catch (Throwable t) {
+            throw new RuntimeException(t.getMessage());
+        }
+    }
 	
 	//checks if the registered user is an owner of the given environment
     public static Boolean fnIsOwner(String envId) throws Exception {
@@ -1528,7 +1888,9 @@ public class SharedLogic {
                 Long overridenSrcEnvId=(Long)db(TDM).fetch(envIdByName_sql,sourceEnvName).firstValue();
 				Long overridenTarEnvId=(Long)db(TDM).fetch(envIdByName_sql,targetExeEnvName).firstValue();
                 try {
+				    if ("false".equalsIgnoreCase(getGlobal("TDM_SUPPRESS_TEST_CONNECTION"))) {
 				    fnTestTaskInterfaces(taskId,forced,overridenSrcEnvId,overridenTarEnvId);
+                    }
                 } catch (Exception e) {
                     return wrapWebServiceResults("WARNING", "Test Connection Failed", e.getMessage());
                 }
@@ -1664,4 +2026,174 @@ public class SharedLogic {
         }
     }
 
+
+    public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String SchemaName, String tableName) throws Exception {
+
+        Map<String,Object> interfaceInput = new HashMap<>();
+        interfaceInput.put("dataPlatform", dbInterfaceName);
+        interfaceInput.put("schema", SchemaName);
+        interfaceInput.put("dataset", tableName);
+
+        List<Map<String, Object>> interfaceTables =  MtableLookup("catalog_field_info",interfaceInput, MTable.Feature.caseInsensitive);
+		if (interfaceTables == null  || interfaceTables.isEmpty()) {
+            return getTableFieldsByJDBC(dbInterfaceName, SchemaName, tableName);
+        } else {
+            return getTableFieldsByCatalog(dbInterfaceName, SchemaName, tableName, interfaceTables);
+        }
+
+    }
+
+    private static List<HashMap<String, String>> getTableFieldsByJDBC(String dbInterfaceName, String SchemaName, String tableName) throws SQLException {
+		List<HashMap<String, String>> result = new ArrayList<>();
+
+        DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
+        ResultSet columns = metaData.getColumns(null, SchemaName, tableName, null);
+        
+        while (columns.next()) {
+            HashMap<String, String> map = new HashMap<>();
+            
+            map.put("column_name", columns.getString("COLUMN_NAME"));
+            int dataType = columns.getInt("DATA_TYPE");
+            String columnType = toSqliteType(dataType);
+            String generalColumnType = "TEXT";
+            Boolean addField = true;
+            switch (columnType) {
+                case "INTEGER":
+                case "REAL":
+                    generalColumnType = "NUMBER";
+                    break;
+                case "TEXT":
+                    generalColumnType = "TEXT";
+                    break;
+                case "BLOB":
+                    generalColumnType = "BLOB";
+                    break;
+                default:
+                    generalColumnType = "TEXT";
+                    break;
+            }
+            if (addField) {
+                map.put("column_name", columns.getString("COLUMN_NAME"));
+                map.put("column_type", generalColumnType);
+                result.add(map);
+            }
+        }
+
+        if (columns != null) {
+            columns.close();
+        }
+
+        return result;
+    }
+
+    private static List<HashMap<String, String>> getTableFieldsByCatalog(String dbInterfaceName, String SchemaName, String tableName, List<Map<String, Object>> interfaceTables) throws SQLException {
+		List<HashMap<String, String>> result = new ArrayList<>();
+
+        for (Map<String, Object> fieldRec : interfaceTables) {
+            HashMap<String, String> map = new HashMap<>();
+            String fieldName = fieldRec.get("field").toString();
+            map.put("column_name", fieldName);
+            String generalColumnType = "TEXT";
+            Boolean addField = true;
+            Object sourceEntityType = fieldRec.get("sourceEntityType");
+            if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
+            int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
+            String columnType = toSqliteType(fieldDataType);
+           
+            switch (columnType) {
+                case "INTEGER":
+                case "REAL":
+                    generalColumnType = "NUMBER";
+                    break;
+                case "TEXT":
+                    generalColumnType = "TEXT";
+                    break;
+                case "BLOB":
+                    generalColumnType = "BLOB";
+                    break;
+                default:
+                    generalColumnType = "TEXT";
+                    break;
+                }
+            } else {
+                addField = false; 
+            }
+            if (addField) {
+                map.put("column_name", fieldName);
+                map.put("column_type", generalColumnType);
+                result.add(map);
+            }
+
+        }
+
+        return result;
+    }
+
+    private record LuTable(String luName, String luTable) {
+        @Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			LuTable luTable1 = (LuTable) o;
+			return Objects.equals(luName, luTable1.luName) && Objects.equals(luTable, luTable1.luTable);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(luName, luTable);
+		} 
+
+
+		public String toString() {
+			return luName + "." + luTable;
+        }
+	}
+    
+    public static HashMap<String, String> fnGetSeparators() throws Exception{
+        if (tdmSeparators == null || tdmSeparators.size() == 0) {
+            tdmSeparators.put("IID_SEPARATOR", "_");
+            tdmSeparators.put("IID_OPEN_SEPARATOR", null);
+            tdmSeparators.put("IID_CLOSE_SEPARATOR", null);
+            String sql = "SELECT param_name, param_value FROM " + TDMDB_SCHEMA + ".tdm_general_parameters WHERE " +
+                    "param_name in ('iid_separator', 'IID_OPEN_SEPARATOR', 'IID_CLOSE_SEPARATOR')";
+
+            Db.Rows rows = db(TDM).fetch(sql);
+
+            for (Db.Row row : rows) {
+                switch (row.get("param_name").toString()) {
+                    case "iid_separator":
+                        tdmSeparators.put("IID_SEPARATOR", row.get("param_value").toString());
+                        break;
+                    case "IID_OPEN_SEPARATOR":
+                        tdmSeparators.put("IID_OPEN_SEPARATOR", row.get("param_value").toString());
+                        break;
+                    case "IID_CLOSE_SEPARATOR":
+                        tdmSeparators.put("IID_CLOSE_SEPARATOR", row.get("param_value").toString());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        return tdmSeparators;
+    }
+
+    public static String fnGetTaskExecutionMode(String executionMode, String taskAction, Long beId, Boolean cloneInd) throws Exception {
+		String result = "HORIZONTAL";
+
+        if ("HORIZONTAL".equalsIgnoreCase(executionMode)) {
+            return result;
+        }
+    
+        if (cloneInd || beId < 0 ||
+            (!"extract".equalsIgnoreCase(taskAction) && !"load".equalsIgnoreCase(taskAction) && !"delete".equalsIgnoreCase(taskAction))) {
+            return result;
+        }
+        if ("INHERITED".equalsIgnoreCase(executionMode)) {
+            executionMode = db(TDM).fetch("select execution_mode from " + TDMDB_SCHEMA + ".business_entities where be_id = ?", beId).firstValue().toString();
+        }
+    
+		return executionMode;
+	}
 }

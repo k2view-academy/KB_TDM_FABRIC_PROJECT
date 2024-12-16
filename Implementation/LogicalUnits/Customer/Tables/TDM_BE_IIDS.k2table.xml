@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>TDM_BE_IIDS</Name>
+  <ID>tbl_TDM_BE_IIDS</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
+  <Columns>
+    <Column name="iid" id="iid" index="0" datatype="text" />
+    <Column name="source_env" id="source_env" index="1" datatype="Text" />
+    <Column name="be_id" id="be_id" index="2" datatype="integer" />
+    <Column name="be_name" id="be_name" index="3" datatype="Text" />
+    <Column name="root_iid" id="root_iid" index="4" datatype="Text" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="iid,source_env,be_id,root_iid" />
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00" deleteMode="Off">
+    <DecisionFunction>fnDecisionSyncBeIIDS</DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+</TableObject>

@@ -1,0 +1,16 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      UpgradeTableLevelDefinitions9_11:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTableLevelDefinitions9_1
+  Stage 2:
+    actors:
+      UpdateFilterOutTargetTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateFilterOutTargetTables

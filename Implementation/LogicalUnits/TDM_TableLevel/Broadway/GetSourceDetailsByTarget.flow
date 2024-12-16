@@ -1,0 +1,120 @@
+stages:
+  Stage 1:
+    actors:
+      Get source Table Details:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: RefList
+          mtableCaseSensitive:
+            const: false
+          lu_name:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          target_ref_table_name:
+            external: tableName
+            schema: any
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          target_interface_name:
+            external: interfaceName
+            schema: any
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          target_schema_name:
+            external: schemaName
+            schema: any
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          reference_table_name:
+            schema: any
+          interface_name:
+            schema: any
+          schema_name:
+            schema: any
+  Stage 2:
+    actors:
+      Set Source Table Name:
+        parent: IfElse
+        in:
+          a:
+            link: Get source Table Details/reference_table_name
+            schema: string
+          b:
+            external: tableName
+            schema: string
+          test:
+            link: Get source Table Details/reference_table_name
+        out:
+          result:
+            external: sourceTableName
+            schema: string
+      Set Source Interface:
+        parent: IfElse
+        in:
+          a:
+            link: Get source Table Details/interface_name
+            schema: string
+          b:
+            external: interfaceName
+            schema: string
+          test:
+            link: Get source Table Details/interface_name
+        out:
+          result:
+            external: sourceInterface
+            schema: string
+      Set Source Schema:
+        parent: IfElse
+        in:
+          a:
+            link: Get source Table Details/schema_name
+            schema: string
+          b:
+            external: schemaName
+            schema: string
+          test:
+            link: Get source Table Details/schema_name
+        out:
+          result:
+            external: sourceSchema
+            schema: string
+schemas:
+  Get source Table Details.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        id:
+          type: string
+        reference_table_name:
+          type: string
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        target_ref_table_name:
+          type: string
+        target_interface_name:
+          type: string
+        target_schema_name:
+          type: string
+        table_pk_list:
+          type: string
+        truncate_indicator:
+          type: string
+        count_indicator:
+          type: string
+        count_flow:
+          type: string

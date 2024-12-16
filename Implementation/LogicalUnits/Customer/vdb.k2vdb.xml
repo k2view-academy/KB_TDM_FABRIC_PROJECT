@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
@@ -7,7 +7,7 @@
   </LuLazyDataUpdate>
   <EventsList>
   </EventsList>
-  <IidFinderProp>
+  <IidFinderProp enabled="false">
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
   </IidFinderProp>
@@ -26,6 +26,7 @@
 	 <Table>TAR_CUSTOMER</Table>
 	 <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
 	 <Table>TDM_LU_TYPE_RELATION_EID</Table>
+	 <Table>TDM_BE_IIDS</Table>
   </Tables>
   <TablesProperties>
 	 <TableProperties name="activity">
@@ -93,6 +94,11 @@
         <Population name="populationTdmLuTypeRealtionEid.flow" order="999" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
+	 <TableProperties name="TDM_BE_IIDS">
+      <Populations>
+        <Population name="populationTdmBeIID.flow" order="1000" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
   </TablesProperties>
   <EnrichmentsOrderList>
   </EnrichmentsOrderList>
@@ -140,28 +146,33 @@
         <From tableType="TableObject" table="cases" column="case_id" columnId="case_id" />
         <To tableType="TableObject" table="case_note" populationObjectName="population.flow" column="case_id" columnId="case_id" />
       </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="IID" />
+        <To tableType="TableObject" table="TDM_BE_IIDS" populationObjectName="populationTdmBeIID.flow" column="iid" columnId="iid" />
+      </Relation>
   </DatabaseRelations>
   <DiagramGraph>
     <Graph name="vdb.k2vdb.xml">
-      <Node name="FABRIC_TDM_ROOT" pos="11 314" viewType="Table" />
-      <Group name="TDM Tables" pos="1708 771" expanded="true">
-        <Node name="LU_PARAMS" pos="1834 877" viewType="Table" />
-        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="1834 1068" viewType="Table" />
-        <Node name="TDM_LU_TYPE_RELATION_EID" pos="1834 1252" viewType="Table" />
+      <Node name="FABRIC_TDM_ROOT" pos="125 700" viewType="Table" />
+      <Group name="TDM Tables" pos="826 1270" expanded="true">
+        <Node name="LU_PARAMS" pos="956 1376" viewType="Table" />
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="956 1576" viewType="Table" />
+        <Node name="TDM_LU_TYPE_RELATION_EID" pos="956 1776" viewType="Table" />
+        <Node name="TDM_BE_IIDS" pos="956 2001" viewType="Table" />
       </Group>
-      <Group name="Target Tables for Delete " pos="340 -66" expanded="true">
-        <Node name="TAR_ACTIVITY" pos="769 39" viewType="Table" />
-        <Node name="TAR_CASES" pos="1071 64" viewType="Table" />
-        <Node name="TAR_CONTRACT" pos="769 239" viewType="Table" />
-        <Node name="TAR_CUSTOMER" pos="467 89" viewType="Table" />
+      <Group name="Target Tables for Delete " pos="535 20" expanded="true">
+        <Node name="TAR_ACTIVITY" pos="961 126" viewType="Table" />
+        <Node name="TAR_CASES" pos="1252 176" viewType="Table" />
+        <Node name="TAR_CONTRACT" pos="961 351" viewType="Table" />
+        <Node name="TAR_CUSTOMER" pos="666 226" viewType="Table" />
       </Group>
-      <Group name="Source Tables" pos="190 358" expanded="true">
-        <Node name="activity" pos="618 664" viewType="Table" />
-        <Node name="address" pos="618 864" viewType="Table" />
-        <Node name="case_note" pos="1222 664" viewType="Table" />
-        <Node name="cases" pos="920 639" viewType="Table" />
-        <Node name="contract" pos="618 464" viewType="Table" />
-        <Node name="CUSTOMER" pos="316 664" viewType="Table" />
+      <Group name="Source Tables" pos="403 533" expanded="true">
+        <Node name="activity" pos="814 863" viewType="Table" />
+        <Node name="address" pos="814 1088" viewType="Table" />
+        <Node name="case_note" pos="1384 963" viewType="Table" />
+        <Node name="cases" pos="1099 913" viewType="Table" />
+        <Node name="contract" pos="814 638" viewType="Table" />
+        <Node name="CUSTOMER" pos="529 863" viewType="Table" />
       </Group>
     </Graph>
   </DiagramGraph>

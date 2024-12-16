@@ -36,6 +36,12 @@ stages:
         in:
           key:
             const: AI_ENVIRONMENT
+      beID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: beID
   Get Inputs:
     actors:
       luName:
@@ -95,6 +101,25 @@ stages:
             const: null
             link: AI_ENVIRONMENT/result
             default: false
+      isParamCoupling:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isParamCoupling
+        out:
+          value:
+            schema: string
+      BE_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: BE_ID
+            default: false
+          value:
+            const: null
+            link: beID/value
+            default: false
   Check MDB EXPORT Schema:
     actors:
       Get k2system Schema Name:
@@ -118,13 +143,13 @@ stages:
             mandatory: false
           k2system:
             link: Get k2system Schema Name/result
-            schema: any
+            schema: string
             mandatory: false
       Broadway Command Sync And Export:
         parent: StringFormat
         in:
           format:
-            const: broadway ${luName}.ImportFromGenerationJob IID=?,luName=${luName},loadIndicator=${loadIndicator}
+            const: broadway ${luName}.ImportFromGenerationJob IID=?,luName=${luName},loadIndicator=${loadIndicator},isParamCoupling=${isParamCoupling}
           luName:
             link: luName/value
             schema: string
@@ -132,6 +157,10 @@ stages:
           loadIndicator:
             link: loadIndicator   /value
             schema: boolean
+            mandatory: false
+          isParamCoupling:
+            link: isParamCoupling/value
+            schema: string
             mandatory: false
   Batch:
     dependsOn: Entity List

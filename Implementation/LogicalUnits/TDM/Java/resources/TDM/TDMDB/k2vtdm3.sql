@@ -1,3 +1,7 @@
+
+-- Set the Schema in case it is not the default one
+SET search_path = ${@schema};
+
 -- Table: ${@schema}.activities.
 
 --DROP TABLE IF EXISTS ${@schema}.activities;
@@ -5,11 +9,11 @@
 CREATE TABLE IF NOT EXISTS ${@schema}.activities
 (
     date timestamp without time zone,
-    action character varying(200),
-    entity character varying,
-    username character varying(200),
-    description character varying(200),
-    user_id character varying(200)
+    action text,
+    entity text,
+    username text,
+    description text,
+    user_id text
 );
 
 -- Table: ${@schema}.business_entities
@@ -18,14 +22,15 @@ CREATE TABLE IF NOT EXISTS ${@schema}.activities
 
 CREATE TABLE IF NOT EXISTS ${@schema}.business_entities
 (
-    be_name character varying(200) NOT NULL,
+    be_name text NOT NULL,
     be_description text,
     be_id bigint NOT NULL DEFAULT nextval('business_entities_be_id_seq'::regclass),
-    be_created_by character varying(200),
+    be_created_by text,
     be_creation_date timestamp without time zone,
     be_last_updated_date timestamp without time zone,
-    be_last_updated_by character varying(200),
-    be_status character varying(50),
+    be_last_updated_by text,
+    be_status text,
+    execution_mode text DEFAULT 'HORIZONTAL',
     CONSTRAINT business_entities_pkey PRIMARY KEY (be_id)
 );
 
@@ -38,9 +43,9 @@ Create UNIQUE INDEX IF NOT EXISTS BE_NAME_FOR_ACTIVE_IX ON ${@schema}.Business_E
 CREATE TABLE IF NOT EXISTS ${@schema}.environment_owners
 (
     environment_id bigint NOT NULL,
-    user_type character varying(10) NOT NULL,
-    user_name character varying(200),
-    user_id character varying(200),
+    user_type text NOT NULL,
+    user_name text,
+    user_id text,
     CONSTRAINT check_env_owner_type CHECK (user_type = 'ID' OR user_type = 'GROUP')
 );
 
@@ -53,13 +58,13 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_products
     environment_product_id bigint NOT NULL DEFAULT nextval('environment_product_id_seq'::regclass),
     environment_id bigint NOT NULL,
     product_id bigint NOT NULL,
-    product_version character varying(200),
-    created_by character varying,
+    product_version text,
+    created_by text,
     creation_date timestamp without time zone,
     last_updated_date timestamp without time zone,
-    last_updated_by character varying,
-    status character varying(200) NOT NULL,
-    data_center_name character varying(200),
+    last_updated_by text,
+    status text NOT NULL,
+    data_center_name text,
     CONSTRAINT environment_products_pkey PRIMARY KEY (environment_product_id)
 );
 
@@ -73,9 +78,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_role_users
 (
     environment_id bigint NOT NULL,
     role_id bigint NOT NULL,
-    user_type character varying(10) NOT NULL,
-    username character varying,
-    user_id character varying(200),
+    user_type text NOT NULL,
+    username text,
+    user_id text,
    CONSTRAINT check_user_type CHECK (user_type = 'ALL' OR user_type = 'ID' OR user_type = 'GROUP') 
 );
 
@@ -91,7 +96,7 @@ Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_USER_IX ON ${@schema}.environment_rol
 CREATE TABLE IF NOT EXISTS ${@schema}.environment_roles
 (
     environment_id bigint NOT NULL,
-    role_name character varying(200) NOT NULL,
+    role_name text NOT NULL,
     role_description text,
     allowed_delete_before_load boolean NOT NULL DEFAULT false,
     allowed_creation_of_synthetic_data boolean NOT NULL DEFAULT false,
@@ -100,12 +105,12 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_roles
     allowed_task_scheduling boolean NOT NULL DEFAULT false,
     allowed_number_of_entities_to_copy bigint NOT NULL DEFAULT 1000,
     role_id bigint NOT NULL DEFAULT nextval('environment_roles_role_id_seq'::regclass),
-    role_created_by character varying(200),
+    role_created_by text,
     role_creation_date timestamp without time zone,
     role_last_updated_date timestamp without time zone,
     role_expiration_date timestamp without time zone,
-    role_last_updated_by character varying(200),
-    role_status character varying(50),
+    role_last_updated_by text,
+    role_status text,
     allowed_refresh_reference_data boolean,
     allowed_replace_sequences boolean,
     allow_read boolean NOT NULL DEFAULT false, 
@@ -127,23 +132,23 @@ Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_FOR_ACTIVE_IX ON ${@schema}.environme
 
 CREATE TABLE IF NOT EXISTS ${@schema}.environments
 (
-    environment_name character varying(200) NOT NULL,
+    environment_name text NOT NULL,
     environment_description text,
     environment_expiration_date date,
-    environment_point_of_contact_first_name character varying,
-    environment_point_of_contact_last_name character varying(50),
-    environment_point_of_contact_phone1 character varying(50),
-    environment_point_of_contact_phone2 character varying(50),
-    environment_point_of_contact_email character varying(50),
+    environment_point_of_contact_first_name text,
+    environment_point_of_contact_last_name text,
+    environment_point_of_contact_phone1 text,
+    environment_point_of_contact_phone2 text,
+    environment_point_of_contact_email text,
     environment_id bigint NOT NULL DEFAULT nextval('environments_environment_id_seq'::regclass),
-    environment_created_by character varying(200),
+    environment_created_by text,
     environment_creation_date timestamp without time zone,
     environment_last_updated_date timestamp without time zone,
-    environment_last_updated_by character varying(200),
-    environment_status character varying,
+    environment_last_updated_by text,
+    environment_status text,
     allow_write boolean NOT NULL DEFAULT true,
     allow_read boolean NOT NULL DEFAULT false,
-    sync_mode character varying(20) DEFAULT 'ON',
+    sync_mode text DEFAULT 'ON',
     mask_sensitive_data boolean NOT NULL DEFAULT true, -- TDM 8.1
     CONSTRAINT environments_pkey PRIMARY KEY (environment_id)
 );
@@ -157,8 +162,8 @@ Create UNIQUE INDEX IF NOT EXISTS ENV_NAME_FOR_ACTIVE_IX ON ${@schema}.environme
 CREATE TABLE IF NOT EXISTS ${@schema}.parameters
 (
     be_id bigint NOT NULL,
-    param_name character varying(200) NOT NULL,
-    param_type character varying(200),
+    param_name text NOT NULL,
+    param_type text,
     valid_values text[],
     min_value numeric[],
     max_value numeric[],
@@ -171,13 +176,13 @@ CREATE TABLE IF NOT EXISTS ${@schema}.parameters
 
 CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
 (
-    lu_name character varying(200) NOT NULL,
+    lu_name text NOT NULL,
     lu_description text,
     be_id bigint NOT NULL,
     lu_parent_id bigint,
     lu_id bigint NOT NULL DEFAULT nextval('product_logical_units_lu_id_seq'::regclass),
-    product_name character varying(200),
-    lu_parent_name character varying(200),
+    product_name text,
+    lu_parent_name text,
     product_id bigint,
     CONSTRAINT product_logical_units_pkey PRIMARY KEY (be_id,lu_id)
 );
@@ -188,16 +193,16 @@ CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
 
 CREATE TABLE IF NOT EXISTS ${@schema}.products
 (
-    product_name character varying(200) NOT NULL,
+    product_name text NOT NULL,
     product_description text,
-    product_vendor character varying(200),
-    product_versions character varying(200),
+    product_vendor text,
+    product_versions text,
     product_id bigint NOT NULL DEFAULT nextval('products_product_id_seq'::regclass),
-    product_created_by character varying(200),
+    product_created_by text,
     product_creation_date timestamp without time zone,
     product_last_updated_date timestamp without time zone,
-    product_last_updated_by character varying(200),
-    product_status character varying(50),
+    product_last_updated_by text,
+    product_status text,
     CONSTRAINT products_pkey PRIMARY KEY (product_id)
    --, CONSTRAINT products_product_name_key UNIQUE (product_name)
 );
@@ -215,38 +220,39 @@ Create UNIQUE INDEX IF NOT EXISTS PROD_NAME_FOR_ACTIVE_IX ON ${@schema}.products
 CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
 (
     task_id bigint NOT NULL, 
-    task_type character varying(20),
+    task_type text,
     task_execution_id bigint NOT NULL,
     creation_date timestamp without time zone,
     be_id bigint,
     environment_id bigint NOT NULL,
     product_id bigint,
-    product_version character varying(50) COLLATE pg_catalog."default",
-    execution_status character varying(50) COLLATE pg_catalog."default",
+    product_version text COLLATE pg_catalog."default",
+    execution_status text COLLATE pg_catalog."default",
     start_execution_time timestamp without time zone,
     end_execution_time timestamp without time zone,
     num_of_processed_entities numeric(10),
     num_of_copied_entities numeric(10),
     num_of_failed_entities numeric(10),
-    data_center_name character varying(200),
+    data_center_name text,
     lu_id bigint NOT NULL default 0,
     num_of_processed_ref_tables numeric(10,0),
     num_of_copied_ref_tables numeric(10,0),
     num_of_failed_ref_tables numeric(10,0),
     parent_lu_id bigint,
-    source_env_name character varying(300), 
+    source_env_name text, 
     source_environment_id bigint, 
     task_executed_by text,
-    fabric_execution_id character varying(200),
+    fabric_execution_id text,
 	subset_task_execution_id bigint DEFAULT 0,
     version_task_execution_id bigint DEFAULT 0,
     expiration_date timestamp without time zone,
     synced_to_fabric boolean DEFAULT false, 
-    updated_by character varying(100), 
+    updated_by text, 
     clean_redis boolean DEFAULT false, -- TDM 5.5
     process_id bigint NOT NULL default 0, -- IDM 7.0.1
     execution_note text, -- TDM 7.4
-    source_product_version character varying(50), -- TD< 7.5.2
+    source_product_version text, -- TDM 7.5.2
+    entity_inclusion_query TEXT, -- TDM 9.1 params coupling 
     CONSTRAINT task_execution_list_pkey PRIMARY KEY (task_execution_id, lu_id, process_id)
 );
 
@@ -271,45 +277,46 @@ Create INDEX IF NOT EXISTS TASK_EXEC_IX2 ON ${@schema}.task_execution_list (task
 CREATE TABLE IF NOT EXISTS ${@schema}.tasks
 (
     task_id bigint NOT NULL DEFAULT nextval('tasks_task_id_seq'::regclass),
-    task_title character varying(200) NOT NULL,
-    task_status character varying(200) DEFAULT 'Active',
-    task_execution_status character varying(10) DEFAULT 'Active',
+    task_title text NOT NULL,
+    task_status text DEFAULT 'Active',
+    task_execution_status text DEFAULT 'Active',
     num_of_entities bigint,
     environment_id bigint NOT NULL,
     be_id bigint NOT NULL,
-    selection_method character varying(200) NOT NULL,
+    selection_method text NOT NULL,
     selection_param_value text,
     custom_logic_lu_name text,
     parameters text,
     refresh_reference_data boolean,
     delete_before_load boolean NOT NULL DEFAULT false,
     replace_sequences boolean,
-    scheduler character varying(200),
+    scheduler text,
     task_created_by text,
     task_creation_date timestamp without time zone,
     task_last_updated_date timestamp without time zone,
-    task_last_updated_by character varying(200),
-    source_env_name character varying(300) NOT NULL,
+    task_last_updated_by text,
+    source_env_name text NOT NULL,
     source_environment_id bigint, 
     load_entity boolean,
-    task_type character varying(20) NOT NULL,
+    task_type text NOT NULL,
     version_ind  boolean NOT NULL DEFAULT false,
-    retention_period_type character varying(20),
+    retention_period_type text,
     retention_period_value numeric,
     selected_version_task_exe_id bigint DEFAULT 0, 
     selected_subset_task_exe_id bigint DEFAULT 0, 
     scheduling_end_date timestamp without time zone, 
     selected_ref_version_task_exe_id bigint DEFAULT 0,  
     task_globals boolean,
-    sync_mode character varying(20),
+    sync_mode text,
     reserve_ind boolean NOT NULL DEFAULT false,
-    reserve_retention_period_type character varying(20) COLLATE pg_catalog."default",
+    reserve_retention_period_type text COLLATE pg_catalog."default",
     reserve_retention_period_value numeric,
     reserve_note text, -- TDM 7.5.2
-    filterout_reserved boolean DEFAULT true, --TDM 7.6
+    filterout_reserved TEXT DEFAULT 'NA', --TDM 9.2
     mask_sensitive_data boolean default true, -- TDM 8.1
     task_description text,
     clone_ind boolean NOT NULL DEFAULT false,
+    execution_mode text DEFAULT 'INHERITED',
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
@@ -324,10 +331,10 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_env_exclusion_list
   be_id bigint,
   environment_id bigint,
   exclusion_list text,
-  requested_by character varying(200),
+  requested_by text,
   update_date timestamp without time zone,
-  created_by character varying(200),
-  updated_by character varying(200),
+  created_by text,
+  updated_by text,
   be_env_exclusion_list_id integer NOT NULL DEFAULT nextval('tdm_be_env_exclusion_list_be_env_exclusion_list_id_seq'::regclass),
   creation_date timestamp without time zone,
   CONSTRAINT tdm_be_env_exclusion_list_be_env_exclusion_list_id_pk PRIMARY KEY (be_env_exclusion_list_id)
@@ -342,15 +349,15 @@ Create UNIQUE INDEX IF NOT EXISTS BE_ENV_EXCLUSION_LIST_IX on ${@schema}.tdm_be_
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_seq_mapping
 (
   task_execution_id      bigint NOT NULL,
-  lu_type character varying(30) NOT NULL,
-  source_env      character varying(100) NOT NULL,
-  entity_target_id        character varying(100),
-  seq_name        character varying(100),
-  table_name      character varying(100),
-  column_name     character varying(100),
-  source_id       character varying(100),
-  target_id       character varying(100),
-  is_instance_id  character varying(1),
+  lu_type text NOT NULL,
+  source_env      text NOT NULL,
+  entity_target_id        text,
+  seq_name        text,
+  table_name      text,
+  column_name     text,
+  source_id       text,
+  target_id       text,
+  is_instance_id  text,
   entity_sequence bigint
 );
 
@@ -394,11 +401,11 @@ CREATE INDEX IF NOT EXISTS task_execution_entities_2ix ON ${@schema}.task_execut
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_lu_type_relation_eid
 (
-  source_env character varying(200) NOT NULL,
-  lu_type_1 character varying(200) NOT NULL,
-  lu_type_2 character varying(200) NOT NULL,
-  lu_type1_eid character varying(50) NOT NULL,
-  lu_type2_eid character varying(50) NOT NULL,
+  source_env text NOT NULL,
+  lu_type_1 text NOT NULL,
+  lu_type_2 text NOT NULL,
+  lu_type1_eid text NOT NULL,
+  lu_type2_eid text NOT NULL,
   creation_date timestamp without time zone,
   version_task_execution_id bigint NOT NULL DEFAULT 0, --TDM 9.0 
   subset_task_execution_id bigint DEFAULT 0,--TDM 9.0
@@ -414,11 +421,11 @@ CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_2ix ON ${@schema}.tdm_lu_typ
 				  
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_lu_type_rel_tar_eid
 (
-	target_env character varying(200) NOT NULL,
-	lu_type_1 character varying(200) NOT NULL,
-	lu_type_2 character varying(200) NOT NULL,
-	lu_type1_eid character varying(50) NOT NULL,
-	lu_type2_eid character varying(50) NOT NULL,
+	target_env text NOT NULL,
+	lu_type_1 text NOT NULL,
+	lu_type_2 text NOT NULL,
+	lu_type1_eid text NOT NULL,
+	lu_type2_eid text NOT NULL,
 	creation_date timestamp without time zone,
 	CONSTRAINT tdm_lu_type_rel_tar_eid_pk PRIMARY KEY (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid)
 );
@@ -430,7 +437,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks_logical_units
 (
   task_id bigint NOT NULL,
   lu_id  bigint NOT NULL,
-  lu_name character varying(200),
+  lu_name text,
   CONSTRAINT tasks_logical_units_pkey PRIMARY KEY (task_id, lu_name)
 );
 
@@ -442,10 +449,10 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
 (
   task_ref_table_id bigint NOT NULL DEFAULT nextval('tasks_ref_table_id_seq'::regclass),
   task_id bigint NOT NULL, 
-  ref_table_name character varying(100),
-  lu_name character varying(100),
-  schema_name character varying(200),
-  interface_name character varying(200),
+  ref_table_name text,
+  lu_name text,
+  schema_name text,
+  interface_name text,
   update_date timestamp without time zone,
   table_filter text,
   filter_type text,
@@ -467,16 +474,16 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_exe_stats
   task_id bigint NOT NULL,
   task_execution_id bigint NOT NULL,
   task_ref_table_id bigint,
-  ref_table_name character varying(100),
-  job_uid character varying(100),
+  ref_table_name text,
+  job_uid text,
   update_date timestamp without time zone,
   start_time timestamp without time zone,
   end_time timestamp without time zone,
-  execution_status character varying(50), 
+  execution_status text, 
   number_of_records_to_process numeric(10,0),
   number_of_processed_records numeric(10,0),
   error_msg text,
-  updated_by character varying(100),
+  updated_by text,
   table_filter text,
   filter_type text		
   );
@@ -491,8 +498,8 @@ Create INDEX IF NOT EXISTS task_ref_exe_stats_IX3 on ${@schema}.task_ref_exe_sta
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_general_parameters
 (
-  param_name character varying(200) NOT NULL,
-  param_value character varying(2000),
+  param_name text NOT NULL,
+  param_value text,
   CONSTRAINT tdm_general_parameters_pk PRIMARY KEY (param_name)
 );
 
@@ -508,7 +515,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
     
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '9.0' 
+    select 'TDM_VERSION', '9.2' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 insert into ${@schema}.tdm_general_parameters(
@@ -531,6 +538,17 @@ insert into ${@schema}.tdm_general_parameters (
     select 'TABLE_DEFAULT_DISTRIBUTION_MAX', 3
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TABLE_DEFAULT_DISTRIBUTION_MAX');
 
+INSERT INTO ${@schema}.tdm_general_parameters(param_name, param_value)
+    VALUES ('ENABLE_PARAMETERS_AUTO_WIDTH', 'false') ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.tdm_general_parameters(
+        param_name, param_value)
+    VALUES ('PARAMS_COUPLING', 'false') ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.tdm_general_parameters(
+        param_name, param_value)
+    VALUES ('ADD_LU_NAME_TO_PARAM_NAME', 'false') ON CONFLICT DO NOTHING;
+
 -- Table: ${@schema}.task_globals
 
 --DROP TABLE IF EXISTS ${@schema}.task_globals;
@@ -538,8 +556,8 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 CREATE TABLE IF NOT EXISTS ${@schema}.task_globals
 (
   task_id bigint NOT NULL,
-  global_name character varying(200),
-  global_value character varying(200)
+  global_name text,
+  global_value text
 );
 
 Create INDEX IF NOT EXISTS task_globals_ix on ${@schema}.task_globals(task_id);
@@ -551,10 +569,10 @@ Create INDEX IF NOT EXISTS task_globals_ix on ${@schema}.task_globals(task_id);
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_env_globals
 (
    ENVIRONMENT_ID bigint ,
-   GLOBAL_NAME character varying (200),
-   GLOBAL_VALUE character varying (200),
+   GLOBAL_NAME text,
+   GLOBAL_VALUE text,
    UPDATE_DATE timestamp without time zone,
-   UPDATED_BY character varying (200)
+   UPDATED_BY text
 );
 
 create UNIQUE INDEX IF NOT EXISTS ENV_ID_GLOBAL_NAME_IX on ${@schema}.tdm_env_globals (ENVIRONMENT_ID,GLOBAL_NAME);
@@ -566,11 +584,11 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
 (
   task_execution_id bigint NOT NULL,
   task_id bigint NOT NULL,
-  task_type character varying(20),
+  task_type text,
   creation_date timestamp without time zone,
   be_id bigint,
   environment_id bigint NOT NULL,
-  execution_status character varying(50),
+  execution_status text,
   start_execution_time timestamp without time zone,
   end_execution_time timestamp without time zone,
   tot_num_of_processed_root_entities numeric(10,0),
@@ -579,7 +597,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
   tot_num_of_processed_ref_tables numeric(10,0),
   tot_num_of_copied_ref_tables numeric(10,0),
   tot_num_of_failed_ref_tables numeric(10,0),
-  source_env_name character varying(300),
+  source_env_name text,
   source_environment_id bigint,
   task_executed_by text,
   version_task_execution_id bigint DEFAULT 0,
@@ -604,13 +622,13 @@ CREATE INDEX IF NOT EXISTS task_exec_summary_ix1
 --CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_summary
 --(
 --	task_execution_id bigint NOT NULL,
---	lu_name character varying(200) NOT NULL,
+--	lu_name text NOT NULL,
 --	creation_date timestamp without time zone,
---	table_name character varying(100),
---	source_count character varying(20),
---	target_count character varying(20),
---	diff character varying(20),
---	results character varying(20),
+--	table_name text,
+--	source_count text,
+--	target_count text,
+--	diff text,
+--	results text,
 --	CONSTRAINT task_exe_stats_summary_pkey PRIMARY KEY (task_execution_id,lu_name,table_name)
 --);
 
@@ -620,9 +638,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_summary
 (
 	task_execution_id bigint NOT NULL,
 	etl_execution_id numeric(10,0),
-	lu_name character varying(200) NOT NULL,
-	error_category character varying(200) NOT NULL,
-	error_code character varying(100) NOT NULL,
+	lu_name text NOT NULL,
+	error_category text NOT NULL,
+	error_code text NOT NULL,
 	error_msg text NOT NULL,
 	creation_date timestamp without time zone,
 	no_of_records numeric(10,0),
@@ -635,17 +653,17 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_summary
 CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_detailed
 (
 	task_execution_id bigint NOT NULL,
-	lu_name character varying(200) NOT NULL,
+	lu_name text NOT NULL,
 	entity_id text NOT NULL,
-	iid character varying(50) NOT NULL,
+	iid text NOT NULL,
 	target_entity_id text NOT NULL,
-	error_category character varying(100) NOT NULL,
-	error_code character varying(100),
+	error_category text NOT NULL,
+	error_code text,
 	error_message text NOT NULL,
 	creation_date timestamp without time zone NOT NULL DEFAULT now(),
-	flow_name character varying(100),
-	stage_name character varying(100),
-	actor_name character varying(100),
+	flow_name text,
+	stage_name text,
+	actor_name text,
 	actor_parameters text
 );
 
@@ -678,6 +696,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks_exe_process (
 	process_name text NOT NULL,
 	execution_order integer NOT NULL,
     process_type TEXT,
+    parameters TEXT,
 	CONSTRAINT tasks_exe_pkey PRIMARY KEY (task_id, process_id)
 );
 
@@ -686,18 +705,18 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks_exe_process (
 CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_detailed
 (
     task_execution_id bigint NOT NULL,
-    lu_name character varying(200)  NOT NULL,
+    lu_name text  NOT NULL,
     entity_id text NOT NULL,
     target_entity_id text NOT NULL,
-    table_name character varying(100) NOT NULL,
-    stage_name character varying(100),
-    flow_name character varying(100),
-    actor_name character varying(100),
+    table_name text NOT NULL,
+    stage_name text,
+    flow_name text,
+    actor_name text,
     creation_date timestamp without time zone,
-    source_count character varying(20),
-    target_count character varying(20),
-    diff character varying(20),
-    results character varying(20)
+    source_count text,
+    target_count text,
+    diff text,
+    results text
 );
 
 -- DROP INDEX IF EXISTS ${@schema}.task_exe_stats_detailed_1ix;
@@ -709,10 +728,10 @@ CREATE INDEX IF NOT EXISTS task_exe_stats_detailed_1ix ON ${@schema}.task_exe_st
 CREATE TABLE IF NOT EXISTS ${@schema}.permission_groups_mapping
 (
     description text,
-    fabric_role character varying(100) NOT NULL,
-    permission_group character varying(100) NOT NULL,
-    created_by character varying(100) NOT NULL,
-    updated_by character varying(100) NOT NULL,
+    fabric_role text NOT NULL,
+    permission_group text NOT NULL,
+    created_by text NOT NULL,
+    updated_by text NOT NULL,
     creation_date timestamp without time zone,
     update_date timestamp without time zone,
     CONSTRAINT permission_groups_mapping_pkey PRIMARY KEY (fabric_role)
@@ -785,6 +804,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values -- New Table TD
     is_numeric boolean,
     min_value text,
     max_value text,
+    field_type text,
     CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (source_environment, lu_name, field_name)
 );
 

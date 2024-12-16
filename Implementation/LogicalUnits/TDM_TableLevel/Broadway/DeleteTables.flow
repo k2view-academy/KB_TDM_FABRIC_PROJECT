@@ -1,411 +1,120 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "List Of Tables",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "GetDeleteOrTruncateIndicator1",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetDeleteOrTruncateIndicator"
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableLevelInd",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "schema_name",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": "PopulateTableErrorsForTableLevel"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Target Entity ID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Delete Table",
-                            "actorType": {
-                                "parentType": "InnerFlowAsync",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "DeleteOneTable"
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ],
-                                            "interfaces": [
-                                                "fabric"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.dbtable"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.dbtable"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "DeleteOrTruncate",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "results",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {}
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Wait for All Tables to be Deleted",
-                            "actorType": {
-                                "parentType": "InnerFlowJoin",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Sleep1",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "Sleep",
-                                "inputs": [
-                                    {
-                                        "name": "millis",
-                                        "const": 30000
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "List Of Tables",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Delete Table",
-                "name": "table"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "List Of Tables",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Set Target Entity ID",
-                "name": "value"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "List Of Tables",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "GetDeleteOrTruncateIndicator1",
-                "name": "tableName"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "GetDeleteOrTruncateIndicator1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Delete Table",
-                "name": "DeleteOrTruncate"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Delete Table",
-                "name": "remaining"
-            },
-            "rightPort": {
-                "actor": "Wait for All Tables to be Deleted",
-                "name": "remaining"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Delete Table",
-                "name": "failures"
-            },
-            "rightPort": {
-                "actor": "Wait for All Tables to be Deleted",
-                "name": "failures"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tablesForDelete"
-            },
-            "rightPort": {
-                "actor": "List Of Tables",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "interface"
-            },
-            "rightPort": {
-                "actor": "GetDeleteOrTruncateIndicator1",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableLevelInd"
-            },
-            "rightPort": {
-                "actor": "GetDeleteOrTruncateIndicator1",
-                "name": "tableLevelInd"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "GetDeleteOrTruncateIndicator1",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "GetDeleteOrTruncateIndicator1",
-                "name": "schema_name"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "interface"
-            },
-            "rightPort": {
-                "actor": "Delete Table",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "Delete Table",
-                "name": "schema"
-            }
-        }
-    ]
-}
+stages:
+  Get List Of Tables And Delete Indicator:
+    actors:
+      Get Delete Or Truncate Indicator:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TableLevelInterfaces
+          interface_name:
+            external: interface
+            schema: any
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          truncate_indicator:
+            schema: any
+      List Of Tables:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tablesForDelete
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+  Delete One Table:
+    last: 1
+    actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Set Target Entity ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
+            default: false
+      Delete Table:
+        parent: InnerFlowAsync
+        in:
+          flowName:
+            const: DeleteOneTable
+          interface:
+            external: interface
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          schema:
+            external: schema
+            schema: string
+            editor:
+              id: com.k2view.dbtable
+            mandatory: false
+          table:
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.dbtable
+            mandatory: false
+          deleteOrTruncate:
+            link: Get Delete Or Truncate Indicator/truncate_indicator
+            schema: string
+            mandatory: false
+        out:
+          results:
+            schema: '#ref'
+  Wait for All Tables:
+    actors:
+      Wait for All Tables to be Deleted:
+        parent: InnerFlowJoin
+        in:
+          remaining:
+            link: Delete Table/remaining
+          failures:
+            link: Delete Table/failures
+      Sleep1:
+        parent: Sleep
+        disabled: true
+        in:
+          millis:
+            const: 30000
+schemas:
+  List Of Tables.in.value:
+    type: array
+    items:
+      type: string
+  List Of Tables.out.value:
+    type: array
+    items:
+      type: string
+  Delete Table.out.results:
+    type: array
+    items: {
+      }

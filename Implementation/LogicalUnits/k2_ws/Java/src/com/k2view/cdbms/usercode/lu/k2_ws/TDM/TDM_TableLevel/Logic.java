@@ -25,8 +25,8 @@ import java.sql.ResultSet;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetTableFields;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
-import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.toSqliteType;
 import java.util.*;
 import java.sql.*;
 import java.math.*;
@@ -50,25 +50,24 @@ public class Logic extends WebServiceUserCode {
 	public static final String TDM = "TDM";
 	
 	private static List<HashMap<String, Object>> getTableByEnv(String source_env) throws Exception {
-		
-	    List<HashMap<String, Object>> result = new ArrayList<>();
+        List<HashMap<String, Object>> result = new ArrayList<>();
+            Set<FabricInterface> interfaces = InterfacesManager.getInstance().getAllInterfaces(source_env);
+            for(FabricInterface interfaceRec : interfaces) {
+                if (interfaceRec.getActiveMode()) {
+                    String interfaceType = interfaceRec.getTypeName();// == "DATABASE"
+                    Map<String,Object> interfaceInput = new HashMap<>();
+                    String intefaceName = interfaceRec.getName();
+                    interfaceInput.put("interface_name", intefaceName);
 
-		Set<FabricInterface> interfaces = InterfacesManager.getInstance().getAllInterfaces(source_env);
-		for(FabricInterface interfaceRec : interfaces) {
-		    if (interfaceRec.getActiveMode() && interfaceRec.getTypeName() == "DATABASE") {
-                Map<String,Object> interfaceInput = new HashMap<>();
-		        String intefaceName = interfaceRec.getName();
-                interfaceInput.put("interface_name", intefaceName);
-
-                List<Map<String, Object>> interfaceParams =  MtableLookup("TableLevelInterfaces",interfaceInput, MTable.Feature.caseInsensitive);
-		        if (interfaceParams == null  || interfaceParams.isEmpty() || Boolean.parseBoolean(interfaceParams.get(0).get("suppress_indicator").toString()) == false) {
-		            List<Map<String, Object>> interfaceTables = getInterfaceTables(intefaceName, source_env);
-		            HashMap<String, Object> interfaceMap = new HashMap<>();
-		            interfaceMap.put(intefaceName, interfaceTables);
-		            result.add(interfaceMap);
-		        }
-		    }
-	    }
+                    List<Map<String, Object>> interfaceParams =  MtableLookup("TableLevelInterfaces",interfaceInput, MTable.Feature.caseInsensitive);
+                    if (interfaceParams == null  || interfaceParams.isEmpty() || Boolean.parseBoolean(interfaceParams.get(0).get("suppress_indicator").toString()) == false) {
+                        List<Map<String, Object>> interfaceTables = getInterfaceTables(intefaceName, interfaceType, source_env);
+                        HashMap<String, Object> interfaceMap = new HashMap<>();
+                        interfaceMap.put(intefaceName, interfaceTables);
+                        result.add(interfaceMap);
+                    }
+                }
+            }
 		return result;
 	}
 
@@ -145,12 +144,15 @@ public class Logic extends WebServiceUserCode {
 		List<String> logicalUnits = new ArrayList<>();
         List<HashMap<String, Object>> result = new ArrayList<>();
 		
+        fabric().execute("set environment='" + source_env + "';");
+        
         String message = null;
         String errorCode = "";
-        if (be_name == null || be_name.isEmpty()) {
-            result = getTableByEnv(source_env);
-        } else {
-            //try {
+        try {
+            if (be_name == null || be_name.isEmpty()) {
+                result = getTableByEnv(source_env);
+            } else {
+                
                 Db.Rows luRows = db(TDM).fetch("SELECT pl.lu_name FROM " + 
                     TDMDB_SCHEMA + ".BUSINESS_ENTITIES be, " + TDMDB_SCHEMA + ".PRODUCT_LOGICAL_UNITS pl " + 
                     "WHERE be.be_name = ? AND be.be_status = 'Active' AND be.be_id = pl.be_id", be_name);
@@ -163,7 +165,6 @@ public class Logic extends WebServiceUserCode {
             
                 String broadwayCommand = "broadway TDM.refListLookup;";
                 Db.Rows rows = fabric().fetch(broadwayCommand);
-                //Map<String, HashMap<String, ArrayList<Map<String, String>>>> interfacesMaps = new HashMap<>();
                 ArrayList<String> tables = new ArrayList<>();
                 for (Db.Row row : rows) {
                     Iterable<? extends Map<?, ?>> maps = ParamConvertor.toIterableOf(row.get("result"), ParamConvertor::toMap);
@@ -184,12 +185,11 @@ public class Logic extends WebServiceUserCode {
                 String schemaName = ""; 
                 String currentInterface = "";
                 String currentSchema = "";
-                String previousInterface = "";
                 
                 HashMap<String, ArrayList<HashMap<String, Object>>> schemaData = new HashMap<>();
                 ArrayList<HashMap<String, ArrayList<HashMap<String, Object>>>> interfaceData = new ArrayList<>();
                 for (String str : tables) {
-                    HashMap<String, Object> tableData = new HashMap<>();
+                    SortedMap<String, Object> tableData = new TreeMap<>();
                     String[] strs = str.split("##");
                     interfaceName = strs[0];
                     schemaName = strs[1];
@@ -220,7 +220,6 @@ public class Logic extends WebServiceUserCode {
                         } 
                         schemaData.clear();
                         ArrayList<HashMap<String, Object>> tableArray = new ArrayList<>();
-                        previousInterface = currentInterface;
                         currentInterface = interfaceName;
                         currentSchema = schemaName;
                         tableArray.add(new HashMap<>(tableData));
@@ -229,26 +228,22 @@ public class Logic extends WebServiceUserCode {
                         
                     }
                 }
-                
-                if (!previousInterface.equals(interfaceName)) {
-                    interfaceData.clear();
-                } 
 
                 interfaceData.add(schemaData);
                 HashMap<String, Object> map = new HashMap<>();
                 map.put(currentInterface, new ArrayList<>(interfaceData));
                 result.add(map);
                 
-		        if (rows != null) {
-    		        rows.close();
-	    	    }
+                if (rows != null) {
+                    rows.close();
+                }
             }
-		    errorCode = "SUCCESS";
-		/*   } catch (Exception e) {
+            errorCode = "SUCCESS";
+	    } catch (Exception e) {
 		    message = e.getMessage();
 		    log.error(message);
 		    errorCode = "FAILED";
-		}*/
+		}
         response.put("result", result);
 		response.put("errorCode", errorCode);
 		response.put("message", message);
@@ -313,11 +308,30 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-    private static List<Map<String, Object>> getInterfaceTables(String dbInterfaceName, String envName) throws Exception {
-		ResultSet rs = null;
+    private static List<Map<String, Object>> getInterfaceTables(String dbInterfaceName, String interfaceType, String envName) throws Exception {
+		List<Map<String, Object>> result = new ArrayList<>();
+
+        Map<String,Object> interfaceInput = new HashMap<>();
+        interfaceInput.put("dataPlatform", dbInterfaceName);
+
+        List<Map<String, Object>> interfaceTables =  MtableLookup("catalog_field_info",interfaceInput, MTable.Feature.caseInsensitive);
+		if (interfaceTables == null  || interfaceTables.isEmpty()) {
+            if ("DATABASE".equalsIgnoreCase(interfaceType)) {
+                result  = getIntefaceTablesByJDBC(dbInterfaceName, envName);
+            }
+        } else {
+            result = getIntefaceTablesByCatalog(dbInterfaceName, envName, interfaceTables);
+        }
+
+		return result;
+	}
+
+    private static List<Map<String, Object>> getIntefaceTablesByJDBC(String dbInterfaceName, String envName) throws Exception{
+        ResultSet rs = null;
         String[] types = {"TABLE"};
 		List<Map<String, Object>> result = new ArrayList<>();
-		try {
+
+        try {
 			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
             ResultSet schemas = md.getSchemas();
             List<String> schemaList = new ArrayList<>();
@@ -344,11 +358,11 @@ public class Logic extends WebServiceUserCode {
             for (String schemaName : schemaList) {
                 Map <String, Object> schemaMap = new HashMap<>();
                 
-                List<Map<String, Object>> tableList  = new ArrayList<>();
+                List<SortedMap<String, Object>> tableList  = new ArrayList<>();
 			    rs = md.getTables(null, schemaName, "%", types);
 			    while (rs.next()) {
                     String tableName = rs.getString("TABLE_NAME");
-                    Map<String, Object> tableData = getTableLastExecution(tableName, schemaName, dbInterfaceName, envName);
+                    SortedMap<String, Object> tableData = getTableLastExecution(tableName, schemaName, dbInterfaceName, envName);
                     tableData.put("tableName", tableName);
 				    tableList.add(tableData);
 			    }
@@ -364,11 +378,11 @@ public class Logic extends WebServiceUserCode {
             for (String catalogName : catalogList) {
                 Map <String, Object> catalogMap = new HashMap<>();
                 
-                List<Map<String, Object>> tableList  = new ArrayList<>();
+                List<SortedMap<String, Object>> tableList  = new ArrayList<>();
 			    rs = md.getTables(catalogName, null, "%", types);
 			    while (rs.next()) {
                     String tableName = rs.getString("TABLE_NAME");
-                    Map<String, Object> tableData = getTableLastExecution(tableName, catalogName, dbInterfaceName, envName);
+                    SortedMap<String, Object> tableData = getTableLastExecution(tableName, catalogName, dbInterfaceName, envName);
                     tableData.put("tableName", tableName);
 				    tableList.add(tableData);
 			    }
@@ -383,11 +397,11 @@ public class Logic extends WebServiceUserCode {
             }
 
             if (result.size() == 0) {
-                List<Map<String, Object>> tableList  = new ArrayList<>();
+                List<SortedMap<String, Object>> tableList  = new ArrayList<>();
                 rs = md.getTables(null, null, "%", types);
                 while (rs.next()) {
                     String tableName = rs.getString("TABLE_NAME");
-                    Map<String, Object> tableData = getTableLastExecution(tableName, "main", dbInterfaceName, envName);
+                    SortedMap<String, Object> tableData = getTableLastExecution(tableName, "main", dbInterfaceName, envName);
                     tableData.put("tableName", tableName);
 				    tableList.add(tableData);
 			    }
@@ -397,18 +411,57 @@ public class Logic extends WebServiceUserCode {
                     result.add(tablesMap);
                 }
             }
-           
+
+            return result;
+        
+        } catch( Exception e) {
+            e.printStackTrace();
+			throw new RuntimeException("Failed to get Meta Data of Interface " + dbInterfaceName + ", with Error Message: " + e.getMessage());
 		} finally {
             if (rs != null) {
                 rs.close();
             }
 		}
-		return result;
-	}
+    }
 
 
-    private static HashMap<String, Object> getTableLastExecution(String tableName, String schemaName, String interfaceName, String envName) throws Exception {
-        HashMap<String, Object > tableVersion = new HashMap<>();
+    private static List<Map<String, Object>> getIntefaceTablesByCatalog(String interfaceName, String envName, List<Map<String, Object>> interfaceData) throws Exception{
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        Set<String> schemaSet = new HashSet<>();
+        Map<String, SortedSet<String>> schemaTables = new HashMap<>();
+       
+        for (Map<String, Object> fieldRec : interfaceData) {
+            String schemaName = fieldRec.get("schema").toString();
+            String tableName = fieldRec.get("dataset").toString();
+            
+            if(!schemaSet.contains(schemaName)) {
+                schemaSet.add(schemaName);
+                schemaTables.put(schemaName,  new TreeSet<>(Arrays.asList(tableName)));
+            } else {
+                if (!schemaTables.get(schemaName).contains(tableName)) {
+                    (schemaTables.get(schemaName)).add(tableName);
+                }
+            }
+
+        }
+        for (Map.Entry<String, SortedSet<String>> entry : schemaTables.entrySet()){
+            String schema = entry.getKey();
+            Map <String, Object> schemaMap = new HashMap<>();
+            List<SortedMap<String, Object>> tableList  = new ArrayList<>();
+            for (String table : entry.getValue()) {
+                SortedMap<String, Object> tableData = getTableLastExecution(table, schema, interfaceName, envName);
+                tableData.put("tableName", table);
+                tableList.add(tableData);
+            }
+            schemaMap.put(schema, tableList);
+            result.add(schemaMap);
+        }
+        return result;
+    }
+
+    private static SortedMap<String, Object> getTableLastExecution(String tableName, String schemaName, String interfaceName, String envName) throws Exception {
+        SortedMap<String, Object > tableVersion = new TreeMap<>();
 
         String sql = "SELECT s.task_execution_id AS taskExecutionId, t.task_title AS taskName " +
             "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s, " + TDMDB_SCHEMA + ".task_ref_tables rt, " + TDMDB_SCHEMA + ".tasks t " +
@@ -430,52 +483,24 @@ public class Logic extends WebServiceUserCode {
     }
 
     @webService(path = "getTableFields", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
-    public static Object wsGetTableFields(String dbInterfaceName, String SchemaName, String tableName) throws SQLException {
+    public static Object wsGetTableFields(String dbInterfaceName, String SchemaName, String tableName) throws Exception {
         HashMap<String,Object> response=new HashMap<>();
 		List<HashMap<String, String>> result = new ArrayList<>();
 		String errorCode="SUCCESS";
 		String message=null;
 
-        DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
-        ResultSet columns = metaData.getColumns(null, SchemaName, tableName, null);
-        
-        while (columns.next()) {
-            HashMap<String, String> map = new HashMap<>();
-            
-            map.put("column_name", columns.getString("COLUMN_NAME"));
-            int dataType = columns.getInt("DATA_TYPE");
-            String columnType = toSqliteType(dataType);
-            String generalColumnType = "TEXT";
-            Boolean addField = true;
-            switch (columnType) {
-                case "INTEGER":
-                case "REAL":
-                    generalColumnType = "NUMBER";
-                    break;
-                case "TEXT":
-                    generalColumnType = "TEXT";
-                    break;
-                case "BLOB":
-                    addField = false;
-                    break;
-                default:
-                    generalColumnType = "TEXT";
-                    break;
-            }
-            if (addField) {
-                map.put("column_name", columns.getString("COLUMN_NAME"));
-                map.put("column_type", generalColumnType);
-                result.add(map);
-            }
-        }
+        Map<String,Object> interfaceInput = new HashMap<>();
+        interfaceInput.put("dataPlatform", dbInterfaceName);
+        interfaceInput.put("schema", dbInterfaceName);
+        interfaceInput.put("dataset", dbInterfaceName);
 
-        if (columns != null) {
-            columns.close();
-        }
-        response.put("errorCode",errorCode);
-		response.put("message", message);
-		response.put("result", result);
-		return response;
+       result = fnGetTableFields(dbInterfaceName, SchemaName, tableName);
+
+       response.put("errorCode",errorCode);
+       response.put("message", message);
+       response.put("result", result);
+
+       return response;
     }
 
 }

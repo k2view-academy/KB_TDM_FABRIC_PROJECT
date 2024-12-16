@@ -1,105 +1,39 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get List of Running Tables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "DbCommand1",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "SELECT es.job_uid\r\nFROM  @TDMDB_SCHEMA@.TASK_REF_EXE_STATS es, @TDMDB_SCHEMA@.TASK_REF_TABLES rt\r\nWHERE lower(es.execution_status) = 'running'\r\nAND rt.task_id = es.task_id AND rt.task_ref_table_id = es.task_ref_table_id\r\nAND es.task_execution_id = ${taskExecutionId}"
-                                    },
-                                    {
-                                        "name": "taskExecutionId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "job_uid": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Wait for Running tables to finish",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Wait  For Current Table Level to Finish",
-                            "actorType": {
-                                "parentType": "BatchWait",
-                                "inputs": [
-                                    {
-                                        "name": "batchId",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "DbCommand1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Wait  For Current Table Level to Finish",
-                "name": "batchId"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "job_uid"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "taskExecutionId"
-            },
-            "rightPort": {
-                "actor": "DbCommand1",
-                "name": "taskExecutionId"
-            }
-        }
-    ]
-}
+stages:
+  Get List of Running Tables:
+    actors:
+      List Of Resumed Tables:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "SELECT es.job_uid\r\nFROM  @TDMDB_SCHEMA@.TASK_REF_EXE_STATS es,\
+              \ @TDMDB_SCHEMA@.TASK_REF_TABLES rt\r\nWHERE lower(es.execution_status)\
+              \ = 'running'\r\nAND rt.task_id = es.task_id AND rt.task_ref_table_id\
+              \ = es.task_ref_table_id\r\nAND es.task_execution_id = ${taskExecutionId}"
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Wait for Running tables to finish:
+    actors:
+      Wait  For Current Table Level to Finish:
+        parent: BatchWait
+        in:
+          batchId:
+            const: null
+            link:
+              path: List Of Resumed Tables/result/job_uid
+              iterate: Iterate
+            default: false
+schemas:
+  List Of Resumed Tables.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        job_uid:
+          type: string

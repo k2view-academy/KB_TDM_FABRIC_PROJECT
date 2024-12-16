@@ -22,61 +22,18 @@ stages:
         in:
           key:
             const: AI_DB_INTERFACE
+      Get BE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: BE_ID
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
   'Build IIDS ':
     actors:
-      Build IID:
-        parent: JavaScript
-        in:
-          script:
-            const:
-              userCode: "const parsedObject = JSON.parse(input);\r\n\r\nconst keyName\
-                \ = Object.keys(parsedObject.iid)[0];\r\n\r\nconst env = parsedObject.env;\r\
-                \nconst iid = parsedObject.iid[keyName];//.iid;\r\nconst execId =\
-                \ parsedObject.exec_id;\r\n\r\n\r\n//const resultString = `${env}_${iid}_${execId}`;\r\
-                \nconst resultString = `${envName}_${iid}_${execId}`;\r\nresultString;"
-              script: |-
-                var parsedObject = JSON.parse(input);
-                var keyName = Object.keys(parsedObject.iid)[0];
-                var env = parsedObject.env;
-                var iid = parsedObject.iid[keyName]; //.iid;
-
-                var execId = parsedObject.exec_id; //const resultString = `${env}_${iid}_${execId}`;
-
-                var resultString = envName + "_" + iid + "_" + execId;
-                resultString;
-          input:
-            external: IID
-            schema: string
-            mandatory: false
-          envName:
-            link: AI_ENVIRONMENT/result
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: string
-      Build TDM IID:
-        parent: JavaScript
-        in:
-          script:
-            const:
-              userCode: "const parsedObject = JSON.parse(input);\r\nconst keyName\
-                \ = Object.keys(parsedObject.iid)[0];\r\nconst iid = parsedObject.iid[keyName];//.iid;\r\
-                \n\r\nconst resultString = iid;\r\nresultString;"
-              script: |-
-                var parsedObject = JSON.parse(input);
-                var keyName = Object.keys(parsedObject.iid)[0];
-                var iid = parsedObject.iid[keyName]; //.iid;
-
-                var resultString = iid;
-                resultString;
-          input:
-            external: IID
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: string
       trainingExcludedTables:
         parent: InnerFlow
         in:
@@ -89,46 +46,107 @@ stages:
         out:
           tables:
             schema: string
-      GenerateIIDs_Actor1:
-        parent: GenerateIIDs_Actor
+      IID:
+        parent: Const
         in:
-          num_of_entities:
-            const: 1
-            schema: integer
-          source_env_name:
-            link: AI_ENVIRONMENT/result
+          value:
+            const: null
+            external: IID
         out:
-          result:
-            schema: '#ref'
-  Split IID:
-    actors:
-      fnSplitUID2:
-        parent: LuFunction
+          value:
+            schema: string
+      BE_NAME:
+        parent: DbFetchField
         in:
-          functionName:
-            const: fnSplitUID2
-          uid:
-            link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
+          interface:
+            const: TDM
+          sql:
+            const: select be_name from ${@TDMDB_SCHEMA}.business_entities where be_id
+              = ?
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
             schema: string
             mandatory: false
+          params:
+            link: Get BE_ID/result
         out:
-          instanceID:
+          result:
             schema: string
-          envName:
+      trainingIncludedTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingIncludedTables
+          luName:
+            external: luName
+            schema: any
+            mandatory: false
+        out:
+          tables:
             schema: string
-          versionExeID:
-            schema: string
+  Split IID:
+    actors:
+      JsonParser:
+        parent: JsonParser
+        in:
+          stream:
+            link: IID/value
+        out:
+          object:
+            schema: '#ref'
   'initaite Task Execution Entities   ':
     actors:
-      'initaiteTaskExecutionEntities  ':
+      Regex:
+        parent: Regex
+        in:
+          pattern:
+            const: \s*"(\d+)"
+          input:
+            link: JsonParser/object/iid
+  Get The Fabric TDM root IID:
+    actors:
+      id:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Regex/strings
+              iterate: First
+        out:
+          value:
+            schema: string
+  Build Tdm Eid:
+    actors:
+      buildTDMEidForAI:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: buildTDMEidForAI
+          Env:
+            link: AI_ENVIRONMENT/result
+            schema: any
+            mandatory: false
+          IID:
+            link: id/value
+            schema: any
+            mandatory: false
+          ExecutionID:
+            link: TDM_TASK_EXE_ID/result
+            schema: any
+            mandatory: false
+        out:
+          string:
+            schema: string
+  Adjust Inputs For Task Execution Entites:
+    actors:
+      'initaiteTaskExecutionEntities ':
         parent: InnerFlow
         in:
           flowName:
             const: initaiteTaskExecutionEntities
           IID:
-            link: fnSplitUID2/instanceID
+            link: id/value
             schema: string
             mandatory: false
           luName:
@@ -142,21 +160,36 @@ stages:
             mandatory: false
           SourceIID:
             const: ''
-            link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
+            link: buildTDMEidForAI/string
             schema: string
             default: true
             mandatory: false
           TargetIID:
             const: ''
-            link: fnSplitUID2/instanceID
+            link: id/value
             schema: string
             default: true
             mandatory: false
+      isParamCoupling:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isParamCoupling
+        out:
+          value:
+            schema: string
   Import to Fabric:
     transactional: false
+    dependsOn: Adjust Inputs For Task Execution Entites
     actors:
+      Included List:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
       Initation Error Handle1:
         parent: ErrorHandler
         error: result
@@ -176,12 +209,10 @@ stages:
           interface:
             const: fabric
           sql:
-            const: MDB_IMPORT ${@luName}.${@IID} WITH INTERFACE_NAME=${@INTERFACE}
-              EXCLUDED_TABLES=${@excludedTables} REMOTE_IID='${@REMOTE}'
+            const: MDB_IMPORT ${luName}.${IID} WITH INTERFACE_NAME=${INTERFACE} EXCLUDED_TABLES=${excludedTables}
+              REMOTE_IID=${REMOTE}
           IID:
-            link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
+            link: buildTDMEidForAI/string
             schema: string
             mandatory: false
           REMOTE:
@@ -200,6 +231,57 @@ stages:
             link: AI_DB_K2SYSTEM1/result
             schema: string
             mandatory: false
+    split: '--------------------'
+  Included:
+    else: true
+    transactional: false
+    dependsOn: Adjust Inputs For Task Execution Entites
+    actors:
+      Initation Error Handle12:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Import With Included:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: MDB_IMPORT ${luName}.${IID} WITH INTERFACE_NAME=${INTERFACE} INCLUDED_TABLES=${includedTables}
+              EXCLUDED_TABLES=${excludedTables} REMOTE_IID=${REMOTE}
+          IID:
+            link: buildTDMEidForAI/string
+            schema: string
+            mandatory: false
+          REMOTE:
+            external: IID
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+          INTERFACE:
+            link: AI_DB_K2SYSTEM1/result
+            schema: string
+            mandatory: false
+          includedTables:
+            link: trainingIncludedTables1/tables
+            schema: any
+            mandatory: false
   Mapping:
     transactional: true
     actors:
@@ -210,14 +292,10 @@ stages:
             link: AI_ENVIRONMENT/result
           ' task_execution_id':
             link: TDM_TASK_EXE_ID/result
-          ' imported_lui':
-            link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
           ' root_imported_lui':
-            link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
+            link: buildTDMEidForAI/string
+          ' imported_lui':
+            link: buildTDMEidForAI/string
           ' root_lu_name ':
             external: luName
           ' lu_name':
@@ -238,8 +316,7 @@ stages:
           iid:
             const: null
             link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
+              path: buildTDMEidForAI/string
               pos: 0
             default: false
           syncMode:
@@ -270,12 +347,10 @@ stages:
             schema: string
             mandatory: false
           iid:
-            link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
+            link: buildTDMEidForAI/string
             schema: string
             mandatory: false
-  Inset into FABRIC_TDM_ROOT:
+  TDM Tables:
     transactional: true
     actors:
       FABRIC_TDM_ROOT:
@@ -284,21 +359,74 @@ stages:
           interface:
             const: fabric
           sql:
-            const: insert into ${@luName}.fabric_tdm_root (K2_TDM_EID,SOURCE_ENV,IID)
-              values (${tdm_eid}, 'AI', ${iid})
+            const: insert into ${@luName}.fabric_tdm_root (K2_TDM_EID,SOURCE_ENV,IID,TASK_EXECUTION_ID)
+              values (${tdm_eid}, ${env}, ${iid},${task_exe_id})
           tdm_eid:
-            link:
-              path: GenerateIIDs_Actor1/result/tdm_eid
-              iterate: First
+            link: buildTDMEidForAI/string
             schema: string
             mandatory: false
           iid:
-            link: fnSplitUID2/instanceID
+            link: id/value
             schema: string
             mandatory: false
           luName:
             external: luName
             schema: string
+            mandatory: false
+          task_exe_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          env:
+            link: AI_ENVIRONMENT/result
+            schema: string
+            mandatory: false
+      'tdm_be_iids         ':
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          command:
+            const: upsert
+          schema:
+            const: null
+            external: luName
+          table:
+            const: TDM_BE_IIDS
+          fields:
+            const:
+            - IID
+            - SOURCE_ENV
+            - BE_ID
+            - BE_NAME
+            - ROOT_IID
+          keys:
+            const:
+            - IID
+            - SOURCE_ENV
+            - BE_ID
+            - ROOT_IID
+          dialect:
+            const: sqlite
+          IID:
+            link: id/value
+            schema: string
+            mandatory: false
+          SOURCE_ENV:
+            link: AI_ENVIRONMENT/result
+            schema: string
+            mandatory: false
+          BE_ID:
+            link: Get BE_ID/result
+            schema: string
+            mandatory: false
+          BE_NAME:
+            link: BE_NAME/result
+            schema: any
+            mandatory: false
+          ROOT_IID:
+            link: id/value
+            schema: any
             mandatory: false
   To Lower Case:
     transactional: false
@@ -398,7 +526,38 @@ stages:
             external: IID
             schema: string
             mandatory: false
-  check if load:
+  'Is Params Coupling   ':
+    transactional: false
+    dependsOn: Delete Cascade from Entities DB
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: isParamCoupling/value
+      ExportIidForParams:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ExportIidForParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          IID:
+            link: buildTDMEidForAI/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'Else     ':
+    else: true
+    transactional: false
+    dependsOn: Delete Cascade from Entities DB
+  'check if load ':
     transactional: false
     actors:
       loadIndicator:
@@ -411,9 +570,8 @@ stages:
         out:
           value:
             schema: boolean
-  'false':
-    transactional: false
-    dependsOn: check if load
+  No Load:
+    dependsOn: 'check if load '
     actors:
       'EqualsIgnoreCase false ':
         parent: EqualsIgnoreCase
@@ -425,13 +583,11 @@ stages:
           a:
             link: loadIndicator/value
     split: '--------------------'
-  'true':
+  'Else   ':
     else: true
-    transactional: false
-    dependsOn: check if load
-  'Populate task execution entities ':
-    transactional: false
-    dependsOn: 'false'
+    dependsOn: 'check if load '
+  Populate Task Execution Entites:
+    dependsOn: No Load
     actors:
       Initation Error Handle:
         parent: ErrorHandler
@@ -452,17 +608,21 @@ stages:
           idType:
             const: ENTITY
     split: '--------------------'
-  Do nothing:
-    transactional: false
-    dependsOn: 'true'
+  'Do Nothing   ':
+    dependsOn: 'Else   '
 schemas:
-  GenerateIIDs_Actor1.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        tdm_eid:
-          type: string
+  JsonParser.out.object:
+    type: object
+    properties:
+      env:
+        type: string
+      iid:
+        type: object
+        properties:
+          customer_id:
+            type: string
+      exec_id:
+        type: integer
   Get Root Table Name.out.result:
     type: array
     items:

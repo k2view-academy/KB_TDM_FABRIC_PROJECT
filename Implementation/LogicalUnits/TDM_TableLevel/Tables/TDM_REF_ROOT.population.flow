@@ -1,624 +1,213 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Input",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "ref_instance_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "ref_table_name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "SyncDeleteMode",
-                            "actorType": {
-                                "parentType": "SyncDeleteMode",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get Table's Info",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Table Details",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetTableLevelDetails"
-                                    },
-                                    {
-                                        "name": "ref_instance_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "ref_table_id": {
-                                                    "type": "integer"
-                                                },
-                                                "ref_table_name": {
-                                                    "type": "string"
-                                                },
-                                                "source_env": {
-                                                    "type": "string"
-                                                },
-                                                "task_type": {
-                                                    "type": "string"
-                                                },
-                                                "interface_name": {
-                                                    "type": "string"
-                                                },
-                                                "schema_name": {
-                                                    "type": "string"
-                                                },
-                                                "task_execution_id": {
-                                                    "type": "integer"
-                                                },
-                                                "task_id": {
-                                                    "type": "integer"
-                                                },
-                                                "filter_type": {
-                                                    "type": "string"
-                                                },
-                                                "table_filter": {
-                                                    "type": "string"
-                                                },
-                                                "filter_parameters": {
-                                                    "type": "string"
-                                                },
-                                                "retention_period_type": {
-                                                    "type": "string"
-                                                },
-                                                "retention_period_value": {
-                                                    "type": "integer"
-                                                },
-                                                "target_interface": {
-                                                    "type": "string"
-                                                },
-                                                "target_schema": {
-                                                    "type": "string"
-                                                },
-                                                "target_table_name": {
-                                                    "type": "string"
-                                                },
-                                                "number_of_records_to_process": {
-                                                    "type": "integer"
-                                                },
-                                                "retention": {
-                                                    "type": "integer"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "LU Table",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "ErrorHandler1",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "TDM_REF_ROOT",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "ref_instance_id",
-                                            "ref_table_id",
-                                            "ref_table_name",
-                                            "source_env",
-                                            "task_execution_id",
-                                            "task_id",
-                                            "retention",
-                                            "interface_name",
-                                            "schema_name",
-                                            "filter_type",
-                                            "table_filter",
-                                            "target_interface",
-                                            "target_schema",
-                                            "target_table_name"
-                                        ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "sqlite"
-                                    },
-                                    {
-                                        "name": "ref_instance_id",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "ref_table_id",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "ref_table_name",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "source_env",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "task_id",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "retention",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "interface_name",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "schema_name",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "filter_type",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table_filter",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "target_interface",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "target_schema",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "target_table_name",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Populater Table in Sqlite",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "ErrorHandler2",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Populate Sqlite Table",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "PopulateSqliteTable"
-                                    },
-                                    {
-                                        "name": "sourceSchema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableFilter",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "sourceInterface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ],
-                                            "interfaces": [
-                                                "fabric"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "retention",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "taskExeId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "taskAction",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "filterParameters",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "The pop is DONE"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          ref_instance_id:
+            external: ref_instance_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Get Table's Info:
+    actors:
+      Get Table Details:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableLevelDetails
+          ref_instance_id:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  LU Table:
+    transactional: false
+    actors:
+      Populate Root Table Error Handler:
+        parent: ErrorHandler
+        error: result
+      TDM_REF_ROOT:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - ref_instance_id
+            - ref_table_id
+            - ref_table_name
+            - source_env
+            - task_execution_id
+            - task_id
+            - retention
+            - interface_name
+            - schema_name
+            - filter_type
+            - table_filter
+            - target_interface
+            - target_schema
+            - target_table_name
+          dialect:
+            const: sqlite
+          ref_instance_id:
+            link: PopulationArgs/iid
+            schema: string
+          ref_table_id:
+            schema: any
+          ref_table_name:
+            schema: any
+          source_env:
+            schema: any
+          task_execution_id:
+            schema: any
+          task_id:
+            schema: any
+          retention:
+            schema: any
+            mandatory: false
+          interface_name:
+            schema: any
+            mandatory: false
+          schema_name:
+            schema: any
+            mandatory: false
+          filter_type:
+            schema: any
+            mandatory: false
+          table_filter:
+            schema: any
+            mandatory: false
+          target_interface:
+            schema: any
+            mandatory: false
+          target_schema:
+            schema: any
+            mandatory: false
+          target_table_name:
+            schema: any
+            mandatory: false
+          params:
+            link: Get Table Details/result
+  Populater Table in Sqlite:
+    transactional: false
+    actors:
+      populate Table in Sqlite Error Handler:
+        parent: ErrorHandler
+        error: result
+      Run Table Extract:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RunTableExtract
+          sourceInterface:
+            link: Get Table Details/result/interface_name
+            schema: string
+            mandatory: false
+          sourceSchema:
+            link: Get Table Details/result/schema_name
+            schema: string
+            mandatory: false
+          tableName:
+            link: Get Table Details/result/ref_table_name
+            schema: string
+            mandatory: false
+          tableFilter:
+            link: Get Table Details/result/table_filter
+            schema: string
+            mandatory: false
+          taskExeId:
+            link: Get Table Details/result/task_execution_id
+            schema: integer
+            mandatory: false
+          tableId:
+            link: Get Table Details/result/ref_table_id
+            schema: integer
+            mandatory: false
+          filterParameters:
+            link: Get Table Details/result/filter_parameters
+            schema: string
+            mandatory: false
+          taskAction:
+            link: Get Table Details/result/task_type
+            schema: string
+            mandatory: false
+      End Indicator:
+        parent: Const
+        in:
+          value:
+            const: The pop is DONE
+            schema: string
+        out:
+          value:
+            schema: string
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        ref_table_name:
+          type: string
+  Get Table Details.out.result:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      ref_table_id:
+        type: integer
+      ref_table_name:
+        type: string
+      source_env:
+        type: string
+      task_type:
+        type: string
+      selection_method:
+        type: string
+      interface_name:
+        type: string
+      schema_name:
+        type: string
+      task_execution_id:
+        type: integer
+      task_id:
+        type: integer
+      filter_type: {
         }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Get Table Details",
-                "name": "ref_instance_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "TDM_REF_ROOT",
-                "name": "ref_instance_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TDM_REF_ROOT",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "sourceSchema"
-            },
-            "path": [
-                "schema_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "tableName"
-            },
-            "path": [
-                "ref_table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "tableFilter"
-            },
-            "path": [
-                "table_filter"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "sourceInterface"
-            },
-            "path": [
-                "interface_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "retention"
-            },
-            "path": [
-                "retention"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "taskExeId"
-            },
-            "path": [
-                "task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "tableId"
-            },
-            "path": [
-                "ref_table_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "taskAction"
-            },
-            "path": [
-                "task_type"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Details",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate Sqlite Table",
-                "name": "filterParameters"
-            },
-            "path": [
-                "filter_parameters"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "ref_instance_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "ref_instance_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "SyncDeleteMode",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "TDM_REF_ROOT",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "TDM_REF_ROOT",
-                "name": "table"
-            }
-        }
-    ]
-}
+      table_filter:
+        type: string
+      filter_parameters:
+        type: string
+      retention_period_type:
+        type: string
+      retention_period_value:
+        type: integer
+      target_interface:
+        type: string
+      target_schema:
+        type: string
+      target_table_name:
+        type: string
+      number_of_records_to_process:
+        type: integer
+      retention:
+        type: integer

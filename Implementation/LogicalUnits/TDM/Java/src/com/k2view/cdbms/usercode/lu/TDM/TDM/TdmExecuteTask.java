@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javax.management.RuntimeErrorException;
+
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.SYNTHETIC_ENVIRONMENT;
@@ -28,12 +30,12 @@ import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_TYPES.LOA
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class TdmExecuteTask {
-
     public static final Log log = Log.a(TdmExecuteTask.class);
     public static final String TDMDB = "TDM";
     public static final String TABLE_LEVEL_LU = "TDM_TableLevel";
     public static final String FABRIC = "fabric";
     public static final String INTERFACE = "interface";
+    public static final String TABLES_TASK = "TABLES";
 
     public static final String PRE_EXECUTIONS = "Select t.process_id , t.process_name, t.execution_order, t.process_type from " +
             TDMDB_SCHEMA + ".tasks_exe_process t, " + TDMDB_SCHEMA + ".task_execution_list l " +
@@ -47,9 +49,7 @@ public class TdmExecuteTask {
             "where ll.task_execution_id =? and ll.process_id = tt.process_id and (? = -100 or tt.execution_order < ?) and tt.process_type = ? " +
             "and ll.execution_status NOT IN ('stopped','completed','failed','killed');";
     public static Map<String, String> entityInclusions = new HashMap<>();
-    public static String separator = "";
     public static String sessionGlobals = "";
-
     public static String OriginalSyncMode = "";
 
     enum TASK_TYPES {
@@ -90,21 +90,14 @@ public class TdmExecuteTask {
         Db tdmDB = db(TDM);
         String startTime = "" + Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
 
-        String iidSeparator = "" + tdmDB.fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'iid_separator'").firstValue();
-        //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
-        if (!Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator)) {
-            separator = iidSeparator;
-        } else {
-            separator = "_";
-        }
-        //log.info("tdmExecuteTask - separator: " + separator);
         tdmDB.fetch(query).forEach(row -> {
             // Get task properties
-            Map<String, Object> taskProperties = getTaskProperties(row);
+            Map<String, Object> taskProperties = Util.rte(() -> getTaskProperties(row));
             Long taskExecutionID = (Long) taskProperties.get("task_execution_id");
             Long luID = (Long) LU_ID.get(taskProperties);
             Long processID = (Long) taskProperties.get("process_id");
             OriginalSyncMode = SYNC_MODE.get(taskProperties);
+            Boolean verticalExecution = "VERTICAL".equalsIgnoreCase(EXECUTION_MODE.get(taskProperties)) ? true : false; 
             //log.info("tdmExecuteTask - taskExecutionID: " + taskExecutionID + ", luID: " + luID + ", processID: " + processID);
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             try {
@@ -117,7 +110,7 @@ public class TdmExecuteTask {
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             String parentLUStatus = PARENT_LU_STATUS.get(taskProperties);
             if (isChildLU(taskProperties) && !parentLUStatus.toUpperCase().equals("COMPLETED")) {
-                updateTaskExecutionStatus(parentLUStatus, taskExecutionID, luID, null, startTime, "19700101000000", null, null, null, null);
+                updateTaskExecutionStatus(verticalExecution, parentLUStatus, taskExecutionID, luID, null, startTime, "19700101000000", null, null, null, null);
                 return;
             }
             //updateTaskExecutionStatus("running", taskExecutionID,luID, "", "0", "0", "0", null);
@@ -144,28 +137,48 @@ public class TdmExecuteTask {
                 return;
             }
 
-            //log.info("taskType: " + taskType + ", selectionMethod: " + selectionMethod);
             if ((long) LU_ID.get(taskProperties) != 0 && processID == 0) {
+                String luName = LU_NAME.get(taskProperties).toString();
+                if (Boolean.valueOf(PARAMS_COUPLING.get(taskProperties).toString()) 
+                    && !TABLES_TASK.equalsIgnoreCase(selectionMethod) && !"".equalsIgnoreCase(luName)) {
+                        if (!"VERTICAL".equalsIgnoreCase(EXECUTION_MODE.get(taskProperties))) {
+                            executeMDBExportSchema(verticalExecution, luName, taskExecutionID, luID, TDMDB_SCHEMA, "broadway " + luName + ".CreateMDBExportSchemaForParams luName=?", "MDB SCHEMA EXPORT");
+                        } else {
+                            String entityInclusion = entityInclusions.getOrDefault(taskExecutionID, "");
+                            if (Util.isEmpty(entityInclusion)) {
+                                Db.Rows rows = Util.rte(() -> db(TDM).fetch("select lu_id, lu_name from " + TDMDB_SCHEMA + ".tasks_logical_units where task_id = "  + TASK_ID.get(taskProperties)));
+                                for (Db.Row luRow : rows) {
+                                    String luNameForMDB = luRow.get("lu_name").toString();
+                                    Long luIdForMDB = Long.parseLong(luRow.get("lu_id").toString());
+                                    executeMDBExportSchema(verticalExecution, luNameForMDB, taskExecutionID, luIdForMDB, TDMDB_SCHEMA, "broadway " + luNameForMDB + ".CreateMDBExportSchemaForParams luName=?", "MDB SCHEMA EXPORT");
+                                }
+                            }
 
+                        }
+
+                }
+                if (("TRAINING".equalsIgnoreCase(taskType) || "ai_generated".equalsIgnoreCase(taskType)) && !"".equalsIgnoreCase(luName)) {
+                    executeMDBExportSchema(verticalExecution, luName, taskExecutionID, luID, TDMDB_SCHEMA, "broadway " + luName + ".CreateMDBExportSchemaForAI luName=?", "MDB SCHEMA EXPORT");
+                }
                 switch (taskType) {
                     case "extract":
                     case "training":
                         log.info("----------------- extract task -------------------");
                         String versionExpDate = null;
                         try {
-                            if (!selectionMethod.equalsIgnoreCase("tables")) {
+                            if (!selectionMethod.equalsIgnoreCase(TABLES_TASK)) {
                                 Map<String, String> executionStatus = Util.rte(() -> executeExtractBatch(taskProperties));
                                 String fabricExecutionId = executionStatus != null ? executionStatus.get("fabric_execution_id") : null;
 
                                 if (!Util.isEmpty(fabricExecutionId)) {
                                     versionExpDate = executionStatus.get("expiration_date");
-                                    updateTaskExecutionStatus("running", taskExecutionID, luID, fabricExecutionId, startTime, versionExpDate, null, null, null, null);
+                                    updateTaskExecutionStatus(verticalExecution, "running", taskExecutionID, luID, fabricExecutionId, startTime, versionExpDate, null, null, null, null);
                                     //log.info("TdmExecuteTask - Calling executeTableLevelBatch");
                                     String batchId = executeTableLevelBatch(taskProperties, false);
 
                                 } else {
                                     // rollback LU and task status
-                                    updatedFailedStatus(taskExecutionID, luID);
+                                    updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                                     updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                                 }
                             } else {
@@ -176,24 +189,24 @@ public class TdmExecuteTask {
 
                         } catch (Exception e) {
                             log.error("TdmExecuteTask - Update extract task status to failed");
-                            updatedFailedStatus(taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                         }
                         break;
                     case "load":
                         log.info("----------------- load task -------------------");
                         try {
-                            if (!selectionMethod.equalsIgnoreCase("tables")) {
+                            if (!selectionMethod.equalsIgnoreCase(TABLES_TASK)) {
                                 Map<String, String> executionStatus = Util.rte(() -> executeLoadBatch(taskProperties));
                                 String executionId = executionStatus != null ? executionStatus.get("fabric_execution_id") : null;
                                 if (!executionId.isEmpty()) {
                                     String subsetExpDate = executionStatus.get("expiration_date");
-                                    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, startTime, subsetExpDate, null, null, null, null);
+                                    updateTaskExecutionStatus(verticalExecution, "running", taskExecutionID, luID, executionId, startTime, subsetExpDate, null, null, null, null);
                                     //log.info("TdmExecuteTask - Calling executeTableLevelBatch For Entities with REF");
                                     String batchId = executeTableLevelBatch(taskProperties, false);
                                 } else {
                                     // rollback LU and task status
-                                    updatedFailedStatus(taskExecutionID, luID);
+                                    updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                                     log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                                 }
                             } else {
@@ -203,7 +216,7 @@ public class TdmExecuteTask {
                             }
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
@@ -215,16 +228,16 @@ public class TdmExecuteTask {
                             Map<String, String> executionStatus = Util.rte(() -> executeLoadBatch(taskProperties));
                             String executionId = executionStatus != null ? executionStatus.get("fabric_execution_id") : null;
                             if (!executionId.isEmpty()) {
-                                updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, startTime, "19700101000000", null, null, null, null);
+                                updateTaskExecutionStatus(verticalExecution, "running", taskExecutionID, luID, executionId, startTime, "19700101000000", null, null, null, null);
 
                             } else {
                                 // rollback LU and task status
-                                updatedFailedStatus(taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                             }
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
                         break;
@@ -237,19 +250,19 @@ public class TdmExecuteTask {
                             if (!executionId.isEmpty()) {
                                 // In case of hierarchy only one LU (root) will be reserved, any Child LU will be ignored
                                 if ("NA".equals(executionId)) {
-                                    updateTaskExecutionStatus("completed", taskExecutionID, luID, null, startTime, "19700101000000", null, null, null, startTime);
+                                    updateTaskExecutionStatus(verticalExecution, "completed", taskExecutionID, luID, null, startTime, "19700101000000", null, null, null, startTime);
                                     return;
                                 }
-                                updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, startTime, "19700101000000", null, null, null, null);
+                                updateTaskExecutionStatus(verticalExecution, "running", taskExecutionID, luID, executionId, startTime, "19700101000000", null, null, null, null);
 
                             } else {
                                 // rollback LU and task status
-                                updatedFailedStatus(taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                             }
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
@@ -263,17 +276,17 @@ public class TdmExecuteTask {
 
                             if (!Util.isEmpty(fabricExecutionId)) {
                                 String subsetExpDate = executionStatus.get("expiration_date");
-                                updateTaskExecutionStatus("running", taskExecutionID, luID, fabricExecutionId, startTime, subsetExpDate, null, null, null, null);
+                                updateTaskExecutionStatus(verticalExecution, "running", taskExecutionID, luID, fabricExecutionId, startTime, subsetExpDate, null, null, null, null);
 
                             } else {
                                 // rollback LU and task status
-                                updatedFailedStatus(taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                             }
 
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
@@ -287,17 +300,18 @@ public class TdmExecuteTask {
 
                             if (Util.isEmpty(fabricExecutionId)) {
                                 // Rollback LU and task status if execution failed
-                                updatedFailedStatus(taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                                 break;
                             }
                             // Update task execution status
                             String subsetExpDate = executionStatus.get("expiration_date");
-                            updateTaskExecutionStatus("running", taskExecutionID, luID, fabricExecutionId, startTime, subsetExpDate, null, null, null, null);
+                            
+                            updateTaskExecutionStatus(verticalExecution, "running", taskExecutionID, luID, fabricExecutionId, startTime, subsetExpDate, null, null, null, null);
 
                         } catch (Exception e) {
                             // Rollback LU and task status if an exception occurred
-                            updatedFailedStatus(taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
@@ -340,7 +354,7 @@ public class TdmExecuteTask {
             if ("true".equals(VERSION_IND.get(taskProperties)) || "TRAINING".equalsIgnoreCase("" + TASK_TYPE.get(taskProperties))) {
                 ExecutionInfo.put("expiration_date", version_exp_date);
                 db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
-                                "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS') where task_execution_id = ? AND lu_id =? AND process_id <= 0 " , version_exp_date , "" + TASK_EXECUTION_ID.get(taskProperties), "" + LU_ID.get(taskProperties));
+                               "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS') where task_execution_id = ? AND lu_id =? AND process_id <= 0 " , version_exp_date , "" + TASK_EXECUTION_ID.get(taskProperties), "" + LU_ID.get(taskProperties));
             } else {
                 ExecutionInfo.put("expiration_date", "19700101000000");
             }
@@ -350,6 +364,7 @@ public class TdmExecuteTask {
             String selectionMethod = SELECTION_METHOD.get(taskProperties);
             String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
             String luName = LU_NAME.get(taskProperties);
+            boolean isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
 
             //log.info("executeExtractBatch - luName: " + LU_NAME.get(taskProperties) + ", isChild: " + isChildLU(taskProperties));
             //log.info("executeExtractBatch - TDM_DATAFLUX_TASK: " + fabric().fetch("set TDM_DATAFLUX_TASK").firstValue());
@@ -379,15 +394,16 @@ public class TdmExecuteTask {
             if (!"ON".equalsIgnoreCase(syncMode)) {
                 fabric().execute("SET SYNC " + syncMode);
             }
-            String broadwayCommand = "broadway " + luName + ".TDMExtractOrchestrator " + "iid=?, luName=" + luName + ", syncMode=\"" + syncMode + "\"";
+            String broadwayCommand = "broadway " + luName + ".TDMExtractOrchestrator " + "iid=?, luName=" + luName +
+                ", syncMode=\"" + syncMode + "\", isParamCoupling=" +isParamCoupling + ", taskExecutionId = " + taskExecutionID;
             //log.info("batchCommand: " + batchCommand + ", broadwayCommand: " + broadwayCommand);
             // TDM 8.1 Call function to set TTL
             //Calculate retention date + set TTL
 
             //Check if param table does not exist and create it, and if it exists, check if its structure is correct
             //It will check only if it is not a versioning task
-            if("false".equalsIgnoreCase(VERSION_IND.get(taskProperties))) {
-                fnCreateUpdateLUParams(luName);
+            if(!isParamCoupling && "false".equalsIgnoreCase(VERSION_IND.get(taskProperties))) {
+                fnCreateUpdateLUParamsForTask(taskProperties);
             }
 
             String batchID = (String) fabric().fetch(batchCommand, entityInclusionOverride, broadwayCommand).firstValue();
@@ -415,7 +431,7 @@ public class TdmExecuteTask {
         String selectedVersionExeID = "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
         String envName = "" + SOURCE_ENVIRONMENT_NAME.get(taskProperties);
         String entityInclusionOverride = "";
-
+        boolean isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
         String syncMode = getSyncModeForLoad(taskProperties);
         Boolean cloneInd = CLONE_IND.get(taskProperties);
         String luID = "" + LU_ID.get(taskProperties);
@@ -454,8 +470,8 @@ public class TdmExecuteTask {
 
         //Check if param table does not exist and create it, and if it exists, check if its structure is correct
         //It will be check only if the task may get new data from source and it is not a versioning task
-        if(!"OFF".equalsIgnoreCase(syncMode) && "false".equalsIgnoreCase(VERSION_IND.get(taskProperties))) {
-            fnCreateUpdateLUParams(luName);
+        if(!isParamCoupling && (!"OFF".equalsIgnoreCase(syncMode) && "false".equalsIgnoreCase(VERSION_IND.get(taskProperties)))) {
+            fnCreateUpdateLUParamsForTask(taskProperties);
         }
         //log.info(" entity inclusion: " + entityInclusionOverride);
         // TDM 7.4 - For Custom Logic the source DB is Cassandra
@@ -482,7 +498,9 @@ public class TdmExecuteTask {
             batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true";
         }
 
-        String broadwayCommand = "broadway " + luName + ".TDMOrchestrator " + "iid=?, luName=" + luName + ", syncMode=\"" + syncMode + "\"" + ", reserveInd=" + reserveInd;
+        String broadwayCommand = "broadway " + luName + ".TDMOrchestrator " + "iid=?, luName=" + luName +
+            ", syncMode=\"" + syncMode + "\"" + ", reserveInd=" + reserveInd + 
+            ", isParamCoupling=" + isParamCoupling + ", taskExecutionId = " + taskExecutionID;
 
         //log.info("Starting batch command: " + batchCommand);
         //log.info("Starting broadway command: " + broadwayCommand);
@@ -536,7 +554,7 @@ public class TdmExecuteTask {
             batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true";
         }
 
-        String broadwayCommand = "broadway " + luName + ".TDMReserveOrchestrator " + "iid=?, luName=" + luName;
+        String broadwayCommand = "broadway " + luName + ".TDMReserveOrchestrator " + "iid=?, luName=" + luName + ", taskExecutionId = " + taskExecutionID;
 
         //log.info("Starting batch command: " + batchCommand);
         //log.info("Starting broadway command: " + broadwayCommand);
@@ -555,6 +573,7 @@ public class TdmExecuteTask {
         String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
         String batchDB = TDM;
         Map<String, String> ExecutionInfo = new LinkedHashMap<>();
+        boolean isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
         //entityInclusionOverride = getEntityInclusion(taskProperties);
 
         if (!isChildLU(taskProperties)) {
@@ -575,12 +594,13 @@ public class TdmExecuteTask {
         String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
         String batchCommand = "BATCH " + luName + " FROM " + batchDB + " USING(?) fabric_command=? with " + affinity + " async=true";
         String broadwayCommand = "broadway " + luName + ".TDMGenerateOrchestrator " + "iid=?, luName=" + luName
-                + ", syncMode=FORCE";
+                + ", syncMode=FORCE , isParamCoupling = " + isParamCoupling + ", taskExecutionId = " + taskExecutionID;
         //log.info("batchCommand: " + batchCommand + " ,broadwayCommand: " + broadwayCommand);
 
         //Check if param table does not exist and create it, and if it exists, check if its structure is correct
-        fnCreateUpdateLUParams(luName);
-
+        if(!isParamCoupling){
+            fnCreateUpdateLUParamsForTask(taskProperties);
+        }
         String batchID = (String) fabric().fetch(batchCommand, entityInclusionOverride, broadwayCommand).firstValue();
         ExecutionInfo.put("fabric_execution_id", batchID);
         ExecutionInfo.put("expiration_date", subset_expiration_date);
@@ -589,6 +609,17 @@ public class TdmExecuteTask {
     
     private static String executeTableLevelBatch(Map<String, Object> taskProperties, Boolean tableLevelInd) throws Exception {
         try {
+
+            // TDM9.1 check if the task includes table level
+            String selectionMethod = SELECTION_METHOD.get(taskProperties);
+            if (!TABLES_TASK.equalsIgnoreCase(selectionMethod)) {
+                Object handleTables = db(TDM).fetch("SELECT task_ref_table_id from " + TDMDB_SCHEMA + ".task_ref_tables where task_id = " + 
+                TASK_ID.get(taskProperties) + " limit 1").firstValue();
+
+                if(handleTables == null) {
+                    return null;
+                }
+            }
 
             //TDM 9.0 - HF1, check if the Table Level already ran or not
             String filter = "TableLevelJob iid=?, taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties);
@@ -610,7 +641,8 @@ public class TdmExecuteTask {
             String broadwayCommand = "broadway " + TABLE_LEVEL_LU + ".TableLevelJob iid=?, " + 
                 "taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties) +",syncMode=\"" + OriginalSyncMode + 
                 "\", taskType=" + taskType + ", deleteBeforeLoad=" + DELETE_BEFORE_LOAD.get(taskProperties) +
-                ", tableLevelInd=" + tableLevelInd;
+                ", loadEntity=" + LOAD_ENTITY.get(taskProperties) + ", tableLevelInd=" + tableLevelInd + 
+                ", retentionPeriodValue=\"" + RETENTION_PERIOD_VALUE.get(taskProperties) + "\"";
 
 
                 //log.info("executeTableLevelBatch - batchCommand: " + batchCommand);
@@ -694,19 +726,23 @@ public class TdmExecuteTask {
         String dcName = "" + DATA_CENTER_NAME.get(taskProperties);
         String LuID = "" + LU_ID.get(taskProperties);
         String generation_exp_date = setTTL(taskProperties);
+        boolean isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
         db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
             "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS') where task_execution_id = ? AND lu_id =? AND process_id <= 0 " , generation_exp_date , taskExecutionID, LuID);
         String loadIndicator= "" + LOAD_ENTITY.get(taskProperties);
+        String beID= "" + BE_ID.get(taskProperties);
 
         String broadwayCommand = "broadway TDM.ImportDataSubset " + "luName = '" + luName + "'" +
                 ", dcName='" + dcName + "'" +
                 ", taskExecutionID='" + taskExecutionID + "'" +
                 ", loadIndicator='" + loadIndicator + "'" +
-                ", LuID='" + LuID +"'" ;
+                ", beID='" + beID + "'" +
+                ", LuID='" + LuID +"' ,isParamCoupling = " + isParamCoupling ;
 
         //Check if param table does not exist and create it, and if it exists, check if its structure is correct
-        fnCreateUpdateLUParams(luName);
-
+        if(!isParamCoupling){
+            fnCreateUpdateLUParamsForTask(taskProperties);
+        }
         Db.Rows rows = fabric().fetch(broadwayCommand);
         String batchID = null;
         for(Db.Row row:rows){
@@ -783,9 +819,9 @@ public class TdmExecuteTask {
         return true;
     }
     
-    public static void updatedFailedStatus(Long taskExecutionID, Long luID) {
+    public static void updatedFailedStatus(Boolean verticalExecution, Long taskExecutionID, Long luID) {
         Timestamp endTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
-        updateTaskExecutionStatus( "failed",taskExecutionID, luID, null,endTime, "19700101000000",0,0,0,endTime);
+        updateTaskExecutionStatus(verticalExecution, "failed",taskExecutionID, luID, null,endTime, "19700101000000",0,0,0,endTime);
         updateTaskExecutionSummary(taskExecutionID, "failed");
     }
     public static void updatedAIFailedStatus(String status, Long taskExecutionID, Long luID) {
@@ -823,7 +859,10 @@ public class TdmExecuteTask {
             }
             version_exp_date = new SimpleDateFormat("yyyyMMddHHmmss").format(unixTime_plus_retention);
             //Set TTL
-            if (-1 != retention_in_seconds) {
+            boolean isRetention = retention_in_seconds != -1;
+            boolean isLoadTask = "LOAD".equalsIgnoreCase(TASK_TYPE.get(taskProperties));
+            boolean isVersionTask = "true".equalsIgnoreCase(VERSION_IND.get(taskProperties));
+            if (isRetention && !(isLoadTask && isVersionTask)) {
                 ludb().execute("SET INSTANCE_TTL = " + retention_in_seconds);
             } else {
                 version_exp_date = "999912310000";
@@ -835,8 +874,8 @@ public class TdmExecuteTask {
     private static String getEntityInclusionForChildLU(Map<String, Object> taskProperties, String luName) throws Exception {
         //log.info("getEntityInclusionForChildLU - handling Child LU: " + luName);
         String parentLU = "" + db(TDM).fetch("SELECT lu_parent_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE lu_id=?", (Object) LU_ID.get(taskProperties)).firstValue();
-        String entityIdSelectChildID = "t.source_env" + getEntityIDSelect("rel.lu_type2_eid");
-        //String entityIdSelectParID = "t.source_env" + getEntityIDSelect("rel.lu_type1_eid");
+        String entityIdSelectChildID = "t.source_env" + getEntityIDSelect("rel.lu_type2_eid", SEPARATOR.get(taskProperties));
+
         String versionClause;
         String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
         String selectedVersionTaskExeId = "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
@@ -851,10 +890,10 @@ public class TdmExecuteTask {
 
         if ("true".equalsIgnoreCase(versionInd)) {
             if ("0".equalsIgnoreCase(selectedVersionTaskExeId)) {
-                entityIdSelectChildID += "||'" + separator + "'||t.task_execution_id";
+                entityIdSelectChildID += "||'" + SEPARATOR.get(taskProperties) + "'||t.task_execution_id";
                 versionTaskExeID = taskExecutionID;
             } else {
-                entityIdSelectChildID += "||'" + separator + "'||" + selectedVersionTaskExeId;
+                entityIdSelectChildID += "||'" + SEPARATOR.get(taskProperties) + "'||" + selectedVersionTaskExeId;
                 versionTaskExeID = selectedVersionTaskExeId ;
 
             }
@@ -930,17 +969,16 @@ public class TdmExecuteTask {
             //TDM 7.6 - The entity list will be checked against reserved entities only if requested in the task
             String filterOutReserved = "" + FILTEROUT_RESERVED.get(taskProperties);
             String selectedVersionTaskExeId = "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
-
+            fabric().execute("set FILTEROUT_RESERVED" + filterOutReserved);
             // Reservation is not relevant in case of replace sequence.
             // And in case of entity list the reservation will be checked by the batch process to fail the entity like any other failure
-            if ("true".equals(filterOutReserved) && !"L".equals(selectionMethod) && !cloneInd && !"true".equals(replaceSequences) && !"extract".equalsIgnoreCase(taskType)) {
+            if (!"NA".equals(filterOutReserved) && !cloneInd && !"true".equals(replaceSequences) && !"extract".equalsIgnoreCase(taskType)) {
                 entityExclusionListWhere = getReserveCondition(taskProperties);
             }
             String entityInclusion = "";
             String versionParams = "";
             //Initiate interface for batch query to TDMDB
             entityInclusions.put(INTERFACE, TDMDB);
-            //log.info("getEntityInclusion - separator: " + separator);
 
             // TDM 9.0 - Set the environment before to make sure in case of BF to have the right interfaces are set.
             fabric().execute("set environment " + env);
@@ -949,17 +987,27 @@ public class TdmExecuteTask {
                 case "L": // In case the task lists the entities to run
                     if ("true".equals(VERSION_IND.get(taskProperties))) {
                         if ("0".equalsIgnoreCase(selectedVersionTaskExeId)) {
-                            versionParams = separator + TASK_EXECUTION_ID.get(taskProperties);
+                            versionParams = SEPARATOR.get(taskProperties).toString() + TASK_EXECUTION_ID.get(taskProperties);
                         } else {
-                            versionParams = separator + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
+                            versionParams = SEPARATOR.get(taskProperties).toString() + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
                         }
                     }
                     //entitiesList = entitiesList.replaceAll("\\s+","");
                     String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
-
+                    if(!"".equalsIgnoreCase(entityExclusionListWhere)){
+                        entityExclusionListWhere=entityExclusionListWhere.replace("'", "''");
+                        String command = "broadway " + luName + ".FilterOutReservedFromEntityList sqlQuery = '" + entityExclusionListWhere + "'" + ", entityList = '" + entitiesList + "'";
+                        String filterOutReserveList = fabric().fetch(command).firstValue().toString();
+                        if(!"".equalsIgnoreCase(filterOutReserveList)){
+                            entitiesListArray = filterOutReserveList.split(",");
+                        }else{
+                            entitiesListArray=new String[]{};
+                            log.error("No matching instances were found");
+                        }
+                    }
                     //TDM 9.0 - There is no longer CLONE selection method
                     if (cloneInd) {
-                        entityInclusion = "SELECT '" + env + separator + addSeparators(entitiesListArray[0]) + 
+                        entityInclusion = "SELECT '" + env + SEPARATOR.get(taskProperties) + addSeparators(entitiesListArray[0]) +
                             "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
                         break;
                     } else {
@@ -967,41 +1015,44 @@ public class TdmExecuteTask {
                         
                             // TDM 7.6 - Add separtors to the entity ID if they are in use
                             entityID = addSeparators(entityID.trim());
-                            entityInclusion += "'" + env + separator + entityID + versionParams + "',";
+                            entityInclusion += "'" + env + SEPARATOR.get(taskProperties) + entityID + versionParams + "',";
 
                         }
-                        entityInclusion = entityInclusion.substring(0, entityInclusion.length() - 1);
+                        if (entitiesListArray.length != 0){
+                            entityInclusion = entityInclusion.substring(0, entityInclusion.length() - 1);
+                        }
                     }
-
                     //log.info("getEntityInclusion: entityInclusion For L: " + entityInclusion);
                     break;
                 case "R": // In case the task requests a random list of entities
-                    String entityId = getEntityIDSelect("entity_id");
                     boolean isAIEnvironment = AI_ENVIRONMENT.equals(SOURCE_ENVIRONMENT_NAME.get(taskProperties));
-
+                    boolean isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
+                    String selectClause = isParamCoupling ? "iid" : "entity_id";
+                    String entityId = getEntityIDSelect(selectClause, SEPARATOR.get(taskProperties));
+                    String lowerCaseLu = ((String) LU_NAME.get(taskProperties)).toLowerCase();
                     if ("true".equals(VERSION_IND.get(taskProperties))) {
                         String versionTaskExeId = "0".equalsIgnoreCase(selectedVersionTaskExeId) ? "" + TASK_EXECUTION_ID.get(taskProperties) : "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
-                        entityId += "||'" + separator + "'||" + versionTaskExeId;
+                        entityId += "||'" + SEPARATOR.get(taskProperties) + "'||" + versionTaskExeId;
                     }     
                     if ("".equals(entityExclusionListWhere)) {
-                        entityExclusionListWhere = " WHERE source_environment='" + SOURCE_ENVIRONMENT_NAME.get(taskProperties) + "' ";
+                        entityExclusionListWhere = " WHERE " + (isParamCoupling ? "source_env" : "source_environment") + "='" + SOURCE_ENVIRONMENT_NAME.get(taskProperties) + "' ";
                     } else {
-                        entityExclusionListWhere += " AND source_environment='" + SOURCE_ENVIRONMENT_NAME.get(taskProperties) + "' ";
+                        entityExclusionListWhere += " " + (isParamCoupling ? "AND source_env" : "AND source_environment") + "='" + SOURCE_ENVIRONMENT_NAME.get(taskProperties) + "' ";
                     }
-                    String luParamsTable = TDMDB_SCHEMA + "." + ((String) LU_NAME.get(taskProperties)).toLowerCase() + "_params";
+                    String luParamsTable = isParamCoupling ? lowerCaseLu + ".fabric_tdm_root" : TDMDB_SCHEMA + "." + lowerCaseLu + "_params";
                     String subQuery = "";
-                    String randomEntity =  "SELECT '" + env + "'" + entityId + " AS entity_id FROM " + luParamsTable + entityExclusionListWhere +" ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " ;
+                    String randomEntity =  "SELECT '" + env + "'" + entityId + " AS entity_id FROM " + luParamsTable + entityExclusionListWhere +" ORDER BY md5(" +selectClause+ " || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " ;
                     String cloneIdParam = "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id " ;
                     if(cloneInd) {
                         if (isAIEnvironment) {
                             subQuery = "WITH entity_ids AS (" + randomEntity + 1 + ") " +
                                         "SELECT ai.root_imported_lui AS root_lui " +
                                         "FROM " + TDMDB_SCHEMA + ".tdm_ai_gen_iid_mapping ai " +
-                                        "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + separator + "(.*)') = e.entity_id";
+                                    "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + SEPARATOR.get(taskProperties) + "(.*)') = e.entity_id";
                             entitiesList = "" + db(TDM).fetch(subQuery).firstValue(); 
                             entityInclusion = "SELECT '" +entitiesList +  cloneIdParam;
                         }else{
-                            entityInclusion = "with subQuery as (SELECT entity_id FROM " + luParamsTable + entityExclusionListWhere + " LIMIT 1) " +
+                            entityInclusion = "with subQuery as (SELECT " + selectClause + " FROM " + luParamsTable + entityExclusionListWhere + " LIMIT 1) " +
                             "SELECT '" + env + "'" + entityId + "||'" + cloneIdParam + " FROM subQuery";
                         }
                     } else {
@@ -1010,7 +1061,7 @@ public class TdmExecuteTask {
                             entityInclusion = "WITH entity_ids AS (" + subQuery + ") " +
                                 "SELECT ai.root_imported_lui AS root_lui " +
                                 "FROM " + TDMDB_SCHEMA + ".tdm_ai_gen_iid_mapping ai " +
-                                "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + separator + "(.*)') = e.entity_id";
+                                    "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + SEPARATOR.get(taskProperties) + "(.*)') = e.entity_id";
                         } else {
                             entityInclusion = "SELECT entity_id FROM (" + subQuery + ") AS ALIAS1";
                         }
@@ -1018,31 +1069,37 @@ public class TdmExecuteTask {
                     //log.info("getEntityInclusion: entityInclusion For R: " + entityInclusion);
                     break;
                 case "P": // In case the task has criteria based on parameters
-                    entityId = getEntityIDSelect("entity_id");
+                    isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
+                    selectClause = isParamCoupling ? "iid" : "entity_id";
+                    entityId = getEntityIDSelect(selectClause, SEPARATOR.get(taskProperties));                   
                     isAIEnvironment = AI_ENVIRONMENT.equals(SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                     cloneIdParam = "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
                     if ("true".equals(VERSION_IND.get(taskProperties))) {
                         String versionTaskExeId = "0".equalsIgnoreCase(selectedVersionTaskExeId) ? "" + TASK_EXECUTION_ID.get(taskProperties) : "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
-                        entityId += "||'" + separator + "'||" + versionTaskExeId;
+                        entityId += "||'" + SEPARATOR.get(taskProperties) + "'||" + versionTaskExeId;
                     }  
                     if (cloneInd) {
-                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, 
-                            SOURCE_ENVIRONMENT_NAME.get(taskProperties),true) + " limit 1";
+                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                                PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
+                                entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),true,false) + " limit 1";
                         //log.info("Parameters - listOfMatchingEntities: " + listOfMatchingEntities);
                         if (isAIEnvironment) {
                             subQuery = "(WITH entity_ids AS (" + listOfMatchingEntities + ") " +
                                         "SELECT ai.root_imported_lui AS root_lui " +
                                         "FROM " + TDMDB_SCHEMA + ".tdm_ai_gen_iid_mapping ai " +
-                                        "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + separator + "(.*)') = e.entity_id)";
+                                    "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + SEPARATOR.get(taskProperties) + "(.*)') = e." + selectClause+ " )";
                             entitiesList = "" + db(TDM).fetch(subQuery).firstValue();            
                             entityInclusion = "SELECT '" +entitiesList +  cloneIdParam;
                         }else{
                             entitiesList = "" + db(TDM).fetch(listOfMatchingEntities).firstValue();
-                            entityInclusion = "SELECT '" + env + separator + addSeparators(entitiesList) + cloneIdParam;
+                            entityInclusion = "SELECT '" + env + SEPARATOR.get(taskProperties) + addSeparators(entitiesList) + cloneIdParam;
                         }
                     } else {
                         entitiesList = entitiesList.replaceAll("'", "''");
-                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),false);
+                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                                PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
+                                entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),false,false);
+                        listOfMatchingEntities = isParamCoupling ? listOfMatchingEntities.replaceAll("''", "'''") : listOfMatchingEntities ; //support empty string in case param value='' 
                         subQuery = "SELECT '" + env + "'" + entityId + " AS entity_id " +
                                     "FROM (" + listOfMatchingEntities + ") AS ALIAS0 " + entityExclusionListWhere +
                                     " LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
@@ -1051,7 +1108,7 @@ public class TdmExecuteTask {
                             entityInclusion = "WITH entity_ids AS (" + subQuery + ") " +
                                             "SELECT ai.root_imported_lui AS root_lui " +
                                             "FROM " + TDMDB_SCHEMA + ".tdm_ai_gen_iid_mapping ai " +
-                                             "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM ''(.*)" + separator + "(.*)'') = e.entity_id";
+                                    "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM ''(.*)" + SEPARATOR.get(taskProperties) + "(.*)'') = e.entity_id";
                         } else {
                             entityInclusion = "SELECT entity_id FROM (" + subQuery + ") AS ALIAS1";
                         }
@@ -1060,52 +1117,58 @@ public class TdmExecuteTask {
                     //log.info("getEntityInclusion: entityInclusion For P: " + entityInclusion);
                     break;
                     case "PR":
-                        entityId = getEntityIDSelect("entity_id");
-                    
+                        isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
+                        selectClause = isParamCoupling ? "iid" : "entity_id";
+                        entityId = getEntityIDSelect(selectClause, SEPARATOR.get(taskProperties));                    
                         isAIEnvironment = AI_ENVIRONMENT.equals(SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                         cloneIdParam = "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
-                    
                         if ("true".equals(VERSION_IND.get(taskProperties))) {
                             String versionTaskExeId = "0".equalsIgnoreCase(selectedVersionTaskExeId) ? "" + TASK_EXECUTION_ID.get(taskProperties) : "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties);
-                            entityId += "||'" + separator + "'||" + versionTaskExeId;
+                        entityId += "||'" + SEPARATOR.get(taskProperties) + "'||" + versionTaskExeId;
                         }
-                    
                         if (cloneInd) {
-                            String entitiesListQuery = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),true);
+                        String entitiesListQuery = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                                PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
+                                entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),true,false);
+
                             if (isAIEnvironment) {
                                 subQuery = "WITH entity_ids AS (" + entitiesListQuery + " LIMIT 1) " +
                                                 "SELECT ai.root_imported_lui AS root_lui " +
                                                 "FROM " + TDMDB_SCHEMA + ".tdm_ai_gen_iid_mapping ai " +
-                                                "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + separator + "(.*)') = e.entity_id";
+                                    "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + SEPARATOR.get(taskProperties) + "(.*)') = e.entity_id";
                                 entitiesList = "" + db(TDM).fetch(subQuery).firstValue();            
                                 entityInclusion = "SELECT '" + entitiesList + cloneIdParam;
                             } else {
                                 entitiesList = "" + db(TDM).fetch(entitiesListQuery).firstValue();
-                                entityInclusion = "SELECT '" + env + separator + addSeparators(entitiesList) + cloneIdParam ;
+                            entityInclusion = "SELECT '" + env + SEPARATOR.get(taskProperties) + addSeparators(entitiesList) + cloneIdParam ;
                             }
                         } else {
                             entitiesList = entitiesList.replaceAll("'", "''");
-                            String listOfMatchingEntitiesQuery = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),false);
+                        String listOfMatchingEntitiesQuery = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                                PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
+                                entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),false,false);
+                            listOfMatchingEntitiesQuery = isParamCoupling ? listOfMatchingEntitiesQuery.replaceAll("''", "'''") : listOfMatchingEntitiesQuery; //support empty string in case param value='' 
                             subQuery = "SELECT entity_id FROM (" +
                                             "  SELECT '" + env + "'" + entityId + " as entity_id " +
-                                            "  FROM (" + listOfMatchingEntitiesQuery + ") AS ALIAS0" +
-                                            ") AS ALIAS1 " + entityExclusionListWhere +
-                                            "  ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
+                                            "  FROM (" + listOfMatchingEntitiesQuery + ") AS ALIAS0 " +
+                                            entityExclusionListWhere +
+                                            ") AS ALIAS1 " +
+                                            "  ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) +
+                                            "') LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
                     
                             if (isAIEnvironment) {
                                 entityInclusion = "WITH entity_ids AS (" + subQuery + ") " +
                                                 "SELECT ai.root_imported_lui AS root_lui " +
                                                 "FROM " + TDMDB_SCHEMA + ".tdm_ai_gen_iid_mapping ai " +
-                                                "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + separator + "(.*)') = e.entity_id";
+                                    "JOIN entity_ids e ON SUBSTRING(ai.root_imported_lui FROM '(.*)" + SEPARATOR.get(taskProperties) + "(.*)') = e.entity_id";
                             } else {
-                                entityInclusion = "SELECT entity_id FROM (" + subQuery + ") AS ALIAS1";
+                                entityInclusion = "SELECT entity_id FROM (" + subQuery + ") AS ALIAS2";
                             }
                         }
                     //log.info("getEntityInclusion: entityInclusion For PR: " + entityInclusion);
                     break;
                 case "ALL":
                     if (taskType.equalsIgnoreCase("load") && (VERSION_IND.get(taskProperties).equals("true"))) {
-
                         entityExclusionListWhere.replace("WHERE", "AND");
                         // The entity list should be taken from TDMDB and it should consider the status of the entities, only entities extracted successfully should be loaded
                         entityInclusion = "SELECT entity_id FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES " + ("".equals(entityExclusionListWhere) ? "WHERE " : entityExclusionListWhere) + " AND " + "task_execution_id='" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties) +
@@ -1116,7 +1179,7 @@ public class TdmExecuteTask {
                         String openSeparator = iidSeparators[0].toString();
                         String closeSeparator = iidSeparators[1].toString();
                         Map<String, String> batchStrings = getCommandForAll("" + LU_NAME.get(taskProperties), "" + TASK_EXECUTION_ID.get(taskProperties), "" +
-                                        SOURCE_ENVIRONMENT_NAME.get(taskProperties), "" + VERSION_IND.get(taskProperties), separator, openSeparator, closeSeparator,
+                                        SOURCE_ENVIRONMENT_NAME.get(taskProperties), "" + VERSION_IND.get(taskProperties), SEPARATOR.get(taskProperties), openSeparator, closeSeparator,
                                 "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties), "" + DATA_CENTER_NAME.get(taskProperties),
                                 Long.valueOf("" + LU_ID.get(taskProperties)), sessionGlobals);
                         String entityInclusionInterface = batchStrings.get(INTERFACE);
@@ -1185,6 +1248,11 @@ public class TdmExecuteTask {
                     break;
 
             }
+            if(selectionMethod.contains("P")){
+                String query = "UPDATE " +TDMDB_SCHEMA+ ".task_execution_list set entity_inclusion_query= ? where task_execution_id = ? AND " +
+                "lu_id = ?";
+                db(TDM).execute(query,entityInclusion,TASK_EXECUTION_ID.get(taskProperties), LU_ID.get(taskProperties));
+            }
             entityInclusions.put("" + TASK_EXECUTION_ID.get(taskProperties), entityInclusion);
             return entityInclusion;
 
@@ -1201,17 +1269,29 @@ public class TdmExecuteTask {
         String beID = "" + BE_ID.get(taskProperties);
         String userID = "" + TASK_EXECUTED_BY.get(taskProperties);
         String taskType = "" + TASK_TYPE.get(taskProperties);
-        String reservedExclusionListWhere = Util.rte(() -> " WHERE cast (entity_id as text) NOT IN (SELECT " + buildEntityReserved(env, taskProperties) + " FROM " +
-                TDMDB_SCHEMA + ".tdm_reserved_entities WHERE env_id = " + envID + " and be_id = " + beID + " and reserve_owner != '" + userID +
-                "' and (end_datetime is null or end_datetime > CURRENT_TIMESTAMP))");
-        if ("reserve".equalsIgnoreCase(taskType)) {
-            reservedExclusionListWhere = Util.rte(() -> " WHERE cast (entity_id as text) NOT IN (SELECT " + buildEntityReserved(env, taskProperties) + " FROM " +
-                    TDMDB_SCHEMA + ".tdm_reserved_entities WHERE env_id = " + envID + " and be_id = " + beID +
-                    " and (end_datetime is null or end_datetime > CURRENT_TIMESTAMP))");
+        String selectionMethod = "" + SELECTION_METHOD.get(taskProperties);
+        boolean isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
+        String selectClause = isParamCoupling ? "iid" : "entity_id";
+        if(selectionMethod.equalsIgnoreCase("ALL")){
+            selectClause="target_entity_id";
         }
-
+        String filterOutReserved = "" + FILTEROUT_RESERVED.get(taskProperties);
+        String reservedExclusionListWhere = "";
+        // In version 9.2, reserve will include two modes , by other and by all 
+        if ("ALL".equalsIgnoreCase(filterOutReserved)) {
+            reservedExclusionListWhere = " WHERE cast(" + selectClause + " as text) NOT IN ("
+                    + "SELECT entity_id FROM " + TDMDB_SCHEMA + ".tdm_reserved_entities "
+                    + "WHERE env_id = " + envID + " AND be_id = " + beID
+                    + " AND (end_datetime IS NULL OR end_datetime > CURRENT_TIMESTAMP))";
+        } else {
+            reservedExclusionListWhere = " WHERE cast(" + selectClause + " as text) NOT IN ("
+                    + "SELECT entity_id FROM " + TDMDB_SCHEMA + ".tdm_reserved_entities "
+                    + "WHERE env_id = " + envID + " AND be_id = " + beID
+                    + " AND reserve_owner != '" + userID + "'"
+                    + " AND (end_datetime IS NULL OR end_datetime > CURRENT_TIMESTAMP))";
+        }
+    
         return reservedExclusionListWhere;
-
     }
 
     private static Map<String, Object> getGlobals(String globalsQuery, Map<String, Object> taskProperties, Map<String, Object> args, Object... params) {
@@ -1257,24 +1337,15 @@ public class TdmExecuteTask {
         globals.put("TASK_TYPE", TASK_TYPE.get(taskProperties).toString().toUpperCase());
         globals.put("TDM_VERSION_TASK_EXECUTION_ID", VERSION_TASK_EXE_ID);
         globals.put("TDM_DELETE_ONLY_TASK", Util.rte(() -> isDeleteOnlyMode(taskProperties)));
-
-        Object minDist = Util.rte(() -> db(TDM).fetch("SELECT param_value FROM " + TDMDB_SCHEMA +
-                ".tdm_general_parameters WHERE PARAM_NAME = 'TABLE_DEFAULT_DISTRIBUTION_MIN'").firstValue());
         globals.put("SELECTION_METHOD", SELECTION_METHOD.get(taskProperties));
+        globals.put("EXECUTION_MODE", EXECUTION_MODE.get(taskProperties));
 
-        if (minDist != null) {
-            globals.put("TABLE_DEFAULT_DISTRIBUTION_MIN", minDist);
-        } else {
-            globals.put("TABLE_DEFAULT_DISTRIBUTION_MIN", "1");
-        }
-        Object maxDist = Util.rte(() -> db(TDM).fetch("SELECT param_value FROM " + TDMDB_SCHEMA +
-                ".tdm_general_parameters WHERE PARAM_NAME = 'TABLE_DEFAULT_DISTRIBUTION_MAX'").firstValue());
+        globals.put("TABLE_DEFAULT_DISTRIBUTION_MIN", TABLE_DEFAULT_DISTRIBUTION_MIN.get(taskProperties));
 
-        if (minDist != null) {
-            globals.put("TABLE_DEFAULT_DISTRIBUTION_MAX", maxDist);
-        } else {
-            globals.put("TABLE_DEFAULT_DISTRIBUTION_MAX", "3");
-        }
+        globals.put("TABLE_DEFAULT_DISTRIBUTION_MAX", TABLE_DEFAULT_DISTRIBUTION_MAX.get(taskProperties));
+
+        globals.put("PARAMS_COUPLING", PARAMS_COUPLING.get(taskProperties));
+
         globals.putAll(args);
 
         Util.rte(() -> db(TDM).fetch(globalsQuery, params).forEach(res -> Util.rte(() -> globals.put(res.resultSet().getString("global_name"), res.resultSet().getString("global_value")))));
@@ -1372,7 +1443,7 @@ public class TdmExecuteTask {
         switch (taskType) {
             case "load":
             case "reserve":
-
+            case "delete":
                 additionalGlobals.put("TDM_SYNC_SOURCE_DATA", getSrcSyncDataVal(taskProperties));
                 additionalGlobals.put("TDM_DELETE_BEFORE_LOAD", DELETE_BEFORE_LOAD.get(taskProperties));
                 additionalGlobals.put("TDM_INSERT_TO_TARGET", LOAD_ENTITY.get(taskProperties));
@@ -1413,6 +1484,7 @@ public class TdmExecuteTask {
             case "generate":
                 additionalGlobals.put("TDM_SYNC_SOURCE_DATA", getSrcSyncDataVal(taskProperties));
                 additionalGlobals.put("TDM_DELETE_BEFORE_LOAD", "false");
+                additionalGlobals.put("CHILD_LU_IND", isChildLU(taskProperties));
                 if ("generate".equals(taskType)) {
                     additionalGlobals.put("generate_consistent", "true");
                 }
@@ -1474,7 +1546,10 @@ public class TdmExecuteTask {
                 ("true".equalsIgnoreCase(DELETE_BEFORE_LOAD.get(taskProperties)) || "true".equalsIgnoreCase(VERSION_IND.get(taskProperties)))) {
             syncMode = "ON";
         }
-
+        // TDM 9.1 - If task type is delete, then the sync mode should be set to ON
+        if ("off".equalsIgnoreCase(syncMode) && "delete".equalsIgnoreCase(TASK_TYPE.get(taskProperties))) {
+            syncMode = "ON";
+        }
         //In case of sync mode is force and the task is dataflux load, the sync mode must be set to ON,
         // to prevent resyncing the data of the LU but to allow populating the Delete tables.
         if ("force".equalsIgnoreCase(syncMode) && "load".equalsIgnoreCase(TASK_TYPE.get(taskProperties)) &&
@@ -1576,14 +1651,14 @@ public class TdmExecuteTask {
             String open = (String) separators[0];
             String close = (String) separators[1];
 
-            String reservedEntitySelect = "'" + environment + "'||'" + separator + "'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + fieldName : fieldName);
+            String reservedEntitySelect = "'" + environment + "'||'" + SEPARATOR.get(taskProperties) + "'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + fieldName : fieldName);
             reservedEntitySelect = !Util.isEmpty(close) ? reservedEntitySelect + "||'" + close + "'" : reservedEntitySelect;
             if (versionInd.equals("true")) {
                 if ("0".equalsIgnoreCase(selectedVersionExeID)) {
-                    reservedEntitySelect += "||'" + separator + taskExeID.trim() + "'";
+                    reservedEntitySelect += "||'" + SEPARATOR.get(taskProperties) + taskExeID.trim() + "'";
 
                 } else {
-                    reservedEntitySelect += "||'" + separator + selectedVersionExeID.trim() + "'";
+                    reservedEntitySelect += "||'" + SEPARATOR.get(taskProperties) + selectedVersionExeID.trim() + "'";
 
                 }
             }
@@ -1594,12 +1669,12 @@ public class TdmExecuteTask {
         }
     }
 
-    private static String getEntityIDSelect(String name) throws Exception {
+    private static String getEntityIDSelect(String name, String iidSeparartor) throws Exception {
         Object[] separators = fnGetIIdSeparatorsFromTDM();
         String open = (String) separators[0];
         String close = (String) separators[1];
-        //log.info("getEntityIDSelect - separator: " + separator);
-        String entityIdSelect = "||'" + separator + "'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + name : name);
+
+        String entityIdSelect = "||'" + iidSeparartor + "'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + name : name);
         entityIdSelect = !Util.isEmpty(close) ? entityIdSelect + "||'" + close + "'" : entityIdSelect;
 
         return entityIdSelect;
@@ -1607,7 +1682,7 @@ public class TdmExecuteTask {
 
     
 
-    private static Map<String, Object> getTaskProperties(Db.Row row) {
+    private static Map<String, Object> getTaskProperties(Db.Row row) throws Exception{
         Map<String, Object> taskProperties = new HashMap<>();
 
         try {
@@ -1627,6 +1702,37 @@ public class TdmExecuteTask {
             log.error("Can't get task properties for task_execution_id=" + row.get("task_execution_id"), e);
         }
 
+        // TDM 9.2 - If the task is reserve only, clone or Generate then it cannot be Vertical.
+        String executionMode = fnGetTaskExecutionMode(EXECUTION_MODE.get(taskProperties), TASK_TYPE.get(taskProperties), 
+            BE_ID.get(taskProperties), CLONE_IND.get(taskProperties));
+        if (!executionMode.equalsIgnoreCase(EXECUTION_MODE.get(taskProperties))) {
+            taskProperties.put("execution_mode", executionMode);
+        }
+    
+        // TDM 9.1 - Get data from tdm_general_parameters and set it.
+        String sql = "Select param_name, param_value from " +
+                TDMDB_SCHEMA + ".tdm_general_parameters where " +
+                "upper(param_name) in ('IID_SEPARATOR', 'TABLE_DEFAULT_DISTRIBUTION_MIN', 'TABLE_DEFAULT_DISTRIBUTION_MAX', 'PARAMS_COUPLING')";
+
+
+        Util.rte(() -> db(TDM).fetch(sql).forEach(record -> {
+            String paramName = record.get("param_name").toString().toUpperCase();
+            String paramValue = record.get("param_value").toString();
+            switch (paramName)  {
+                case "IID_SEPARATOR" :
+                    taskProperties.put("separator", paramValue);
+                    break;
+                case "TABLE_DEFAULT_DISTRIBUTION_MIN" :
+                    taskProperties.put("table_default_distribution_min", paramValue);
+                    break;
+                case "TABLE_DEFAULT_DISTRIBUTION_MAX" :
+                    taskProperties.put("table_default_distribution_max", paramValue);
+                    break;
+                case "PARAMS_COUPLING" :
+                    taskProperties.put("params_coupling", Boolean.parseBoolean(paramValue));
+                    break;
+            }
+        }));
         //TDM 7.2 - Get task execution override attributes and use them to override the task's attributes
         Map<String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs((Long) row.get("task_id"), (Long) row.get("task_execution_id"));
         String overrideValue = "";
@@ -1743,19 +1849,46 @@ public class TdmExecuteTask {
         }
     }
 
-    private static void updateTaskExecutionStatus(String status, Long taskExecutionID, Long luID, Object... params) {
+    private static void updateTaskExecutionStatus(Boolean verticalExecution, String status, Long taskExecutionID, Long luID, Object... params) {
         try {
-            db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
-                            "execution_status=?, " +
-                            "fabric_execution_id=?, " +
-                            "start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else ? end), " +
-                            "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS'), " +
-                            "num_of_processed_entities = ?, " +
-                            "num_of_copied_entities = ?, " +
-                            "num_of_failed_entities = ?, " +
-                            "end_execution_time = ? " +
-                            "WHERE task_execution_id=? and lu_id = ? and process_id=0"
-                    , status, params[0], params[1], params[2], params[3], params[4],params[5],params[6], taskExecutionID, luID);
+
+            if (!verticalExecution) {
+                db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
+                                "execution_status=?, " +
+                                "fabric_execution_id=?, " +
+                                "start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else ? end), " +
+                                "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS'), " +
+                                "num_of_processed_entities = ?, " +
+                                "num_of_copied_entities = ?, " +
+                                "num_of_failed_entities = ?, " +
+                                "end_execution_time = ? " +
+                                "WHERE task_execution_id=? and lu_id = ? and process_id=0"
+                        , status, params[0], params[1], params[2], params[3], params[4],params[5],params[6], taskExecutionID, luID);
+            } else {
+                String updateSQL = "WITH RECURSIVE ph AS " +
+                    "(SELECT lu_id, parent_lu_id FROM " + TDMDB_SCHEMA + ".task_execution_list " +
+                    "WHERE task_execution_id = ? and lu_id = ? " +
+                    "UNION ALL " +
+                    "SELECT task_execution_list.lu_id, task_execution_list.parent_lu_id " +
+                    "FROM " + TDMDB_SCHEMA + ".task_execution_list, ph " +
+                    "WHERE ph.lu_id = task_execution_list.parent_lu_id " +
+                    "AND task_execution_list.task_execution_id = ?) " +
+                    "UPDATE " + TDMDB_SCHEMA + ".task_execution_list " +
+                    "SET execution_status = ?, " +
+                    "fabric_execution_id= ?," +
+                    "start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else ? end), " +
+                    "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS'), " +
+                    "num_of_processed_entities = ?, " +
+                    "num_of_copied_entities = ?, " +
+                    "num_of_failed_entities = ?, " +
+                    "end_execution_time = ? " +
+                    "FROM ph " +
+                    "WHERE task_execution_id = ? AND " +
+                    "(ph.lu_id = task_execution_list.parent_lu_id OR (task_execution_list.parent_lu_id is null AND task_execution_list.lu_id = ?))";
+                
+                db(TDM).execute(updateSQL, taskExecutionID, luID, taskExecutionID, status,
+                    params[0], params[1], params[2], params[3], params[4],params[5],params[6], taskExecutionID, luID);
+            }
         } catch (SQLException e) {
             log.error("Can't update status in task_execution_list table for task_execution_id=" + taskExecutionID + ", lu_id: " + luID, e);
         }
@@ -1854,8 +1987,24 @@ public class TdmExecuteTask {
             return permissionGroup;
         }
     }
-
-   
+    //tdm 9.1 export schema in two modes in ParamsCoupling and AI
+    private static void executeMDBExportSchema(Boolean verticalExecution, String luName, Long taskExecutionID, Long luID, String TDMDB_SCHEMA, String command, String errorCategory) {
+        try {
+            fabric().execute(command, luName);
+        } catch (Exception e) {
+            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+            String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
+                                "ERROR_CATEGORY, ERROR_MESSAGE) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            try {
+                db(TDM).execute(insertSql, taskExecutionID, luName, " ", " ", " ", errorCategory, e.getMessage());
+            } catch (SQLException e1) {
+                log.error(e1);
+                throw new RuntimeException(e1.getMessage());
+            }
+            throw new RuntimeException(e.getMessage());
+        }
+    }
     public enum TASK_PROPERTIES {
         TASK_ID(null),
         TASK_EXECUTION_ID(""),
@@ -1896,9 +2045,14 @@ public class TdmExecuteTask {
         USER_ROLES(""),
         PARAMETERS(""),
         RESERVE_NOTE(""),
-        FILTEROUT_RESERVED("true"),
+        FILTEROUT_RESERVED("OTHERS"),
         MASK_SENSITIVE_DATA("true"),
-        CLONE_IND("false");
+        CLONE_IND("false"),
+        SEPARATOR("_"),
+        TABLE_DEFAULT_DISTRIBUTION_MIN("1"),
+        TABLE_DEFAULT_DISTRIBUTION_MAX("3"),
+        PARAMS_COUPLING(false),
+        EXECUTION_MODE("HORIZONTAL");
         private Object def;
 
         TASK_PROPERTIES(Object def) {
@@ -1916,6 +2070,25 @@ public class TdmExecuteTask {
             } else {
                 Object value = args.get(this.getName());
                 return (T) (value == null ? this.def : value);
+            }
+        }
+    }
+
+    private static void fnCreateUpdateLUParamsForTask(Map<String, Object> taskProperties) throws Exception {
+
+        String luName = LU_NAME.get(taskProperties);
+        String executionMode = EXECUTION_MODE.get(taskProperties);
+        String taskExecutionID = TASK_EXECUTION_ID.get(taskProperties).toString();
+        if (!"VERTICAL".equalsIgnoreCase(executionMode)) {
+            fnCreateUpdateLUParams(luName);
+        } else {
+            String entityInclusion = entityInclusions.getOrDefault(taskExecutionID, "");
+            if (Util.isEmpty(entityInclusion)) {
+                Db.Rows rows = Util.rte(() -> db(TDM).fetch("select lu_id, lu_name from " + TDMDB_SCHEMA + ".tasks_logical_units where task_id = "  + TASK_ID.get(taskProperties)));
+                for (Db.Row luRow : rows) {
+                    String luNameForVertical = luRow.get("lu_name").toString();
+                    fnCreateUpdateLUParams(luNameForVertical);
+                }
             }
         }
     }

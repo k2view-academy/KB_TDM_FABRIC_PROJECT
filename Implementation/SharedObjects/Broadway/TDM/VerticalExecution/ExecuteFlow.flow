@@ -1,0 +1,65 @@
+tags: TDM
+stages:
+  Set Node and Run On It:
+    actors:
+      Set cluster_distribute_affinity:
+        parent: FabricSet
+        in:
+          key:
+            const: cluster_distribute_affinity
+            default: false
+          value:
+            const: 127.0.0.1
+            default: false
+      Run Orchestrator:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway ${@luName}.${@execFlowName} taskAction=${taskAction},
+              luName=${luName}, syncMode=${syncMode}, couplingInd=${couplingInd},
+              reserveInd=${reserveInd}, iid=${iid}, verticalChildInd=true
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskAction:
+            external: taskAction
+            schema: string
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+          reserveInd:
+            external: reserveInd
+            schema: string
+            mandatory: false
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+          isParamCoupling:
+            external: isParamCoupling
+            schema: string
+            mandatory: false
+          execFlowName:
+            external: execFlowName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+schemas:
+  Run Orchestrator.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Node:
+          type: string
+        Status:
+          type: string
+        Value:
+          type: string

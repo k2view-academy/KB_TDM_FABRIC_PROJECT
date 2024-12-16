@@ -1,1146 +1,344 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Prepare the Data",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Entity Status",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "ENTITY_STATUS",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Source Entity ID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get LU Type",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "LU_TYPE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get IID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get LU_ID",
-                            "minHeight": 132,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "LU_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Target Entity ID",
-                            "minHeight": 99,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Continue Preparing",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Task Execution ID",
-                            "actorType": {
-                                "parentType": "getLUVariable_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "variableName",
-                                        "const": "TDM_TASK_EXE_ID"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Timing of Processing Start",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID_START_DATETIME"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Source Environment",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Now1",
-                            "actorType": {
-                                "parentType": "Now",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "LuFunction1",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "fnSplitUID2"
-                                    },
-                                    {
-                                        "name": "uid",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "instanceID",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "envName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "versionExeID",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Check if Target Entity ID is Not Set",
-                            "minHeight": 389,
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "NO_ID"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check env",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Synthetic",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "Synthetic"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "AI",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "AI"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Else ",
-                    "dependsOnList": [
-                        "Check env"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                },
-                {
-                    "name": "Check if Generate Rule based",
-                    "dependsOnList": [
-                        "Check env"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Or",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Or",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Default value for version exe id",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Null",
-                    "dependsOnList": [
-                        "Else "
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Verison execution id is empty",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Default value",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "versionExeID  ",
-                    "dependsOnList": [
-                        "Else "
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "versionExeID",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Default value1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do Nothing",
-                    "dependsOnList": [
-                        "Check if Generate Rule based"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Subset execution id is empty",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Default value  ",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "subsetExeID  ",
-                    "dependsOnList": [
-                        "Check if Generate Rule based"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "subsetExeID",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Calculate Fabric Get Duration and Total Duration",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Clone No",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "clone_id",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Calculate Total Processing Duration",
-                            "actorType": {
-                                "parentType": "DateDuration",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get root_iid",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "root_iid",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get root_lu_name",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "root_lu_name",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "If Target Entity ID is not set, use source ID",
-                            "actorType": {
-                                "parentType": "IfElse",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Format the Current Time",
-                            "actorType": {
-                                "parentType": "DateFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "yyyy-MMM-dd HH:mm:ss.SSS"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get TDMDB Schema",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDMDB_SCHEMA",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Load Data to Entities table",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Add Entity to Entities Table",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID, FABRIC_GET_TIME,\r\nTOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID, ROOT_LU_NAME) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType}, \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid}, \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime}, ${entityEndTime}, ${version_task_execution_id},${subset_task_execution_id}, ${fabticTime}, \r\n${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}\r\nFROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "taskexecutionId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "sourceEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "executionStatus",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "entityStartTime",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "entityEndTime",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "fabticTime",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    {
-                                        "name": "totalTime",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    {
-                                        "name": "idType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "cloneNo",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "rootEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "rootLUName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "version_task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "subset_task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Entity Status",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "executionStatus"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Source Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "sourceEntityId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Source Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "LuFunction1",
-                "name": "uid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get LU Type",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get LU Type",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Task Execution ID",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get IID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get IID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "If Target Entity ID is not set, use source ID",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Target Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check if Target Entity ID is Not Set",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Target Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "If Target Entity ID is not set, use source ID",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Task Execution ID",
-                "name": "variableValue"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "taskexecutionId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Timing of Processing Start",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Calculate Total Processing Duration",
-                "name": "from"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Timing of Processing Start",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "entityStartTime"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Source Environment",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Synthetic",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Source Environment",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "AI",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Now1",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Format the Current Time",
-                "name": "date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Now1",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Calculate Total Processing Duration",
-                "name": "to"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction1",
-                "name": "versionExeID"
-            },
-            "rightPort": {
-                "actor": "Verison execution id is empty",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction1",
-                "name": "versionExeID"
-            },
-            "rightPort": {
-                "actor": "versionExeID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction1",
-                "name": "versionExeID"
-            },
-            "rightPort": {
-                "actor": "subsetExeID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction1",
-                "name": "versionExeID"
-            },
-            "rightPort": {
-                "actor": "Subset execution id is empty",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Check if Target Entity ID is Not Set",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "If Target Entity ID is not set, use source ID",
-                "name": "test"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Synthetic",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Or",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "AI",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Or",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Default value for version exe id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "version_task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Default value",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "version_task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Default value",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "subset_task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "versionExeID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "version_task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Default value1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "subset_task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Default value  ",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "subset_task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "subsetExeID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "subset_task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Clone No",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "cloneNo"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Calculate Total Processing Duration",
-                "name": "millis"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "totalTime"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get root_iid",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "rootEntityId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get root_lu_name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "rootLUName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "If Target Entity ID is not set, use source ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "targetEntityId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format the Current Time",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "entityEndTime"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "idType"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "idType"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Prepare the Data:
+    actors:
+      Get LU_TYPE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: LU_TYPE
+            default: false
+      Get Entity Status:
+        parent: FabricSetRead
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+      Get TARGET_ENTITY_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      Get IID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IID
+            default: false
+      Get SOURCE_ENTITY_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+  Continue Preparing:
+    actors:
+      Get Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      Get Timing of Processing Start:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IID_START_DATETIME
+            default: false
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Now1:
+        parent: Now
+      LuFunction1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnSplitUID2
+          uid:
+            link: Get SOURCE_ENTITY_ID/result
+            schema: string
+            mandatory: false
+        out:
+          instanceID:
+            schema: string
+          envName:
+            schema: string
+          versionExeID:
+            schema: string
+      Check if Target Entity ID is Not Set:
+        parent: Equals
+        in:
+          a:
+            link: Get TARGET_ENTITY_ID/result
+            schema: string
+          b:
+            const: NO_ID
+            schema: string
+  Check env:
+    actors:
+      Synthetic:
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: Synthetic
+            schema: string
+          a:
+            link: Get Source Environment/result
+      AI:
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: AI
+            schema: string
+          a:
+            link: Get Source Environment/result
+  'Else ':
+    else: true
+    transactional: false
+    dependsOn: Check env
+    split: '--------------------'
+  Check if Generate Rule based:
+    transactional: false
+    dependsOn: Check env
+    actors:
+      Or:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: Synthetic/result
+          b:
+            link: AI/result
+      Default value for version exe id:
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            schema: integer
+  'Null':
+    transactional: false
+    dependsOn: 'Else '
+    actors:
+      Verison execution id is empty:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: LuFunction1/versionExeID
+      Default value:
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  'versionExeID  ':
+    else: true
+    transactional: false
+    dependsOn: 'Else '
+    actors:
+      versionExeID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: LuFunction1/versionExeID
+        out:
+          value:
+            schema: string
+      Default value1:
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: Check if Generate Rule based
+    actors:
+      Subset execution id is empty:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: LuFunction1/versionExeID
+      'Default value  ':
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  'subsetExeID  ':
+    else: true
+    transactional: false
+    dependsOn: Check if Generate Rule based
+    actors:
+      subsetExeID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: LuFunction1/versionExeID
+        out:
+          value:
+            schema: string
+  Calculate Fabric Get Duration and Total Duration:
+    actors:
+      Get Clone No:
+        parent: FabricSetRead
+        in:
+          key:
+            const: clone_id
+            default: false
+      Calculate Total Processing Duration:
+        parent: DateDuration
+        in:
+          from:
+            link: Get Timing of Processing Start/result
+          to:
+            link: Now1/date
+      Get root_iid:
+        parent: FabricSetRead
+        in:
+          key:
+            const: root_iid
+            default: false
+      Get root_lu_name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: root_lu_name
+            default: false
+      If Target Entity ID is not set, use source ID:
+        parent: IfElse
+        in:
+          a:
+            link: Get IID/result
+            schema: string
+          b:
+            link: Get TARGET_ENTITY_ID/result
+            schema: string
+          test:
+            link: Check if Target Entity ID is Not Set/result
+        out:
+          result:
+            schema: string
+      Format the Current Time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyy-MMM-dd HH:mm:ss.SSS
+          date:
+            link: Now1/date
+  Load Data to Entities table:
+    actors:
+      Add Entity to Entities Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID,\
+              \ LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE,\
+              \ \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME,\
+              \ ENTITY_END_TIME, VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID,\
+              \ FABRIC_GET_TIME,\r\nTOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID,\
+              \ ROOT_LU_NAME) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId},\
+              \ ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType},\
+              \ \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid},\
+              \ \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE\
+              \ THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime},\
+              \ ${entityEndTime}, ${version_task_execution_id},${subset_task_execution_id},\
+              \ ${fabticTime}, \r\n${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}\r\
+              \nFROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS\
+              \ E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID =\
+              \ T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON\
+              \ CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set\
+              \ execution_status = ${executionStatus}"
+          luName:
+            link: Get LU_TYPE/result
+            schema: string
+          taskexecutionId:
+            link: Get Task Execution ID/result
+            schema: string
+          sourceEntityId:
+            link: Get SOURCE_ENTITY_ID/result
+            schema: string
+          targetEntityId:
+            link: If Target Entity ID is not set, use source ID/result
+            schema: string
+          executionStatus:
+            link: Get Entity Status/result
+            schema: string
+          iid:
+            link: Get IID/result
+            schema: string
+          entityStartTime:
+            link: Get Timing of Processing Start/result
+            schema: string
+          entityEndTime:
+            link: Format the Current Time/string
+            schema: string
+          fabticTime:
+            schema: number
+          totalTime:
+            link: Calculate Total Processing Duration/millis
+            schema: number
+          idType:
+            external: idType
+            schema: string
+          cloneNo:
+            link: Get Clone No/result
+            schema: string
+          schema:
+            const: '@TDMDB_SCHEMA@'
+            schema: string
+            mandatory: false
+          rootEntityId:
+            link: Get root_iid/result
+            schema: string
+            mandatory: false
+          rootLUName:
+            link: Get root_lu_name/result
+            schema: string
+            mandatory: false
+          version_task_execution_id:
+            link:
+            - Default value for version exe id/value
+            - Default value/value
+            - versionExeID/value
+            schema: string
+            mandatory: false
+          subset_task_execution_id:
+            link:
+            - Default value/value
+            - Default value1/value
+            - Default value  /value
+            - subsetExeID/value
+            schema: string
+            mandatory: false

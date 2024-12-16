@@ -1,0 +1,156 @@
+tags: TDM
+stages:
+  LU Params Mapping:
+    actors:
+      MTableLookup:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: LuParamsMapping
+          lu_name:
+            external: lu_name
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Remove White Spaces:
+    actors:
+      Trim:
+        parent: Trim
+        in:
+          string:
+            link:
+              path: MTableLookup/result/lu_table
+              iterate: Iterate
+      'Trim  ':
+        parent: Trim
+        in:
+          string:
+            link:
+              path: MTableLookup/result/lu_table_field
+              iterate: Iterate
+  'Get Table and Filed  ':
+    actors:
+      TableName:
+        parent: Lowercase
+        in:
+          string:
+            link: Trim/string
+      Column Name:
+        parent: Lowercase
+        in:
+          string:
+            link: Trim  /string
+  Append:
+    actors:
+      Validate Table And Column:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnValidateFabricTableAndColumns
+          table_name:
+            link: TableName/string
+            schema: string
+            mandatory: false
+          luName:
+            external: lu_name
+            schema: string
+            mandatory: false
+          column_name:
+            link: Column Name/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      table+column:
+        parent: StringFormat
+        in:
+          format:
+            const: ${table}.${column}
+          table:
+            link: TableName/string
+            schema: string
+            mandatory: false
+          column:
+            link: Column Name/string
+            schema: string
+            mandatory: false
+  Get All Fields:
+    last: 1
+    dependsOn: Append
+    actors:
+      EqualsIgnoreCase1:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: Validate Table And Column/result
+      'Included ':
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: table+column/string
+              pos: 0
+    split: '--------------------'
+  Not In Fabric:
+    last: 1
+    else: true
+    dependsOn: Append
+  TDM Tables:
+    actors:
+      TDM_BE_IIDS:
+        parent: Const
+        in:
+          value:
+            const: TDM_BE_IIDS
+            schema: string
+        out:
+          value:
+            schema: string
+      FABRIC_TDM_ROOT:
+        parent: Const
+        in:
+          value:
+            const: FABRIC_TDM_ROOT
+            schema: string
+        out:
+          value:
+            schema: string
+  Result:
+    actors:
+      Output:
+        parent: StringBuild
+        in:
+          input:
+            link:
+            - path: Included /string
+              pos: 0
+            - path: TDM_BE_IIDS/value
+              pos: 1
+            - path: FABRIC_TDM_ROOT/value
+              pos: 2
+        out:
+          string:
+            external: string
+schemas:
+  MTableLookup.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        param_name:
+          type: string
+        lu_table:
+          type: string
+        lu_table_field:
+          type: string

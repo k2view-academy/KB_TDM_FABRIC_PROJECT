@@ -73,7 +73,9 @@ stages:
                 Case When t.reserve_ind = False Then 'false' Else 'true' End As reserve_ind,
                 reserve_retention_period_type,
                 reserve_retention_period_value,
-                Case When t.clone_ind = False Then 'false' Else 'true' End As clone_ind
+                Case When t.clone_ind = False Then 'false' Else 'true' End As clone_ind,
+                t.execution_mode,
+                t.be_id
               From @TDMDB_SCHEMA@.tasks t FULL OUTER JOIN @TDMDB_SCHEMA@.business_entities b ON (t.be_id = -1 or b.be_id = t.be_id),
                 @TDMDB_SCHEMA@.task_execution_list te,
                 @TDMDB_SCHEMA@.environments e
@@ -84,8 +86,40 @@ stages:
         out:
           result:
             schema: '#ref'
-  Stage 1: {
-    }
+  Stage 1:
+    actors:
+      Set Execution Mode:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTaskExecutionMode
+          executionMode:
+            link:
+              path: Query/result/execution_mode
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          taskAction:
+            link:
+              path: Query/result/task_type
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          beId:
+            link:
+              path: Query/result/be_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          cloneInd:
+            link:
+              path: Query/result/clone_ind
+              iterate: Iterate
+            schema: boolean
+            mandatory: false
+        out:
+          result:
+            schema: string
   LU Table:
     last: 1
     actors:
@@ -132,6 +166,7 @@ stages:
             - selection_param_value
             - parameters
             - clone_ind
+            - execution_mode
           keys:
             const:
             - task_id
@@ -226,6 +261,10 @@ stages:
             mandatory: false
           clone_ind:
             schema: any
+          execution_mode:
+            link: Set Execution Mode/result
+            schema: any
+            mandatory: false
           params:
             link:
               path: Query/result
@@ -305,3 +344,7 @@ schemas:
           type: integer
         clone_ind:
           type: string
+        execution_mode:
+          type: string
+        be_id:
+          type: integer

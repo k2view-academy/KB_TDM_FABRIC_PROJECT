@@ -1,564 +1,200 @@
-{
-    "tags": [
-        "population"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Input",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "TDM_INSTANCE_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "TDM_INSTANCE_ID": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "SyncDeleteMode",
-                            "actorType": {
-                                "parentType": "SyncDeleteMode",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "\"#params#\"",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "SplitIIDAndCloneNumber_Actor1",
-                            "actorType": {
-                                "parentType": "SplitIIDAndCloneNumber_Actor",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "cloneNo",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "UID",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "get LU_ID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "LU_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "get TDM_TASK_EXE_ID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_TASK_EXE_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "LU Table",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FABRIC_TDM_ROOT",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "K2_TDM_EID",
-                                            "SOURCE_ENV",
-                                            "IID",
-                                            "TASK_EXECUTION_ID"
-                                        ]
-                                    },
-                                    {
-                                        "name": "K2_TDM_EID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_ENV",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "IID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Root Entity Id",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "fnGetRootEntityId"
-                                    },
-                                    {
-                                        "name": "luId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "taskExecId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "sourceEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "rootLuName": {
-                                                    "type": "string"
-                                                },
-                                                "rootEntityId": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "get clone_id",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "clone_id",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set Root Lu Name and IID",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Set root_lu_name",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "root_lu_name",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set root_iid",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "root_iid",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get Generate Data Params From TDMDB and Set them as Session Variables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load GD Params From Table Into Session",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "LoadGDParamsFromTableIntoSession"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set clone_id if not set",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "IsNull2",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set clone_id to be sused by Masking/Sequences actors",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "clone_id",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "K2_TDM_EID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "envName"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "SOURCE_ENV"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "instanceID"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "IID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "cloneNo"
-            },
-            "rightPort": {
-                "actor": "Set clone_id to be sused by Masking/Sequences actors",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "instanceID"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "envName"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "sourceEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get LU_ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "luId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM_TASK_EXE_ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "taskExecId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM_TASK_EXE_ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "TASK_EXECUTION_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Root Entity Id",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set root_iid",
-                "name": "value"
-            },
-            "path": [
-                "rootEntityId"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Root Entity Id",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set root_lu_name",
-                "name": "value"
-            },
-            "path": [
-                "rootLuName"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "get clone_id",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "IsNull2",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TDM_INSTANCE_ID"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "TDM_INSTANCE_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "SyncDeleteMode",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "luName"
-            }
-        }
-    ]
-}
+tags: population
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          TDM_INSTANCE_ID:
+            external: TDM_INSTANCE_ID
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  '"#params#"':
+    actors:
+      Split IID And Clone Number:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            link: PopulationArgs/iid
+        out:
+          cloneNo:
+            schema: string
+          UID:
+            schema: string
+          versionExeID:
+            schema: string
+      get LU_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: LU_ID
+            default: false
+      get TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+  LU Table:
+    actors:
+      get root_lu_name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: root_lu_name
+            default: false
+      FABRIC_TDM_ROOT:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - k2_tdm_eid
+            - source_env
+            - IID
+            - task_execution_id
+          k2_tdm_eid:
+            link: Split IID And Clone Number/UID
+            schema: string
+          source_env:
+            link: Split IID And Clone Number/envName
+            schema: string
+          IID:
+            link: Split IID And Clone Number/instanceID
+            schema: string
+            mandatory: false
+          task_execution_id:
+            link: get TDM_TASK_EXE_ID/result
+            schema: string
+      get clone_id:
+        parent: FabricSetRead
+        in:
+          key:
+            const: clone_id
+            default: false
+  Get Root Info:
+    dependsOn: LU Table
+    actors:
+      Root Info Not Set?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: get root_lu_name/result
+      Get Root Entity Id:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetRootEntityId
+          luId:
+            link: get LU_ID/result
+            schema: string
+            mandatory: false
+          luName:
+            external: schema
+            schema: string
+            mandatory: false
+          iid:
+            link: Split IID And Clone Number/instanceID
+            schema: string
+            mandatory: false
+          taskExecId:
+            link: get TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          sourceEnv:
+            link: Split IID And Clone Number/envName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Root Info Alresdy Set:
+    else: true
+    dependsOn: LU Table
+  Set Root Lu Name and IID:
+    dependsOn: Get Root Info
+    actors:
+      Set root_lu_name:
+        parent: FabricSet
+        in:
+          key:
+            const: root_lu_name
+            default: false
+          value:
+            const: null
+            link: Get Root Entity Id/result/rootLuName
+            default: false
+      Set root_iid:
+        parent: FabricSet
+        in:
+          key:
+            const: root_iid
+            default: false
+          value:
+            const: null
+            link: Get Root Entity Id/result/rootEntityId
+            default: false
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Root Info Alresdy Set
+  Get Generate Data Params From TDMDB and Set them as Session Variables:
+    actors:
+      Load GD Params From Table Into Session:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadGDParamsFromTableIntoSession
+  Set clone_id if not set:
+    actors:
+      Clone ID not Set?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: get clone_id/result
+      Set clone_id to be sused by Masking/Sequences actors:
+        parent: FabricSet
+        in:
+          key:
+            const: clone_id
+            default: false
+          value:
+            const: null
+            link: Split IID And Clone Number/cloneNo
+            default: false
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        TDM_INSTANCE_ID:
+          type: string
+  Get Root Entity Id.out.result:
+    type: object
+    properties:
+      rootLuName:
+        type: string
+      rootEntityId:
+        type: string
