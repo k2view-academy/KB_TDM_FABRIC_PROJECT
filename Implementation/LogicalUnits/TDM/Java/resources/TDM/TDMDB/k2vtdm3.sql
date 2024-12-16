@@ -543,7 +543,7 @@ INSERT INTO ${@schema}.tdm_general_parameters(param_name, param_value)
 
 INSERT INTO ${@schema}.tdm_general_parameters(
         param_name, param_value)
-    VALUES ('PARAMS_COUPLING', 'false') ON CONFLICT DO NOTHING;
+    VALUES ('PARAMS_COUPLING', 'true') ON CONFLICT DO NOTHING;
 
 INSERT INTO ${@schema}.tdm_general_parameters(
         param_name, param_value)
