@@ -21,7 +21,7 @@ stages:
           key:
             const: enable_sequences
             default: false
-      Get FILTEROUT_RESERVED:
+      FILTEROUT_RESERVED:
         parent: FabricSetRead
         in:
           key:
@@ -38,18 +38,12 @@ stages:
         parent: JavaScript
         in:
           script:
-            const:
-              userCode: "var result = true;\r\nif (taskType == 'EXTRACT' || sequenceInd\
-                \ == 'true' || filteroutReserved == 'false') {\r\n    result = false;\r\
-                \n}\r\nresult;"
-              script: |-
-                var result = true;
-
-                if (taskType == 'EXTRACT' || sequenceInd == 'true' || filteroutReserved == 'false') {
+            const: |-
+              var result = true;
+              if (taskType == 'EXTRACT' || sequenceInd == 'true' || filteroutReserved == 'NA') {
                   result = false;
-                }
-
-                result;
+              }
+              result;
           taskType:
             link: Get Task Type/result
             schema: string
@@ -59,7 +53,7 @@ stages:
             schema: string
             mandatory: false
           filteroutReserved:
-            link: Get FILTEROUT_RESERVED/result
+            link: FILTEROUT_RESERVED/result
             schema: string
             mandatory: false
         out:
@@ -77,42 +71,52 @@ stages:
           key:
             const: TARGET_ENVIRONMENT_ID
             default: false
-  Reserve Only Tasks:
+  Filter Out Reserved By ALL:
+    transactional: false
     dependsOn: Need to Check Reservation?
     actors:
-      Reserve Only Task?:
+      ALL?:
         parent: EqualsIgnoreCase
         condition: result
         in:
           a:
-            link: Get Task Type/result
+            link: FILTEROUT_RESERVED/result
             schema: string
           b:
-            const: reserve
+            const: ALL
             schema: string
       Query Without Check Owner:
         parent: Const
         in:
           value:
-            const: 'SELECT reserve_owner FROM ${@schema}.tdm_reserved_entities WHERE
-              entity_id = ${entityId} AND be_id = ${beId} AND env_id = ${envId} '
+            const: 'SELECT COUNT(*) FROM ${@schema}.tdm_reserved_entities WHERE entity_id
+              = ${entityId} AND be_id = ${beId} AND env_id = ${envId} '
             schema: string
         out:
           value:
             schema: string
     split: '--------------------'
-  Not Reserve Only Task:
+  Filter Out Reserved By Others:
     else: true
     transactional: false
     dependsOn: Need to Check Reservation?
     actors:
+      OTHERS?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: OTHERS
+            schema: string
+          a:
+            link: FILTEROUT_RESERVED/result
       Query With Check Owner:
         parent: Const
         in:
           value:
-            const: SELECT reserve_owner FROM ${@schema}.tdm_reserved_entities WHERE
-              entity_id = ${entityId} AND be_id = ${beId} AND env_id = ${envId} AND
-              reserve_owner != ${userName}
+            const: SELECT COUNT(*)  FROM ${@schema}.tdm_reserved_entities WHERE entity_id
+              = ${entityId} AND be_id = ${beId} AND env_id = ${envId} AND reserve_owner
+              != ${userName}
             schema: string
         out:
           value:
@@ -141,6 +145,13 @@ stages:
           key:
             const: USER_NAME
             default: false
+      Entity ID:
+        parent: ToString
+        in:
+          value:
+            link:
+              path: BytesToStrings/strings
+              iterate: First
   Check if Reserved by other user:
     dependsOn: Prepare Inputs For Query
     actors:
@@ -170,9 +181,7 @@ stages:
             schema: string
             mandatory: false
           entityId:
-            link:
-              path: BytesToStrings/strings
-              iterate: First
+            link: Entity ID/string
             schema: string
             mandatory: false
           beId:
@@ -195,9 +204,9 @@ stages:
     else: true
     transactional: false
     dependsOn: Prepare Inputs For Query
-  Entity Reserved by Other?:
+  'Entity Reserved ':
     actors:
-      Instance Owner:
+      Num Of Reserved Records:
         parent: Const
         in:
           value:
@@ -208,15 +217,16 @@ stages:
           value:
             schema: string
   Already Reserved:
-    dependsOn: Entity Reserved by Other?
+    dependsOn: 'Entity Reserved '
     actors:
-      If Record Exists:
-        parent: NotNull
+      Greater Than Zero:
+        parent: GreaterThan
         condition: result
         in:
-          value:
-            link: Instance Owner/value
-            schema: string
+          b:
+            const: 0
+          a:
+            link: Num Of Reserved Records/value
       Filter Out Entry:
         parent: Const
         in:
@@ -231,7 +241,7 @@ stages:
   Not Reserved:
     else: true
     transactional: false
-    dependsOn: Entity Reserved by Other?
+    dependsOn: 'Entity Reserved '
     actors:
       Keep Entry:
         parent: Const

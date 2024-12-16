@@ -174,23 +174,30 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = Object.class, desc = "")
-	public static Object buildTemplateData(String luName, String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable, String tableIidFieldName, String sequenceName, String flowType) throws Exception {
+	public static Object buildTemplateData(String luName, String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable, String tableIidFieldName, String sequenceName, String flowType, Boolean useFabric) throws Exception {
 		//String luName = getLuType().luName;
 		
 		if (luName == null || Util.isEmpty(luName)) {
 			luName = getLuType().luName;
 		}
-		
-		
+		List <String> keyFields = new ArrayList<>();
+        Map<String, Object> map = new TreeMap<>();
 		List<String> luTableColumns = getLuTableColumns(luName, luTable);
-		Object[] targetTableData = getDbTableColumns(targetDbInterface, targetDbSchema, targetDbTable);
+        
+        if(!useFabric) {
+		    Object[] targetTableData = getDbTableColumns(targetDbInterface, targetDbSchema, targetDbTable);
+            map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
+            keyFields = (ArrayList<String>) targetTableData[1];
+        } else {
+            map.put("TARGET_TABLE_COLUMNS", luTableColumns);
+            keyFields = new ArrayList<String>(getLuTablePKs(luName, luTable));
+        }
+        
+        luTableColumns.replaceAll(String::toUpperCase);
+
 		String seqIID;
 		String seqName;
 		
-		List <String> keyFields = new ArrayList<>();
-		luTableColumns.replaceAll(String::toUpperCase);
-		
-		Map<String, Object> map = new TreeMap<>();
 		map.put("LU_NAME", luName);
 		map.put("LU_TABLE", luTable);
 		map.put("DELETE_TABLE", TDM_DELETE_TABLES_PREFIX + luTable);
@@ -198,9 +205,8 @@ public class SharedLogic {
 		map.put("TARGET_INTERFACE", targetDbInterface);
 		map.put("TARGET_SCHEMA", targetDbSchema);
 		map.put("TARGET_TABLE", targetDbTable);
-		map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
-        keyFields = (ArrayList<String>) targetTableData[1];
-        if (keyFields == null || keyFields.size() == 0 || "LOAD".equalsIgnoreCase(flowType)) {
+		
+        if (keyFields == null || keyFields.size() == 0 || !"LOAD".equalsIgnoreCase(flowType)) {
             Set<Map<String,String>> argsFields = getPopArgumentListForDelete(luName, luTable);
             for (Map<String,String> rec : argsFields) {
                 if(!keyFields.contains(rec.get("FIELD_NAME"))){
@@ -267,12 +273,32 @@ public class SharedLogic {
 			return al;
 			
 		al = new ArrayList<>(luType.ludbObjects.get(table).getLudbObjectColumns().keySet());
+
 		al.replaceAll(String::toLowerCase);
 		return al;
 	}
 
+    @out(name = "res", type = List.class, desc = "")
+	public static List<String> getLuTablePKs(String luName, String table) throws Exception {
+		List<String> pkList = new ArrayList<>();
+		LUType luType = null;
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
+		if(luType == null || !luType.ludbObjects.containsKey(table)) 
+			return pkList;
+		
+        String pkString = luType.ludbObjects.get(table).getPrimaryKeyString().toLowerCase();
+        pkList = (Arrays.asList(pkString.split(",")));
+		
+		return pkList;
+	}
+
 	@out(name = "res", type = List.class, desc = "")
 	public static List<String> getLuTables(String luName) throws Exception {
+
 		List<String> al = new ArrayList<>();
 		LUType luType = null;
 		if (luName == null || Util.isEmpty(luName)) {
@@ -306,7 +332,7 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = List.class, desc = "")
-	public static List<Map<String,String>> getTablesForGenerate(String luName, String sourceInterface, String sourceSchema) throws Exception {
+	public static List<Map<String,String>> getTablesForGenerate(String luName, String sourceInterface, String sourceSchema, Boolean useFabric) throws Exception {
 		List<Map<String,String>> result = new ArrayList<>();
 		LUType luType = null;
 		if (luName == null || Util.isEmpty(luName)) {
@@ -315,7 +341,13 @@ public class SharedLogic {
 			luType = LUType.getTypeByName(luName);
 		}
         
-        List<String> sourceTables = getDbTables(sourceInterface, sourceSchema);
+        List<String> sourceTables = new ArrayList<>();
+        if (!useFabric) {
+            sourceTables = getDbTables(sourceInterface, sourceSchema);
+        } else {
+            sourceTables = getLuTables(luName);
+        }
+        final List<String> tableList = sourceTables;
 
 		if(luType == null)
 			return result;
@@ -332,7 +364,7 @@ public class SharedLogic {
 			}
 
 			if (checkTable != null && checkTable.firstValue() != null) {
-                for (String sourceTable : sourceTables) {
+                for (String sourceTable : tableList) {
                     if (sourceTable.equalsIgnoreCase(s)) {
                         map.put("luTable", s);
                         map.put("sourceTable", sourceTable);
@@ -765,7 +797,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		    	}
 			}
         }
-
+        
 		return result;
 	}
 
@@ -786,43 +818,47 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	}
 
 	@out(name = "pks", type = List.class, desc = "")
-	public static List<String> getDbTablePKs(String dbInterfaceName, String catalogSchema, String table) throws Exception {
-		ResultSet rs = null;
-		ResultSet rs1 = null;
-		String[] types = {"TABLE"};
-		String targetTableName = table;
-		
-		try {
-			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-			
-			String[] dbSchemaType = getDBCollection(md, catalogSchema);
-			String catalog = dbSchemaType[0];
-			String schema = dbSchemaType[1];
-			//log.info("getDbTableColumns - Catalog: " + catalog + ", Schema: " + schema);
-			rs = md.getTables(catalog, schema, "%", types);
-			
-			while (rs.next()) {
-				if (table.equalsIgnoreCase(rs.getString(3))) {
-					targetTableName = rs.getString(3);
-					//log.info("getDbTableColumns - tableName: " + targetTableName);
-					break;
-				}
-			}
+	public static List<String> getDbTablePKs(String dbInterfaceName, String catalogSchema, String table, String luName, Boolean useFabric) throws Exception {
+        if (!useFabric) {
+            ResultSet rs = null;
+            ResultSet rs1 = null;
+            String[] types = {"TABLE"};
+            String targetTableName = table;
+            
+            try {
+                DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
+                
+                String[] dbSchemaType = getDBCollection(md, catalogSchema);
+                String catalog = dbSchemaType[0];
+                String schema = dbSchemaType[1];
+                //log.info("getDbTableColumns - Catalog: " + catalog + ", Schema: " + schema);
+                rs = md.getTables(catalog, schema, "%", types);
+                
+                while (rs.next()) {
+                    if (table.equalsIgnoreCase(rs.getString(3))) {
+                        targetTableName = rs.getString(3);
+                        //log.info("getDbTableColumns - tableName: " + targetTableName);
+                        break;
+                    }
+                }
 
-			// get PKs
-			rs1 = md.getPrimaryKeys(catalog, schema, targetTableName);
-			List<String> pkList = new ArrayList<>();
-			while (rs1.next()) {
-				pkList.add(rs1.getString("COLUMN_NAME"));
-			}
+                // get PKs
+                rs1 = md.getPrimaryKeys(catalog, schema, targetTableName);
+                List<String> pkList = new ArrayList<>();
+                while (rs1.next()) {
+                    pkList.add(rs1.getString("COLUMN_NAME"));
+                }
 
-			return pkList;
-		} finally {
-			if (rs != null)
-				rs.close();
-			if (rs1 != null)
-				rs1.close();
-		}
+                return pkList;
+            } finally {
+                if (rs != null)
+                    rs.close();
+                if (rs1 != null)
+                    rs1.close();
+            } 
+        } else {
+            return getLuTablePKs(luName, table);
+        }
 	}
 
 
@@ -841,50 +877,6 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		luType.ludbTables.forEach((s, s2) -> al.add(s));
 		return al;
 	}
-    @out(name = "columns", type = List.class, desc = "")
-	public static List<Map<String, String>> getDbTablesColsAsSqlite(String dbInterfaceName, String catalogSchema, String table) throws Exception {
-        ResultSet rs = null;
-        ResultSet rs1 = null;
-        String[] types = { "TABLE" };
-        String targetTableName = table;
-
-        try {
-            DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-
-            String[] dbSchemaType = getDBCollection(md, catalogSchema);
-            String catalog = dbSchemaType[0];
-            String schema = dbSchemaType[1];
-            //log.info("getDbTablesColsAsSqlite - dbInterfaceName: " + dbInterfaceName + ", Catalog: " + catalog
-            //        + ", Schema: " + schema);
-            rs = md.getTables(catalog, schema, "%", types);
-
-            while (rs.next()) {
-                if (table.equalsIgnoreCase(rs.getString(3))) {
-                    targetTableName = rs.getString(3);
-                    //log.info("getDbTablesColsAsSqlite - tableName: " + targetTableName);
-                    break;
-                }
-            }
-
-            rs1 = md.getColumns(catalog, schema, targetTableName, null);
-            List<Map<String, String>> al = new ArrayList<>();
-            while (rs1.next()) {
-                int DataType = rs1.getInt("DATA_TYPE");
-                String ColumnType = toSqliteType(DataType);
-                Map<String, String> map = new HashMap<>();
-                map.put("column_name", rs1.getString("COLUMN_NAME"));
-                map.put("column_type", ColumnType);
-                al.add(map);
-            }
-
-            return al;
-        } finally {
-            if (rs != null)
-                rs.close();
-            if (rs1 != null)
-                rs1.close();
-        }
-    }
 
     public static String toSqliteType(int sqlColumnType) {
         switch (sqlColumnType) {

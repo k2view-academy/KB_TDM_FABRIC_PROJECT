@@ -1,456 +1,152 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Project Directory",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetProjectFolder"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "PROJECT_FOLDER",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "LuFunction2",
-                            "minHeight": 261,
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "buildTemplateData"
-                                    },
-                                    {
-                                        "name": "luTable",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetDbInterface",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetDbSchema",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetDbTable",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "tableIidFieldName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "sequenceName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "LOAD",
-                                        "name": "flowType",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "res",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "LU_TABLE": {
-                                                    "type": "string"
-                                                },
-                                                "LU_TABLE_COLUMNS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "MAIN_TABLE_SEQ_ID": {
-                                                    "type": "string"
-                                                },
-                                                "MAIN_TABLE_SEQ_NAME": {
-                                                    "type": "string"
-                                                },
-                                                "TABLE_SEQ_DATA": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "column": {
-                                                                "type": "string"
-                                                            },
-                                                            "value": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "LU_NAME": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "TARGET_TABLE_NAME": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "TARGET_FIELD_NAME": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "FABRIC_TABLE_NAME": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "FABRIC_FIELD_NAME": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "SEQUENCE_NAME": {
-                                                                        "type": "string"
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                "TARGET_INTERFACE": {
-                                                    "type": "string"
-                                                },
-                                                "TARGET_SCHEMA": {
-                                                    "type": "string"
-                                                },
-                                                "TARGET_TABLE": {
-                                                    "type": "string"
-                                                },
-                                                "TARGET_TABLE_COLUMNS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "TARGET_TABLE_PKS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FlowTemplate",
-                            "minHeight": 153,
-                            "actorType": {
-                                "parentType": "FileRead",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "path",
-                                        "const": "SharedObjects/Templates/TDM/tdmLoadTable.flow.template"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "flow folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/LoadFlows"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "PROJECT_DIRECTORY",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "ApplyTemplate",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "transform"
-                                    },
-                                    {
-                                        "name": "templateContent",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "data",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FileWrite1",
-                            "actorType": {
-                                "parentType": "FileWrite",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Project Directory",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "flow folder",
-                "name": "PROJECT_DIRECTORY"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Project Directory",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "FlowTemplate",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction2",
-                "name": "res"
-            },
-            "rightPort": {
-                "actor": "ApplyTemplate",
-                "name": "data"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "FlowTemplate",
-                "name": "stream"
-            },
-            "rightPort": {
-                "actor": "ApplyTemplate",
-                "name": "templateContent"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flow folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ApplyTemplate",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_TABLE"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "luTable"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "targetDbInterface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "targetDbSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_TABLE"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "targetDbTable"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "IID_FIELD_NAME"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "tableIidFieldName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SEQUENCE_NAME"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "sequenceName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "flow folder",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "FLOW_NAME"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "path"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      LuFunction2:
+        parent: LuFunction
+        height: 261
+        in:
+          functionName:
+            const: buildTemplateData
+          luTable:
+            external: LU_TABLE
+            schema: string
+          targetDbInterface:
+            external: TARGET_INTERFACE
+            schema: string
+          targetDbSchema:
+            external: TARGET_SCHEMA
+            schema: string
+          targetDbTable:
+            external: TARGET_TABLE
+            schema: string
+          tableIidFieldName:
+            external: IID_FIELD_NAME
+            schema: string
+          sequenceName:
+            external: SEQUENCE_NAME
+            schema: string
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          flowType:
+            const: LOAD
+            schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      FlowTemplate:
+        parent: FileRead
+        height: 153
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            const: SharedObjects/Templates/TDM/tdmLoadTable.flow.template
+  Stage 4:
+    actors:
+      flow folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/LoadFlows
+          LU_NAME:
+            external: luType
+            schema: string
+          PROJECT_DIRECTORY:
+            link: Get Project Directory/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      ApplyTemplate:
+        parent: LuFunction
+        in:
+          functionName:
+            const: transform
+          templateContent:
+            link: FlowTemplate/stream
+            schema: string
+          data:
+            link: LuFunction2/res
+            schema: string
+        out:
+          result:
+            schema: string
+  Stage 7:
+    actors:
+      FileWrite1:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: flow folder/string
+          stream:
+            link: ApplyTemplate/result
+          path:
+            external: FLOW_NAME
+schemas:
+  LuFunction2.out.res:
+    type: object
+    properties:
+      LU_TABLE:
+        type: string
+      LU_TABLE_COLUMNS:
+        type: array
+        items:
+          type: string
+      MAIN_TABLE_SEQ_ID:
+        type: string
+      MAIN_TABLE_SEQ_NAME:
+        type: string
+      TABLE_SEQ_DATA:
+        type: array
+        items:
+          type: object
+          properties:
+            column:
+              type: string
+            value:
+              type: object
+              properties:
+                LU_NAME:
+                  type: string
+                TARGET_TABLE_NAME:
+                  type: string
+                TARGET_FIELD_NAME:
+                  type: string
+                FABRIC_TABLE_NAME:
+                  type: string
+                FABRIC_FIELD_NAME:
+                  type: string
+                SEQUENCE_NAME:
+                  type: string
+      TARGET_INTERFACE:
+        type: string
+      TARGET_SCHEMA:
+        type: string
+      TARGET_TABLE:
+        type: string
+      TARGET_TABLE_COLUMNS:
+        type: array
+        items:
+          type: string
+      TARGET_TABLE_PKS:
+        type: array
+        items:
+          type: string

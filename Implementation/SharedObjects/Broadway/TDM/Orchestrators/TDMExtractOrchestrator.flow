@@ -1,613 +1,347 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Start",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Print Inputs to Log",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "TDMExtractOrchestrator --> Handling task with following parameters: iid: ${iid}, luType: ${luName}, syncMode: ${syncMode}"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "syncMode",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Start Time",
-                            "actorType": {
-                                "parentType": "Now",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set LU_TYPE",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "LU_TYPE",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Split IID",
-                            "actorType": {
-                                "parentType": "SplitIIDAndCloneNumber_Actor",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "cloneNo",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "UID",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "versionExeID",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Set INPUT_IID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "INPUT_IID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set Session Variables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Set TARGET_ENTITY_ID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Format Start Time",
-                            "actorType": {
-                                "parentType": "DateFormat",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Clone No",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "clone_id",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "0",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Initiate Entity Status",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "ENTITY_STATUS",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "completed",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set IID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set SOURCE_ENTIT_ID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Source Environment",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "environment",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get Synthetic Entities",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "ErrorHandler1",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": "PopulateTableErrorsWithFailed"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Start Processing Time",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID_START_DATETIME",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Instance",
-                            "actorType": {
-                                "parentType": "FabricGet",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "syncMode",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Time After Get",
-                            "actorType": {
-                                "parentType": "Now",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Populate Tables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Format Current Time",
-                            "actorType": {
-                                "parentType": "DateFormat",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Populate Task Execution Entities",
-                            "actorType": {
-                                "parentType": "PopulateTaskExecutionEntities_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "idType",
-                                        "const": "ENTITY"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "End",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Set End Time of Get Command",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID_AFTER_GET_DATETIME",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Print Finish Note",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Finished Extracting Entity ${luType}.${iid}."
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Start Time",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Format Start Time",
-                "name": "date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split IID",
-                "name": "instanceID"
-            },
-            "rightPort": {
-                "actor": "Set TARGET_ENTITY_ID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split IID",
-                "name": "instanceID"
-            },
-            "rightPort": {
-                "actor": "Set IID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split IID",
-                "name": "UID"
-            },
-            "rightPort": {
-                "actor": "Set SOURCE_ENTIT_ID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split IID",
-                "name": "envName"
-            },
-            "rightPort": {
-                "actor": "Set Source Environment",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Start Time",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Set Start Processing Time",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Time After Get",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Format Current Time",
-                "name": "date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Current Time",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Set End Time of Get Command",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Print Inputs to Log",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Print Inputs to Log",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "Print Inputs to Log",
-                "name": "syncMode"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Set LU_TYPE",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Split IID",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Set INPUT_IID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Get Instance",
-                "name": "luType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Get Instance",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "Get Instance",
-                "name": "syncMode"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Print Finish Note",
-                "name": "luType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Print Finish Note",
-                "name": "iid"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Dummy Stage to Allow Condition: {
+    }
+  Set Child Flag in Case of Vertical Execution of child instance:
+    dependsOn: Dummy Stage to Allow Condition
+    actors:
+      Vertiical Child Instance?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: verticalChildInd
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - 'true'
+              - 'false'
+          b:
+            const: 'true'
+            schema: string
+      set CHILD_LU_IND:
+        parent: FabricSet
+        in:
+          key:
+            const: CHILD_LU_IND
+            default: false
+          value:
+            const: 'true'
+            default: false
+    split: '--------------------'
+  Not Vertiical Child Instance:
+    else: true
+    dependsOn: Dummy Stage to Allow Condition
+  Start:
+    actors:
+      Print Inputs to Log:
+        parent: Logger
+        in:
+          message:
+            const: 'TDMExtractOrchestrator --> Handling task with following parameters:
+              iid: ${iid}, luType: ${luName}, syncMode: ${syncMode}'
+          level:
+            const: info
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ''
+              - 'ON'
+              - 'OFF'
+              - FORCE
+              - DELTA
+            mandatory: false
+      Get Start Time:
+        parent: Now
+      Set LU_TYPE:
+        parent: FabricSet
+        in:
+          key:
+            const: LU_TYPE
+            default: false
+          value:
+            const: null
+            external: luName
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            default: false
+      Split IID:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            external: iid
+        out:
+          cloneNo:
+            schema: string
+          UID:
+            schema: string
+          versionExeID:
+            schema: string
+      Set INPUT_IID:
+        parent: FabricSet
+        in:
+          key:
+            const: INPUT_IID
+            default: false
+          value:
+            const: null
+            external: iid
+            default: false
+  Set Session Variables:
+    actors:
+      Set TARGET_ENTITY_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Split IID/instanceID
+            default: false
+      Format Start Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Start Time/date
+      Set Clone No:
+        parent: FabricSet
+        in:
+          key:
+            const: clone_id
+            default: false
+          value:
+            const: '0'
+            default: false
+      Initiate Entity Status:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: completed
+            default: false
+      Set IID:
+        parent: FabricSet
+        in:
+          key:
+            const: IID
+            default: false
+          value:
+            const: null
+            link: Split IID/instanceID
+            default: false
+      Set SOURCE_ENTIT_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Split IID/UID
+            default: false
+      Set Source Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            link: Split IID/envName
+      set Sync Mode:
+        parent: FabricSet
+        in:
+          key:
+            const: sync
+            default: false
+          value:
+            const: null
+            external: syncMode
+            default: false
+  Get Synthetic Entities:
+    actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Set Start Processing Time:
+        parent: FabricSet
+        in:
+          key:
+            const: IID_START_DATETIME
+            default: false
+          value:
+            link: Format Start Time/string
+      Get Instance:
+        parent: FabricGet
+        in:
+          luType:
+            const: null
+            external: luName
+          iid:
+            const: null
+            external: iid
+            default: false
+          syncMode:
+            const: null
+            external: syncMode
+      Get Time After Get:
+        parent: Now
+      isParamCoupling:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isParamCoupling
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - 'true'
+              - 'false'
+        out:
+          value:
+            schema: string
+  'Is Params Coupling ':
+    dependsOn: Get Synthetic Entities
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link: isParamCoupling/value
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      ExportIidForParams:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ExportIidForParams
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          IID:
+            external: iid
+            schema: '#ref'
+            mandatory: false
+    split: '--------------------'
+  'False':
+    else: true
+    dependsOn: Get Synthetic Entities
+  Populate Tables:
+    actors:
+      Format Current Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Time After Get/date
+      Populate Task Execution Entities:
+        parent: PopulateTaskExecutionEntities_Actor
+        in:
+          idType:
+            const: ENTITY
+  Get Execution Mode:
+    actors:
+      get EXECUTION_MODE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: EXECUTION_MODE
+            default: false
+  Run Children For Vertical:
+    dependsOn: Get Execution Mode
+    actors:
+      Vertical?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: get EXECUTION_MODE/result
+            schema: string
+          b:
+            const: VERTICAL
+            schema: string
+      Run Children LUs:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnRunVerticalChildren
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Not Vertical:
+    else: true
+    dependsOn: Get Execution Mode
+  End:
+    actors:
+      Set End Time of Get Command:
+        parent: FabricSet
+        in:
+          key:
+            const: IID_AFTER_GET_DATETIME
+            default: false
+          value:
+            link: Format Current Time/string
+      Print Finish Note:
+        parent: Logger
+        in:
+          message:
+            const: Finished Extracting Entity ${luType}.${iid}.
+          level:
+            const: info
+          luType:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+schemas:
+  ExportIidForParams.in.IID:
+    type: array
+    items:
+      type: string

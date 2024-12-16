@@ -1,0 +1,268 @@
+tags: CleanUp
+stages:
+  Inputs:
+    actors:
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+      Const1:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: truncate_date
+        out:
+          value:
+            schema: '#ref'
+  Select:
+    actors:
+      DbCommand:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |
+              SELECT DISTINCT
+                  s.task_execution_id,
+                  t.custom_logic_lu_name,
+                  t.selection_param_value
+              FROM
+                  ${@TDMDB_SCHEMA}.tasks t
+              JOIN
+                  ${@TDMDB_SCHEMA}.task_execution_list s
+              ON
+                  t.task_id = s.task_id
+              WHERE
+                  LOWER(s.execution_status) = 'stopped'
+                  AND t.selection_method = 'C'
+                  AND t.task_last_updated_date < ${truncate_date};
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+          truncate_date:
+            link: Const1/value/date_trunc
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  'Is Flow Direct ':
+    actors:
+      CheckIfCustomFlowIsDirect1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckIfCustomFlowIsDirect
+          LU_NAME:
+            link:
+              path: DbCommand/result/custom_logic_lu_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          FLOW_NAME:
+            link:
+              path: DbCommand/result/selection_param_value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Non Direct Mode:
+    dependsOn: 'Is Flow Direct '
+    actors:
+      'False':
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: 'false'
+            schema: string
+          a:
+            link: CheckIfCustomFlowIsDirect1/result
+    split: '--------------------'
+  Direct Mode:
+    else: true
+    dependsOn: 'Is Flow Direct '
+  Format Entity Table Name:
+    dependsOn: Non Direct Mode
+    actors:
+      table name:
+        parent: StringFormat
+        in:
+          format:
+            const: entity_list_${id}
+          id:
+            link:
+              path: DbCommand/result/task_execution_id
+              iterate: Iterate
+            schema: '#ref'
+            mandatory: false
+    split: '--------------------'
+  Stage 4:
+    dependsOn: Direct Mode
+  Clean:
+    dependsOn: Format Entity Table Name
+    actors:
+      Drop Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: DROP TABLE IF EXISTS ${@TDMDB_SCHEMA}.${@entity_table}
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+          entity_table:
+            link: table name/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 5:
+    dependsOn: Stage 4
+  Update:
+    last: 1
+    dependsOn: Clean
+    actors:
+      Update to failed:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.task_Execution_list set execution_status='failed'
+              where task_execution_id=${task_execution_id}
+          task_execution_id:
+            link:
+              path: DbCommand/result/task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 6:
+    last: 1
+    dependsOn: Stage 5
+  Check For Entity Table To Delete:
+    actors:
+      Get Entity List Tables:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: select  table_name from INFORMATION_SCHEMA.tables where table_schema
+              = ${schema} and table_name like 'entity_list_%'
+          schema:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Get Task Execution ID:
+    actors:
+      Substring1:
+        parent: Substring
+        in:
+          begin:
+            const: 12
+          end:
+            const: 0
+          string:
+            link:
+              path: Get Entity List Tables/result/table_name
+              iterate: Iterate
+  Drop Table is Task Execution Already Deleted:
+    actors:
+      Check If Task Execution Still Exists:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "SELECT count(1) as cnt from ${@schema}.task_execution_list \r\n\
+              where task_execution_id = ${taskExecutionId}"
+          schema:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            link: Substring1/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Drop Entity List Table:
+    last: 1
+    actors:
+      If Task Execution Cleaned Up:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link: Check If Task Execution Still Exists/result
+      Drop Table1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: DROP TABLE IF EXISTS ${@schema}.${@tableName}
+          tableName:
+            link:
+              path: Get Entity List Tables/result
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          schema:
+            schema: string
+            mandatory: false
+schemas:
+  Const1.out.value:
+    type: object
+    properties:
+      date_trunc:
+        type: date
+  DbCommand.in.truncate_date:
+    type: object
+    properties:
+      date_trunc:
+        type: date
+  DbCommand.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_last_updated_date:
+          type: date
+        task_execution_id:
+          type: integer
+        custom_logic_lu_name:
+          type: string
+        selection_param_value:
+          type: string
+  table name.in.id:
+    type: array
+    items:
+      type: integer
+  Get Entity List Tables.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string

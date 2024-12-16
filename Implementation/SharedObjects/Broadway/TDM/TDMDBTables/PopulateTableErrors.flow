@@ -31,14 +31,14 @@ stages:
   Continue Preparing:
     actors:
       Get Task Execution ID:
-        parent: getLUVariable_Actor
-        height: 191
+        parent: FabricSetRead
         in:
-          variableName:
+          interface:
+            default: false
+          key:
             const: TDM_TASK_EXE_ID
-          luName:
-            link: Get LU Type/result
-      Equals1:
+            default: false
+      No Target Entity ID?:
         parent: Equals
         in:
           a:
@@ -62,14 +62,14 @@ stages:
         in:
           date:
             link: Get Current Date/date
-  Stage 1:
+  Format Fields and clean unsupported chars:
     actors:
-      ToNumber1:
+      Format Task Execution ID:
         parent: ToNumber
         in:
           value:
-            link: Get Task Execution ID/variableValue
-      ToString1:
+            link: Get Task Execution ID/result
+      Format Error Code:
         parent: ToString
         in:
           value:
@@ -98,13 +98,7 @@ stages:
             schema: '#ref'
   Format the actor's parameters:
     actors:
-      Get TDMDB Schema:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
-      IfElse1:
+      If No Target Entity ID Set to Source Entity ID:
         parent: IfElse
         in:
           a:
@@ -114,7 +108,7 @@ stages:
             link: Get Target Entity ID/result
             schema: string
           test:
-            link: Equals1/result
+            link: No Target Entity ID?/result
         out:
           result:
             schema: string
@@ -133,8 +127,7 @@ stages:
           interface:
             const: TDM
           schema:
-            const: null
-            link: Get TDMDB Schema/result
+            const: '@TDMDB_SCHEMA@'
           table:
             const: task_exe_error_detailed
           fields:
@@ -155,7 +148,7 @@ stages:
           dialect:
             const: postgres
           task_execution_id:
-            link: ToNumber1/number
+            link: Format Task Execution ID/number
             schema: string
           lu_name:
             link: Get LU Type/result
@@ -167,13 +160,13 @@ stages:
             link: Get IID/result
             schema: string
           target_entity_id:
-            link: IfElse1/result
+            link: If No Target Entity ID Set to Source Entity ID/result
             schema: string
           error_category:
             external: error_category
             schema: string
           error_code:
-            link: ToString1/string
+            link: Format Error Code/string
             schema: string
           error_message:
             link: Get the Error Fields/message

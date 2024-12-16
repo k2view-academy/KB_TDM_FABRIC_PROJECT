@@ -1,247 +1,167 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Stage 1"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Equals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "DELETE"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Delete Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": "PopulateTableErrorsForTableLevel"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Delete Table",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "delete from ${@schema}.${@table}"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [
-                        "Stage 1"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Truncate Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": "PopulateTableErrorsForTableLevel"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Truncate Table",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "TRUNCATE TABLE ${@schema}.${@table}"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "DeleteOrTruncate"
-            },
-            "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "interface"
-            },
-            "rightPort": {
-                "actor": "Delete Table",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "Delete Table",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Delete Table",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "interface"
-            },
-            "rightPort": {
-                "actor": "Truncate Table",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "Truncate Table",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Truncate Table",
-                "name": "table"
-            }
-        }
-    ]
-}
+stages:
+  Dummy Stage to allow Split: {
+    }
+  Delete:
+    else: true
+    dependsOn: Dummy Stage to allow Split
+    actors:
+      Get Delete Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableDefinitions
+          interfaceName:
+            external: interface
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schema
+            schema: string
+            mandatory: false
+          tableName:
+            external: table
+            schema: string
+            mandatory: false
+          attrName:
+            const: delete_flow
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  Truncate:
+    else: false
+    transactional: false
+    dependsOn: Dummy Stage to allow Split
+    actors:
+      truncate?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            external: deleteOrTruncate
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Truncate Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Truncate Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            external: interface
+          sql:
+            const: TRUNCATE TABLE ${@schema}.${@table}
+          schema:
+            external: schema
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+  Delete Using DB Command:
+    dependsOn: Delete
+    actors:
+      No Delete Flow?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Delete Flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Delete  Command Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Delete Table By DBCommand:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DeleteTableByDBCommand
+          schema:
+            external: schema
+            schema: string
+            mandatory: false
+          tableName:
+            external: table
+            schema: string
+            mandatory: false
+          interface:
+            external: interface
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+    split: '--------------------'
+  Custom Delete Flow:
+    else: true
+    dependsOn: Delete
+    actors:
+      Error Handler For Delete Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+      Run Delete Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: Get Delete Flow/result
+          interface:
+            external: interface
+            schema: string
+            mandatory: false
+          schema:
+            external: schema
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Truncate

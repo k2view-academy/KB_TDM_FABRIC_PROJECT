@@ -33,12 +33,13 @@
     <Column name="selection_param_value" id="selection_param_value" index="27" datatype="Text" />
     <Column name="parameters" id="parameters" index="28" datatype="Text" />
     <Column name="clone_ind" id="clone_ind" index="29" datatype="Text" />
+    <Column name="execution_mode" id="execution_mode" index="30" datatype="Text" />
   </Columns>
   <IndexesList>
   </IndexesList>
   <EnrichmentList>
   </EnrichmentList>
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" deleteMode="">
     <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
   <TriggersList>

@@ -1,0 +1,162 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      Query:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: sqlQuery
+        out:
+          value:
+            schema: string
+      Entity List:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: entityList
+        out:
+          value:
+            schema: string
+  Split To Get Query:
+    actors:
+      Split:
+        parent: Split
+        in:
+          delimiter:
+            const: NOT IN
+          string:
+            link: Query/value
+  Return Reserved Query:
+    actors:
+      Reserved Query:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                const queryArray = [...arr];
+
+                const secondElement = queryArray[1];
+
+                secondElement;
+              script: |-
+                var queryArray = [].concat(arr);
+                var secondElement = queryArray[1];
+                secondElement;
+          arr:
+            link: Split/strings
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Remove Escaping:
+    actors:
+      Replace:
+        parent: Replace
+        in:
+          search:
+            const: ''''''
+          replace:
+            const: ''''
+          string:
+            link: Reserved Query/result
+  Run Query:
+    actors:
+      DbCommand:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Replace/string
+        out:
+          result:
+            schema: '#ref'
+  List Of Reserved:
+    last: 1
+    actors:
+      Resreved Entites:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: DbCommand/result/entity_id
+              iterate: Iterate
+              pos: 0
+  Filter Out Reserved:
+    actors:
+      Final Entity List:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                // Input strings
+                var string1 = original || "";
+                var string2 = reserved || "";
+
+                // Convert the comma-separated strings into arrays
+                var array1 = string1.length ? string1.split(',').map(item => item.trim()) : [];
+                var array2 = string2.length ? string2.split(',').map(item => item.trim()) : [];
+
+                // Filter the original array to exclude values present in the reserved array
+                var notInString2 = array1.filter(function(num) {
+                  return array2.indexOf(num) === -1;
+                });
+
+                // Combine the results into a single string
+                var uniqueValuesString = notInString2.join(','); // Join the array into a string
+
+                uniqueValuesString;
+              script: |-
+                // Input strings
+                var string1 = original || "";
+                var string2 = reserved || ""; // Convert the comma-separated strings into arrays
+
+                var array1 = string1.length ? string1.split(',').map(function (item) {
+                  return item.trim();
+                }) : [];
+                var array2 = string2.length ? string2.split(',').map(function (item) {
+                  return item.trim();
+                }) : []; // Filter the original array to exclude values present in the reserved array
+
+                var notInString2 = array1.filter(function (num) {
+                  return array2.indexOf(num) === -1;
+                }); // Combine the results into a single string
+
+                var uniqueValuesString = notInString2.join(','); // Join the array into a string
+
+                uniqueValuesString;
+          original:
+            link: Entity List/value
+            schema: string
+            mandatory: false
+          reserved:
+            link: Resreved Entites/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: '#ref'
+schemas:
+  Reserved Query.in.arr:
+    type: array
+    items:
+      type: string
+  DbCommand.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        entity_id:
+          type: string
+  Final Entity List.out.result:
+    type: array
+    items:
+      type: string

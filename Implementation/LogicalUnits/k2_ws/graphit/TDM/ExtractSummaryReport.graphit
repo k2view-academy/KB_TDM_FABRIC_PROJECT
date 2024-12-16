@@ -10,14 +10,16 @@
     {
       "name": "result",
       "sessionProvider": "fabric",
+      "collapsed": true,
       "children": [
         {
           "name": "General Info",
           "type": "sql",
-          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  Case When SELECTION_METHOD = 'TABLES' Then '' Else T.BE_NAME END AS be_name,\n  T.TASK_TYPE AS task_type,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_TASK_EXECUTION_ID AS version_task_execution_id,\n  L.SUBSET_TASK_EXECUTION_ID AS subset_task_execution_id,\n  T.RETENTION_PERIOD_TYPE AS retention_period_type,\n  T.RETENTION_PERIOD_VALUE AS retention_period_value,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
+          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  Case When SELECTION_METHOD = 'TABLES' Then '' Else T.BE_NAME END AS be_name,\n  T.TASK_TYPE AS task_type,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_TASK_EXECUTION_ID AS version_task_execution_id,\n  L.SUBSET_TASK_EXECUTION_ID AS subset_task_execution_id,\n  T.RETENTION_PERIOD_TYPE AS retention_period_type,\n  T.RETENTION_PERIOD_VALUE AS retention_period_value,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value,\n  T.EXECUTION_MODE\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
         },
         {
           "name": "Source Environment",
+          "collapsed": true,
           "children": [
             {
               "name": "Environment Name",
@@ -43,11 +45,13 @@
               "name": "Selection Method",
               "type": "function",
               "code": "var sm = selection_method; \nsm;",
+              "collapsed": true,
               "children": [
                 {
                   "name": "Generate Selection Method",
                   "type": "condition",
                   "code": "sm == 'GENERATE' ",
+                  "collapsed": true,
                   "children": [
                     {
                       "name": "Generate Params",
@@ -73,6 +77,7 @@
                   "name": "Custom Logic Selection Method",
                   "type": "condition",
                   "code": "sm == 'C' ",
+                  "collapsed": true,
                   "children": [
                     {
                       "name": "custom logic",
@@ -80,17 +85,18 @@
                       "code": "Select parameters as params from TDM.tasks;",
                       "sessionProvider": "fabric",
                       "one": true,
+                      "collapsed": true,
                       "children": [
                         {
                           "name": "param_name",
                           "type": "function",
-                          "code": "var parsedData = JSON.parse(params);\nvar par = parsedData.inputs;\nvar result={};\nfor (var p in par){ \n\tresult[p] = par[p].name;\n}\nresult;",
+                          "code": "var result = {};\nif (params) {\n    var parsedData = JSON.parse(params);\n    var par = parsedData.inputs;\n    for (var p in par) { \n        result[p] = par[p].name;\n    }\n}\nresult;\n",
                           "one": true
                         },
                         {
                           "name": "param_value",
                           "type": "function",
-                          "code": "var parsedData = JSON.parse(params);\nvar par = parsedData.inputs;\nvar result={};\nfor (var p in par){ \n\tresult[p] = par[p].value;\n}\nresult;",
+                          "code": "var result={};\nif (params) {\n\tvar parsedData = JSON.parse(params);\n\tvar par = parsedData.inputs;\n  \tfor (var p in par){ \n      \tresult[p] = par[p].value;\n\t}\n}\nresult;",
                           "one": true
                         }
                       ]
@@ -131,6 +137,7 @@
           "name": "Task Execution Summary",
           "type": "sql",
           "code": "select ifnull(fabric_execution_id, -1) as fabric_execution_id, lu_id, lu_name, process_id, process_name, process_type, num_of_processed_entities from task_execution_list",
+          "collapsed": true,
           "children": [
             {
               "type": "condition",
@@ -165,6 +172,7 @@
               "children": [
                 {
                   "name": "Processes",
+                  "collapsed": true,
                   "children": [
                     {
                       "type": "condition",

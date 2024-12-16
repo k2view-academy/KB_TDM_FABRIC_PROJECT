@@ -1,217 +1,69 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Entity Reserved by Other?",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Check If Reserved",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "CheckIfReserved"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "blob"
-                                            }
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "check if Reserved by other",
-                    "dependsOnList": [
-                        "Entity Reserved by Other?"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Already Reserved?",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Output Zero",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Not Reserved",
-                    "dependsOnList": [
-                        "Entity Reserved by Other?"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "insert To Lu External Entity List",
-                            "actorType": {
-                                "parentType": "insertToLuExternalEntityList",
-                                "inputs": [
-                                    {
-                                        "name": "SOURCE_IID",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Output 1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 1
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Check If Reserved",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Already Reserved?",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_IID"
-            },
-            "rightPort": {
-                "actor": "Check If Reserved",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Output Zero",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "recordLoaded"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "insert To Lu External Entity List",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_IID"
-            },
-            "rightPort": {
-                "actor": "insert To Lu External Entity List",
-                "name": "SOURCE_IID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Output 1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "recordLoaded"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Entity Reserved by Other?:
+    actors:
+      Check If Reserved:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckIfReserved
+          value:
+            external: SOURCE_IID
+            schema: '#ref'
+            mandatory: false
+        out:
+          value:
+            schema: boolean
+  check if Reserved by other:
+    dependsOn: Entity Reserved by Other?
+    actors:
+      Already Reserved?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check If Reserved/value
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      Output Zero:
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            external: recordLoaded
+            schema: integer
+    split: '--------------------'
+  Not Reserved:
+    else: true
+    transactional: false
+    dependsOn: Entity Reserved by Other?
+    actors:
+      insert To Lu External Entity List:
+        parent: insertToLuExternalEntityList
+        in:
+          SOURCE_IID:
+            const: null
+            external: SOURCE_IID
+            default: false
+          LU_NAME:
+            external: LU_NAME
+      Output 1:
+        parent: Const
+        in:
+          value:
+            const: 1
+            schema: integer
+        out:
+          value:
+            external: recordLoaded
+            schema: integer
+schemas:
+  Check If Reserved.in.value:
+    type: array
+    items:
+      type: blob

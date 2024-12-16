@@ -1,433 +1,146 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Empty Stage to Allow Split",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create Delete (TAR) Tables",
-                    "dependsOnList": [
-                        "Empty Stage to Allow Split"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Create TAR Tables?",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "create Delete Tables And Populations",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createDeleteTablesAndPopulations"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.logicalUnit",
-                                            "addEmptyEntry": true
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "OVERRIDE_EXISTING_FLOWS",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do Not Create Delete Tables",
-                    "dependsOnList": [
-                        "Empty Stage to Allow Split"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create Sequences, Load and Delete Flows",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "create Flows From Templates",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createFlowsFromTemplates"
-                                    },
-                                    {
-                                        "name": "OVERRIDE_EXISTING_FLOWS",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.logicalUnit",
-                                            "addEmptyEntry": true
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_ENVIRONMENT",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "CREATE_DELETE_TABLES",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create Generate Flows",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Create Generate Flows?",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "create Generate Data Table Flows",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createGenerateDataTableFlows"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.logicalUnit",
-                                            "addEmptyEntry": true
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "OVERRIDE_EXISTING_FLOWS",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "CREATE_DELETE_TABLES"
-            },
-            "rightPort": {
-                "actor": "Create TAR Tables?",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "create Delete Tables And Populations",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "create Delete Tables And Populations",
-                "name": "TARGET_SCHEMA"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "create Delete Tables And Populations",
-                "name": "TARGET_INTERFACE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "OVERRIDE_EXISTING_FLOWS"
-            },
-            "rightPort": {
-                "actor": "create Delete Tables And Populations",
-                "name": "OVERRIDE_EXISTING_FLOWS"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "OVERRIDE_EXISTING_FLOWS"
-            },
-            "rightPort": {
-                "actor": "create Flows From Templates",
-                "name": "OVERRIDE_EXISTING_FLOWS"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "create Flows From Templates",
-                "name": "TARGET_INTERFACE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "create Flows From Templates",
-                "name": "TARGET_SCHEMA"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "create Flows From Templates",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_ENVIRONMENT"
-            },
-            "rightPort": {
-                "actor": "create Flows From Templates",
-                "name": "TARGET_ENVIRONMENT"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "CREATE_DELETE_TABLES"
-            },
-            "rightPort": {
-                "actor": "create Flows From Templates",
-                "name": "CREATE_DELETE_TABLES"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "CREATE_GENERATE_FLOWS"
-            },
-            "rightPort": {
-                "actor": "Create Generate Flows?",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "create Generate Data Table Flows",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "OVERRIDE_EXISTING_FLOWS"
-            },
-            "rightPort": {
-                "actor": "create Generate Data Table Flows",
-                "name": "OVERRIDE_EXISTING_FLOWS"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "create Generate Data Table Flows",
-                "name": "SOURCE_INTERFACE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "create Generate Data Table Flows",
-                "name": "SOURCE_SCHEMA"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Empty Stage to Allow Split: {
+    }
+  Create Delete (TAR) Tables:
+    dependsOn: Empty Stage to Allow Split
+    actors:
+      Create TAR Tables?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      create Delete Tables And Populations:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createDeleteTablesAndPopulations
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+    split: '--------------------'
+  Do Not Create Delete Tables:
+    else: true
+    transactional: false
+    dependsOn: Empty Stage to Allow Split
+  Create Sequences, Load and Delete Flows:
+    actors:
+      create Flows From Templates:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFlowsFromTemplates
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
+          CREATE_DELETE_TABLES:
+            const: ''
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+            default: true
+            mandatory: false
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+  Create Generate Flows:
+    actors:
+      Create Generate Flows?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: CREATE_GENERATE_FLOWS
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      create Generate Data Table Flows:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createGenerateDataTableFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false

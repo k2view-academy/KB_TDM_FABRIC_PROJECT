@@ -1,0 +1,89 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      get TDM Separators:
+        parent: getTDMSeparators
+  Versioning Task:
+    dependsOn: Get Inputs
+    actors:
+      Versioning?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            external: VERSION_IND
+      get TDM_VERSION_TASK_EXECUTION_ID:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: set TDM.TDM_VERSION_TASK_EXECUTION_ID
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  Not a Versioning Task:
+    else: true
+    dependsOn: Get Inputs
+    actors:
+      Format Simple EID:
+        parent: StringFormat
+        in:
+          format:
+            const: ${sourceEnv}${iidSeparator}${iidOpenSeparator}${sourceIID}${iidCloseSeparator}
+          sourceEnv:
+            external: SOURCE_ENV
+            schema: string
+          iidSeparator:
+            link: get TDM Separators/IID_SEPARATOR
+            schema: string
+          iidOpenSeparator:
+            link: get TDM Separators/IID_OPEN_SEPARATOR
+            schema: string
+          sourceIID:
+            external: SOURCE_IID
+            schema: string
+          iidCloseSeparator:
+            link: get TDM Separators/IID_CLOSE_SEPARATOR
+            schema: string
+        out:
+          string:
+            external: TDM_EID
+  Build Versioning IID:
+    dependsOn: Versioning Task
+    actors:
+      Format Versioing EID:
+        parent: StringFormat
+        in:
+          format:
+            const: ${sourceEnv}${iidSeparator}${iidOpenSeparator}${sourceIID}${iidCloseSeparator}${iidSeparator}${taskExeID}
+          sourceEnv:
+            external: SOURCE_ENV
+            schema: string
+          iidSeparator:
+            link: get TDM Separators/IID_SEPARATOR
+            schema: string
+          iidOpenSeparator:
+            link: get TDM Separators/IID_OPEN_SEPARATOR
+            schema: string
+          sourceIID:
+            external: SOURCE_IID
+            schema: string
+          iidCloseSeparator:
+            link: get TDM Separators/IID_CLOSE_SEPARATOR
+            schema: string
+          taskExeID:
+            link: get TDM_VERSION_TASK_EXECUTION_ID/result
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: TDM_EID
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Not a Versioning Task

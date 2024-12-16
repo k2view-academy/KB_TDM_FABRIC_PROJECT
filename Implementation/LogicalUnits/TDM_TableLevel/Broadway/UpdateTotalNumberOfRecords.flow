@@ -1,233 +1,27 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "NotEquals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": -1
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Total Number of Records",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Update Table's Total Count",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset number_of_records_to_process = ${recCount},\r\n    execution_status = 'running'\r\nwhere task_execution_id = ${taskExeId} \r\nand task_ref_table_id = ${tableId}"
-                                    },
-                                    {
-                                        "name": "taskExeId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "recCount",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 8",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Total Number of Records",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Update Table's Total Count",
-                "name": "recCount"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "totalNumberOfRecords"
-            },
-            "rightPort": {
-                "actor": "NotEquals1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "countSql"
-            },
-            "rightPort": {
-                "actor": "Get Total Number of Records",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "params"
-            },
-            "rightPort": {
-                "actor": "Get Total Number of Records",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "taskExeId"
-            },
-            "rightPort": {
-                "actor": "Update Table's Total Count",
-                "name": "taskExeId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableId"
-            },
-            "rightPort": {
-                "actor": "Update Table's Total Count",
-                "name": "tableId"
-            }
-        }
-    ]
-}
+stages:
+  Update Total:
+    actors:
+      Update Table's Total Count:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update @TDMDB_SCHEMA@.task_ref_exe_stats
+              set number_of_records_to_process = ${totalCount},
+                  execution_status = 'running'
+              where task_execution_id = ${taskExeId}
+              and task_ref_table_id = ${tableId}
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          totalCount:
+            external: totalCount
+            schema: integer
+            mandatory: false

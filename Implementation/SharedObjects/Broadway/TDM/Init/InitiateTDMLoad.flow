@@ -31,12 +31,24 @@ stages:
             default: false
   Check If Init Did Not Run:
     actors:
-      Already ran?:
-        parent: IsNull
+      JavaScript1:
+        parent: JavaScript
         condition: result
         in:
-          value:
+          script:
+            const: |-
+              var result = false;
+              if (scopeFlag == null || scopeFlag == ""){
+                  result = true;
+              }
+              result;
+          scopeFlag:
             link: SCOPE_INITIATED/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
   Print Inputs:
     actors:
       Set Initiation Flag to True:
@@ -47,6 +59,7 @@ stages:
             default: false
           value:
             const: 'true'
+            default: false
       Print Inputs to Log:
         parent: Logger
         in:
@@ -77,19 +90,14 @@ stages:
           key:
             const: AI_ENVIRONMENT
             default: false
-      Get TDMDB Schema:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
   Set Environment To Source:
     actors:
       Get Start Time:
         parent: Now
       Set Source Environment:
         parent: FabricSet
-        height: 106
+        remark: The Source Entity ID should be initiated in case the flows fails during
+          the next stage and before setting this ID as it is used in the Error handler
         in:
           key:
             const: environment
@@ -134,16 +142,6 @@ stages:
             const: null
             external: iid
             default: false
-      Set sequence_schema:
-        parent: FabricSet
-        in:
-          key:
-            const: sequence_schema
-            default: false
-          value:
-            const: null
-            link: Get TDMDB Schema/result
-            default: false
       set Sync Mode:
         parent: FabricSet
         in:
@@ -151,7 +149,9 @@ stages:
             const: sync
             default: false
           value:
+            const: null
             external: syncMode
+            default: false
       Get Sync Mode:
         parent: Const
         in:
@@ -161,12 +161,6 @@ stages:
         out:
           value:
             schema: string
-      get LU_ID:
-        parent: FabricSetRead
-        in:
-          key:
-            const: LU_ID
-            default: false
       get TDM_TASK_EXE_ID:
         parent: FabricSetRead
         in:
@@ -190,26 +184,34 @@ stages:
             schema: string
           a:
             link: Get Sync Mode/value
-      Get Selection Method:
-        parent: DbCommand
+      Get Selection Method and LU_ID:
+        parent: DbFetchFirstRow
         in:
           interface:
             const: TDM
           sql:
-            const: "select selection_method\r\nfrom ${@TDMDB_SCHEMA}.tasks t INNER\
-              \ JOIN ${@TDMDB_SCHEMA}.task_execution_list l on t.task_id=l.task_id\
-              \ \r\nwhere task_execution_id = ${task-execution_id}"
-          TDMDB_SCHEMA:
-            link: Get TDMDB Schema/result
+            const: |-
+              select selection_method, l.lu_id
+              from @TDMDB_SCHEMA@.tasks t , @TDMDB_SCHEMA@.task_execution_list l, @TDMDB_SCHEMA@.tasks_logical_units u
+              where task_execution_id = ${taskExecutionId} and  t.task_id=l.task_id and  t.task_id=u.task_id and u.lu_name = ${luName}
+              and u.lu_id = l.lu_id
+          taskExecutionId:
+            link: get TDM_TASK_EXE_ID/result
             schema: string
             mandatory: false
-          task-execution_id:
-            link: get TDM_TASK_EXE_ID/result
+          luName:
+            external: luName
             schema: string
             mandatory: false
         out:
           result:
             schema: '#ref'
+      Get TDM_DELETE_BEFORE_LOAD1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_BEFORE_LOAD
+            default: false
   Check selection Method:
     actors:
       AI_GENERATED:
@@ -219,9 +221,7 @@ stages:
             const: AI_GENERATED
             schema: string
           a:
-            link:
-              path: Get Selection Method/result/selection_method
-              iterate: First
+            link: Get Selection Method and LU_ID/result/selection_method
       Sync is OFF and Source is AI:
         parent: And
         in:
@@ -229,6 +229,36 @@ stages:
             link: Source is AI /result
           b:
             link: Sync is OFF/result
+      set LU_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: LU_ID
+            default: false
+          value:
+            const: null
+            link: Get Selection Method and LU_ID/result/lu_id
+            default: false
+      set TDM_TASK_EXE_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+          value:
+            const: null
+            link: get TDM_TASK_EXE_ID/result
+            default: false
+      set TDM_DELETE_BEFORE_LOAD:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_DELETE_BEFORE_LOAD
+            default: false
+          value:
+            const: null
+            link: Get TDM_DELETE_BEFORE_LOAD1/result
+            default: false
   Sync Is OFF:
     dependsOn: Check selection Method
     actors:
@@ -246,8 +276,9 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "select root_lu_name ,root_imported_lui from ${@TDMDB_SCHEMA}.tdm_ai_gen_iid_mapping\r\
-              \nwhere lu_name=${lu_name} and imported_lui=${iid} and task_execution_id=${task_execution_id}"
+            const: |-
+              select root_lu_name ,root_imported_lui from @TDMDB_SCHEMA@.tdm_ai_gen_iid_mapping
+              where lu_name=${lu_name} and imported_lui=${iid} and task_execution_id=${task_execution_id}
           iid:
             external: iid
             schema: string
@@ -258,10 +289,6 @@ stages:
             mandatory: false
           lu_name:
             external: luName
-            schema: string
-            mandatory: false
-          TDMDB_SCHEMA:
-            link: Get TDMDB Schema/result
             schema: string
             mandatory: false
         out:
@@ -296,11 +323,9 @@ stages:
             const: root_lu_name
             default: false
           value:
-            const: null
             link:
               path: Get Root Lui and Name/result/root_lu_name
               iterate: First
-            default: false
       Set root_iid:
         parent: FabricSet
         in:
@@ -308,11 +333,9 @@ stages:
             const: root_iid
             default: false
           value:
-            const: null
             link:
               path: Regex/strings
               iterate: First
-            default: false
     split: '--------------------'
   Do Nothing:
     transactional: false
@@ -335,7 +358,7 @@ stages:
         in:
           date:
             link: Get Start Time/date
-      Set Input IID:
+      Set INPUT_IID:
         parent: FabricSet
         in:
           key:
@@ -352,7 +375,7 @@ stages:
     actors:
       Split IID And Clone Number:
         parent: SplitIIDAndCloneNumber_Actor
-        height: 265
+        height: 347
         in:
           iid:
             external: iid
@@ -365,19 +388,15 @@ stages:
             schema: string
       Set Start Processing Time:
         parent: FabricSet
+        height: 108
         in:
           key:
             const: IID_START_DATETIME
             default: false
           value:
+            const: null
             link: Format Start Time/string
-      get TDM Task Execution ID:
-        parent: getLUVariable_Actor
-        in:
-          variableName:
-            const: TDM_TASK_EXE_ID
-          luName:
-            external: luName
+            default: false
   Get Values of Globals And Set Indicators And IDs:
     transactional: false
     actors:
@@ -387,30 +406,6 @@ stages:
           key:
             const: TDM_TAR_ENV_NAME
             default: false
-      Get Source Environment DC:
-        parent: DbFetchField
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: "select p.data_center_name from ${@schema}.environment_products\
-              \ p, ${@schema}.task_execution_list l, ${@schema}.tasks_logical_units\
-              \ u\r\nwhere l.task_execution_id=${taskExeID} and  l.task_id = u.task_id\
-              \ and l.lu_id = u.lu_id and u.lu_name = ${luName}\r\nand l.source_environment_id=\
-              \ p.environment_id and l.product_id = p.product_id\r\n"
-          taskExeID:
-            link: get TDM Task Execution ID/variableValue
-            schema: string
-          luName:
-            external: luName
-            schema: string
-          schema:
-            link: Get TDMDB Schema/result
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: string
       Set IID:
         parent: FabricSet
         in:
@@ -418,7 +413,9 @@ stages:
             const: IID
             default: false
           value:
+            const: null
             link: Split IID And Clone Number/instanceID
+            default: false
       Set Clone No:
         parent: FabricSet
         in:
@@ -426,12 +423,11 @@ stages:
             const: clone_id
             default: false
           value:
-            const: '0'
+            const: null
             link: Split IID And Clone Number/cloneNo
+            default: false
       Initiate Target Entity ID after IID Split:
         parent: FabricSet
-        remark: The Target Entity ID should be initiated in case the flows fails during
-          the next stage and before setting this ID as it is used in the Error handler
         in:
           key:
             const: TARGET_ENTITY_ID
@@ -452,7 +448,6 @@ stages:
             default: false
       Set Source Entity ID:
         parent: FabricSet
-        height: 110
         in:
           key:
             const: SOURCE_ENTITY_ID
@@ -461,22 +456,12 @@ stages:
             const: null
             link: Split IID And Clone Number/UID
             default: false
-      Set Task Execution ID:
-        parent: FabricSet
-        in:
-          key:
-            const: execution_id
-            default: false
-          value:
-            const: null
-            link: get TDM Task Execution ID/variableValue
-            default: false
-  Stage 2:
+  Set iid based on clone_no:
     transactional: false
     actors:
-      IfElse1:
+      Cloning?:
         parent: IfElse
-        height: 496
+        height: 424
         in:
           a:
             link: Split IID And Clone Number/UID
@@ -491,16 +476,8 @@ stages:
             schema: string
   Get Instance From Fabric:
     transactional: false
-    dependsOn: Stage 2
     actors:
-      Check if Source Env has DC:
-        parent: IsNull
-        condition: result
-        height: 144
-        in:
-          value:
-            link: Get Source Environment DC/result
-      ErrorHandler1:
+      Sync Instance Error Handler:
         parent: ErrorHandler
         error: result
         in:
@@ -513,7 +490,7 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsWithFailed
-      Get Entity:
+      Get Instance:
         parent: FabricGet
         in:
           luType:
@@ -521,55 +498,14 @@ stages:
             external: luName
           iid:
             const: null
-            link: IfElse1/result
+            link:
+              path: Cloning?/result
+              pos: 0
             default: false
           syncMode:
             const: null
             external: syncMode
-        out:
-          result:
-            schema: '#ref'
       Get Time After Get:
-        parent: Now
-    split: '--------------------'
-  'DC not Null ':
-    else: true
-    transactional: false
-    dependsOn: Stage 2
-    actors:
-      ErrorHandler2:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: true
-                flowName: PopulateTableErrorsWithFailed
-      Get Entity with Source DC:
-        parent: DbCommand
-        in:
-          interface:
-            const: fabric
-          sql:
-            const: get ${luName}.${iid} @ ${dcName} WITH PARALLEL=false STOP_ON_ERROR=true
-          luName:
-            external: luName
-            schema: string
-          iid:
-            link: IfElse1/result
-            schema: string
-          dcName:
-            link: Get Source Environment DC/result
-            schema: string
-        out:
-          result:
-            schema: '#ref'
-      Get Time After Get With DC:
         parent: Now
   Get LOAD_MASKING_FLAG:
     transactional: false
@@ -580,6 +516,70 @@ stages:
           key:
             const: LOAD_MASKING_FLAG
             default: false
+      isParamCoupling:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isParamCoupling
+        out:
+          value:
+            schema: string
+      'clone id = 1 or 0 ':
+        parent: LessThan
+        in:
+          b:
+            const: 2
+          a:
+            link: Split IID And Clone Number/cloneNo
+      TDM_SYNC_SOURCE_DATA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SYNC_SOURCE_DATA
+            default: false
+  If not Delete and not Clone:
+    transactional: false
+    actors:
+      Not Delete Nor Clone:
+        parent: And
+        in:
+          b:
+            link: clone id = 1 or 0 /result
+          a:
+            link: TDM_SYNC_SOURCE_DATA/result
+  'Is Params Coupling ':
+    transactional: false
+    dependsOn: If not Delete and not Clone
+    actors:
+      And:
+        parent: And
+        condition: result
+        in:
+          b:
+            link: isParamCoupling/value
+          a:
+            link: Not Delete Nor Clone/result
+      Export Iid For Params:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ExportIidForParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          IID:
+            link:
+              path: Cloning?/result
+              iterate: First
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'False':
+    else: true
+    transactional: false
+    dependsOn: If not Delete and not Clone
   Set Environment To Target:
     transactional: false
     actors:
@@ -606,9 +606,7 @@ stages:
         parent: DateFormat
         in:
           date:
-            link:
-            - Get Time After Get/date
-            - Get Time After Get With DC/date
+            link: Get Time After Get/date
       Set enable_masking:
         parent: FabricSet
         in:
@@ -671,15 +669,17 @@ stages:
             const: IID_AFTER_GET_DATETIME
             default: false
           value:
+            const: null
             link: Format Current Time/string
+            default: false
 schemas:
-  Get Selection Method.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        selection_method:
-          type: string
+  Get Selection Method and LU_ID.out.result:
+    type: object
+    properties:
+      selection_method:
+        type: string
+      lu_id:
+        type: integer
   Get Root Lui and Name.out.result:
     type: array
     items:
@@ -688,30 +688,4 @@ schemas:
         root_lu_name:
           type: string
         root_imported_lui:
-          type: string
-  Get Entity.out.result:
-    type: object
-    properties:
-      luName:
-        type: string
-      iid:
-        type: string
-      version:
-        type: integer
-      action:
-        type: string
-  Get Entity with Source DC.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        luName:
-          type: string
-        iid:
-          type: string
-        version:
-          type: integer
-        action:
-          type: string
-        notes:
           type: string

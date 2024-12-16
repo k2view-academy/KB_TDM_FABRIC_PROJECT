@@ -35,6 +35,26 @@
                                 <input id="be_description" type="text" class="form-control1" ng-model="businessEntityCtrl.businessEntityData.be_description" ng-disabled="businessEntityCtrl.disableChange">
                             </div>
                         </div>
+                        <div class="form-group" style="margin-left: 0px">
+                            <div style="display: flex; align-items: center;"  title="Executes Logical Unit (LU) by LU, processing all entities for each LU">
+                                <input type="radio"
+                                    ng-value="'HORIZONTAL'" name="executionModeRadio"
+                                    ng-model="businessEntityCtrl.businessEntityData.execution_mode" />
+                                <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Horizontal execution
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group"style="margin-left: 0px">
+                            <div style="display: flex; align-items: center;"  title="Executes entire hierarchy for each entity ID">
+                                <input type="radio"
+                                    ng-value="'VERTICAL'" name="executionModeRadio"
+                                    ng-model="businessEntityCtrl.businessEntityData.execution_mode" />
+                                <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Vertical execution
+                                </label>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
                                 <button id="be_save" class="pull-right  K2-primary-btn" type="submit" ng-if="!businessEntityCtrl.disableChange" role-handler role="0">{{"SAVE_CHANGES" | translate}}</button>
@@ -119,7 +139,6 @@
                 </ul>
                 <hr style="margin:0px">
                 <div class="tab-content">
-                    
                     <div id="tab-1" class="tab-pane active" ng-show="tab == 1" style="padding: 15px;">
                         <div class="row">
                             <div class="col-lg-12">

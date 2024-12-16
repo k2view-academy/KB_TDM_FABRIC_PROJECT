@@ -19,10 +19,14 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.COMBO_MAX_COUNT;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnAddExecutionProcessForBusinessEntity;
@@ -51,7 +55,7 @@ public class Logic extends WebServiceUserCode {
 	public enum PARAM_TYPES{
 		NUMBER, TEXT;
 		public String getName(){
-			return this.toString().toLowerCase();
+			return this.toString();
 		}
 	}
 
@@ -77,14 +81,15 @@ public class Logic extends WebServiceUserCode {
 			"      \"be_description\": \"description\",\r\n" +
 			"      \"be_created_by\": \"K2View\",\r\n" +
 			"      \"be_name\": \"BE2\",\r\n" +
-			"      \"be_last_updated_by\": \"K2View\"\r\n" +
+			"      \"be_last_updated_by\": \"K2View\",\r\n" +
+            "      \"execution_mode\": \"HORIZONTAL\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetBusinessEntities() throws Exception {
-		String sql = "SELECT be_id, be_description, be_name, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status FROM " + schema + ".business_entities";
+		String sql = "SELECT be_id, be_description, be_name, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode FROM " + schema + ".business_entities";
 		String errorCode="";
 		String message=null;
 		
@@ -103,6 +108,8 @@ public class Logic extends WebServiceUserCode {
 				businessEntity.put("be_last_updated_date", row.get("be_last_updated_date"));
 				businessEntity.put("be_last_updated_by", row.get("be_last_updated_by"));
 				businessEntity.put("be_status", row.get("be_status"));
+                businessEntity.put("execution_mode", row.get("execution_mode"));
+
 				result.add(businessEntity);
 			}
 			if (rows != null) {
@@ -130,24 +137,25 @@ public class Logic extends WebServiceUserCode {
 			"    \"be_description\": \"test BE\",\r\n" +
 			"    \"be_created_by\": \"K2View\",\r\n" +
 			"    \"be_name\": \"BE10\",\r\n" +
-			"    \"be_last_updated_by\": \"K2View\"\r\n" +
+			"    \"be_last_updated_by\": \"K2View\",\r\n" +
+            "    \"execution_mode\": \"HORIZONTAL\"\r\n" +
 			"  },\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsPostBusinessEntity(String be_name, String be_description) throws Exception {		
+	public static Object wsPostBusinessEntity(String be_name, String be_description, String execution_mode) throws Exception {		
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if ("admin".equals(permissionGroup)) {
 			try {
 				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
-				String sql = "INSERT INTO " + schema + ".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) " +
-						"VALUES (?, ?, ?, ?, ?, ?, ?) " +
-						"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status";
+				String sql = "INSERT INTO " + schema + ".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode) " +
+						"VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+						"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode";
 
 				String username = sessionUser().name();
-				Db.Row row = db(TDM).fetch(sql, be_name, be_description!=null?be_description:"", username, now, now, username, "Active").firstRow();
+				Db.Row row = db(TDM).fetch(sql, be_name, be_description!=null?be_description:"", username, now, now, username, "Active", execution_mode).firstRow();
 				HashMap<String,Object> businessEntity=new HashMap<>();
 				businessEntity.put("be_id",Integer.parseInt(row.get("be_id").toString()));
 				businessEntity.put("be_name", row.get("be_name"));
@@ -157,7 +165,7 @@ public class Logic extends WebServiceUserCode {
 				businessEntity.put("be_last_updated_date", row.get("be_last_updated_date"));
 				businessEntity.put("be_last_updated_by", row.get("be_last_updated_by"));
 				businessEntity.put("be_status", row.get("be_status"));
-
+                businessEntity.put("execution_mode", row.get("execution_mode"));
 				String activityDesc = "Business entity " + be_name + " was created";
 				try {
 					fnInsertActivity("create", "Business entities", activityDesc);
@@ -184,7 +192,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsPutBusinessEntity(String be_description, @param(required=true) Long beId) throws Exception {
+	public static Object wsPutBusinessEntity(String be_description, @param(required=true) Long beId, String execution_mode) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -198,11 +206,12 @@ public class Logic extends WebServiceUserCode {
 						.format(Instant.now());
 				String sql = "UPDATE " + schema + ".business_entities " +
 						"SET be_description=(?)," +
+                        "execution_mode=(?)," +
 						"be_last_updated_date=(?)," +
 						"be_last_updated_by=(?) " +
-						"WHERE be_id = " + beId + " RETURNING be_name";
+						"WHERE be_id = ? RETURNING be_name";
 
-				Db.Row row = db(TDM).fetch(sql, be_description,now,username).firstRow();
+				Db.Row row = db(TDM).fetch(sql, be_description, execution_mode, now, username, beId).firstRow();
 				errorCode= "SUCCESS";
 
 				String activityDesc = "Business entity " + row.get("be_name") + " was updated";
@@ -1104,7 +1113,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	static void fnAddLogicalUnits(Set<Map<String,Object>> logicalUnits,long beId) throws Exception{
+    static void fnAddLogicalUnits(Set<Map<String,Object>> logicalUnits,long beId) throws Exception{
 		for(Map<String,Object> logicalUnit:logicalUnits){
 			Map<String,Object> luParent = (Map<String,Object>)logicalUnit.get("lu_parent");
 			Map<String,Object> childLuInputs = new HashMap<>();
@@ -1143,7 +1152,7 @@ public class Logic extends WebServiceUserCode {
 					//Check if there are any Childs that are already part of the BE
 					parentLuInputs.put("child_lu",luName);
 					List<Map<String, Object>> childLinkToParentForBeLu =  MtableLookup("ChildLink",parentLuInputs, MTable.Feature.caseInsensitive);
-					if (luParent.size() == 0) {
+					if (luParent == null || (luParent.get("logical_unit")== null) || luParent.size() == 0) {
 						for (Map<String, Object> map : childLinkToParentForBeLu) {
 							if (!productLus.contains(map.get("parent_lu"))) {
 								//Check for multiple LUs in BE, child is added without parent. Child added as current LU - INVALID SCENARIO
@@ -1161,7 +1170,8 @@ public class Logic extends WebServiceUserCode {
 						}
 					}
 					for (Map<String, Object> map : childLinkToParent) {
-						if (!productLus.contains(map.get("parent_lu"))) {
+						if (!productLus.contains(map.get("parent_lu")) && luParent.get("logical_unit")!= null && luParent.get("logical_unit").equals(map.get("parent_lu"))
+                         ) {
 							//Check for multiple LUs in BE, child is added without parent. Child already part of BE. -INVALID SCENARIO
 							/*
 								CASE 2:
@@ -1174,7 +1184,7 @@ public class Logic extends WebServiceUserCode {
 							*/
 							throw (new Exception("Parent logical Unit "+ map.get("parent_lu") +" is not associated to Child logical Unit "+luName+". "+ logicalUnit.get("lu_name") + " cannot be added."));
 						}
-						if (map.get("parent_lu").equals(luName) && luParent.size() == 0) {
+						if (map.get("parent_lu").equals(luName) && (luParent == null || (luParent.get("logical_unit")== null) || luParent.size() == 0)) {
 							//Check if the Parent and Child are added in Parallel.
 							// Child added first with no association to Parent. Parent added as current lu- INVALID SCENARIO
 								/*
@@ -1188,7 +1198,7 @@ public class Logic extends WebServiceUserCode {
 							throw (new Exception("Child Logical Unit " + logicalUnit.get("lu_name") + " and Parent Logical Unit " + luName + " cannot be added in parallel"));
 						}
 					}
-					if (luParent.size() == 0) {
+					if (luParent == null || (luParent.get("logical_unit")== null) || luParent.size() == 0) {
 						for (Map<String, Object> map : childLink) {
 							if (map.get("child_lu").equals(luName)) {
 								//Check if the Parent and Child are added in Parallel.
@@ -1205,7 +1215,7 @@ public class Logic extends WebServiceUserCode {
 							}
 						}
 					}
-					if (childLinkToParentForBeLu.size() != 0 && childLinkToParent.size() != 0 && luParent.size() == 0)  {
+					if (childLinkToParentForBeLu.size() != 0 && childLinkToParent.size() != 0 && (luParent == null || (luParent.get("logical_unit")== null) || luParent.size() == 0))  {
 						//Check for multiple LUs in BE, 2 childs are added (same parent or different parent). - INVALID SCENARIO
 						/*
 						CASE 5:
@@ -1293,37 +1303,22 @@ public class Logic extends WebServiceUserCode {
 		Db.Row row = db(TDM).fetch(deleteLogicalUnitSql,luId).firstRow();
 
 		if(row.isEmpty()) return;
-		String prodId = "" + row.get("product_id");
-		if (prodId != null && !"-1".equals(prodId)) {
+		Object prodId = row.get("product_id");
+		if (prodId != null && !"-1".equals(prodId.toString())) {
 			
 			String sql = "UPDATE " + schema + ".environment_products " +
 					"SET status= (?) " +
-					"WHERE environment_products.status = \'Active\' AND environment_products.product_id = " + prodId +
+					"WHERE environment_products.status = 'Active' AND environment_products.product_id = " + prodId.toString() +
 					" AND (select count(product_logical_units.product_id) " +
 					"FROM " + schema + ".product_logical_units " +
-					"WHERE product_logical_units.product_id = " + prodId + ") = 0 RETURNING product_id";
+					"WHERE product_logical_units.product_id = " + prodId.toString() + ") = 0 RETURNING product_id";
 			
 			row = db(TDM).fetch(sql, "Inactive").firstRow();
-
 			if (!row.isEmpty()) {
-				prodId = "" + row.get("product_id");
-				 sql = "WITH src AS ( " +
-						"UPDATE " + schema + ".tasks_products " +
-						"SET task_product_status = (?) " +
-						"WHERE tasks_products.product_id = " + prodId + " " +
-						"RETURNING tasks_products.task_id ) " +
-						" " +
-						"UPDATE " + schema + ".tasks SET task_status = (?) " +
-						"FROM ( SELECT task_id FROM " + schema + ".tasks_products " +
-						"WHERE tasks_products.task_product_status = \'Active\' " +
-						"GROUP BY tasks_products.task_id " +
-						"HAVING COUNT(*) = 1 " +
-						"INTERSECT " +
-						"SELECT tasks_products.task_id " +
-						"FROM " + schema + ".tasks_products " +
-						"WHERE tasks_products.product_id = " + prodId + " ) AS sq " +
-						"WHERE tasks.task_id = sq.task_id AND tasks.task_status = \'Active\'";
-				db(TDM).fetch(sql, "Inactive", "Inactive");
+				 sql =  "UPDATE " + schema + ".tasks SET task_status = (?) " +
+						"WHERE tasks.task_status = 'Active' " +
+                        "AND task_id in (SELECT task_id from " + schema + ".tasks_logical_units where lu_id = ?)";
+				db(TDM).execute(sql, "Inactive", luId);
 			}
 		}
 
@@ -1404,14 +1399,15 @@ public class Logic extends WebServiceUserCode {
 			"    },\r\n" +
 			"    {\r\n" +
 			"      \"be_id\": 3,\r\n" +
-			"      \"be_name\": \"bb\"\r\n" +
+			"      \"be_name\": \"bb\",\r\n" +
+            "      \"execution_mode\": \"HORIZONTAL\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetActiveBusinessentities() throws Exception {
-		String sql = "SELECT be_id, be_name FROM "+ TDMDB_SCHEMA +".business_entities be WHERE EXISTS"+ 
+		String sql = "SELECT be_id, be_name, execution_mode FROM "+ TDMDB_SCHEMA +".business_entities be WHERE EXISTS"+ 
         "(SELECT be_id FROM "+ TDMDB_SCHEMA +".product_logical_units plu WHERE plu.be_id=be.be_id) AND be_status = 'Active'";
 		String errorCode="";
 		String message=null;
@@ -1425,6 +1421,7 @@ public class Logic extends WebServiceUserCode {
 				businessEntity=new HashMap<String,Object>();
 				businessEntity.put("be_id",Integer.parseInt(row.get("be_id").toString()));
 				businessEntity.put("be_name", row.get("be_name"));
+                businessEntity.put("execution_mode", row.get("execution_mode"));
 				result.add(businessEntity);
 			}
 			
@@ -1498,18 +1495,16 @@ public class Logic extends WebServiceUserCode {
 
     private static Object fnGetListOfParamsForBE(String beID, String sourceEnvName) throws Exception {
 		final String env = Util.isEmpty(sourceEnvName) ? "_dev" : sourceEnvName;
-
-        Map<String, Map<String, Object>> beParametersColumnTypes = new HashMap<>();
+        SortedMap<String, Map<String, Object>> beParametersColumnTypes = new TreeMap<>();
 		Db tdmDB = db(TDM);
 		Db.Rows luRes = tdmDB.fetch(LU_SQL, beID);
         int maxNumOfValues = Integer.parseInt(COMBO_MAX_COUNT) + 1;
+        Boolean paramCoupling =isParamsCoupling();
 		for(Db.Row luRow : luRes) {
 			String luName = luRow.get("logicalunitname").toString();
-			
-            String getDistinctValuesSQL = "SELECT * FROM " + schema +".tdm_params_distinct_values " +
-                    "WHERE lu_name = ? AND SOURCE_ENVIRONMENT = ?";
-
-            Db.Rows luFieldsValues = tdmDB.fetch(getDistinctValuesSQL, luName.toUpperCase(), sourceEnvName);
+			String broadway = "Broadway " +luName + ".VerifyParamsInDistinctValues luName = " + luName + " , sourceEnvName = " + sourceEnvName + " RESULT_STRUCTURE=COLUMN";
+            String query = fabric().fetch(broadway).firstValue().toString();
+            Db.Rows luFieldsValues = tdmDB.fetch(query);
             for (Db.Row fieldValuesRec : luFieldsValues) {
                 String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
                 Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
@@ -1523,14 +1518,19 @@ public class Logic extends WebServiceUserCode {
                 if (numOfValues < maxNumOfValues) {
                     isCombo = "true";
                     fieldValues = fieldValuesRec.get("field_values").toString();
-                    fieldValues = fieldValues.replace("{", "");
-                    fieldValues = fieldValues.replace("}", "");
-                    fieldValues = fieldValues.replace("\"", "");
+                    fieldValues = processFieldValues(fieldValues);
                 }
-
                 List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
+                
                 String paramType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
-                                                    
+
+                if (paramCoupling) {
+                    String fieldType = fieldValuesRec.get("field_type").toString().trim();
+                    if (fieldType.isEmpty() || "null".equalsIgnoreCase(fieldType)) {
+                        fieldType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
+                    }
+                    paramType = fieldType;
+                }
 				beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
                                                                     PARAM_TYPE, paramType, COMBO_INDICATOR, isCombo, 
                                                                     VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, 
@@ -1544,10 +1544,20 @@ public class Logic extends WebServiceUserCode {
 		if (luRes != null) {
 			luRes.close();
 		}
-		        
+        // Sort the Parameters according to param_name  TDM 9.1
+        /*Map<String, Map<String, Object>> sortedBeParametersColumnTypes = beParametersColumnTypes.entrySet()
+        .stream()
+        .sorted(Comparator.comparing(entry -> entry.getValue().get(PARAM_NAME).toString()))
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue,
+            (e1, e2) -> e1,
+            LinkedHashMap::new
+        ));   
+		return wrapWebServiceResults("SUCCESS", null, sortedBeParametersColumnTypes);*/
 		return wrapWebServiceResults("SUCCESS", null, beParametersColumnTypes);
 	}
-
+        
 	static void fnUpdateProductDate(long prodId,String username) throws Exception{
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 				.withZone(ZoneOffset.UTC)
@@ -1571,5 +1581,41 @@ public class Logic extends WebServiceUserCode {
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);
 	}
-	
+    /**
+     * Processes the input string to remove surrounding curly braces and
+     * handle escaped quotes within quoted strings. This method is intended
+     * to prepare parameter values for display in the GUI by removing escaped
+     * quotes and ensuring proper formatting TDM 9.1 change.
+     */    
+    private static String processFieldValues(String fieldValues) {
+        // Remove surrounding curly braces
+        fieldValues = fieldValues.replaceAll("^\\{|\\}$", "");
+        
+        // Use a regex to match items inside quotes and handle escaped quotes
+        Pattern pattern = Pattern.compile("\"(\\\\\"|[^\"])*\"|[^,]+");
+        Matcher matcher = pattern.matcher(fieldValues);
+        
+        StringBuilder result = new StringBuilder();
+        
+        while (matcher.find()) {
+            String match = matcher.group();
+            
+            if (match.startsWith("\"") && match.endsWith("\"")) {
+                // Remove the surrounding quotes
+                match = match.substring(1, match.length() - 1);
+                
+                // Replace escaped quotes (\" with ")
+                match = match.replace("\\\"", "\"");
+            }
+            
+            result.append(match).append(",");
+        }
+        
+        if (result.length() > 0) {
+            result.setLength(result.length() - 1);
+        }
+        
+        return result.toString();
+    }
+    
 }

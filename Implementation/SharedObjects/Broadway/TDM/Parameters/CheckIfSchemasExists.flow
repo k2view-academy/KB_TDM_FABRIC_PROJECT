@@ -1,0 +1,158 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      Lu List:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: lus
+        out:
+          value:
+            schema: '#ref'
+      TDM Interface:
+        parent: Const
+        in:
+          value:
+            const: TDM
+            schema: string
+        out:
+          value:
+            schema: string
+  Check if Schema exists:
+    actors:
+      Information Schema:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: TDM Interface/value
+          sql:
+            const: |-
+              SELECT EXISTS (
+                  SELECT 1
+                  FROM information_schema.schemata
+                  WHERE schema_name = Lower(${LuName})
+              );
+          luName:
+            link:
+              path: Lu List/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Build Array of values:
+    last: 1
+    actors:
+      exists or not:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Information Schema/result/exists
+              iterate: First
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  'Return number of false schema ':
+    actors:
+      JavaScript:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                function checkArrayAndRunExtraction(arr) {
+                    // Count the number of false values in the array
+                    const falseCount = arr.filter(value => value === false).length;
+
+                    // If there are any false values, throw an exception and run the extraction
+                    if (falseCount > 0) {
+                        throw new Error('There are no entities available. Please run an extract task.');
+                    }
+                }
+
+                // Example usage:
+                try {
+                    const inputArray = [...arr];
+                    checkArrayAndRunExtraction(inputArray);
+                } catch (error) {
+                    error.message;
+                }
+              script: |-
+                function checkArrayAndRunExtraction(arr) {
+                  // Count the number of false values in the array
+                  var falseCount = arr.filter(function (value) {
+                    return value === false;
+                  }).length; // If there are any false values, throw an exception and run the extraction
+
+                  if (falseCount > 0) {
+                    throw new Error('There are no entities available. Please run an extract task.');
+                  }
+                } // Example usage:
+
+
+                try {
+                  var inputArray = [].concat(arr);
+                  checkArrayAndRunExtraction(inputArray);
+                } catch (error) {
+                  error.message;
+                }
+          arr:
+            link: exists or not/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: string
+  false = 0:
+    dependsOn: 'Return number of false schema '
+    actors:
+      EqualsIgnoreCase:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: JavaScript/result
+    split: '--------------------'
+  Else Throw Error:
+    else: true
+    dependsOn: 'Return number of false schema '
+    actors:
+      Error Message:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: JavaScript/result
+        out:
+          value:
+            external: value
+            schema: string
+schemas:
+  Lu List.out.value:
+    type: array
+    items:
+      type: string
+  Information Schema.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        exists:
+          type: boolean
+  exists or not.out.array:
+    type: array
+    items:
+      type: boolean
+  JavaScript.in.arr:
+    type: array
+    items:
+      type: boolean

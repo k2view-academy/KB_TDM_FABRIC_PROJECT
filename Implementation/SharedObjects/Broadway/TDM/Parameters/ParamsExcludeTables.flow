@@ -1,0 +1,67 @@
+tags: TDM
+stages:
+  Get Lu Tables:
+    actors:
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTablesForAIML
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Check For Excluded Tables:
+    actors:
+      FilterOut TDM Tables For Params:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: FilterOutTDMTablesForParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          tableName:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          tableNameOut:
+            schema: string
+  Table is Valid:
+    last: 1
+    dependsOn: Check For Excluded Tables
+    actors:
+      NotNull1:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: FilterOut TDM Tables For Params/tableNameOut
+      EXCLUDED_TABLES:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: FilterOut TDM Tables For Params/tableNameOut
+              pos: 0
+        out:
+          string:
+            external: tables
+    split: '--------------------'
+  Table Is not Valid:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Check For Excluded Tables
+schemas:
+  geLuTables.out.res:
+    type: array
+    items:
+      type: string

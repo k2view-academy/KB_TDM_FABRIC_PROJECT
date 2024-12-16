@@ -1,0 +1,215 @@
+stages:
+  Get Fields and Set Env:
+    actors:
+      set Source Environment:
+        parent: setSourceEnv_Actor
+      List of Fields:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: TableColums
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+  Set fields for Create Table:
+    actors:
+      Field Name And Type:
+        parent: StringFormat
+        in:
+          format:
+            const: ${columnName} ${columnType}
+          columnName:
+            link:
+              path: List of Fields/value/column_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          columnType:
+            link:
+              path: List of Fields/value/column_type
+              iterate: Iterate
+            schema: string
+            mandatory: false
+      Dollar:
+        parent: Const
+        in:
+          value:
+            const: $
+            schema: string
+        out:
+          value:
+            schema: string
+      Open:
+        parent: Const
+        in:
+          value:
+            const: '{'
+            schema: string
+        out:
+          value:
+            schema: string
+      Close:
+        parent: Const
+        in:
+          value:
+            const: '}'
+            schema: string
+        out:
+          value:
+            schema: string
+  Stage 1:
+    actors:
+      StringBuild1:
+        parent: StringBuild
+        in:
+          delimiter:
+            const: ''
+          input:
+            link:
+            - path: Dollar/value
+              pos: 0
+            - path: Open/value
+              pos: 1
+            - path: List of Fields/value/column_name
+              iterate: Iterate
+              pos: 2
+            - path: Close/value
+              pos: 3
+  Create lines for Create/Insert Statements:
+    last: 1
+    actors:
+      Add Field to Create Statement:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: Field Name And Type/string
+              pos: 0
+      Add Field to Insert Statement:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: List of Fields/value/column_name
+              iterate: Iterate
+              pos: 0
+      Add ? to Insert Statement:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: StringBuild1/string
+              pos: 0
+      Build Fields List:
+        parent: ArrayBuilder
+        disabled: true
+        out:
+          array:
+            schema: '#ref'
+      ResetActors1:
+        parent: ResetActors
+        in:
+          actorId:
+            const:
+            - StringBuild1
+  Build Create/Insert Statements:
+    actors:
+      Build Create Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: "/*sqlite*/CREATE TABLE IF NOT EXISTS TDM_TableLevel.__t_${tableName}\
+              \ (\r\n${colmns})"
+          colmns:
+            link: Add Field to Create Statement/string
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      Build Delete Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: /*sqlite*/ DELETE FROM TDM_TableLevel.__t_${tableName}
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      Build Insert Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: /*sqlite*/ insert into TDM_TableLevel.__t_${tableName} (${columns})
+              values(${values})
+          values:
+            link: Add ? to Insert Statement/string
+            schema: string
+            mandatory: false
+          columns:
+            link: Add Field to Insert Statement/string
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: SqliteInsertStatement
+      Set Fields List:
+        parent: FabricSet
+        disabled: true
+        in:
+          key:
+            const: TABLE_FIELDS
+            default: false
+          value:
+            const: null
+            link: Build Fields List/array
+            default: false
+  Create Table:
+    transactional: false
+    actors:
+      Create Sqlite Table if it Does Not Exist:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link: Build Create Statement/string
+      Delete Sqlite Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link: Build Delete Statement/string
+schemas:
+  List of Fields.in.value:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+  List of Fields.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+  Build Fields List.out.array:
+    type: array
+    items:
+      type: string

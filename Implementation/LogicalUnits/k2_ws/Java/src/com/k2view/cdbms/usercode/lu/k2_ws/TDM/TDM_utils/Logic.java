@@ -167,6 +167,17 @@ public class Logic extends WebServiceUserCode {
 		return wrapWebServiceResults("SUCCESS", null, tdmVersion);
 	}
 
+    public static Object wsGetParamsAutoWidth() throws Exception {
+		Object paramWidth =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ENABLE_PARAMETERS_AUTO_WIDTH'").firstValue();
+		
+		return wrapWebServiceResults("SUCCESS", null, paramWidth);
+	}
+
+    public static Object wsGetParamsLUName() throws Exception {
+		Object paramLuName =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ADD_LU_NAME_TO_PARAM_NAME'").firstValue();
+		
+		return wrapWebServiceResults("SUCCESS", null, paramLuName);
+	}
 
 
 	@desc("This API provides Retention Period Info for TDM GUI")

@@ -1,1445 +1,449 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get Fields and Set Env",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Table's Fields with Sqlite Types",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "getDbTablesColsAsSqlite"
-                                    },
-                                    {
-                                        "name": "dbInterfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "catalogSchema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "columns",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "column_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "column_type": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "set Source Environment",
-                            "actorType": {
-                                "parentType": "setSourceEnv_Actor",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set fields for Create Table",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Field Name And Type",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${columnName} ${columnType}"
-                                    },
-                                    {
-                                        "name": "columnName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "columnType",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Question Mark",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "?"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create lines for Create/Insert Statements",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "Add Field to Create Statement",
-                            "actorType": {
-                                "parentType": "StringBuild",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Add Field to Insert Statement",
-                            "actorType": {
-                                "parentType": "StringBuild",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Add ? to Insert Statement",
-                            "actorType": {
-                                "parentType": "StringBuild",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Build Fields List",
-                            "actorType": {
-                                "parentType": "ArrayBuilder",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "array",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Build Create/Insert Statements",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Build Create Statement",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "/*sqlite*/CREATE TABLE IF NOT EXISTS TDM_TableLevel.__t_${tableName} (\r\n${colmns})"
-                                    },
-                                    {
-                                        "name": "colmns",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Build Delete Statement",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "/*sqlite*/ DELETE FROM TDM_TableLevel.__t_${tableName}"
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Build Insert Statement",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "/*sqlite*/ insert into TDM_TableLevel.__t_${tableName} (${columns}) values(${values})"
-                                    },
-                                    {
-                                        "name": "values",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "columns",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Fields List",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TABLE_FIELDS",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create Table",
-                    "dependsOnList": [
-                        "Build Create/Insert Statements"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Retain in Fabric?",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Create Sqlite Table if it Does Not Exist",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Delete Sqlite Table",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Not Retained in Fabric",
-                    "dependsOnList": [
-                        "Build Create/Insert Statements"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Build Select Statement",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Create Count Statement",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "select count(*) as CNT from ${schemaName}.${tableName}"
-                                    },
-                                    {
-                                        "name": "schemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Create Select Statement",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "select * from ${schemaName}.${tableName}"
-                                    },
-                                    {
-                                        "name": "schemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "There is No Filter",
-                    "dependsOnList": [
-                        "Build Select Statement"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "There is Table Filter?",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "No Where clause For Count",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "No Where clause",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "There is a Filter",
-                    "dependsOnList": [
-                        "Build Select Statement"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Add  Wherer Clause to Count1",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "BuildTableFilter"
-                                    },
-                                    {
-                                        "name": "selectClause",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableFilter",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "filterParameters",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "selectStatement",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "paramters",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Add  Wherer Clause to Query: InnerFlow",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "BuildTableFilter"
-                                    },
-                                    {
-                                        "name": "selectClause",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableFilter",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "filterParameters",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "selectStatement",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "paramters",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Mark Filter As Used",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "filterUsed",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "true",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Count Records",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Run Count Statement",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set Table Totals in Case of Extract",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Update Table's Total Count",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset number_of_records_to_process = ${recCount},\r\n    execution_status = 'running'\r\nwhere task_execution_id = ${taskExeId} \r\nand task_ref_table_id = ${tableId}"
-                                    },
-                                    {
-                                        "name": "taskExeId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "recCount",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Select Data From Source",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Run Select Statement",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "customer_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "ssn": {
-                                                        "type": "string"
-                                                    },
-                                                    "first_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "last_name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get SEQ_CACHE_INTERFACE",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SEQ_CACHE_INTERFACE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get MASKING_CACHE_TTL",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "MASKING_CACHE_TTL",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Mask Data",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Set Target Environment",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "setTargetEnv"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Catalog Masking",
-                            "actorType": {
-                                "parentType": "CatalogMaskingMapper",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "mtable",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "dataPlatform",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "dataset",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "useEnvironment",
-                                        "const": true
-                                    },
-                                    {
-                                        "name": "ttl",
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "values",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "contract_ref_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "offer_ref_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "offer_contract_description": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Table's Fields with Sqlite Types",
-                "name": "columns"
-            },
-            "rightPort": {
-                "actor": "Build Fields List",
-                "name": "input"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "column_name"
-            ],
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table's Fields with Sqlite Types",
-                "name": "columns"
-            },
-            "rightPort": {
-                "actor": "Add Field to Insert Statement",
-                "name": "input"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "column_name"
-            ],
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table's Fields with Sqlite Types",
-                "name": "columns"
-            },
-            "rightPort": {
-                "actor": "Field Name And Type",
-                "name": "columnType"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "column_type"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table's Fields with Sqlite Types",
-                "name": "columns"
-            },
-            "rightPort": {
-                "actor": "Field Name And Type",
-                "name": "columnName"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "column_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Field Name And Type",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Add Field to Create Statement",
-                "name": "input"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Question Mark",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add ? to Insert Statement",
-                "name": "input"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Add Field to Create Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Build Create Statement",
-                "name": "colmns"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add Field to Insert Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Build Insert Statement",
-                "name": "columns"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add ? to Insert Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Build Insert Statement",
-                "name": "values"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Build Fields List",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "Set Fields List",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Build Create Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Create Sqlite Table if it Does Not Exist",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Build Delete Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Delete Sqlite Table",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Count Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "No Where clause For Count",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Count Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "selectClause"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Select Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "No Where clause",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Select Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Query: InnerFlow",
-                "name": "selectClause"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "No Where clause For Count",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Run Count Statement",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "No Where clause",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Run Select Statement",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "selectStatement"
-            },
-            "rightPort": {
-                "actor": "Run Count Statement",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "paramters"
-            },
-            "rightPort": {
-                "actor": "Run Count Statement",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add  Wherer Clause to Query: InnerFlow",
-                "name": "selectStatement"
-            },
-            "rightPort": {
-                "actor": "Run Select Statement",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add  Wherer Clause to Query: InnerFlow",
-                "name": "paramters"
-            },
-            "rightPort": {
-                "actor": "Run Select Statement",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Run Count Statement",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Update Table's Total Count",
-                "name": "recCount"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Run Select Statement",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking",
-                "name": "values"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get SEQ_CACHE_INTERFACE",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get MASKING_CACHE_TTL",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking",
-                "name": "ttl"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceInterface"
-            },
-            "rightPort": {
-                "actor": "Get Table's Fields with Sqlite Types",
-                "name": "dbInterfaceName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceSchema"
-            },
-            "rightPort": {
-                "actor": "Get Table's Fields with Sqlite Types",
-                "name": "catalogSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Get Table's Fields with Sqlite Types",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Build Create Statement",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Build Delete Statement",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Build Insert Statement",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "SqliteInsertStatement"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Build Insert Statement",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "retention"
-            },
-            "rightPort": {
-                "actor": "Retain in Fabric?",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceSchema"
-            },
-            "rightPort": {
-                "actor": "Create Count Statement",
-                "name": "schemaName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Create Count Statement",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceSchema"
-            },
-            "rightPort": {
-                "actor": "Create Select Statement",
-                "name": "schemaName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Create Select Statement",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableFilter"
-            },
-            "rightPort": {
-                "actor": "There is Table Filter?",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableFilter"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "tableFilter"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "filterParameters"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "filterParameters"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableFilter"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Query: InnerFlow",
-                "name": "tableFilter"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "filterParameters"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Query: InnerFlow",
-                "name": "filterParameters"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceInterface"
-            },
-            "rightPort": {
-                "actor": "Run Count Statement",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "taskExeId"
-            },
-            "rightPort": {
-                "actor": "Update Table's Total Count",
-                "name": "taskExeId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableId"
-            },
-            "rightPort": {
-                "actor": "Update Table's Total Count",
-                "name": "tableId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceInterface"
-            },
-            "rightPort": {
-                "actor": "Run Select Statement",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Catalog Masking",
-                "name": "values"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "result"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceInterface"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking",
-                "name": "dataPlatform"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceSchema"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Catalog Masking",
-                "name": "dataset"
-            }
-        }
-    ]
-}
+stages:
+  Prepare Select Statements:
+    actors:
+      set Source Environment:
+        parent: setSourceEnv_Actor
+      Create Count Statement:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var cntStatement = "select count(*) as CNT from " + schemaName + "." + tableName;
+              if (schemaName == null || schemaName == "") {
+                 cntStatement = "select count(*) as CNT from " + tableName;
+              }
+              cntStatement;
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Create Select Statement:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var selectStatement = "select * from " + schemaName + "." + tableName;
+              if (schemaName == null || schemaName == "") {
+                 selectStatement = "select * from " + tableName;
+              }
+              selectStatement;
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Without Filter:
+    else: false
+    dependsOn: Prepare Select Statements
+    actors:
+      There is No Table Filter?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: tableFilter
+            schema: string
+          b:
+            const: ''
+            schema: string
+      No Where clause For Count:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Create Count Statement/result
+            schema: string
+        out:
+          value:
+            schema: string
+      No Where clause:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Create Select Statement/result
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  With Filter:
+    else: true
+    dependsOn: Prepare Select Statements
+    actors:
+      Add  Wherer Clause to Count:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Create Count Statement/result
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      'Add  Wherer Clause to Query: InnerFlow':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Create Select Statement/result
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      Mark Filter As Used:
+        parent: FabricSet
+        in:
+          key:
+            const: filterUsed
+            default: false
+          value:
+            const: 'true'
+            default: false
+  Get Extract Flow if Exists:
+    actors:
+      Get Extract Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableDefinitions
+          interfaceName:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          attrName:
+            const: extract_flow
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Get Source Data:
+    else: false
+    dependsOn: Get Extract Flow if Exists
+    actors:
+      No Extract Flow?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Extract Flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Error Handler For Extract By Query:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Get Source Data By Query:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSourceDataByQuery
+          innerFlowClose:
+            const: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          countStatement:
+            link:
+            - No Where clause For Count/value
+            - Add  Wherer Clause to Count/selectStatement
+            schema: string
+            editor:
+              id: com.k2view.code
+              language: sql
+              template: true
+            mandatory: false
+          selectStatement:
+            link:
+            - No Where clause/value
+            - 'Add  Wherer Clause to Query: InnerFlow/selectStatement'
+            schema: string
+            editor:
+              id: com.k2view.code
+              language: sql
+              template: true
+            mandatory: false
+          queryParameters:
+            link: 'Add  Wherer Clause to Query: InnerFlow/paramters'
+            schema: string
+            mandatory: false
+          whereClause:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          sourceTableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          paramtersStr:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          tableCount:
+            schema: integer
+    split: '--------------------'
+  Call Custom Flow:
+    else: true
+    dependsOn: Get Extract Flow if Exists
+    actors:
+      Error Handler For Extract By Custom Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Run Extract Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: Get Extract Flow/result
+          innerFlowClose:
+            const: false
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceTableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          whereClause:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          paramtersStr:
+            external: filterParameters
+            schema: string
+            mandatory: false
+          countStatement:
+            link:
+            - No Where clause For Count/value
+            - Add  Wherer Clause to Count/selectStatement
+            schema: string
+            mandatory: false
+          selectStatement:
+            link:
+            - No Where clause/value
+            - 'Add  Wherer Clause to Query: InnerFlow/selectStatement'
+            schema: string
+            mandatory: false
+          queryParameters:
+            link: 'Add  Wherer Clause to Query: InnerFlow/paramters'
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          tableCount:
+            schema: integer
+  Get Masking Definitons:
+    actors:
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Update Table Total:
+    dependsOn: Get Masking Definitons
+    actors:
+      NotEquals1:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link:
+            - Get Source Data By Query/tableCount
+            - Run Extract Flow/tableCount
+            schema: integer
+          b:
+            const: -1
+            schema: integer
+      UpdateTotalNumberOfRecords1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTotalNumberOfRecords
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          totalCount:
+            link:
+            - Get Source Data By Query/tableCount
+            - Run Extract Flow/tableCount
+            schema: integer
+            mandatory: false
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    dependsOn: Get Masking Definitons
+  Mask Data:
+    actors:
+      Catalog Masking:
+        parent: CatalogMaskingMapper
+        height: 327
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: null
+            external: sourceInterface
+          schema:
+            const: null
+            external: sourceSchema
+          dataset:
+            const: null
+            external: tableName
+          useEnvironment:
+            const: true
+          ttl:
+            link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
+          values:
+            link:
+            - Get Source Data By Query/result
+            - Run Extract Flow/result
+        out:
+          values:
+            external: result
+            schema: '#ref'
+schemas:
+  Add  Wherer Clause to Count.out.paramters:
+    type: array
+    items:
+      type: string
+  'Add  Wherer Clause to Query: InnerFlow.out.paramters':
+    type: array
+    items:
+      type: string
+  Get Source Data By Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        ssn:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+  Run Extract Flow.in.queryParameters:
+    type: array
+    items:
+      type: string
+  Run Extract Flow.out.result:
+    type: array
+    items:
+      type: object
+  Catalog Masking.out.values:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string

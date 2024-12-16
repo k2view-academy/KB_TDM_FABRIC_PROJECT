@@ -1,1640 +1,586 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Input",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_execution_id": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "SyncDeleteMode",
-                            "actorType": {
-                                "parentType": "SyncDeleteMode",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Source",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Query",
-                            "actorType": {
-                                "parentType": "SourceDbQuery",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "SELECT * FROM @TDMDB_SCHEMA@.task_execution_list"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "task_type": {
-                                                        "type": "string"
-                                                    },
-                                                    "task_execution_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "creation_date": {
-                                                        "type": "date"
-                                                    },
-                                                    "be_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "environment_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "product_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "product_version": {
-                                                        "type": "string"
-                                                    },
-                                                    "execution_status": {
-                                                        "type": "string"
-                                                    },
-                                                    "start_execution_time": {
-                                                        "type": "date"
-                                                    },
-                                                    "end_execution_time": {
-                                                        "type": "date"
-                                                    },
-                                                    "num_of_processed_entities": {
-                                                        "type": "integer"
-                                                    },
-                                                    "num_of_copied_entities": {
-                                                        "type": "integer"
-                                                    },
-                                                    "num_of_failed_entities": {
-                                                        "type": "integer"
-                                                    },
-                                                    "data_center_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "lu_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "num_of_processed_ref_tables": {
-                                                        "type": "integer"
-                                                    },
-                                                    "num_of_copied_ref_tables": {
-                                                        "type": "integer"
-                                                    },
-                                                    "num_of_failed_ref_tables": {
-                                                        "type": "integer"
-                                                    },
-                                                    "parent_lu_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "source_env_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "source_environment_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "task_executed_by": {
-                                                        "type": "string"
-                                                    },
-                                                    "fabric_execution_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "subset_task_execution_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "version_task_execution_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "expiration_date": {
-                                                        "type": "date"
-                                                    },
-                                                    "synced_to_fabric": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "updated_by": {
-                                                        "type": "string"
-                                                    },
-                                                    "clean_redis": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "process_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "execution_note": {
-                                                        "type": "string"
-                                                    },
-                                                    "source_product_version": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Integer lu_id",
-                            "actorType": {
-                                "parentType": "ToNumber",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "check condition",
-                    "dependsOnList": [
-                        "Stage 2"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "lu_id not zero",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "lu_id is zero",
-                    "dependsOnList": [
-                        "Stage 2"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Integer task_id",
-                            "actorType": {
-                                "parentType": "ToNumber",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Integer process_id",
-                            "actorType": {
-                                "parentType": "ToNumber",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "luNames",
-                    "dependsOnList": [
-                        "check condition"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "product_logical_units",
-                            "actorType": {
-                                "parentType": "DbFetchFirstRow",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "SELECT lu_name, lu_parent_name, product_name from @TDMDB_SCHEMA@.product_logical_units where lu_id = ${lu_id}"
-                                    },
-                                    {
-                                        "name": "lu_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "lu_name": {
-                                                    "type": "string"
-                                                },
-                                                "lu_parent_name": {},
-                                                "product_name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "processName",
-                    "dependsOnList": [
-                        "lu_id is zero"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "tasks_exe_process",
-                            "actorType": {
-                                "parentType": "DbFetchFirstRow",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "SELECT process_name, process_type from @TDMDB_SCHEMA@.tasks_exe_process where task_id =${task_id} and process_id = ${process_id}"
-                                    },
-                                    {
-                                        "name": "task_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "process_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "process_name": {
-                                                    "type": "string"
-                                                },
-                                                "process_type": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Task Type",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "task_type",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Reserve or Load",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load  ",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "LOAD"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Reserve",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "RESERVE"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Target Product Version",
-                    "dependsOnList": [
-                        "Reserve or Load"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Reserve or Load Task",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Or",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "target_product_version",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select product_version from @TDMDB_SCHEMA@.environment_products\r\nwhere status = 'Active' and product_id = ${product_id} and environment_id = ${environment_id}"
-                                    },
-                                    {
-                                        "name": "product_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "environment_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "source_product_version For Load Task",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select product_version from @TDMDB_SCHEMA@.environment_products\r\nwhere status = 'Active' and product_id = ${product_id} and environment_id = ${environment_id}"
-                                    },
-                                    {
-                                        "name": "product_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "environment_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Source Product Version",
-                    "dependsOnList": [
-                        "Reserve or Load"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "source_product_version",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select product_version from @TDMDB_SCHEMA@.environment_products\r\nwhere status = 'Active' and product_id = ${product_id} and environment_id = ${environment_id}"
-                                    },
-                                    {
-                                        "name": "product_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "environment_id",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "userData",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "ToString",
-                            "actorType": {
-                                "parentType": "ToString",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Split",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "##",
-                            "actorType": {
-                                "parentType": "Split",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": "##"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "User Name",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "task_executed_by",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "var result = input[0];\r\nresult;",
-                                            "script": "var result = input[0];\nresult;"
-                                        }
-                                    },
-                                    {
-                                        "name": "input",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Load to Fabric",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "task_execution_list",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": "TASK_EXECUTION_LIST"
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "TASK_EXECUTION_ID",
-                                            "TASK_ID",
-                                            "LU_ID",
-                                            "LU_NAME",
-                                            "PARENT_LU_ID",
-                                            "PARENT_LU_NAME",
-                                            "VERSION_IND",
-                                            "VERSION_TASK_EXECUTION_ID",
-                                            "EXPIRATION_DATE",
-                                            "EXECUTION_STATUS",
-                                            "START_EXECUTION_TIME",
-                                            "END_EXECUTION_TIME",
-                                            "NUM_OF_PROCESSED_ENTITIES",
-                                            "NUM_OF_COPIED_ENTITIES",
-                                            "NUM_OF_FAILED_ENTITIES",
-                                            "DATA_CENTER_NAME",
-                                            "NUM_OF_PROCESSED_REF_TABLES",
-                                            "NUM_OF_COPIED_REF_TABLES",
-                                            "NUM_OF_FAILED_REF_TABLES",
-                                            "FABRIC_EXECUTION_ID",
-                                            "TASK_EXECUTED_BY",
-                                            "PROCESS_ID",
-                                            "PROCESS_NAME",
-                                            "PROCESS_TYPE",
-                                            "PRODUCT_NAME",
-                                            "SOURCE_PRODUCT_VERSION",
-                                            "TARGET_PRODUCT_VERSION",
-                                            "SUBSET_TASK_EXECUTION_ID"
-                                        ]
-                                    },
-                                    {
-                                        "name": "keys",
-                                        "const": [
-                                            "TASK_EXECUTION_ID",
-                                            "TASK_ID",
-                                            "LU_ID",
-                                            "PROCESS_ID"
-                                        ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "sqlite"
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TASK_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "PARENT_LU_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "PARENT_LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "VERSION_IND",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "EXECUTION_STATUS",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "START_EXECUTION_TIME",
-                                        "schema": {
-                                            "type": "date"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "END_EXECUTION_TIME",
-                                        "schema": {
-                                            "type": "date"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "NUM_OF_PROCESSED_ENTITIES",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "NUM_OF_COPIED_ENTITIES",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "NUM_OF_FAILED_ENTITIES",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "DATA_CENTER_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "NUM_OF_PROCESSED_REF_TABLES",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "NUM_OF_COPIED_REF_TABLES",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "NUM_OF_FAILED_REF_TABLES",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "FABRIC_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTED_BY",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "PROCESS_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "PROCESS_NAME",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "process_name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "PRODUCT_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_PRODUCT_VERSION",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_PRODUCT_VERSION",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "VERSION_TASK_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "EXPIRATION_DATE",
-                                        "schema": {
-                                            "type": "date"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SUBSET_TASK_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "PROCESS_TYPE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT * FROM @TDMDB_SCHEMA@.task_execution_list
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      Integer lu_id:
+        parent: ToNumber
+        in:
+          value:
+            link:
+              path: Query/result/lu_id
+              iterate: Iterate
+  check condition:
+    dependsOn: Stage 2
+    actors:
+      lu_id not zero:
+        parent: NotEquals
+        condition: result
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link: Integer lu_id/number
+    split: '--------------------'
+  lu_id is zero:
+    else: true
+    transactional: false
+    dependsOn: Stage 2
+    actors:
+      Integer task_id:
+        parent: ToNumber
+        in:
+          value:
+            link:
+              path: Query/result/task_id
+              iterate: Iterate
+      Integer process_id:
+        parent: ToNumber
+        in:
+          value:
+            link:
+              path: Query/result/process_id
+              iterate: Iterate
+  luNames:
+    dependsOn: check condition
+    actors:
+      product_logical_units:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT lu_name, lu_parent_name, product_name from @TDMDB_SCHEMA@.product_logical_units
+              where lu_id = ${lu_id}
+          lu_id:
+            link: Integer lu_id/number
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  processName:
+    transactional: false
+    dependsOn: lu_id is zero
+    actors:
+      tasks_exe_process:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT process_name, process_type from @TDMDB_SCHEMA@.tasks_exe_process
+              where task_id =${task_id} and process_id = ${process_id}
+          task_id:
+            link: Integer task_id/number
+            schema: integer
+            mandatory: false
+          process_id:
+            link: Integer process_id/number
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Task Type:
+    actors:
+      task_type:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Query/result/task_type
+              iterate: Iterate
+        out:
+          value:
+            schema: string
+  Reserve or Load:
+    actors:
+      'Load  ':
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: LOAD
+            schema: string
+          a:
+            link: task_type/value
+      Reserve:
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: RESERVE
+            schema: string
+          a:
+            link: task_type/value
+  Target Product Version:
+    dependsOn: Reserve or Load
+    actors:
+      Reserve or Load Task:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: Load  /result
+          b:
+            link: Reserve/result
+      target_product_version:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
+              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
+              \ = ${environment_id}"
+          product_id:
+            link:
+              path: Query/result/product_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          environment_id:
+            link:
+              path: Query/result/environment_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: string
+      source_product_version For Load Task:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
+              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
+              \ = ${environment_id}"
+          product_id:
+            link:
+              path: Query/result/product_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          environment_id:
+            link:
+              path: Query/result/source_environment_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  Source Product Version:
+    else: true
+    transactional: false
+    dependsOn: Reserve or Load
+    actors:
+      source_product_version:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
+              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
+              \ = ${environment_id}"
+          product_id:
+            link:
+              path: Query/result/product_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          environment_id:
+            link:
+              path: Query/result/source_environment_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: string
+  userData:
+    transactional: false
+    actors:
+      ToString:
+        parent: ToString
+        in:
+          value:
+            link:
+              path: Query/result/task_executed_by
+              iterate: Iterate
+  Split:
+    transactional: false
+    actors:
+      '##':
+        parent: Split
+        in:
+          delimiter:
+            const: '##'
+          string:
+            link: ToString/string
+  User Name:
+    transactional: false
+    actors:
+      task_executed_by:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var result = input[0];\r\nresult;"
+              script: |-
+                var result = input[0];
+                result;
+          input:
+            link: '##/strings'
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Load to Fabric:
+    transactional: false
+    actors:
+      task_execution_list:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXECUTION_LIST
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - TASK_ID
+            - LU_ID
+            - LU_NAME
+            - PARENT_LU_ID
+            - PARENT_LU_NAME
+            - VERSION_IND
+            - VERSION_TASK_EXECUTION_ID
+            - EXPIRATION_DATE
+            - EXECUTION_STATUS
+            - START_EXECUTION_TIME
+            - END_EXECUTION_TIME
+            - NUM_OF_PROCESSED_ENTITIES
+            - NUM_OF_COPIED_ENTITIES
+            - NUM_OF_FAILED_ENTITIES
+            - DATA_CENTER_NAME
+            - NUM_OF_PROCESSED_REF_TABLES
+            - NUM_OF_COPIED_REF_TABLES
+            - NUM_OF_FAILED_REF_TABLES
+            - FABRIC_EXECUTION_ID
+            - TASK_EXECUTED_BY
+            - PROCESS_ID
+            - PROCESS_NAME
+            - PROCESS_TYPE
+            - PRODUCT_NAME
+            - SOURCE_PRODUCT_VERSION
+            - TARGET_PRODUCT_VERSION
+            - SUBSET_TASK_EXECUTION_ID
+            - ENTITY_INCLUSION_QUERY
+          keys:
+            const:
+            - TASK_EXECUTION_ID
+            - TASK_ID
+            - LU_ID
+            - PROCESS_ID
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            link:
+              path: Query/result/task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          TASK_ID:
+            link:
+              path: Query/result/task_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          LU_ID:
+            link:
+              path: Query/result/lu_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          LU_NAME:
+            link: product_logical_units/result/lu_name
+            schema: string
+            mandatory: false
+          PARENT_LU_ID:
+            link:
+              path: Query/result/parent_lu_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          PARENT_LU_NAME:
+            link: product_logical_units/result/lu_parent_name
+            schema: string
+            mandatory: false
+          VERSION_IND:
+            schema: boolean
+            mandatory: false
+          EXECUTION_STATUS:
+            link:
+              path: Query/result/execution_status
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          START_EXECUTION_TIME:
+            link:
+              path: Query/result/start_execution_time
+              iterate: Iterate
+            schema: date
+            mandatory: false
+          END_EXECUTION_TIME:
+            link:
+              path: Query/result/end_execution_time
+              iterate: Iterate
+            schema: date
+            mandatory: false
+          NUM_OF_PROCESSED_ENTITIES:
+            link:
+              path: Query/result/num_of_processed_entities
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_COPIED_ENTITIES:
+            link:
+              path: Query/result/num_of_copied_entities
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_FAILED_ENTITIES:
+            link:
+              path: Query/result/num_of_failed_entities
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          DATA_CENTER_NAME:
+            link:
+              path: Query/result/data_center_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          NUM_OF_PROCESSED_REF_TABLES:
+            link:
+              path: Query/result/num_of_processed_ref_tables
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_COPIED_REF_TABLES:
+            link:
+              path: Query/result/num_of_copied_ref_tables
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_FAILED_REF_TABLES:
+            link:
+              path: Query/result/num_of_failed_ref_tables
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          FABRIC_EXECUTION_ID:
+            link:
+              path: Query/result/fabric_execution_id
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          TASK_EXECUTED_BY:
+            link: task_executed_by/result
+            schema: string
+            mandatory: false
+          PROCESS_ID:
+            link:
+              path: Query/result/process_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          PROCESS_NAME:
+            link: tasks_exe_process/result/process_name
+            schema: '#ref'
+            mandatory: false
+          PRODUCT_NAME:
+            link: product_logical_units/result/product_name
+            schema: string
+            mandatory: false
+          SOURCE_PRODUCT_VERSION:
+            link:
+            - source_product_version For Load Task/result
+            - source_product_version/result
+            schema: string
+            mandatory: false
+          TARGET_PRODUCT_VERSION:
+            link: target_product_version/result
+            schema: string
+            mandatory: false
+          VERSION_TASK_EXECUTION_ID:
+            link:
+              path: Query/result/version_task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          EXPIRATION_DATE:
+            link: Query/result/expiration_date
+            schema: date
+            mandatory: false
+          SUBSET_TASK_EXECUTION_ID:
+            link: Query/result/subset_task_execution_id
+            schema: integer
+            mandatory: false
+          PROCESS_TYPE:
+            link: tasks_exe_process/result/process_type
+            schema: string
+            mandatory: false
+          ENTITY_INCLUSION_QUERY:
+            link:
+              path: Query/result/entity_inclusion_query
+              iterate: Iterate
+            schema: any
+            mandatory: false
+  Stage 1:
+    transactional: false
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string
+  Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_id:
+          type: integer
+        task_type:
+          type: string
+        task_execution_id:
+          type: integer
+        creation_date:
+          type: date
+        be_id:
+          type: integer
+        environment_id:
+          type: integer
+        product_id:
+          type: integer
+        product_version:
+          type: string
+        execution_status:
+          type: string
+        start_execution_time:
+          type: date
+        end_execution_time:
+          type: date
+        num_of_processed_entities:
+          type: integer
+        num_of_copied_entities:
+          type: integer
+        num_of_failed_entities:
+          type: integer
+        data_center_name:
+          type: string
+        lu_id:
+          type: integer
+        num_of_processed_ref_tables:
+          type: integer
+        num_of_copied_ref_tables:
+          type: integer
+        num_of_failed_ref_tables:
+          type: integer
+        parent_lu_id:
+          type: integer
+        source_env_name:
+          type: string
+        source_environment_id:
+          type: integer
+        task_executed_by:
+          type: string
+        fabric_execution_id:
+          type: string
+        subset_task_execution_id:
+          type: integer
+        version_task_execution_id:
+          type: integer
+        expiration_date:
+          type: date
+        synced_to_fabric:
+          type: boolean
+        updated_by:
+          type: string
+        clean_redis:
+          type: boolean
+        process_id:
+          type: integer
+        execution_note:
+          type: string
+        source_product_version:
+          type: string
+        entity_inclusion_query:
+          type: string
+  product_logical_units.out.result:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      lu_parent_name: {
         }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Query",
-                "name": "parent_rows"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Integer lu_id",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "lu_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Integer process_id",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "process_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Integer task_id",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "task_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_type",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "task_type"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "source_product_version",
-                "name": "product_id"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "product_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "target_product_version",
-                "name": "environment_id"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "environment_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "target_product_version",
-                "name": "product_id"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "product_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "source_product_version",
-                "name": "environment_id"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "source_environment_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "ToString",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "task_executed_by"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "TASK_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "task_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "LU_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "lu_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "PARENT_LU_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "parent_lu_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "EXECUTION_STATUS"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "execution_status"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "START_EXECUTION_TIME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "start_execution_time"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "END_EXECUTION_TIME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "end_execution_time"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "NUM_OF_PROCESSED_ENTITIES"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "num_of_processed_entities"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "NUM_OF_COPIED_ENTITIES"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "num_of_copied_entities"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "NUM_OF_FAILED_ENTITIES"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "num_of_failed_entities"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "DATA_CENTER_NAME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "data_center_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "NUM_OF_PROCESSED_REF_TABLES"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "num_of_processed_ref_tables"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "NUM_OF_COPIED_REF_TABLES"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "num_of_copied_ref_tables"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "NUM_OF_FAILED_REF_TABLES"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "num_of_failed_ref_tables"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "FABRIC_EXECUTION_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "fabric_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "PROCESS_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "process_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "TASK_EXECUTION_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "source_product_version For Load Task",
-                "name": "product_id"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "product_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "source_product_version For Load Task",
-                "name": "environment_id"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "source_environment_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "VERSION_TASK_EXECUTION_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "version_task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "EXPIRATION_DATE"
-            },
-            "path": [
-                "expiration_date"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "SUBSET_TASK_EXECUTION_ID"
-            },
-            "path": [
-                "subset_task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Integer lu_id",
-                "name": "number"
-            },
-            "rightPort": {
-                "actor": "product_logical_units",
-                "name": "lu_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Integer lu_id",
-                "name": "number"
-            },
-            "rightPort": {
-                "actor": "lu_id not zero",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Integer task_id",
-                "name": "number"
-            },
-            "rightPort": {
-                "actor": "tasks_exe_process",
-                "name": "task_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Integer process_id",
-                "name": "number"
-            },
-            "rightPort": {
-                "actor": "tasks_exe_process",
-                "name": "process_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "product_logical_units",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "LU_NAME"
-            },
-            "path": [
-                "lu_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "product_logical_units",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "PARENT_LU_NAME"
-            },
-            "path": [
-                "lu_parent_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "product_logical_units",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "PRODUCT_NAME"
-            },
-            "path": [
-                "product_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "tasks_exe_process",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "PROCESS_NAME"
-            },
-            "path": [
-                "process_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "tasks_exe_process",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "PROCESS_TYPE"
-            },
-            "path": [
-                "process_type"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "task_type",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Load  ",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "task_type",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Reserve",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Load  ",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Reserve or Load Task",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Reserve",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Reserve or Load Task",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "target_product_version",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "TARGET_PRODUCT_VERSION"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "source_product_version For Load Task",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "SOURCE_PRODUCT_VERSION"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "source_product_version",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "SOURCE_PRODUCT_VERSION"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ToString",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "##",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "##",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "task_executed_by",
-                "name": "input"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "task_executed_by",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "TASK_EXECUTED_BY"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "task_execution_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "SyncDeleteMode",
-                "name": "table"
-            }
-        }
-    ]
-}
+      product_name:
+        type: string
+  tasks_exe_process.out.result:
+    type: object
+    properties:
+      process_name:
+        type: string
+      process_type:
+        type: string
+  task_execution_list.in.PROCESS_NAME:
+    type: object
+    properties:
+      process_name:
+        type: string

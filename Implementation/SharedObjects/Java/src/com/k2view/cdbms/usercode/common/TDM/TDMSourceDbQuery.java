@@ -8,6 +8,8 @@ import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.io.IoSession;
 import com.k2view.fabric.session.broadway.sourcedbquery.SourceDbQuery;
 
+import static com.k2view.cdbms.shared.user.UserCode.fabric;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,14 +33,17 @@ public class TDMSourceDbQuery extends SourceDbQuery {
     private Object tdmSourceDbQuery(Data input, Data output, Context ctx) throws Exception {
         
         IoSession fabricSession = ctx.ioProvider().createSession("fabric");
-        
+        List<String> listLut = new ArrayList<String>(Arrays.asList(("" + fabricSession.
+        prepareStatement("list lut").execute().iterator().next().get("lu_name")).toLowerCase()));
+        if (!listLut.contains(ctx.externals().get("schema").toString().toLowerCase())) {
+            return null;
+        } 
         List<String> mainTables = new ArrayList<String>(Arrays.asList(("" + fabricSession.
             prepareStatement("set " + ctx.externals().get("schema").toString() + ".ROOT_TABLE_NAME").execute().iterator().next().get("value")).toLowerCase()));
             
         if (mainTables.contains(ctx.externals().get("table").toString().toLowerCase())) {
             return null;
         }
-
         String globalName =  ctx.externals().get("schema").toString().toLowerCase() + "_" +
             ctx.externals().get("table").toString().toLowerCase() + "_number_of_records";
         Object noOfRecsVal = ctx.globals().get(globalName);

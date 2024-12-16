@@ -101,7 +101,7 @@ stages:
             mandatory: false
           k2system:
             link: Getk2SystemSchemaName/result
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:
@@ -172,11 +172,11 @@ stages:
             const: update ${@k2system}.task_executions set status='FAILED' where id=${id}
           k2system:
             link: Getk2SystemSchemaName/result
-            schema: any
+            schema: string
             mandatory: false
           id:
             link: TDM_TASK_EXE_ID/result
-            schema: any
+            schema: string
             mandatory: false
   'Update Task Exe Error Summary    ':
     actors:
@@ -218,8 +218,10 @@ stages:
             schema: string
             mandatory: false
           lu_name:
+            const: ''
             link: TDM_LU_NAME/result
             schema: string
+            default: true
             mandatory: false
           error_category:
             const: AI
@@ -286,8 +288,10 @@ stages:
             schema: string
             mandatory: false
           lu_name:
+            const: ''
             link: TDM_LU_NAME/result
             schema: string
+            default: true
             mandatory: false
           entity_id:
             const: ''
@@ -337,13 +341,6 @@ stages:
           actor_parameters:
             schema: '#ref'
             mandatory: false
-  Throw Execption:
-    actors:
-      Fail:
-        parent: Fail
-        in:
-          message:
-            const: The AI Process Has Failed
 schemas:
   Get Status.out.result:
     type: array

@@ -5,6 +5,7 @@
 package com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils;
 
 import com.k2view.cdbms.lut.LUType;
+import com.k2view.cdbms.lut.LudbColumn;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.getCustomProperties;
+import static com.k2view.cdbms.shared.user.UserCode.getLuType;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
@@ -423,5 +425,28 @@ public class SharedLogic {
         return details;
         
     }
+    public static Boolean fnValidateFabricTableAndColumns(String table_name , String luName , String column_name){
+        LUType luType = null;
+        if (luName == null || Util.isEmpty(luName)) {
+            luType = getLuType();
+        } else {
+            luType = LUType.getTypeByName(luName);
+        }
+        // Get columns for the specified table
+        HashMap<String, LudbColumn> originalColumns = new HashMap<>(luType.ludbObjects.get(table_name).getLudbObjectColumns());
+
+        // Create a new map with lower case keys to handle issue if mtable returns param all caps 
+        HashMap<String, LudbColumn> columns = new HashMap<>();
+        for (Map.Entry<String, LudbColumn> entry : originalColumns.entrySet()) {
+            columns.put(entry.getKey().toLowerCase(), entry.getValue());
+        }
+         if (column_name != null && !Util.isEmpty(column_name)) {
+             // If column name is found return true
+             if (columns.containsKey(column_name)) {
+                 return true;
+             }
+         }
+        return false;
+    } 
     
 }

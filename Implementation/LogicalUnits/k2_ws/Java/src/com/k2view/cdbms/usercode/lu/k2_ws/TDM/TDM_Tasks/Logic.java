@@ -46,7 +46,7 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode {
-    public static String schema = "public";
+    public static String schema = TDMDB_SCHEMA;
     public static final String DB_FABRIC = "fabric";
     public static final String TDM = "TDM";
     public static final String TABLES = "TABLES";
@@ -212,6 +212,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"task_type\": \"LOAD\",\r\n" +
 			"      \"environment_creation_date\": \"2021-11-07 15:10:17.569\",\r\n" +
 			"      \"owner_type\": \"ID\",\r\n" +
+            "      \"execution_mode\": \"HORIZONTAL\",\r\n" +
 			"      \"creatorRoles\": [\r\n" +
 			"        \"tdmOwner\"\r\n" +
 			"      ]\r\n" +
@@ -309,6 +310,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"task_type\": \"RESERVE\",\r\n" +
 			"      \"environment_creation_date\": \"2021-11-07 15:10:17.569\",\r\n" +
 			"      \"owner_type\": \"ID\",\r\n" +
+            "      \"execution_mode\": \"HORIZONTAL\",\r\n" +
 			"      \"creatorRoles\": [\r\n" +
 			"        \"admin\"\r\n" +
 			"      ]\r\n" +
@@ -317,251 +319,318 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetTasks(@param(description="list of task IDs separated by a comma") String task_ids) throws Exception {
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
-		String errorCode = "";
-		
-		try {
-		    Db.Rows result = fnGetTasks(task_ids);
-		
-		    String q = "SELECT * FROM " + TDMDB_SCHEMA + ".ENVIRONMENT_ROLES";
-		    Db.Rows rolesResult = db(TDM).fetch(q);
-		
-		    List<Map<String, Object>> envsRoles = new ArrayList<>();
-		    for (Db.Row role : rolesResult) {
-		        ResultSet roleResultSet = role.resultSet();
-		        HashMap<String, Object> map = new HashMap<>();
-		        map.put("environment_id", roleResultSet.getInt("environment_id"));
-		        map.put("role_id", roleResultSet.getInt("role_id"));
-		        map.put("allowed_test_conn_failure", roleResultSet.getBoolean("allowed_test_conn_failure"));
-		
-		        envsRoles.add(map);
-		    }
-		
-		   /*  Map<String, List<String>> usersRoles = new HashMap<>();
-		    fabric().fetch("list users;").forEach(r -> {
-		        List<String> roles = new ArrayList<>();
-		        roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
-		        usersRoles.put("" + r.get("user"), roles);
-		    });*/
-		
-		    //modified newRow will be added to newResult list
-		    List<Map<String, Object>> newResult = new ArrayList<>();
-		
-		    Integer prevTaskId = 0;
-		    HashMap<String, Object> prevRow = new HashMap<>();
-		
-		    for (Db.Row row : result) {
-		        HashMap<String, Object> newRow = new HashMap<>();
-                String userId = null;
-		        ResultSet resultSet = row.resultSet();
-                if (resultSet.getString("task_created_by") != null) {
-                    String[] userData = resultSet.getString("task_created_by").split("##");
-		            userId = userData[0];
-                    String userRoles = null;
-                    if(userData.length > 1) {
-                        userRoles = userData[1];
-                        userRoles = userRoles.substring(1, userRoles.length() - 1);
-		                List<String> creatorfabricRoles = Arrays.asList(userRoles.split(TDM_PARAMETERS_SEPARATOR));
-                        if (creatorfabricRoles != null && creatorfabricRoles.size() > 0) {
-                            newRow.put("creatorRoles", creatorfabricRoles);
+    public static Object wsGetTasks(@param(description="list of task IDs separated by a comma") String task_ids) throws Exception {
+        HashMap<String, Object> response = new HashMap<>();
+        String message = null;
+        String errorCode = "";
+        final String TASK_CREATED_BY_SEPARATOR = "##";
+        final String ROLE_SEPARATOR = TDM_PARAMETERS_SEPARATOR;
+
+        Db.Rows result = fnGetTasks(task_ids);
+        
+        String q = "SELECT * FROM " + TDMDB_SCHEMA + ".ENVIRONMENT_ROLES";
+        Db.Rows rolesResult = db(TDM).fetch(q);
+        
+        List<Map<String, Object>> envsRoles = new ArrayList<>();
+        for (Db.Row role : rolesResult) {
+            ResultSet roleResultSet = role.resultSet();
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("environment_id", roleResultSet.getInt("environment_id"));
+            map.put("role_id", roleResultSet.getInt("role_id"));
+            map.put("allowed_test_conn_failure", roleResultSet.getBoolean("allowed_test_conn_failure"));
+    
+            envsRoles.add(map);
+        }
+    
+        //modified newRow will be added to newResult list
+        List<Map<String, Object>> newResult = new ArrayList<>();
+    
+        Integer prevTaskId = 0;
+        HashMap<String, Object> prevRow = new HashMap<>();
+        String callerUserId = sessionUser().name();
+        String callerFabricRoles = String.join(ROLE_SEPARATOR, sessionUser().roles());
+        Map<String,List<String>> rolesPerUserEnvs = new HashMap<>();
+        String key = "";
+    
+        for (Db.Row row : result) {
+            HashMap<String, Object> newRow = new HashMap<>();
+            String userId = null;
+            
+            ResultSet resultSet = row.resultSet();
+            String userRoles = "";
+            if (resultSet.getString("task_created_by") != null) {
+                List<String> creatorFabricRoles = new ArrayList<>();
+                String taskCreatedBy = resultSet.getString("task_created_by");
+                Long targetEnvId = resultSet.getLong("environment_id");
+                Long sourceEnvId = resultSet.getLong("source_environment_id");
+                String taskKey = taskCreatedBy + TASK_CREATED_BY_SEPARATOR + sourceEnvId + 
+                    TASK_CREATED_BY_SEPARATOR + targetEnvId;
+                
+                // Split the string using TASK_CREATED_BY_SEPARATOR and not split function
+                int separatorIndex = taskCreatedBy.indexOf(TASK_CREATED_BY_SEPARATOR);
+                if (separatorIndex != -1) {
+                    userId = taskCreatedBy.substring(0, separatorIndex);  // Get userId before the separator
+                    userRoles = taskCreatedBy.substring(separatorIndex + TASK_CREATED_BY_SEPARATOR.length());
+                    creatorFabricRoles = new ArrayList<String>(Arrays.asList(userRoles.split(ROLE_SEPARATOR)));  // Split userRoles using ROLE_SEPARATOR
+                } else {
+                    userId = taskCreatedBy; // If separator is not found, use the entire string as userId
+                }
+
+                List<String> roleList = new ArrayList<>();
+                if (!rolesPerUserEnvs.containsKey(taskKey)) {
+
+                    Set<String> creatorEnvRoles = fnGetUserEnvRoles(targetEnvId, userId, userRoles);
+                    Set<String> callerEnvRoles = creatorEnvRoles;
+                    if (!callerUserId.equals(userId) || !callerFabricRoles.equals(userRoles)) {
+                        callerEnvRoles = fnGetUserEnvRoles(targetEnvId, callerUserId, callerFabricRoles);
+                    }
+
+                    creatorEnvRoles.retainAll(callerEnvRoles);
+
+                    Set<String> creatorSourceEnvRoles = null;
+                    if (resultSet.getLong("source_environment_id") != resultSet.getLong("environment_id")) {
+                        creatorSourceEnvRoles = fnGetUserEnvRoles(resultSet.getLong("source_environment_id"), userId, userRoles);
+                        Set<String> callerSourceEnvRoles = creatorSourceEnvRoles;
+                        if (!callerUserId.equals(userId) || !callerFabricRoles.equals(userRoles)) {
+                            callerSourceEnvRoles =  fnGetUserEnvRoles(resultSet.getLong("source_environment_id"), callerUserId, callerFabricRoles);
+                        }
+                        creatorSourceEnvRoles.retainAll(callerSourceEnvRoles);
+                    } else {
+                        creatorSourceEnvRoles = callerEnvRoles;
+                    }
+
+                    if(creatorEnvRoles.size() > 0 && creatorSourceEnvRoles.size() > 0) {
+                        Set<String> tmpRoles = new HashSet<>();
+                        for(String role :sessionUser().roles()){
+                            if(!("Everybody".equalsIgnoreCase(role)) && !creatorFabricRoles.contains(role)){
+                                creatorFabricRoles.add(role);
+                            }
                         }
                     }
-                }
-		        newRow.put("task_id", resultSet.getInt("task_id"));
-		        newRow.put("task_title", resultSet.getString("task_title"));
-		        newRow.put("task_status", resultSet.getString("task_status"));
-		        newRow.put("task_execution_status", resultSet.getString("task_execution_status"));
-		        newRow.put("num_of_entities", resultSet.getInt("num_of_entities"));
-		        newRow.put("environment_id", resultSet.getInt("environment_id"));
-		        newRow.put("be_id", resultSet.getInt("be_id"));
-		        newRow.put("selection_method", resultSet.getString("selection_method"));
-		        newRow.put("selection_param_value", resultSet.getString("selection_param_value"));
-		        newRow.put("custom_logic_lu_name", resultSet.getString("custom_logic_lu_name"));
-		        newRow.put("parameters", resultSet.getString("parameters"));
-		        newRow.put("refresh_reference_data", resultSet.getBoolean("refresh_reference_data"));
-		        newRow.put("delete_before_load", resultSet.getBoolean("delete_before_load"));
-		        newRow.put("replace_sequences", resultSet.getBoolean("replace_sequences"));
-		        newRow.put("scheduler", resultSet.getString("scheduler"));
-		        newRow.put("task_created_by", userId);
-		        newRow.put("task_creation_date", resultSet.getString("task_creation_date"));
-		        newRow.put("task_last_updated_date", resultSet.getString("task_last_updated_date"));
-		        newRow.put("task_last_updated_by", resultSet.getString("task_last_updated_by"));
-		        newRow.put("source_env_name", resultSet.getString("source_env_name"));
-		        newRow.put("source_environment_id", resultSet.getInt("source_environment_id"));
-		        newRow.put("load_entity", resultSet.getBoolean("load_entity"));
-		        newRow.put("task_type", resultSet.getString("task_type"));
-		        newRow.put("version_ind", resultSet.getBoolean("version_ind"));
-		        newRow.put("retention_period_type", resultSet.getString("retention_period_type"));
-		        newRow.put("retention_period_value", resultSet.getString("retention_period_value"));
-		        newRow.put("selected_version_task_exe_id", resultSet.getInt("selected_version_task_exe_id"));
-		        newRow.put("selected_subset_task_exe_id", resultSet.getInt("selected_subset_task_exe_id"));
-		        newRow.put("scheduling_end_date", resultSet.getString("scheduling_end_date"));
-		        newRow.put("selected_ref_version_task_exe_id", resultSet.getInt("selected_ref_version_task_exe_id"));
-		        newRow.put("task_globals", resultSet.getBoolean("task_globals"));
-		        newRow.put("task_description", resultSet.getString("task_description"));
-		        newRow.put("sync_mode", resultSet.getString("sync_mode"));
-		        newRow.put("environment_name", resultSet.getString("environment_name"));
-		        newRow.put("environment_description", resultSet.getString("environment_description"));
-		        newRow.put("environment_expiration_date", resultSet.getString("environment_expiration_date"));
-		        newRow.put("environment_point_of_contact_first_name", resultSet.getString("environment_point_of_contact_first_name"));
-		        newRow.put("environment_point_of_contact_last_name", resultSet.getString("environment_point_of_contact_last_name"));
-		        newRow.put("environment_point_of_contact_phone1", resultSet.getString("environment_point_of_contact_phone1"));
-		        newRow.put("environment_point_of_contact_phone2", resultSet.getString("environment_point_of_contact_phone2"));
-		        newRow.put("environment_point_of_contact_email", resultSet.getString("environment_point_of_contact_email"));
-		        newRow.put("environment_created_by", resultSet.getString("environment_created_by"));
-		        newRow.put("environment_creation_date", resultSet.getString("environment_creation_date"));
-		        newRow.put("environment_last_updated_date", resultSet.getString("environment_last_updated_date"));
-		        newRow.put("environment_last_updated_by", resultSet.getString("environment_last_updated_by"));
-		        newRow.put("environment_status", resultSet.getString("environment_status"));
-		        newRow.put("allow_write", resultSet.getBoolean("allow_write"));
-		        newRow.put("be_name", resultSet.getString("be_name"));
-		        newRow.put("be_description", resultSet.getString("be_description"));
-		        newRow.put("be_created_by", resultSet.getString("be_created_by"));
-		        newRow.put("be_creation_date", resultSet.getString("be_creation_date"));
-		        newRow.put("be_last_updated_date", resultSet.getString("be_last_updated_date"));
-		        newRow.put("be_last_updated_by", resultSet.getString("be_last_updated_by"));
-		        newRow.put("be_status", resultSet.getString("be_status"));
-		        newRow.put("owner", resultSet.getString("owner"));
-		        newRow.put("owner_type", resultSet.getString("owner_type"));
-		        newRow.put("tester", resultSet.getString("tester"));
-		        newRow.put("tester_type", resultSet.getString("tester_type"));
-		        newRow.put("role_id_orig", resultSet.getInt("role_id_orig"));
-		        newRow.put("executioncount", resultSet.getInt("executioncount"));
-		        newRow.put("refcount", resultSet.getInt("refcount"));
-		        newRow.put("processnames", resultSet.getString("processnames"));
-		        newRow.put("reserve_ind", resultSet.getBoolean("reserve_ind"));
-		        newRow.put("reserve_retention_period_type", resultSet.getString("reserve_retention_period_type"));
-		        newRow.put("reserve_retention_period_value", resultSet.getString("reserve_retention_period_value"));
-		        newRow.put("reserve_note", resultSet.getString("reserve_note"));
-		        newRow.put("filterout_reserved", resultSet.getBoolean("filterout_reserved"));
-		        newRow.put("mask_sensitive_data", resultSet.getBoolean("mask_sensitive_data"));
-		     newRow.put("clone_ind", resultSet.getBoolean("clone_ind"));
-		
-		        Map<String, Object> task = null;
 
-                if("CLONE".equalsIgnoreCase(resultSet.getString("selection_method"))){
-                    newRow.put("clone_ind", true);
+                    rolesPerUserEnvs.put(taskKey, creatorFabricRoles);
+                } else {
+                    creatorFabricRoles = rolesPerUserEnvs.get(taskKey);
                 }
-		        if (prevTaskId == resultSet.getInt("task_id")) {
-		            task = prevRow;
-		        } else {
-		            prevTaskId = resultSet.getInt("task_id");
-		            prevRow = newRow;
-		        }
-		
-		        List<Map<String, Object>> roleArr = new ArrayList<>();
-		        //for (Db.Row role : rolesResult) {
-		        for (Map<String, Object> envsRole : envsRoles) {
-		            HashMap<String, Object> roleMap = new HashMap<>();
-		            String envId = (envsRole.get("environment_id")).toString();
-		            String taskEnvId = "" + resultSet.getInt("environment_id");
-		            if (envId.equals(taskEnvId)) {
-		                roleMap.put("role_id", Integer.valueOf(envsRole.get("role_id").toString()));
-		                roleMap.put("allowed_test_conn_failure", Boolean.valueOf(envsRole.get("allowed_test_conn_failure").toString()));
-		                roleArr.add(roleMap);
-		            }
-		        }
-		
-		        if (task != null) {
-		            List<Map<String, Object>> owners = (List<Map<String, Object>>) task.get("owners");
-		            Map<String, Object> owner = null;
-		            //if (!owners.contains(resultSet.getString("owner"))) {
-		            for (Map<String, Object> _owner : owners) {
-		                if (_owner.get("owner").toString().equals(resultSet.getString("owner"))) {
-		                    owner = _owner;
-		                }
-		            }
-		
-		            // Add owner type
-		            if (owner == null) {
-		                HashMap<String, Object> ownerMap = new HashMap<>();
-		                if (resultSet.getString("owner") != null) {
-		                    ownerMap.put("owner", resultSet.getString("owner"));
-		                    ownerMap.put("owner_type", resultSet.getString("owner_type"));
-		                    owners.add(ownerMap);
-		                }
-		            }
-		
-		            List<Map<String, Object>> testers = (List<Map<String, Object>>) task.get("testers");
-		            Map<String, Object> tester = null;
-		            for (Map<String, Object> _tester : testers) {
-		                if (_tester.get("tester").toString().equals(resultSet.getString("tester"))) {
-		                    tester = _tester;
-		                }
-		            }
-		
-		            if (tester != null) {  //add role_id_orig to role_id list
-		                List<String> roleId = (List<String>) tester.get("role_id");
-		                if (!roleId.contains(resultSet.getString("role_id_orig"))) {
-		                    roleId.add(resultSet.getString("role_id_orig"));
-		                }
-		            } else { //add new tester to task testers
-		                HashMap<String, Object> testerMap = new HashMap<>();
-		                if (resultSet.getString("tester") != null) {
-		                    testerMap.put("tester", resultSet.getString("tester"));
-		                    testerMap.put("tester_type", resultSet.getString("tester_type"));
-		
-		                    List<String> roleIdList = new ArrayList<>();
-		                    roleIdList.add(resultSet.getString("role_id_orig"));
-		                    testerMap.put("role_id", roleIdList);
-		                    testers.add(testerMap);
-		                }
-		            }
-		
-		        } else {
-		            List<Map<String, Object>> owners = new ArrayList<>();
-		            newRow.put("owners", owners);
-		            if (resultSet.getString("owner") != null) {
-		                HashMap<String, Object> ownerMap = new HashMap<>();
-		                ownerMap.put("owner", resultSet.getString("owner"));
-		                ownerMap.put("owner_type", resultSet.getString("owner_type"));
-		                owners.add(ownerMap);
-		            }
-		
-		            List<Map<String, Object>> testers = new ArrayList<>();
-		            newRow.put("testers", testers);
-		            if (resultSet.getString("tester") != null) {
-		                HashMap<String, Object> testerMap = new HashMap<>();
-		                testerMap.put("tester", resultSet.getString("tester"));
-		                testerMap.put("tester_type", resultSet.getString("tester_type"));
-		                List<String> roleIdList = new ArrayList<>();
-		                roleIdList.add(resultSet.getString("role_id_orig"));
-		                testerMap.put("role_id", roleIdList);
-		                testers.add(testerMap);
-		            }
-		
-		            List<List<Map<String, Object>>> roles = new ArrayList<>();
-		
-		            if (roleArr != null && roleArr.size() > 0) {
-		                roles.add(roleArr);
-		            }
-		            newRow.put("roles", roles);
-		            newResult.add(newRow);
-		        }
-		
-		    }
-		    if (result != null) {
-		        result.close();
-		    }
-		    if (rolesResult != null) {
-		        rolesResult.close();
-		    }
-		    errorCode = "SUCCESS";
-		    response.put("result", newResult);
-		
-		} catch (Exception e) {
-		    errorCode = "FAILED";
-		    e.printStackTrace();
-		    message = e.getMessage();
-		    log.error(message);
+
+                if (!creatorFabricRoles.isEmpty()) {
+                    newRow.put("creatorRoles", creatorFabricRoles);
+                }
+
+            }
+            newRow.put("task_id", resultSet.getInt("task_id"));
+            newRow.put("task_title", resultSet.getString("task_title"));
+            newRow.put("task_status", resultSet.getString("task_status"));
+            newRow.put("task_execution_status", resultSet.getString("task_execution_status"));
+            newRow.put("num_of_entities", resultSet.getInt("num_of_entities"));
+            newRow.put("environment_id", resultSet.getInt("environment_id"));
+            newRow.put("be_id", resultSet.getInt("be_id"));
+            newRow.put("selection_method", resultSet.getString("selection_method"));
+            newRow.put("selection_param_value", resultSet.getString("selection_param_value"));
+            newRow.put("custom_logic_lu_name", resultSet.getString("custom_logic_lu_name"));
+            newRow.put("parameters", resultSet.getString("parameters"));
+            newRow.put("refresh_reference_data", resultSet.getBoolean("refresh_reference_data"));
+            newRow.put("delete_before_load", resultSet.getBoolean("delete_before_load"));
+            newRow.put("replace_sequences", resultSet.getBoolean("replace_sequences"));
+            newRow.put("scheduler", resultSet.getString("scheduler"));
+            newRow.put("task_created_by", userId);
+            newRow.put("task_creation_date", resultSet.getString("task_creation_date"));
+            newRow.put("task_last_updated_date", resultSet.getString("task_last_updated_date"));
+            newRow.put("task_last_updated_by", resultSet.getString("task_last_updated_by"));
+            newRow.put("source_env_name", resultSet.getString("source_env_name"));
+            newRow.put("source_environment_id", resultSet.getInt("source_environment_id"));
+            newRow.put("load_entity", resultSet.getBoolean("load_entity"));
+            newRow.put("task_type", resultSet.getString("task_type"));
+            newRow.put("version_ind", resultSet.getBoolean("version_ind"));
+            newRow.put("retention_period_type", resultSet.getString("retention_period_type"));
+            newRow.put("retention_period_value", resultSet.getString("retention_period_value"));
+            newRow.put("selected_version_task_exe_id", resultSet.getInt("selected_version_task_exe_id"));
+            newRow.put("selected_subset_task_exe_id", resultSet.getInt("selected_subset_task_exe_id"));
+            newRow.put("scheduling_end_date", resultSet.getString("scheduling_end_date"));
+            newRow.put("selected_ref_version_task_exe_id", resultSet.getInt("selected_ref_version_task_exe_id"));
+            newRow.put("task_globals", resultSet.getBoolean("task_globals"));
+            newRow.put("task_description", resultSet.getString("task_description"));
+            newRow.put("sync_mode", resultSet.getString("sync_mode"));
+            newRow.put("environment_name", resultSet.getString("environment_name"));
+            newRow.put("environment_description", resultSet.getString("environment_description"));
+            newRow.put("environment_expiration_date", resultSet.getString("environment_expiration_date"));
+            newRow.put("environment_point_of_contact_first_name", resultSet.getString("environment_point_of_contact_first_name"));
+            newRow.put("environment_point_of_contact_last_name", resultSet.getString("environment_point_of_contact_last_name"));
+            newRow.put("environment_point_of_contact_phone1", resultSet.getString("environment_point_of_contact_phone1"));
+            newRow.put("environment_point_of_contact_phone2", resultSet.getString("environment_point_of_contact_phone2"));
+            newRow.put("environment_point_of_contact_email", resultSet.getString("environment_point_of_contact_email"));
+            newRow.put("environment_created_by", resultSet.getString("environment_created_by"));
+            newRow.put("environment_creation_date", resultSet.getString("environment_creation_date"));
+            newRow.put("environment_last_updated_date", resultSet.getString("environment_last_updated_date"));
+            newRow.put("environment_last_updated_by", resultSet.getString("environment_last_updated_by"));
+            newRow.put("environment_status", resultSet.getString("environment_status"));
+            newRow.put("allow_write", resultSet.getBoolean("allow_write"));
+            newRow.put("be_name", resultSet.getString("be_name"));
+            newRow.put("be_description", resultSet.getString("be_description"));
+            newRow.put("be_created_by", resultSet.getString("be_created_by"));
+            newRow.put("be_creation_date", resultSet.getString("be_creation_date"));
+            newRow.put("be_last_updated_date", resultSet.getString("be_last_updated_date"));
+            newRow.put("be_last_updated_by", resultSet.getString("be_last_updated_by"));
+            newRow.put("be_status", resultSet.getString("be_status"));
+            newRow.put("owner", resultSet.getString("owner"));
+            newRow.put("owner_type", resultSet.getString("owner_type"));
+            newRow.put("tester", resultSet.getString("tester"));
+            newRow.put("tester_type", resultSet.getString("tester_type"));
+            newRow.put("role_id_orig", resultSet.getInt("role_id_orig"));
+            newRow.put("executioncount", resultSet.getInt("executioncount"));
+            newRow.put("refcount", resultSet.getInt("refcount"));
+            newRow.put("processnames", resultSet.getString("processnames"));
+            newRow.put("reserve_ind", resultSet.getBoolean("reserve_ind"));
+            newRow.put("reserve_retention_period_type", resultSet.getString("reserve_retention_period_type"));
+            newRow.put("reserve_retention_period_value", resultSet.getString("reserve_retention_period_value"));
+            newRow.put("reserve_note", resultSet.getString("reserve_note"));
+            newRow.put("filterout_reserved", resultSet.getString("filterout_reserved"));
+            newRow.put("mask_sensitive_data", resultSet.getBoolean("mask_sensitive_data"));
+            newRow.put("clone_ind", resultSet.getBoolean("clone_ind"));
+            newRow.put("execution_mode", resultSet.getString("execution_mode"));
+    
+            Map<String, Object> task = null;
+
+            if("CLONE".equalsIgnoreCase(resultSet.getString("selection_method"))){
+                newRow.put("clone_ind", true);
+            }
+            if (prevTaskId == resultSet.getInt("task_id")) {
+                task = prevRow;
+            } else {
+                prevTaskId = resultSet.getInt("task_id");
+                prevRow = newRow;
+            }
+    
+            List<Map<String, Object>> roleArr = new ArrayList<>();
+            //for (Db.Row role : rolesResult) {
+            for (Map<String, Object> envsRole : envsRoles) {
+                HashMap<String, Object> roleMap = new HashMap<>();
+                String envId = (envsRole.get("environment_id")).toString();
+                String taskEnvId = "" + resultSet.getInt("environment_id");
+                if (envId.equals(taskEnvId)) {
+                    roleMap.put("role_id", Integer.valueOf(envsRole.get("role_id").toString()));
+                    roleMap.put("allowed_test_conn_failure", Boolean.valueOf(envsRole.get("allowed_test_conn_failure").toString()));
+                    roleArr.add(roleMap);
+                }
+            }
+    
+            if (task != null) {
+                List<Map<String, Object>> owners = (List<Map<String, Object>>) task.get("owners");
+                Map<String, Object> owner = null;
+                //if (!owners.contains(resultSet.getString("owner"))) {
+                for (Map<String, Object> _owner : owners) {
+                    if (_owner.get("owner").toString().equals(resultSet.getString("owner"))) {
+                        owner = _owner;
+                    }
+                }
+    
+                // Add owner type
+                if (owner == null) {
+                    HashMap<String, Object> ownerMap = new HashMap<>();
+                    if (resultSet.getString("owner") != null) {
+                        ownerMap.put("owner", resultSet.getString("owner"));
+                        ownerMap.put("owner_type", resultSet.getString("owner_type"));
+                        owners.add(ownerMap);
+                    }
+                }
+    
+                List<Map<String, Object>> testers = (List<Map<String, Object>>) task.get("testers");
+                Map<String, Object> tester = null;
+                for (Map<String, Object> _tester : testers) {
+                    if (_tester.get("tester").toString().equals(resultSet.getString("tester"))) {
+                        tester = _tester;
+                    }
+                }
+    
+                if (tester != null) {  //add role_id_orig to role_id list
+                    List<String> roleId = (List<String>) tester.get("role_id");
+                    if (!roleId.contains(resultSet.getString("role_id_orig"))) {
+                        roleId.add(resultSet.getString("role_id_orig"));
+                    }
+                } else { //add new tester to task testers
+                    HashMap<String, Object> testerMap = new HashMap<>();
+                    if (resultSet.getString("tester") != null) {
+                        testerMap.put("tester", resultSet.getString("tester"));
+                        testerMap.put("tester_type", resultSet.getString("tester_type"));
+    
+                        List<String> roleIdList = new ArrayList<>();
+                        roleIdList.add(resultSet.getString("role_id_orig"));
+                        testerMap.put("role_id", roleIdList);
+                        testers.add(testerMap);
+                    }
+                }
+    
+            } else {
+                List<Map<String, Object>> owners = new ArrayList<>();
+                newRow.put("owners", owners);
+                if (resultSet.getString("owner") != null) {
+                    HashMap<String, Object> ownerMap = new HashMap<>();
+                    ownerMap.put("owner", resultSet.getString("owner"));
+                    ownerMap.put("owner_type", resultSet.getString("owner_type"));
+                    owners.add(ownerMap);
+                }
+    
+                List<Map<String, Object>> testers = new ArrayList<>();
+                newRow.put("testers", testers);
+                if (resultSet.getString("tester") != null) {
+                    HashMap<String, Object> testerMap = new HashMap<>();
+                    testerMap.put("tester", resultSet.getString("tester"));
+                    testerMap.put("tester_type", resultSet.getString("tester_type"));
+                    List<String> roleIdList = new ArrayList<>();
+                    roleIdList.add(resultSet.getString("role_id_orig"));
+                    testerMap.put("role_id", roleIdList);
+                    testers.add(testerMap);
+                }
+    
+                List<List<Map<String, Object>>> roles = new ArrayList<>();
+    
+                if (roleArr != null && roleArr.size() > 0) {
+                    roles.add(roleArr);
+                }
+                newRow.put("roles", roles);
+                newResult.add(newRow);
+            }
+    
+        }
+        if (result != null) {
+            result.close();
+        }
+        if (rolesResult != null) {
+            rolesResult.close();
+        }
+        errorCode = "SUCCESS";
+        response.put("result", newResult);
+    
+        response.put("errorCode", errorCode);
+        response.put("message", message);
+        return response;
+    }
+
+    private static Set<String> fnGetUserEnvRoles(Long envId, String userId, String fabricRoles) throws Exception{
+        
+        String sql = "SELECT u.role_id FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
+					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
+					"WHERE u.environment_id = ? " + 
+					"AND  u.user_id = ? AND u.user_type = 'ID' " +
+                    " UNION SELECT u.role_id FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
+					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
+					"WHERE u.environment_id = ? " + 
+					"AND  u.user_id = ANY(string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "')) AND u.user_type = 'GROUP' ";
+        
+        
+        Db.Rows envUserRoles = db(TDM).fetch(sql, envId, userId, envId, fabricRoles);
+        Set<String> result = new HashSet<>();
+        for (Db.Row row : envUserRoles) {
+            result.add(row.get("role_id").toString());
+        }
+
+
+		if (envUserRoles != null) {
+			envUserRoles.close();
 		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
-	}
-
+        return result;
+        
+    }
 
     @desc("Gets Running Tasks IDs")
     @webService(path = "runningTasks", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -636,10 +705,23 @@ public class Logic extends WebServiceUserCode {
     @desc("Create a task in one transaction. Rollback the transaction in case of a failure.\r\n" + "\r\n" + "The following input parameters are mandatory:\r\n" + "- be_id: populated by the ID of the task's Business Entity (BE)\r\n" + "\r\n" + "- environment_id: \r\n" + "  - Extract task: populated by the source environment id.\r\n" + "  - Load task: populated by the target environment id.\r\n" + "\r\n" + "- source_environment_id: source environment ID.\r\n" + "\r\n" + "- selection_method: populated by the following values:\r\n" + "  - Extract task: 'L' (entity list), 'TABLE' (reference only task),  or 'ALL' (all entities).\r\n" + "  - Load task: 'L' (entity list), 'ALL', 'P' (Paramerers), 'PR' (Parameters with random selection), 'CLONE' (Cloning), or 'R' (Random).\r\n" + "\r\n" + "- task_title: task name\r\n" + "\r\n" + "- task_type: populated by 'EXTRACT' or 'LOAD'\r\n" + "\r\n" + "- logicalUnits: populated by the list of the task's logical units (LUs).\r\n" + "\r\n" + "Example of a request body:\r\n" + "\r\n" + "{\r\n" + "    \"be_id\": 3,\r\n" + "    \"environment_id\": 1,\r\n" + "    \"source_environment_id\": 1,\r\n" + "    \"scheduler\": \"immediate\",\r\n" + "    \"delete_before_load\": true,\r\n" + "    \"request_of_fresh_data\": true,\r\n" + "    \"num_of_entities\": 0,\r\n" + "    \"selection_method\": \"R\",\r\n" + "    \"selection_param_value\": null,\r\n" + "    \"task_title\": \"taskTitle\",\r\n" + "    \"parameters\": null,\r\n" + "    \"refresh_reference_data\": true,\r\n" + "    \"replace_sequences\": true,\r\n" + "    \"source_env_name\": \"env1\",\r\n" + "    \"load_entity\": true,\r\n" + "    \"task_type\": \"LOAD\",\r\n" + "    \"scheduling_end_date\": \"2021-02-04 14:20:59.454\",\r\n" + "    \"version_ind\": true,\r\n" + "    \"retention_period_type\": \"Days\",\r\n" + "    \"retention_period_value\": 5,\r\n" + "    \"selected_version_task_exe_id\": 0,\r\n" + "    \"task_globals\": true,\r\n" + "    \"selected_ref_version_task_exe_id\": 0,\r\n" + "    \"sync_mode\": null,\r\n" + "    \"refList\": [{\r\n" + "            \"reference_table_name\": \"RefT\",\r\n" + "            \"logical_unit_name\": \"RefLU\",\r\n" + "            \"schema_name\": \"RefSchema\",\r\n" + "            \"interface_name\": \"RefInterface\"\r\n" + "        }, {\r\n" + "            \"reference_table_name\": \"RefT2\",\r\n" + "            \"logical_unit_name\": \"RefLU2\",\r\n" + "            \"schema_name\": \"RefSchema2\",\r\n" + "            \"interface_name\": \"RefInterface2\"\r\n" + "        }\r\n" + "    ],\r\n" + "    \"globals\": [{\r\n" + "            \"global_name\": \"globalName1\",\r\n" + "            \"global_value\": \"globalValue1\"\r\n" + "        }, {\r\n" + "            \"global_name\": \"globalName2\",\r\n" + "            \"global_value\": \"globalValue2\"\r\n" + "        }\r\n" + "    ],\r\n" + "    \"reference\": \"ref\",\r\n" + "    \"postExecutionProcesses\": [{\r\n" + "            \"process_id\": 1,\r\n" + "            \"process_name\": \"processName\",\r\n" + "            \"task_id\": 145,\r\n" + "            \"execution_order\": 2\r\n" + "        }, {\r\n" + "            \"process_id\": 2,\r\n" + "            \"process_name\": \"processName2\",\r\n" + "            \"task_id\": 145,\r\n" + "            \"execution_order\": 3\r\n" + "        }\r\n" + "    ],\r\n" + "    \"logicalUnits\": [{\r\n" + "            \"lu_parent_name\": \"parentName\",\r\n" + "            \"lu_name\": \"name\",\r\n" + "            \"lu_id\": 23\r\n" + "        }, {\r\n" + "            \"lu_parent_name\": \"PATIENT_LU\",\r\n" + "            \"lu_name\": \"PATIENT_VISITS\",\r\n" + "            \"lu_id\": 12\r\n" + "        }, {\r\n" + "            \"lu_parent_name\": \"PATIENT_VISITS\",\r\n" + "            \"lu_name\": \"VISIT_LAB_RESULTS\",\r\n" + "            \"lu_id\": 16\r\n" + "        }\r\n" + "    ]\r\n" + "}")
     @webService(path = "task", verb = {MethodType.POST}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": {\r\n" + "    \"id\": 145\r\n" + "  },\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
-    public static Object wsCreateTaskV2(@param(required = true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, @param(required = true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required = true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String sync_mode, List<Map<String, Object>> tableList, List<Map<String, Object>> globals, String reference,List<Map<String, Object>> preExecutionProcesses, List<Map<String, Object>> postExecutionProcesses, @param(required = true) List<Map<String, Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String, Object> generateParams, Boolean mask_sensitive_data, String task_description, String custom_logic_lu_name,Long selected_subset_task_exe_id,Boolean clone_ind) throws Exception {
+    public static Object wsCreateTaskV2(@param(required = true) Long be_id, Long environment_id, 
+            Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, 
+            String selection_method, String selection_param_value, @param(required = true) String task_title, 
+            String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, 
+            Boolean load_entity, @param(required = true) String task_type, String scheduling_end_date, 
+            Boolean version_ind, String retention_period_type, Integer retention_period_value, 
+            Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, 
+            String sync_mode, List<Map<String, Object>> tableList, List<Map<String, Object>> globals, String reference,
+            List<Map<String, Object>> preExecutionProcesses, List<Map<String, Object>> postExecutionProcesses, 
+            @param(required = true) List<Map<String, Object>> logicalUnits, Boolean reserve_ind, 
+            String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, 
+            String filterout_reserved, HashMap<String, Object> generateParams, Boolean mask_sensitive_data, 
+            String task_description, String custom_logic_lu_name,Long selected_subset_task_exe_id,Boolean clone_ind,
+            String execution_mode) throws Exception {
         Long taskId;
         String msg =fnValidateOverrideSyncMode(source_environment_id,source_env_name,sync_mode);
-        if(!"".equalsIgnoreCase(msg)){
+        if (!"".equalsIgnoreCase(msg)){
             return wrapWebServiceResults("FAILED", msg, null);
         }
         if ("LOAD".equals(task_type) && !"ALL".equals(selection_method) && !TABLES.equals(selection_method) && num_of_entities == null) {
@@ -650,8 +732,14 @@ public class Logic extends WebServiceUserCode {
             return wrapWebServiceResults("FAILED", "AI-based training or generation tasks can run on one LU only", null);
 
         }
-        if(clone_ind==null){
+        if (clone_ind==null){
             clone_ind=false;
+        }
+        if (reserve_ind==null){
+            reserve_ind=false;
+        }
+        if (mask_sensitive_data==null){
+            mask_sensitive_data=false;
         }
         if ("TRAINING".equalsIgnoreCase(task_type)) {
             if("TABLES".equalsIgnoreCase(selection_method)){
@@ -667,12 +755,15 @@ public class Logic extends WebServiceUserCode {
        }
 
         db(TDM).beginTransaction();
-        try {
-            Map<String, Object> result = (Map<String, Object>) wsCreateTaskV1(be_id, environment_id, source_environment_id, scheduler, delete_before_load,
-                    num_of_entities, selection_method, selection_param_value, task_title, parameters, refresh_reference_data, replace_sequences, source_env_name,
-                    load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_exe_id, task_globals,
-                    selected_ref_version_task_exe_id, sync_mode, tableList, globals, reference, reserve_ind, reserve_retention_period_type, reserve_retention_period_value,
-                    reserve_note, filterout_reserved, generateParams, mask_sensitive_data, task_description, custom_logic_lu_name,selected_subset_task_exe_id, clone_ind);
+        //try {
+            Map<String, Object> result = (Map<String, Object>) wsCreateTaskV1(be_id, environment_id, source_environment_id, 
+                    scheduler, delete_before_load, num_of_entities, selection_method, selection_param_value, task_title,
+                    parameters, refresh_reference_data, replace_sequences, source_env_name, load_entity, task_type,
+                    scheduling_end_date, version_ind, retention_period_type, retention_period_value,
+                    selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, sync_mode, tableList, globals,
+                    reference, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, 
+                    filterout_reserved, generateParams, mask_sensitive_data, task_description, custom_logic_lu_name,
+                    selected_subset_task_exe_id, clone_ind, execution_mode);
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
                 return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -686,19 +777,25 @@ public class Logic extends WebServiceUserCode {
                 db(TDM).rollback();
                 return wrapWebServiceResults("FAILED", "Can't create post execution processes for the task: " + result.get("message"), null);
             }
-            result = (Map<String, Object>) wsCreateLogicalUnitsFortask(taskId, task_title, environment_id, logicalUnits);
+            Boolean validLus = fnValidateBELogicalUnits(be_id,logicalUnits);
+            if(validLus){
+                result = (Map<String, Object>) wsCreateLogicalUnitsFortask(taskId, task_title, environment_id, logicalUnits);
+
+            }else {
+                return wrapWebServiceResults("FAILED", "Logical Unit validation failed. Ensure that all selected Logical Units have their respective parents selected.", null);
+            }
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
                 return wrapWebServiceResults("FAILED", "Can't create logical units for the task: " + result.get("message"), null);
             }
-        } catch (Exception e) {
-            db(TDM).rollback();
-            return wrapWebServiceResults("FAILED", e.getMessage(), null);
-        }
+        //} catch (Exception e) {
+        //    db(TDM).rollback();
+       //     return wrapWebServiceResults("FAILED", e.getMessage(), null);
+        //}
 
         db(TDM).commit();
 
-        Map<String, Object> result = new HashMap();
+        //Map<String, Object> result = new HashMap();
         result.put("id", taskId);
         return wrapWebServiceResults("SUCCESS", null, result);
     }
@@ -706,7 +803,19 @@ public class Logic extends WebServiceUserCode {
     @desc("Creates Task.\r\n" + "\r\n" + "Example of a request body:\r\n" + "\r\n" + "{\r\n" + "   \"filterout_reserved\":false,\r\n" + "   \"operationMode\":\"insert_entity_without_delete\",\r\n" + "   \"task_type\":\"LOAD\",\r\n" + "   \"task_title\":\"testapi2\",\r\n" + "   \"extractSelected\":false,\r\n" + "   \"load_entity\":true,\r\n" + "   \"delete_before_load\":false,\r\n" + "   \"reserve_ind\":true,\r\n" + "   \"be_id\":4,\r\n" + "   \"source_environment_id\":1,\r\n" + "   \"environment_id\":2,\r\n" + "   \"source_env_name\":\"SRC\",\r\n" + "   \"environment_name\":\"TAR\",\r\n" + "   \"allLogicalUnits\":[\r\n" + "      {\r\n" + "         \"lu_parent_name\":null,\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"lu_id\":7,\r\n" + "         \"product_name\":\"CRM\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Billing\",\r\n" + "         \"lu_id\":9,\r\n" + "         \"product_name\":\"FINANCE\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Collection\",\r\n" + "         \"lu_id\":10,\r\n" + "         \"product_name\":\"FINANCE\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Orders\",\r\n" + "         \"lu_id\":8,\r\n" + "         \"product_name\":\"ORDERS\"\r\n" + "      }\r\n" + "   ],\r\n" + "   \"selectedLogicalUnits\":[\r\n" + "      {\r\n" + "         \"lu_parent_name\":null,\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"lu_id\":7,\r\n" + "         \"product_name\":\"CRM\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Billing\",\r\n" + "         \"lu_id\":9,\r\n" + "         \"product_name\":\"FINANCE\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Collection\",\r\n" + "         \"lu_id\":10,\r\n" + "         \"product_name\":\"FINANCE\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Orders\",\r\n" + "         \"lu_id\":8,\r\n" + "         \"product_name\":\"ORDERS\"\r\n" + "      }\r\n" + "   ],\r\n" + "   \"missingRootLU\":[\r\n" + "      \r\n" + "   ],\r\n" + "   \"num_of_entities\":2,\r\n" + "   \"syncModeRadio\":null,\r\n" + "   \"sync_mode\":null,\r\n" + "   \"reserve_retention_period_value\":5,\r\n" + "   \"reserve_retention_period_type\":\"Days\",\r\n" + "   \"allPostExecutionProcess\":[\r\n" + "      {\r\n" + "         \"process_id\":1,\r\n" + "         \"be_id\":4,\r\n" + "         \"process_name\":\"PostExecFlow\",\r\n" + "         \"process_description\":null,\r\n" + "         \"execution_order\":1\r\n" + "      }\r\n" + "   ],\r\n" + "   \"postExecutionProcesses\":[\r\n" + "      1\r\n" + "   ],\r\n" + "   \"reference\":\"both\",\r\n" + "   \"versionsForLoad\":[\r\n" + "      \r\n" + "   ],\r\n" + "   \"selection_method\":\"PR\",\r\n" + "   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" + "   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" + "   \"refList\":[\r\n" + "      {\r\n" + "         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"interface_name\":\"CRM_DB\",\r\n" + "         \"schema_name\":\"public\",\r\n" + "         \"logical_unit_name\":\"Customer\",\r\n" + "         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"ref_table_name\":\"devicestable2017\",\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"interface_name\":\"CRM_DB\",\r\n" + "         \"schema_name\":\"public\",\r\n" + "         \"logical_unit_name\":\"Customer\",\r\n" + "         \"reference_table_name\":\"devicestable2017\",\r\n" + "         \"selected\":true\r\n" + "      }\r\n" + "   ],\r\n" + "   \"refresh_reference_data\":false,\r\n" + "   \"selected_version_task_exe_id\":null,\r\n" + "   \"selected_ref_version_task_exe_id\":null,\r\n" + "   \"scheduler\":\"immediate\"\r\n" + "}")
     @webService(path = "task", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": {\r\n" + "    \"id\": 145\r\n" + "  },\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
-    public static Object wsCreateTaskV1(@param(required = true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, @param(required = true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required = true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String sync_mode, List<Map<String, Object>> tableList, List<Map<String, Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String, Object> generateParams, Boolean mask_sensitive_data, String task_description, String custom_logic_lu_name, Long selected_subset_task_exe_id,Boolean clone_ind ) throws Exception {
+    public static Object wsCreateTaskV1(@param(required = true) Long be_id, Long environment_id,
+            Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities,
+            String selection_method, String selection_param_value, @param(required = true) String task_title,
+            String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name,
+            Boolean load_entity, @param(required = true) String task_type, String scheduling_end_date,
+            Boolean version_ind, String retention_period_type, Integer retention_period_value,
+            Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id,
+            String sync_mode, List<Map<String, Object>> tableList, List<Map<String, Object>> globals,
+            String reference, Boolean reserve_ind, String reserve_retention_period_type,
+            Integer reserve_retention_period_value, String reserve_note, String filterout_reserved,
+            HashMap<String, Object> generateParams, Boolean mask_sensitive_data, String task_description,
+            String custom_logic_lu_name, Long selected_subset_task_exe_id,Boolean clone_ind, 
+            String execution_mode) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         String message = null;
         String errorCode = "";
@@ -738,14 +847,14 @@ public class Logic extends WebServiceUserCode {
             }
         }
 
-        try {
+        //try {
             String sql = "INSERT INTO " + TDMDB_SCHEMA + ".tasks (be_id, environment_id, scheduler, delete_before_load," +
                     "num_of_entities,selection_method,selection_param_value, custom_logic_lu_name, task_execution_status, " +
                     "task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, task_title, parameters, refresh_reference_data,replace_sequences, " +
                     "source_environment_id, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, " +
                     "selected_version_task_exe_id,selected_subset_task_exe_id,task_globals, selected_ref_version_task_exe_id, sync_mode, reserve_ind, " +
-                    "reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, mask_sensitive_data,task_description,clone_ind) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?,?) RETURNING task_id";
+                    "reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, mask_sensitive_data,task_description,clone_ind, execution_mode) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
             String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC).format(Instant.now());
             String username = sessionUser().name();
             String userRoles = String.join(",", sessionUser().roles());
@@ -775,7 +884,7 @@ public class Logic extends WebServiceUserCode {
                     ((source_env_name != null) ? source_env_name : ""), ((load_entity != null) ? load_entity : false), task_type, scheduling_end_date,
                     (version_ind != null ? version_ind == true : false), retention_period_type, retention_period_value, selected_version_task_exe_id,selected_subset_task_exe_id,
                     task_globals, selected_ref_version_task_exe_id, sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value,
-                    reserve_note, filterout_reserved, mask_sensitive_data, task_description, clone_ind).firstRow();
+                    reserve_note, filterout_reserved, mask_sensitive_data, task_description, clone_ind, execution_mode).firstRow();
             Long taskId = Long.parseLong(row.get("task_id").toString());
 
             if (tableList != null) {
@@ -810,11 +919,11 @@ public class Logic extends WebServiceUserCode {
             errorCode = "SUCCESS";
             response.put("result", result);
 
-        } catch (Exception e) {
-            message = e.getMessage();
-            log.error(message);
-            errorCode = "FAILED";
-        }
+        //} catch (Exception e) {
+        //   message = e.getMessage();
+        //    log.error(message);
+        //    errorCode = "FAILED";
+        //}
         response.put("errorCode", errorCode);
         response.put("message", message);
         return response;
@@ -823,7 +932,21 @@ public class Logic extends WebServiceUserCode {
     @desc("Updates Task. The task update creates a new version of the task and set the status of the previous task version to Inactive.\r\n" + "\r\n" + "Example of a request body:\r\n" + "{\r\n" + "  \"copy\": false,\r\n" + "  \"task_status\": \"complete\",\r\n" + "  \"be_id\": 3,\r\n" + "  \"environment_id\": 1,\r\n" + "  \"source_environment_id\": 1,\r\n" + "  \"scheduler\": \"immediate\",\r\n" + "  \"delete_before_load\": true,\r\n" + "  \"request_of_fresh_data\": true,\r\n" + "  \"num_of_entities\": 0,\r\n" + "  \"selection_method\": \"R\",\r\n" + "  \"selection_param_value\": null,\r\n" + "  \"task_title\": \"taskTitle\",\r\n" + "  \"parameters\": null,\r\n" + "  \"refresh_reference_data\": true,\r\n" + "  \"replace_sequences\": true,\r\n" + "  \"source_env_name\": \"env1\",\r\n" + "  \"load_entity\": true,\r\n" + "  \"task_type\": \"LOAD\",\r\n" + "  \"scheduling_end_date\": \"2021-02-04 14:20:59.454\",\r\n" + "  \"version_ind\": true,\r\n" + "  \"retention_period_type\": \"Days\",\r\n" + "  \"retention_period_value\": 0,\r\n" + "  \"selected_version_task_exe_id\": 0,\r\n" + "  \"task_globals\": true,\r\n" + "  \"selected_ref_version_task_exe_id\": 0,\r\n" + "  \"sync_mode\": null,\r\n" + "  \"refList\": [\r\n" + "    {\r\n" + "        \"reference_table_name\":\t\"RefT\",\r\n" + "        \"logical_unit_name\": \"RefLU\",\r\n" + "        \"schema_name\": \"RefSchema\",\r\n" + "        \"interface_name\": \"RefInterface\"\r\n" + "    },\r\n" + "    {\r\n" + "        \"reference_table_name\":\t\"RefT2\",\r\n" + "        \"logical_unit_name\": \"RefLU2\",\r\n" + "        \"schema_name\": \"RefSchema2\",\r\n" + "        \"interface_name\": \"RefInterface2\"\r\n" + "    }\r\n" + "  ],\r\n" + "  \"globals\": [\r\n" + "    {\r\n" + "      \"global_name\":\"globalName1\",\r\n" + "      \"global_value\":\"globalValue1\"\r\n" + "    },\r\n" + "    {\r\n" + "      \"global_name\":\"globalName2\",\r\n" + "      \"global_value\":\"globalValue2\"\r\n" + "    }\r\n" + "  ],\r\n" + "  \"reference\": \"ref\",\r\n" + "  \"task_created_by\": \"test\",\r\n" + "  \"task_creation_date\": \"2021-02-04 14:20:59.454\",\r\n" + "    \"postExecutionProcesses\": [{\r\n" + "            \"process_id\": 1,\r\n" + "            \"process_name\": \"processName\",\r\n" + "            \"task_id\": 145,\r\n" + "            \"execution_order\": 2\r\n" + "        }, {\r\n" + "            \"process_id\": 2,\r\n" + "            \"process_name\": \"processName2\",\r\n" + "            \"task_id\": 145,\r\n" + "            \"execution_order\": 3\r\n" + "        }\r\n" + "    ],\r\n" + "    \"logicalUnits\": [{\r\n" + "            \"lu_parent_name\": \"parentName\",\r\n" + "            \"lu_name\": \"name\",\r\n" + "            \"lu_id\": 23\r\n" + "        }, {\r\n" + "            \"lu_parent_name\": \"PATIENT_LU\",\r\n" + "            \"lu_name\": \"PATIENT_VISITS\",\r\n" + "            \"lu_id\": 12\r\n" + "        }, {\r\n" + "            \"lu_parent_name\": \"PATIENT_VISITS\",\r\n" + "            \"lu_name\": \"VISIT_LAB_RESULTS\",\r\n" + "            \"lu_id\": 16\r\n" + "        }\r\n" + "    ]\r\n" + "}")
     @webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": {\r\n" + "    \"id\": 146\r\n" + "  },\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
-    public static Object wsUpdateTaskV2(@param(required = true) Long taskId, Boolean copy, String task_status, @param(required = false) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, @param(required = true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required = true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String sync_mode, List<Map<String, Object>> tableList, List<Map<String, Object>> globals, String reference, String task_created_by, String task_creation_date,List<Map<String, Object>> preExecutionProcesses, List<Map<String, Object>> postExecutionProcesses, List<Map<String, Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String, Object> generateParams, Boolean mask_sensitive_data, String task_description, String custom_logic_lu_name, Long selected_subset_task_exe_id, Boolean clone_ind) throws Exception {
+    public static Object wsUpdateTaskV2(@param(required = true) Long taskId, Boolean copy, String task_status,
+            @param(required = false) Long be_id, Long environment_id, Long source_environment_id, String scheduler,
+            Boolean delete_before_load, Integer num_of_entities, String selection_method,
+            String selection_param_value, @param(required = true) String task_title, String parameters,
+            Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity,
+            @param(required = true) String task_type, String scheduling_end_date, Boolean version_ind,
+            String retention_period_type, Integer retention_period_value, Integer selected_version_task_exe_id,
+            Boolean task_globals, Integer selected_ref_version_task_exe_id, String sync_mode,
+            List<Map<String, Object>> tableList, List<Map<String, Object>> globals, String reference,
+            String task_created_by, String task_creation_date,List<Map<String, Object>> preExecutionProcesses,
+            List<Map<String, Object>> postExecutionProcesses, List<Map<String, Object>> logicalUnits,
+            Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value,
+            String reserve_note, String filterout_reserved, HashMap<String, Object> generateParams,
+            Boolean mask_sensitive_data, String task_description, String custom_logic_lu_name,
+            Long selected_subset_task_exe_id, Boolean clone_ind, String execution_mode) throws Exception {
         Long newTaskId = null;
 
         String msg =fnValidateOverrideSyncMode(source_environment_id,source_env_name,sync_mode);
@@ -835,8 +958,14 @@ public class Logic extends WebServiceUserCode {
                     throw new IllegalArgumentException("AI-based training or generation tasks can run on one LU only");
 
         }
-        if (clone_ind == null) {
-            clone_ind = false;
+        if (clone_ind==null) {
+            clone_ind=false;
+        }
+        if (reserve_ind==null){
+            reserve_ind=false;
+        }        
+        if (mask_sensitive_data==null){
+            mask_sensitive_data=false;
         }
 		if ("TRAINING".equalsIgnoreCase(task_type)) {
             if("TABLES".equalsIgnoreCase(selection_method)){
@@ -852,13 +981,16 @@ public class Logic extends WebServiceUserCode {
         }
         
         db(TDM).beginTransaction();
-        try {
-            Map<String, Object> result = (Map<String, Object>) wsUpdateTaskV1(taskId, copy, task_status, be_id, environment_id, source_environment_id, scheduler,
-            delete_before_load, num_of_entities, selection_method, selection_param_value, task_title, parameters, refresh_reference_data,
-            replace_sequences, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type,
-            retention_period_value, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, sync_mode, tableList, globals,
-            reference, task_created_by, task_creation_date, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note,
-            filterout_reserved, generateParams, mask_sensitive_data, task_description, custom_logic_lu_name, selected_subset_task_exe_id,clone_ind);
+        //try {
+            Map<String, Object> result = (Map<String, Object>) wsUpdateTaskV1(taskId, copy, task_status, be_id,
+                environment_id, source_environment_id, scheduler, delete_before_load, num_of_entities,
+                selection_method, selection_param_value, task_title, parameters, refresh_reference_data,
+                replace_sequences, source_env_name, load_entity, task_type, scheduling_end_date, version_ind,
+                retention_period_type, retention_period_value, selected_version_task_exe_id, task_globals,
+                selected_ref_version_task_exe_id, sync_mode, tableList, globals, reference, task_created_by,
+                task_creation_date, reserve_ind, reserve_retention_period_type, reserve_retention_period_value,
+                reserve_note, filterout_reserved, generateParams, mask_sensitive_data, task_description,
+                custom_logic_lu_name, selected_subset_task_exe_id, clone_ind, execution_mode);
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
                 return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -877,19 +1009,23 @@ public class Logic extends WebServiceUserCode {
                 db(TDM).rollback();
                 return wrapWebServiceResults("FAILED", result.get("message"), null);
             }
-
-            result = (Map<String, Object>) wsCreateLogicalUnitsFortask(newTaskId, task_title, environment_id, logicalUnits);
+            Boolean validLus = fnValidateBELogicalUnits(be_id,logicalUnits);
+            if(validLus){
+                result = (Map<String, Object>) wsCreateLogicalUnitsFortask(newTaskId, task_title, environment_id, logicalUnits);
+            }else {
+                return wrapWebServiceResults("FAILED", "Logical Unit validation failed. Ensure that all selected Logical Units have their respective parents selected.", null);
+            }
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
                 return wrapWebServiceResults("FAILED", result.get("message"), null);
             }
-        } catch (Exception e) {
-            db(TDM).rollback();
-            return wrapWebServiceResults("FAILED", e.getMessage(), null);
-        }
+        //} catch (Exception e) {
+        //    db(TDM).rollback();
+        //    return wrapWebServiceResults("FAILED", e.getMessage(), null);
+        //}
         db(TDM).commit();
 
-        Map<String, Object> result = new HashMap();
+        //Map<String, Object> result = new HashMap();
         result.put("id", newTaskId);
         return wrapWebServiceResults("SUCCESS", null, result);
     }
@@ -897,7 +1033,20 @@ public class Logic extends WebServiceUserCode {
     @desc("Updates Task. The task update creates a new version of the task and set the status of the previous task version to Inactive.\r\n" + "\r\n" + "Example of a request body:\r\n" + "\r\n" + "{\r\n" + "   \"task_last_updated_date\":\"2022-12-19 12:16:48.257\",\r\n" + "   \"filterout_reserved\":false,\r\n" + "   \"be_id\":4,\r\n" + "   \"reserve_retention_period_type\":\"Days\",\r\n" + "   \"environment_id\":2,\r\n" + "   \"selection_method\":\"PR\",\r\n" + "   \"refresh_reference_data\":false,\r\n" + "   \"tester\":\"tester2\",\r\n" + "   \"be_last_updated_date\":\"2022-12-19 12:12:39.838\",\r\n" + "   \"owners\":[\r\n" + "      \r\n" + "   ],\r\n" + "   \"refcount\":1,\r\n" + "   \"num_of_entities\":2,\r\n" + "   \"tester_type\":\"ID\",\r\n" + "   \"reserve_note\":null,\r\n" + "   \"load_entity\":true,\r\n" + "   \"selected_version_task_exe_id\":null,\r\n" + "   \"task_created_by\":\"admin\",\r\n" + "   \"be_last_updated_by\":\"admin\",\r\n" + "   \"scheduling_end_date\":null,\r\n" + "   \"environment_point_of_contact_phone1\":null,\r\n" + "   \"processnames\":\"PostExecFlow\",\r\n" + "   \"testers\":[\r\n" + "      {\r\n" + "         \"tester_type\":\"ID\",\r\n" + "         \"role_id\":[\r\n" + "            \"4\"\r\n" + "         ],\r\n" + "         \"tester\":\"tester2\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"tester_type\":\"ID\",\r\n" + "         \"role_id\":[\r\n" + "            \"3\"\r\n" + "         ],\r\n" + "         \"tester\":\"tester1\"\r\n" + "      }\r\n" + "   ],\r\n" + "   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" + "   \"environment_status\":\"Active\",\r\n" + "   \"be_status\":\"Active\",\r\n" + "   \"task_last_updated_by\":\"admin\",\r\n" + "   \"selected_ref_version_task_exe_id\":null,\r\n" + "   \"task_execution_status\":\"Active\",\r\n" + "   \"sync_mode\":null,\r\n" + "   \"replace_sequences\":false,\r\n" + "   \"environment_point_of_contact_last_name\":null,\r\n" + "   \"environment_point_of_contact_email\":null,\r\n" + "   \"be_description\":\"\",\r\n" + "   \"reserve_retention_period_value\":5,\r\n" + "   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" + "   \"environment_expiration_date\":null,\r\n" + "   \"environment_point_of_contact_phone2\":null,\r\n" + "   \"environment_created_by\":\"admin\",\r\n" + "   \"roles\":[\r\n" + "      [\r\n" + "         {\r\n" + "            \"role_id\":4,\r\n" + "            \"allowed_test_conn_failure\":false\r\n" + "         },\r\n" + "         {\r\n" + "            \"role_id\":3,\r\n" + "            \"allowed_test_conn_failure\":false\r\n" + "         }\r\n" + "      ]\r\n" + "   ],\r\n" + "   \"environment_last_updated_by\":\"admin\",\r\n" + "   \"be_creation_date\":\"2022-10-19 18:42:40.301\",\r\n" + "   \"task_id\":87,\r\n" + "   \"be_created_by\":\"admin\",\r\n" + "   \"source_environment_id\":1,\r\n" + "   \"role_id_orig\":4,\r\n" + "   \"scheduler\":\"immediate\",\r\n" + "   \"environment_description\":null,\r\n" + "   \"source_env_name\":\"SRC\",\r\n" + "   \"reserve_ind\":true,\r\n" + "   \"task_title\":\"testapi2\",\r\n" + "   \"environment_name\":\"TAR\",\r\n" + "   \"delete_before_load\":false,\r\n" + "   \"allow_write\":true,\r\n" + "   \"owner\":null,\r\n" + "   \"task_status\":\"Active\",\r\n" + "   \"executioncount\":0,\r\n" + "   \"environment_last_updated_date\":\"2022-12-06 10:18:49.378\",\r\n" + "   \"be_name\":\"Customer\",\r\n" + "   \"version_ind\":false,\r\n" + "   \"task_creation_date\":\"2022-12-19 12:16:48.257\",\r\n" + "   \"task_globals\":false,\r\n" + "   \"environment_point_of_contact_first_name\":null,\r\n" + "   \"task_type\":\"LOAD\",\r\n" + "   \"environment_creation_date\":\"2022-09-21 13:43:25.13\",\r\n" + "   \"owner_type\":null,\r\n" + "   \"creatorRoles\":[\r\n" + "      \"admin\"\r\n" + "   ],\r\n" + "   \"selection_method2\":\"Parameters with Random Entity Selection\",\r\n" + "   \"task_type2\":\"LOAD\",\r\n" + "   \"operation_mode\":\"Load entity\",\r\n" + "   \"data_type\":\"Entities and Reference\",\r\n" + "   \"disabled\":false,\r\n" + "   \"onHold\":false,\r\n" + "   \"reference\":\"both\",\r\n" + "   \"operationMode\":\"insert_entity_without_delete\",\r\n" + "   \"extractSelected\":true,\r\n" + "   \"postExecutionProcesses\":[\r\n" + "      1\r\n" + "   ],\r\n" + "   \"refList\":[\r\n" + "      {\r\n" + "         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"interface_name\":\"CRM_DB\",\r\n" + "         \"schema_name\":\"public\",\r\n" + "         \"logical_unit_name\":\"Customer\",\r\n" + "         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"ref_table_name\":\"devicestable2017\",\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"interface_name\":\"CRM_DB\",\r\n" + "         \"schema_name\":\"public\",\r\n" + "         \"logical_unit_name\":\"Customer\",\r\n" + "         \"reference_table_name\":\"devicestable2017\",\r\n" + "         \"selected\":true\r\n" + "      }\r\n" + "   ],\r\n" + "   \"globals\":[\r\n" + "      \r\n" + "   ],\r\n" + "   \"selectedLogicalUnits\":[\r\n" + "      {\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"lu_id\":7,\r\n" + "         \"task_id\":87\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_name\":\"Billing\",\r\n" + "         \"lu_id\":9,\r\n" + "         \"task_id\":87\r\n" + "      {\r\n" + "         \"lu_name\":\"Collection\",\r\n" + "         \"lu_id\":10,\r\n" + "         \"task_id\":87\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_name\":\"Orders\",\r\n" + "         \"lu_id\":8,\r\n" + "         \"task_id\":87\r\n" + "      }\r\n" + "   ],\r\n" + "   \"allLogicalUnits\":[\r\n" + "      {\r\n" + "         \"lu_parent_name\":null,\r\n" + "         \"lu_name\":\"Customer\",\r\n" + "         \"lu_id\":7,\r\n" + "         \"product_name\":\"CRM\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Billing\",\r\n" + "         \"lu_id\":9,\r\n" + "         \"product_name\":\"FINANCE\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Collection\",\r\n" + "         \"lu_id\":10,\r\n" + "         \"product_name\":\"FINANCE\"\r\n" + "      },\r\n" + "      {\r\n" + "         \"lu_parent_name\":\"Customer\",\r\n" + "         \"lu_name\":\"Orders\",\r\n" + "         \"lu_id\":8,\r\n" + "         \"product_name\":\"ORDERS\"\r\n" + "      }\r\n" + "   ],\r\n" + "   \"missingRootLU\":[\r\n" + "      \r\n" + "   ],\r\n" + "   \"syncModeRadio\":null,\r\n" + "   \"allPostExecutionProcess\":[\r\n" + "      {\r\n" + "         \"process_id\":1,\r\n" + "         \"be_id\":4,\r\n" + "         \"process_name\":\"PostExecFlow\",\r\n" + "         \"process_description\":null,\r\n" + "         \"execution_order\":1\r\n" + "      }\r\n" + "   ],\r\n" + "   \"versionsForLoad\":[\r\n" + "      \r\n" + "   ]\r\n" + "}=-}")
     @webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": {\r\n" + "    \"id\": 146\r\n" + "  },\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
-    public static Object wsUpdateTaskV1(@param(required = true) Long taskId, Boolean copy, String task_status, @param(required = true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, @param(required = true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required = true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String sync_mode, List<Map<String, Object>> tableList, List<Map<String, Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String, Object> generateParams, Boolean mask_sensitive_data, String task_description, String custom_logic_lu_name, Long selected_subset_task_exe_id,Boolean clone_ind) throws Exception {
+    public static Object wsUpdateTaskV1(@param(required = true) Long taskId, Boolean copy, String task_status, 
+            @param(required = true) Long be_id, Long environment_id, Long source_environment_id, String scheduler,
+            Boolean delete_before_load, Integer num_of_entities, String selection_method,
+            String selection_param_value, @param(required = true) String task_title, String parameters,
+            Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity,
+            @param(required = true) String task_type, String scheduling_end_date, Boolean version_ind,
+            String retention_period_type, Integer retention_period_value, Integer selected_version_task_exe_id,
+            Boolean task_globals, Integer selected_ref_version_task_exe_id, String sync_mode,
+            List<Map<String, Object>> tableList, List<Map<String, Object>> globals, String reference,
+            String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type,
+            Integer reserve_retention_period_value, String reserve_note, String filterout_reserved,
+            HashMap<String, Object> generateParams, Boolean mask_sensitive_data, String task_description,
+            String custom_logic_lu_name, Long selected_subset_task_exe_id,Boolean clone_ind, 
+            String execution_mode) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         Map<String, Object> result = new HashMap<>();
         String message = null;
@@ -944,8 +1093,10 @@ public class Logic extends WebServiceUserCode {
                     "scheduling_end_date, version_ind, retention_period_type, retention_period_value, " +
                     "selected_version_task_exe_id, selected_subset_task_exe_id, task_globals, " +
                     "selected_ref_version_task_exe_id, sync_mode, reserve_ind, " +
-                    "reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, mask_sensitive_data,task_description,clone_ind) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?) RETURNING task_id";
+                    "reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved," +
+                    "mask_sensitive_data, task_description, clone_ind, execution_mode) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + 
+                    "RETURNING task_id";
             String username = sessionUser().name();
             String userRoles = String.join(",", sessionUser().roles());
             Set<String> tmpRoles = new HashSet<>();
@@ -957,14 +1108,18 @@ public class Logic extends WebServiceUserCode {
 			String createdBy = new StringBuilder().append(username).append("##").append(String.join(TDM_PARAMETERS_SEPARATOR, tmpRoles)).toString();
             
             task_created_by = task_created_by == null ? createdBy : task_created_by;
-            Db.Row row = db(TDM).fetch(sql, be_id, environment_id != null ? environment_id : source_environment_id, scheduler,
-                    ((delete_before_load != null) ? delete_before_load : false), num_of_entities, selection_method, selection_param_value,
-                    custom_logic_lu_name, "Active", copy != null && copy ? createdBy : task_created_by, task_creation_date,
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC).format(Instant.now()), username,
-                    "Active", task_title, parameters, refresh_reference_data, replace_sequences, source_environment_id, source_env_name,
-                    ((load_entity != null) ? load_entity : false), task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value,
-                    selected_version_task_exe_id,selected_subset_task_exe_id, task_globals, selected_ref_version_task_exe_id, sync_mode, reserve_ind, reserve_retention_period_type,
-                    reserve_retention_period_value, reserve_note, filterout_reserved, mask_sensitive_data, task_description,clone_ind).firstRow();
+            Db.Row row = db(TDM).fetch(sql, be_id, environment_id != null ? environment_id : source_environment_id,
+                    scheduler, ((delete_before_load != null) ? delete_before_load : false), num_of_entities,
+                    selection_method, selection_param_value, custom_logic_lu_name, "Active",
+                    copy != null && copy ? createdBy : task_created_by, task_creation_date,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC).format(Instant.now()),
+                    username, "Active", task_title, parameters, refresh_reference_data, replace_sequences,
+                    source_environment_id, source_env_name, ((load_entity != null) ? load_entity : false),
+                    task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value,
+                    selected_version_task_exe_id,selected_subset_task_exe_id, task_globals,
+                    selected_ref_version_task_exe_id, sync_mode, reserve_ind, reserve_retention_period_type,
+                    reserve_retention_period_value, reserve_note, filterout_reserved, mask_sensitive_data,
+                    task_description,clone_ind, execution_mode).firstRow();
 
             Long id = Long.parseLong(row.get("task_id").toString());
 
@@ -988,7 +1143,7 @@ public class Logic extends WebServiceUserCode {
             }
 
 
-            try {
+            //try {
                 // TDM 8.0 - In case of Synthetic task, load the input parameters of the population flows into the TDMDB tdm_generate_task_field_mappings
                 //log.info("wsUpdateTaskV1 - params size: " + DataManParams.size());
                 if (source_environment_id == -1) {
@@ -1004,10 +1159,10 @@ public class Logic extends WebServiceUserCode {
 
                 String activityDesc = "Task " + task_title + " was updated";
                 fnInsertActivity("update", "Tasks", activityDesc);
-            } catch (Exception e) {
-                e.printStackTrace();
-                log.error(e.getMessage());
-            }
+           // } catch (Exception e) {
+           //     e.printStackTrace();
+           //     log.error(e.getMessage());
+           // }
 
             errorCode = "SUCCESS";
             result.put("id", id);
@@ -1022,13 +1177,13 @@ public class Logic extends WebServiceUserCode {
         return response;
     }
 
-    @desc("Calculates the number of entities that matches the selected task's parameters. The calculation is based on the task's Business Entity (BE), source environment, and the Where statement (populated in the request Body) reflecting the selected parameters.\r\n" + "\r\n" + "Use the ANY command when checking a value of a parameter since the TDM LU parameter tables contain an array of values on each parameter.\r\n" + "\r\n" + "Example of a request body:\r\n" + "{\r\n" + "  \"tar_env_name\": \"TAR\",\r\n" + "  \"where\": \"(( 'Alise' = ANY(\\\"CUSTOMER.FIRST_NAME\\\") ))\",\r\n" + "  \"filterout_reserved\": false\r\n" + "}")
+    @desc("Calculates the number of entities that matches the selected task's parameters. The calculation is based on the task's Business Entity (BE), source environment, and the Where statement (populated in the request Body) reflecting the selected parameters.\r\n" + "\r\n" + "Use the ANY command when checking a value of a parameter since the TDM LU parameter tables contain an array of values on each parameter.\r\n" + "\r\n" + "Example of a request body:\r\n" + "{\r\n" + "  \"tar_env_name\": \"TAR\",\r\n" + "  \"where\": \"(( 'Alise' = ANY(\\\"CUSTOMER.FIRST_NAME\\\") ))\",\r\n" + "  \"filterout_reserved\": OTHERS\r\n" + "}")
     @webService(path = "businessentity/{beId}/sourceEnv/{src_env_name}/analysiscount", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = "{\"errorCode\":\"SUCCESS\",\"message\":null,\"result\":834}")
-    public static Object wsGetAnalysiscountForBusinessEntity(@param(required = true) Long beId, @param(required = true) String src_env_name, String tar_env_name, String where, Boolean filterout_reserved) throws Exception {
+    public static Object wsGetAnalysiscountForBusinessEntity(@param(required = true) Long beId, @param(required = true) String src_env_name, String tar_env_name, String where, String queryJson, String filterout_reserved) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         try {
-            Object result = fnGetNumberOfMatchingEntities(where, src_env_name, tar_env_name, beId, filterout_reserved); //TDM
+            Object result = fnGetNumberOfMatchingEntities(where, queryJson, src_env_name, tar_env_name, beId, filterout_reserved,true); //TDM
             response.put("result", ((Map<String, Object>) result).get("result"));
             response.put("errorCode", "SUCCESS");
         } catch (Exception e) {
@@ -1496,13 +1651,13 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<String> lu_list, String target_env_name) throws Exception {
+	public static Object wsGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<String> lu_list, String target_env_name,String filterout_reserved) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
 		try {
 		    entitiesList = entitiesList.replaceAll("\\s+", "");
-		    Map<String, Object> versions = fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
+		    Map<String, Object> versions = fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name,filterout_reserved);
 		
 		    Map<String, Object> validations = (Map<String, Object>) versions.get("EntityReservationValidations");
 		    message = (String) validations.get("message");
@@ -1741,113 +1896,116 @@ public class Logic extends WebServiceUserCode {
         HashMap<String, Object> response = new HashMap<>();
         String message = null;
         String errorCode = "";
-        try {
-            String query = "SELECT * , " + "( SELECT COUNT(*) FROM " + TDMDB_SCHEMA + ".task_ref_tables rt WHERE rt.task_id = el.task_id " + 
-            "and rt.lu_name in (select lu_name from " + TDMDB_SCHEMA + ".tasks_logical_units lu " + 
-            "where  lu.lu_id = el.lu_id)) AS refcount " +
-            "FROM " + TDMDB_SCHEMA + ".task_execution_list el " + 
-            "LEFT JOIN " + TDMDB_SCHEMA + ".products p " + "ON (el.product_id = p.product_id) " + 
-            "INNER JOIN " + TDMDB_SCHEMA + ".tasks t " + "ON (el.task_id = t.task_id) " + 
-            "INNER JOIN " + TDMDB_SCHEMA + ".environments e " + "ON (el.environment_id = e.environment_id) " + 
-            "LEFT JOIN " + TDMDB_SCHEMA + ".business_entities be " + "ON (el.be_id = be.be_id) " + 
-            "LEFT JOIN " + TDMDB_SCHEMA + ".product_logical_units plu " + "ON (el.lu_id = plu.lu_id) " + 
-            "LEFT JOIN " + TDMDB_SCHEMA + ".tasks_exe_process pep ON (el.process_id = pep.process_id AND el.task_id = pep.task_id) " +
-            "WHERE el.task_execution_id = ? ";
-            Db.Rows rows = db(TDM).fetch(query, taskExeId);
 
-            List<Map<String, Object>> result = new ArrayList<>();
-            List<String> columnNames = rows.getColumnNames();
-            for (Db.Row row : rows) {
-                ResultSet resultSet = row.resultSet();
-                Map<String, Object> rowMap = new HashMap<>();
-                for (String columnName : columnNames) {
-                    if ("task_executed_by".equalsIgnoreCase(columnName)) {
-                        String[] userData = resultSet.getObject(columnName).toString().split("##");
-                        rowMap.put(columnName, userData[0]);
-					} else if ("execution_status".equalsIgnoreCase(columnName)) {
-						String status = resultSet.getString(columnName);
-						if ("STARTEXECUTIONREQUESTED".equalsIgnoreCase(status)) {
-							status = "running";
-						}
-						rowMap.put(columnName, status.toLowerCase());
-					} else {
-						rowMap.put(columnName, resultSet.getObject(columnName));
-					}
+        String query = "SELECT * , " + "( SELECT COUNT(*) FROM " + TDMDB_SCHEMA + ".task_ref_tables rt WHERE rt.task_id = el.task_id " + 
+        "and rt.lu_name in (select lu_name from " + TDMDB_SCHEMA + ".tasks_logical_units lu " + 
+        "where  lu.lu_id = el.lu_id)) AS refcount " +
+        "FROM " + TDMDB_SCHEMA + ".task_execution_list el " + 
+        "LEFT JOIN " + TDMDB_SCHEMA + ".products p " + "ON (el.product_id = p.product_id) " + 
+        "INNER JOIN " + TDMDB_SCHEMA + ".tasks t " + "ON (el.task_id = t.task_id) " + 
+        "INNER JOIN " + TDMDB_SCHEMA + ".environments e " + "ON (el.environment_id = e.environment_id) " + 
+        "LEFT JOIN " + TDMDB_SCHEMA + ".business_entities be " + "ON (el.be_id = be.be_id) " + 
+        "LEFT JOIN " + TDMDB_SCHEMA + ".product_logical_units plu " + "ON (el.lu_id = plu.lu_id) " + 
+        "LEFT JOIN " + TDMDB_SCHEMA + ".tasks_exe_process pep ON (el.process_id = pep.process_id AND el.task_id = pep.task_id) " +
+        "WHERE el.task_execution_id = ? ";
+        Db.Rows rows = db(TDM).fetch(query, taskExeId);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        List<String> columnNames = rows.getColumnNames();
+        for (Db.Row row : rows) {
+            ResultSet resultSet = row.resultSet();
+            Map<String, Object> rowMap = new HashMap<>();
+            for (String columnName : columnNames) {
+                if ("task_executed_by".equalsIgnoreCase(columnName)) {
+                    String[] userData = resultSet.getObject(columnName).toString().split("##");
+                    rowMap.put(columnName, userData[0]);
+                } else if ("execution_status".equalsIgnoreCase(columnName)) {
+                    String status = resultSet.getString(columnName);
+                    if ("STARTEXECUTIONREQUESTED".equalsIgnoreCase(status)) {
+                        status = "running";
+                    }
+                    rowMap.put(columnName, status.toLowerCase());
+                } else {
+                    rowMap.put(columnName, resultSet.getObject(columnName));
                 }
-                Map<String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs((Long) row.get("task_id"), (Long) row.get("task_execution_id"));
-                String overrideValue = "";
-                for (String attrName : taskOverrideAttrs.keySet()) {
-                    Boolean entityListFlag = false;
+            }
 
-                    if (!"task_globals".equalsIgnoreCase(attrName)) {
-                        overrideValue = "" + taskOverrideAttrs.get(attrName);
-                        //log.info("getTaskProperties - attrName: " + attrName + ", overrideValue: " + overrideValue);
-                        attrName = attrName.toLowerCase();
-                        switch (attrName) {
-                            case "selection_method":
-                                rowMap.put(attrName, overrideValue);
-                                break;
-                            case "entity_list":
-                                rowMap.put("selection_param_value", overrideValue);
-                                int numberOfEntities = overrideValue.split(",", -1).length;
-                                rowMap.put("num_of_entities", numberOfEntities);
-                                entityListFlag = true;
-                                break;
-                            case "no_of_entities":
-                                if (!entityListFlag) {
-                                    rowMap.put("num_of_entities", overrideValue);
-                                }
-                                break;
-                            case "source_environment_name":
-                                rowMap.put(attrName, overrideValue);
-                                String srcEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments " + "where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
-                                rowMap.put("source_environment_id", srcEnvId);
+            String executionMode = fnGetTaskExecutionMode(row.get("execution_mode").toString(), row.get("task_type").toString(), 
+                        Long.parseLong(row.get("be_id").toString()), Boolean.parseBoolean(row.get("clone_ind").toString()));
+            if ("VERTICAL".equalsIgnoreCase(executionMode) && row.get("parent_lu_id") != null) {
+                rowMap.put("fabric_execution_id", null);
+            }
+            rowMap.put("execution_mode", executionMode);
+            Map<String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs((Long) row.get("task_id"), (Long) row.get("task_execution_id"));
+            String overrideValue = "";
+            for (String attrName : taskOverrideAttrs.keySet()) {
+                Boolean entityListFlag = false;
 
-                                break;
-                            case "target_environment_name":
-                                rowMap.put(attrName, overrideValue);
-                                String tarEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments " + "where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
-                                rowMap.put("environment_id", tarEnvId);
-                                break;
-                            // TDM 7.4 - 16-Jan-22 - Add support for overriding DataFlux parameters
-                            case "selected_version_task_exe_id":
-                                rowMap.put(attrName, overrideValue);
-                                break;
-                            case "dataflux_retention_params":
-                                Map rentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
-                                rowMap.put("retention_period_type", "" + rentionPeriodInfo.get("unit"));
-                                rowMap.put("retention_period_value", "" + rentionPeriodInfo.get("value"));
-                                break;
-                            case "reserve_ind":
-                                rowMap.put("reserve_ind", overrideValue);
-                                break;
-                            case "reserve_retention_params":
-                                Map reserveRentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
-                                rowMap.put("reserve_retention_period_type", "" + reserveRentionPeriodInfo.get("unit"));
-                                rowMap.put("reserve_retention_period_value", "" + reserveRentionPeriodInfo.get("value"));
-                                break;
-                            // TDM 7.4 - End of Change
-                            default:
-                                rowMap.put(attrName, overrideValue);
-                                break;
-                        }
+                if (!"task_globals".equalsIgnoreCase(attrName)) {
+                    overrideValue = "" + taskOverrideAttrs.get(attrName);
+                    //log.info("getTaskProperties - attrName: " + attrName + ", overrideValue: " + overrideValue);
+                    attrName = attrName.toLowerCase();
+                    switch (attrName) {
+                        case "selection_method":
+                            rowMap.put(attrName, overrideValue);
+                            break;
+                        case "entity_list":
+                            rowMap.put("selection_param_value", overrideValue);
+                            int numberOfEntities = overrideValue.split(",", -1).length;
+                            rowMap.put("num_of_entities", numberOfEntities);
+                            entityListFlag = true;
+                            break;
+                        case "no_of_entities":
+                            if (!entityListFlag) {
+                                rowMap.put("num_of_entities", overrideValue);
+                            }
+                            break;
+                        case "source_environment_name":
+                            rowMap.put(attrName, overrideValue);
+                            String srcEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments " + "where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+                            rowMap.put("source_environment_id", srcEnvId);
+
+                            break;
+                        case "target_environment_name":
+                            rowMap.put(attrName, overrideValue);
+                            String tarEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments " + "where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+                            rowMap.put("environment_id", tarEnvId);
+                            break;
+                        // TDM 7.4 - 16-Jan-22 - Add support for overriding DataFlux parameters
+                        case "selected_version_task_exe_id":
+                            rowMap.put(attrName, overrideValue);
+                            break;
+                        case "dataflux_retention_params":
+                            Map rentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
+                            rowMap.put("retention_period_type", "" + rentionPeriodInfo.get("unit"));
+                            rowMap.put("retention_period_value", "" + rentionPeriodInfo.get("value"));
+                            break;
+                        case "reserve_ind":
+                            rowMap.put("reserve_ind", overrideValue);
+                            break;
+                        case "reserve_retention_params":
+                            Map reserveRentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
+                            rowMap.put("reserve_retention_period_type", "" + reserveRentionPeriodInfo.get("unit"));
+                            rowMap.put("reserve_retention_period_value", "" + reserveRentionPeriodInfo.get("value"));
+                            break;
+                        // TDM 7.4 - End of Change
+                        default:
+                            rowMap.put(attrName, overrideValue);
+                            break;
                     }
                 }
-
-                result.add(rowMap);
             }
 
-
-            response.put("result", result);
-            errorCode = "SUCCESS";
-            if (rows != null) {
-                rows.close();
-            }
-        } catch (Exception e) {
-            message = e.getMessage();
-            log.error(message);
-            errorCode = "FAILED";
+            result.add(rowMap);
         }
+
+
+        response.put("result", result);
+        errorCode = "SUCCESS";
+        if (rows != null) {
+            rows.close();
+        }
+    
         response.put("errorCode", errorCode);
         response.put("message", message);
         return response;
@@ -3161,48 +3319,8 @@ public class Logic extends WebServiceUserCode {
     @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": [\r\n" + "    {\r\n" + "      \"editor\": {\r\n" + "        \"schema\": {\r\n" + "          \"type\": \"date\"\r\n" + "        },\r\n" + "        \"name\": \"param1\",\r\n" + "        \"context\": {\r\n" + "          \"level\": {\r\n" + "            \"const\": \"error\"\r\n" + "          },\r\n" + "          \"message\": {\r\n" + "            \"const\": \"${param1}, ${param2}\"\r\n" + "          },\r\n" + "          \"param1\": {\r\n" + "            \"self\": \"param1\"\r\n" + "          },\r\n" + "          \"param2\": {\r\n" + "            \"external\": \"param2\"\r\n" + "          }\r\n" + "        },\r\n" + "        \"id\": \"com.k2view.default\"\r\n" + "      },\r\n" + "      \"default\": null,\r\n" + "      \"description\": \"\",\r\n" + "      \"type\": \"date\",\r\n" + "      \"mandatory\": false\r\n" + "    },\r\n" + "    {\r\n" + "      \"editor\": {\r\n" + "        \"schema\": {\r\n" + "          \"type\": \"integer\"\r\n" + "        },\r\n" + "        \"name\": \"param2\",\r\n" + "        \"context\": {\r\n" + "          \"level\": {\r\n" + "            \"const\": \"error\"\r\n" + "          },\r\n" + "          \"message\": {\r\n" + "            \"const\": \"${param1}, ${param2}\"\r\n" + "          },\r\n" + "          \"param1\": {\r\n" + "            \"external\": \"param1\"\r\n" + "          },\r\n" + "          \"param2\": {\r\n" + "            \"self\": \"param2\"\r\n" + "          }\r\n" + "        },\r\n" + "        \"id\": \"com.k2view.default\"\r\n" + "      },\r\n" + "      \"default\": null,\r\n" + "      \"description\": \"\",\r\n" + "      \"type\": \"integer\",\r\n" + "      \"mandatory\": false\r\n" + "    }\r\n" + "  ],\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
     public static Object wsGetCustomLogicParam(String luName, String flowName) throws Exception {
         List<HashMap<String, Object>> result = new ArrayList<>();
-        if ("ALL".equalsIgnoreCase(luName) || luName == null || Util.isEmpty(luName)) {
-            luName = "TDM";
-        }
         try {
-            Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName + "'");
-            for (Db.Row row : rows) {
-                if (!"LU_NAME".equalsIgnoreCase("" + row.get("name")) && !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name")) && !"SESSION_GLOBALS".equalsIgnoreCase("" + row.get("name")) && "input".equalsIgnoreCase("" + row.get("param"))) {
-                    HashMap<String, Object> map = new HashMap<>();
-                    HashMap<Object, Object> editorMap = new HashMap<>();
-                    Map<String, Object[]> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
-                    Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
-                    Object[] interfaces = new Object[0];
-                    if ("com.k2view.interface".equalsIgnoreCase(String.valueOf(editor.get("id")))) {
-                        String broadwayCommand = "Broadway TDM.ListEditorInterfaces editor=" + row.get("editor");
-                        Db.Rows interfaceNames = fabric().fetch(broadwayCommand);
-                        for (Db.Row name : interfaceNames) {
-                            interfaces = ParamConvertor.toArray(name.get("array"));
-
-                        }
-                        editor.put("interfaces", interfaces);
-                    }
-                    if (editor.isEmpty()) {
-                        editorMap.put("id", "com.k2view.default");
-                    } else {
-                        editorMap.putAll(editor);
-                    }
-                    editorMap.put("name", row.get("name"));
-                    editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
-                    editorMap.put("mandatory", row.get("mandatory"));
-                    editorMap.put("context", context);
-                    map.put("editor", editorMap);
-                    map.put("default", row.get("default"));
-                    map.put("type", row.get("type"));
-                    map.put("mandatory", row.get("mandatory"));
-                    String description = ("" + row.get("remark")).replaceAll("/n", "\n");
-                    map.put("description", description);
-                    result.add(map);
-                }
-            }
-            if (rows != null) {
-                rows.close();
-            }
+            result = getFlowParams("CustomLogic", luName, flowName);
         } catch (Exception e) {
             return wrapWebServiceResults("FAILED", e.getMessage(), null);
         }
@@ -3223,7 +3341,13 @@ public class Logic extends WebServiceUserCode {
 
             for (String luName : lus) {
                 String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
-                Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Generate Data'");
+                Db.Rows flows = null;
+                
+                try {
+                    flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Generate Data'");
+                } catch (Exception e) {
+                    continue;
+                }
 
                 for (Db.Row flow : flows) {
                     String flowName = flow.get("Flow").toString();
@@ -3363,6 +3487,91 @@ public class Logic extends WebServiceUserCode {
         }*/
 
         return wrapWebServiceResults("SUCCESS", null, result);
+    }
+
+
+    @desc("Get the list of parameters of the given Post/Pre Execution Flow")
+    @webService(path = "getExecutionProcessParams", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+    @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": [\r\n" + "    {\r\n" + "      \"editor\": {\r\n" + "        \"schema\": {\r\n" + "          \"type\": \"date\"\r\n" + "        },\r\n" + "        \"name\": \"param1\",\r\n" + "        \"context\": {\r\n" + "          \"level\": {\r\n" + "            \"const\": \"error\"\r\n" + "          },\r\n" + "          \"message\": {\r\n" + "            \"const\": \"${param1}, ${param2}\"\r\n" + "          },\r\n" + "          \"param1\": {\r\n" + "            \"self\": \"param1\"\r\n" + "          },\r\n" + "          \"param2\": {\r\n" + "            \"external\": \"param2\"\r\n" + "          }\r\n" + "        },\r\n" + "        \"id\": \"com.k2view.default\"\r\n" + "      },\r\n" + "      \"default\": null,\r\n" + "      \"description\": \"\",\r\n" + "      \"type\": \"date\",\r\n" + "      \"mandatory\": false\r\n" + "    },\r\n" + "    {\r\n" + "      \"editor\": {\r\n" + "        \"schema\": {\r\n" + "          \"type\": \"integer\"\r\n" + "        },\r\n" + "        \"name\": \"param2\",\r\n" + "        \"context\": {\r\n" + "          \"level\": {\r\n" + "            \"const\": \"error\"\r\n" + "          },\r\n" + "          \"message\": {\r\n" + "            \"const\": \"${param1}, ${param2}\"\r\n" + "          },\r\n" + "          \"param1\": {\r\n" + "            \"external\": \"param1\"\r\n" + "          },\r\n" + "          \"param2\": {\r\n" + "            \"self\": \"param2\"\r\n" + "          }\r\n" + "        },\r\n" + "        \"id\": \"com.k2view.default\"\r\n" + "      },\r\n" + "      \"default\": null,\r\n" + "      \"description\": \"\",\r\n" + "      \"type\": \"integer\",\r\n" + "      \"mandatory\": false\r\n" + "    }\r\n" + "  ],\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
+    public static Object wsGetExecutionProcessParam(String processType, String[] processesList) throws Exception {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        String luName = "";
+        Map<String, Object> processInputs = new HashMap<>();
+        processInputs.put("Process_type", processType);
+        for (String processName : processesList) {  
+            try {
+                processInputs.put("Process_name", processName);
+                List<Map<String, Object>> ProcessList = MtableLookup("PostAndPreExecutionProcess", processInputs, MTable.Feature.caseInsensitive);
+                for (Map<String, Object> t : ProcessList) {
+                    Object luNameObj = t.get("Lu_name");
+                    if (luNameObj != null) {
+                        luName = luNameObj.toString();
+                        break;
+                    }
+                }
+                
+                if ("".equals(luName) && ProcessList.size() > 0) {
+                    luName = "TDM";
+                }
+
+                List<HashMap<String, Object>> flowParams =  getFlowParams("Execution", luName, processName);
+                HashMap<String, Object> tmp = new HashMap<>();
+                tmp.put("process_name", processName);
+                tmp.put("editors", flowParams);
+                result.add(tmp);
+
+            } catch (Exception e) {
+                return wrapWebServiceResults("FAILED", "failed to get Parameters for flow: " + processName + " with Error: " +e.getMessage(), null);
+            }
+        }
+        return wrapWebServiceResults("SUCCESS", null, result);
+    }
+
+    private static List<HashMap<String, Object>> getFlowParams(String flowType, String luName, String flowName) throws Exception {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        if ("ALL".equalsIgnoreCase(luName) || luName == null || Util.isEmpty(luName)) {
+            luName = "TDM";
+        }
+        Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName + "'");
+        for (Db.Row row : rows) {
+            if (!"LU_NAME".equalsIgnoreCase("" + row.get("name")) && !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name")) && !"SESSION_GLOBALS".equalsIgnoreCase("" + row.get("name")) && "input".equalsIgnoreCase("" + row.get("param"))) {
+                HashMap<String, Object> map = new HashMap<>();
+                HashMap<Object, Object> editorMap = new HashMap<>();
+                Map<String, Object[]> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
+                Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
+                Object[] interfaces = new Object[0];
+                if ("com.k2view.interface".equalsIgnoreCase(String.valueOf(editor.get("id")))) {
+                    String broadwayCommand = "Broadway TDM.ListEditorInterfaces editor=" + row.get("editor");
+                    Db.Rows interfaceNames = fabric().fetch(broadwayCommand);
+                    for (Db.Row name : interfaceNames) {
+                        interfaces = ParamConvertor.toArray(name.get("array"));
+
+                    }
+                    editor.put("interfaces", interfaces);
+                }
+                if (editor.isEmpty()) {
+                    editorMap.put("id", "com.k2view.default");
+                } else {
+                    editorMap.putAll(editor);
+                }
+                editorMap.put("name", row.get("name"));
+                editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
+                editorMap.put("mandatory", row.get("mandatory"));
+                editorMap.put("context", context);
+                map.put("editor", editorMap);
+                map.put("default", row.get("default"));
+                map.put("type", row.get("type"));
+                map.put("mandatory", row.get("mandatory"));
+                String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+                map.put("description", description);
+                result.add(map);
+            }
+        }
+        if (rows != null) {
+            rows.close();
+        }
+
+        return result;
     }
 
 	@desc("Get the list of available training tasks for AI generate")

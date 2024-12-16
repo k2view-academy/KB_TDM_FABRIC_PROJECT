@@ -1,76 +1,215 @@
-tags: Create
-stages:
-  Stage 1:
-    actors:
-      Get  SQL Resource File To Create TDMDB Schema And User:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/TDMDB/k2vtdm0.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
-  Stage 2:
-    actors:
-      Create TDMDB Error Handler:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
-              conditions:
-                standardType: UNIQUE_CONSTRAINT
-              actions:
-                suppress: false
-                log: true
-                flowName: ''
-      Create TDMDB Role:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: null
-            link: Get  SQL Resource File To Create TDMDB Schema And User/result
-  Stage 3:
-    actors:
-      Get  SQL Resource File To Create TDMDB Schema And User1:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/TDMDB/k2vtdm1.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
-  Stage 4:
-    actors:
-      Create TDMDB Error Handler1:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
-              conditions:
-                standardType: UNIQUE_CONSTRAINT
-              actions:
-                suppress: false
-                log: true
-                flowName: ''
-      Create TDMDB Databse:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: null
-            link: Get  SQL Resource File To Create TDMDB Schema And User1/result
+{
+    "tags": [
+        "Create"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get  SQL Resource File To Create TDMDB Schema And User",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/TDMDB/k2vtdm0.sql",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create TDMDB Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
+                                                "conditions": {
+                                                    "standardType": "UNIQUE_CONSTRAINT"
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create TDMDB Role",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get  SQL Resource File To Create TDMDB Schema And User1",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/TDMDB/k2vtdm1.sql",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create TDMDB Error Handler1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
+                                                "conditions": {
+                                                    "standardType": "UNIQUE_CONSTRAINT"
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create TDMDB Databse",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To Create TDMDB Schema And User",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create TDMDB Role",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To Create TDMDB Schema And User1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create TDMDB Databse",
+                "name": "sql"
+            }
+        }
+    ]
+}

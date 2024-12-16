@@ -160,4 +160,7 @@ public class SharedGlobals {
     @category("TDM")
 	public static String TDM_DELETE_ONLY_TASK = "false";
 
+    @category("TDM")
+	public static String TDM_SUPPRESS_TEST_CONNECTION = "false";
+
 }
