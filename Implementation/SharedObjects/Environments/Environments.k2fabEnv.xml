@@ -71,79 +71,8 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>local</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/postgres?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>COLLECTION_DB</dbScheme>
-          <dbUser>COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~CuAyskAxb4776deM0JA8Xbmy5PW+pZObOrrt29dABMSFYVDQTXuTxqVXt2BT7VI&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>ORDERS_DB</dbScheme>
-          <dbUser>ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~Cr83wWv+7pEo5d2hpccSOv2Yj+cWPy0Y+lksoiB7piimQHwS22rhXSKchw&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_COLLECTION_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_ORDERS_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_COLUMN_NAME" luName="Orders">
-          <Value>contract_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Orders">
-          <Value>orders</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Collection">
-          <Value>customer_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Collection">
-          <Value>collection</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
           <Value>10</Value>
           <Comment></Comment>
@@ -380,93 +309,19 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.2</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>None</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-            <Property name="testConnectionState">
-              <Value>error</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value>postgres</Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-            <Property name="testConnectionState">
-              <Value>ok</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="UAT">
+    <Environment enabled="true" name="Devolpment">
       <Comments></Comments>
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
@@ -535,79 +390,8 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>local</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/postgres?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_COLLECTION_DB</dbScheme>
-          <dbUser>TAR_COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~E5omE1w8+uPhtS88l3rjdsr76/I4FRFp00z/xh9JPNTnFmxIjRDqokMVYEZUTJ4Ua1MT</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_ORDERS_DB</dbScheme>
-          <dbUser>TAR_ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~snMU2RVqmURX9nYd6frHaeeO3iUVcdQLI81el8w8UBht5y184JK8hU45k7EiHBg&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="false">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_COLLECTION_DB</dbScheme>
-          <dbUser>TAR_COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~Bd8x9UUWnagnnxBhA97d4r2W9SQ/bBgkM7bDZAu/i7CWHDNQKRpFr6RANF5IKFsnCMiS</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="false">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_ORDERS_DB</dbScheme>
-          <dbUser>TAR_ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~VuhwP5dsvv8cjp+GWEXX0/OY7J5xTrHYc5Z7ejIcJEVecC70E9ofmkxKrdwYOL8&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_COLUMN_NAME" luName="Orders">
-          <Value>contract_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Orders">
-          <Value>orders</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Collection">
-          <Value>customer_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Collection">
-          <Value>collection</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
           <Value>10</Value>
           <Comment></Comment>
@@ -844,87 +628,19 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.2</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>None</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="Synthetic">
+    <Environment enabled="false" name="Synthetic">
       <Comments></Comments>
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
@@ -993,79 +709,8 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>local</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/postgres?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>COLLECTION_DB</dbScheme>
-          <dbUser>COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~SvlLOF6ki+N65v6WtcUEj3Gs1bzjtq7i0xMHbgUFKD2vw6q68ejZxMhQLnlyQBU&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>ORDERS_DB</dbScheme>
-          <dbUser>ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~urVyyd9l76lyFzWmQymGcJLkxKTXlzwgxWpRJ/Esvu8GAUCrVWcLD5/A5g&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_COLLECTION_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_ORDERS_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_COLUMN_NAME" luName="Orders">
-          <Value>contract_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Orders">
-          <Value>orders</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Collection">
-          <Value>customer_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Collection">
-          <Value>collection</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
           <Value>10</Value>
           <Comment></Comment>
@@ -1302,84 +947,16 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.2</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>None</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="false" name="AI">
@@ -1451,79 +1028,8 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>local</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/postgres?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>COLLECTION_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>ORDERS_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_COLLECTION_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>TAR_ORDERS_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_COLUMN_NAME" luName="Orders">
-          <Value>contract_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Orders">
-          <Value>orders</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Collection">
-          <Value>customer_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Collection">
-          <Value>collection</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
           <Value>10</Value>
           <Comment></Comment>
@@ -1760,84 +1266,16 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.2</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>None</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
   </EnvironmentsList>
