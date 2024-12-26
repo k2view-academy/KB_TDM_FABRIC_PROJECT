@@ -1,354 +1,143 @@
-{
-    "tags": [
-        "Create"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Check Flag",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "is_first_deploy",
-                            "remark": "A boolean representing if this is the first deploy",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "True",
-                    "dependsOnList": [
-                        "Check Flag"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Equals",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "False",
-                    "dependsOnList": [
-                        "Check Flag"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Insert Data To CRM",
-                    "dependsOnList": [
-                        "True"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "CRM",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "populateDbs"
-                                    },
-                                    {
-                                        "const": "CRM_DB",
-                                        "name": "interface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ],
-                                            "interfaces": [
-                                                "fabric"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "TDM/DEMO/crm.sql.gz",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [
-                        "False"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Insert Data To Billing",
-                    "dependsOnList": [
-                        "Insert Data To CRM"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "BILLING",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "populateDbs"
-                                    },
-                                    {
-                                        "const": "BILLING_DB",
-                                        "name": "interface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ],
-                                            "interfaces": [
-                                                "fabric"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "TDM/DEMO/billing.sql.gz",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Stage 1"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Insert Data To Collection",
-                    "dependsOnList": [
-                        "Insert Data To Billing"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "COLLECTION",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "populateDbs"
-                                    },
-                                    {
-                                        "const": "COLLECTION_DB",
-                                        "name": "interface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ],
-                                            "interfaces": [
-                                                "fabric"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "TDM/DEMO/collection.sql.gz",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [
-                        "Stage 2"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Insert Data To Orders",
-                    "dependsOnList": [
-                        "Insert Data To Collection"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "ORDERS",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "populateDbs"
-                                    },
-                                    {
-                                        "const": "ORDERS_DB",
-                                        "name": "interface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
-                                            ],
-                                            "interfaces": [
-                                                "fabric"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "TDM/DEMO/orders.sql.gz",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [
-                        "Stage 3"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "is_first_deploy",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Equals",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "is_first_deploy"
-            },
-            "rightPort": {
-                "actor": "is_first_deploy",
-                "name": "value"
-            }
-        }
-    ]
-}
+tags: Create
+stages:
+  Check Flag:
+    actors:
+      is_first_deploy:
+        parent: Const
+        remark: A boolean representing if this is the first deploy
+        in:
+          value:
+            const: null
+            external: is_first_deploy
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+  'True':
+    dependsOn: Check Flag
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: is_first_deploy/value
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+    split: '--------------------'
+  'False':
+    else: true
+    transactional: false
+    dependsOn: Check Flag
+  Insert Data To CRM:
+    dependsOn: 'True'
+    actors:
+      CRM:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: populateDbs
+          interface:
+            const: CRM_DB
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          path:
+            const: TDM/DEMO/crm.sql.gz
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 1:
+    transactional: false
+    dependsOn: 'False'
+  Insert Data To Billing:
+    dependsOn: Insert Data To CRM
+    actors:
+      BILLING:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: populateDbs
+          interface:
+            const: BILLING_DB
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          path:
+            const: TDM/DEMO/billing.sql.gz
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 2:
+    transactional: false
+    dependsOn: Stage 1
+  Insert Data To Collection:
+    dependsOn: Insert Data To Billing
+    actors:
+      COLLECTION:
+        parent: InnerFlow
+        disabled: true
+        in:
+          flowName:
+            const: populateDbs
+          interface:
+            const: COLLECTION_DB
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          path:
+            const: TDM/DEMO/collection.sql.gz
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 3:
+    transactional: false
+    dependsOn: Stage 2
+  Insert Data To Orders:
+    dependsOn: Insert Data To Collection
+    actors:
+      ORDERS:
+        parent: InnerFlow
+        disabled: true
+        in:
+          flowName:
+            const: populateDbs
+          interface:
+            const: ORDERS_DB
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          path:
+            const: TDM/DEMO/orders.sql.gz
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 4:
+    transactional: false
+    dependsOn: Stage 3
