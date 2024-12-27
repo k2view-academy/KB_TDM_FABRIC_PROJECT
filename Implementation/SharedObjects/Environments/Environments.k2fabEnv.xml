@@ -321,7 +321,7 @@
       <GenericInterfacesList>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="Devolpment">
+    <Environment enabled="true" name="Development">
       <Comments></Comments>
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
