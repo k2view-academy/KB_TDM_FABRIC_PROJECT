@@ -98,6 +98,30 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "remark": "Enter your first name to be included in the message printed to the log upon completion of the post-execution process.\n",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -116,7 +140,7 @@
                                 "inputs": [
                                     {
                                         "name": "message",
-                                        "const": "The task execution ended. Task ID: ${1}, task execution id: ${0}, task execution status: ${2}, \r\nnumber of processed entities: ${3}, \r\nnumber of successful entities: ${4},\r\nnumber of failed entities: ${5}"
+                                        "const": "The post-execution process has been successfully completed.\r\n\r\nTask Details:\r\n\r\nTask ID: ${1}\r\nTask Execution ID: ${0}\r\nTask Execution Status: ${2}\r\nProcessed Entities: ${3}\r\nSuccessful Entities: ${4}\r\nFailed Entities: ${5}\r\n\r\nThank you, ${6}, for overseeing this process."
                                     },
                                     {
                                         "name": "level",
@@ -231,6 +255,27 @@
                 "num_of_failed_entities"
             ],
             "arrayPosition": 5
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "arrayPosition": 6
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "firstName"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            }
         }
     ]
 }
