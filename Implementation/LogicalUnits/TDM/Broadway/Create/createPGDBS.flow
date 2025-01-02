@@ -1,305 +1,99 @@
-{
-    "tags": [
-        "Create"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Check Flag",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "is_first_deploy",
-                            "remark": "A boolean representing if this is the first deploy",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "True",
-                    "dependsOnList": [
-                        "Check Flag"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Equals",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "False",
-                    "dependsOnList": [
-                        "Check Flag"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create DBS & Roles",
-                    "dependsOnList": [
-                        "True"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "createRolesAndDbs",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createRolesAndDbs"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [
-                        "False"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create SRC Schema",
-                    "dependsOnList": [
-                        "Create DBS & Roles"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "createSRCDbs",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createSRCDbs"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Stage 1"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create TAR Schema",
-                    "dependsOnList": [
-                        "Create SRC Schema"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "createTARDbs",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createTARDbs"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [
-                        "Stage 2"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create Fabric Roles",
-                    "dependsOnList": [
-                        "Create TAR Schema"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "createFabricRolesWithPermissions",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createFabricRolesWithPermissions"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [
-                        "Stage 3"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 8",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 9",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "is_first_deploy",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Equals",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "is_first_deploy"
-            },
-            "rightPort": {
-                "actor": "is_first_deploy",
-                "name": "value"
-            }
-        }
-    ]
-}
+tags: Create
+stages:
+  Check Flag:
+    actors:
+      is_first_deploy:
+        parent: Const
+        remark: A boolean representing if this is the first deploy
+        in:
+          value:
+            const: null
+            external: is_first_deploy
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+  'True':
+    dependsOn: Check Flag
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: is_first_deploy/value
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+    split: '--------------------'
+  'False':
+    else: true
+    transactional: false
+    dependsOn: Check Flag
+  Create DBS & Roles:
+    dependsOn: 'True'
+    actors:
+      createRolesAndDbs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createRolesAndDbs
+    split: '--------------------'
+  Stage 1:
+    transactional: false
+    dependsOn: 'False'
+  Create SRC Schema:
+    dependsOn: Create DBS & Roles
+    actors:
+      createSRCDbs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createSRCDbs
+      populatePGDBS1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: populatePGDBS
+          is_first_deploy:
+            schema: boolean
+            mandatory: false
+    split: '--------------------'
+  Stage 2:
+    transactional: false
+    dependsOn: Stage 1
+  Create TAR Schema:
+    dependsOn: Create SRC Schema
+    actors:
+      createTARDbs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createTARDbs
+    split: '--------------------'
+  Stage 3:
+    transactional: false
+    dependsOn: Stage 2
+  Create Fabric Roles:
+    dependsOn: Create TAR Schema
+    actors:
+      createFabricRolesWithPermissions:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFabricRolesWithPermissions
+    split: '--------------------'
+  Stage 5:
+    transactional: false
+    dependsOn: Stage 3
+  Stage 4:
+    transactional: false
+  Stage 6:
+    transactional: false
+  Stage 7:
+    transactional: false
+  Stage 8:
+    transactional: false
+  Stage 9:
+    transactional: false
