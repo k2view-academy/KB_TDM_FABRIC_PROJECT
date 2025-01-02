@@ -57,6 +57,7 @@ stages:
           flowName:
             const: populatePGDBS
           is_first_deploy:
+            const: true
             schema: boolean
             mandatory: false
     split: '--------------------'
