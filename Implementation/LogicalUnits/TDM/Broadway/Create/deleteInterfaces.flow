@@ -18,3 +18,12 @@ stages:
             const: file:///
           path:
             const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Interfaces/Databases/BILLING_DB.k2dbConn.xml
+  Remove TAR_BILLING_DB:
+    actors:
+      rm3:
+        parent: rm
+        in:
+          interface:
+            const: file:///
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Interfaces/Databases/TAR_BILLING_DB.k2dbConn.xml

@@ -8,10 +8,18 @@ stages:
           interface:
             const: CRM_DB
           sql:
-            const: select * from customer
+            const: select * from public.customer
         out:
           result:
             schema: '#ref'
+      Add Column Email:
+        parent: DbCommand
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: "ALTER TABLE public.customer \r\nADD COLUMN IF NOT EXISTS email\
+              \ TEXT;\r\n"
   Loop on each customer:
     actors:
       Names:
