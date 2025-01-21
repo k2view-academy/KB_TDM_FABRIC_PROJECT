@@ -20,7 +20,7 @@
                               
                     <dbUser>BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:E2RO4hup/vbH9hB3mL/T8NUZkr+yhZWc2ZKk3A6rvYerwcdss+jHXeJ/3kY=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:ibxEfcbIkA64eFAri5lVFC9Nx9tJbAngv5wAPI/fSaSy2gLLK/OJm7M6h3w=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/BILLING_DB?stringtype=unspecified</connString>
                               
@@ -42,7 +42,7 @@
                               
                     <dbUser>CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:Gx5rcEldrz+OSC9od7mJwdrcOiZUEhMLaFwH6Pvj3bVOxB+AOiZr9A==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:mvjRJIfAlIBQGloZDlL1tMqsivNJf6S2XHjdhWM0lYvI2ngnxU3XTw==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
                               
@@ -64,7 +64,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:a+sguo4Ho/TxZm7MTf6sINzVj+EQOJmkYcCEDkzpPyk3+zMjaqRA5g==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:vpjWNS9O+0SGM+1WctOv0dKcQOmQ1AEfjUfqy8fFZ8RjiMAR08x3Cg==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -109,7 +109,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:fE7hVQXP4jpqBGY9f47KcbtRaNAAgI2NJWMZ325bOq+OCiw=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:bHX9Q2Vig3FKvNND8yhxIFGY6G2b+NoOYR14nZmqGEx6Amw=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -620,7 +620,7 @@
                 
         </Environment>
             
-        <Environment enabled="true" name="Devolpment">
+        <Environment enabled="true" name="Development">
                   
             <Comments/>
                   
@@ -636,7 +636,7 @@
                               
                     <dbUser>TAR_BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:PtZumFD93asQYHYPMUU+t6daYdQxL77FpdpUp8yHzN4jlmuRmzYWqpWBgJPIMif/</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:emtBG63LwBgu9oed+YIkQT8KHdXHfec5DLA70dlNuSvY117L6Oiaidd6AAzexP+c</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
                               
@@ -658,7 +658,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:pVcqfKzsDXAXRvF0whN0Mo9cywVgSglniPldN1tBaWqS/GJY1xby3E5noO0=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:byZ1gK2fvGrxhHpCWEqUO0UincbXfpU6lbaDcDPN4mRPf4N6wjv43Z77QGM=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -680,7 +680,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:rd3XkgE/NBzR7m1iKfr+ix12mBBMcfmtvCutZvoL3nl1rT4D7KnktQ==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:KP1Bg34T7GT/qI5u5QlORe1zsYreSxxxPFGWk4czpCsv1UC9yikoxg==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -703,7 +703,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:T3srv780lCW6iATsrFP4p34TZ7Dx5AQdeDrJqXpRhoT8slWKieUKJNrpUH4=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:+SLpUPhXLhiA19fj/Y6yPz9m08+XL+kX7TmHlN+Ci1Y+W5s1C1lUaAUl4wc=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -725,7 +725,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:iTzij5DNyAQeo0DDg5wHc2zw0Wr2ckwHSVXXjQU14HhjU3M=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:aWZTM+ox3JVuBGOa0HSr+FYi+4xVzxusCTSgx8ososgJbTQ=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -1253,7 +1253,7 @@
                               
                     <dbUser>BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:cMpq3i+WzNzZU9sjThzKQwrJK7A+Knuq/glqSJrpGAUuXCEZSv4Gtj/2w1A=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:Xg2TOkVjw4BRE1BVZYlrrvwDpkjQvO3ulfdj8lR9GnuCHIOQqLp3sAef0tY=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/BILLING_DB?stringtype=unspecified</connString>
                               
@@ -1275,7 +1275,7 @@
                               
                     <dbUser>CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:bGinQdCThCgDqjv+QlL7EPFSBmNdHaxoQuMJvT8vXcOldE1tL4eqgw==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:9726TVnIPmjg6coD9xswkGfWu3WiMh/b/HYhx83wXLMCniE1CQTwTA==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
                               
@@ -1297,7 +1297,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:9pmA42myzyiz9Y7Mu9x2PfFmOHOLqruvHmeWWQe1CFU1QrarZ9ynhw==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:T9FraXZgg7KGdbcmcynrtSypR51fmrl/p17VBaPRWBBsvpDG0iE8oQ==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -1319,7 +1319,7 @@
                               
                     <dbUser>TAR_BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:/iSlhJMXv51l7wvu1vn/78xtvDVJ01j4Q7RV+z6Z5rwo9jh0RJnLLJbBBk6W5AJa</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:WcPxnbRFc5SsalaEsjlVr0hv03GEFHdv0Fs0jSGPvQDu0fszYavumohxCCFTdooF</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
                               
@@ -1341,7 +1341,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:9EwnEdURa6xklFp0h/SnZgL0MFe1YSO25HaNYd/wgKFac6SAT4gMaysKJxs=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:eMaQzfUtj5yA9jb9jEMTpf9TGdK0vUPT74940jv9ixb8LugCUJzwle1eHcM=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -1363,7 +1363,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlAffGFU=:pBeC9uSyaiM2AaJS1SYs5HADRX8fyWdnTOPngWjuGystcjo=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABlIimrdY=:FAc6Qswwq8yEXPERrtooKuKxRGQzhbsOpYn8lhts59W+QlY=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               

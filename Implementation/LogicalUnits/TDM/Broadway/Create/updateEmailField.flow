@@ -1,0 +1,97 @@
+tags: Create
+stages:
+  Get Customers:
+    actors:
+      DbCommand:
+        parent: DbCommand
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: select * from customer
+        out:
+          result:
+            schema: '#ref'
+  Loop on each customer:
+    actors:
+      Names:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: DbCommand/result
+              iterate: Iterate
+            schema: object
+        out:
+          value:
+            schema: '#ref'
+  Generate email:
+    actors:
+      RandomEmail:
+        parent: RandomEmail
+        in:
+          firstName:
+            link: Names/value/first_name
+          lastName:
+            link: Names/value/last_name
+  Load Data:
+    transactional: true
+    actors:
+      DbLoad:
+        parent: DbLoad
+        in:
+          interface:
+            const: CRM_DB
+          command:
+            const: update
+          schema:
+            const: public
+          table:
+            const: customer
+          fields:
+            const:
+            - customer_id
+            - email
+          keys:
+            const:
+            - customer_id
+          dialect:
+            const: postgres
+          email:
+            link: RandomEmail/value
+            schema: string
+            mandatory: false
+          customer_id:
+            link: Names/value/customer_id
+            schema: integer
+            mandatory: false
+schemas:
+  DbCommand.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        ssn:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+  Names.out.value:
+    type: object
+    properties:
+      customer_id:
+        type: integer
+      ssn:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      email: {
+        }

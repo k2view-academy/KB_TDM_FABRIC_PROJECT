@@ -1,0 +1,20 @@
+tags: Create
+stages:
+  remove CRM_DB:
+    actors:
+      rm1:
+        parent: rm
+        in:
+          interface:
+            const: file:///
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Interfaces/Databases/CRM_DB.k2dbConn.xml
+  remove BILLING_DB:
+    actors:
+      rm2:
+        parent: rm
+        in:
+          interface:
+            const: file:///
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Interfaces/Databases/BILLING_DB.k2dbConn.xml

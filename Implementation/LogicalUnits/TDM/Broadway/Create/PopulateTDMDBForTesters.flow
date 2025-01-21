@@ -1,0 +1,80 @@
+tags: Create
+stages:
+  Check first deploy:
+    actors:
+      is_first_deploy:
+        parent: Const
+        remark: A boolean representing if this is the first deploy
+        in:
+          value:
+            const: null
+            external: is_first_deploy
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+  'True':
+    dependsOn: Check first deploy
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: is_first_deploy/value
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+    split: '--------------------'
+  Else:
+    else: true
+    transactional: false
+    dependsOn: Check first deploy
+  Get SQL:
+    dependsOn: 'True'
+    actors:
+      Get  SQL Resource File To insert data to TDM tables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/DEMO/tdm_insert.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+    split: '--------------------'
+  'Do Nothing   ':
+    transactional: false
+    dependsOn: Else
+  Insert:
+    dependsOn: Get SQL
+    actors:
+      Create Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Insert To TDM DB:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To insert data to TDM tables/result
+    split: '--------------------'
+  'Do Nothing    ':
+    transactional: false
+    dependsOn: 'Do Nothing   '
