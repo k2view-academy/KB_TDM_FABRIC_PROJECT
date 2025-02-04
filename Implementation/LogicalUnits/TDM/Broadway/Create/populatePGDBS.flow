@@ -85,59 +85,29 @@ stages:
   Stage 2:
     transactional: false
     dependsOn: Stage 1
-  Insert Data To Collection:
+  'Add Email ':
     dependsOn: Insert Data To Billing
     actors:
-      COLLECTION:
+      addEmailAddressToCRM:
         parent: InnerFlow
-        disabled: true
         in:
           flowName:
-            const: populateDbs
-          interface:
-            const: COLLECTION_DB
-            schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-              - CassandraLoader
-              interfaces:
-              - fabric
-            mandatory: false
-          path:
-            const: TDM/DEMO/collection.sql.gz
-            schema: string
-            mandatory: false
+            const: addEmailAddressToCRM
     split: '--------------------'
   Stage 3:
     transactional: false
     dependsOn: Stage 2
-  Insert Data To Orders:
-    dependsOn: Insert Data To Collection
+  Add Birthday:
+    dependsOn: 'Add Email '
     actors:
-      ORDERS:
+      addBirthdayToCRM:
         parent: InnerFlow
-        disabled: true
         in:
           flowName:
-            const: populateDbs
-          interface:
-            const: ORDERS_DB
-            schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-              - CassandraLoader
-              interfaces:
-              - fabric
-            mandatory: false
-          path:
-            const: TDM/DEMO/orders.sql.gz
-            schema: string
-            mandatory: false
+            const: addBirthdayToCRM
     split: '--------------------'
   Stage 4:
     transactional: false
     dependsOn: Stage 3
+  Stage 5: {
+    }

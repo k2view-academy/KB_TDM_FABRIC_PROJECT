@@ -1,0 +1,97 @@
+tags: Create
+stages:
+  Set Env:
+    actors:
+      Production:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+          value:
+            const: Production
+  Add column to source:
+    actors:
+      Add Column Email:
+        parent: DbCommand
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: Alter Table public.customer Add Column if not exists email Text
+              ;
+  Get Customer Info:
+    actors:
+      Select Customer Data:
+        parent: DbCommand
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: select customer_id , first_name , last_name from public.customer
+        out:
+          result:
+            schema: '#ref'
+  Generate Random Email:
+    actors:
+      RandomEmail:
+        parent: RandomEmail
+        in:
+          firstName:
+            link:
+              path: Select Customer Data/result/first_name
+              iterate: Iterate
+          lastName:
+            link:
+              path: Select Customer Data/result/last_name
+              iterate: Iterate
+  Update Table:
+    last: 1
+    actors:
+      Update Customer Data:
+        parent: DbCommand
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: update public.customer set email=${email_address} where customer_id=${id}
+          email_address:
+            link: RandomEmail/value
+            schema: string
+            mandatory: false
+          id:
+            link:
+              path: Select Customer Data/result/customer_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+  'Set Env ':
+    actors:
+      Development:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+          value:
+            const: Development
+  Add column to target:
+    actors:
+      Add Column Email To Target:
+        parent: DbCommand
+        in:
+          interface:
+            const: TAR_CRM_DB
+          sql:
+            const: Alter Table public.customer Add Column if not exists email Text
+              ;
+schemas:
+  Select Customer Data.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
