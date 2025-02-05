@@ -5,6 +5,17 @@
     <Environment enabled="true" name="Production">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser>CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~LosOMqU6FC+Ww6gS1SgfBO75V4HI1VLVSVs7SwYOtkA7WadbbargpA&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -34,17 +45,6 @@
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>~encs2~Cfg0bRMK1Vn1sWeKvqqLHlrcrt95u2waQmaFs+oU+KbnYk0&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~LosOMqU6FC+Ww6gS1SgfBO75V4HI1VLVSVs7SwYOtkA7WadbbargpA&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -302,6 +302,17 @@
     <Environment enabled="true" name="Development">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~qG13lC5oBhstLopsg4IXj5+V6EZppZft1mz9O/M+8thH2qIaw8iCilFYTV0&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -331,17 +342,6 @@
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>~encs2~t1408UjFDmFarGdJbeilRj2nhcSiUbSl3qquqvxImKzTFto&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~YJCdlTwhvZDbfAI2Y93y9JFx9ontBmRMhSYJJhb04GJ+ysTNShWK4g&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
