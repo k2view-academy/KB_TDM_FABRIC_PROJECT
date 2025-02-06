@@ -79,27 +79,3 @@ stages:
   Stage 5:
     transactional: false
     dependsOn: Stage 3
-  Add Email:
-    transactional: false
-    dependsOn: Create Fabric Roles
-    actors:
-      updateEmailField:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: updateEmailField
-    split: '--------------------'
-  Stage 10:
-    dependsOn: Stage 5
-  Remove Interface:
-    transactional: false
-    dependsOn: Add Email
-    actors:
-      deleteInterfaces:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: deleteInterfaces
-    split: '--------------------'
-  Stage 4:
-    dependsOn: Stage 10

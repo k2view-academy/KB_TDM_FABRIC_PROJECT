@@ -109,5 +109,14 @@ stages:
   Stage 4:
     transactional: false
     dependsOn: Stage 3
-  Stage 5: {
-    }
+  Remove Interface:
+    dependsOn: Add Birthday
+    actors:
+      deleteInterfaces:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: deleteInterfaces
+    split: '--------------------'
+  Stage 6:
+    dependsOn: Stage 4

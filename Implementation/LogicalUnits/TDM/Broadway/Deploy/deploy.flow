@@ -138,6 +138,17 @@ stages:
             external: is_first_deploy
             schema: boolean
             mandatory: false
+  populate postgres Databses:
+    actors:
+      populatePGDBS1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: populatePGDBS
+          is_first_deploy:
+            external: is_first_deploy
+            schema: boolean
+            mandatory: false
   Populate TDMDB:
     actors:
       PopulateTDMDBForTesters1:
