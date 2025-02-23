@@ -60,27 +60,6 @@ stages:
     dependsOn: 'False'
   Insert Data To Billing:
     dependsOn: Insert Data To CRM
-    actors:
-      BILLING:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: populateDbs
-          interface:
-            const: BILLING_DB
-            schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-              - CassandraLoader
-              interfaces:
-              - fabric
-            mandatory: false
-          path:
-            const: TDM/DEMO/billing.sql.gz
-            schema: string
-            mandatory: false
     split: '--------------------'
   Stage 2:
     transactional: false
