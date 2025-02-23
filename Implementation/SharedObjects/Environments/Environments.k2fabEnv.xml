@@ -252,7 +252,7 @@
           <Comment></Comment>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>UAT</Value>
+          <Value>Development</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
@@ -549,7 +549,7 @@
           <Comment></Comment>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>UAT</Value>
+          <Value>Development</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
@@ -632,6 +632,18 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
@@ -835,7 +847,7 @@
           <Comment></Comment>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>UAT</Value>
+          <Value>Development</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
@@ -918,6 +930,18 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
@@ -1121,7 +1145,7 @@
           <Comment></Comment>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>UAT</Value>
+          <Value>Development</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">

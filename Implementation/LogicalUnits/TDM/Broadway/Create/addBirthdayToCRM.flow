@@ -73,7 +73,7 @@ stages:
         parent: DbCommand
         in:
           interface:
-            const: TAR_CRM_DB
+            const: CRM_DB
           sql:
             const: Alter Table public.customer Add Column if not exists birthday Date
               ;
