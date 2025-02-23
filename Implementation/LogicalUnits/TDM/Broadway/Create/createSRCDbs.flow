@@ -16,18 +16,6 @@ stages:
         out:
           result:
             schema: blob
-      Get  SQL Resource File To create BILLING DB Tables:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/DEMO/billing_create.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
   Statements For Source:
     actors:
       Create Error Handler:
@@ -51,11 +39,3 @@ stages:
           sql:
             const: null
             link: Get  SQL Resource File To create CRM DB Tables/result
-      CREATE BILLING DB TABLES:
-        parent: DbCommand
-        in:
-          interface:
-            const: BILLING_DB
-          sql:
-            const: null
-            link: Get  SQL Resource File To create BILLING DB Tables/result

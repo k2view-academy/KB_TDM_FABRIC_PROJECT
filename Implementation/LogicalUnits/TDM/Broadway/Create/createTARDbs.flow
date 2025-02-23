@@ -16,44 +16,6 @@ stages:
         out:
           result:
             schema: blob
-      Get  SQL Resource File To create TAR BILLING DB Tables:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/DEMO/tar_billing_create.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
-      Get  SQL Resource File To create TAR COLLECTION DB Tables:
-        parent: LuFunction
-        disabled: true
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/DEMO/tar_collection_create.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
-      Get  SQL Resource File To create TAR ORDERS DB Tables:
-        parent: LuFunction
-        disabled: true
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/DEMO/tar_orders_create.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
   Statements For Target:
     actors:
       Create Error Handler__1:
@@ -77,29 +39,3 @@ stages:
           sql:
             const: null
             link: Get  SQL Resource File To create TAR CRM DB Tables/result
-      CREATE TAR BILLING DB TABLES:
-        parent: DbCommand
-        in:
-          interface:
-            const: TAR_BILLING_DB
-          sql:
-            const: null
-            link: Get  SQL Resource File To create TAR BILLING DB Tables/result
-      CREATE TAR COLLECTION DB TABLES:
-        parent: DbCommand
-        disabled: true
-        in:
-          interface:
-            const: TAR_COLLECTION_DB
-          sql:
-            const: null
-            link: Get  SQL Resource File To create TAR COLLECTION DB Tables/result
-      CREATE TAR ORDERS DB TABLES:
-        parent: DbCommand
-        disabled: true
-        in:
-          interface:
-            const: TAR_ORDERS_DB
-          sql:
-            const: null
-            link: Get  SQL Resource File To create TAR ORDERS DB Tables/result

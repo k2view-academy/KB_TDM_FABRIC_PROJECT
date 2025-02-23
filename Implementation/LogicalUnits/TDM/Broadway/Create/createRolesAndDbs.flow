@@ -48,18 +48,6 @@ stages:
         out:
           result:
             schema: blob
-      Get  SQL Resource File To Create BILLING DB Tables and Functions:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/DEMO/dbs.sql
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: blob
   Execute Create Sql Statements For Roles&Dbs:
     actors:
       DB Error Handler:
@@ -83,15 +71,6 @@ stages:
           sql:
             const: null
             link: Get  SQL Resource File To Create CRM DB Tables and Functions/result
-      Create DBS:
-        parent: DbCommand
-        disabled: true
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: null
-            link: Get  SQL Resource File To Create BILLING DB Tables and Functions/result
   Source:
     actors:
       CRM_DB:
@@ -102,30 +81,6 @@ stages:
           sql:
             const: CREATE DATABASE "CRM_DB" WITH TEMPLATE = template0 ENCODING = 'UTF8'
               CONNECTION LIMIT = -1 OWNER="CRM_USER";
-      COLLECTION_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: "CREATE DATABASE \"COLLECTION_DB\" WITH TEMPLATE = template0 ENCODING\
-              \ = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"COLLECTION_USER\";\r\n"
-      BILLING_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "BILLING_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1 OWNER="BILLING_USER";
-      ORDERS_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "ORDERS_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1 OWNER="ORDERS_USER";
   Target:
     actors:
       TAR_CRM_DB:
@@ -136,31 +91,6 @@ stages:
           sql:
             const: CREATE DATABASE "TAR_CRM_DB" WITH TEMPLATE = template0 ENCODING
               = 'UTF8' CONNECTION LIMIT = -1 OWNER="TAR_CRM_USER";
-      TAR_COLLECTION_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: "CREATE DATABASE \"TAR_COLLECTION_DB\" WITH TEMPLATE = template0\
-              \ ENCODING = 'UTF8' CONNECTION LIMIT = -1 OWNER=\"TAR_COLLECTION_USER\"\
-              ;\r\n"
-      TAR_BILLING_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "TAR_BILLING_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1 OWNER="TAR_BILLING_USER";
-      TAR_ORDERS_DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: POSTGRESQL_ADMIN
-          sql:
-            const: CREATE DATABASE "TAR_ORDERS_DB" WITH TEMPLATE = template0 ENCODING
-              = 'UTF8' CONNECTION LIMIT = -1 OWNER="TAR_ORDERS_USER";
 schemas:
   Check If PostgreSQL Admin Interface  Connection.out.result:
     type: array
