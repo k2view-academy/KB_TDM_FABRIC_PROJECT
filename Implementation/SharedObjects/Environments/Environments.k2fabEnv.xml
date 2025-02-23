@@ -16,18 +16,6 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CSV_Files" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort></dbPort>
-          <dbScheme>/opt/apps/fabric/workspace/project/project-resources</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:relique:csv:/opt/apps/fabric/workspace/project/project-resources?separator&#x3D;,&amp;fileExtension&#x3D;.csv</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>csv</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -309,34 +297,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="LOCAL" enabled="true" version="">
-          <Name>LocalFileSystem</Name>
-          <Properties>
-            <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value></Value>
-            </Property>
-            <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="LOCAL" enabled="true" version="">
-          <Name>LocalFileSystem1</Name>
-          <Properties>
-            <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value></Value>
-            </Property>
-            <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="true" name="Development">
@@ -352,18 +312,6 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CSV_Files" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort></dbPort>
-          <dbScheme>/opt/apps/fabric/workspace/project/project-resources</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:relique:csv:/opt/apps/fabric/workspace/project/project-resources?separator&#x3D;,&amp;fileExtension&#x3D;.csv</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>csv</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
@@ -646,34 +594,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="LOCAL" enabled="true" version="">
-          <Name>LocalFileSystem</Name>
-          <Properties>
-            <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value></Value>
-            </Property>
-            <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="LOCAL" enabled="true" version="">
-          <Name>LocalFileSystem1</Name>
-          <Properties>
-            <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value></Value>
-            </Property>
-            <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="false" name="Synthetic">
