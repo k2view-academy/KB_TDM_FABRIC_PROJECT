@@ -67,15 +67,3 @@ stages:
   Stage 3:
     transactional: false
     dependsOn: Stage 2
-  Create Fabric Roles:
-    dependsOn: Create TAR Schema
-    actors:
-      createFabricRolesWithPermissions:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createFabricRolesWithPermissions
-    split: '--------------------'
-  Stage 5:
-    transactional: false
-    dependsOn: Stage 3
