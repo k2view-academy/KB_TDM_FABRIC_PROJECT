@@ -39,7 +39,7 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_SOURCE_ENVIRONMENT_NAME = "Production";
 	@category("TDM")
-	public static String TDM_TAR_ENV_NAME = "UAT";
+	public static String TDM_TAR_ENV_NAME = "Development";
 	@category("TDM")
 	public static String TDM_CLONING_DATA = "false";
 	@category("TDM")
