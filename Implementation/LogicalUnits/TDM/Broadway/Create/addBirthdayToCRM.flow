@@ -58,25 +58,6 @@ stages:
             link: RandomRegexGenerator1/value
             schema: string
             mandatory: false
-  'Set Env  ':
-    actors:
-      Development:
-        parent: FabricSet
-        in:
-          key:
-            const: environment
-          value:
-            const: Development
-  Add column to tagret:
-    actors:
-      Add Column Birthday to Target:
-        parent: DbCommand
-        in:
-          interface:
-            const: CRM_DB
-          sql:
-            const: Alter Table public.customer Add Column if not exists birthday Date
-              ;
 schemas:
   Select Customer Data.out.result:
     type: array

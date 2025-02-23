@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS public.customer (
     ssn character varying(20),
     first_name character varying(200),
     last_name character varying(200),
+    birthday Date,
+    email Text,
 	CONSTRAINT customer_pk PRIMARY KEY (customer_id)
 );
 ALTER TABLE public.customer OWNER TO "TAR_CRM_USER";

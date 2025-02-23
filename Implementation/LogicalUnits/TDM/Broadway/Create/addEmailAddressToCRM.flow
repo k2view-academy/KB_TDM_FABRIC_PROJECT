@@ -64,25 +64,6 @@ stages:
               iterate: Iterate
             schema: integer
             mandatory: false
-  'Set Env ':
-    actors:
-      Development:
-        parent: FabricSet
-        in:
-          key:
-            const: environment
-          value:
-            const: Development
-  Add column to target:
-    actors:
-      Add Column Email To Target:
-        parent: DbCommand
-        in:
-          interface:
-            const: TAR_CRM_DB
-          sql:
-            const: Alter Table public.customer Add Column if not exists email Text
-              ;
 schemas:
   Select Customer Data.out.result:
     type: array
