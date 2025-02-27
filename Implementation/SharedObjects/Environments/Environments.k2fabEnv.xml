@@ -39,12 +39,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>dev-cassandra-service</dbHost>
+          <dbHost>cassandra-service</dbHost>
           <dbPort>9042</dbPort>
           <dbScheme />
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>~encs2~PO9GLsoLkslcPxMgWwIFntxjKB+HYxKSERlmcpp/xFmRsNnuoxmepPU=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
@@ -411,12 +411,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>dev-cassandra-service</dbHost>
+          <dbHost>cassandra-service</dbHost>
           <dbPort>9042</dbPort>
           <dbScheme />
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>~encs0~La6/yIuy2ZfeDIfFPSRxkA==</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
@@ -801,12 +801,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>dev-cassandra-service</dbHost>
+          <dbHost>cassandra-service</dbHost>
           <dbPort>9042</dbPort>
           <dbScheme />
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>~encs0~La6/yIuy2ZfeDIfFPSRxkA==</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
