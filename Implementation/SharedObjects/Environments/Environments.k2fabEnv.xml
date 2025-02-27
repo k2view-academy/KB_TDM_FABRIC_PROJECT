@@ -6,34 +6,34 @@
       <Comments />
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>~encs2~eb2ckhtnZhv4ceH5bwxDycO2oTsJOV4Z1nJ9tlop1jcrzeQzTHRPu/Az4T0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>~encs2~ccG3WS96ODu6KkmoFEkR1mhumpUt78iEW8K1KQ03ReAUhGRY27pwzN2kKFdnG+Q=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
           <dbPasswordEncrypted>~encs2~y8ORiz2BA82TRBBlem0VlGet/9/Xl3PZFo8uSsE2t43M5PF5cKXM8A==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -50,23 +50,23 @@
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>ORDERS_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>~encs2~uND/ponEEE3S2/Lj9VAIKd8Lj9RllNUS0Fct9tXPkL0dnAG6hUQBe3i54w==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/ORDERS_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/ORDERS_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
           <dbPasswordEncrypted>~encs2~P+8wWgbUqkANZ6Gi42qjFtAsza1a0rSEKstmDCtbW+/Ttw9cg4mn0g==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -105,12 +105,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>~encs2~5owc8/WDVJeMAxmLk4fHucmlJW+umxFhek5HFOsGyS2+io0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -378,34 +378,34 @@
       <Comments />
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>~encs0~zan02CBXZPD+RaE2/eOQNw==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>~encs0~wlety9qVdCSnEmRRjoIXnQ==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
           <dbPasswordEncrypted>~encs0~XO/VnBrwdcsZsEuLuF3PKw==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -422,12 +422,12 @@
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>ORDERS_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>~encs0~mm6ts+MpH7gWMAt4HCi6bA==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/ORDERS_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/ORDERS_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -488,12 +488,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>~encs0~Cf6Q3hZ6YFKxBiYMOOB0Tg==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -768,34 +768,34 @@
       <Comments />
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
           <dbUser>TAR_BILLING_USER</dbUser>
           <dbPasswordEncrypted>~encs0~oP9jOzE7rOHV/J3NZ8PdMxW2dW0zjXP12dQdzt8WnzQ=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_COLLECTION_DB</dbScheme>
           <dbUser>TAR_COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>~encs0~23BCg7ZCdomtEXS3YinzJsKCv8fNAbuKIJjiGe++WC8=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/TAR_COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
           <dbUser>TAR_CRM_USER</dbUser>
           <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -812,12 +812,12 @@
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_ORDERS_DB</dbScheme>
           <dbUser>TAR_ORDERS_USER</dbUser>
           <dbPasswordEncrypted>~encs0~t7pMZ/E1oEUI1qMEKmRzWQ==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -878,12 +878,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>~encs0~Cf6Q3hZ6YFKxBiYMOOB0Tg==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
