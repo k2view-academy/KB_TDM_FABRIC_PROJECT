@@ -112,15 +112,6 @@ stages:
             mandatory: false
   MDB EXPORT Schema:
     actors:
-      createMDBExportSchema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createMDBExportSchema
-          luName:
-            link: luName/value
-            schema: string
-            mandatory: false
       Getk2SystemSchemaName:
         parent: InnerFlow
         in:

@@ -1,6 +1,3 @@
--- Update TDM version
-update ${@schema}.tdm_general_parameters set param_value = '8.0' where param_name = 'TDM_VERSION' ;
-
 -- Change the default retention period to 'Do Not Delete'
 UPDATE ${@schema}.tdm_general_parameters
 SET param_value = '{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"retentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
@@ -57,3 +54,5 @@ CREATE SEQUENCE IF NOT EXISTS ${@schema}.instance_id_seq
     MAXVALUE 9223372036854775807
     CACHE 50;
 	
+-- Update TDM version
+update ${@schema}.tdm_general_parameters set param_value = '8.0' where param_name = 'TDM_VERSION' ;

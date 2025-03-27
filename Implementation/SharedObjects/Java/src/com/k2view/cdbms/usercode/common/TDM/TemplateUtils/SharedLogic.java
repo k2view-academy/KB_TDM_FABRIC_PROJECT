@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_DELETE_TABLES_PREFIX;
@@ -60,7 +61,7 @@ public class SharedLogic {
 		handlebars.registerHelper("getFieldName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
 				//log.info(map.get("TARGET_FIELD_NAME"));
-				return map.get("TARGET_FIELD_NAME");
+				return map.get("TARGET_FIELD_NAME").toUpperCase();
 			}
 		});
 		
@@ -174,23 +175,31 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = Object.class, desc = "")
-	public static Object buildTemplateData(String luName, String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable, String tableIidFieldName, String sequenceName, String flowType) throws Exception {
+	public static Object buildTemplateData(String luName, String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable, String tableIidFieldName, String sequenceName, String flowType, Boolean useFabric) throws Exception {
 		//String luName = getLuType().luName;
 		
 		if (luName == null || Util.isEmpty(luName)) {
 			luName = getLuType().luName;
 		}
-		
-		
+	
+		Set <String> keyFields = new HashSet<>();
+        Map<String, Object> map = new TreeMap<>();
 		List<String> luTableColumns = getLuTableColumns(luName, luTable);
-		Object[] targetTableData = getDbTableColumns(targetDbInterface, targetDbSchema, targetDbTable);
+        
+        if(!useFabric) {
+		    Object[] targetTableData = getDbTableColumns(targetDbInterface, targetDbSchema, targetDbTable);
+            map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
+            keyFields = (HashSet<String>) targetTableData[1];
+        } else {
+            map.put("TARGET_TABLE_COLUMNS", luTableColumns);
+            keyFields = new HashSet<String>(getLuTablePKs(luName, luTable));
+        }
+        
+        luTableColumns.replaceAll(String::toUpperCase);
+
 		String seqIID;
 		String seqName;
 		
-		List <String> keyFields = new ArrayList<>();
-		luTableColumns.replaceAll(String::toUpperCase);
-		
-		Map<String, Object> map = new TreeMap<>();
 		map.put("LU_NAME", luName);
 		map.put("LU_TABLE", luTable);
 		map.put("DELETE_TABLE", TDM_DELETE_TABLES_PREFIX + luTable);
@@ -198,12 +207,13 @@ public class SharedLogic {
 		map.put("TARGET_INTERFACE", targetDbInterface);
 		map.put("TARGET_SCHEMA", targetDbSchema);
 		map.put("TARGET_TABLE", targetDbTable);
-		map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
-        keyFields = (ArrayList<String>) targetTableData[1];
-        if (keyFields == null || keyFields.size() == 0 || "LOAD".equalsIgnoreCase(flowType)) {
+		
+        if (keyFields == null || keyFields.size() == 0 || !"LOAD".equalsIgnoreCase(flowType)) {
             Set<Map<String,String>> argsFields = getPopArgumentListForDelete(luName, luTable);
+            
             for (Map<String,String> rec : argsFields) {
                 if(!keyFields.contains(rec.get("FIELD_NAME"))){
+                    
                     keyFields.add(rec.get("FIELD_NAME"));
                 }
             }
@@ -226,7 +236,7 @@ public class SharedLogic {
 			seqIID = "NO_ID";
 			seqName = "";
 		} else {
-			seqIID = tableIidFieldName;
+			seqIID = tableIidFieldName.toUpperCase();
 			seqName = sequenceName;
 		}
 		map.put("MAIN_TABLE_SEQ_ID", seqIID);
@@ -267,12 +277,32 @@ public class SharedLogic {
 			return al;
 			
 		al = new ArrayList<>(luType.ludbObjects.get(table).getLudbObjectColumns().keySet());
+
 		al.replaceAll(String::toLowerCase);
 		return al;
 	}
 
+    @out(name = "res", type = List.class, desc = "")
+	public static Set<String> getLuTablePKs(String luName, String table) throws Exception {
+		Set<String> pkList = new HashSet<>();
+		LUType luType = null;
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
+		if(luType == null || !luType.ludbObjects.containsKey(table)) 
+			return pkList;
+		
+        String pkString = luType.ludbObjects.get(table).getPrimaryKeyString().toLowerCase();
+        pkList = Arrays.stream(pkString.split(",")).collect(Collectors.toSet());
+        		
+		return pkList;
+	}
+
 	@out(name = "res", type = List.class, desc = "")
 	public static List<String> getLuTables(String luName) throws Exception {
+
 		List<String> al = new ArrayList<>();
 		LUType luType = null;
 		if (luName == null || Util.isEmpty(luName)) {
@@ -306,7 +336,7 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = List.class, desc = "")
-	public static List<Map<String,String>> getTablesForGenerate(String luName, String sourceInterface, String sourceSchema) throws Exception {
+	public static List<Map<String,String>> getTablesForGenerate(String luName, String sourceInterface, String sourceSchema, Boolean useFabric) throws Exception {
 		List<Map<String,String>> result = new ArrayList<>();
 		LUType luType = null;
 		if (luName == null || Util.isEmpty(luName)) {
@@ -315,7 +345,13 @@ public class SharedLogic {
 			luType = LUType.getTypeByName(luName);
 		}
         
-        List<String> sourceTables = getDbTables(sourceInterface, sourceSchema);
+        List<String> sourceTables = new ArrayList<>();
+        if (!useFabric) {
+            sourceTables = getDbTables(sourceInterface, sourceSchema);
+        } else {
+            sourceTables = getLuTables(luName);
+        }
+        final List<String> tableList = sourceTables;
 
 		if(luType == null)
 			return result;
@@ -332,7 +368,7 @@ public class SharedLogic {
 			}
 
 			if (checkTable != null && checkTable.firstValue() != null) {
-                for (String sourceTable : sourceTables) {
+                for (String sourceTable : tableList) {
                     if (sourceTable.equalsIgnoreCase(s)) {
                         map.put("luTable", s);
                         map.put("sourceTable", sourceTable);
@@ -352,6 +388,7 @@ public class SharedLogic {
 
 	@out(name = "res", type = Object.class, desc = "")
 	public static Object getLuTablesMappedByOrder(String luName, Boolean reverseInd) throws Exception {
+		Map<String, Object> result = new HashMap<>();
 		List<List<String>> buckets = new ArrayList<>();
 		LUType luType = null;
 		if (luName == null || Util.isEmpty(luName)) {
@@ -408,8 +445,9 @@ public class SharedLogic {
 		if (reverseInd) {
 			Collections.reverse(buckets);
 		}
-		
-		return buckets;
+		result.put("Tables", buckets);
+		result.put("Size", buckets.size() -1);
+		return result;
 		//return Json.get().toJson(buckets);
 	}
 
@@ -469,7 +507,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			}
 						
 			rs1 = md.getColumns(catalog, schema, targetTableName, null);
-			List<String> al = new ArrayList<>();
+			Set<String> al = new HashSet<>();
 			while (rs1.next()) {
 				al.add(rs1.getString("COLUMN_NAME"));
 			}
@@ -477,7 +515,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		
 			// get PKs
 			rs2 = md.getPrimaryKeys(catalog, schema, targetTableName);
-			List<String> al2 = new ArrayList<>();
+			Set<String> al2 = new HashSet<>();
 			while (rs2.next()) {
 				al2.add(rs2.getString("COLUMN_NAME"));
 			}
@@ -765,7 +803,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		    	}
 			}
         }
-
+        
 		return result;
 	}
 
@@ -786,43 +824,47 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	}
 
 	@out(name = "pks", type = List.class, desc = "")
-	public static List<String> getDbTablePKs(String dbInterfaceName, String catalogSchema, String table) throws Exception {
-		ResultSet rs = null;
-		ResultSet rs1 = null;
-		String[] types = {"TABLE"};
-		String targetTableName = table;
-		
-		try {
-			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-			
-			String[] dbSchemaType = getDBCollection(md, catalogSchema);
-			String catalog = dbSchemaType[0];
-			String schema = dbSchemaType[1];
-			//log.info("getDbTableColumns - Catalog: " + catalog + ", Schema: " + schema);
-			rs = md.getTables(catalog, schema, "%", types);
-			
-			while (rs.next()) {
-				if (table.equalsIgnoreCase(rs.getString(3))) {
-					targetTableName = rs.getString(3);
-					//log.info("getDbTableColumns - tableName: " + targetTableName);
-					break;
-				}
-			}
+	public static Set<String> getDbTablePKs(String dbInterfaceName, String catalogSchema, String table, String luName, Boolean useFabric) throws Exception {
+        if (!useFabric) {
+            ResultSet rs = null;
+            ResultSet rs1 = null;
+            String[] types = {"TABLE"};
+            String targetTableName = table;
+            
+            try {
+                DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
+                
+                String[] dbSchemaType = getDBCollection(md, catalogSchema);
+                String catalog = dbSchemaType[0];
+                String schema = dbSchemaType[1];
+                //log.info("getDbTableColumns - Catalog: " + catalog + ", Schema: " + schema);
+                rs = md.getTables(catalog, schema, "%", types);
+                
+                while (rs.next()) {
+                    if (table.equalsIgnoreCase(rs.getString(3))) {
+                        targetTableName = rs.getString(3);
+                        //log.info("getDbTableColumns - tableName: " + targetTableName);
+                        break;
+                    }
+                }
 
-			// get PKs
-			rs1 = md.getPrimaryKeys(catalog, schema, targetTableName);
-			List<String> pkList = new ArrayList<>();
-			while (rs1.next()) {
-				pkList.add(rs1.getString("COLUMN_NAME"));
-			}
+                // get PKs
+                rs1 = md.getPrimaryKeys(catalog, schema, targetTableName);
+                Set<String> pkList = new HashSet<>();
+                while (rs1.next()) {
+                    pkList.add(rs1.getString("COLUMN_NAME"));
+                }
 
-			return pkList;
-		} finally {
-			if (rs != null)
-				rs.close();
-			if (rs1 != null)
-				rs1.close();
-		}
+                return pkList;
+            } finally {
+                if (rs != null)
+                    rs.close();
+                if (rs1 != null)
+                    rs1.close();
+            } 
+        } else {
+            return getLuTablePKs(luName, table);
+        }
 	}
 
 

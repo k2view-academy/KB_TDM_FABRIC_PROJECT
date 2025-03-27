@@ -105,6 +105,7 @@ stages:
                 columnId;
           iid:
             link: Parse Table XML/object/TableObject/_value/EntityId/_value
+            external: ROOT_TABLE_KEY
             schema: string
             mandatory: false
           objIn:
@@ -137,6 +138,7 @@ stages:
             mandatory: false
           iid:
             link: Parse Table XML/object/TableObject/_value/EntityId/_value
+            external: ROOT_TABLE_KEY
             schema: string
             mandatory: false
           population:

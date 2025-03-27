@@ -104,7 +104,7 @@ public class SharedGlobals {
 	public static String LOAD_MASKING_FLAG = "false";
 
 	@category("TDM")
-	public static String TDM_SUMMARY_REPORT_LIMIT = "10000";
+	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
 
 	@category("TDM")
 	public static final String TDM_DELETE_TABLES_PREFIX = "TAR_";
@@ -138,10 +138,6 @@ public class SharedGlobals {
 
 	@category("TDM")
 	public static final String BUILD_TDMDB = "true";
-	@category("TDM_DEMO")
-	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
-	@category("TDM_DEMO")
-	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 
     @category("AI")
 	public static final String AI_DB_INTERFACE = "AI_DB";
@@ -159,5 +155,14 @@ public class SharedGlobals {
 
     @category("TDM")
 	public static String TDM_DELETE_ONLY_TASK = "false";
+
+    @category("TDM")
+	public static String TDM_SUPPRESS_TEST_CONNECTION = "false";
+
+    @category("TDM")
+	public static final String POP_FULL_LU_HIERARCHY_IN_TDM_LU = "true";
+	
+	@category("TDM")
+	public static String UPDATE_MDB_EXPORTED_SCHEMA = "false";
 
 }

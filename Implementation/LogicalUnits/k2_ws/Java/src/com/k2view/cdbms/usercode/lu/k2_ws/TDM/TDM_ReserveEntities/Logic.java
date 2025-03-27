@@ -182,14 +182,16 @@ public class Logic extends WebServiceUserCode {
 		String sqlOwnerEnvList = "";
 		String sqlTesterEnvList = "";
 		
-		String sql = "SELECT e.environment_name, t.task_title, re.task_execution_id, be.be_name, " +
+		String sql = "SELECT e.environment_name, COALESCE(t.task_title, 'Cleaned Inactive Task') AS task_title, re.task_execution_id, be.be_name, " +
 					"re.entity_id as target_entity_id, re.reserve_owner, re.start_datetime as reserve_date, " +
 					"re.end_datetime as expiration_date,  reserve_owner, reserve_consumers, reserve_notes, reserve_tags, ";
 		 
-		String sqlFromWhere = "FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES re, " + TDMDB_SCHEMA + ".TASKS t, " + 
-					TDMDB_SCHEMA + ".ENVIRONMENTS e, " + TDMDB_SCHEMA + ".BUSINESS_ENTITIES be " +
-					"WHERE re.task_id = t.task_id AND t.environment_id = e.environment_id AND e.environment_status = 'Active' " +
-					"AND re.be_id = be.be_id and (re.end_datetime is null or re.end_datetime >= timezone('UTC', now())) ";
+		String sqlFromWhere = "FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES re " +  
+                      "LEFT OUTER JOIN " + TDMDB_SCHEMA + ".TASKS t ON re.task_id = t.task_id " +  
+                      "INNER JOIN " + TDMDB_SCHEMA + ".ENVIRONMENTS e ON re.env_id = e.environment_id " +  
+                      "INNER JOIN " + TDMDB_SCHEMA + ".BUSINESS_ENTITIES be ON re.be_id = be.be_id " +  
+                      "WHERE e.environment_status = 'Active' " +  
+                      "AND (re.end_datetime IS NULL OR re.end_datetime >= timezone('UTC', now())) ";
 		
 		if(entityId != null && !"".equals(entityId)) {
 			sqlFromWhere += " and entity_id = '" + entityId + "' ";
@@ -253,14 +255,14 @@ public class Logic extends WebServiceUserCode {
 		
 		if (ownerEnvs.size() > 0) {
 			envOwnerFound = true;
-			sqlOwnerEnvList = " AND t.environment_id in (" + String.join(",", ownerEnvs) + ")";
+			sqlOwnerEnvList = " AND e.environment_id in (" + String.join(",", ownerEnvs) + ")";
 			sqlAllowEdit = " true as allow_edit ";
 		} 
 		
 		if (testerEnvs.size() > 0) {
 			testerEnvs.removeAll(ownerEnvs);
 			envTesterFound = true;
-			sqlTesterEnvList = " AND t.environment_id in (" + String.join(",", testerEnvs) + ")";
+			sqlTesterEnvList = " AND e.environment_id in (" + String.join(",", testerEnvs) + ")";
 			String userName = sessionUser().name();
 			sqlAllowEdit = "CASE WHEN re.reserve_owner = '" + userName + "' THEN true ELSE FALSE END AS allow_edit ";
 		} 
@@ -923,14 +925,14 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsValidateReservedEntities(@param(required=true) String beID, @param(required=true) String envID, @param(required=true) List<Map<String,String>> listOfEntities) throws Exception {
+	public static Object wsValidateReservedEntities(@param(required=true) String beID, @param(required=true) String envID, @param(required=true) List<Map<String,String>> listOfEntities, String filterout_reserved) throws Exception {
 		ArrayList<String> entitiesArray = new ArrayList<>();
 		
 		for (Map<String, String> entityInfo : listOfEntities) {
 			entitiesArray.add(entityInfo.get("target_entity_id"));
 		}
 		try {
-			Map<String, Object> result = fnValidateReservedEntities(beID, envID, entitiesArray);
+			Map<String, Object> result = fnValidateReservedEntities(beID, envID, entitiesArray,filterout_reserved);
 			List<Map<String, Object>> list = (List<Map<String, Object>>) result.get("listOfEntities");
 			String message = (String)result.get("message");
 			

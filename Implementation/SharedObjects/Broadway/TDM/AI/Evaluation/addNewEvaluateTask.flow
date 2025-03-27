@@ -1,0 +1,114 @@
+tags: TDM,TDMAI MLGenerate
+stages:
+  Get Globals:
+    actors:
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+  Inputs:
+    actors:
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      Now:
+        parent: Now
+      Training Task Execution ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: trainingTaskId
+        out:
+          value:
+            schema: string
+      Get k2system Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+      Generation Task Execution ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: TDM_TASK_EXE_ID/result
+        out:
+          value:
+            schema: string
+  Params:
+    actors:
+      'Format the current date to load it ':
+        parent: DateFormat
+        in:
+          date:
+            link: Now/date
+      Execution Params:
+        parent: StringFormat
+        in:
+          format:
+            const: "{\r\n   \"training_task_execution_id\":${training_execution_id},\r\
+              \n   \"generation_task_execution_id\":${generation_execution_id},\r\n\
+              \   \"high_cardinality_column_ratio_threshold\": 0.2,\r\n   \"lr_score_leniency\"\
+              :2,\r\n   \"logical_relations\":{\r\n      \"logical_relations_root_table_sampling\"\
+              :2000,\r\n      \"root_table_n_rows_for_fully_joined_table\":null,\r\
+              \n      \"root_table_n_rows_for_memory_estimation_for_fully_joined_table\"\
+              :20,\r\n      \"ram_safety_factor_for_fully_joined_table\":0.4\r\n \
+              \  },\r\n   \"root_table_sampling_source\":null,\r\n   \"root_table_sampling_synthetic\"\
+              :null,\r\n   \"random_state\":42,\r\n   \"verbose\":true\r\n}"
+          training_execution_id:
+            link: Training Task Execution ID/value
+            schema: string
+            mandatory: false
+          generation_execution_id:
+            link: Generation Task Execution ID/value
+            schema: string
+            mandatory: false
+  'ADD New Task ':
+    actors:
+      'ErrorHandler ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      NewTask:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM1/result
+          sql:
+            const: "INSERT INTO ${@k2systemName}.task_executions(\n\tid,status, execution_params,result\
+              \ ,creation_time, last_update_time,task_type)\n\tVALUES (${task_exe_id},\
+              \ 'NEW',${execution_params}::json,'{}'::json ,${creation_time},NOW(),'EVALUATION')"
+          task_exe_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          creation_time:
+            link: Format the current date to load it /string
+            schema: string
+            mandatory: false
+          execution_params:
+            link: Execution Params/string
+            schema: string
+            mandatory: false
+          k2systemName:
+            link: Get k2system Schema Name/result
+            schema: string
+            mandatory: false

@@ -1,0 +1,548 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          iid:
+            external: iid
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+  Source:
+    actors:
+      Get Sync Source Data Indicator:
+        parent: InnerFlow
+        condition: value
+        in:
+          flowName:
+            const: GetSyncSourceDataIndicator
+        out:
+          value:
+            schema: boolean
+      Get BE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: BE_ID
+      Get root_iid:
+        parent: FabricSetRead
+        in:
+          key:
+            const: root_iid
+      FABRIC_TDM_ROOT:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: select SOURCE_ENV,IID from FABRIC_TDM_ROOT
+        out:
+          result:
+            schema: '#ref'
+      postgres schema:
+        parent: Lowercase
+        in:
+          string:
+            external: schema
+  Check if Schema Already Exported:
+    transactional: true
+    actors:
+      Table Exists:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |2-
+               SELECT EXISTS (
+                      SELECT 1
+                      FROM information_schema.tables
+                      WHERE table_schema = '${@schema}'
+                      AND table_name = 'tdm_be_iids'
+                  ) AS table_exists
+          schema:
+            link: postgres schema/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check For Existing Records:
+    transactional: true
+    dependsOn: Check if Schema Already Exported
+    actors:
+      'true':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link:
+              path: Table Exists/result/table_exists
+              iterate: First
+      tdm_be_iids where be_id <>:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |
+              SELECT *
+              FROM ${@schema}.tdm_be_iids
+              WHERE iid = ${iid} AND be_id <> ${be_id}
+          iid:
+            link: FABRIC_TDM_ROOT/result/IID
+            schema: string
+            mandatory: false
+          be_id:
+            link: Get BE_ID/result
+            schema: string
+            mandatory: false
+          schema:
+            link: postgres schema/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  'false':
+    else: true
+    transactional: false
+    dependsOn: Check if Schema Already Exported
+  'No Records       ':
+    last: 1
+    transactional: false
+    dependsOn: Check For Existing Records
+    actors:
+      'IsNull         ':
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: tdm_be_iids where be_id <>/result
+    split: '--------------------'
+  'Else       ':
+    last: 1
+    else: true
+    transactional: true
+    dependsOn: Check For Existing Records
+    actors:
+      'tdm_be_iids         ':
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          command:
+            const: upsert
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - be_name
+            - root_iid
+          keys:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - root_iid
+          dialect:
+            const: sqlite
+          iid:
+            link:
+              path: tdm_be_iids where be_id <>/result/iid
+              iterate: Iterate
+            schema: string
+          source_env:
+            link:
+              path: tdm_be_iids where be_id <>/result/source_env
+              iterate: Iterate
+            schema: string
+          be_id:
+            link:
+              path: tdm_be_iids where be_id <>/result/be_id
+              iterate: Iterate
+            schema: string
+          be_name:
+            link:
+              path: tdm_be_iids where be_id <>/result/be_name
+              iterate: Iterate
+            schema: string
+          root_iid:
+            link:
+              path: tdm_be_iids where be_id <>/result/root_iid
+              iterate: Iterate
+            schema: string
+    split: '--------------------'
+  Do Nothing:
+    last: 1
+    dependsOn: 'false'
+  Get the BE name:
+    actors:
+      BE_NAME:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: select be_name from ${@TDMDB_SCHEMA}.business_entities where be_id
+              = ?
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+          params:
+            link: Get BE_ID/result
+        out:
+          result:
+            schema: string
+  LU Table:
+    transactional: true
+    actors:
+      tdm_be_iids:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          command:
+            const: upsert
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - be_name
+            - root_iid
+          keys:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - root_iid
+          dialect:
+            const: sqlite
+          iid:
+            link: FABRIC_TDM_ROOT/result/IID
+            schema: string
+          source_env:
+            link: FABRIC_TDM_ROOT/result/SOURCE_ENV
+            schema: string
+          be_id:
+            link: Get BE_ID/result
+            schema: string
+          be_name:
+            link: BE_NAME/result
+            schema: string
+          root_iid:
+            link: Get root_iid/result
+            schema: string
+  Multi Roots:
+    transactional: true
+    actors:
+      Get Other Roots of iid:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select t.root_entity_id , t.root_lu_name ,t.source_env , t.iid
+              from ${@TDMDB_SCHEMA}.task_execution_entities t
+              where t.task_execution_id =${task_execution_id} and t.lu_name=${lu_name} and t.execution_status='completed' and t.id_type='ENTITY'
+              and t.root_entity_id<>${root_iid} and t.iid= ${iid}::TEXT
+          lu_name:
+            external: schema
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+          root_iid:
+            link: Get root_iid/result
+            schema: string
+            mandatory: false
+          task_execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          iid:
+            link: FABRIC_TDM_ROOT/result/IID
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  No Records:
+    last: 1
+    transactional: false
+    dependsOn: Multi Roots
+    actors:
+      'IsNull  ':
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Get Other Roots of iid/result
+    split: '--------------------'
+  Else:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Multi Roots
+    actors:
+      tdm_be_iids multi roots:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          command:
+            const: upsert
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - be_name
+            - root_iid
+          keys:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - root_iid
+          dialect:
+            const: sqlite
+          iid:
+            link:
+              path: Get Other Roots of iid/result/iid
+              iterate: Iterate
+            schema: string
+          source_env:
+            link:
+              path: Get Other Roots of iid/result/source_env
+              iterate: Iterate
+            schema: string
+          be_id:
+            link: Get BE_ID/result
+            schema: string
+          be_name:
+            link: BE_NAME/result
+            schema: string
+          root_iid:
+            link:
+              path: Get Other Roots of iid/result/root_entity_id
+              iterate: Iterate
+            schema: string
+  Check For Other Load Cases:
+    transactional: false
+    actors:
+      Get Lu Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schema
+        out:
+          value:
+            schema: string
+  Select where Lu is Root:
+    transactional: true
+    actors:
+      Be Name and ID where Lu is root:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select p.be_id , b.be_name
+              from ${@TDMDB_SCHEMA}.product_logical_units p inner join ${@TDMDB_SCHEMA}.business_entities b on p.be_id=b.be_id
+              where p.be_id<>${be_id} and p.lu_name=${lu_name} and p.lu_parent_name is null and b.be_status = 'Active'
+          be_id:
+            link: Get BE_ID/result
+            schema: string
+            mandatory: false
+          lu_name:
+            link: Get Lu Name/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Record Doesn't Exists:
+    last: 1
+    transactional: false
+    dependsOn: Select where Lu is Root
+    actors:
+      IsNull:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Be Name and ID where Lu is root/result
+    split: '--------------------'
+  Record Exists:
+    last: 1
+    else: true
+    transactional: true
+    dependsOn: Select where Lu is Root
+    actors:
+      tdm_be_iids root:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          command:
+            const: upsert
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - be_name
+            - root_iid
+          keys:
+            const:
+            - iid
+            - source_env
+            - be_id
+            - root_iid
+          dialect:
+            const: sqlite
+          iid:
+            link: FABRIC_TDM_ROOT/result/IID
+            schema: string
+          source_env:
+            link: FABRIC_TDM_ROOT/result/SOURCE_ENV
+            schema: string
+          be_id:
+            link:
+              path: Be Name and ID where Lu is root/result/be_id
+              iterate: Iterate
+            schema: string
+          be_name:
+            link:
+              path: Be Name and ID where Lu is root/result/be_name
+              iterate: Iterate
+            schema: string
+          root_iid:
+            link: FABRIC_TDM_ROOT/result/IID
+            schema: string
+  End: {
+    }
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        iid:
+          type: string
+  FABRIC_TDM_ROOT.out.result:
+    type: object
+    properties:
+      SOURCE_ENV:
+        type: string
+      IID:
+        type: string
+  Table Exists.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        table_exists:
+          type: boolean
+  tdm_be_iids where be_id <>.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        __iid:
+          type: string
+        iid:
+          type: string
+        source_env:
+          type: string
+        be_id:
+          type: integer
+        root_iid:
+          type: string
+        be_name:
+          type: string
+  Get Other Roots of iid.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        root_entity_id:
+          type: string
+        root_lu_name:
+          type: string
+        source_env:
+          type: string
+        iid:
+          type: string
+  Be Name and ID where Lu is root.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        be_id:
+          type: integer
+        be_name:
+          type: string

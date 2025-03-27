@@ -1,0 +1,287 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Check LU and Envs Deploy:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: checkPreRequisite
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Set Main Table Of LU:
+        parent: FabricSet
+        in:
+          key:
+            const: ROOT_TABLE_NAME
+            default: false
+          value:
+            const: null
+            external: ROOT_TABLE_NAME
+            default: false
+      Set Key OF Main Table:
+        parent: FabricSet
+        in:
+          key:
+            const: ROOT_COLUMN_NAME
+            default: false
+          value:
+            const: null
+            external: ROOT_COLUMN_NAME
+            default: false
+  Stage 2:
+    actors:
+      TDM_LIBRARY folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/TDM_LIBRARY/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      LU folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/${LU_NAME}/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+  Stage 8:
+    actors:
+      TDMLUInit First Run:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMLUInitFirstRun
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Stage 3:
+    dependsOn: Stage 8
+    actors:
+      First Run?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: TDMLUInit First Run/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Copy TDM Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: copyTDMTables
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            mandatory: false
+          TDM_LIBRARY_PATH:
+            link: TDM_LIBRARY folder/string
+            schema: string
+            mandatory: false
+        out:
+          table_id:
+            schema: string
+    split: '--------------------'
+  Stage 9:
+    else: true
+    dependsOn: Stage 8
+  Stage 4:
+    dependsOn: Stage 3
+    actors:
+      Get Tables Info:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUTableCoulumnID
+          TABLE_LIST:
+            link: Copy TDM Tables/table_id
+            schema: '#ref'
+            mandatory: false
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file://
+            mandatory: false
+        out:
+          tables:
+            schema: string
+    split: '--------------------'
+  Stage 10:
+    dependsOn: Stage 9
+  Stage 5:
+    dependsOn: Stage 4
+    actors:
+      Update LU Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: updateLUSchema
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file://
+            mandatory: false
+          tables_to_add:
+            link: Get Tables Info/tables
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          SOURCE_TABLE:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          SOURCE_TABLE_KEY:
+            external: ROOT_COLUMN_NAME
+            schema: string
+            mandatory: false
+        out:
+          rootInfo:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 11:
+    dependsOn: Stage 10
+  Stage 6:
+    actors:
+      create All Flows FromTemplates:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createAllFromTemplates
+          CREATE_DELETE_TABLES:
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            const: false
+            schema: boolean
+            mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
+          CREATE_GENERATE_FLOWS:
+            external: CREATE_GENERATE_FLOWS
+            schema: boolean
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          useFabric:
+            const: true
+            schema: boolean
+            mandatory: false
+  Stage 7:
+    actors:
+      End:
+        parent: Const
+        in:
+          value:
+            const: TDM Implementation is created!
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+schemas:
+  Get Tables Info.in.TABLE_LIST:
+    type: array
+    items:
+      type: blob
+  Update LU Schema.out.rootInfo:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }

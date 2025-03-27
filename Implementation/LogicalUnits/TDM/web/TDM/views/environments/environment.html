@@ -39,7 +39,7 @@
                                     ng-options="option as option.username for option in environmentCtrl.allOwners track by option.user_id">
                                 </select>
                                 <div off-click="environmentCtrl.isOpen = false" off-click-activator="environmentCtrl.isOpen">
-                                    <button id="environment_add_environments_owners" role-handler role="0"  uib-tooltip="Add Owner" tooltip-placement="top" popover-placement="left"
+                                    <button id="environment_add_environments_owners" role-handler role="0"  title="Add Owner" tooltip-placement="top" popover-placement="left"
                                         ng-click="environmentCtrl.initAddNewOwnerPopup()" type="button"
                                         class="btn k2-primary-btn">
                                         <i class="fa fa-plus"></i>
@@ -178,7 +178,7 @@
 								
 							</a>
 						</li>
-                        <li ng-class="{'active' : tab == 2}">
+                        <li ng-show="!environmentCtrl.masking_only" ng-class="{'active' : tab == 2}">
 							<a id="environment_systems_table" ng-click="tab = (environmentCtrl.tabClicked(2) || environmentCtrl.newTab)">
                                 <span ng-class="{'tab-title' : tab == 2}">
                                     <i class="fa fa-briefcase"></i>

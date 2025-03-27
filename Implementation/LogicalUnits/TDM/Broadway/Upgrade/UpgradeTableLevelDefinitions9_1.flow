@@ -1,0 +1,159 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Stage 2:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0}/Implementation/LogicalUnits/k2_ref/Mtable/TableLevelInterfaces.csv
+          params:
+            link:
+              path: PROJECT_DIR/value
+              pos: 0
+  Stage 3:
+    actors:
+      StringFormat2:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0}.bck
+          params:
+            link:
+              path: StringFormat1/string
+              pos: 0
+  Stage 8:
+    actors:
+      cp1:
+        parent: cp
+        in:
+          interface:
+            const: file://
+          from:
+            link: StringFormat1/string
+          to:
+            link: StringFormat2/string
+      FileRead1:
+        parent: FileRead
+        in:
+          interface:
+            const: file://
+          path:
+            link: StringFormat1/string
+  Stage 4:
+    actors:
+      CsvParser1:
+        parent: CsvParser
+        in:
+          stream:
+            link: FileRead1/stream
+        out:
+          object:
+            schema: '#ref'
+  Stage 7:
+    actors:
+      MapBuild1:
+        parent: MapBuild
+        in:
+          key:
+            const: interface_name
+            schema: string
+          value:
+            link: CsvParser1/object/interface_name
+        out:
+          map:
+            schema: '#ref'
+      MapBuild2:
+        parent: MapBuild
+        in:
+          key:
+            const: suppress_indicator
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      MapBuild3:
+        parent: MapBuild
+        in:
+          key:
+            const: truncate_indicator
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Stage 5:
+    actors:
+      CsvBuilder2:
+        parent: CsvBuilder
+        in:
+          columns:
+            const:
+            - interface_name
+            - suppress_indicator
+            - truncate_indicator
+            - order_flow
+            - no_schema
+          maps:
+            link:
+              path: CsvParser1/object
+              iterate: Iterate
+  Stage 6:
+    actors:
+      FileWrite1:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            link: StringFormat1/string
+          stream:
+            link: CsvBuilder2/csv
+schemas:
+  CsvParser1.out.object:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        suppress_indicator:
+          type: string
+        truncate_indicator:
+          type: string
+        count_indicator:
+          type: string
+        count_flow:
+          type: string
+  MapBuild1.out.map:
+    type: object
+    properties:
+      interface_name:
+        type: array
+        items:
+          type: string
+  MapBuild2.out.map:
+    type: object
+    properties:
+      suppress_indicator: {
+        }
+  MapBuild3.out.map:
+    type: object
+    properties:
+      truncate_indicator: {
+        }

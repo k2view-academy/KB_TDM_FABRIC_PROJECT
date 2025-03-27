@@ -1546,16 +1546,16 @@ public class Logic extends WebServiceUserCode {
 			
 			if (row == null || row.isEmpty()) {
 		
-				String fabricRoles = String.join(",", (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result"));
+				String fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result"));
 				//log.info("fabricRoles: " + fabricRoles);
 				String sqlUserGRoup = "SELECT * FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
 					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
 					"WHERE u.environment_id = ? " + 
-					"AND  u.user_id = ANY(string_to_array(?, ',')) AND u.user_type = 'GROUP' ";	
+					"AND  u.user_id = ANY(string_to_array(?, ?)) AND u.user_type = 'GROUP' ";	
 				//log.info("wsGetRoleForUserInEnv - sqlUserGRoup: " + sqlUserGRoup);
 		
 				
-				Db.Rows rows2 = db(TDM).fetch(sqlUserGRoup, envId, fabricRoles);
+				Db.Rows rows2 = db(TDM).fetch(sqlUserGRoup, envId, fabricRoles,TDM_PARAMETERS_SEPARATOR);
 				row = rows2.firstRow();
 				if (row == null || row.isEmpty()) {
 					String sqlAll = "SELECT * FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
@@ -1815,6 +1815,7 @@ public class Logic extends WebServiceUserCode {
                         !"CREATE_AI_K2SYSTEM_DB".equals(keyParts[2]) &&
                         !"SYNTHETIC_ENVIRONMENT".equals(keyParts[2]) &&
                         !"TABLE_LEVEL_SEPARATOR".equals(keyParts[2]) &&
+						!"POP_FULL_LU_HIERARCHY_IN_TDM_LU".equals(keyParts[2]) &&
 						!keyParts[2].contains("MASKING_FLAG")
 					) 
 					{
@@ -2855,14 +2856,14 @@ public class Logic extends WebServiceUserCode {
 			"}")
     public static Object wsGetEnvironmentsByUserAndBE(String be_name) throws Exception {
         Map<String,Object> response=new HashMap<>();
-        List<Map<String, Object>> result = new ArrayList<>();
+        Set<Map<String, Object>> result = new HashSet<>();
         String message=null;
         String errorCode="SUCCESS";
         String userId = sessionUser().name();
         String permissionGroup = fnGetUserPermissionGroup("");
         Boolean hasSyntheticEnvironment = false ;
         Boolean hasAIEnvironment = false ;
-        List<Map<String, Object>> userEnvs = new ArrayList<>();
+        Set<Map<String, Object>> userEnvs = new HashSet<>();
         try {
             String allEnvs = "Select env.environment_id,env.environment_name," +
                                 "  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'" +
@@ -3074,12 +3075,12 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetUserEnvironments(String be_name) throws Exception {
 		Map<String,Object> response=new HashMap<>();
-		List<Map<String, Object>> result = new ArrayList<>();
+		Set<Map<String, Object>> result = new HashSet<>();
 		String message=null;
 		String errorCode="SUCCESS";
 		String userId = sessionUser().name();
 		String permissionGroup = fnGetUserPermissionGroup("");
-		List<Map<String, Object>> userEnvs = new ArrayList<>();
+		Set<Map<String, Object>> userEnvs = new HashSet<>();
 		try {
 		
 			if (admin.equalsIgnoreCase(permissionGroup)){
@@ -3118,10 +3119,10 @@ public class Logic extends WebServiceUserCode {
 		
 				Map<String, Object> map = new HashMap<>();
 				if ("tester".equalsIgnoreCase(permissionGroup)) {
-					int num_of_reserved = Integer.parseInt("" + env.get("allowed_number_of_reserved_entities"));
-					int num_of_read = Integer.parseInt("" + env.get("allowed_number_of_entities_to_read"));
-					int num_of_write = Integer.parseInt("" + env.get("allowed_number_of_entities_to_copy"));
-                    Boolean allowed_refresh_reference_data = Boolean.parseBoolean("" + env.get("allowed_refresh_reference_data"));
+					int num_of_reserved = env.get("allowed_number_of_reserved_entities") != null ? Integer.parseInt(env.get("allowed_number_of_reserved_entities").toString()) : 0;
+					int num_of_read = env.get("allowed_number_of_entities_to_read") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_read").toString()) : 0;
+					int num_of_write = env.get("allowed_number_of_entities_to_copy") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_copy").toString()) : 0;
+					Boolean allowed_refresh_reference_data = env.get("allowed_refresh_reference_data") != null ? Boolean.parseBoolean(env.get("allowed_refresh_reference_data").toString()) : false;
 					String permission;
 					switch (env_type) {
 						case "SOURCE":
@@ -3177,6 +3178,7 @@ public class Logic extends WebServiceUserCode {
 				map.put("mask_sensitive_data", env.get("mask_sensitive_data"));
 		        map.put("environment_sync_mode", env.get("sync_mode"));
 				result.add(map);
+			}
                 // After processing userEnvs, manually add AI and Synthetic environments if they are not already present
                 boolean foundAI = false;
                 boolean foundSynthetic = false;
@@ -3220,7 +3222,8 @@ public class Logic extends WebServiceUserCode {
                     result.add(syntheticEnv);
                 }
 
-			}
+		
+
 		} catch(Exception e){
 			message=e.getMessage();
 			errorCode="FAILED";

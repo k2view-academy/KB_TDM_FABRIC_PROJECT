@@ -1,319 +1,130 @@
-{
-    "tags": [
-        "Medoid",
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get Params",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "namespace",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "training_image",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "id",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "gcr.io/k2view-medoid/medoid-postgres:latest",
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "YAML",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "StringFormat Yaml",
-                            "minHeight": 113,
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "apiVersion: batch/v1\r\nkind: Job\r\nmetadata:\r\n  name: training-job\r\nspec:\r\n  backoffLimit: 0\r\n  template:\r\n    spec:\r\n      containers:\r\n      - name: training\r\n        image: ${training_image}\r\n        imagePullPolicy: IfNotPresent\r\n        command: [\"python\", \"main.py\"]\r\n        args: [\"--task_execution_id\", \"${id}\"]\r\n        resources:\r\n          limits:\r\n            nvidia.com/gpu: 1\r\n        volumeMounts:\r\n        - name: shared-storage\r\n          mountPath: /app/artifacts\r\n        env:\r\n        - name: POSTGRES_USER\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-user\r\n        - name: POSTGRES_PASSWORD\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-password\r\n        - name: POSTGRES_DB\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-db\r\n        - name: POSTGRES_HOST\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-host\r\n        - name: POSTGRES_PORT\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-port\r\n        - name: SQLALCHEMY_DATABASE_URI\r\n          value: \"postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)\"\r\n      restartPolicy: OnFailure\r\n      volumes:\r\n      - name: shared-storage\r\n        persistentVolumeClaim:\r\n          claimName: shared-artifacts-pvc\r\n"
-                                    },
-                                    {
-                                        "name": "training_image",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "K8 Apply",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "ErrorHandler 1   ",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": "PopulateAITablesWithFailed"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "kubeApply",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "kubeApply"
-                                    },
-                                    {
-                                        "const": "POST",
-                                        "name": "method",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.dropdown",
-                                            "options": [
-                                                "",
-                                                "GET",
-                                                "POST",
-                                                "PUT",
-                                                "DELETE",
-                                                "PATCH"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "namespace",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "jobs",
-                                        "name": "kind",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "apis/batch/v1",
-                                        "name": "api",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "payload",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "training_image",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "StringFormat Yaml",
-                "name": "training_image"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "StringFormat Yaml",
-                "name": "id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "StringFormat Yaml",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "kubeApply",
-                "name": "payload"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "namespace"
-            },
-            "rightPort": {
-                "actor": "namespace",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "training_image"
-            },
-            "rightPort": {
-                "actor": "training_image",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "id"
-            },
-            "rightPort": {
-                "actor": "id",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "namespace"
-            },
-            "rightPort": {
-                "actor": "kubeApply",
-                "name": "namespace"
-            }
-        }
-    ]
-}
+tags: Medoid,TDM
+stages:
+  Get Params:
+    actors:
+      namespace:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: namespace
+            schema: string
+        out:
+          value:
+            schema: string
+      training_image:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: training_image
+            schema: string
+        out:
+          value:
+            schema: string
+      id:
+        parent: Const
+        in:
+          value:
+            const: gcr.io/k2view-medoid/medoid-postgres:latest
+            external: id
+            schema: string
+            default: true
+        out:
+          value:
+            schema: string
+  YAML:
+    actors:
+      StringFormat Yaml:
+        parent: StringFormat
+        height: 113
+        in:
+          format:
+            const: "apiVersion: batch/v1\r\nkind: Job\r\nmetadata:\r\n  name: training-job\r\
+              \nspec:\r\n  backoffLimit: 0\r\n  template:\r\n    spec:\r\n      containers:\r\
+              \n      - name: training\r\n        image: ${training_image}\r\n   \
+              \     imagePullPolicy: IfNotPresent\r\n        command: [\"python\"\
+              , \"main.py\"]\r\n        args: [\"--task_execution_id\", \"${id}\"\
+              ]\r\n        resources:\r\n          requests:\r\n            memory:\
+              \ \"20Gi\"\r\n          limits:\r\n            memory: \"80Gi\"\r\n\
+              \            nvidia.com/gpu: 1\r\n        volumeMounts:\r\n        -\
+              \ name: shared-storage\r\n          mountPath: /app/artifacts\r\n  \
+              \      - name: dshm\r\n          mountPath: /dev/shm\r\n        env:\r\
+              \n        - name: POSTGRES_USER\r\n          valueFrom:\r\n        \
+              \    secretKeyRef:\r\n              name: medoid-secrets\r\n       \
+              \       key: pg-user\r\n        - name: POSTGRES_PASSWORD\r\n      \
+              \    valueFrom:\r\n            secretKeyRef:\r\n              name:\
+              \ medoid-secrets\r\n              key: pg-password\r\n        - name:\
+              \ POSTGRES_DB\r\n          valueFrom:\r\n            secretKeyRef:\r\
+              \n              name: medoid-secrets\r\n              key: pg-db\r\n\
+              \        - name: POSTGRES_HOST\r\n          valueFrom:\r\n         \
+              \   secretKeyRef:\r\n              name: medoid-secrets\r\n        \
+              \      key: pg-host\r\n        - name: POSTGRES_PORT\r\n          valueFrom:\r\
+              \n            secretKeyRef:\r\n              name: medoid-secrets\r\n\
+              \              key: pg-port\r\n        - name: SQLALCHEMY_DATABASE_URI\r\
+              \n          value: \"postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)\"\
+              \r\n      restartPolicy: OnFailure\r\n      volumes:\r\n      - name:\
+              \ shared-storage\r\n        persistentVolumeClaim:\r\n          claimName:\
+              \ shared-artifacts-pvc\r\n      - name: dshm\r\n        emptyDir:\r\n\
+              \          medium: Memory\r\n          sizeLimit: 50Gi\r\n"
+          training_image:
+            link: training_image/value
+            schema: string
+            mandatory: false
+          id:
+            link: id/value
+            schema: string
+            mandatory: false
+  K8 Apply:
+    actors:
+      'ErrorHandler 1   ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      kubeApply:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeApply
+          method:
+            const: POST
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ''
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+            mandatory: false
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false
+          kind:
+            const: jobs
+            schema: string
+            mandatory: false
+          api:
+            const: apis/batch/v1
+            schema: string
+            mandatory: false
+          payload:
+            link: StringFormat Yaml/string
+            schema: string
+            mandatory: false
+  Stage 4: {
+    }
+  Stage 5: {
+    }

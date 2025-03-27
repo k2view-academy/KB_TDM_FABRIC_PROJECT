@@ -75,6 +75,12 @@
 									{
                                         "name": "TTL",
                                         "const": 0
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": [

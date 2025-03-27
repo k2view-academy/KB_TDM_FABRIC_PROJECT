@@ -10,6 +10,20 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
+                         {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "parent_row",
                             "actorType": {
@@ -84,7 +98,25 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-					
+                        {
+                            "name": "Set sequence_schema",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "sequence_schema",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },					
 						{{#if TABLE_PARENT_FIELDS}}
 						{{#each TABLE_PARENT_FIELDS~}}
 						{
@@ -534,6 +566,16 @@
         }
     ],
     "connections": [
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set sequence_schema",
+                "name": "value"
+            }
+        },
 		{{#if TABLE_PARENT_FIELDS}}
 		{{#each TABLE_PARENT_FIELDS~}}
 		{

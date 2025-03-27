@@ -1,329 +1,84 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get Values",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "NullValue1",
-                            "actorType": {
-                                "parentType": "NullValue",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "FabricSetRead1",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_PARAMETERS_SEPARATOR",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set Where Statement and Binding values",
-                    "dependsOnList": [
-                        "Get Values"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Is There Parameters?",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Add  Wherer Clause to Count",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${select}\r\nwhere ${filter}"
-                                    },
-                                    {
-                                        "name": "select",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "filter",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Split Parameters",
-                            "actorType": {
-                                "parentType": "Split",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [
-                        "Get Values"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Add  Wherer Clause to Count1",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${select}\r\nwhere ${filter}"
-                                    },
-                                    {
-                                        "name": "select",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "filter",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Const3",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "NullValue1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Const3",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Split Parameters",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Is There Parameters?",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Split Parameters",
-                "name": "delimiter"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "filterParameters"
-            },
-            "rightPort": {
-                "actor": "Const1",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add  Wherer Clause to Count",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "selectStatement"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "selectClause"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Count",
-                "name": "select"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableFilter"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Count",
-                "name": "filter"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split Parameters",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "paramters"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "selectStatement"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "selectClause"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "select"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableFilter"
-            },
-            "rightPort": {
-                "actor": "Add  Wherer Clause to Count1",
-                "name": "filter"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const3",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "paramters"
-            }
-        }
-    ]
-}  
+stages:
+  Get Values:
+    actors:
+      Null Value:
+        parent: NullValue
+      Get Separator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_PARAMETERS_SEPARATOR
+            default: false
+  Set Where Statement and Binding values:
+    dependsOn: Get Values
+    actors:
+      Is There Parameters?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            external: filterParameters
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Add  Wherer Clause to Count:
+        parent: StringFormat
+        in:
+          format:
+            const: "${select}\r\nwhere ${filter}"
+          select:
+            external: selectClause
+            schema: string
+            mandatory: false
+          filter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: selectStatement
+      Split Parameters:
+        parent: Split
+        in:
+          delimiter:
+            const: null
+            link: Get Separator/result
+          string:
+            external: filterParameters
+        out:
+          strings:
+            external: paramters
+    split: '--------------------'
+  Stage 4:
+    else: true
+    transactional: false
+    dependsOn: Get Values
+    actors:
+      Add  Wherer Clause to Count1:
+        parent: StringFormat
+        in:
+          format:
+            const: "${select}\r\nwhere ${filter}"
+          select:
+            external: selectClause
+            schema: string
+            mandatory: false
+          filter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: selectStatement
+      Return Parameters as Null:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Null Value/value
+            schema: string
+        out:
+          value:
+            external: paramters
+            schema: string

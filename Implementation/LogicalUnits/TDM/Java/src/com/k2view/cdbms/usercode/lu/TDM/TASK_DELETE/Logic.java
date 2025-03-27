@@ -19,23 +19,20 @@ public class Logic extends UserCode {
 		// Clean TDM execution tables from TDMDB after the data is populated in TDM LU
 		// For TEST mode- you can comment this delete
 		String instID = getInstanceID();
-		if(!inDebugMode()){
-			//db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".task_execution_entities where task_execution_id = ?", instID);
-			//db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".tdm_seq_mapping where task_execution_id = ?", instID);
-			//db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".task_execution_entities where task_execution_id = ?", instID);
-			//db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".tdm_seq_mapping where task_execution_id = ?", instID);
-			//db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".TASK_EXE_STATS_DETAILED where task_execution_id = ?", instID);
-			//db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED where task_execution_id = ?", instID);
-		}		
+        //db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".task_execution_entities where task_execution_id = ?", instID);
+        //db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".tdm_seq_mapping where task_execution_id = ?", instID);
+        //db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".task_execution_entities where task_execution_id = ?", instID);
+        //db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".tdm_seq_mapping where task_execution_id = ?", instID);
+        //db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".TASK_EXE_STATS_DETAILED where task_execution_id = ?", instID);
+        //db(TDM).execute("Delete from " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED where task_execution_id = ?", instID);
+				
 	}
 
 
 	@desc("25-Sep-19- new function- update the TDM DB - task_execution_list set synced_to_fabric = TRUE. Originally this was done by a parser.")
 	public static void fnUpdateTaskSyncStatus() throws Exception {
-		if(!inDebugMode()) {
 			String sql = "update " + TDMDB_SCHEMA + ".task_execution_list set synced_to_fabric = TRUE where task_execution_id = ? ";
 			db(TDM).execute(sql, ludb().fetch("SELECT IID('TDM')").firstValue());
-		}
+		
 	}
-	
 }

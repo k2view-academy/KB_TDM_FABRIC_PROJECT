@@ -1,0 +1,235 @@
+tags: LoadFlows
+stages:
+  Description:
+    remark: This flow gets the data from Fabric
+    transactional: false
+  Build Statements:
+    transactional: false
+    actors:
+      Build Select Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: /*sqlite*/ select * from TDM_TableLevel.__t_${tableName}
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      Build Count Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: /*sqlite*/ select count(*) as CNT from TDM_TableLevel.__t_${tableName}
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      Apply Filter?:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var result = false;
+                if (tableFilter == "" || (retention != 0 && syncMode != 'OFF')) {
+                    result = true;
+                }
+                result;
+              script: |-
+                var result = false;
+
+                if (tableFilter == "" || retention != 0 && syncMode != 'OFF') {
+                  result = true;
+                }
+
+                result;
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          retention:
+            external: retention
+            schema: integer
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Check Filter:
+    transactional: false
+    dependsOn: Build Statements
+    actors:
+      No Filter?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Apply Filter?/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Select Statement:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Build Select Statement/string
+            schema: string
+        out:
+          value:
+            schema: string
+      Count Statement:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Build Count Statement/string
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Add Filter:
+    else: true
+    transactional: false
+    dependsOn: Build Statements
+    actors:
+      Add  Wherer Clause to Select Statement:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Build Select Statement/string
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      Add  Wherer Clause to Count Statement:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Build Count Statement/string
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+  Get Fabric Table Data:
+    transactional: false
+    actors:
+      Get Data From Fabric:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link:
+            - Select Statement/value
+            - Add  Wherer Clause to Select Statement/selectStatement
+          params:
+            link: Add  Wherer Clause to Select Statement/paramters
+        out:
+          result:
+            external: result
+            schema: '#ref'
+      Set Target Environment1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: setTargetEnv
+  Get Table's Total Count:
+    transactional: false
+    actors:
+      If The Total is Not Set Yet:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: totalNumberOfRecords
+            schema: integer
+          b:
+            const: -1
+            schema: integer
+      Get Records Count From Fabric:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link:
+            - Count Statement/value
+            - Add  Wherer Clause to Count Statement/selectStatement
+          params:
+            link: Add  Wherer Clause to Count Statement/paramters
+  Update Table's Total:
+    transactional: false
+    actors:
+      Update Total Number of Records:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTotalNumberOfRecords
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          recCount:
+            link: Get Records Count From Fabric/result
+            schema: integer
+            mandatory: false
+schemas:
+  Add  Wherer Clause to Select Statement.out.paramters:
+    type: array
+    items:
+      type: string
+  Add  Wherer Clause to Count Statement.out.paramters:
+    type: array
+    items:
+      type: string
+  Get Data From Fabric.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: string
+        note_text:
+          type: string

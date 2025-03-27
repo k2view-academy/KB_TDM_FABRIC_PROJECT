@@ -1,0 +1,100 @@
+tags: TDM
+stages:
+  'Get Inputs ':
+    actors:
+      Lowercase luName:
+        parent: Lowercase
+        in:
+          string:
+            external: luName
+  Check If Schema Exists:
+    actors:
+      DbFetchField:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT schema_name
+              FROM information_schema.schemata
+              WHERE schema_name = '${@schemaName}'
+          schemaName:
+            link: Lowercase luName/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Exists:
+    else: false
+    dependsOn: Check If Schema Exists
+    actors:
+      'EqualsIgnoreCase ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            link: Lowercase luName/string
+          a:
+            link: DbFetchField/result
+    split: '--------------------'
+  Doesn't Exists:
+    else: true
+    dependsOn: Check If Schema Exists
+    actors:
+      MDBExportSchemaParams1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: MDBExportSchemaParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+  Check Global:
+    dependsOn: Exists
+    actors:
+      CheckGlobalToUpdateMDBExport1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckGlobalToUpdateMDBExport
+          taskID:
+            external: taskID
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: any
+            mandatory: false
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Do Nothing ':
+    dependsOn: Doesn't Exists
+  Update Schema:
+    dependsOn: Check Global
+    actors:
+      'EqualsIgnoreCase  ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: CheckGlobalToUpdateMDBExport1/value
+      MDBExportSchemaParams2:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: MDBExportSchemaParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: 'Do Nothing '

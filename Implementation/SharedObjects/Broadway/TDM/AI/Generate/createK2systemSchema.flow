@@ -41,20 +41,26 @@ stages:
         in:
           format:
             const: "CREATE SCHEMA IF NOT EXISTS ${k2systemName};\r\n\r\nCREATE TABLE\
-              \ IF NOT EXISTS ${k2systemName}.task_executions (\r\n    id BIGINT PRIMARY\
-              \ KEY,\r\n    status varchar (10) NOT NULL,\r\n    execution_params\
-              \ json NOT NULL,\r\n    result json NOT NULL,\r\n    creation_time timestamp\
-              \ without time zone NOT NULL,\r\n    last_update_time timestamp without\
-              \ time zone,\r\n    task_type varchar (10) NOT NULL\r\n);\r\n\r\nCREATE\
-              \ TABLE IF NOT EXISTS ${k2systemName}.entity_list (\r\n    id SERIAL\
-              \ PRIMARY KEY,\r\n    task_execution_id BIGINT REFERENCES ${k2systemName}.task_executions\
-              \ (id) NOT NULL,\r\n    schema varchar (50) NOT NULL,\r\n    iid varchar\
-              \ (100) NOT NULL,\r\n    creation_time timestamp without time zone NOT\
-              \ NULL\r\n);\r\n\r\nCREATE TABLE IF NOT EXISTS ${k2systemName}.task_execution_stats\
-              \ (\r\n    id SERIAL PRIMARY KEY,\r\n    task_execution_id BIGINT REFERENCES\
-              \ ${k2systemName}.task_executions (id) NOT NULL,\r\n    result json\
-              \ NOT NULL,\r\n    creation_time timestamp without time zone NOT NULL,\r\
-              \n    last_update_time timestamp without time zone\r\n);\r\n"
+              \ IF NOT EXISTS ${k2systemName}.task_executions (\r\n    id BIGINT,\r\
+              \n    task_type varchar(20),\r\n    status varchar(10) NOT NULL,\r\n\
+              \    execution_params json NOT NULL,\r\n    result json NOT NULL,\r\n\
+              \    evaluation_report BYTEA,\r\n    evaluation_json BYTEA,\r\n    creation_time\
+              \ timestamp without time zone NOT NULL,\r\n    last_update_time timestamp\
+              \ without time zone,\r\n    PRIMARY KEY (id, task_type)\r\n);\r\n\r\n\
+              CREATE TABLE IF NOT EXISTS ${k2systemName}.entity_list (\r\n    id SERIAL\
+              \ PRIMARY KEY,\r\n    task_execution_id BIGINT NOT NULL,\r\n    task_type\
+              \ varchar(20) NOT NULL,\r\n    schema varchar (50) NOT NULL,\r\n   \
+              \ iid text NOT NULL,\r\n    creation_time timestamp without time zone\
+              \ NOT NULL,\r\n    FOREIGN KEY (task_execution_id, task_type) REFERENCES\
+              \ ${k2systemName}.task_executions (id, task_type)\r\n);\r\n\r\nCREATE\
+              \ TABLE IF NOT EXISTS ${k2systemName}.task_execution_stats (\r\n   \
+              \ id SERIAL PRIMARY KEY,\r\n    task_execution_id BIGINT NOT NULL,\r\
+              \n    task_type varchar(20) NOT NULL,\r\n    result json NOT NULL,\r\
+              \n    evaluation_report BYTEA,\r\n    evaluation_json BYTEA,\r\n   \
+              \ creation_time timestamp without time zone NOT NULL,\r\n    last_update_time\
+              \ timestamp without time zone,\r\n    FOREIGN KEY (task_execution_id,\
+              \ task_type) REFERENCES ${k2systemName}.task_executions (id, task_type)\r\
+              \n);"
           k2systemName:
             link: Getk2SystemSchemaName1/result
             schema: string

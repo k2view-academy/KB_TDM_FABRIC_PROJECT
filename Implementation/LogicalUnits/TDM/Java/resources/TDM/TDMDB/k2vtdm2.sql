@@ -1,3 +1,7 @@
+
+-- Set the Schema in case it is not the default one
+SET search_path = ${@schema};
+
 -- start CREATE SEQUENCE IF NOT EXISTS
 
 

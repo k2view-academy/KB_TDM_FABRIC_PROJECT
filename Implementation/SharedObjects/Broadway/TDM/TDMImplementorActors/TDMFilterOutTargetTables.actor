@@ -7,6 +7,44 @@
     "inputs": [
         {
             "name": "table",
+            "const": [
+  {
+    "table_regex": "FABRIC_TDM_ROOT",
+    "active": true,
+    "lu_name": "ALL_LUS",
+    "generator_filterout": true
+  },
+  {
+    "table_regex": "LU_PARAMS",
+    "active": true,
+    "lu_name": "ALL_LUS",
+    "generator_filterout": true
+  },
+  {
+    "table_regex": "TDM_LU_TYPE_REL_TAR_EID",
+    "active": true,
+    "lu_name": "ALL_LUS",
+    "generator_filterout": true
+  },
+  {
+    "table_regex": "TDM_LU_TYPE_RELATION_EID",
+    "active": true,
+    "lu_name": "ALL_LUS",
+    "generator_filterout": true
+  },
+  {
+    "table_regex": "TAR_.*",
+    "active": true,
+    "lu_name": "ALL_LUS",
+    "generator_filterout": true
+  },
+  {
+    "table_regex": "TDM_BE_IIDS",
+    "active": true,
+    "lu_name": "ALL_LUS",
+    "generator_filterout": true
+  }
+],
             "schema": {
                 "type": "array",
                 "items": {
@@ -26,39 +64,7 @@
                         }
                     }
                 }
-            },
-            "const": [
-                {
-                    "table_regex": "FABRIC_TDM_ROOT",
-                    "active": true,
-                    "lu_name": "ALL_LUS",
-                    "generator_filterout": true
-                },
-                {
-                    "table_regex": "LU_PARAMS",
-                    "active": true,
-                    "lu_name": "ALL_LUS",
-                    "generator_filterout": true
-                },
-                {
-                    "table_regex": "TDM_LU_TYPE_REL_TAR_EID",
-                    "active": true,
-                    "lu_name": "ALL_LUS",
-                    "generator_filterout": true
-                },
-                {
-                    "table_regex": "TDM_LU_TYPE_RELATION_EID",
-                    "active": true,
-                    "lu_name": "ALL_LUS",
-                    "generator_filterout": true
-                },
-                {
-                    "table_regex": "TAR_.*",
-                    "active": true,
-                    "lu_name": "ALL_LUS",
-                    "generator_filterout": true
-                }
-            ]
+            }
         }
     ],
     "outputs": [],

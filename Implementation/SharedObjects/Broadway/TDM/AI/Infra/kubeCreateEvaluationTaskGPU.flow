@@ -1,0 +1,128 @@
+tags: Medoid,TDM
+stages:
+  Get Params:
+    actors:
+      namespace:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: namespace
+            schema: string
+        out:
+          value:
+            schema: string
+      evaluation_image:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: evaluation-image
+            schema: string
+        out:
+          value:
+            schema: string
+      id:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: id
+            schema: string
+        out:
+          value:
+            schema: string
+  YAML:
+    actors:
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: "apiVersion: batch/v1\r\nkind: Job\r\nmetadata:\r\n  name: evaluation-job${id}\r\
+              \n  namespace: ${namesapce}\r\n  labels:\r\n    task: evaluation\r\n\
+              spec:\r\n  backoffLimit: 0\r\n  template:\r\n    spec:\r\n      containers:\r\
+              \n      - name: evaluation\r\n        image: ${image}\r\n        imagePullPolicy:\
+              \ IfNotPresent\r\n        command: [\"/bin/bash\", \"-c\"]\r\n     \
+              \   args: [\"apt update && apt install -y htop && python main.py --task_execution_id\
+              \ ${id}\"]\r\n        resources:\r\n          requests:\r\n        \
+              \    memory: \"20Gi\"\r\n          limits:\r\n            memory: \"\
+              80Gi\"\r\n        volumeMounts:\r\n        - name: shared-storage\r\n\
+              \          mountPath: /app/artifacts\r\n        - name: dshm\r\n   \
+              \       mountPath: /dev/shm\r\n        env:\r\n        - name: POSTGRES_USER\r\
+              \n          valueFrom:\r\n            secretKeyRef:\r\n            \
+              \  name: medoid-secrets\r\n              key: pg-user\r\n        - name:\
+              \ POSTGRES_PASSWORD\r\n          valueFrom:\r\n            secretKeyRef:\r\
+              \n              name: medoid-secrets\r\n              key: pg-password\r\
+              \n        - name: POSTGRES_DB\r\n          valueFrom:\r\n          \
+              \  secretKeyRef:\r\n              name: medoid-secrets\r\n         \
+              \     key: pg-db\r\n        - name: POSTGRES_HOST\r\n          valueFrom:\r\
+              \n            secretKeyRef:\r\n              name: medoid-secrets\r\n\
+              \              key: pg-host\r\n        - name: POSTGRES_PORT\r\n   \
+              \       valueFrom:\r\n            secretKeyRef:\r\n              name:\
+              \ medoid-secrets\r\n              key: pg-port\r\n        - name: SQLALCHEMY_DATABASE_URI\r\
+              \n          value: \"postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)\"\
+              \r\n      restartPolicy: Never\r\n      volumes:\r\n      - name: shared-storage\r\
+              \n        persistentVolumeClaim:\r\n          claimName: shared-artifacts-pvc\r\
+              \n      - name: dshm\r\n        emptyDir:\r\n          medium: Memory\r\
+              \n          sizeLimit: 100Gi\r\n"
+          id:
+            link: id/value
+            schema: string
+            mandatory: false
+          image:
+            link: evaluation_image/value
+            schema: string
+            mandatory: false
+          namesapce:
+            link: namespace/value
+            schema: any
+            mandatory: false
+  k8 Apply:
+    actors:
+      ErrorHandler 1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      'kubeApply  ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeApply
+          method:
+            const: POST
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ''
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+            mandatory: false
+          namespace:
+            link: namespace/value
+            schema: string
+            mandatory: false
+          kind:
+            const: jobs
+            schema: string
+            mandatory: false
+          api:
+            const: apis/batch/v1
+            schema: string
+            mandatory: false
+          payload:
+            link: StringFormat1/string
+            schema: string
+            mandatory: false

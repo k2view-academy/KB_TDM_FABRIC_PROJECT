@@ -4,7 +4,10 @@
 
 package com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils;
 
+import com.k2view.cdbms.lut.DbInterface;
+import com.k2view.cdbms.lut.InterfacesManager;
 import com.k2view.cdbms.lut.LUType;
+import com.k2view.cdbms.lut.LudbColumn;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
@@ -12,15 +15,25 @@ import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import org.json.JSONObject;
 
+import java.lang.reflect.Executable;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.k2view.cdbms.shared.user.UserCode.db;
-import static com.k2view.cdbms.shared.user.UserCode.getCustomProperties;
-import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
+import javax.management.RuntimeErrorException;
+
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.shared.user.UserCode.db;
+import static com.k2view.cdbms.shared.user.UserCode.getActiveEnvironmentName;
+import static com.k2view.cdbms.shared.user.UserCode.getConnection;
+import static com.k2view.cdbms.shared.user.UserCode.getCustomProperties;
+import static com.k2view.cdbms.shared.user.UserCode.getLuType;
+import static com.k2view.cdbms.shared.user.UserCode.isFirstSync;
+import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
 
@@ -29,7 +42,6 @@ public class SharedLogic {
 	
 	public static final String TDM = "TDM";
     public static final Log log = Log.a(UserCode.class);
-
     public static int fnValidateNumberOfReadEntities(String role_id, String sourceEnvName) throws Exception {
         return fnValidateNumberOfEntities(role_id, "allowed_number_of_entities_to_read", sourceEnvName);
     }
@@ -44,6 +56,9 @@ public class SharedLogic {
 
     private static int fnValidateNumberOfEntities( String role_id, String columnName, String envName) throws Exception {
         //log.info("Inputs: numberOfEntities: " + numberOfEntities + ", role_id: " + role_id +", columnName: " + columnName + ", envName: " + envName);
+        if("0".equalsIgnoreCase(role_id)){
+            return -1 ;
+        }
         String numberOfEntities_sql = "select " + columnName + " as number_of_entities from " +
                 TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA + ".environment_roles r where " +
                 "e.environment_name = ? and lower(e.environment_status) = 'active' and " +
@@ -58,8 +73,8 @@ public class SharedLogic {
         // If overrideParameters is null and already exists an execution without override parameters -> don't add a new execution
         if (overrideParameters.isEmpty()) {
             String sql = "select count(*) from " + TDMDB_SCHEMA + ".task_execution_list tl " +
-                    "where tl.task_id = ? And UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and " +
-                    "not exists (select 1 from " + TDMDB_SCHEMA + ".task_execution_override_attrs o where tl.task_execution_id = o.task_execution_id)";
+            "where tl.task_id = ? And UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and " +
+            "not exists (select 1 from " + TDMDB_SCHEMA + ".task_execution_override_attrs o where tl.task_execution_id = o.task_execution_id)";
             Object count = UserCode.db(TDM).fetch(sql, taskId).firstValue();
             if (Integer.parseInt(count.toString()) > 0) return false;
         } else {
@@ -81,15 +96,61 @@ public class SharedLogic {
         return true;
     }
 
-
+    public static List<String> fnValidateProductForEnv(String env_id, String env_name, Long task_id) throws Exception {
+        List<String> inactiveProducts = new ArrayList<>();
+        if("null".equalsIgnoreCase(env_name)){
+            return inactiveProducts;
+        }
+        String query = "SELECT p.product_name " +
+                       "FROM " + TDMDB_SCHEMA + ".environments e " +
+                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".products p ON p.product_id = ep.product_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON p.product_id = pu.product_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".tasks_logical_units tu ON tu.lu_id = pu.lu_id " +
+                       "WHERE e.environment_status = ? " +
+                       "AND e.environment_id = ? " +
+                       "AND e.environment_name = ? " +
+                       "AND p.product_status = ? " +
+                       "AND tu.task_id = ? " +
+                       "AND ep.enable_product = ? " ;
+    
+        try {
+            Db.Rows results = db(TDM).fetch(query, "Active", env_id, env_name,"Active",task_id,false);
+            for (Db.Row row : results) {
+                inactiveProducts.add(row.get("product_name").toString()); 
+            }
+            return inactiveProducts;
+        } catch (Exception e) { 
+            log.error("Error in fnValidateProductForEnv: " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static String fnValidateProductForTask(String env_id, String env_name, String task_type, String sync_mode, String env_type, Long task_id) throws Exception {
+        String product_name = "";
+        try {
+            if (("SOURCE".equalsIgnoreCase(env_type) && !"OFF".equalsIgnoreCase(sync_mode)) && !"RESERVE".equalsIgnoreCase(task_type) ||
+                ("TARGET".equalsIgnoreCase(env_type) && ("LOAD".equalsIgnoreCase(task_type) || "DELETE".equalsIgnoreCase(task_type)))) {
+                List<String> inactive_products = fnValidateProductForEnv(env_id, env_name, task_id);
+                if (!inactive_products.isEmpty()) {
+                    product_name = String.join(", ", inactive_products);
+                }
+            }
+            return product_name;
+        } catch (Exception e) {
+            log.error("Error in fnValidateProductForTask: " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+    
     public static Map<String, String> fnValidateSourceEnvForTask(Map<String, Object> be_lus, Integer refCount, String selection_method,
                                                                  String sync_mode, Boolean version_ind, String task_type,
-                                                                 Map<String, Object> envDetails) throws Exception {
+                                                                 Map<String, Object> envDetails,Long task_id) throws Exception {
 
         Object res = null;
         Boolean ownerOrAdminRole;
         ArrayList<String> lusList;
-        String env_id, role_id, beId;
+        String env_id, role_id, beId, env_name;
         Map<String, String> errorMessages = new HashMap<>();
         //log.info("fnValidateSourceEnvForTask - selection_method: " + selection_method);
         String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + TDMDB_SCHEMA + ".environment_products ep Inner Join " + TDMDB_SCHEMA + ".product_logical_units p " +
@@ -106,10 +167,18 @@ public class SharedLogic {
         }
 
         env_id = "" + envDetails.get("environment_id");
+        env_name = "" + envDetails.get("environment_name");
         role_id = "" + envDetails.get("role_id");
         //log.info("fnValidateSourceEnvForTask - selection_method: " + selection_method);
         ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
         //log.info("fnValidateSourceEnvForTask - role_id: " + role_id);
+
+        //check if system are diabled in the source environment 
+        String inactive_source_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"SOURCE",task_id);
+        if(!"".equalsIgnoreCase(inactive_source_products)){
+            errorMessages.put("systems", "The task cannot be executed. The following systems are currently disabled in " + env_name + ": " + inactive_source_products);
+
+        }
         //check if source env satisfy BE and LUs filtering
         if (!"-1".equals(beId)) {
             res = UserCode.db(TDM).fetch(beAndLus_sql, beId, env_id).firstValue();
@@ -147,12 +216,12 @@ public class SharedLogic {
         }
 
         //check if source env satisfy versioning filtering
-        if (version_ind != null && version_ind && !ownerOrAdminRole) {
+        if (version_ind != null && version_ind && !ownerOrAdminRole && !"OFF".equalsIgnoreCase(sync_mode)) {
             res = UserCode.db(TDM).fetch(versioning_sql, role_id).firstValue();
             if (res == null)
                 errorMessages.put("versioning", "The user has no permissions to run Data Versioning tasks on the task's source environment");
         }
-
+       
         //if (!errorMessages.isEmpty())  => test fails
         return errorMessages;
     }
@@ -160,12 +229,12 @@ public class SharedLogic {
 
     public static Map<String, String> fnValidateTargetEnvForTask(Map<String, Object> be_lus, Integer refCount, String selection_method,
         Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load,
-        String task_type, Boolean reserve_ind, int noOfEntities, Map<String, Object> envDetails, Boolean clone_ind) throws Exception {
+        String task_type, Boolean reserve_ind, int noOfEntities, Map<String, Object> envDetails, Boolean clone_ind, String sync_mode, Long task_id) throws Exception {
         Map<String, String> errorMessages = new HashMap<>();
         Object res = null;
         Boolean ownerOrAdminRole;
         ArrayList<String> lusList;
-        String env_id, role_id, beId;
+        String env_id, role_id, beId, env_name;
         //log.info("fnValidateTargetEnvForTask - selection_method: " + selection_method);
         String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + TDMDB_SCHEMA + ".environment_products ep Inner Join " + TDMDB_SCHEMA + ".product_logical_units p " +
                 "On ep.product_id = p.product_id Where p.be_id = (?) And ep.environment_id = (?) And Lower(ep.status) = 'active') lu Where 1 = 1 ";
@@ -187,9 +256,17 @@ public class SharedLogic {
         }
 
         env_id = "" + envDetails.get("environment_id");
+        env_name = "" + envDetails.get("environment_name");
         role_id = "" + envDetails.get("role_id");
         ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
         //log.info("fnValidateTargetEnvForTask - role_id: " + role_id);
+        
+        //check if system are diabled in the target environment 
+        String inactive_target_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"TARGET",task_id);
+
+        if(!"".equalsIgnoreCase(inactive_target_products)){
+            errorMessages.put("systems", "The task cannot be executed. The following systems are currently disabled in " + env_name + ": " + inactive_target_products);
+        }
         //check if target env satisfy BE and LUs filtering
         res = UserCode.db(TDM).fetch(beAndLus_sql, beId, env_id).firstValue();
         if (res == null)
@@ -260,13 +337,18 @@ public class SharedLogic {
                 
             }
         }
+
         return errorMessages;
     }
 
     @out(name = "result", type = Map.class, desc = "")
-    public static Map<String, String> fnValidateRetentionPeriodParams(Map<String, String> retentionPeriodParams, String validation, String envId, Boolean versionInd) throws Exception {
-        UserCode.log.info("fnValidateRetentionPeriodParams - Calling fnIsAdminOrOwner");
-        Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner(envId, sessionUser().name()));
+    public static Map<String, String> fnValidateRetentionPeriodParams(Map<String, String> retentionPeriodParams, String validation, String envId, Boolean versionInd, String createdBy) throws Exception {
+        //UserCode.log.info("fnValidateRetentionPeriodParams - Calling fnIsAdminOrOwner");
+        String userName=sessionUser().name();
+        if("TDM.tdmTaskScheduler".equalsIgnoreCase(userName)){
+            userName=createdBy;
+        }
+        Boolean adminOrOwner = fnIsAdminOrOwner(envId, userName);
         Map<String, String> errorMessages = new HashMap<>();
         Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
         Double inputValue = calculateRetentionValue(retentionPeriodParams, retentionDefinitions, validation);
@@ -423,5 +505,37 @@ public class SharedLogic {
         return details;
         
     }
-    
+    public static Boolean fnValidateFabricTableAndColumns(String table_name , String luName , String column_name){
+        LUType luType = null;
+        if (luName == null || Util.isEmpty(luName)) {
+            luType = getLuType();
+        } else {
+            luType = LUType.getTypeByName(luName);
+        }
+        // Get columns for the specified table
+        HashMap<String, LudbColumn> originalColumns = new HashMap<>(luType.ludbObjects.get(table_name).getLudbObjectColumns());
+
+        // Create a new map with lower case keys to handle issue if mtable returns param all caps 
+        HashMap<String, LudbColumn> columns = new HashMap<>();
+        for (Map.Entry<String, LudbColumn> entry : originalColumns.entrySet()) {
+            columns.put(entry.getKey().toLowerCase(), entry.getValue());
+        }
+         if (column_name != null && !Util.isEmpty(column_name)) {
+             // If column name is found return true
+             if (columns.containsKey(column_name)) {
+                 return true;
+             }
+         }
+        return false;
+    } 
+
+    public static String getDBNameFromInterface(String interfaceName) throws Exception {
+        try{
+            String env = getActiveEnvironmentName();
+            DbInterface dbInterface = (DbInterface)InterfacesManager.getInstance().getInterface(interfaceName, env.isEmpty()?"_dev":env);
+            return dbInterface.dbScheme;
+        } catch (Exception e) {
+            throw new SQLException("Error retrieving database name for interface: " + interfaceName, e);
+        }
+    }
 }

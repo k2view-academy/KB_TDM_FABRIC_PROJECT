@@ -1,580 +1,186 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get Project Directory and Create Template Inputs",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Project Directory",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetProjectFolder"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "PROJECT_FOLDER",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Create Template Inputs",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "buildDeleteTablesTemplateData"
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.logicalUnit"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "schemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "interfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "tableDefaultMapping",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "LU_NAME": {
-                                                    "type": "string"
-                                                },
-                                                "TableName": {
-                                                    "type": "string"
-                                                },
-                                                "Columns": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "datatype": {
-                                                                "type": "string"
-                                                            },
-                                                            "name": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                "PARENT_TABLE_DATA": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "FIELD_TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARENT_TABLE": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARENT_FIELD_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "FIELD_NAME": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                "FullTextSearch": {
-                                                    "type": "string"
-                                                },
-                                                "TARGET_INTERFACE": {
-                                                    "type": "string"
-                                                },
-                                                "TARGET_SCHEMA": {
-                                                    "type": "string"
-                                                },
-                                                "OriginalTableName": {
-                                                    "type": "string"
-                                                },
-                                                "MainTableInd": {
-                                                    "type": "boolean"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get Template for Generators",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Read Template of Table XML",
-                            "actorType": {
-                                "parentType": "FileRead",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "path",
-                                        "const": "SharedObjects/Templates/TDM/deleteTable.k2table.xml.template"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Read Template of Table Population",
-                            "actorType": {
-                                "parentType": "FileRead",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "path",
-                                        "const": "SharedObjects/Templates/TDM/deleteTablePopulation.flow.template"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create Flow",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "flow folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Tables"
-                                    },
-                                    {
-                                        "name": "PROJECT_DIRECTORY",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Format Table XML Name",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${tableName}.k2table.xml"
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Apply Template For Table XML",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "transform"
-                                    },
-                                    {
-                                        "name": "templateContent",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "data",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Format Table Population Name",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${tableName}.population.flow"
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Apply Template For Table Population",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "transform"
-                                    },
-                                    {
-                                        "name": "templateContent",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "data",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Write Flow",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "remark": "Only Populations based on Broadway Flows will have equivalent Generator flow",
-                    "actors": [
-                        {
-                            "name": "Write Table XML to Folder",
-                            "minHeight": 215,
-                            "actorType": {
-                                "parentType": "FileWrite",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Write Table Population to Folder",
-                            "actorType": {
-                                "parentType": "FileWrite",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Project Directory",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "Read Template of Table XML",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Project Directory",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "flow folder",
-                "name": "PROJECT_DIRECTORY"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Project Directory",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "Read Template of Table Population",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Template Inputs",
-                "name": "tableDefaultMapping"
-            },
-            "rightPort": {
-                "actor": "Apply Template For Table XML",
-                "name": "data"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Template Inputs",
-                "name": "tableDefaultMapping"
-            },
-            "rightPort": {
-                "actor": "Apply Template For Table Population",
-                "name": "data"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Template Inputs",
-                "name": "tableDefaultMapping"
-            },
-            "rightPort": {
-                "actor": "Format Table XML Name",
-                "name": "tableName"
-            },
-            "path": [
-                "TableName"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Create Template Inputs",
-                "name": "tableDefaultMapping"
-            },
-            "rightPort": {
-                "actor": "Format Table Population Name",
-                "name": "tableName"
-            },
-            "path": [
-                "TableName"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Read Template of Table XML",
-                "name": "stream"
-            },
-            "rightPort": {
-                "actor": "Apply Template For Table XML",
-                "name": "templateContent"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Read Template of Table Population",
-                "name": "stream"
-            },
-            "rightPort": {
-                "actor": "Apply Template For Table Population",
-                "name": "templateContent"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flow folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Write Table XML to Folder",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flow folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Write Table Population to Folder",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Table XML Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Write Table XML to Folder",
-                "name": "path"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Apply Template For Table XML",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Write Table XML to Folder",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Table Population Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Write Table Population to Folder",
-                "name": "path"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Apply Template For Table Population",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Write Table Population to Folder",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Create Template Inputs",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "Create Template Inputs",
-                "name": "luType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "Create Template Inputs",
-                "name": "schemaName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "Create Template Inputs",
-                "name": "interfaceName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "flow folder",
-                "name": "LU_NAME"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Get Project Directory and Create Template Inputs:
+    actors:
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Create Template Inputs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: buildDeleteTablesTemplateData
+          table:
+            external: table
+            schema: string
+            mandatory: false
+          luType:
+            external: luType
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+            mandatory: false
+          schemaName:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          interfaceName:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+        out:
+          tableDefaultMapping:
+            schema: '#ref'
+  Get Template for Generators:
+    actors:
+      Read Template of Table XML:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            const: SharedObjects/Templates/TDM/deleteTable.k2table.xml.template
+      Read Template of Table Population:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            const: SharedObjects/Templates/TDM/deleteTablePopulation.flow.template
+  Create Flow:
+    actors:
+      flow folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Tables
+          PROJECT_DIRECTORY:
+            link: Get Project Directory/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: luType
+            schema: string
+            mandatory: false
+      Format Table XML Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${tableName}.k2table.xml
+          tableName:
+            link: Create Template Inputs/tableDefaultMapping/TableName
+            schema: string
+            mandatory: false
+      Apply Template For Table XML:
+        parent: LuFunction
+        in:
+          functionName:
+            const: transform
+          templateContent:
+            link: Read Template of Table XML/stream
+            schema: string
+          data:
+            link: Create Template Inputs/tableDefaultMapping
+            schema: string
+        out:
+          result:
+            schema: string
+      Format Table Population Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${tableName}.population.flow
+          tableName:
+            link: Create Template Inputs/tableDefaultMapping/TableName
+            schema: string
+            mandatory: false
+      Apply Template For Table Population:
+        parent: LuFunction
+        in:
+          functionName:
+            const: transform
+          templateContent:
+            link: Read Template of Table Population/stream
+            schema: string
+          data:
+            link: Create Template Inputs/tableDefaultMapping
+            schema: string
+        out:
+          result:
+            schema: string
+  Write Flow:
+    remark: Only Populations based on Broadway Flows will have equivalent Generator
+      flow
+    actors:
+      Write Table XML to Folder:
+        parent: FileWrite
+        height: 215
+        in:
+          interface:
+            const: null
+            link: flow folder/string
+          path:
+            link: Format Table XML Name/string
+          stream:
+            link: Apply Template For Table XML/result
+      Write Table Population to Folder:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: flow folder/string
+          path:
+            link: Format Table Population Name/string
+          stream:
+            link: Apply Template For Table Population/result
+schemas:
+  Create Template Inputs.out.tableDefaultMapping:
+    type: object
+    properties:
+      LU_NAME:
+        type: string
+      TableName:
+        type: string
+      Columns:
+        type: array
+        items:
+          type: object
+          properties:
+            datatype:
+              type: string
+            name:
+              type: string
+      PARENT_TABLE_DATA:
+        type: array
+        items:
+          type: object
+          properties:
+            FIELD_TYPE:
+              type: string
+            PARENT_TABLE:
+              type: string
+            PARENT_FIELD_NAME:
+              type: string
+            FIELD_NAME:
+              type: string
+      FullTextSearch:
+        type: string
+      TARGET_INTERFACE:
+        type: string
+      TARGET_SCHEMA:
+        type: string
+      OriginalTableName:
+        type: string
+      MainTableInd:
+        type: boolean

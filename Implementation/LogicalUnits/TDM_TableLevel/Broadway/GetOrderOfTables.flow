@@ -1,0 +1,195 @@
+stages:
+  Ger Order Flow if Defined:
+    actors:
+      Get Order Flow:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TableLevelInterfaces
+          interface_name:
+            external: interfaceName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          order_flow:
+            schema: string
+  Get Order Of Tables By DB:
+    dependsOn: Ger Order Flow if Defined
+    actors:
+      No Order Flow?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = false;
+              if(flowName == null || flowName == "") {
+                  result = true;
+              }
+              result;
+          flowName:
+            link: Get Order Flow/order_flow
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Error Handler For Get Tables' Order:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Get Order of Tables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTablesOrder
+          tableList:
+            external: tableList
+            schema: '#ref'
+            mandatory: false
+          dbInterfaceName:
+            external: interfaceName
+            schema: '#ref'
+            mandatory: false
+          dbSchemaName:
+            external: schemaName
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Get Order Of Tables By Flow:
+    else: true
+    dependsOn: Ger Order Flow if Defined
+    actors:
+      Error Handler For Get Order of Tables By Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Call Order Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: Get Order Flow/order_flow
+          tableList:
+            external: tableList
+            schema: '#ref'
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+          envName:
+            external: environmentName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: object
+  Get Sets Of Tables:
+    actors:
+      Error Handler For Get Sets Of Tables:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Get Sets Of Tables Per Order:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTablesSetsByOrder
+          tablesOrder:
+            link:
+            - Get Order of Tables/result
+            - Call Order Flow/result
+            schema: object
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: any
+schemas:
+  Get Order Flow.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        suppress_indicator:
+          type: string
+        truncate_indicator:
+          type: string
+        count_indicator: {
+          }
+        order_flow: {
+          }
+        no_schema: {
+          }
+  Get Order of Tables.in.tableList:
+    type: array
+    items:
+      type: string
+  Get Order of Tables.in.dbInterfaceName:
+    type: array
+    items:
+      type: string
+  Get Order of Tables.in.dbSchemaName:
+    type: array
+    items:
+      type: string
+  Get Order of Tables.out.result:
+    type: object
+    properties:
+      cases:
+        type: integer
+      case_note:
+        type: integer
+  Call Order Flow.in.tableList:
+    type: array
+    items:
+      type: string

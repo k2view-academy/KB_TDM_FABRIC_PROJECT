@@ -2,6 +2,14 @@ tags: convert,TDM
 stages:
   Get All Lu Names:
     actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
       LIST LUT:
         parent: DbCommand
         in:
@@ -14,14 +22,12 @@ stages:
             schema: '#ref'
   Inputs:
     actors:
-      PROJECT_DIR:
-        parent: SysEnv
+      Studio Present?:
+        parent: NotNull
+        condition: result
         in:
-          name:
-            const: PROJECT_DIR
-        out:
           value:
-            schema: string
+            link: PROJECT_DIR/value
       Filter LUS:
         parent: JavaScript
         in:

@@ -1,609 +1,342 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "JsonParser1",
-                            "actorType": {
-                                "parentType": "JsonParser",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "object",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "table_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "column_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "active": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "population": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "StringFormat1",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "Tables/${TABLE_NAME}.k2table.xml"
-                                    },
-                                    {
-                                        "name": "TABLE_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FileRead1",
-                            "actorType": {
-                                "parentType": "FileRead",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "XmlParser1",
-                            "actorType": {
-                                "parentType": "XmlParser",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "object",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TableObject": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "_value": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "Name": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "_value": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "ID": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "_value": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "LazyDataUpdate": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "_attributes": {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "syncMethod": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "performEvery": {
-                                                                                    "type": "string"
-                                                                                }
-                                                                            }
-                                                                        },
-                                                                        "_value": {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "TruncateBeforeSync": {
-                                                                                    "type": "object",
-                                                                                    "properties": {
-                                                                                        "_value": {
-                                                                                            "type": "string"
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "Columns": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "_value": {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "Column": {
-                                                                                    "type": "array",
-                                                                                    "items": {
-                                                                                        "type": "object",
-                                                                                        "properties": {
-                                                                                            "_attributes": {
-                                                                                                "type": "object",
-                                                                                                "properties": {
-                                                                                                    "name": {
-                                                                                                        "type": "string"
-                                                                                                    },
-                                                                                                    "id": {
-                                                                                                        "type": "string"
-                                                                                                    },
-                                                                                                    "index": {
-                                                                                                        "type": "string"
-                                                                                                    },
-                                                                                                    "datatype": {
-                                                                                                        "type": "string"
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "IndexesList": {
-                                                                    "type": "object",
-                                                                    "properties": {}
-                                                                },
-                                                                "EnrichmentList": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "_value": {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "Enrichment": {
-                                                                                    "type": "object",
-                                                                                    "properties": {
-                                                                                        "_value": {
-                                                                                            "type": "object",
-                                                                                            "properties": {
-                                                                                                "Name": {
-                                                                                                    "type": "object",
-                                                                                                    "properties": {
-                                                                                                        "_value": {
-                                                                                                            "type": "string"
-                                                                                                        }
-                                                                                                    }
-                                                                                                },
-                                                                                                "Type": {
-                                                                                                    "type": "object",
-                                                                                                    "properties": {
-                                                                                                        "_value": {
-                                                                                                            "type": "string"
-                                                                                                        }
-                                                                                                    }
-                                                                                                },
-                                                                                                "TableName": {
-                                                                                                    "type": "object",
-                                                                                                    "properties": {
-                                                                                                        "_value": {
-                                                                                                            "type": "string"
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "info",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                },
-                                                "standalone": {
-                                                    "type": "boolean"
-                                                },
-                                                "header": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "EqualsIgnoreCase1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "MapBuild1",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "id"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "MapMerge1",
-                            "actorType": {
-                                "parentType": "MapMerge",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "table_name": {
-                                                    "type": "string"
-                                                },
-                                                "column_name": {
-                                                    "type": "string"
-                                                },
-                                                "active": {
-                                                    "type": "boolean"
-                                                },
-                                                "population": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "id": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "StringBuild1",
-                            "actorType": {
-                                "parentType": "StringBuild",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 8",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "StringFormat2",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "[${table_info}]"
-                                    },
-                                    {
-                                        "name": "table_info",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "JsonParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "StringFormat1",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "JsonParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "MapMerge1",
-                "name": "maps"
-            },
-            "iterate": "Iterate",
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "JsonParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "StringFormat1",
-                "name": "TABLE_NAME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "JsonParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "EqualsIgnoreCase1",
-                "name": "a"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "column_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "StringFormat1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "FileRead1",
-                "name": "path"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "FileRead1",
-                "name": "stream"
-            },
-            "rightPort": {
-                "actor": "XmlParser1",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "XmlParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "EqualsIgnoreCase1",
-                "name": "b"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "TableObject",
-                "_value",
-                "Columns",
-                "_value",
-                "Column",
-                "_attributes",
-                "name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "XmlParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "MapBuild1",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "TableObject",
-                "_value",
-                "Columns",
-                "_value",
-                "Column",
-                "_attributes",
-                "id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "MapBuild1",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "MapMerge1",
-                "name": "maps"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "MapMerge1",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "StringBuild1",
-                "name": "input"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "StringBuild1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "StringFormat2",
-                "name": "table_info"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TABLE_LIST"
-            },
-            "rightPort": {
-                "actor": "JsonParser1",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_PATH"
-            },
-            "rightPort": {
-                "actor": "FileRead1",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "StringFormat2",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "tables"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      JsonParser1:
+        parent: JsonParser
+        in:
+          stream:
+            external: TABLE_LIST
+        out:
+          object:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: Tables/${TABLE_NAME}.k2table.xml
+          TABLE_NAME:
+            link:
+              path: JsonParser1/object/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          params:
+            link: JsonParser1/object
+  Stage 3:
+    actors:
+      FileRead1:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            external: LU_PATH
+          path:
+            link: StringFormat1/string
+  Stage 4:
+    actors:
+      XmlParser1:
+        parent: XmlParser
+        in:
+          stream:
+            link: FileRead1/stream
+        out:
+          object:
+            schema: '#ref'
+          info:
+            schema: '#ref'
+  Stage 5:
+    dependsOn: Stage 4
+    actors:
+      EqualsIgnoreCase1:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link:
+              path: JsonParser1/object/column_name
+              iterate: Iterate
+          b:
+            link:
+              path: XmlParser1/object/TableObject/_value/Columns/_value/Column/_attributes/name
+              iterate: Iterate
+      MapBuild1:
+        parent: MapBuild
+        in:
+          key:
+            const: id
+            schema: string
+          value:
+            link:
+              path: XmlParser1/object/TableObject/_value/Columns/_value/Column/_attributes/id
+              iterate: Iterate
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 9:
+    else: true
+    dependsOn: Stage 4
+    actors:
+      JsonParser2:
+        parent: JsonParser
+        in:
+          stream:
+            link: XmlParser1/object/TableObject/_value/IndexesList
+        out:
+          object:
+            schema: '#ref'
+  Stage 10:
+    dependsOn: Stage 5
+    split: '--------------------'
+  Stage 11:
+    dependsOn: Stage 9
+    actors:
+      EqualsIgnoreCase2:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link:
+              path: JsonParser1/object/column_name
+              iterate: Iterate
+          b:
+            link: JsonParser2/object/Index/_attributes/columnsIdsList
+      MapBuild2:
+        parent: MapBuild
+        in:
+          key:
+            const: id
+            schema: string
+          value:
+            link: JsonParser2/object/Index/_attributes/columnsIdsList
+        out:
+          map:
+            schema: '#ref'
+          previous:
+            schema: '#ref'
+  Stage 6:
+    last: 1
+    actors:
+      MapMerge1:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: JsonParser1/object
+              iterate: Iterate
+              pos: 0
+            - path: MapBuild1/map
+              pos: 1
+            - path: MapBuild2/map
+              pos: 2
+        out:
+          map:
+            schema: '#ref'
+  Stage 7:
+    last: 1
+    actors:
+      StringBuild1:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: MapMerge1/map
+              pos: 0
+  Stage 8:
+    actors:
+      StringFormat2:
+        parent: StringFormat
+        in:
+          format:
+            const: '[${table_info}]'
+          table_info:
+            link: StringBuild1/string
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: tables
+schemas:
+  JsonParser1.out.object:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population:
+          type: array
+          items:
+            type: string
+  XmlParser1.out.object:
+    type: object
+    properties:
+      TableObject:
+        type: object
+        properties:
+          _value:
+            type: object
+            properties:
+              Name:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              ID:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              LazyDataUpdate:
+                type: object
+                properties:
+                  _attributes:
+                    type: object
+                    properties:
+                      syncMethod:
+                        type: string
+                      performEvery:
+                        type: string
+                  _value:
+                    type: object
+                    properties:
+                      TruncateBeforeSync:
+                        type: object
+                        properties:
+                          _value:
+                            type: string
+              Columns:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Column:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _attributes:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                id:
+                                  type: string
+                                index:
+                                  type: string
+                                datatype:
+                                  type: string
+              IndexesList:
+                type: object
+                properties: {
+                  }
+              EnrichmentList:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Enrichment:
+                        type: object
+                        properties:
+                          _value:
+                            type: object
+                            properties:
+                              Name:
+                                type: object
+                                properties:
+                                  _value:
+                                    type: string
+                              Type:
+                                type: object
+                                properties:
+                                  _value:
+                                    type: string
+                              TableName:
+                                type: object
+                                properties:
+                                  _value:
+                                    type: string
+  XmlParser1.out.info:
+    type: object
+    properties:
+      version:
+        type: string
+      standalone:
+        type: boolean
+      header:
+        type: string
+  MapBuild1.out.map:
+    type: object
+    properties:
+      id:
+        type: string
+  JsonParser2.out.object:
+    type: object
+    properties:
+      Index:
+        type: object
+        properties:
+          _attributes:
+            type: object
+            properties:
+              id:
+                type: string
+              pk:
+                type: string
+              unique:
+                type: string
+              instanceOnly:
+                type: string
+              columnsIdsList:
+                type: string
+  MapBuild2.out.map:
+    type: object
+    properties:
+      id:
+        type: string
+  MapBuild2.out.previous:
+    type: object
+    properties:
+      _value:
+        type: object
+        properties:
+          Index:
+            type: object
+            properties:
+              _attributes:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  pk:
+                    type: string
+                  unique:
+                    type: string
+                  instanceOnly:
+                    type: string
+                  columnsIdsList:
+                    type: string
+  MapMerge1.out.map:
+    type: object
+    properties:
+      table_name:
+        type: string
+      column_name:
+        type: string
+      active:
+        type: boolean
+      population:
+        type: array
+        items:
+          type: string
+      id:
+        type: string

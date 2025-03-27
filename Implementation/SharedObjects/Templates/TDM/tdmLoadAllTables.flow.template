@@ -9,8 +9,7 @@
                     "actors": []
                 }
             ]
-        },
-		{{~#each this}}
+        },{{#each Tables}}
 		{
             "stages": [
                 {
@@ -18,7 +17,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						{{#if @first}}{{^}}
+						{{#if @index}}
 						{
                             "name": "Check if Entity has not failed {{@index}}",
                             "condition": "result",
@@ -35,8 +34,7 @@
                                 ],
                                 "outputs": []
                             }
-						},{{/if}}
-						{{~#each this}}
+						},{{/if}}{{~#each this}}
                         {
                             "name": "load_{{this}}",
                             "actorType": {
@@ -49,8 +47,7 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-						{{~/each}}
+                        },{{~/each}}
                         {
                             "name": "Get Entity Status {{indexPlus @index}}",
                             "actorType": {
@@ -68,8 +65,7 @@
                     ]
                 }
             ]
-        },
-		{{~/each}}
+        },{{/each}}
         {
             "stages": [
                 {
@@ -81,9 +77,7 @@
             ]
         }
     ],
-    "connections": [
-		{{~#each this}}
-		{{#if @first}}{{^}}
+    "connections": [{{#each Tables}}{{#if @index}}
 		{
             "leftPort": {
                 "actor": "Get Entity Status {{@index}}",
@@ -93,7 +87,6 @@
                 "actor": "Check if Entity has not failed {{@index}}",
                 "name": "a"
             }
-        }{{#if @last}}{{^}},{{/if}}{{/if}}
-		{{~/each}}
+        }{{#neq @index Size}},{{/neq}}{{/if}}{{/each}}
 	]
 }

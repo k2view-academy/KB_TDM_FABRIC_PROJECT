@@ -164,6 +164,10 @@ stages:
             link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
             schema: string
             mandatory: false
+          ROOT_TABLE_KEY:
+            external: TABLE_KEY
+            schema: string
+            mandatory: false
         out:
           rootInfo:
             schema: '#ref'
@@ -278,6 +282,8 @@ stages:
                         popOrder = "1"; // Always set FABRIC_TDM_ROOT as order 1
                     } else if (tableObj.table_name=='LU_PARAMS') {
                         popOrder = "998";
+                    } else if (tableObj.table_name=='TDM_BE_IIDS') { // New Table added for params Coupling option in TDM 9.1
+                        popOrder = "1000";
                     } else {
                         popOrder = "999";
                     }
@@ -347,6 +353,9 @@ stages:
                     popOrder = "1"; // Always set FABRIC_TDM_ROOT as order 1
                   } else if (tableObj.table_name == 'LU_PARAMS') {
                     popOrder = "998";
+                  } else if (tableObj.table_name == 'TDM_BE_IIDS') {
+                    // New Table added for params Coupling option in TDM 9.1
+                    popOrder = "1000";
                   } else {
                     popOrder = "999";
                   }
@@ -488,44 +497,130 @@ stages:
         out:
           result:
             schema: '#ref'
+      Create Root Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createRootTablePopulation
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          TABLE_NAME:
+            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
+            schema: string
+            mandatory: false
+          TABLE_KEY:
+            external: TABLE_KEY
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+          LU_PATH:
+            external: LU_PATH
+            schema: string
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          SOURCE_TABLE:
+            external: SOURCE_TABLE
+            schema: string
+            mandatory: false
       Set TDM Tables Relations:
         parent: JavaScript
         in:
           script:
             const:
-              userCode: "var arrIn = [];\r\nvar objTmp = [];\r\nvar objOut = {};\r\
-                \nvar tableObj = {};\r\nvar tablesObjt = [];\r\nif (objIn != null)\
-                \ {\r\n  arrIn = [ ...objIn ];\r\n}\r\n\r\ntablesObjt = JSON.parse(tables);\r\
-                \n\r\nfor(var i=0; i<tablesObjt.length; i++) {\r\n    tableObj = tablesObjt[i];\r\
-                \n    \r\n    if(\"\"+tableObj.table_name==\"FABRIC_TDM_ROOT\") {\r\
-                \n        objTmp = {\r\n                    \"From\": {\r\n      \
-                \              \"_attributes\": {\r\n                      \"tableType\"\
-                : \"TableObject\",\r\n                      \"table\": tableObj.table_name,\r\
-                \n                      \"column\": tableObj.column_name,\r\n    \
-                \                  \"columnId\": tableObj.id\r\n                 \
-                \   }\r\n                    },\r\n                    \"To\": {\r\
-                \n                    \"_attributes\": {\r\n                     \
-                \ \"tableType\": \"TableObject\",\r\n                      \"table\"\
-                : rootTable.table_name,\r\n                      \"populationObjectName\"\
-                : rootTable.population,\r\n                      \"column\": rootTable.column_name,\r\
-                \n                      \"columnId\": rootTable.id\r\n           \
-                \         }\r\n                    }\r\n                  };\r\n \
-                \       arrIn.push({\"_value\":objTmp});\r\n\r\n        // TAR root\
-                \ table\r\n        objTmp = {\r\n                    \"From\": {\r\
-                \n                    \"_attributes\": {\r\n                     \
-                \ \"tableType\": \"TableObject\",\r\n                      \"table\"\
-                : tableObj.table_name,\r\n                      \"column\": tableObj.column_name,\r\
-                \n                      \"columnId\": tableObj.id\r\n            \
-                \        }\r\n                    },\r\n                    \"To\"\
-                : {\r\n                    \"_attributes\": {\r\n                \
-                \      \"tableType\": \"TableObject\",\r\n                      \"\
-                table\": \"TAR_\"+rootTable.table_name,\r\n                      \"\
-                populationObjectName\": rootTable.population,\r\n                \
-                \      \"column\": rootTable.column_name,\r\n                    \
-                \  \"columnId\": rootTable.id\r\n                    }\r\n       \
-                \             }\r\n                  };\r\n        arrIn.push({\"\
-                _value\":objTmp});\r\n    }\r\n    \r\n}\r\nobjOut.DatabaseRelations\
-                \ = {\"_value\" : { \"Relation\": arrIn} };\r\nobjOut;"
+              userCode: |-
+                var arrIn = [];
+                var objTmp = [];
+                var objOut = {};
+                var tableObj = {};
+                var tablesObjt = [];
+                if (objIn != null) {
+                  arrIn = [ ...objIn ];
+                }
+
+                tablesObjt = JSON.parse(tables);
+
+                for(var i=0; i<tablesObjt.length; i++) {
+                    tableObj = tablesObjt[i];
+
+                    if(""+tableObj.table_name=="FABRIC_TDM_ROOT") {
+                        objTmp = {
+                                    "From": {
+                                    "_attributes": {
+                                      "tableType": "TableObject",
+                                      "table": tableObj.table_name,
+                                      "column": tableObj.column_name,
+                                      "columnId": tableObj.id
+                                    }
+                                    },
+                                    "To": {
+                                    "_attributes": {
+                                      "tableType": "TableObject",
+                                      "table": rootTable.table_name,
+                                      "populationObjectName": rootTable.population,
+                                      "column": rootTable.column_name,
+                                      "columnId": rootTable.id
+                                    }
+                                    }
+                                  };
+                        arrIn.push({"_value":objTmp});
+
+                        // TAR root table
+                        objTmp = {
+                                    "From": {
+                                    "_attributes": {
+                                      "tableType": "TableObject",
+                                      "table": tableObj.table_name,
+                                      "column": tableObj.column_name,
+                                      "columnId": tableObj.id
+                                    }
+                                    },
+                                    "To": {
+                                    "_attributes": {
+                                      "tableType": "TableObject",
+                                      "table": "TAR_"+rootTable.table_name,
+                                      "populationObjectName": rootTable.population,
+                                      "column": rootTable.column_name,
+                                      "columnId": rootTable.id
+                                    }
+                                    }
+                                  };
+                        arrIn.push({"_value":objTmp});
+
+                        //TDM BE IIDS New TDM Table For Params Coupling Method 9.1
+                                objTmp = {
+                                    "From": {
+                                    "_attributes": {
+                                      "tableType": "TableObject",
+                                      "table": tableObj.table_name,
+                                      "column": tableObj.column_name,
+                                      "columnId": tableObj.id
+                                    }
+                                    },
+                                    "To": {
+                                    "_attributes": {
+                                      "tableType": "TableObject",
+                                      "table": "TDM_BE_IIDS",
+                                      "populationObjectName": "populationTdmBeIID.flow",
+                                      "column": "iid",
+                                      "columnId": "iid"
+                                    }
+                                    }
+                                  };
+                        arrIn.push({"_value":objTmp});
+
+                    }
+
+                }
+                objOut.DatabaseRelations = {"_value" : { "Relation": arrIn} };
+                objOut;
               script: |-
                 var arrIn = [];
                 var objTmp = [];
@@ -587,6 +682,29 @@ stages:
                     };
                     arrIn.push({
                       "_value": objTmp
+                    }); //TDM BE IIDS New TDM Table For Params Coupling Method 9.1
+
+                    objTmp = {
+                      "From": {
+                        "_attributes": {
+                          "tableType": "TableObject",
+                          "table": tableObj.table_name,
+                          "column": tableObj.column_name,
+                          "columnId": tableObj.id
+                        }
+                      },
+                      "To": {
+                        "_attributes": {
+                          "tableType": "TableObject",
+                          "table": "TDM_BE_IIDS",
+                          "populationObjectName": "populationTdmBeIID.flow",
+                          "column": "iid",
+                          "columnId": "iid"
+                        }
+                      }
+                    };
+                    arrIn.push({
+                      "_value": objTmp
                     });
                   }
                 }
@@ -630,40 +748,6 @@ stages:
           LU_ROOT_TABLE:
             link: Get Root Table IID/rootInfo
             schema: '#ref'
-            mandatory: false
-      Create Root Population:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createRootTablePopulation
-          LU_NAME:
-            external: LU_NAME
-            schema: string
-            mandatory: false
-          TABLE_NAME:
-            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
-            schema: string
-            mandatory: false
-          TABLE_KEY:
-            link: Get Root Table IID/rootInfo/column_name
-            external: SOURCE_TABLE_KEY
-            schema: string
-            mandatory: false
-          SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
-            schema: string
-            mandatory: false
-          LU_PATH:
-            external: LU_PATH
-            schema: string
-            mandatory: false
-          SOURCE_SCHEMA:
-            external: SOURCE_SCHEMA
-            schema: string
-            mandatory: false
-          SOURCE_TABLE:
-            external: SOURCE_TABLE
-            schema: string
             mandatory: false
       Update TAR Root Population:
         parent: InnerFlow
@@ -1022,11 +1106,11 @@ schemas:
       properties:
         table_name:
           type: string
-        column_name: {
-          }
-        population:
+        column_name:
           type: string
-        id: {
+        active:
+          type: boolean
+        population: {
           }
   Add TDM tables.in.objIn:
     type: object

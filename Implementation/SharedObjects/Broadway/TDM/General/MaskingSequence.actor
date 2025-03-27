@@ -1,0 +1,74 @@
+{
+	"type": "MaskingSequence",
+	"parentType": "Masking",
+	"badge":"TSQ",
+	"actorClass": "com.k2view.cdbms.usercode.common.TDM.TDMMasking",
+	"tags":["masking"],
+	"doc":[
+		"This sequence implements a unique sequential number. If the initial value is not provided or empty, the sequence is still generated."
+	],
+	"inputs": [
+		{
+			"name": "flowName",
+			"const": "Sequence.actor",
+			"hidden": true
+		},
+		{
+			"name": "sequenceId",
+			"mandatory": false,
+			"const": "",
+			"schema": {
+				"type": "string"
+			},
+			"doc": [
+				"The sequence name to separate different sequences.",
+				"This is optional parameter, in case it is empty will be used masking ID as sequence ID.",
+				"In case the sequence interface is DB (Postgres, Oracle, DB2) and the sequence doesn't exist the actor will create it in the DB."
+			]
+		},
+		{
+			"name": "sequenceInterface",
+			"mandatory": true,
+			"const": "",
+			"editor":{"id":"com.k2view.interface", "interfaceType":["REDIS", "database"], "interfaces": ["IN-MEMORY"]},
+			"schema": {
+				"type": "string"
+			},
+			"doc":[
+				"The interface where the sequence is defined with the name stored in the 'maskingId' argument. The following use cases are supported:",
+				"- IN-MEMORY, useful for testing only since it can be used only in a single node configuration.",
+				"- Redis or DB sequence. To implement the DB sequence, set the maskingId to hold the sequence name defined in the sequenceInterface DB."
+			]
+		},
+		{
+			"name": "initialValue",
+			"mandatory": true,
+			"schema": {
+				"type": "string"
+			},
+			"const": "1",
+			"doc": [
+				"The sequence initial value, can be either a number or a string.",
+				"When set to a string, the actor will try to find the Broadway flow with such name. Note that the flow must return an external output named \"initialValue\"."
+			]
+		},
+		{
+			"name": "increment",
+			"mandatory": true,
+			"schema": {
+				"type": "number"
+			},
+			"const": 1,
+			"doc": ["The incremental value."]
+		},
+		{
+			"name": "category",
+			"const": "enable_sequences"
+		},
+		{
+			"name": "onEmpty",
+			"const": "MASK_NO_CACHE"
+		}
+	],
+	"outputs": []
+}

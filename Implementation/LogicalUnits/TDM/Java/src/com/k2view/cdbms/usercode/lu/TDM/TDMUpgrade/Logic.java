@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnUpdateDistinctFieldData;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.lu.TDM.Globals.TDM_PARAMETERS_SEPARATOR;
+import static com.k2view.cdbms.usercode.lu.TDM.TDM.Logic.fnGetParamType;
 
 @SuppressWarnings({"DefaultAnnotationParam",  "unchecked"})
 public class Logic extends UserCode {
@@ -64,8 +65,9 @@ public class Logic extends UserCode {
                             value = value.replace("{", "");
                             value = value.replace("}", "");
                             HashSet<String> values = new HashSet<String>(Arrays.stream(value.split(TDM_PARAMETERS_SEPARATOR)).collect(Collectors.toSet()));
-            
-                            fieldValues = fnUpdateDistinctFieldData(columnName, fieldValues, values);
+                            String col = columnName.split("\\.")[1];
+                            String columnType = fnGetParamType(luName, col);
+                            fieldValues = fnUpdateDistinctFieldData(columnName,columnType, fieldValues, values);
                         }
                     }
                 }

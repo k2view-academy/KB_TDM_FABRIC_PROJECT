@@ -1,0 +1,270 @@
+stages:
+  Get List of Tables:
+    actors:
+      Sync Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Get Tables List:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT  rt.lu_name, rt.interface_name, rt.schema_name, es.ref_table_name as table_name
+              FROM  @TDMDB_SCHEMA@.TASK_REF_EXE_STATS es, @TDMDB_SCHEMA@.TASK_REF_TABLES rt, @TDMDB_SCHEMA@.tasks t
+              WHERE  rt.task_id = t.task_id
+              -- AND (lower(es.execution_status) = 'pending' or (lower(t.sync_mode) != 'off' and lower(es.execution_status) = 'running'))
+              AND rt.task_id = es.task_id AND rt.task_ref_table_id = es.task_ref_table_id
+              AND es.task_execution_id = ${taskExecutionId}
+              order by lu_name, interface_name, schema_name
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Get Target Details:
+    transactional: false
+    actors:
+      Check if Table Exists in RefList Mtable:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: RefList
+          lu_name:
+            link:
+              path: Get Tables List/result/lu_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          interface_name:
+            link:
+              path: Get Tables List/result/interface_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          targetSchemaName:
+            link:
+              path: Get Tables List/result/schema_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          reference_table_name:
+            link:
+              path: Get Tables List/result/table_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          target_ref_table_name:
+            schema: any
+          target_interface_name:
+            schema: any
+          target_schema_name:
+            schema: any
+  Set Target Table Details:
+    transactional: false
+    actors:
+      Set Target Table Name:
+        parent: IfElse
+        in:
+          a:
+            link: Check if Table Exists in RefList Mtable/target_ref_table_name
+            schema: string
+          b:
+            link:
+              path: Get Tables List/result/table_name
+              iterate: Iterate
+            schema: string
+          test:
+            link: Check if Table Exists in RefList Mtable/target_ref_table_name
+        out:
+          result:
+            schema: string
+      Set Target Interface:
+        parent: IfElse
+        in:
+          a:
+            link: Check if Table Exists in RefList Mtable/target_interface_name
+            schema: string
+          b:
+            link:
+              path: Get Tables List/result/interface_name
+              iterate: Iterate
+            schema: string
+          test:
+            link: Check if Table Exists in RefList Mtable/target_interface_name
+        out:
+          result:
+            schema: string
+      Set Target Schema:
+        parent: IfElse
+        in:
+          a:
+            link: Check if Table Exists in RefList Mtable/target_schema_name
+            schema: string
+          b:
+            link:
+              path: Get Tables List/result/schema_name
+              iterate: Iterate
+            schema: string
+          test:
+            link: Check if Table Exists in RefList Mtable/target_schema_name
+        out:
+          result:
+            schema: string
+  Create Target Table Details:
+    transactional: false
+    actors:
+      Create Map for Target Table Name:
+        parent: MapBuild
+        in:
+          key:
+            const: target_table_name
+            schema: string
+          value:
+            link: Set Target Table Name/result
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Create Map for Target Interface:
+        parent: MapBuild
+        in:
+          key:
+            const: target_interface
+            schema: string
+          value:
+            link: Set Target Interface/result
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Create Map for Target Scherna:
+        parent: MapBuild
+        in:
+          key:
+            const: target_schema
+            schema: string
+          value:
+            link: Set Target Schema/result
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Get Tables' Order:
+    transactional: false
+    actors:
+      Get Tables' Order Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Get Order Of Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetOrderOfTables
+          interfaceName:
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schemaName:
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          tableList:
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Update Batch ID:
+    transactional: false
+schemas:
+  Get Tables List.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        table_name:
+          type: string
+  Create Map for Target Table Name.out.map:
+    type: object
+    properties:
+      retention:
+        type: integer
+  Create Map for Target Interface.out.map:
+    type: object
+    properties:
+      retention:
+        type: integer
+  Create Map for Target Scherna.out.map:
+    type: object
+    properties:
+      retention:
+        type: integer
+  Get Order Of Tables.in.tableList:
+    type: array
+    items:
+      type: string
+  Get Order Of Tables.out.result:
+    type: object
+    properties:
+      tablesList:
+        type: object
+        properties:
+          '0':
+            type: array
+            items:
+              type: string
+          '1':
+            type: array
+            items:
+              type: string
+          '2':
+            type: array
+            items:
+              type: string
+          '3':
+            type: array
+            items:
+              type: string
+      maxOrder:
+        type: integer

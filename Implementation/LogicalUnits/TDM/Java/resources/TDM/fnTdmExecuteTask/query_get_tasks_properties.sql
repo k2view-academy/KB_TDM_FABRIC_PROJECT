@@ -25,6 +25,7 @@ SELECT task_title,
        reserve_note,
        filterout_reserved,
        CAST(mask_sensitive_data as varchar(10)) as mask_sensitive_data,
-       clone_ind
-FROM   @TDMDB_SCHEMA@.TASKS
+       clone_ind,
+       t.execution_mode
+FROM   @TDMDB_SCHEMA@.TASKS t
 WHERE  task_id = ?

@@ -32,6 +32,14 @@ stages:
             default: false
   Get List of Upgrade Scripts:
     actors:
+      NotEquals:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Current Version/result
+          b:
+            link: Get Target Version/result
       List of Upgrade Scripts:
         parent: TDMDBUpgradeScripts
         height: 303
@@ -235,6 +243,24 @@ stages:
           flowName:
             const: null
             link: Lookup For Upgrade Script/result/flow_name
+  Update TDM Version:
+    actors:
+      TDM_VERSION:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@schema}.tdm_general_parameters set param_value = ${updated_version}
+              where param_name = 'TDM_VERSION' ;
+          schema:
+            link: TDMDB_SCHEMA/result
+            schema: any
+            mandatory: false
+          updated_version:
+            link: Get Target Version/result
+            schema: any
+            mandatory: false
 schemas:
   List of Upgrade Scripts.out.table:
     type: array

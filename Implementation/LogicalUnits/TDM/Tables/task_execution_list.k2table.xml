@@ -2,6 +2,8 @@
 <TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>task_execution_list</Name>
   <ID>tbl_task_execution_list</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="task_execution_id" id="tblCol_516f51bbc0ec4c7eafca8ee74b48578e" index="0" datatype="Integer" mandatory="true" />
     <Column name="task_id" id="tblCol_2f6a4593ef4142ffa559426939cabdc0" index="1" datatype="Integer" mandatory="true" />
@@ -31,6 +33,7 @@
     <Column name="source_product_version" id="source_product_version" index="25" datatype="text" />
     <Column name="target_product_version" id="target_product_version" index="26" datatype="text" />
     <Column name="subset_task_execution_id" id="subset_task_execution_id" index="27" datatype="integer" />
+    <Column name="entity_inclusion_query" id="entity_inclusion_query" index="28" datatype="Text" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_516f51bbc0ec4c7eafca8ee74b48578e,tblCol_2f6a4593ef4142ffa559426939cabdc0,tblCol_8266e9c91a8f4631aeb957b787fee2a5,tblCol_29bb00d7855341c68d690ebe4e601ae1" />

@@ -8,7 +8,7 @@ SELECT DISTINCT
   , 0 AS parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
-  , tt.execution_status parent_lu_status
+  , tt.execution_status as parent_lu_status
   , 0 as product_id
   , null as tdm_target_product_version
   , tt.num_of_processed_entities
@@ -19,7 +19,12 @@ SELECT DISTINCT
   , e.environment_name  as source_environment_name
   , e2.environment_name as target_environment_name
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
-  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
+  , CASE
+        WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
+            SPLIT_PART(ts.task_created_by, '##', 2)
+        ELSE
+            SPLIT_PART(tt.task_executed_by, '##', 2)
+    END AS user_roles
 FROM
     @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
   , @TDMDB_SCHEMA@.environments         e
@@ -42,23 +47,29 @@ SELECT DISTINCT
   , 0 AS parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
-  , tt.execution_status parent_lu_status
+  , tt.execution_status as parent_lu_status
   , tt.product_id
-  , tt.product_version tdm_target_product_version
+  , tt.product_version as tdm_target_product_version
   , tt.num_of_processed_entities
   , tt.process_id
-  , ep.product_version tdm_source_product_version
+  , ep.product_version as tdm_source_product_version
   , tt.version_task_execution_id
   , tt.subset_task_execution_id
   , e.environment_name  as source_environment_name
   , e2.environment_name as target_environment_name
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
-  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
+  , CASE
+        WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
+            SPLIT_PART(ts.task_created_by, '##', 2)
+        ELSE
+            SPLIT_PART(tt.task_executed_by, '##', 2)
+    END AS user_roles
 FROM
     @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
   , @TDMDB_SCHEMA@.environments         e
   , @TDMDB_SCHEMA@.environments         e2
   , @TDMDB_SCHEMA@.environment_products ep
+  , @TDMDB_SCHEMA@.tasks ts
 WHERE
     UPPER(ep.status)                 = 'ACTIVE'
     AND UPPER(tt.execution_status)   = 'PENDING'
@@ -73,6 +84,7 @@ WHERE
     AND ep.product_id            = tt.product_id
 	AND tt.environment_id        = e2.environment_id
 	AND tt.lu_id > 0
+    AND ts.task_id = tt.task_id
 UNION
 SELECT DISTINCT
     tt.task_id
@@ -84,24 +96,30 @@ SELECT DISTINCT
   , tt.parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
-  , p.execution_status parent_lu_status
+  , p.execution_status as parent_lu_status
   , tt.product_id
-  , tt.product_version tdm_target_product_version
+  , tt.product_version as tdm_target_product_version
   , tt.num_of_processed_entities
   , tt.process_id
-  , ep.product_version tdm_source_product_version
+  , ep.product_version as tdm_source_product_version
   , tt.version_task_execution_id
   , tt.subset_task_execution_id
   , e.environment_name as source_environment_name
   , e2.environment_name as target_environment_name
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
-  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
+  , CASE
+        WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
+            SPLIT_PART(ts.task_created_by, '##', 2)
+        ELSE
+            SPLIT_PART(tt.task_executed_by, '##', 2)
+    END AS user_roles
 FROM
     @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
   , @TDMDB_SCHEMA@.TASK_EXECUTION_LIST p
   , @TDMDB_SCHEMA@.environments         e
   , @TDMDB_SCHEMA@.environments         e2
   , @TDMDB_SCHEMA@.environment_products ep
+  , @TDMDB_SCHEMA@.tasks ts
 WHERE
     UPPER(tt.execution_status)       = 'PENDING'
     AND tt.task_execution_id         = p.task_execution_id
@@ -112,6 +130,7 @@ WHERE
     AND e.environment_id         = ep.environment_id
     AND ep.product_id            = tt.product_id
 	AND tt.environment_id        = e2.environment_id
+    AND ts.task_id               = tt.task_id
 	AND tt.lu_id > 0
 UNION
 SELECT DISTINCT
@@ -121,25 +140,32 @@ SELECT DISTINCT
   , tt.creation_date
   , tt.data_center_name
   , tt.environment_id
-  , 0 parent_lu_id
+  , 0 as parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
-  , '' parent_lu_status
+  , '' as parent_lu_status
   , tt.product_id
-  , tt.product_version tdm_target_product_version
+  , tt.product_version as tdm_target_product_version
   , tt.num_of_processed_entities
   , tt.process_id
-  , '' tdm_source_product_version
+  , '' as tdm_source_product_version
   , tt.version_task_execution_id
   , tt.subset_task_execution_id
   , tt.source_env_name as source_environment_name
   , e.environment_name as target_environment_name
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
-  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
+  , CASE
+        WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
+            SPLIT_PART(ts.task_created_by, '##', 2)
+        ELSE
+            SPLIT_PART(tt.task_executed_by, '##', 2)
+    END AS user_roles
 FROM
       @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
-    , @TDMDB_SCHEMA@.environments         e
+    , @TDMDB_SCHEMA@.environments  e
+    , @TDMDB_SCHEMA@.tasks ts
 WHERE
     UPPER(tt.execution_status)   = 'PENDING'
-    AND tt.environment_id            = e.environment_id
+    AND tt.environment_id        = e.environment_id
     AND ((tt.process_id !=0))
+    AND ts.task_id               = tt.task_id

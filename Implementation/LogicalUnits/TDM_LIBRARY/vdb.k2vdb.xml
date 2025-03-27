@@ -7,7 +7,7 @@
   </LuLazyDataUpdate>
   <EventsList>
   </EventsList>
-  <IidFinderProp>
+  <IidFinderProp enabled="false">
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
   </IidFinderProp>
@@ -16,6 +16,7 @@
 	 <Table>LU_PARAMS</Table>
 	 <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
 	 <Table>TDM_LU_TYPE_RELATION_EID</Table>
+	 <Table>TDM_BE_IIDS</Table>
   </Tables>
   <TablesProperties>
 	 <TableProperties name="FABRIC_TDM_ROOT">
@@ -33,6 +34,11 @@
         <Population name="populationTdmLuTypeRealtionEid.flow" order="999" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
+	 <TableProperties name="TDM_BE_IIDS">
+      <Populations>
+        <Population name="populationTdmBeIID.flow" order="1000" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
   </TablesProperties>
   <EnrichmentsOrderList>
   </EnrichmentsOrderList>
@@ -40,14 +46,19 @@
   </ReferencesList>
   <Relations />
   <DatabaseRelations>
+	  <Relation>
+        <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+        <To tableType="TableObject" table="TDM_BE_IIDS" populationObjectName="populationTdmBeIID.flow" column="iid" columnId="iid" />
+      </Relation>
   </DatabaseRelations>
   <DiagramGraph>
     <Graph name="vdb.k2vdb.xml">
-      <Node name="FABRIC_TDM_ROOT" pos="134 24" viewType="Table" />
-      <Group name="TDM Tables" pos="384 -161" expanded="true">
-        <Node name="LU_PARAMS" pos="510 -56" viewType="Table" />
-        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="515 318" viewType="Table" />
-        <Node name="TDM_LU_TYPE_RELATION_EID" pos="513 131" viewType="Table" />
+      <Node name="FABRIC_TDM_ROOT" pos="120 606" viewType="Table" />
+      <Group name="TDM Tables" pos="393 20" expanded="true">
+        <Node name="LU_PARAMS" pos="519 537" viewType="Table" />
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="519 112" viewType="Table" />
+        <Node name="TDM_LU_TYPE_RELATION_EID" pos="519 312" viewType="Table" />
+        <Node name="TDM_BE_IIDS" pos="519 762" viewType="Table" />
       </Group>
     </Graph>
   </DiagramGraph>

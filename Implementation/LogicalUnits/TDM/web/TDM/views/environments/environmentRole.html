@@ -43,7 +43,7 @@
                                     <label class="control-label option-button-label">Read</label>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_read">
+                            <div class="form-group col-lg-9" ng-if="environmentCtrl.roleData.allow_read">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
                                 <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1" 
                                     ng-disabled="environmentCtrl.disableChangeRole"
@@ -75,12 +75,14 @@
                                     class="form-control1 chosen-select" ng-model="environmentCtrl.testers"
                                     ng-options="option as option.username for option in environmentCtrl.allTestersRole track by option.user_id">
                             </select>
-                            <div ng-if="!environmentCtrl.disableChangeRole" off-click="environmentCtrl.isOpen1 = false" off-click-activator="environmentCtrl.isOpen1">
-                                <button id="environment_role_add_tester" uib-tooltip="Add Tester" tooltip-placement="top" popover-placement="left"
-                                    ng-click="environmentCtrl.initAddNewTesterPopup()" type="button"
-                                    class="btn k2-primary-btn">
-                                    <i class="fa fa-plus"></i>
-                                </button>
+                            <div style="position: relative;" ng-if="!environmentCtrl.disableChangeRole" off-click="environmentCtrl.isOpen1 = false" off-click-activator="environmentCtrl.isOpen1">
+                                <div uib-tooltip="Add Tester" tooltip-placement="top" >
+                                    <button id="environment_role_add_tester" 
+                                        ng-click="environmentCtrl.initAddNewTesterPopup()" type="button"
+                                        class="btn k2-primary-btn">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
                                 <user-settings 
                                     class="testers"
                                     

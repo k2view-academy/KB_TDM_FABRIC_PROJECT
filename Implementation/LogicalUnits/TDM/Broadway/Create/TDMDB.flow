@@ -35,7 +35,6 @@ stages:
     actors:
       Check If TDM Interface is Active:
         parent: assertTrue
-        height: 145
         in:
           message:
             const: The TDM interface is not active, cannot build the TDM DB

@@ -1,5 +1,5 @@
 stages:
-  Stage 1:
+  Get IID Components:
     actors:
       SOURCE Env:
         parent: Const
@@ -48,7 +48,7 @@ stages:
             const: TDM
           sql:
             const: |
-              select case when t.task_type = 'LOAD' and t.version_ind = true and t.sync_mode = 'OFF' then rt.version_task_execution_id else ${taskExecutionId} end as version_task_execution_id
+              select case when t.task_type = 'LOAD' and rt.version_task_execution_id is not null and t.sync_mode = 'OFF' then rt.version_task_execution_id else ${taskExecutionId} end as version_task_execution_id
               from @TDMDB_SCHEMA@.task_execution_list l, @TDMDB_SCHEMA@.task_ref_tables rt, @TDMDB_SCHEMA@.tasks t
               where l.task_execution_id = ${taskExecutionId} and l.task_id = rt.task_id and l.task_id = t.task_id
               and rt.ref_table_name = ${tableName}
@@ -69,9 +69,9 @@ stages:
           key:
             const: TABLE_LEVEL_SEPARATOR
             default: false
-  Stage 2:
+  Create IID:
     actors:
-      Concat2:
+      Concat into IID:
         parent: Concat
         in:
           delimiter:
@@ -89,7 +89,7 @@ stages:
               pos: 3
             - path: Task Execution ID/result
               pos: 4
-  Stage 3:
+  Set IID:
     actors:
       Set Source Entity ID:
         parent: FabricSet
@@ -99,14 +99,14 @@ stages:
             default: false
           value:
             const: null
-            link: Concat2/string
+            link: Concat into IID/string
             default: false
       iid:
         parent: Const
         in:
           value:
             const: null
-            link: Concat2/string
+            link: Concat into IID/string
             schema: string
         out:
           value:

@@ -1,6 +1,3 @@
--- Update TDM version
-update ${@schema}.tdm_general_parameters set param_value = '7.6' where param_name = 'TDM_VERSION';
-
 -- Remove unused tables if they exists
 DROP table IF EXISTS ${@schema}.source_environment_role_users;
 DROP table IF EXISTS ${@schema}.source_environment_roles;
@@ -16,3 +13,5 @@ update ${@schema}.task_exe_stats_detailed t set flow_name = 'load_' ||t.table_na
 -- Update the parameters in tasks table in case of combo parameter, to include the new indicator and set the type accordingly
 update ${@schema}.tasks set parameters = replace (parameters, '"type":"combo"', '"type":"text","comboIndicator":"true"') where parameters like'%"type":"combo"%';
 
+-- Update TDM version
+update ${@schema}.tdm_general_parameters set param_value = '7.6' where param_name = 'TDM_VERSION';

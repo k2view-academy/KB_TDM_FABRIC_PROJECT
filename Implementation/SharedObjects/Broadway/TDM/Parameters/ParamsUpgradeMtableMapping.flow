@@ -1,0 +1,341 @@
+tags: TDM
+stages:
+  'Lu Params Lookup ':
+    actors:
+      LuParams Lookup:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: LuParams
+        out:
+          result:
+            schema: '#ref'
+  Remove new lines:
+    actors:
+      Replace New Lines:
+        parent: Replace
+        in:
+          search:
+            const: \s+
+          replace:
+            const: ' '
+          regex:
+            const: true
+          string:
+            link:
+              path: LuParams Lookup/result/sql
+              iterate: Iterate
+  Aggreagte functions:
+    actors:
+      Replace Aggregate functions1:
+        parent: Replace
+        in:
+          search:
+            const: .*(?i)\b(SUM|COUNT|AVG|MIN|MAX|GROUP_CONCAT|STDDEV|VARIANCE|WHERE)\b.*
+          replace:
+            const: 'true'
+          regex:
+            const: true
+          string:
+            link: Replace New Lines/string
+  'Check for Distinct ':
+    else: true
+    dependsOn: Aggreagte functions
+    actors:
+      Split The Query:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                function splitSQLQuery(query) {
+                    query = query.trim().replace(/\s+/g, " ");
+
+                    const selectRegex = /SELECT\s+(.+?)\s+FROM/i;
+                    const fromRegex = /FROM\s+(.+)/i;
+
+                    const selectMatch = query.match(selectRegex);
+                    let columns = selectMatch ? String(selectMatch[1]).trim() : null;
+
+                    const fromMatch = query.match(fromRegex);
+                    let tables = fromMatch ? String(fromMatch[1]).trim() : null;
+
+                    if (columns && typeof columns === 'string') {
+                        const lastDotIndex = columns.lastIndexOf('.');
+                        if (lastDotIndex !== -1) {
+                            columns = columns.substring(lastDotIndex + 1).trim();
+                        }
+                    }
+
+                    if (tables && typeof tables === 'string') {
+                        const lastDotIndex = tables.lastIndexOf('.');
+                        if (lastDotIndex !== -1) {
+                            tables = tables.substring(lastDotIndex + 1).trim();
+                        }
+                    }
+                    return {
+                        columns: columns,
+                        tables: tables
+                    };
+                }
+
+
+                // Example usage:
+                const result = splitSQLQuery(query);
+                result ;
+              script: |-
+                function splitSQLQuery(query) {
+                  query = query.trim().replace(/\s+/g, " ");
+                  var selectRegex = /SELECT\s+(.+?)\s+FROM/i;
+                  var fromRegex = /FROM\s+(.+)/i;
+                  var selectMatch = query.match(selectRegex);
+                  var columns = selectMatch ? String(selectMatch[1]).trim() : null;
+                  var fromMatch = query.match(fromRegex);
+                  var tables = fromMatch ? String(fromMatch[1]).trim() : null;
+
+                  if (columns && typeof columns === 'string') {
+                    var lastDotIndex = columns.lastIndexOf('.');
+
+                    if (lastDotIndex !== -1) {
+                      columns = columns.substring(lastDotIndex + 1).trim();
+                    }
+                  }
+
+                  if (tables && typeof tables === 'string') {
+                    var _lastDotIndex = tables.lastIndexOf('.');
+
+                    if (_lastDotIndex !== -1) {
+                      tables = tables.substring(_lastDotIndex + 1).trim();
+                    }
+                  }
+
+                  return {
+                    columns: columns,
+                    tables: tables
+                  };
+                } // Example usage:
+
+
+                var result = splitSQLQuery(query);
+                result;
+          query:
+            link: Replace New Lines/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Else:
+    dependsOn: Aggreagte functions
+    actors:
+      EqualsIgnoreCase:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: Replace Aggregate functions1/string
+  Get The column And Table:
+    dependsOn: 'Check for Distinct '
+    actors:
+      Column:
+        parent: Replace
+        in:
+          search:
+            const: (?i)\bDISTINCT\s*\(?\s*(\w+)\s*\)?\b
+          replace:
+            const: $1
+          regex:
+            const: true
+          string:
+            link: Split The Query/result/columns
+      Table:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Split The Query/result/tables
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Else
+  Build Data Maps:
+    dependsOn: Get The column And Table
+    actors:
+      Lu Name:
+        parent: MapBuild
+        in:
+          key:
+            const: lu_name
+            schema: string
+          value:
+            link:
+              path: LuParams Lookup/result/lu_name
+              iterate: Iterate
+        out:
+          map:
+            schema: '#ref'
+      Param Name:
+        parent: MapBuild
+        in:
+          key:
+            const: param_name
+            schema: string
+          value:
+            link:
+              path: LuParams Lookup/result/column_name
+              iterate: Iterate
+        out:
+          map:
+            schema: '#ref'
+      Lu Table:
+        parent: MapBuild
+        in:
+          key:
+            const: lu_table
+            schema: string
+          value:
+            link: Table/value
+        out:
+          map:
+            schema: '#ref'
+      Lu Table Field:
+        parent: MapBuild
+        in:
+          key:
+            const: lu_table_field
+            schema: string
+          value:
+            link: Column/string
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: Do Nothing
+  Merge to One Map:
+    dependsOn: Build Data Maps
+    actors:
+      MapMerge:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Lu Name/map
+              pos: 0
+            - path: Param Name/map
+              pos: 1
+            - path: Lu Table/map
+              pos: 2
+            - path: Lu Table Field/map
+              pos: 3
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing       ':
+    dependsOn: 'Do Nothing  '
+  Write to Csv:
+    dependsOn: Merge to One Map
+    actors:
+      CsvBuilder:
+        parent: CsvBuilder
+        in:
+          columns:
+            const:
+            - lu_name
+            - param_name
+            - lu_table
+            - lu_table_field
+          maps:
+            link: MapMerge/map
+    split: '--------------------'
+  'Do Nothing   ':
+    dependsOn: 'Do Nothing       '
+  Load New Mtable:
+    last: 1
+    dependsOn: Write to Csv
+    actors:
+      FileWrite:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParamsMapping.csv
+          stream:
+            link: CsvBuilder/csv
+      MTableLoad:
+        parent: MTableLoad
+        in:
+          mtable:
+            const: LuParamsMapping
+          columns:
+            const:
+            - lu_name
+            - param_name
+            - lu_table
+            - lu_table_field
+          data:
+            link:
+              path: MapMerge/map
+              pos: 0
+    split: '--------------------'
+  'Do Nothing    ':
+    last: 1
+    dependsOn: 'Do Nothing   '
+schemas:
+  LuParams Lookup.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        column_name:
+          type: string
+        sql:
+          type: string
+  Split The Query.out.result:
+    type: object
+    properties:
+      columns:
+        type: string
+      tables:
+        type: string
+  Lu Name.out.map:
+    type: object
+    properties:
+      lu_name:
+        type: string
+  Param Name.out.map:
+    type: object
+    properties:
+      param_name:
+        type: string
+  Lu Table.out.map:
+    type: object
+    properties:
+      lu_table:
+        type: string
+  Lu Table Field.out.map:
+    type: object
+    properties:
+      lu_table_field:
+        type: string
+  MapMerge.out.map:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      param_name:
+        type: string
+      lu_table:
+        type: string
+      lu_table_field:
+        type: string

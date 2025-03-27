@@ -40,7 +40,7 @@ stages:
           script:
             const: |
               var upgradeLU = true;
-              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel') {
+              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
                   upgradeLU = false;
               }
               upgradeLU;
@@ -77,15 +77,11 @@ stages:
         in:
           strings:
             const:
-            - TDM_LU_TYPE_REL_TAR_EID.*.flow
-            - TDM_LU_TYPE_REL_TAR_EID.*.k2tablePop.xml
             - LU_PARAMS.*.flow
             - LU_PARAMS.*.k2tablePop.xml
-            - TDM_LU_TYPE_RELATION_EID.*.flow
-            - TDM_LU_TYPE_RELATION_EID.*.k2tablePop.xml
   Stage 6:
     actors:
-      Look for TDM_LU_TYPE_REL_TAR_EID Population:
+      Look for Populations:
         parent: ls
         in:
           interface:
@@ -110,7 +106,7 @@ stages:
         in:
           value:
             link:
-              path: Look for TDM_LU_TYPE_REL_TAR_EID Population/result/name
+              path: Look for Populations/result/name
               iterate: First
       Population File:
         parent: StringFormat
@@ -119,7 +115,7 @@ stages:
             const: Tables/${fileName}
           fileName:
             link:
-              path: Look for TDM_LU_TYPE_REL_TAR_EID Population/result/name
+              path: Look for Populations/result/name
               iterate: First
             schema: string
             mandatory: false
@@ -170,7 +166,7 @@ stages:
           path:
             const: Java/resources
           pattern:
-            const: vdb_bkp.xml
+            const: vdb_upgrade9_bkp.xml
         out:
           result:
             schema: '#ref'
@@ -190,7 +186,7 @@ stages:
             const: null
             link: LU folder/string
           path:
-            const: Java/resources/vdb_bkp.xml
+            const: Java/resources/vdb_upgrade9_bkp.xml
     split: '--------------------'
   Stage 13:
     else: true
@@ -213,7 +209,7 @@ stages:
           from:
             const: vdb.k2vdb.xml
           to:
-            const: Java/resources/vdb_bkp.xml
+            const: Java/resources/vdb_upgrade9_bkp.xml
   Stage 14:
     actors:
       Remove LU_PARAM Enrichment:
@@ -258,7 +254,7 @@ schemas:
           type: string
         Project Version:
           type: string
-  Look for TDM_LU_TYPE_REL_TAR_EID Population.out.result:
+  Look for Populations.out.result:
     type: array
     items:
       type: object

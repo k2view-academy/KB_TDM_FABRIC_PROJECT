@@ -1,0 +1,53 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      get TDM Separators:
+        parent: getTDMSeparators
+      AI Env:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: Env
+      IID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: IID
+      ExecutionID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: ExecutionID
+  Build TDM_EID:
+    actors:
+      Format DataFlux EID:
+        parent: StringFormat
+        in:
+          format:
+            const: ${sourceEnv}${iidSeparator}${iidOpenSeparator}${sourceIID}${iidCloseSeparator}${iidSeparator}${taskExeID}
+          sourceEnv:
+            link: AI Env/value
+            schema: string
+          iidSeparator:
+            link: get TDM Separators/IID_SEPARATOR
+            schema: string
+          iidOpenSeparator:
+            link: get TDM Separators/IID_OPEN_SEPARATOR
+            schema: string
+          sourceIID:
+            link: IID/value
+            schema: string
+          iidCloseSeparator:
+            link: get TDM Separators/IID_CLOSE_SEPARATOR
+            schema: string
+          taskExeID:
+            link: ExecutionID/value
+            schema: any
+            mandatory: false
+        out:
+          string:
+            external: string

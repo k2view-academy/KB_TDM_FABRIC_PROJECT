@@ -21,9 +21,6 @@ public class Globals extends SharedGlobals {
 	public static String SYNTHETIC_INDICATOR = "false";
 
 	@category("TDM")
-	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
-
-	@category("TDM")
 	public static String TDM_DEPLOY_ENVIRONMENTS = "true";
 
     @desc("This flag is used to enble running sync in Studio")
@@ -31,5 +28,5 @@ public class Globals extends SharedGlobals {
 	public static String TDM_DEBUG_MODE = "true";
 
     @category("TDM_UPGRADE")
-    public static String TARGET_TDM_VERSION = "9.0";
+    public static final String TARGET_TDM_VERSION = "9.3.0";
 }

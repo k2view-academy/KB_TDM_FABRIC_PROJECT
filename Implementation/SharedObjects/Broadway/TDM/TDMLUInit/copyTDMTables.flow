@@ -1,946 +1,363 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "TDM_LIBRARY folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${TDM_LIBRARY_PATH}Tables/"
-                                    },
-                                    {
-                                        "name": "TDM_LIBRARY_PATH",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "LU Folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${LU_PATH}Tables/"
-                                    },
-                                    {
-                                        "name": "LU_PATH",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      TDM_LIBRARY folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${TDM_LIBRARY_PATH}Tables/
+          TDM_LIBRARY_PATH:
+            external: TDM_LIBRARY_PATH
+            schema: string
+            mandatory: false
+      LU Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${LU_PATH}Tables/
+          LU_PATH:
+            external: LU_PATH
+            schema: string
+            mandatory: false
+  Stage 2:
+    actors:
+      ls TDM_LIBRARY tables:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: TDM_LIBRARY folder/string
+          path:
+            const: .
+        out:
+          result:
+            schema: '#ref'
+  Stage 9:
+    actors:
+      Replace Table extension:
+        parent: Replace
+        height: 282
+        in:
+          search:
+            const: .k2table.xml
+          string:
+            link:
+              path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+  Stage 3:
+    actors:
+      Concat1:
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: TDM_LIBRARY folder/string
+              pos: 0
+            - path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+              pos: 1
+      Concat2:
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: LU Folder/string
+              pos: 0
+            - path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+              pos: 1
+      Lookup1:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - table_name
+          lookupData:
+            const:
+            - table_name: FABRIC_TDM_ROOT
+              column_name: IID
+              active: true
+            - table_name: LU_PARAMS
+              column_name: ENTITY_ID
+              active: true
+            - table_name: TDM_LU_TYPE_REL_TAR_EID
+              column_name: lu_type1_eid
+              active: true
+            - table_name: TDM_LU_TYPE_RELATION_EID
+              column_name: lu_type1_eid
+              active: true
+            - table_name: TDM_BE_IIDS
+              column_name: iid,source_env,be_id,root_iid
+              active: true
+            schema: '#ref'
+          table_name:
+            link: Replace Table extension/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Table Population file:
+        parent: StringFormat
+        in:
+          format:
+            const: ${tableName}.*.flow
+          tableName:
+            link: Replace Table extension/string
+            schema: string
+            mandatory: false
+  Stage 4:
+    actors:
+      Replace file:// TDM LIBRARY:
+        parent: Replace
+        in:
+          search:
+            const: file://
+          string:
+            link: Concat1/string
+      Replace file:// LU_PATH:
+        parent: Replace
+        in:
+          search:
+            const: file://
+          string:
+            link: Concat2/string
+  Stage 16:
+    actors:
+      Copy file:
+        parent: cp
+        in:
+          interface:
+            const: file://
+          from:
+            link: Replace file:%2F%2F TDM LIBRARY/string
+          to:
+            link: Replace file:%2F%2F LU_PATH/string
+  Stage 5:
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: Lookup1/result/active
+      List populations:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: TDM_LIBRARY folder/string
+          path:
+            const: .
+          pattern:
+            const: null
+            link: Table Population file/string
+        out:
+          result:
+            schema: '#ref'
+  Stage 7:
+    last: 1
+    dependsOn: Stage 5
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const:
+              userCode: "var result = true;\r\nif(population == null || population\
+                \ == []) {\r\n    result = false;\r\n}\r\nresult;"
+              script: |-
+                var result = true;
+
+                if (population == null || population == []) {
+                  result = false;
                 }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "ls TDM_LIBRARY tables",
-                            "actorType": {
-                                "parentType": "ls",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "path",
-                                        "const": "."
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "name": {
-                                                        "type": "string"
-                                                    },
-                                                    "size": {
-                                                        "type": "integer"
-                                                    },
-                                                    "createTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lastModifiedTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lastAccessTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "directory": {
-                                                        "type": "boolean"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 9",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Replace Table extension",
-                            "minHeight": 282,
-                            "actorType": {
-                                "parentType": "Replace",
-                                "inputs": [
-                                    {
-                                        "name": "search",
-                                        "const": ".k2table.xml"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Concat1",
-                            "actorType": {
-                                "parentType": "Concat",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Concat2",
-                            "actorType": {
-                                "parentType": "Concat",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Lookup1",
-                            "actorType": {
-                                "parentType": "Lookup",
-                                "inputs": [
-                                    {
-                                        "name": "lookupKeys",
-                                        "const": [
-                                            "table_name"
-                                        ]
-                                    },
-                                    {
-                                        "name": "lookupData",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "table_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "column_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "active": {
-                                                        "type": "boolean"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "const": [
-                                            {
-                                                "table_name": "FABRIC_TDM_ROOT",
-                                                "column_name": "IID",
-                                                "active": true
-                                            },
-                                            {
-                                                "table_name": "LU_PARAMS",
-                                                "column_name": "ENTITY_ID",
-                                                "active": true
-                                            },
-                                            {
-                                                "table_name": "TDM_LU_TYPE_REL_TAR_EID",
-                                                "column_name": "lu_type1_eid",
-                                                "active": true
-                                            },
-                                            {
-                                                "table_name": "TDM_LU_TYPE_RELATION_EID",
-                                                "column_name": "lu_type1_eid",
-                                                "active": true
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "name": "table_name",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "table_name": {
-                                                    "type": "string"
-                                                },
-                                                "column_name": {
-                                                    "type": "string"
-                                                },
-                                                "active": {
-                                                    "type": "boolean"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Table Population file",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${tableName}.*.flow"
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Replace file:// TDM LIBRARY",
-                            "actorType": {
-                                "parentType": "Replace",
-                                "inputs": [
-                                    {
-                                        "name": "search",
-                                        "const": "file://"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Replace file:// LU_PATH",
-                            "actorType": {
-                                "parentType": "Replace",
-                                "inputs": [
-                                    {
-                                        "name": "search",
-                                        "const": "file://"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 16",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Copy file",
-                            "actorType": {
-                                "parentType": "cp",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "file://"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Equals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "List populations",
-                            "actorType": {
-                                "parentType": "ls",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "path",
-                                        "const": "."
-                                    },
-                                    {
-                                        "name": "pattern",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "name": {
-                                                        "type": "string"
-                                                    },
-                                                    "size": {
-                                                        "type": "integer"
-                                                    },
-                                                    "createTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lastModifiedTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lastAccessTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "directory": {
-                                                        "type": "boolean"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [
-                        "Stage 5"
-                    ],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "JavaScript1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "var result = true;\r\nif(population == null || population == []) {\r\n    result = false;\r\n}\r\nresult;",
-                                            "script": "var result = true;\n\nif (population == null || population == []) {\n  result = false;\n}\n\nresult;"
-                                        }
-                                    },
-                                    {
-                                        "name": "population",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "size": {
-                                                    "type": "integer"
-                                                },
-                                                "createTime": {
-                                                    "type": "integer"
-                                                },
-                                                "lastModifiedTime": {
-                                                    "type": "integer"
-                                                },
-                                                "lastAccessTime": {
-                                                    "type": "integer"
-                                                },
-                                                "directory": {
-                                                    "type": "boolean"
-                                                }
-                                            }
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "MapBuild1",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "population"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "population": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 11",
-                    "dependsOnList": [
-                        "Stage 5"
-                    ],
-                    "isLast": 1,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "MapBuild2",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "population"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "population": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 12",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "MapMerge1",
-                            "actorType": {
-                                "parentType": "MapMerge",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "table_name": {
-                                                    "type": "string"
-                                                },
-                                                "column_name": {
-                                                    "type": "string"
-                                                },
-                                                "active": {
-                                                    "type": "boolean"
-                                                },
-                                                "population": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 10",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "StringBuild1",
-                            "actorType": {
-                                "parentType": "StringBuild",
-                                "inputs": [
-                                    {
-                                        "name": "input",
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 8",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "StringFormat1",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "[${TABLES_INFO}]"
-                                    },
-                                    {
-                                        "name": "TABLES_INFO",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "TDM_LIBRARY folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "ls TDM_LIBRARY tables",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_LIBRARY folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_LIBRARY folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "List populations",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LU Folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Concat2",
-                "name": "elements"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "ls TDM_LIBRARY tables",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Replace Table extension",
-                "name": "string"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "ls TDM_LIBRARY tables",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Concat2",
-                "name": "elements"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "name"
-            ],
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "ls TDM_LIBRARY tables",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "name"
-            ],
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "Replace Table extension",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Lookup1",
-                "name": "table_name"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Replace Table extension",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Table Population file",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Concat1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Replace file:// TDM LIBRARY",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Concat2",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Replace file:// LU_PATH",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Lookup1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "MapMerge1",
-                "name": "maps"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Lookup1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
-            },
-            "path": [
-                "active"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Table Population file",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "List populations",
-                "name": "pattern"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Replace file:// TDM LIBRARY",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Copy file",
-                "name": "from"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Replace file:// LU_PATH",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Copy file",
-                "name": "to"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "List populations",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "MapBuild1",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "List populations",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "JavaScript1",
-                "name": "population"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "MapBuild1",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "MapMerge1",
-                "name": "maps"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "MapBuild2",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "MapMerge1",
-                "name": "maps"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "MapMerge1",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "StringBuild1",
-                "name": "input"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "StringBuild1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "StringFormat1",
-                "name": "TABLES_INFO"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TDM_LIBRARY_PATH"
-            },
-            "rightPort": {
-                "actor": "TDM_LIBRARY folder",
-                "name": "TDM_LIBRARY_PATH"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_PATH"
-            },
-            "rightPort": {
-                "actor": "LU Folder",
-                "name": "LU_PATH"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "StringFormat1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "table_id"
-            }
-        }
-    ]
-}
+
+                result;
+          population:
+            link:
+              path: List populations/result
+              iterate: Iterate
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      MapBuild1:
+        parent: MapBuild
+        in:
+          key:
+            const: population
+            schema: string
+          value:
+            link:
+              path: List populations/result/name
+              iterate: Iterate
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 11:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Stage 5
+    actors:
+      MapBuild2:
+        parent: MapBuild
+        in:
+          key:
+            const: population
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Stage 12:
+    actors:
+      MapMerge1:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Lookup1/result
+              pos: 0
+            - path: MapBuild1/map
+              pos: 1
+            - path: MapBuild2/map
+              pos: 1
+        out:
+          map:
+            schema: '#ref'
+  Stage 10:
+    actors:
+      StringBuild1:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: MapMerge1/map
+              pos: 0
+            mandatory: false
+  Stage 6:
+    last: 1
+  Stage 8:
+    transactional: false
+    actors:
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: '[${TABLES_INFO}]'
+          TABLES_INFO:
+            link: StringBuild1/string
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: table_id
+schemas:
+  ls TDM_LIBRARY tables.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+  Lookup1.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+  Lookup1.out.result:
+    type: object
+    properties:
+      table_name:
+        type: string
+      column_name:
+        type: string
+      active:
+        type: boolean
+  List populations.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+  JavaScript1.in.population:
+    type: object
+    properties:
+      name:
+        type: string
+      size:
+        type: integer
+      createTime:
+        type: integer
+      lastModifiedTime:
+        type: integer
+      lastAccessTime:
+        type: integer
+      directory:
+        type: boolean
+  MapBuild1.out.map:
+    type: object
+    properties:
+      population:
+        type: array
+        items:
+          type: string
+  MapBuild2.out.map:
+    type: object
+    properties:
+      population:
+        type: array
+        items:
+          type: string
+  MapMerge1.out.map:
+    type: object
+    properties:
+      table_name:
+        type: string
+      column_name:
+        type: string
+      active:
+        type: boolean
+      population:
+        type: array
+        items:
+          type: string

@@ -1,2221 +1,927 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get Table Column, List of Seqeuences and Population Arguments",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "get Population Argument List",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "getPopArgumentListForDelete"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "FIELD_TYPE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_TABLE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_FIELD_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "FIELD_NAME": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get Delete Table Prefix",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_DELETE_TABLES_PREFIX",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Root Table Name__1",
-                            "actorType": {
-                                "parentType": "getLUVariable_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "variableName",
-                                        "const": "ROOT_TABLE_NAME"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Initiate Main Table Indicator",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": "flowArgs.mainTableInd = false;"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+tags: TDM
+stages:
+  Get Table Column, List of Seqeuences and Population Arguments:
+    actors:
+      get Population Argument List:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getPopArgumentListForDelete
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          tableName:
+            external: table
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Get Delete Table Prefix:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_TABLES_PREFIX
+            default: false
+      Get Root Table Name__1:
+        parent: getLUVariable_Actor
+        in:
+          variableName:
+            const: ROOT_TABLE_NAME
+          luName:
+            external: luType
+      Initiate Main Table Indicator:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.mainTableInd = false;
+        out:
+          result:
+            schema: boolean
+  Stage 8:
+    actors:
+      InnerFlow1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildDeleteTableFieldData
+          value:
+            link:
+              path: get Population Argument List/result/FIELD_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          datatype:
+            link:
+              path: get Population Argument List/result/FIELD_TYPE
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          deleteFieldData:
+            schema: '#ref'
+  Stage 3:
+    last: 1
+    actors:
+      Create Array of Fields with Types:
+        parent: ArrayBuilder
+        height: 92
+        in:
+          input:
+            link:
+              path: InnerFlow1/deleteFieldData
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Stage 1:
+    actors:
+      get Table PK Columns:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDbTablePKs
+          catalogSchema:
+            external: schemaName
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+          dbInterfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+        out:
+          pks:
+            schema: '#ref'
+      get Lu Table Columns And Types:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTableColumnsAndTypes
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Stage 7:
+    dependsOn: Stage 1
+    actors:
+      Lookup1:
+        parent: Lookup
+        condition: result
+        in:
+          lookupKeys:
+            const:
+            - name
+          lookupData:
+            const: null
+            link: Create Array of Fields with Types/array
+            schema: '#ref'
+          name:
+            link:
+              path: get Table PK Columns/pks
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 2:
+    else: true
+    transactional: false
+    dependsOn: Stage 1
+    actors:
+      Lookup2:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - columnName
+          lookupData:
+            const: null
+            link: get Lu Table Columns And Types/result
+            schema: '#ref'
+          columnName:
+            link:
+              path: get Table PK Columns/pks
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Stage 10:
+    dependsOn: Stage 7
+    split: '--------------------'
+  Stage 11:
+    transactional: false
+    dependsOn: Stage 2
+    actors:
+      InnerFlow2:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildDeleteTableFieldData
+          value:
+            link: Lookup2/result/columnName
+            schema: string
+            mandatory: false
+          datatype:
+            link: Lookup2/result/columnType
+            schema: string
+            mandatory: false
+        out:
+          deleteFieldData:
+            schema: '#ref'
+  Stage 4:
+    last: 1
+    dependsOn: Stage 10
+    split: '--------------------'
+  Stage 9:
+    last: 1
+    transactional: false
+    dependsOn: Stage 11
+    actors:
+      Create Array of Fields with Types1:
+        parent: ArrayBuilder
+        height: 92
+        in:
+          input:
+            link:
+              path: InnerFlow2/deleteFieldData
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Stage 14:
+    actors:
+      Const2:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: get Population Argument List/result
+        out:
+          value:
+            schema: '#ref'
+  Stage 15:
+    last: 1
+    dependsOn: Stage 14
+    actors:
+      NotEquals1:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link:
+              path: Const2/value/PARENT_TABLE
+              iterate: Iterate
+            schema: string
+          b:
+            external: table
+            schema: string
+      ArrayBuilder1:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Const2/value
+              iterate: Iterate
+        out:
+          array:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 16:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Stage 14
+    actors:
+      ArrayBuilder2:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Const2/value
+              iterate: Iterate
+        out:
+          array:
+            schema: '#ref'
+  Stage 12:
+    dependsOn: Stage 15
+    actors:
+      IsNull1:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Create Array of Fields with Types1/array
+      Const1:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Create Array of Fields with Types/array
+        out:
+          value:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 13:
+    else: true
+    transactional: false
+    dependsOn: Stage 15
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "flowArgs.NewArray = new Array();\r\nfor (var i=0; i<array1.length;\
+                \ ++i) {\r\n    flowArgs.NewArray.push(array1[i]);\r\n}\r\nfor (var\
+                \ i=0; i<array2.length; ++i) {\r\n    flowArgs.NewArray.push(array2[i]);\r\
+                \n}\r\nflowArgs.NewArray;"
+              script: |-
+                flowArgs.NewArray = new Array();
+
+                for (var i = 0; i < array1.length; ++i) {
+                  flowArgs.NewArray.push(array1[i]);
                 }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 8",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "InnerFlow1",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "BuildDeleteTableFieldData"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "datatype",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "deleteFieldData",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "datatype": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+
+                for (var i = 0; i < array2.length; ++i) {
+                  flowArgs.NewArray.push(array2[i]);
                 }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "Create Array of Fields with Types",
-                            "minHeight": 92,
-                            "actorType": {
-                                "parentType": "ArrayBuilder",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "array",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "datatype": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "get Table PK Columns",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "getDbTablePKs"
-                                    },
-                                    {
-                                        "name": "catalogSchema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "dbInterfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "pks",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "get Lu Table Columns And Types",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "getLuTableColumnsAndTypes"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "columnType": {
-                                                        "type": "string"
-                                                    },
-                                                    "columnName": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [
-                        "Stage 1"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Lookup1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Lookup",
-                                "inputs": [
-                                    {
-                                        "name": "lookupKeys",
-                                        "const": [
-                                            "name"
-                                        ]
-                                    },
-                                    {
-                                        "name": "lookupData",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {}
-                                            }
-                                        },
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "name",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Stage 1"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Lookup2",
-                            "actorType": {
-                                "parentType": "Lookup",
-                                "inputs": [
-                                    {
-                                        "name": "lookupKeys",
-                                        "const": [
-                                            "columnName"
-                                        ]
-                                    },
-                                    {
-                                        "name": "lookupData",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {}
-                                            }
-                                        },
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "columnName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "columnType": {
-                                                    "type": "string"
-                                                },
-                                                "columnName": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 10",
-                    "dependsOnList": [
-                        "Stage 7"
-                    ],
-                    "isLast": 0,
-                    "actors": []
-                },
-                {
-                    "name": "Stage 11",
-                    "dependsOnList": [
-                        "Stage 2"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "InnerFlow2",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "BuildDeleteTableFieldData"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "datatype",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "deleteFieldData",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "datatype": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [
-                        "Stage 10"
-                    ],
-                    "isLast": 1,
-                    "actors": []
-                },
-                {
-                    "name": "Stage 9",
-                    "dependsOnList": [
-                        "Stage 11"
-                    ],
-                    "isLast": 1,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Create Array of Fields with Types1",
-                            "minHeight": 92,
-                            "actorType": {
-                                "parentType": "ArrayBuilder",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "array",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "datatype": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 14",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Const2",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "FIELD_TYPE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_TABLE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_FIELD_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "FIELD_NAME": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 15",
-                    "dependsOnList": [
-                        "Stage 14"
-                    ],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "NotEquals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "ArrayBuilder1",
-                            "actorType": {
-                                "parentType": "ArrayBuilder",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "array",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "FIELD_TYPE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_TABLE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_FIELD_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "FIELD_NAME": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 16",
-                    "dependsOnList": [
-                        "Stage 14"
-                    ],
-                    "isLast": 1,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "ArrayBuilder2",
-                            "actorType": {
-                                "parentType": "ArrayBuilder",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "array",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "FIELD_TYPE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_TABLE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_FIELD_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "FIELD_NAME": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 12",
-                    "dependsOnList": [
-                        "Stage 15"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "IsNull1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "datatype": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 13",
-                    "dependsOnList": [
-                        "Stage 15"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "JavaScript1",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "flowArgs.NewArray = new Array();\r\nfor (var i=0; i<array1.length; ++i) {\r\n    flowArgs.NewArray.push(array1[i]);\r\n}\r\nfor (var i=0; i<array2.length; ++i) {\r\n    flowArgs.NewArray.push(array2[i]);\r\n}\r\nflowArgs.NewArray;",
-                                            "script": "flowArgs.NewArray = new Array();\n\nfor (var i = 0; i < array1.length; ++i) {\n  flowArgs.NewArray.push(array1[i]);\n}\n\nfor (var i = 0; i < array2.length; ++i) {\n  flowArgs.NewArray.push(array2[i]);\n}\n\nflowArgs.NewArray;"
-                                        }
-                                    },
-                                    {
-                                        "name": "array1",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "datatype": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "array2",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "datatype": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "datatype": {
-                                                        "type": "string"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 17",
-                    "dependsOnList": [
-                        "Stage 16"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Split1",
-                            "actorType": {
-                                "parentType": "Split",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Build Delete Table Name",
-                            "minHeight": 235,
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${prefix}${table}"
-                                    },
-                                    {
-                                        "name": "prefix",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Sync Method",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "syncMethod"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "DecisionFunction"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "perform Every",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "performEvery"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "1.00:00:00"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "perform Every1",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "performEvery"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "1.00:00:00"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check if table is main table",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "Equals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Main Table Indicator To True",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": "flowArgs.mainTableInd = true;"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Loop Stop",
-                            "actorType": {
-                                "parentType": "LoopStop",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Template's Input 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Table PK Fields",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "Columns"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Parent Table Data",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "PARENT_TABLE_DATA"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Child Table Data",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "CHILD"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Lazy Data Update",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "LazyDataUpdate"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Full Text Search",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "FullTextSearch"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "false"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get Main Table Indicator",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": "flowArgs.mainTableInd;"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "LU Name",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "LU_NAME"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Table Name",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "TableName"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Original Table Name",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "OriginalTableName"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Target Interface",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "TARGET_INTERFACE"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Target Schema",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "TARGET_SCHEMA"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Main Table Indicator",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "MainTableInd"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Marge All Inputs to One Map",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Merge Inputs",
-                            "minHeight": 303,
-                            "actorType": {
-                                "parentType": "MapMerge",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                },
-                                                "TABLE_FIELDS": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "TYPE": {
-                                                                "type": "string"
-                                                            },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                "TABLE_SEQ_DATA": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "LU_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "TARGET_TABLE_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "TARGET_FIELD_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "FABRIC_TABLE_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "FABRIC_FIELD_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "SEQUENCE_NAME": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
+
+                flowArgs.NewArray;
+          array1:
+            link: Create Array of Fields with Types/array
+            schema: '#ref'
+            mandatory: false
+          array2:
+            link: Create Array of Fields with Types1/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 17:
+    transactional: false
+    dependsOn: Stage 16
+  Stage 5:
+    actors:
+      Split1:
+        parent: Split
+        in:
+          string:
+            link: Get Root Table Name__1/variableValue
+      Build Delete Table Name:
+        parent: StringFormat
+        height: 235
+        in:
+          format:
+            const: ${prefix}${table}
+          prefix:
+            link: Get Delete Table Prefix/result
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+      Sync Method:
+        parent: MapBuild
+        in:
+          key:
+            const: syncMethod
+            schema: string
+          value:
+            const: DecisionFunction
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      perform Every:
+        parent: MapBuild
+        in:
+          key:
+            const: performEvery
+            schema: string
+          value:
+            const: 1.00:00:00
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      perform Every1:
+        parent: MapBuild
+        in:
+          key:
+            const: performEvery
+            schema: string
+          value:
+            const: 1.00:00:00
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Check if table is main table:
+    last: 1
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link:
+              path: Split1/strings
+              iterate: Iterate
+            schema: string
+          b:
+            external: table
+            schema: string
+      Set Main Table Indicator To True:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.mainTableInd = true;
+        out:
+          result:
+            schema: boolean
+      Loop Stop:
+        parent: LoopStop
+  Template's Input 2:
+    actors:
+      Table PK Fields:
+        parent: MapBuild
+        in:
+          key:
+            const: Columns
+            schema: string
+          value:
+            link:
+            - Const1/value
+            - JavaScript1/result
+        out:
+          map:
+            schema: '#ref'
+      Parent Table Data:
+        parent: MapBuild
+        in:
+          key:
+            const: PARENT_TABLE_DATA
+            schema: string
+          value:
+            link: ArrayBuilder1/array
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Child Table Data:
+        parent: MapBuild
+        in:
+          key:
+            const: CHILD
+            schema: string
+          value:
+            link: ArrayBuilder2/array
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Lazy Data Update:
+        parent: MapBuild
+        in:
+          key:
+            const: LazyDataUpdate
+            schema: string
+          value:
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Full Text Search:
+        parent: MapBuild
+        in:
+          key:
+            const: FullTextSearch
+            schema: string
+          value:
+            const: 'false'
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Get Main Table Indicator:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.mainTableInd;
+        out:
+          result:
+            schema: boolean
+  Stage 6:
+    actors:
+      LU Name:
+        parent: MapBuild
+        in:
+          key:
+            const: LU_NAME
+            schema: string
+          value:
+            external: luType
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Table Name:
+        parent: MapBuild
+        in:
+          key:
+            const: TableName
+            schema: string
+          value:
+            link: Build Delete Table Name/string
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Original Table Name:
+        parent: MapBuild
+        in:
+          key:
+            const: OriginalTableName
+            schema: string
+          value:
+            external: table
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Target Interface:
+        parent: MapBuild
+        in:
+          key:
+            const: TARGET_INTERFACE
+            schema: string
+          value:
+            external: interfaceName
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Target Schema:
+        parent: MapBuild
+        in:
+          key:
+            const: TARGET_SCHEMA
+            schema: string
+          value:
+            external: schemaName
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Main Table Indicator:
+        parent: MapBuild
+        in:
+          key:
+            const: MainTableInd
+            schema: string
+          value:
+            link: Get Main Table Indicator/result
+            schema: boolean
+        out:
+          map:
+            schema: '#ref'
+  Marge All Inputs to One Map:
+    actors:
+      Merge Inputs:
+        parent: MapMerge
+        height: 303
+        in:
+          maps:
+            link:
+            - path: LU Name/map
+              pos: 0
+            - path: Table Name/map
+              pos: 1
+            - path: Table PK Fields/map
+              pos: 2
+            - path: Parent Table Data/map
+              pos: 3
+            - path: Full Text Search/map
+              pos: 4
+            - path: Target Interface/map
+              pos: 5
+            - path: Target Schema/map
+              pos: 6
+            - path: Original Table Name/map
+              pos: 7
+            - path: Main Table Indicator/map
+              pos: 8
+        out:
+          map:
+            external: tableDefaultMapping
+            schema: '#ref'
+schemas:
+  get Population Argument List.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        FIELD_TYPE:
+          type: string
+        PARENT_TABLE:
+          type: string
+        PARENT_FIELD_NAME:
+          type: string
+        FIELD_NAME:
+          type: string
+  InnerFlow1.out.deleteFieldData:
+    type: object
+    properties:
+      datatype:
+        type: string
+      name:
+        type: string
+  Create Array of Fields with Types.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+  get Table PK Columns.out.pks:
+    type: array
+    items:
+      type: string
+  get Lu Table Columns And Types.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        columnType:
+          type: string
+        columnName:
+          type: string
+  Lookup1.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
         }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "get Population Argument List",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Const2",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get Population Argument List",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "InnerFlow1",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "FIELD_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "get Population Argument List",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "InnerFlow1",
-                "name": "datatype"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "FIELD_TYPE"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Delete Table Prefix",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Build Delete Table Name",
-                "name": "prefix"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Root Table Name__1",
-                "name": "variableValue"
-            },
-            "rightPort": {
-                "actor": "Split1",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "InnerFlow1",
-                "name": "deleteFieldData"
-            },
-            "rightPort": {
-                "actor": "Create Array of Fields with Types",
-                "name": "input"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Create Array of Fields with Types",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "Lookup1",
-                "name": "lookupData"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Array of Fields with Types",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "Const1",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Array of Fields with Types",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "JavaScript1",
-                "name": "array1"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get Table PK Columns",
-                "name": "pks"
-            },
-            "rightPort": {
-                "actor": "Lookup1",
-                "name": "name"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "get Table PK Columns",
-                "name": "pks"
-            },
-            "rightPort": {
-                "actor": "Lookup2",
-                "name": "columnName"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "get Lu Table Columns And Types",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Lookup2",
-                "name": "lookupData"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Lookup2",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "InnerFlow2",
-                "name": "datatype"
-            },
-            "path": [
-                "columnType"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Lookup2",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "InnerFlow2",
-                "name": "value"
-            },
-            "path": [
-                "columnName"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "InnerFlow2",
-                "name": "deleteFieldData"
-            },
-            "rightPort": {
-                "actor": "Create Array of Fields with Types1",
-                "name": "input"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Create Array of Fields with Types1",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "IsNull1",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Array of Fields with Types1",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "JavaScript1",
-                "name": "array2"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const2",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "NotEquals1",
-                "name": "a"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "PARENT_TABLE"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Const2",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "ArrayBuilder1",
-                "name": "input"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Const2",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "ArrayBuilder2",
-                "name": "input"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "ArrayBuilder1",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "Parent Table Data",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ArrayBuilder2",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "Child Table Data",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Table PK Fields",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "JavaScript1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Table PK Fields",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split1",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Build Delete Table Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Table Name",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Table PK Fields",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 2
-        },
-        {
-            "leftPort": {
-                "actor": "Parent Table Data",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 3
-        },
-        {
-            "leftPort": {
-                "actor": "Full Text Search",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 4
-        },
-        {
-            "leftPort": {
-                "actor": "Get Main Table Indicator",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Main Table Indicator",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LU Name",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Table Name",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "Original Table Name",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 7
-        },
-        {
-            "leftPort": {
-                "actor": "Target Interface",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 5
-        },
-        {
-            "leftPort": {
-                "actor": "Target Schema",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 6
-        },
-        {
-            "leftPort": {
-                "actor": "Main Table Indicator",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Merge Inputs",
-                "name": "maps"
-            },
-            "arrayPosition": 8
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "get Population Argument List",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "get Population Argument List",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "Get Root Table Name__1",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schemaName"
-            },
-            "rightPort": {
-                "actor": "get Table PK Columns",
-                "name": "catalogSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "get Table PK Columns",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "interfaceName"
-            },
-            "rightPort": {
-                "actor": "get Table PK Columns",
-                "name": "dbInterfaceName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "get Lu Table Columns And Types",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "get Lu Table Columns And Types",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "NotEquals1",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Build Delete Table Name",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Equals1",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "LU Name",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Original Table Name",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "interfaceName"
-            },
-            "rightPort": {
-                "actor": "Target Interface",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schemaName"
-            },
-            "rightPort": {
-                "actor": "Target Schema",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Merge Inputs",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "tableDefaultMapping"
-            }
+  Lookup2.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
         }
-    ]
-}
+  Lookup2.out.result:
+    type: object
+    properties:
+      columnType:
+        type: string
+      columnName:
+        type: string
+  InnerFlow2.out.deleteFieldData:
+    type: object
+    properties:
+      datatype:
+        type: string
+      name:
+        type: string
+  Create Array of Fields with Types1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+  Const2.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        FIELD_TYPE:
+          type: string
+        PARENT_TABLE:
+          type: string
+        PARENT_FIELD_NAME:
+          type: string
+        FIELD_NAME:
+          type: string
+  ArrayBuilder1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        FIELD_TYPE:
+          type: string
+        PARENT_TABLE:
+          type: string
+        PARENT_FIELD_NAME:
+          type: string
+        FIELD_NAME:
+          type: string
+  ArrayBuilder2.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        FIELD_TYPE:
+          type: string
+        PARENT_TABLE:
+          type: string
+        PARENT_FIELD_NAME:
+          type: string
+        FIELD_NAME:
+          type: string
+  Const1.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+  JavaScript1.in.array1:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+  JavaScript1.in.array2:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+  JavaScript1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+  Sync Method.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  perform Every.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  perform Every1.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Table PK Fields.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Parent Table Data.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Child Table Data.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Lazy Data Update.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Full Text Search.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  LU Name.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Table Name.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Original Table Name.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Target Interface.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Target Schema.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Main Table Indicator.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Merge Inputs.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+      TABLE_SEQ_DATA:
+        type: array
+        items:
+          type: object
+          properties:
+            LU_NAME:
+              type: string
+            TARGET_TABLE_NAME:
+              type: string
+            TARGET_FIELD_NAME:
+              type: string
+            FABRIC_TABLE_NAME:
+              type: string
+            FABRIC_FIELD_NAME:
+              type: string
+            SEQUENCE_NAME:
+              type: string

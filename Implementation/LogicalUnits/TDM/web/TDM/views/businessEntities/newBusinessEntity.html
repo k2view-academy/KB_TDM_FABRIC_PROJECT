@@ -24,6 +24,26 @@
                                 <input id="be_description" type="text" class="form-control1" ng-model="newBusinessEntityCtrl.businessEntityData.be_description">
                             </div>
                         </div>
+                        <div class="form-group" style="margin-left: 0px">
+                            <div style="display: flex; align-items: center;" title="Executes Logical Unit (LU) by LU, processing all entities for each LU">
+                                <input type="radio"
+                                    ng-value="'HORIZONTAL'" name="executionModeRadio"
+                                    ng-model="newBusinessEntityCtrl.businessEntityData.execution_mode" />
+                                <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Horizontal execution
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group"style="margin-left: 0px">
+                            <div style="display: flex; align-items: center;" title="Executes entire hierarchy for each entity ID">
+                                <input type="radio"
+                                    ng-value="'VERTICAL'" name="executionModeRadio"
+                                    ng-model="newBusinessEntityCtrl.businessEntityData.execution_mode" />
+                                <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Vertical execution
+                                </label>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
                                 <button id="be_create" class="k2-primary-btn  pull-right class-right" type="submit">{{"CREATE" | translate}}</button>
