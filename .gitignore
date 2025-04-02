@@ -20,3 +20,4 @@ Implementation/LogicalUnits/*/Java/*.iml
 FabricHome
 LocalDeploy
 .studioWeb/deployLuStatus.json
+Environments.k2fabEnv_encrypted.xml
