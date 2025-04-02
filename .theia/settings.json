@@ -35,9 +35,9 @@
 		"Implementation/LogicalUnits/TDM_LIBRARY/Java/src",	
 		"Implementation/LogicalUnits/TDM_TableLevel/Java/src",	
 		"Implementation/LogicalUnits/Billing/Java/src",	
+		"Implementation/LogicalUnits/Customer/Java/src",	
 		"Implementation/LogicalUnits/k2_ws/Java/src",	
 		"Implementation/LogicalUnits/k2_ref/Java/src",	
-		"Implementation/LogicalUnits/Customer/Java/src",	
 		"Implementation/LogicalUnits/TDM/Java/src"	
 	],
 	"java.project.resourceFilters": [

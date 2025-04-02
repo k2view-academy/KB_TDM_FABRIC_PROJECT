@@ -19,3 +19,4 @@ Implementation/LogicalUnits/*/Java/*.iml
 .studio
 FabricHome
 LocalDeploy
+.studioWeb/deployLuStatus.json
