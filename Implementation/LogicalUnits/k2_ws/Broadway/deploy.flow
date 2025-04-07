@@ -9,39 +9,6 @@ stages:
             const: Finished Deploy Activities
           level:
             const: info
-  Create PGDB Tables:
-    actors:
-      craetePGDBS:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createPGDBS
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
-  Populate PGDBS:
-    actors:
-      populatePGDBS:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: populatePGDBS
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
-  'Populate TDMDB ':
-    actors:
-      populateTDMDB:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: PopulateTDMDBForTesters
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
   End:
     actors:
       Started Deploy Activities:
