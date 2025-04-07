@@ -9,6 +9,51 @@ stages:
             const: Finished Deploy Activities
           level:
             const: info
+  Get Proj Dir:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Get Deploy Command:
+    actors:
+      Command:
+        parent: Const
+        in:
+          value:
+            const: DEPLOY ENVIRONMENTS FROM FILE '
+            schema: string
+        out:
+          value:
+            schema: string
+      Path:
+        parent: Const
+        in:
+          value:
+            const: /Implementation/SharedObjects/Environments/Environments.k2fabEnv.xml'
+            schema: string
+        out:
+          value:
+            schema: string
+  Deploy Envs:
+    actors:
+      Concat:
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: Command/value
+              pos: 0
+            - path: PROJECT_DIR/value
+              pos: 1
+            - path: Path/value
+              pos: 2
   Create PGDB Tables:
     actors:
       craetePGDBS:
