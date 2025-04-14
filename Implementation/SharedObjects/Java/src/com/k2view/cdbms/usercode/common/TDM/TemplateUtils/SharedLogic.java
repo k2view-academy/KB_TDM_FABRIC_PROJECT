@@ -241,11 +241,13 @@ public class SharedLogic {
 		}
 		map.put("MAIN_TABLE_SEQ_ID", seqIID);
 		map.put("MAIN_TABLE_SEQ_NAME", seqName);
+
 		//log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
-		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = '" + luTable + "', RESULT_STRUCTURE=ROW";
+		String cmd = "broadway " + luName + ".GetSequenceListForFlows luName='" + luName + "', fabricTable = '" + luTable + 
+				"', interfaceName='" + targetDbInterface + "', schemaName='" + targetDbSchema + "', tableName='" + targetDbTable + "'";
 		//log.info("buildTemplateData - cmd: " + cmd);
-		
-		ArrayList<Object> tableSeq = (ArrayList<Object>)fabric().fetch(cmd).firstRow().get("value");
+		ArrayList<Object> tableSeq = (ArrayList<Object>)(fabric().fetch(cmd).firstRow().get("result"));
+
 		//log.info("buildTemplateData - tableSeq: " + tableSeq);
 		
 		if (tableSeq != null) {

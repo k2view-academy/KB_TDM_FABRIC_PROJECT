@@ -16,11 +16,14 @@ stages:
         out:
           value:
             schema: string
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   build table name:
     actors:
       Lu_Params:
@@ -65,7 +68,7 @@ stages:
                  AND tablename = ${table}
               );
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           table:
@@ -87,7 +90,7 @@ stages:
             schema: string
           a:
             link: DbFetchField/result
-      DbCommand1:
+      DbCommand:
         parent: DbCommand
         in:
           interface:
@@ -104,7 +107,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
     split: '--------------------'

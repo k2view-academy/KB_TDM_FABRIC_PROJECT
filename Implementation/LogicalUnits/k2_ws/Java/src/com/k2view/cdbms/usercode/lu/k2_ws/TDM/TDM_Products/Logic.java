@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 

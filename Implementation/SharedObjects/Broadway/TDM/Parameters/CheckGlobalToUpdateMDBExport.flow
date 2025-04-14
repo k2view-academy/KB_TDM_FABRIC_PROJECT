@@ -2,11 +2,14 @@ tags: TDM
 stages:
   Get Inputs:
     actors:
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       Task ID:
         parent: Const
         in:
@@ -38,7 +41,7 @@ stages:
               task_id=${task_id} and global_name = 'UPDATE_MDB_EXPORTED_SCHEMA' or
               global_name=${global_name}
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           task_id:

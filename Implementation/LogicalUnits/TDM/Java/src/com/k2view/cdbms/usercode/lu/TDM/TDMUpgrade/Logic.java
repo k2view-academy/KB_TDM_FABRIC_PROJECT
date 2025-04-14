@@ -7,15 +7,19 @@ package com.k2view.cdbms.usercode.lu.TDM.TDMUpgrade;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnUpdateDistinctFieldData;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.lu.TDM.Globals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM.Logic.fnGetParamType;
 
@@ -168,4 +172,53 @@ public class Logic extends UserCode {
         fwMain.close();
     }
 
+    public static void removeRelationTables(String SchemaLocation) throws Exception {
+        
+        String inputFile = SchemaLocation + "/vdb.k2vdb.xml";
+        String outputFile = SchemaLocation + "/vdb.k2vdb.xml";
+
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+
+        String line;
+        boolean skip = false;
+
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().startsWith("<TableProperties name=\"TDM_LU_TYPE_RELATION_EID\">")) {
+                skip = true;
+                continue;
+            }
+            if (line.trim().startsWith("</TableProperties>")) {
+                if (skip){
+                    skip = false;
+                    continue;
+                }
+
+            }
+            if (!skip) {
+                writer.write(line + "\n");
+            }
+        }
+
+        reader.close();
+        writer.close();
+
+        StringBuffer tdmBuffer = new StringBuffer();
+        Scanner schemaFile = new Scanner(new File(SchemaLocation + "/vdb.k2vdb.xml"));
+        while (schemaFile.hasNextLine()) {
+            tdmBuffer.append(schemaFile.nextLine() + "\n");
+        }
+
+        schemaFile.close();
+        //String newSchema = tdmBuffer.toString().replaceAll("TableProperties name=\"TDM_LU_TYPE_RELATION_EID\">(.*?)<\\/TableProperties>$","");
+        String newSchema = tdmBuffer.toString().replaceAll("<Table>TDM_LU_TYPE_RELATION_EID</Table>","");
+        newSchema = newSchema.replaceAll("<Table>TDM_LU_TYPE_REL_TAR_EID</Table>","");
+        newSchema = newSchema.replaceAll("<Node name=\"TDM_LU_TYPE_RELATION_EID\".*? viewType=\"Table\" />","");
+        newSchema = newSchema.replaceAll("<Node name=\"TDM_LU_TYPE_REL_TAR_EID\".*? viewType=\"Table\" />","");
+
+        FileWriter fwTdm = new FileWriter(SchemaLocation + "/vdb.k2vdb4.xml", false);
+        fwTdm.write(newSchema);
+        fwTdm.close();
+
+    }
 }

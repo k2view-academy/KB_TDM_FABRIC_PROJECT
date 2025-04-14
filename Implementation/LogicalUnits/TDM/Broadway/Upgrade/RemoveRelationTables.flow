@@ -1,0 +1,111 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Stage 2:
+    actors:
+      Get List of LUs:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: list lut
+        out:
+          result:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      Project LU?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |
+              var upgradeLU = true;
+              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
+                  upgradeLU = false;
+              }
+              upgradeLU;
+          luName:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Stage 4:
+    actors:
+      LU folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/Implementation/LogicalUnits/${LU_NAME}/
+          projectDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          LU_NAME:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+      LU folder1:
+        parent: StringFormat
+        in:
+          format:
+            const: /LogicalUnits/${LU_NAME}/vdb.k2vdb2.xml
+          LU_NAME:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Stage 5:
+    actors:
+      LuFunction1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: removeRelationTables
+          SchemaLocation:
+            link: LU folder/string
+            schema: string
+            mandatory: false
+      rm1:
+        parent: rm
+        in:
+          interface:
+            const: null
+            link: Get Project Folder/PROJECT_FOLDER
+          path:
+            link: LU folder1/string
+schemas:
+  Get List of LUs.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+        Project Version:
+          type: string

@@ -95,7 +95,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: geLuTables/res
@@ -138,7 +137,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: geLuTables/res
@@ -200,6 +198,10 @@ stages:
           interfaceName:
             external: TARGET_INTERFACE
             schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
             mandatory: false
 schemas:
   geLuTables.out.res:

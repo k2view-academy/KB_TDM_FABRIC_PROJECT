@@ -70,6 +70,7 @@ stages:
             - target_interface
             - target_schema
             - target_table_name
+            - gui_filter
           dialect:
             const: sqlite
           ref_instance_id:
@@ -107,6 +108,9 @@ stages:
             schema: any
             mandatory: false
           target_table_name:
+            schema: any
+            mandatory: false
+          gui_filter:
             schema: any
             mandatory: false
           params:
@@ -158,6 +162,10 @@ stages:
             link: Get Table Details/result/filter_fields
             schema: string
             mandatory: false
+          filterGUI:
+            link: Get Table Details/result/gui_filter
+            schema: any
+            mandatory: false
       End Indicator:
         parent: Const
         in:
@@ -202,10 +210,21 @@ schemas:
         type: string
       table_filter:
         type: string
+      gui_filter:
+        type: string
       filter_parameters:
         type: string
-      filter_fields: {
-        }
+      filter_fields:
+        type: array
+        items:
+          type: object
+          properties:
+            field_name:
+              type: string
+            field_type:
+              type: string
+            field_value:
+              type: string
       retention_period_type:
         type: string
       retention_period_value:

@@ -1,6 +1,6 @@
 tags: TDM
 stages:
-  Stage 1:
+  Get PAth:
     actors:
       Path format:
         parent: StringFormat
@@ -20,7 +20,7 @@ stages:
             external: ROOT_TABLE
             schema: string
             mandatory: false
-  Stage 2:
+  Read XML:
     actors:
       Read Table XML:
         parent: FileRead
@@ -30,7 +30,7 @@ stages:
             external: LU_PATH
           path:
             link: Path format/string
-      ls1:
+      'ls ':
         parent: ls
         in:
           interface:
@@ -44,7 +44,7 @@ stages:
         out:
           result:
             schema: '#ref'
-      StringFormat1:
+      'StringFormat ':
         parent: StringFormat
         in:
           format:
@@ -53,7 +53,7 @@ stages:
             external: ROOT_TABLE
             schema: string
             mandatory: false
-  Stage 3:
+  Parse XML:
     actors:
       Parse Table XML:
         parent: XmlParser
@@ -65,17 +65,17 @@ stages:
             schema: '#ref'
           info:
             schema: '#ref'
-      Replace1:
+      'Replace ':
         parent: Replace
         in:
           search:
             const: null
-            link: StringFormat1/string
+            link: StringFormat /string
           string:
             link:
-              path: ls1/result/name
+              path: ls /result/name
               iterate: First
-  Stage 4:
+  Get IID and Column ID:
     actors:
       Get IID column ID:
         parent: JavaScript
@@ -105,7 +105,6 @@ stages:
                 columnId;
           iid:
             link: Parse Table XML/object/TableObject/_value/EntityId/_value
-            external: ROOT_TABLE_KEY
             schema: string
             mandatory: false
           objIn:
@@ -115,7 +114,7 @@ stages:
         out:
           result:
             schema: string
-  Stage 5:
+  Result:
     actors:
       Return Root Info:
         parent: JavaScript
@@ -138,11 +137,10 @@ stages:
             mandatory: false
           iid:
             link: Parse Table XML/object/TableObject/_value/EntityId/_value
-            external: ROOT_TABLE_KEY
             schema: string
             mandatory: false
           population:
-            link: Replace1/string
+            link: Replace /string
             schema: string
             mandatory: false
           columnID:
@@ -154,7 +152,7 @@ stages:
             external: rootInfo
             schema: '#ref'
 schemas:
-  ls1.out.result:
+  ls .out.result:
     type: array
     items:
       type: object

@@ -1,0 +1,278 @@
+stages:
+  Get RefList records by source values:
+    actors:
+      Get record by source:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: RefList
+          mtableCaseSensitive:
+            const: false
+          lu_name:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          reference_table_name:
+            external: table_name
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          interface_name:
+            external: interface_name
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Schema Name Contains @:
+    actors:
+      Does source schema contain @:
+        parent: StringPos
+        in:
+          substring:
+            const: '@'
+          string:
+            link:
+              path: Get record by source/result/schema_name
+              iterate: Iterate
+  The source schema contains Global:
+    actors:
+      '@ found?':
+        parent: GreaterThanEquals
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Does source schema contain @/position
+      Replace1:
+        parent: Replace
+        in:
+          search:
+            const: '@'
+          string:
+            link:
+              path: Get record by source/result/schema_name
+              iterate: Iterate
+  Stage 2:
+    last: 1
+    actors:
+      getLUVariable1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          variableName:
+            link: Replace1/string
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
+      Loop Stop:
+        parent: LoopStop
+  Stage 1:
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: getLUVariable1/variableValue
+            schema: string
+          b:
+            external: schema_name
+            schema: string
+      Global Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Get record by source/result
+              iterate: Iterate
+            schema: object
+        out:
+          value:
+            schema: '#ref'
+  Set externals except schema:
+    actors:
+      Table name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Global Schema/value/reference_table_name
+        out:
+          value:
+            external: tableName
+      Interface name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Global Schema/value/interface_name
+        out:
+          value:
+            external: interfaceName
+      Get Source Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSchemaName
+          schemaName:
+            link: Global Schema/value/schema_name
+            schema: string
+            mandatory: false
+          sourceEnvInd:
+            const: true
+            schema: boolean
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: schemaName
+            schema: string
+      Target table name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Global Schema/value/target_ref_table_name
+        out:
+          value:
+            external: targetTableName
+      Target interface name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Global Schema/value/target_interface_name
+        out:
+          value:
+            external: targetInterface
+      Get Target Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSchemaName
+          innerFlowClose:
+            const: false
+          schemaName:
+            link: Global Schema/value/target_schema_name
+            schema: string
+            mandatory: false
+          sourceEnvInd:
+            const: true
+            schema: boolean
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: targetSchemaName
+            schema: string
+      Trunctate Indicator:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Global Schema/value/truncate_indicator
+            schema: string
+        out:
+          value:
+            external: truncate_indicator
+            schema: string
+      Count Indicator:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Global Schema/value/count_indicator
+            schema: string
+        out:
+          value:
+            external: count_indicator
+            schema: string
+      Count Flow:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Global Schema/value/count_flow
+            schema: string
+        out:
+          value:
+            external: count_flow
+            schema: string
+schemas:
+  Get record by source.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        id:
+          type: string
+        reference_table_name:
+          type: string
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        target_ref_table_name:
+          type: string
+        target_interface_name:
+          type: string
+        target_schema_name:
+          type: string
+        table_pk_list: {
+          }
+        truncate_indicator:
+          type: string
+        count_indicator:
+          type: string
+        count_flow: {
+          }
+  Global Schema.out.value:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      id:
+        type: string
+      reference_table_name:
+        type: string
+      interface_name:
+        type: string
+      schema_name:
+        type: string
+      target_ref_table_name:
+        type: string
+      target_interface_name:
+        type: string
+      target_schema_name:
+        type: string
+      table_pk_list: {
+        }
+      truncate_indicator:
+        type: string
+      count_indicator:
+        type: string
+      count_flow: {
+        }

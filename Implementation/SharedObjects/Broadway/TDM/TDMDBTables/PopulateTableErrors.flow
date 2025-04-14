@@ -33,11 +33,11 @@ stages:
       Get Task Execution ID:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: TDM_TASK_EXE_ID
             default: false
+          interface:
+            schema: any
       No Target Entity ID?:
         parent: Equals
         in:
@@ -119,6 +119,14 @@ stages:
             const: false
           maps:
             link: Remove none ASC Characters/result
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Load Data to Detailed Error table:
     actors:
       Load Data To Error Table:
@@ -127,7 +135,8 @@ stages:
           interface:
             const: TDM
           schema:
-            const: '@TDMDB_SCHEMA@'
+            const: null
+            link: getTDMDBSchema/schema
           table:
             const: task_exe_error_detailed
           fields:

@@ -27,5 +27,5 @@ SELECT task_title,
        CAST(mask_sensitive_data as varchar(10)) as mask_sensitive_data,
        clone_ind,
        t.execution_mode
-FROM   @TDMDB_SCHEMA@.TASKS t
+FROM   ${@TDMDB_SCHEMA}.TASKS t
 WHERE  task_id = ?

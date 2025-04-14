@@ -1,6 +1,14 @@
 tags: Upgrade
 stages:
-  Stage 1:
+  Get TDMDB Schema:
+    actors:
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+  get task created by:
     actors:
       DbCommand1:
         parent: DbCommand
@@ -11,13 +19,13 @@ stages:
             const: select distinct task_created_by from ${@schema}.tasks where task_created_by
               not like '%##%'
           schema:
-            const: '@TDMDB_SCHEMA@'
+            link: TDMDB_SCHEMA/result
             schema: string
             mandatory: false
         out:
           result:
             schema: '#ref'
-  Stage 2:
+  UserRolesUpgrade:
     actors:
       MTableLookup1:
         parent: MTableLookup
@@ -37,7 +45,7 @@ stages:
             schema: '#ref'
           user_roles:
             schema: string
-  Stage 3:
+  update:
     actors:
       NotNull1:
         parent: NotNull
@@ -56,7 +64,7 @@ stages:
               set task_created_by = task_created_by || '##'||${userRoles}
               where task_created_by = ${userId}
           schema:
-            const: '@TDMDB_SCHEMA@'
+            link: TDMDB_SCHEMA/result
             schema: string
             mandatory: false
           userRoles:

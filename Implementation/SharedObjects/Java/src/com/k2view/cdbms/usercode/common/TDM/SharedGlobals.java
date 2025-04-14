@@ -93,10 +93,7 @@ public class SharedGlobals {
 
 	@category("TDM")
 	public static final String TDM_REF_UPD_SIZE = "1000";
-
-	@category("TDM")
-	public static final String TDMDB_SCHEMA = "public";
-
+	
 	@category("TDM")
 	public static String clone_id = "0";
 
@@ -138,6 +135,10 @@ public class SharedGlobals {
 
 	@category("TDM")
 	public static final String BUILD_TDMDB = "true";
+	@category("TDM_DEMO")
+	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
+	@category("TDM_DEMO")
+	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 
     @category("AI")
 	public static final String AI_DB_INTERFACE = "AI_DB";
@@ -164,5 +165,14 @@ public class SharedGlobals {
 	
 	@category("TDM")
 	public static String UPDATE_MDB_EXPORTED_SCHEMA = "false";
+
+	@category("TDM")
+	public static String REPLACE_SEQ_BY_LUI_SYNC = "false";
+
+	@category("TDM")
+	public static String TDM_USING_CATALOG_SEQUENCES = "false";
+
+	@category("TDM")
+	public static String CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA= "true";
 
 }

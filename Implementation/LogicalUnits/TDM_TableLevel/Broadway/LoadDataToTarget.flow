@@ -1,24 +1,5 @@
 stages:
-  Table's Details:
-    actors:
-      Get Table Details:
-        parent: InnerFlow
-        height: 296
-        in:
-          flowName:
-            const: GetTableLevelDetails
-          ref_instance_id:
-            external: refInstanceId
-            schema: string
-            mandatory: false
-          taskExeId:
-            external: taskExeId
-            schema: integer
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
-  Get Load Flow if Exists:
+  Get Table's Fields:
     actors:
       Get List of Table's Fields:
         parent: LuFunction
@@ -26,15 +7,15 @@ stages:
           functionName:
             const: fnGetTableFields
           dbInterfaceName:
-            link: Get Table Details/result/target_interface
+            external: sourceInterfaceName
             schema: string
             mandatory: false
           SchemaName:
-            link: Get Table Details/result/target_schema
+            external: sourceSchemaName
             schema: string
             mandatory: false
           tableName:
-            link: Get Table Details/result/target_table_name
+            external: sourceTableName
             schema: string
             mandatory: false
         out:
@@ -54,7 +35,7 @@ stages:
         out:
           array:
             schema: '#ref'
-  Input Records:
+  Get Custom Flow If Exists:
     actors:
       Records To Be Loaded:
         parent: Const
@@ -81,15 +62,15 @@ stages:
           functionName:
             const: fnGetTableDefinitions
           interfaceName:
-            link: Get Table Details/result/interface_name
+            external: sourceInterfaceName
             schema: string
             mandatory: false
           schemaName:
-            link: Get Table Details/result/schema_name
+            external: sourceSchemaName
             schema: string
             mandatory: false
           tableName:
-            link: Get Table Details/result/ref_table_name
+            external: sourceTableName
             schema: string
             mandatory: false
           attrName:
@@ -115,7 +96,7 @@ stages:
             schema: integer
             mandatory: false
           tableId:
-            link: Get Table Details/result/ref_table_id
+            external: tableId
             schema: integer
             mandatory: false
           values:
@@ -123,6 +104,14 @@ stages:
         out:
           values:
             schema: '#ref'
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Load By Query:
     else: false
     dependsOn: Update Table Current Count
@@ -258,7 +247,7 @@ stages:
             const: TDM
           sql:
             const: |-
-              update @TDMDB_SCHEMA@.task_ref_exe_stats
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
               set number_of_processed_records = coalesce(${recCount}, 0)
               where task_execution_id = ${taskExeId}
               and task_ref_table_id = ${tableId}
@@ -267,7 +256,7 @@ stages:
             schema: integer
             mandatory: false
           tableId:
-            link: Get Table Details/result/ref_table_id
+            external: tableId
             schema: integer
             mandatory: false
           recCount:
@@ -276,52 +265,11 @@ stages:
             - Run Load Flow/result
             schema: integer
             mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
 schemas:
-  Get Table Details.out.result:
-    type: object
-    properties:
-      lu_name:
-        type: string
-      ref_table_id:
-        type: integer
-      ref_table_name:
-        type: string
-      source_env:
-        type: string
-      task_type:
-        type: string
-      selection_method:
-        type: string
-      interface_name:
-        type: string
-      schema_name:
-        type: string
-      task_execution_id:
-        type: integer
-      task_id:
-        type: integer
-      filter_type: {
-        }
-      table_filter:
-        type: string
-      filter_parameters:
-        type: string
-      filter_fields: {
-        }
-      retention_period_type:
-        type: string
-      retention_period_value:
-        type: integer
-      target_interface:
-        type: string
-      target_schema:
-        type: string
-      target_table_name:
-        type: string
-      number_of_records_to_process:
-        type: integer
-      retention:
-        type: integer
   Get List of Table's Fields.out.result:
     type: array
     items:

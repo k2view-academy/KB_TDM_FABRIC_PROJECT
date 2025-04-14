@@ -1,8 +1,8 @@
 tags: TDM
 stages:
-  Stage 1:
+  Parse Tables Info:
     actors:
-      JsonParser1:
+      'JsonParser ':
         parent: JsonParser
         in:
           stream:
@@ -10,59 +10,59 @@ stages:
         out:
           object:
             schema: '#ref'
-  Stage 2:
+  Get Xml Of Table:
     actors:
-      StringFormat1:
+      'StringFormat ':
         parent: StringFormat
         in:
           format:
             const: Tables/${TABLE_NAME}.k2table.xml
           TABLE_NAME:
             link:
-              path: JsonParser1/object/table_name
+              path: JsonParser /object/table_name
               iterate: Iterate
             schema: string
             mandatory: false
           params:
-            link: JsonParser1/object
-  Stage 3:
+            link: JsonParser /object
+  Read Table File:
     actors:
-      FileRead1:
+      FileRead:
         parent: FileRead
         in:
           interface:
             const: null
             external: LU_PATH
           path:
-            link: StringFormat1/string
-  Stage 4:
+            link: StringFormat /string
+  Parse Table Xml:
     actors:
-      XmlParser1:
+      XmlParser:
         parent: XmlParser
         in:
           stream:
-            link: FileRead1/stream
+            link: FileRead/stream
         out:
           object:
             schema: '#ref'
           info:
             schema: '#ref'
-  Stage 5:
-    dependsOn: Stage 4
+  Column if IDs Match:
+    dependsOn: Parse Table Xml
     actors:
-      EqualsIgnoreCase1:
+      'EqualsIgnoreCase  ':
         parent: EqualsIgnoreCase
         condition: result
         in:
           a:
             link:
-              path: JsonParser1/object/column_name
+              path: JsonParser /object/column_name
               iterate: Iterate
           b:
             link:
-              path: XmlParser1/object/TableObject/_value/Columns/_value/Column/_attributes/name
+              path: XmlParser/object/TableObject/_value/Columns/_value/Column/_attributes/name
               iterate: Iterate
-      MapBuild1:
+      MapBuild:
         parent: MapBuild
         in:
           key:
@@ -70,97 +70,97 @@ stages:
             schema: string
           value:
             link:
-              path: XmlParser1/object/TableObject/_value/Columns/_value/Column/_attributes/id
+              path: XmlParser/object/TableObject/_value/Columns/_value/Column/_attributes/id
               iterate: Iterate
         out:
           map:
             schema: '#ref'
     split: '--------------------'
-  Stage 9:
+  Else:
     else: true
-    dependsOn: Stage 4
+    dependsOn: Parse Table Xml
     actors:
-      JsonParser2:
+      'JsonParser  ':
         parent: JsonParser
         in:
           stream:
-            link: XmlParser1/object/TableObject/_value/IndexesList
+            link: XmlParser/object/TableObject/_value/IndexesList
         out:
           object:
             schema: '#ref'
-  Stage 10:
-    dependsOn: Stage 5
+  'Continue ':
+    dependsOn: Column if IDs Match
     split: '--------------------'
-  Stage 11:
-    dependsOn: Stage 9
+  Check If Column and ID match:
+    dependsOn: Else
     actors:
-      EqualsIgnoreCase2:
+      EqualsIgnoreCase:
         parent: EqualsIgnoreCase
         condition: result
         in:
           a:
             link:
-              path: JsonParser1/object/column_name
+              path: JsonParser /object/column_name
               iterate: Iterate
           b:
-            link: JsonParser2/object/Index/_attributes/columnsIdsList
-      MapBuild2:
+            link: JsonParser  /object/Index/_attributes/columnsIdsList
+      'MapBuild ':
         parent: MapBuild
         in:
           key:
             const: id
             schema: string
           value:
-            link: JsonParser2/object/Index/_attributes/columnsIdsList
+            link: JsonParser  /object/Index/_attributes/columnsIdsList
         out:
           map:
             schema: '#ref'
           previous:
             schema: '#ref'
-  Stage 6:
+  Merge Info:
     last: 1
     actors:
-      MapMerge1:
+      MapMerge:
         parent: MapMerge
         in:
           maps:
             link:
-            - path: JsonParser1/object
+            - path: JsonParser /object
               iterate: Iterate
               pos: 0
-            - path: MapBuild1/map
+            - path: MapBuild/map
               pos: 1
-            - path: MapBuild2/map
+            - path: MapBuild /map
               pos: 2
         out:
           map:
             schema: '#ref'
-  Stage 7:
+  Build Result:
     last: 1
     actors:
-      StringBuild1:
+      StringBuild:
         parent: StringBuild
         in:
           input:
             link:
-              path: MapMerge1/map
+              path: MapMerge/map
               pos: 0
-  Stage 8:
+  Return Table Info:
     actors:
-      StringFormat2:
+      StringFormat:
         parent: StringFormat
         in:
           format:
             const: '[${table_info}]'
           table_info:
-            link: StringBuild1/string
+            link: StringBuild/string
             schema: string
             mandatory: false
         out:
           string:
             external: tables
 schemas:
-  JsonParser1.out.object:
+  JsonParser .out.object:
     type: array
     items:
       type: object
@@ -175,7 +175,7 @@ schemas:
           type: array
           items:
             type: string
-  XmlParser1.out.object:
+  XmlParser.out.object:
     type: object
     properties:
       TableObject:
@@ -265,7 +265,7 @@ schemas:
                                 properties:
                                   _value:
                                     type: string
-  XmlParser1.out.info:
+  XmlParser.out.info:
     type: object
     properties:
       version:
@@ -274,12 +274,12 @@ schemas:
         type: boolean
       header:
         type: string
-  MapBuild1.out.map:
+  MapBuild.out.map:
     type: object
     properties:
       id:
         type: string
-  JsonParser2.out.object:
+  JsonParser  .out.object:
     type: object
     properties:
       Index:
@@ -298,12 +298,12 @@ schemas:
                 type: string
               columnsIdsList:
                 type: string
-  MapBuild2.out.map:
+  MapBuild .out.map:
     type: object
     properties:
       id:
         type: string
-  MapBuild2.out.previous:
+  MapBuild .out.previous:
     type: object
     properties:
       _value:
@@ -325,7 +325,7 @@ schemas:
                     type: string
                   columnsIdsList:
                     type: string
-  MapMerge1.out.map:
+  MapMerge.out.map:
     type: object
     properties:
       table_name:

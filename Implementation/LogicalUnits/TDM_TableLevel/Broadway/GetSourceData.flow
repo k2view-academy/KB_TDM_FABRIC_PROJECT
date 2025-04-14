@@ -316,6 +316,10 @@ stages:
             external: filterParametersInfo
             schema: any
             mandatory: false
+          filterGUI:
+            external: filterGUI
+            schema: any
+            mandatory: false
         out:
           result:
             schema: '#ref'

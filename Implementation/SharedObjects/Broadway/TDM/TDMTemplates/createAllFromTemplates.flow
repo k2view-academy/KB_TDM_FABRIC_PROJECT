@@ -136,7 +136,6 @@ stages:
               id: com.k2view.interface
               interfaceType:
               - database
-              - CassandraLoader
             mandatory: false
           SOURCE_SCHEMA:
             external: SOURCE_SCHEMA

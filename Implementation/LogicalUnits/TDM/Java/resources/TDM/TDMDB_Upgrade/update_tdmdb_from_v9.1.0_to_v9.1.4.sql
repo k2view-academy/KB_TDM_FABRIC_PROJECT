@@ -8,6 +8,7 @@ ALTER TABLE ${@schema}.task_execution_entities ADD COLUMN IF NOT EXISTS parent_t
 ALTER TABLE ${@schema}.task_execution_entities DROP CONSTRAINT task_execution_entities_pkey;
 
 CREATE INDEX IF NOT EXISTS task_execution_entities_1ix ON ${@schema}.task_execution_entities (task_execution_id, root_lu_name, root_entity_id);
+UPDATE ${@schema}.task_execution_entities SET root_entity_id = '' WHERE root_entity_id IS NULL;
 
 CREATE OR REPLACE PROCEDURE ${@schema}.update_parent_root_info(schemaName text)
 LANGUAGE 'plpgsql'
@@ -48,6 +49,8 @@ $BODY$;
 
 call ${@schema}.update_parent_root_info('${@schema}');
 drop procedure ${@schema}.update_parent_root_info(IN TEXT);
+
+UPDATE ${@schema}.task_execution_entities SET root_target_entity_id = '' WHERE root_target_entity_id IS NULL;
 
 ALTER TABLE ${@schema}.task_execution_entities ADD CONSTRAINT task_execution_entities_pkey 
     PRIMARY KEY (task_execution_id, lu_name, entity_id, target_entity_id, root_entity_id, root_target_entity_id);

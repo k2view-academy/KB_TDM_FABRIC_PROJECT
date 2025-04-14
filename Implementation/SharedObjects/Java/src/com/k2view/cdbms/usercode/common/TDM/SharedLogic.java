@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.management.RuntimeErrorException;
+
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.DecisionFunction;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.RootFunction;
@@ -29,10 +31,17 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_BATCH_LIMIT
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_TASK_ID;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
+ public static String TDMDB_SCHEMA;
+    static {
+        try {
+            TDMDB_SCHEMA = fabric().fetch("Broadway TDM.getTDMDBSchema").firstValue().toString();
+        } catch (Exception e) {
+            log.error("Failed to fetch TDMDB schema", e);
+        }
+    }	
 	public static final String TDM = "TDM";
 	public static final String TASKS = "TASKS";
 	public static final String TASK_EXECUTION_LIST = "task_execution_list";

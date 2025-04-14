@@ -16,7 +16,7 @@ stages:
             schema: string
             mandatory: false
           tableName:
-            external: tableName
+            external: table
             schema: string
             mandatory: false
         out:

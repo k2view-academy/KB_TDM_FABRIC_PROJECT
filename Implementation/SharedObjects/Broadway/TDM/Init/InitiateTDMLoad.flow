@@ -98,6 +98,14 @@ stages:
             schema: string
           a:
             external: parentLuName
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Set Environment To Source:
     actors:
       Get Start Time:
@@ -210,7 +218,7 @@ stages:
           sql:
             const: |-
               select selection_method, l.lu_id
-              from @TDMDB_SCHEMA@.tasks t , @TDMDB_SCHEMA@.task_execution_list l, @TDMDB_SCHEMA@.tasks_logical_units u
+              from ${@TDMDB_SCHEMA}.tasks t , ${@TDMDB_SCHEMA}.task_execution_list l, ${@TDMDB_SCHEMA}.tasks_logical_units u
               where task_execution_id = ${taskExecutionId} and  t.task_id=l.task_id and  t.task_id=u.task_id and u.lu_name = ${luName}
               and u.lu_id = l.lu_id
           taskExecutionId:
@@ -220,6 +228,10 @@ stages:
           luName:
             external: luName
             schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
         out:
           result:
@@ -295,7 +307,7 @@ stages:
             const: TDM
           sql:
             const: |-
-              select root_lu_name ,root_imported_lui from @TDMDB_SCHEMA@.tdm_ai_gen_iid_mapping
+              select root_lu_name ,root_imported_lui from ${@TDMDB_SCHEMA}.tdm_ai_gen_iid_mapping
               where lu_name=${lu_name} and imported_lui=${iid} and task_execution_id=${task_execution_id}
           iid:
             external: iid
@@ -308,6 +320,10 @@ stages:
           lu_name:
             external: luName
             schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
         out:
           result:
@@ -444,16 +460,6 @@ stages:
             const: null
             link: Split IID And Clone Number/cloneNo
             default: false
-      Initiate Target Entity ID after IID Split:
-        parent: FabricSet
-        in:
-          key:
-            const: TARGET_ENTITY_ID
-            default: false
-          value:
-            const: null
-            link: Split IID And Clone Number/instanceID
-            default: false
       Initiate Instance ID:
         parent: FabricSet
         in:
@@ -474,6 +480,28 @@ stages:
             const: null
             link: Split IID And Clone Number/UID
             default: false
+      Initiate Target Entity ID after IID Split:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Split IID And Clone Number/instanceID
+            default: false
+      Get REPLACE_SEQ_BY_LUI_SYNC:
+        parent: FabricSetRead
+        in:
+          key:
+            const: REPLACE_SEQ_BY_LUI_SYNC
+            default: false
+      Get TDM_REPLACE_SEQUENCES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_REPLACE_SEQUENCES
+            default: false
   Set iid based on clone_no:
     transactional: false
     actors:
@@ -492,6 +520,19 @@ stages:
         out:
           result:
             schema: string
+      Set enable_sequences For Extract:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SetSeqFlagForExtract
+          replaceSeqAtSync:
+            link: Get REPLACE_SEQ_BY_LUI_SYNC/result
+            schema: boolean
+            mandatory: false
+          replaceSeq:
+            link: Get TDM_REPLACE_SEQUENCES/result
+            schema: boolean
+            mandatory: false
   Get Instance From Fabric:
     transactional: false
     actors:
@@ -635,12 +676,26 @@ stages:
             const: null
             link: Get Load Masking Flag/result
             default: false
-      Get Sequences Flag:
-        parent: FabricSetRead
+      Set enable_sequences For Load:
+        parent: InnerFlow
         in:
-          key:
-            const: enable_sequences
-            default: false
+          flowName:
+            const: SetSeqFlagForLoad
+          replaceSeq:
+            link: Get TDM_REPLACE_SEQUENCES/result
+            schema: string
+            mandatory: false
+          replaceSeqAtSync:
+            link: Get REPLACE_SEQ_BY_LUI_SYNC/result
+            schema: string
+            mandatory: false
+          cloneId:
+            link: Split IID And Clone Number/cloneNo
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: boolean
   'set Enable_Masking_uniqueness ':
     transactional: false
     dependsOn: Set Environment To Target
@@ -652,7 +707,7 @@ stages:
           a:
             link: Get Load Masking Flag/result
           b:
-            link: Get Sequences Flag/result
+            link: Set enable_sequences For Load/result
       Set Enable_Masking_uniqueness to true:
         parent: FabricSet
         in:

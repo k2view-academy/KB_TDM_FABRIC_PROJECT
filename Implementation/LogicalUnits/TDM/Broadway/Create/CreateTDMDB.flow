@@ -1,0 +1,150 @@
+tags: Create
+stages:
+  Get Inputs:
+    actors:
+      Create DB Flag:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: flag
+        out:
+          value:
+            schema: string
+      Get DB Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: database
+        out:
+          value:
+            schema: string
+  Check flag for create DB:
+    dependsOn: Get Inputs
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            const: true
+            schema: boolean
+          b:
+            link: Create DB Flag/value
+      Create DB:
+        parent: DbCommand
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: create database "${@databaseName}" ;
+          databaseName:
+            link: Get DB Name/value
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Don't Create DB:
+    else: true
+    dependsOn: Get Inputs
+  Get Scripts:
+    actors:
+      Get  SQL Resource File To Clear TDMDB And Create Sequences:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm2.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+      getTDMDBSchemaName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Create Schema if Not exists:
+    actors:
+      Create Schema:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: create Schema if not exists ${@schemaName}
+          schemaName:
+            link: getTDMDBSchemaName1/schema
+            schema: string
+            mandatory: false
+  Create TDMDB Sequences:
+    actors:
+      Clear And Sequence Creation Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Clear TDMDB and Create Sequences:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Clear TDMDB And Create Sequences/result
+          schema:
+            link: getTDMDBSchemaName1/schema
+            schema: string
+            mandatory: false
+      Get  SQL Resource File To Create TDMDB Tables and Functions:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm3.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+  Create TDMDB Tables:
+    actors:
+      Create TDMDB Tables Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Create TDMDB Tables and Functions:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Create TDMDB Tables and Functions/result
+          schema:
+            link: getTDMDBSchemaName1/schema
+            schema: string
+            mandatory: false

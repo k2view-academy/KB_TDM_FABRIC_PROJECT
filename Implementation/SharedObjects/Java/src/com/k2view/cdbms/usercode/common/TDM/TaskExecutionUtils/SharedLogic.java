@@ -24,7 +24,8 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.fnTdmReference;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
@@ -563,6 +564,7 @@ public class SharedLogic {
     }
 
 
+	@out(name = "result", type = Object.class, desc = "")
 	public static Object fnGetNumberOfMatchingEntities(String whereStmt, String queryJson, String sourceEnvName, String targetEnvName, Long beID, String filteroutReserved,boolean analysisCount) throws Exception {
 		String sourceEnv = !Util.isEmpty(sourceEnvName) ? sourceEnvName : "_dev";
         String paramsQuery = "";
@@ -585,6 +587,7 @@ public class SharedLogic {
         }
 
         String userID = sessionUser().name();
+		log.error(userID);
         String tarEnvID = "" + db(TDM).fetch("SELECT environment_id FROM " + TDMDB_SCHEMA + ".environments WHERE environment_name = ? AND environment_status = 'Active'", targetEnvName).firstValue();
         Db.Rows rows =  null;
         String countClause = paramCoupling ? "COUNT(*)" : "COUNT(distinct " + iidFieldName + ")";
@@ -601,16 +604,16 @@ public class SharedLogic {
         if ("OTHERS".equalsIgnoreCase(filteroutReserved)) {
         	query = query.replace(" WHERE tr.env_id = ?", 
                         " WHERE tr.env_id = ? and tr.reserve_owner != ?");
-			//log.info("fnGetNumberOfMatchingEntities2 - query: " + query);	
+			log.info("fnGetNumberOfMatchingEntities2 - query: " + query);	
             rows = db(TDM).fetch(query, tarEnvID, userID, beID);
         } else if ("ALL".equalsIgnoreCase(filteroutReserved)) {
-			//log.info("fnGetNumberOfMatchingEntities3 - query: " + query);
+			log.info("fnGetNumberOfMatchingEntities3 - query: " + query);
             rows = db(TDM).fetch(query, tarEnvID, beID);
         } else {
             query = paramCoupling 
 					? "SELECT COUNT(*) FROM (" + paramsQuery + ") AS final_count" 
 					: "SELECT COUNT(distinct " + iidFieldName + ") FROM (" + paramsQuery + ") AS final_count";
-        	//log.info("fnGetNumberOfMatchingEntities4 - query: " + query);													
+        	log.info("fnGetNumberOfMatchingEntities4 - query: " + query);													
             rows = db(TDM).fetch(query);
         }
 		Object numberOfMatches = rows.firstValue();
@@ -619,7 +622,6 @@ public class SharedLogic {
 				}
 		return wrapWebServiceResults("SUCCESS", null, numberOfMatches);
 	}
-
 
 
 	public static HashMap<String, Object> fnMigrateStatusWs(String migrateId, List<String> runModes) throws Exception {

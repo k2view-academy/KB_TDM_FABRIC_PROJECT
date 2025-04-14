@@ -6,9 +6,6 @@ DROP INDEX IF EXISTS ${@schema}.tdm_be_exe_process_ix1;
 CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_exe_process_ix1 ON ${@schema}.tdm_be_exe_process (process_name, be_id, process_type);
 
 -- TDM 9.1.4/5/6, in case upgrading from TDM 9.2 which does not include the these changes
-INSERT INTO ${@schema}.tdm_general_parameters(
-        param_name, param_value)
-    VALUES ('FOOTER_TEXT', 'Copyright K2view') ON CONFLICT DO NOTHING;
 
 ALTER TABLE ${@schema}.task_execution_entities ALTER COLUMN task_execution_id type BIGINT USING task_execution_id::BIGINT;
 
@@ -19,6 +16,8 @@ ALTER TABLE ${@schema}.task_execution_entities ADD COLUMN IF NOT EXISTS parent_t
 
 DROP INDEX IF EXISTS ${@schema}.task_execution_entities_2ix;
 CREATE INDEX IF NOT EXISTS task_execution_entities_1ix ON ${@schema}.task_execution_entities (task_execution_id, root_lu_name, root_entity_id);
+
+UPDATE ${@schema}.task_execution_entities SET root_entity_id = '' WHERE root_entity_id IS NULL;
 
 CREATE OR REPLACE PROCEDURE ${@schema}.update_parent_root_info(schemaName text)
 LANGUAGE 'plpgsql'
@@ -60,9 +59,6 @@ BEGIN
             END IF;
         END LOOP;
         CLOSE curr_cursor;
-
-        ALTER TABLE ${@schema}.task_execution_entities  ADD CONSTRAINT task_execution_entities_pkey
-            PRIMARY KEY (task_execution_id, lu_name, entity_id, clone_no, root_entity_id, root_target_entity_id);
     END IF;
 END;
 $BODY$;
@@ -71,3 +67,12 @@ call ${@schema}.update_parent_root_info('${@schema}');
 drop procedure ${@schema}.update_parent_root_info(IN TEXT);
 
 ANALYZE  ${@schema}.task_execution_entities;
+
+UPDATE ${@schema}.task_execution_entities SET root_target_entity_id = '' WHERE root_target_entity_id IS NULL;
+
+ALTER TABLE ${@schema}.task_execution_entities  ADD CONSTRAINT task_execution_entities_pkey
+PRIMARY KEY (task_execution_id, lu_name, entity_id, clone_no, root_entity_id, root_target_entity_id);
+
+INSERT INTO ${@schema}.tdm_general_parameters(
+        param_name, param_value)
+    VALUES ('FOOTER_TEXT', 'Copyright K2view') ON CONFLICT DO NOTHING;  

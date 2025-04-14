@@ -153,6 +153,9 @@ stages:
             link: Get Table Details/result/filter_fields
             schema: any
             mandatory: false
+          filterGUI:
+            schema: any
+            mandatory: false
         out:
           result:
             schema: '#ref'
@@ -202,10 +205,6 @@ stages:
             - Get Source Data/result
             schema: '#ref'
             mandatory: false
-          refInstanceId:
-            external: refInstanceId
-            schema: string
-            mandatory: false
           taskExeId:
             external: taskExeId
             schema: integer
@@ -213,6 +212,18 @@ stages:
           sourceTableName:
             link: Get Table Details/result/ref_table_name
             schema: string
+            mandatory: false
+          sourceInterfaceName:
+            link: Get Table Details/result/interface_name
+            schema: string
+            mandatory: false
+          sourceSchemaName:
+            link: Get Table Details/result/schema_name
+            schema: string
+            mandatory: false
+          tableId:
+            link: Get Table Details/result/ref_table_id
+            schema: integer
             mandatory: false
 schemas:
   Get Table Details.out.result:
@@ -244,17 +255,8 @@ schemas:
         type: string
       filter_parameters:
         type: string
-      filter_fields:
-        type: array
-        items:
-          type: object
-          properties:
-            field_name:
-              type: string
-            field_type:
-              type: string
-            field_value:
-              type: integer
+      filter_fields: {
+        }
       retention_period_type:
         type: string
       retention_period_value:

@@ -7,6 +7,12 @@ stages:
         in:
           flowName:
             const: UpdatePostProcessList
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
   Stage 2:
     actors:
       masking_cache_add_exp_date_9_01:
@@ -47,6 +53,6 @@ stages:
             const: update ${@schema}.tdm_general_parameters set param_value = '9.0'
               where param_name = 'TDM_VERSION' ;
           schema:
-            const: '@TDMDB_SCHEMA@'
+            link: TDMDB_SCHEMA/result
             schema: string
             mandatory: false

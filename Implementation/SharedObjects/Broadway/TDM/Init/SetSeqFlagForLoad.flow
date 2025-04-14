@@ -1,0 +1,117 @@
+tags: TDM
+stages:
+  Dummy First  Stage to Allow Split:
+    actors:
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      AI_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_ENVIRONMENT
+            default: false
+      SYNTHETIC_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SYNTHETIC_ENVIRONMENT
+            default: false
+  Enable Sequence:
+    dependsOn: Dummy First  Stage to Allow Split
+    actors:
+      Enable Sequences At Load?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const:
+              userCode: |
+                var result = false;
+                var envCondition = (srcEnv == aiEnv || srcEnv == synthEnv);
+                if (envCondition || (replaceSeq === "true" && replaceSeqAtSync === "false") || cloneId > 0) {
+                    result = true;
+                }
+                result;
+              script: |-
+                var result = false;
+                var envCondition = srcEnv == aiEnv || srcEnv == synthEnv;
+
+                if (envCondition || replaceSeq === "true" && replaceSeqAtSync === "false" || cloneId > 0) {
+                  result = true;
+                }
+
+                result;
+          replaceSeq:
+            external: replaceSeq
+            schema: string
+            mandatory: false
+          replaceSeqAtSync:
+            external: replaceSeqAtSync
+            schema: string
+            mandatory: false
+          cloneId:
+            external: cloneId
+            schema: integer
+            mandatory: false
+          srcEnv:
+            link: Get Source Environment/result
+            schema: any
+            mandatory: false
+          synthEnv:
+            link: AI_ENVIRONMENT/result
+            schema: any
+            mandatory: false
+          aiEnv:
+            link: SYNTHETIC_ENVIRONMENT/result
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Set enable_sequences to True1:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'true'
+            default: false
+      'true':
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean
+    split: '--------------------'
+  Set To False:
+    else: true
+    dependsOn: Dummy First  Stage to Allow Split
+    actors:
+      Set enable_sequences to False:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'false'
+            default: false
+      'false':
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean

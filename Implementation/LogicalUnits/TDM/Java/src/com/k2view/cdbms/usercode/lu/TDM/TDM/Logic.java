@@ -19,7 +19,6 @@ import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
-
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.Blob;
@@ -35,7 +34,8 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends UserCode {
@@ -1295,6 +1295,7 @@ public class Logic extends UserCode {
     
     public static void fnInsertValuestoDistinctParamsTable(String srcEnv , String luName,Map<String, Map<String, Object>> disitnctValuesMap){
         try{
+			
             for (String key : disitnctValuesMap.keySet()) {
                 Map<String, Object> fieldinfo = disitnctValuesMap.get(key);
                 Long numberOfValues = Long.parseLong(fieldinfo.get("numberOfValues").toString());

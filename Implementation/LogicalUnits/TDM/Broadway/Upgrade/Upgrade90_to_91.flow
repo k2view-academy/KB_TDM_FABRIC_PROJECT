@@ -7,6 +7,12 @@ stages:
         in:
           flowName:
             const: UpgradeTableLevelDefinitions9_1
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
   Stage 2:
     actors:
       UpdateFilterOutTargetTables1:
@@ -25,6 +31,6 @@ stages:
             const: update ${@schema}.tdm_general_parameters set param_value = '9.1'
               where param_name = 'TDM_VERSION' ;
           schema:
-            const: '@TDMDB_SCHEMA@'
+            link: TDMDB_SCHEMA/result
             schema: string
             mandatory: false

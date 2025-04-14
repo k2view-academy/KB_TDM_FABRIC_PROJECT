@@ -12,7 +12,8 @@ import com.k2view.fabric.api.endpoint.Endpoint.*;
 import java.util.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.GET_RESERVED_ENTITIES_LIMIT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnReleaseReservedEntity;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnInsertActivity;

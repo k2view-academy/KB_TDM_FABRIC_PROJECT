@@ -1,6 +1,6 @@
 tags: TDM
 stages:
-  Stage 1:
+  Get Path:
     actors:
       PROJECT_DIR:
         parent: SysEnv
@@ -10,8 +10,8 @@ stages:
         out:
           value:
             schema: string
-  Stage 2:
-    dependsOn: Stage 1
+  Studio:
+    dependsOn: Get Path
     actors:
       Studio Present?:
         parent: NotNull
@@ -32,9 +32,9 @@ stages:
           string:
             external: PROJECT_FOLDER
     split: '--------------------'
-  Stage 3:
+  Non Dev:
     else: true
-    dependsOn: Stage 1
+    dependsOn: Get Path
     actors:
       Return Null:
         parent: NullValue

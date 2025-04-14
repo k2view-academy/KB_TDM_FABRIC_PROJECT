@@ -31,7 +31,7 @@ import com.k2view.fabric.interfaceSchema.InterfaceSchemaLogic.TableInfoResult;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.Globals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
@@ -58,6 +58,22 @@ public class Logic extends UserCode {
         
         lookupInputs.put("table_name", tableName);
 		List<Map<String, Object>> tableDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+
+        //TDM 9.3.1 - Check if the schema is dynamic
+        if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
+            lookupInputs.put("schema_name", null);
+            List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+            if (tableDefinitions2 != null && tableDefinitions.size() > 0) {
+                String dynamicSchema = tableDefinitions2.get(0).get("schema_name").toString();
+                if (dynamicSchema.startsWith("@")) {
+                    dynamicSchema = dynamicSchema.replaceAll("@", "");
+                    if (dynamicSchema.equals(schemaName)) {
+                        tableDefinitions = tableDefinitions2;
+                    }
+                }   
+            }
+            lookupInputs.put("schema_name", schemaName);
+        }
 		lookupInputs.put("table_name", null);
         List<Map<String, Object>> schemaDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
         lookupInputs.put("schema_name", null);
@@ -128,6 +144,22 @@ public class Logic extends UserCode {
             Integer order = tableEntry.getValue();
             lookupInputs.put("table_name",tableName);
             List<Map<String, Object>> tableDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+            if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
+                //TDM 9.3.1 - Check if the schema is dynamic
+                if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
+                    lookupInputs.put("schema_name", null);
+                    List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+                    if (tableDefinitions2 != null && tableDefinitions.size() > 0) {
+                        String dynamicSchema = tableDefinitions2.get(0).get("schema_name").toString();
+                        if (dynamicSchema.startsWith("@")) {
+                            dynamicSchema = dynamicSchema.replaceAll("@", "");
+                            if (dynamicSchema.equals(schemaName)) {
+                                tableDefinitions = tableDefinitions2;
+                            }
+                        }   
+                    }
+                }
+            }
             if (tableDefinitions != null && tableDefinitions.size() > 0) {
                 Object orderObj = tableDefinitions.get(0).get("table_order");
                 if (orderObj != null && !"".equals(orderObj.toString())) {
@@ -166,7 +198,7 @@ public class Logic extends UserCode {
             "FROM  " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".TASK_REF_TABLES rt, " + 
             TDMDB_SCHEMA + ".tasks t " +
             "WHERE  rt.task_id = t.task_id " + 
-            //"AND (lower(es.execution_status) = 'pending' or (lower(t.sync_mode) != 'off' and lower(es.execution_status) = 'running')) " +
+            "AND (lower(es.execution_status) = 'pending' or (lower(t.sync_mode) != 'off' and lower(es.execution_status) = 'running')) " +
             "AND rt.task_id = es.task_id AND rt.task_ref_table_id = es.task_ref_table_id " +
             "AND es.task_execution_id = ?";
 
@@ -178,6 +210,9 @@ public class Logic extends UserCode {
             String interfaceName = row.get("interface_name").toString();
             String schemaName = row.get("schema_name").toString();
             String tableName = row.get("table_name").toString();
+            String targetInterfaceName = row.get("interface_name").toString();
+            String targetSchemaName = row.get("schema_name").toString();
+            String targetTableName = row.get("table_name").toString();
         
             Map<String,Object> lookupInputs = new HashMap<>();
             lookupInputs.put("lu_name",luName);
@@ -187,16 +222,44 @@ public class Logic extends UserCode {
             List<Map<String, Object>> tableInfo =  MtableLookup("RefList",lookupInputs, MTable.Feature.caseInsensitive);
             if (tableInfo != null && tableInfo.size() > 0) {
                 if (tableInfo.get(0).get("target_ref_table_name") != null && !"".equals(tableInfo.get(0).get("target_ref_table_name").toString())) {
-                    tableName = tableInfo.get(0).get("target_ref_table_name").toString();
+                    targetTableName = tableInfo.get(0).get("target_ref_table_name").toString();
                 }
 
                 if (tableInfo.get(0).get("target_interface_name") != null && !"".equals(tableInfo.get(0).get("target_interface_name").toString())) {
-                    interfaceName = tableInfo.get(0).get("target_interface_name").toString();
+                    targetInterfaceName = tableInfo.get(0).get("target_interface_name").toString();
                 }
 
                 if (tableInfo.get(0).get("target_schema_name") != null && !"".equals(tableInfo.get(0).get("target_schema_name").toString())) {
-                    schemaName = tableInfo.get(0).get("target_schema_name").toString();
+                    targetSchemaName = tableInfo.get(0).get("target_schema_name").toString();
                     
+                }
+            } else {
+                lookupInputs.remove("schema_name");
+                tableInfo =  MtableLookup("RefList",lookupInputs, MTable.Feature.caseInsensitive);
+                if (tableInfo != null && tableInfo.size() > 0) {
+                    String sourceSchemaName = tableInfo.get(0).get("schema_name").toString();
+                    if (sourceSchemaName.startsWith("@")) {
+                        sourceSchemaName = sourceSchemaName.replaceAll("@", "");
+                        if (schemaName.equals(getGlobal(sourceSchemaName))) {
+                            schemaName = getGlobal(sourceSchemaName);
+                            if (tableInfo.get(0).get("target_ref_table_name") != null && !"".equals(tableInfo.get(0).get("target_ref_table_name").toString())) {
+                                targetTableName = tableInfo.get(0).get("target_ref_table_name").toString();
+                            }
+            
+                            if (tableInfo.get(0).get("target_interface_name") != null && !"".equals(tableInfo.get(0).get("target_interface_name").toString())) {
+                                targetInterfaceName = tableInfo.get(0).get("target_interface_name").toString();
+                            }
+            
+                            if (tableInfo.get(0).get("target_schema_name") != null && !"".equals(tableInfo.get(0).get("target_schema_name").toString())) {
+                                targetSchemaName = tableInfo.get(0).get("target_schema_name").toString();
+                                if (targetSchemaName.startsWith("@")) {
+                                    targetSchemaName = targetSchemaName.replaceAll("@", "");
+                                    targetSchemaName = getGlobal(targetSchemaName);
+                                }
+                                
+                            }
+                        }
+                    }
                 }
             }
 
@@ -204,16 +267,26 @@ public class Logic extends UserCode {
             Map<String, Object> interfaceSchemaEntry = interfaceSChemaList.get(key);
             if (interfaceSchemaEntry != null) {
                 Set<String> tableSet = (Set<String>)interfaceSchemaEntry.get("tableSet");
+                
+                Map<String, String>  targetTableMap = (Map<String, String>)interfaceSchemaEntry.get("targetTableMap");
                 tableSet.add(tableName);
+                targetTableMap.put(tableName, targetTableName);
 
             } else {
                 Map<String, Object> newEntry = new HashMap<>();
                 newEntry.put("lu_name", luName);
                 newEntry.put("interfaceName", interfaceName);
                 newEntry.put("schemaName", schemaName);
-                Set<String> set = new HashSet<>();
-                set.add(tableName);
-                newEntry.put("tableSet", set);
+                newEntry.put("targetInterfaceName", targetInterfaceName);
+                newEntry.put("targetSchemaName", targetSchemaName);
+                Set<String> tableSet = new HashSet<>();
+                Map<String, String>  targetTableMap = new HashMap<>();
+                
+                targetTableMap.put(tableName, targetTableName);
+                tableSet.add(tableName);
+               
+                newEntry.put("tableSet", tableSet);
+                newEntry.put("targetTableMap", targetTableMap);
                 interfaceSChemaList.put(key, newEntry);
             }
         }
@@ -346,4 +419,3 @@ public class Logic extends UserCode {
 
     }
 }
-

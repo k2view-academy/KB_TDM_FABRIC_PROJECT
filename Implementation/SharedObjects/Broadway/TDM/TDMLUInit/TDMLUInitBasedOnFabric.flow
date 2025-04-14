@@ -1,6 +1,6 @@
 tags: TDM
 stages:
-  Stage 1:
+  Get Inputs:
     actors:
       Check LU and Envs Deploy:
         parent: InnerFlow
@@ -42,7 +42,7 @@ stages:
             const: null
             external: ROOT_COLUMN_NAME
             default: false
-  Stage 2:
+  Build Path:
     actors:
       TDM_LIBRARY folder:
         parent: StringFormat
@@ -66,7 +66,7 @@ stages:
             external: LU_NAME
             schema: string
             mandatory: false
-  Stage 8:
+  'Check if Ran Before? ':
     actors:
       TDMLUInit First Run:
         parent: InnerFlow
@@ -80,8 +80,8 @@ stages:
         out:
           result:
             schema: boolean
-  Stage 3:
-    dependsOn: Stage 8
+  'First Run?   ':
+    dependsOn: 'Check if Ran Before? '
     actors:
       First Run?:
         parent: Equals
@@ -110,11 +110,11 @@ stages:
           table_id:
             schema: string
     split: '--------------------'
-  Stage 9:
+  Already Ran Do Nothing:
     else: true
-    dependsOn: Stage 8
-  Stage 4:
-    dependsOn: Stage 3
+    dependsOn: 'Check if Ran Before? '
+  'Copy Tdm Tables  ':
+    dependsOn: 'First Run?   '
     actors:
       Get Tables Info:
         parent: InnerFlow
@@ -141,10 +141,10 @@ stages:
           tables:
             schema: string
     split: '--------------------'
-  Stage 10:
-    dependsOn: Stage 9
-  Stage 5:
-    dependsOn: Stage 4
+  Do Nothing:
+    dependsOn: Already Ran Do Nothing
+  Update Lu Schema With Tdm Tables:
+    dependsOn: 'Copy Tdm Tables  '
     actors:
       Update LU Schema:
         parent: InnerFlow
@@ -161,7 +161,7 @@ stages:
               - SFTP
               - filesystem
               interfaces:
-              - file://
+              - file:///
             mandatory: false
           tables_to_add:
             link: Get Tables Info/tables
@@ -187,7 +187,7 @@ stages:
             external: ROOT_TABLE_NAME
             schema: string
             mandatory: false
-          SOURCE_TABLE_KEY:
+          TABLE_KEY:
             external: ROOT_COLUMN_NAME
             schema: string
             mandatory: false
@@ -195,9 +195,9 @@ stages:
           rootInfo:
             schema: '#ref'
     split: '--------------------'
-  Stage 11:
-    dependsOn: Stage 10
-  Stage 6:
+  'Do Nothing  ':
+    dependsOn: Do Nothing
+  'Create Delete and Load Flows ':
     actors:
       create All Flows FromTemplates:
         parent: InnerFlow
@@ -255,7 +255,7 @@ stages:
             const: true
             schema: boolean
             mandatory: false
-  Stage 7:
+  Finish:
     actors:
       End:
         parent: Const

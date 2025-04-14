@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.k2view.fabric.common.Util.safeClose;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 
 @SuppressWarnings({"unchecked"})
 public class StatsLoader implements Actor {
@@ -34,9 +35,10 @@ public class StatsLoader implements Actor {
             "source_count, " +
             "target_count, " +
             "diff, " +
+            "suppressed_error_count, " +
             "results" +
             ") VALUES " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private IoSession fabricSession;
 
     @Override
@@ -108,6 +110,7 @@ public class StatsLoader implements Actor {
                         tableStats.exec + tableStats.errors,
                         tableStats.affected,
                         tableStats.exec + tableStats.errors - tableStats.affected,
+                        tableStats.exec + tableStats.errors - tableStats.affected,
                         tableStats.errors == 0 ? "OK" : "FAIL"
                 );
             } catch (Exception e) {
@@ -176,7 +179,7 @@ public class StatsLoader implements Actor {
             tableStats.affected = root_dbcommand ? (value-1) : value;
         } else if (keyStr.contains(DbCommand.STATS_EXECUTIONS_COUNT)) {
             tableStats.exec = root_dbcommand ? (value-1) : value;
-        } else if (keyStr.contains(DbCommand.STATS_EXECUTIONS_ERRORS)) {
+        } else if (keyStr.contains(DbCommand.STATS_EXECUTIONS_ERRORS) || keyStr.startsWith("errors_")) {
             tableStats.errors = value;
         }
     }

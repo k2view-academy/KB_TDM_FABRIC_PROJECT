@@ -3,7 +3,6 @@
   "children": [
     {
       "name": "result",
-      "collapsed": true,
       "children": [
         {
           "name": "General Info",
@@ -131,7 +130,7 @@
         {
           "name": "Statistics Report",
           "type": "sql",
-          "code": "select lu_name, table_name, target_count, source_count, diff, results\nFrom task_exe_stats_summary\nwhere LU_NAME = ${i_luName}"
+          "code": "select lu_name, table_name, target_count, source_count, suppressed_error_count, diff, results\nFrom task_exe_stats_summary\nwhere lu_name = ${i_luName}"
         },
         {
           "name": "Replace Sequence Summary Report",

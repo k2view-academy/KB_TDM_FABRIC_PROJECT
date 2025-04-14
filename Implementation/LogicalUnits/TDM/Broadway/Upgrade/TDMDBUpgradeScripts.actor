@@ -169,6 +169,12 @@
                     "script_id": 27,
                     "script_name": "update_tdmdb_from_v9.2_to_v9.3.sql",
                     "flow_name": "Upgrade92_to_930"
+                },
+                {
+                    "version_name": "9.3.1",
+                    "script_id": 28,
+                    "script_name": "update_tdmdb_from_v9.3.0_to_v9.3.1.sql",
+                    "flow_name": "Upgrade930_to_931"
                 }
             ],
             "final": true,

@@ -1,0 +1,59 @@
+tags: TDM
+stages:
+  Get TDMDB_SCHEMA:
+    actors:
+      TDMDBSchema:
+        parent: TDMDBSchema
+        out:
+          table:
+            schema: '#ref'
+  'Check value ':
+    actors:
+      'Value ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: TDMDBSchema/table/schema_value
+              iterate: First
+        out:
+          value:
+            schema: '#ref'
+      SysEnv:
+        parent: SysEnv
+        in:
+          name:
+            const: CLUSTER_ID
+        out:
+          value:
+            schema: string
+  Result:
+    actors:
+      Replace:
+        parent: Replace
+        in:
+          search:
+            const: ${ClusterID}
+          replace:
+            const: null
+            link: SysEnv/value
+          string:
+            link: Value /value
+        out:
+          string:
+            external: schema
+schemas:
+  TDMDBSchema.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        schema_name:
+          type: string
+        schema_value:
+          type: string
+  Value .out.value:
+    type: array
+    items:
+      type: string

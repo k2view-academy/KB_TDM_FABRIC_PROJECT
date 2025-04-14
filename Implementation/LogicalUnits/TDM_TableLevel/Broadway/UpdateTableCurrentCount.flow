@@ -14,6 +14,14 @@ stages:
         out:
           result:
             schema: integer
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Check if to Update:
     actors:
       Get Mod of Current Count:
@@ -44,7 +52,7 @@ stages:
             const: TDM
           sql:
             const: |-
-              update @TDMDB_SCHEMA@.task_ref_exe_stats
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
               set number_of_processed_records = coalesce(${recCount}, 0)
               where task_execution_id = ${taskExeId}
               and task_ref_table_id = ${tableId}
@@ -59,6 +67,10 @@ stages:
           recCount:
             link: Calculate The Record Count/result
             schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
   Return Input Record as is:
     actors:

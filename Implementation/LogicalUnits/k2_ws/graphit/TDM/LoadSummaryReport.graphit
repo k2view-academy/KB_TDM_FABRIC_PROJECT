@@ -273,7 +273,7 @@
         {
           "name": "Statistics Report",
           "type": "sql",
-          "code": "select lu_name, table_name, target_count, source_count, diff, results \nfrom task_exe_stats_summary"
+          "code": "select lu_name, table_name, target_count, source_count, suppressed_error_count, diff, results \nfrom task_exe_stats_summary"
         },
         {
           "name": "Replace Sequence Summary Report",

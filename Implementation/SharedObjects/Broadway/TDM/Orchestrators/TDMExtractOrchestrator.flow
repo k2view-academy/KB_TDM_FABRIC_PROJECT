@@ -229,8 +229,19 @@ stages:
         out:
           value:
             schema: string
+  'Populate Statistic Report ':
+    actors:
+      PopulateTaskExecutionStatsDetailed1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionStatsDetailed
+          luName:
+            external: luName
+            schema: any
+            mandatory: false
   'Is Params Coupling ':
-    dependsOn: Get Synthetic Entities
+    dependsOn: 'Populate Statistic Report '
     actors:
       'True':
         parent: EqualsIgnoreCase
@@ -261,7 +272,7 @@ stages:
     split: '--------------------'
   'False':
     else: true
-    dependsOn: Get Synthetic Entities
+    dependsOn: 'Populate Statistic Report '
   Populate Tables:
     transactional: true
     actors:

@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 
 @SuppressWarnings({"DefaultAnnotationParam"})
 public class EnvironmentUtils {

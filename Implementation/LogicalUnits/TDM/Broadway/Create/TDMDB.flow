@@ -1,6 +1,6 @@
 tags: Create
 stages:
-  Check TDM Interface connectivity:
+  Check If Active:
     actors:
       Error Handler For Test Connection:
         parent: ErrorHandler
@@ -31,9 +31,9 @@ stages:
         out:
           result:
             schema: '#ref'
-  Check if TDM DB is Disabled:
+  Active:
     actors:
-      Check If TDM Interface is Active:
+      Check If TDM Interface is Active1:
         parent: assertTrue
         in:
           message:
@@ -42,124 +42,137 @@ stages:
             link:
               path: Check TDM Interface Connection/result/active
               iterate: First
-  Check if TDM DB Already Exists:
+  Get Database Name:
     actors:
-      TDM DB Failed Test Connection:
-        parent: Not
+      LuFunction:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBNameFromInterface
+          interfaceName:
+            const: TDM
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Check If DB Exists:
+    actors:
+      DbFetchField:
+        parent: DbFetchField
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: |
+              SELECT 1 FROM pg_database WHERE datname = ${tdm_db};
+          tdm_db:
+            link: LuFunction/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  DB Exists:
+    dependsOn: Check If DB Exists
+    actors:
+      EqualsIgnoreCase:
+        parent: EqualsIgnoreCase
         condition: result
         in:
-          value:
-            link:
-              path: Check TDM Interface Connection/result/passed
-              iterate: First
-  Create Role and Db:
-    actors:
-      Error Handler For Create Role & DB:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: true
-                log: false
-                flowName: ''
-      Create tdm role and TDMDB DB:
+          b:
+            const: 1
+            schema: integer
+          a:
+            link: DbFetchField/result
+      getTDMDBSchemaName1:
         parent: InnerFlow
         in:
           flowName:
-            const: TDMDBCreateRoleAndDB
-  Report Errors If Cannot Connect:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+    split: '--------------------'
+  'Create TDMB ':
+    else: true
+    dependsOn: Check If DB Exists
     actors:
-      Get TDMDB Schema:
-        parent: FabricSetRead
+      'CreateTDMDB  ':
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
-  Get SQL to create Sequences:
-    actors:
-      Get  SQL Resource File To Clear TDMDB And Create Sequences:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/TDMDB/k2vtdm2.sql
+          flowName:
+            const: CreateTDMDB
+          database:
+            link: LuFunction/result
             schema: string
             mandatory: false
-        out:
-          result:
-            schema: blob
-  Create TDMDB Sequences:
+          flag:
+            const: true
+            schema: boolean
+            mandatory: false
+  Check if Schema Exists:
+    dependsOn: DB Exists
     actors:
-      Clear And Sequence Creation Error Handler:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
-              conditions:
-                standardType: UNIQUE_CONSTRAINT
-              actions:
-                suppress: false
-                log: true
-                flowName: ''
-      Clear TDMDB and Create Sequences:
-        parent: DbCommand
+      'DbFetchField   ':
+        parent: DbFetchField
         in:
           interface:
             const: TDM
           sql:
-            const: null
-            link: Get  SQL Resource File To Clear TDMDB And Create Sequences/result
-          schema:
-            link: Get TDMDB Schema/result
-            schema: string
-            mandatory: false
-      Get  SQL Resource File To Create TDMDB Tables and Functions:
-        parent: LuFunction
-        in:
-          functionName:
-            const: loadFromLUResource
-          path:
-            const: TDM/TDMDB/k2vtdm3.sql
-            schema: string
+            const: |-
+              SELECT COALESCE(
+                  (SELECT schema_name
+                   FROM information_schema.schemata
+                   WHERE schema_name IN (${schemaName})
+                   AND EXISTS (
+                       SELECT 1
+                       FROM information_schema.tables
+                       WHERE table_schema = schema_name
+                       AND table_name = 'tdm_general_parameters'
+                   )
+              ),NULL
+              ) AS schema_name;
+          schemaName:
+            link: getTDMDBSchemaName1/schema
+            schema: any
             mandatory: false
         out:
           result:
-            schema: blob
-  Create TDMDB Tables:
+            schema: string
+    split: '--------------------'
+  Do Nothing:
+    else: false
+    dependsOn: 'Create TDMB '
+  Create Schema:
+    dependsOn: Check if Schema Exists
     actors:
-      Create TDMDB Tables Error Handler:
-        parent: ErrorHandler
-        error: result
+      IsNull:
+        parent: IsNull
+        condition: result
         in:
-          config:
-            const:
-            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
-              conditions:
-                standardType: UNIQUE_CONSTRAINT
-              actions:
-                suppress: false
-                log: true
-                flowName: ''
-      Create TDMDB Tables and Functions:
-        parent: DbCommand
+          value:
+            link: DbFetchField   /result
+      'CreateTDMDB     ':
+        parent: InnerFlow
         in:
-          interface:
-            const: TDM
-          sql:
-            const: null
-            link: Get  SQL Resource File To Create TDMDB Tables and Functions/result
-          schema:
-            link: Get TDMDB Schema/result
+          flowName:
+            const: CreateTDMDB
+          database:
+            link: LuFunction/result
             schema: string
             mandatory: false
+          flag:
+            const: false
+            schema: boolean
+            mandatory: false
+    split: '--------------------'
+  'Do Nothing   ':
+    else: true
+    dependsOn: Check if Schema Exists
+    split: '--------------------'
+  'Do Nothing ':
+    dependsOn: Do Nothing
 schemas:
   Check TDM Interface Connection.out.result:
     type: array

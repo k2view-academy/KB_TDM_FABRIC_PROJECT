@@ -34,7 +34,6 @@ import java.io.ByteArrayInputStream;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIDListForMigration;
@@ -42,6 +41,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.getDBCollection;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.toSqliteType;
 
 import static java.lang.Math.min;
@@ -85,7 +85,6 @@ public class SharedLogic {
 	public static Map<String, List<Map<String, Object>>> allTables = new HashMap<>();
 	private static HashMap<String, String> luShortMap = new HashMap<>();
     private static HashMap<String, String> tdmSeparators = new HashMap<>();
-
     public static void setBroadwayActorFlags(String key, String value) throws SQLException {
         //TDM 7.1 - Masking and Sequence Broadway Actors have special flags to enable/disable them, and they need
         // to be set based on the input globals of the task

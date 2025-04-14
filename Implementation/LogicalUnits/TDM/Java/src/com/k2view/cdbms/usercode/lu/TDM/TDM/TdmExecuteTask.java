@@ -19,7 +19,8 @@ import javax.management.RuntimeErrorException;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.SYNTHETIC_ENVIRONMENT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDM;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
@@ -54,19 +55,27 @@ public class TdmExecuteTask {
     public static Map<String, String> entityInclusions = new HashMap<>();
     public static String sessionGlobals = "";
     public static String OriginalSyncMode = "";
-
+    private static String loadAndReplace(String resourcePath) {
+        try {
+            return new String(getLuType().loadResource(resourcePath))
+                    .replace("${@TDMDB_SCHEMA}", TDMDB_SCHEMA);
+        } catch (Exception e) {
+            log.error("Error loading resource: " + resourcePath, e);
+            throw new RuntimeException("Error loading resource: " + resourcePath, e);
+        }
+    } 
     enum TASK_TYPES {
-        GENERATE(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_extract_globals.sql"))),
+        GENERATE(() -> Util.rte(() -> new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_extract_globals.sql"))),
                 (taskProperties) -> new Object[]{SOURCE_ENVIRONMENT_ID.get(taskProperties), TASK_ID.get(taskProperties), TASK_ID.get(taskProperties), SOURCE_ENVIRONMENT_ID.get(taskProperties)}),
-        EXTRACT(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_extract_globals.sql"))),
+        EXTRACT(() -> Util.rte(() -> new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_extract_globals.sql"))),
                 (taskProperties) -> new Object[]{SOURCE_ENVIRONMENT_ID.get(taskProperties), TASK_ID.get(taskProperties), TASK_ID.get(taskProperties), SOURCE_ENVIRONMENT_ID.get(taskProperties)}),
-        LOAD(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
+        LOAD(() -> Util.rte(() -> new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
                 (taskProperties) -> new Object[]{SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties), TASK_ID.get(taskProperties), TASK_ID.get(taskProperties), SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties)}),
-        RESERVE(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
+        RESERVE(() -> Util.rte(() -> new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
                 (taskProperties) -> new Object[]{SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties), TASK_ID.get(taskProperties), TASK_ID.get(taskProperties), SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties)}),
-        TRAINING(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
+        TRAINING(() -> Util.rte(() -> new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
                 (taskProperties) -> new Object[]{SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties), TASK_ID.get(taskProperties), TASK_ID.get(taskProperties), SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties)}),
-        AI_GENERATED(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
+        AI_GENERATED(() -> Util.rte(() -> new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_load_globals.sql"))),
                 (taskProperties) -> new Object[]{SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties), TASK_ID.get(taskProperties), TASK_ID.get(taskProperties), SOURCE_ENVIRONMENT_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties)});
 
         Supplier<String> query;
@@ -88,11 +97,8 @@ public class TdmExecuteTask {
 
     public static void fnTdmExecuteTask() throws Exception {
         log.info("----------------- Starting tdmExecuteTask -------------------");
-        String query = new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_tasks.sql"));
-        
+        String query = new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_tasks.sql"));
         Db tdmDB = db(TDM);
-        String startTime = "" + Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
-
         tdmDB.fetch(query).forEach(row -> {
             // Get task properties
             Map<String, Object> taskProperties = Util.rte(() -> getTaskProperties(row));
@@ -103,16 +109,18 @@ public class TdmExecuteTask {
             OriginalSyncMode = SYNC_MODE.get(taskProperties);
             Boolean verticalExecution = "VERTICAL".equalsIgnoreCase(EXECUTION_MODE.get(taskProperties)) ? true : false; 
             //log.info("tdmExecuteTask - taskExecutionID: " + taskExecutionID + ", luID: " + luID + ", processID: " + processID);
-            // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
+            
+            String startTime = "" + Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
             try {
                 db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
                                 "start_execution_time = ? " +
-                                "WHERE task_execution_id = ? AND lu_id = ? AND LOWER(execution_status) = 'pending'",
-                                startTime, taskExecutionID, luID);
+                                "WHERE task_execution_id = ? AND lu_id = ? AND process_id = ? AND LOWER(execution_status) = 'pending' and start_execution_time is null",
+                                startTime, taskExecutionID, luID, processID);
 
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             String parentLUStatus = PARENT_LU_STATUS.get(taskProperties);
             if (isChildLU(taskProperties) && !parentLUStatus.toUpperCase().equals("COMPLETED")) {
@@ -1377,7 +1385,6 @@ public class TdmExecuteTask {
         globals.put("execution_id", "" + TASK_EXECUTION_ID.get(taskProperties));
         globals.put("clone_id", "0");
         globals.put("TDM_REPLACE_SEQUENCES", cloneInd ? true : REPLACE_SEQUENCES.get(taskProperties));
-        globals.put("enable_sequences", cloneInd ? true : REPLACE_SEQUENCES.get(taskProperties));
         globals.put("TASK_TYPE", TASK_TYPE.get(taskProperties).toString().toUpperCase());
         globals.put("TDM_VERSION_TASK_EXECUTION_ID", VERSION_TASK_EXE_ID);
         globals.put("TDM_DELETE_ONLY_TASK", Util.rte(() -> isDeleteOnlyMode(taskProperties)));
@@ -1423,7 +1430,6 @@ public class TdmExecuteTask {
 
             globals.put("TDM_REPLACE_SEQUENCES", "false");
 
-            globals.put("enable_sequences", "false");
             globals.put("enable_masking", "false");
 
             //TDM 7.3 - Add global to mark dataflux tasks
@@ -1437,19 +1443,10 @@ public class TdmExecuteTask {
             globals.put("TDM_DATAFLUX_TASK", "false");
         }
 
-        if (globals.containsKey("TDM_REPLACE_SEQUENCES")) {
-            if ("false".equalsIgnoreCase("" + globals.get("TDM_REPLACE_SEQUENCES"))) {
-                globals.put("enable_sequences", "false");
-            } else {
-                globals.put("enable_sequences", "true");
-            }
-        } else {
-            globals.put("enable_sequences", "false");
-        }
 
         if (Integer.parseInt(SOURCE_ENVIRONMENT_ID.get(taskProperties).toString()) < 0) {
-            globals.put("enable_sequences", "true");
             globals.put("TDM_REPLACE_SEQUENCES", "true");
+            globals.put("REPLACE_SEQ_BY_LUI_SYNC", "true");
         }
 
         //TDM 9.3 - The MASK_SENSITIVE_DATA is managed at environment level only
@@ -1469,12 +1466,6 @@ public class TdmExecuteTask {
 
         if ("Synthetic".equalsIgnoreCase(SELECTION_METHOD.get(taskProperties)) || "Generate".equalsIgnoreCase(SELECTION_METHOD.get(taskProperties))) {
             globals.put("ROWS_GENERATOR", "true");
-        }
-
-        if ("true".equals(globals.get("enable_masking")) || "true".equals(globals.get("enable_sequences"))) {
-            globals.put("enable_masking_uniqueness", "true");
-        } else {
-            globals.put("enable_masking_uniqueness", "false");
         }
 
         //Disable DEBUG MODE, as it is not relevant in case of task execution
@@ -1853,8 +1844,8 @@ public class TdmExecuteTask {
 
     private static Db.Row getTaskProperties(Long taskId) {
         try {
-            String query = new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_tasks_properties.sql"));
-            return db(TDM).fetch(query, taskId).firstRow();
+            String query = new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_tasks_properties.sql"));
+            return db(TDM).fetch(query,taskId).firstRow();
         } catch (Exception e) {
             log.error("Can't get properties for task_id=" + taskId, e);
             return null;
@@ -1900,7 +1891,7 @@ public class TdmExecuteTask {
                 db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
                                 "execution_status=?, " +
                                 "fabric_execution_id=?, " +
-                                "start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else ? end), " +
+                                "start_execution_time = (case when start_execution_time is null then ? else start_execution_time end), " +
                                 "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS'), " +
                                 "num_of_processed_entities = ?, " +
                                 "num_of_copied_entities = ?, " +
@@ -1920,7 +1911,7 @@ public class TdmExecuteTask {
                     "UPDATE " + TDMDB_SCHEMA + ".task_execution_list " +
                     "SET execution_status = ?, " +
                     "fabric_execution_id= ?," +
-                    "start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else ? end), " +
+                    "start_execution_time = (case when start_execution_time is null then ? else start_execution_time end), " +
                     "expiration_date = TO_TIMESTAMP(COALESCE(?, '19700101000000'), 'YYYYMMDDHH24MISS'), " +
                     "num_of_processed_entities = ?, " +
                     "num_of_copied_entities = ?, " +

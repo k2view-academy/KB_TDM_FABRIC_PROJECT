@@ -1,8 +1,8 @@
 tags: TDM
 stages:
-  Stage 1:
+  Check for Schema Backup:
     actors:
-      ls1:
+      'ls ':
         parent: ls
         in:
           interface:
@@ -15,15 +15,15 @@ stages:
         out:
           result:
             schema: '#ref'
-  Stage 10:
-    dependsOn: Stage 1
+  Read From Backup:
+    dependsOn: Check for Schema Backup
     actors:
-      NotNull1:
+      'NotNull ':
         parent: NotNull
         condition: result
         in:
           value:
-            link: ls1/result/name
+            link: ls /result/name
       Read vdb from BKP:
         parent: FileRead
         in:
@@ -33,10 +33,10 @@ stages:
           path:
             const: Java/resources/vdb_bkp.xml
     split: '--------------------'
-  Stage 11:
+  Read From Schema File:
     else: true
     transactional: false
-    dependsOn: Stage 1
+    dependsOn: Check for Schema Backup
     actors:
       Read vdb File:
         parent: FileRead
@@ -46,7 +46,7 @@ stages:
             external: LU_PATH
           path:
             const: vdb.k2vdb.xml
-      cp1:
+      Create Backup:
         parent: cp
         in:
           interface:
@@ -56,7 +56,7 @@ stages:
             const: vdb.k2vdb.xml
           to:
             const: Java/resources/vdb_bkp.xml
-  Stage 2:
+  Parse Schema XML:
     actors:
       Parse vdb XML:
         parent: XmlParser
@@ -70,7 +70,7 @@ stages:
             schema: '#ref'
           info:
             schema: '#ref'
-  Stage 9:
+  Get Root Info:
     actors:
       Set TAR Diagram Graph:
         parent: JavaScript
@@ -164,14 +164,10 @@ stages:
             link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
             schema: string
             mandatory: false
-          ROOT_TABLE_KEY:
-            external: TABLE_KEY
-            schema: string
-            mandatory: false
         out:
           rootInfo:
             schema: '#ref'
-  Stage 3:
+  Get Tables Data And Attributes:
     actors:
       Add TDM tables:
         parent: JavaScript
@@ -763,7 +759,7 @@ stages:
             link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
             schema: string
             mandatory: false
-  Stage 4:
+  Merge With Source Tables:
     actors:
       Merge with Original XML:
         parent: MapMerge
@@ -785,7 +781,7 @@ stages:
         out:
           map:
             schema: '#ref'
-      Const1:
+      root Info:
         parent: Const
         in:
           value:
@@ -796,7 +792,7 @@ stages:
           value:
             external: rootInfo
             schema: '#ref'
-  Stage 5:
+  Add Tag:
     actors:
       Add back version tag:
         parent: JavaScript
@@ -827,14 +823,14 @@ stages:
         out:
           result:
             schema: '#ref'
-  Stage 6:
+  From Object To XmL:
     actors:
       Convert Obj to XML:
         parent: XmlStringify
         in:
           object:
             link: Add back version tag/result
-  Stage 7:
+  Save Schema:
     actors:
       Save vdb File:
         parent: FileWrite
@@ -847,7 +843,7 @@ stages:
           stream:
             link: Convert Obj to XML/xmlString
 schemas:
-  ls1.out.result:
+  ls .out.result:
     type: array
     items:
       type: object
@@ -1108,10 +1104,10 @@ schemas:
           type: string
         column_name:
           type: string
-        active:
-          type: boolean
-        population: {
-          }
+        population:
+          type: string
+        id:
+          type: string
   Add TDM tables.in.objIn:
     type: object
     properties:
@@ -1509,7 +1505,7 @@ schemas:
                                   type: string
                                 viewType:
                                   type: string
-  Const1.in.value:
+  root Info.in.value:
     type: array
     items:
       type: object
@@ -1522,7 +1518,7 @@ schemas:
           type: boolean
         population: {
           }
-  Const1.out.value:
+  root Info.out.value:
     type: array
     items:
       type: object

@@ -1,0 +1,34 @@
+{
+    "type": "TDMDBSchema",
+    "badge": "TD",
+    "inputs": [
+        {
+            "name": "table",
+            "const": [
+                {
+                    "schema_name": "TDMDB_SCHEMA",
+                    "schema_value": "k2tdm_${ClusterID}"
+                }
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "schema_name": {
+                            "type": "string"
+                        },
+                        "schema_value": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "TDM"
+    ],
+    "parentType": "ConstTable"
+}

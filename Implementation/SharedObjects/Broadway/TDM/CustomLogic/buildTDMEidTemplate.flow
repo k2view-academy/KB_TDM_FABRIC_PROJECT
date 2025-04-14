@@ -22,12 +22,14 @@ stages:
           key:
             const: AI_ENVIRONMENT
             default: false
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Check Close:
     actors:
       IsNull:
@@ -129,7 +131,7 @@ stages:
             - Close Separator     /value
             schema: string
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: any
             mandatory: false
         out:
@@ -162,7 +164,7 @@ stages:
             schema: string
             mandatory: false
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: any
             mandatory: false
         out:

@@ -23,7 +23,8 @@ import com.k2view.fabric.common.mtable.MTable;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetTableFields;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
@@ -174,6 +175,12 @@ public class Logic extends WebServiceUserCode {
                             String interfaceName = "" + map.get("interface_name");
                             String schemaName = "" + map.get("schema_name");
                             String tableName = "" + map.get("reference_table_name");
+
+                            //TDM9.3.1 - Support dynamitc schema name
+                            if (schemaName.startsWith("@")) {
+                                String globalName = schemaName.replaceAll("@", "");
+                                schemaName = getGlobal(globalName, luName);
+                            }
                             
                             tables.add(interfaceName + "##" + schemaName + "##" + luName + "##" + tableName);
                         }

@@ -24,7 +24,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.COMBO_MAX_COUNT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;

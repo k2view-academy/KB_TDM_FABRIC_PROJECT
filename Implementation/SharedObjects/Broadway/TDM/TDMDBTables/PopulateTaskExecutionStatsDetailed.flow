@@ -1,0 +1,190 @@
+tags: TDM
+stages:
+  'Select From k2_objects_info  ':
+    actors:
+      luName k2_objects_info:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: select * from ${@luName}._k2_objects_info
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Get Inputs:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      Get IID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IID
+            default: false
+      Table Name:
+        parent: Lowercase
+        in:
+          string:
+            link:
+              path: luName k2_objects_info/result/table_name
+              iterate: Iterate
+      'Now  ':
+        parent: Now
+  Format Creation Date:
+    actors:
+      Format the Current Time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyy-MMM-dd HH:mm:ss.SSS
+          date:
+            link: Now  /date
+      'filterOutTDMTables ':
+        parent: filterOutTDMTables
+        in:
+          tableName:
+            link: Table Name/string
+          luName:
+            external: luName
+  Load Into Stats Detailed:
+    actors:
+      'NotNull ':
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: filterOutTDMTables /tableNameOut
+      DbLoad task_exe_stats_detailed:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_exe_stats_detailed
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - entity_id
+            - target_entity_id
+            - table_name
+            - stage_name
+            - flow_name
+            - actor_name
+            - creation_date
+            - source_count
+            - target_count
+            - suppressed_error_count
+            - diff
+            - results
+          dialect:
+            const: postgres
+          task_execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          lu_name:
+            external: luName
+            schema: string
+            mandatory: false
+          entity_id:
+            link: Get IID/result
+            schema: string
+            mandatory: false
+          target_entity_id:
+            link: Get IID/result
+            schema: string
+            mandatory: false
+          table_name:
+            link: filterOutTDMTables /tableNameOut
+            schema: string
+            mandatory: false
+          stage_name:
+            schema: any
+            mandatory: false
+          flow_name:
+            schema: any
+            mandatory: false
+          actor_name:
+            schema: any
+            mandatory: false
+          creation_date:
+            link: Format the Current Time/string
+            schema: string
+            mandatory: false
+          source_count:
+            link:
+              path: luName k2_objects_info/result/number_of_records
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          target_count:
+            link:
+              path: luName k2_objects_info/result/number_of_records
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          diff:
+            const: 0
+            schema: integer
+            mandatory: false
+          results:
+            const: OK
+            schema: string
+            mandatory: false
+          suppressed_error_count:
+            const: 0
+            schema: integer
+            mandatory: false
+schemas:
+  luName k2_objects_info.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        object_name:
+          type: string
+        type:
+          type: string
+        verified_time:
+          type: integer
+        start_sync_time:
+          type: integer
+        end_sync_time:
+          type: integer
+        start_write_time:
+          type: integer
+        last_write_time:
+          type: integer
+        number_of_records:
+          type: integer
+        time_to_populate_in_sec:
+          type: number
+        next_time_to_populate_object:
+          type: integer
+        version:
+          type: integer
+        sync_error:
+          type: string

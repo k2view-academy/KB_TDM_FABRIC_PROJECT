@@ -5,114 +5,122 @@ stages:
       Get Reserve Retention Value:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: RESERVE_RETENTION_PERIOD_VALUE
             default: false
+          interface:
+            schema: any
       Now:
         parent: Now
       Get Reserve Retention Type__1:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: RESERVE_RETENTION_PERIOD_TYPE
             default: false
+          interface:
+            schema: any
       Get Target Entity ID:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: TARGET_ENTITY_ID
             default: false
+          interface:
+            schema: any
       Get Business Entity ID:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: BE_ID
             default: false
+          interface:
+            schema: any
         out:
           result:
             schema: integer
       Get Target Environment ID:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: TARGET_ENVIRONMENT_ID
             default: false
+          interface:
+            schema: any
         out:
           result:
             schema: integer
       Get Task ID:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: TDM_TASK_ID
             default: false
+          interface:
+            schema: any
         out:
           result:
             schema: integer
       Get Task Execution ID:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: TDM_TASK_EXE_ID
             default: false
+          interface:
+            schema: any
         out:
           result:
             schema: integer
       Get Session User:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: USER_NAME
             default: false
+          interface:
+            schema: any
       Get User's Fabric Roles:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: USER_FABRIC_ROLES
             default: false
+          interface:
+            schema: any
       Get Reserve Note:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: RESERVE_NOTE
             default: false
-  Stage 8:
+          interface:
+            schema: any
+  Get TDMDB_schema:
     actors:
-      ToNumber1:
+      ToNumber:
         parent: ToNumber
         in:
           value:
             link: Get Reserve Retention Value/result
             schema: string
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Calculate Retention:
-    dependsOn: Stage 8
+    dependsOn: Get TDMDB_schema
     actors:
       NotEquals1:
         parent: NotEquals
         condition: result
         in:
           a:
-            link: ToNumber1/number
+            link: ToNumber/number
             schema: number
           b:
             const: 0
@@ -125,7 +133,7 @@ stages:
           retentionPeriodType:
             link: Get Reserve Retention Type__1/result
           retentionPeriodValue:
-            link: ToNumber1/number
+            link: ToNumber/number
       Now Date Format:
         parent: DateFormat
         in:
@@ -135,7 +143,7 @@ stages:
   Stage 1:
     else: true
     transactional: false
-    dependsOn: Stage 8
+    dependsOn: Get TDMDB_schema
     actors:
       ErrorHandler3:
         parent: ErrorHandler
@@ -166,15 +174,15 @@ stages:
       Get Reserve Max Days For Tester:
         parent: FabricSetRead
         in:
-          interface:
-            default: false
           key:
             const: MAX_RESERVATION_DAYS_FOR_TESTER
             default: false
+          interface:
+            schema: any
         out:
           result:
             schema: integer
-      DbFetchFirstRow1:
+      DbFetchFirstRow:
         parent: DbFetchFirstRow
         in:
           interface:
@@ -201,7 +209,7 @@ stages:
             schema: integer
             mandatory: false
           schema:
-            const: '@TDMDB_SCHEMA@'
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:
@@ -211,17 +219,17 @@ stages:
   Stage 3:
     transactional: false
     dependsOn: Stage 1
-  Stage 7: {
+  Merge: {
     }
   Check Record Exists:
-    dependsOn: Stage 7
+    dependsOn: Merge
     actors:
       NotNull1:
         parent: NotNull
         condition: result
         in:
           value:
-            link: DbFetchFirstRow1/result/reserve_owner
+            link: DbFetchFirstRow/result/reserve_owner
             schema: string
       Calculate Max End Date:
         parent: DateAdd
@@ -231,12 +239,12 @@ stages:
             link: Get Reserve Max Days For Tester/result
             schema: integer
           date:
-            link: DbFetchFirstRow1/result/start_datetime
+            link: DbFetchFirstRow/result/start_datetime
       Compare Owner with User:
         parent: Equals
         in:
           a:
-            link: DbFetchFirstRow1/result/reserve_owner
+            link: DbFetchFirstRow/result/reserve_owner
             schema: string
           b:
             link: Get Session User/result
@@ -249,7 +257,7 @@ stages:
             const: 'Entity cannot be reserved by user ${userName} as it is reserved
               by user: ${owner}'
           owner:
-            link: DbFetchFirstRow1/result/reserve_owner
+            link: DbFetchFirstRow/result/reserve_owner
             schema: string
             mandatory: false
           userName:
@@ -260,7 +268,7 @@ stages:
   Insert New Reservation:
     else: true
     transactional: false
-    dependsOn: Stage 7
+    dependsOn: Merge
     actors:
       ErrorHandler4:
         parent: ErrorHandler
@@ -324,13 +332,14 @@ stages:
             schema: string
             mandatory: false
           schema:
-            const: '@TDMDB_SCHEMA@'
             schema: string
             mandatory: false
+          params:
+            link: getTDMDBSchema/schema
     split: '--------------------'
-  Stage 4:
+  'Do Nothing     ':
     transactional: false
-    dependsOn: Stage 7
+    dependsOn: Merge
   Check Owner:
     transactional: false
     dependsOn: Check Record Exists
@@ -349,12 +358,12 @@ stages:
         parent: GetNewEndDate
         in:
           retentionPeriodValue:
-            link: ToNumber1/number
+            link: ToNumber/number
             schema: number
           retentionPeriodType:
             link: Get Reserve Retention Type__1/result
           nowDate:
-            link: DbFetchFirstRow1/result/start_datetime
+            link: DbFetchFirstRow/result/start_datetime
       StringFormat2:
         parent: StringFormat
         height: 416
@@ -392,13 +401,13 @@ stages:
             const: null
             link: StringFormat1/string
     split: '--------------------'
-  Stage 2:
+  'Do Nothing   ':
     transactional: false
     dependsOn: Insert New Reservation
     split: '--------------------'
-  Stage 5:
+  'Do Nothing          ':
     transactional: false
-    dependsOn: Stage 4
+    dependsOn: 'Do Nothing     '
   Update the End Date:
     transactional: false
     dependsOn: Check Owner
@@ -445,7 +454,8 @@ stages:
           command:
             const: update
           schema:
-            const: '@TDMDB_SCHEMA@'
+            const: null
+            link: getTDMDBSchema/schema
           table:
             const: tdm_reserved_entities
           fields:
@@ -519,15 +529,15 @@ stages:
     transactional: false
     dependsOn: The entity is reserved by other
     split: '--------------------'
-  Stage 15:
+  'Do Nothing  ':
     transactional: false
-    dependsOn: Stage 2
+    dependsOn: 'Do Nothing   '
     split: '--------------------'
-  Stage 6:
+  'Do Nothing             ':
     transactional: false
-    dependsOn: Stage 5
+    dependsOn: 'Do Nothing          '
 schemas:
-  DbFetchFirstRow1.out.result:
+  DbFetchFirstRow.out.result:
     type: object
     properties:
       reserve_owner:

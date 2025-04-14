@@ -26,16 +26,24 @@ SELECT DISTINCT
             SPLIT_PART(tt.task_executed_by, '##', 2)
     END AS user_roles
 FROM
-    @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
-  , @TDMDB_SCHEMA@.environments         e
-  , @TDMDB_SCHEMA@.environments         e2
-  , @TDMDB_SCHEMA@.tasks ts
+    ${@TDMDB_SCHEMA}.task_execution_list tt
+  , ${@TDMDB_SCHEMA}.environments         e
+  , ${@TDMDB_SCHEMA}.environments         e2
+  , ${@TDMDB_SCHEMA}.tasks ts
 WHERE
     UPPER(tt.execution_status)   = 'PENDING'
     AND ts.task_id = tt.task_id
     and ts.selection_method = 'TABLES'
     AND tt.source_environment_id = e.environment_id
 	AND tt.environment_id        = e2.environment_id
+    AND (
+        NOT EXISTS 
+            (SELECT 1 FROM ${@TDMDB_SCHEMA}.task_execution_list tt2, ${@TDMDB_SCHEMA}.tasks_exe_process ep 
+            WHERE tt2.task_execution_id = tt.task_execution_id AND tt2.process_id > 0 
+                AND upper(tt2.execution_status) in ('PENDING', 'RUNNING') 
+                AND tt2.task_id = ep.task_id AND tt2.process_id = ep.process_id AND ep.process_type = 'pre'
+            )
+    )
 UNION
 SELECT DISTINCT
     tt.task_id
@@ -65,19 +73,27 @@ SELECT DISTINCT
             SPLIT_PART(tt.task_executed_by, '##', 2)
     END AS user_roles
 FROM
-    @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
-  , @TDMDB_SCHEMA@.environments         e
-  , @TDMDB_SCHEMA@.environments         e2
-  , @TDMDB_SCHEMA@.environment_products ep
-  , @TDMDB_SCHEMA@.tasks ts
+    ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST tt
+  , ${@TDMDB_SCHEMA}.environments         e
+  , ${@TDMDB_SCHEMA}.environments         e2
+  , ${@TDMDB_SCHEMA}.environment_products ep
+  , ${@TDMDB_SCHEMA}.tasks ts
 WHERE
     UPPER(ep.status)                 = 'ACTIVE'
     AND UPPER(tt.execution_status)   = 'PENDING'
     AND (
         tt.parent_lu_id is null
         or not exists(
-            select 1 from @TDMDB_SCHEMA@.TASK_EXECUTION_LIST par where par.task_execution_id = tt.task_execution_id and par.lu_id = tt.parent_lu_id
+            select 1 from ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST par where par.task_execution_id = tt.task_execution_id and par.lu_id = tt.parent_lu_id
         )
+    )
+    AND (
+        NOT EXISTS 
+            (SELECT 1 FROM ${@TDMDB_SCHEMA}.task_execution_list tt2, ${@TDMDB_SCHEMA}.tasks_exe_process ep 
+            WHERE tt2.task_execution_id = tt.task_execution_id AND tt2.process_id > 0 
+                AND upper(tt2.execution_status) in ('PENDING', 'RUNNING') 
+                AND tt2.task_id = ep.task_id AND tt2.process_id = ep.process_id AND ep.process_type = 'pre'
+            )
     )
     AND tt.source_environment_id = e.environment_id
     AND e.environment_id         = ep.environment_id
@@ -114,12 +130,12 @@ SELECT DISTINCT
             SPLIT_PART(tt.task_executed_by, '##', 2)
     END AS user_roles
 FROM
-    @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
-  , @TDMDB_SCHEMA@.TASK_EXECUTION_LIST p
-  , @TDMDB_SCHEMA@.environments         e
-  , @TDMDB_SCHEMA@.environments         e2
-  , @TDMDB_SCHEMA@.environment_products ep
-  , @TDMDB_SCHEMA@.tasks ts
+    ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST tt
+  , ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST p
+  , ${@TDMDB_SCHEMA}.environments         e
+  , ${@TDMDB_SCHEMA}.environments         e2
+  , ${@TDMDB_SCHEMA}.environment_products ep
+  , ${@TDMDB_SCHEMA}.tasks ts
 WHERE
     UPPER(tt.execution_status)       = 'PENDING'
     AND tt.task_execution_id         = p.task_execution_id
@@ -161,11 +177,16 @@ SELECT DISTINCT
             SPLIT_PART(tt.task_executed_by, '##', 2)
     END AS user_roles
 FROM
-      @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
-    , @TDMDB_SCHEMA@.environments  e
-    , @TDMDB_SCHEMA@.tasks ts
+      ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST tt
+    , ${@TDMDB_SCHEMA}.environments  e
+    , ${@TDMDB_SCHEMA}.tasks ts
+    , ${@TDMDB_SCHEMA}.tasks_exe_process ep 
 WHERE
     UPPER(tt.execution_status)   = 'PENDING'
     AND tt.environment_id        = e.environment_id
-    AND ((tt.process_id !=0))
+    AND tt.process_id !=0
     AND ts.task_id               = tt.task_id
+    AND ts.task_id = ep.task_id AND tt.process_id = ep.process_id
+    AND (ep.process_type = 'pre' OR (ep.process_type = 'post' AND
+        NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST tt2 WHERE tt2.task_execution_id = tt.task_execution_id 
+        AND tt2.process_id != ep.process_id and upper(execution_status) in ('PENDING', 'RUNNING') )))

@@ -1,0 +1,64 @@
+tags: Upgrade
+stages:
+  Get Project Dir:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Get Path Of Shared Globals:
+    actors:
+      TDM/SharedGlobalsjava:
+        parent: StringFormat
+        in:
+          format:
+            const: ${path}/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/SharedGlobals.java
+          path:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+  Remove file://:
+    actors:
+      Remove file://  From Source:
+        parent: Replace
+        in:
+          search:
+            const: file://
+          string:
+            link: TDM%2FSharedGlobalsjava/string
+  Read Globals:
+    actors:
+      FileRead:
+        parent: FileRead
+        in:
+          interface:
+            const: file://
+          path:
+            link: Remove file:%2F%2F  From Source/string
+  Replace TDMDB_SCHEMA:
+    actors:
+      Replace Schema:
+        parent: Replace
+        in:
+          search:
+            const: |
+              @category\("TDM"\)\r?\n\s*public static final String TDMDB_SCHEMA = \s*"([^"]+)";
+          regex:
+            const: true
+          string:
+            link: FileRead/stream
+  Write Globals:
+    actors:
+      FileWrite:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            link: Remove file:%2F%2F  From Source/string
+          stream:
+            link: Replace Schema/string

@@ -16,12 +16,14 @@ stages:
         in:
           key:
             const: AI_ENVIRONMENT
-      Get TDMDB Schema:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Get IIDs:
     actors:
       DbCommand:
@@ -37,7 +39,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: Get TDMDB Schema/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           lu_name:

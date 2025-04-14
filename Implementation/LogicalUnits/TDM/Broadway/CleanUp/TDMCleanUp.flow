@@ -2,12 +2,14 @@ tags: TDM,CleanUp
 stages:
   Start:
     actors:
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        height: 472
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   param_value:
     actors:
       tdm_general_parameters:
@@ -19,7 +21,7 @@ stages:
             const: SELECT param_value FROM ${@TDMDB_SCHEMA}.tdm_general_parameters
               where UPPER(param_name) = 'CLEANUP_RETENTION_PERIOD'
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:
@@ -264,7 +266,7 @@ stages:
               path: Sorted Data/value/CLEANUP_STATEMENT
               iterate: Iterate
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           TRUNC_DATE:

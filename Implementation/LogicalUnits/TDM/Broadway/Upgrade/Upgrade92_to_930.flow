@@ -1,5 +1,13 @@
 tags: Upgrade
 stages:
+  Get TDMDB Schema:
+    actors:
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
   Get Conditions:
     actors:
       Get Project Folder:
@@ -19,7 +27,7 @@ stages:
             const: select param_value from ${@TDMDB_SCHEMA}.tdm_general_parameters
               where param_name='TDM_VERSION'
           TDMDB_SCHEMA:
-            const: '@TDMDB_SCHEMA@'
+            link: TDMDB_SCHEMA/result
             schema: string
             mandatory: false
         out:

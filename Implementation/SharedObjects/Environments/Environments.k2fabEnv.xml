@@ -5,6 +5,17 @@
     <Environment enabled="true" name="Production">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -64,20 +75,9 @@
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
-          <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~Cfg0bRMK1Vn1sWeKvqqLHlrcrt95u2waQmaFs+oU+KbnYk0&#x3D;</dbPasswordEncrypted>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~KObjmkDdYFpTdVe81A1yC12xHoEhtQprQmK3f6MS1KzyAA2u2L+ISQ&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -92,10 +92,6 @@
           <Value>SUBSCRIBER_ID</Value>
           <Comment></Comment>
         </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Customer">
           <Value>CUSTOMER_ID</Value>
           <Comment></Comment>
@@ -107,10 +103,6 @@
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
           <Value>10</Value>
           <Comment>The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE. Populate this global with zero or empty value to avoid setting a TTL on the TDM LUIs.</Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Customer">
           <Value>CUSTOMER</Value>
@@ -124,22 +116,6 @@
           <Value>true</Value>
           <Comment></Comment>
         </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="Customer">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="Billing">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="k2_ref">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="k2_ws">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
@@ -147,14 +123,6 @@
         <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_LIBRARY">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_TableLevel">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
         </Global>
         <Global name="TABLE_LEVEL_SEPARATOR" luName="TDM_TableLevel">
           <Value>|</Value>
@@ -364,8 +332,54 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.3.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="POP_FULL_LU_HIERARCHY_IN_TDM_LU" luName="">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="UPDATE_MDB_EXPORTED_SCHEMA" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
+        <GenericInterface type="CUSTOM" enabled="false" version="">
+          <Name>AI_DB_External</Name>
+          <Properties>
+            <Property name="Host">
+              <Value>localhost</Value>
+            </Property>
+            <Property name="Port">
+              <Value>5432</Value>
+            </Property>
+            <Property name="User">
+              <Value></Value>
+            </Property>
+            <Property name="Password">
+              <Value></Value>
+            </Property>
+            <Property name="Data">
+              <Value>postgres</Value>
+            </Property>
+            <Property name="ioprovider">
+              <Value></Value>
+            </Property>
+            <Property name="TechType">
+              <Value></Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
         <GenericInterface type="HTTP" enabled="false" version="">
           <Name>AI_Execution</Name>
           <Properties>
@@ -414,30 +428,7 @@
             <Property name="TestConnectionValidStatus">
               <Value></Value>
             </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value>postgres</Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
+            <Property name="Certificate">
               <Value></Value>
             </Property>
           </Properties>
@@ -447,6 +438,17 @@
     <Environment enabled="true" name="UAT">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -506,20 +508,9 @@
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
-          <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~t1408UjFDmFarGdJbeilRj2nhcSiUbSl3qquqvxImKzTFto&#x3D;</dbPasswordEncrypted>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~+RUr839JU7z5jTgJphwEoOZrSWltPhtoVOtQ6xYtuXNwCR1J/YWAeA&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -532,10 +523,6 @@
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Billing">
           <Value>SUBSCRIBER_ID</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
           <Comment></Comment>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Customer">
@@ -554,32 +541,12 @@
           <Value>false</Value>
           <Comment></Comment>
         </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Customer">
           <Value>CUSTOMER</Value>
           <Comment></Comment>
         </Global>
         <Global name="SYNTHETIC_INDICATOR" luName="TDM">
           <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="Customer">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="Billing">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="k2_ref">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="k2_ws">
-          <Value>Synthetic</Value>
           <Comment></Comment>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -589,14 +556,6 @@
         <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_LIBRARY">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_TableLevel">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
         </Global>
         <Global name="TABLE_LEVEL_SEPARATOR" luName="TDM_TableLevel">
           <Value>|</Value>
@@ -806,58 +765,28 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.3.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="POP_FULL_LU_HIERARCHY_IN_TDM_LU" luName="">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="UPDATE_MDB_EXPORTED_SCHEMA" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="true" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Bearer</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value>.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJmdWxsLWFkbWluLXVzZXItc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImZ1bGwtYWRtaW4tdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImRmMmVlMGNjLTZkYjUtNGMzZC1hZDNiLTBhNGNiMzk0MjYwZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpmdWxsLWFkbWluLXVzZXIifQ.lMypK4RwQwsTtQgxd7co08XQqJ4Vap6-Gjey9W-VAnmTVQtEvYqlvbFxk6UPb9evZ38J5wa9VhOw9YknCZAdJHcOooFWtTVPJrv6YiB6OwlFMD5A0dCaJQQ3vJpUzf-YykuKEonuDpKJg-WbWh6KKJZ7qCLIOcniF3DNMk4yVJpNq04y1AnXOAYpEluDtuglCgqy2aftj5JVOsgF1u49ptSkRlzg7Y6TO8Tfgd_DHDyPYL1hePRQ-mnHwu5w6Z-9LRp5k9Px781NI0dUfM0gqIphbOaIQBNZqKwxxXfBly1tPjV5fT4fbHrXC6mTu8kQ6RkKpXfI2o_qBfGhNj-5Vg</Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
         <GenericInterface type="CUSTOM" enabled="false" version="">
           <Name>AI_DB_External</Name>
           <Properties>
@@ -884,11 +813,75 @@
             </Property>
           </Properties>
         </GenericInterface>
+        <GenericInterface type="HTTP" enabled="true" version="">
+          <Name>AI_Execution</Name>
+          <Properties>
+            <Property name="ProtocolType">
+              <Value>HTTPS</Value>
+            </Property>
+            <Property name="HOST">
+              <Value>localhost</Value>
+            </Property>
+            <Property name="PORT">
+              <Value>443</Value>
+            </Property>
+            <Property name="Path">
+              <Value></Value>
+            </Property>
+            <Property name="AuthenticationType">
+              <Value>Bearer</Value>
+            </Property>
+            <Property name="User">
+              <Value></Value>
+            </Property>
+            <Property name="Password">
+              <Value></Value>
+            </Property>
+            <Property name="Token">
+              <Value>~encs2~HWG/pInBPHVKe6uin7AnK4hl3iOzXdQLlWxTHHWkRBYwmznN58C2Eu56xMSlcSsq96Ycl65XBAOatRjGCXfU9BKWYhPXftZFYFZ0En9tdH851yA6BFrPuVaWGOHfoqseKGdtmgajweOxRCjJcz4OaD7TBLXzxsF8N4Zmo1/8zNZ/30QPMsxGNUoT+FnT+og4UrTq98D8MBWxjMyeuIEaJH2hzH11XGXV/TVoJfK2az2Gr2TMyEYJxQ3mVamqWV6zLNarsgrvAnrhY/kNpld++2qpfA/Km8j+mtUNHu1XXlmY/RAhy6g5RR4GyFk1wShKM21lK2Ejj8HrW1M2PYxChLQsIqHS7a9BUONuX1UYCshQW79PNAcPFb3l6ygI9FskXA7MOpVm18Skaw+82fxkOWqDuDBY1VGIyOZiBucDkBu67FGXAmR/E3CCGy8Qzf9uPyk80dh679DrGjLOGKfECsem0ZXn0HBDEQujsxhqZEoLFmoFtjHtO8+nQ8KFQL3nzFoDKmpCROzikUxDm9QhEoC/yleFh8h2Z4e/0F2V1i7J7Fll6V8DZ3jekNnHihccAK2an0afWU9V+zUBaVgxge7mzDyIv2yd9aVjrSipVbMjO901hhWDpxtplU0bTPBmI9S3WZFlNVdIctMpnv4Ee5BBOtydf5WrjVs+EV+TnEDwAPlxq3Ni2y3FbR5GiHjHL2Fo4tD48nYJehaSZVy9709gACKWVT5Tum78RR1uextV4bhGHWncbx7CGsJnBKVvVL7HNwIGfuWYPaU2X5jdtRZ+KMrRsnMi6As0YdTuwNlbzNjbBKFzwwx9/Bz+AOneMUC/edDBnQWz77lpedLxU45Sl6KwkHXVJFOGDUPOeRaW3XEKK+eQvrhED/6XKgo4bqASmblxVFvrVflvIce4ZVpWnICLhRfbBbTDkTxgnE32sDrttRrrMHo3RcOEDEos9DrUJSrKidtj9NHMuJcnTZBoZ1bKQg/QwjoA87AC3f5fXWu7Wb7rr2a6EgKI4OJJP0mO9LfNSI4RDMAXQAoUIMOtcufrNaJR4EWw7QmC9zwjiR3yKsWy7LvrX7opNUJONkzih+bn+PJx5C91JreCQxPu39VAJ5JKW2JVlFXuPsdonkvryEJtnsAjcUx3ZJ4GlzPq333ZDNK69V13X7Y&#x3D;</Value>
+            </Property>
+            <Property name="AccessTokenUrl">
+              <Value></Value>
+            </Property>
+            <Property name="AccessTokenBodyParams">
+              <Value></Value>
+            </Property>
+            <Property name="ClientId">
+              <Value></Value>
+            </Property>
+            <Property name="ClientSecret">
+              <Value></Value>
+            </Property>
+            <Property name="Scope">
+              <Value></Value>
+            </Property>
+            <Property name="TokenTimeout">
+              <Value>0</Value>
+            </Property>
+            <Property name="TestConnectionValidStatus">
+              <Value></Value>
+            </Property>
+            <Property name="Certificate">
+              <Value></Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="true" name="Synthetic">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -948,20 +941,9 @@
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
-          <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~4ajuFiHWiHkD+Hk+WZG0XFGwQJ859BMPHt57yo3WLcSu4mo&#x3D;</dbPasswordEncrypted>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~SkDovhVrkjyRDf4/FylF8ska6T5NyBCMB9qmjilHTdW2g0RbLxyoIQ&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -974,10 +956,6 @@
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Billing">
           <Value>SUBSCRIBER_ID</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
           <Comment></Comment>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Customer">
@@ -996,32 +974,12 @@
           <Value>false</Value>
           <Comment></Comment>
         </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Customer">
           <Value>CUSTOMER</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="Customer">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="Billing">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="k2_ref">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="k2_ws">
-          <Value>Synthetic</Value>
           <Comment></Comment>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -1031,14 +989,6 @@
         <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_LIBRARY">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_TableLevel">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
         </Global>
         <Global name="TABLE_LEVEL_SEPARATOR" luName="TDM_TableLevel">
           <Value>|</Value>
@@ -1248,8 +1198,54 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.3.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="POP_FULL_LU_HIERARCHY_IN_TDM_LU" luName="">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="UPDATE_MDB_EXPORTED_SCHEMA" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
+        <GenericInterface type="CUSTOM" enabled="false" version="">
+          <Name>AI_DB_External</Name>
+          <Properties>
+            <Property name="Host">
+              <Value>localhost</Value>
+            </Property>
+            <Property name="Port">
+              <Value>5432</Value>
+            </Property>
+            <Property name="User">
+              <Value></Value>
+            </Property>
+            <Property name="Password">
+              <Value></Value>
+            </Property>
+            <Property name="Data">
+              <Value>postgres</Value>
+            </Property>
+            <Property name="ioprovider">
+              <Value></Value>
+            </Property>
+            <Property name="TechType">
+              <Value></Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
         <GenericInterface type="HTTP" enabled="false" version="">
           <Name>AI_Execution</Name>
           <Properties>
@@ -1298,30 +1294,7 @@
             <Property name="TestConnectionValidStatus">
               <Value></Value>
             </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value>postgres</Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
+            <Property name="Certificate">
               <Value></Value>
             </Property>
           </Properties>
@@ -1331,6 +1304,17 @@
     <Environment enabled="false" name="AI">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -1390,20 +1374,9 @@
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
-          <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~o6KXg/N1HDQR3un8cNoE1aD1/5sIq++i5v16mmsSZlvIj08&#x3D;</dbPasswordEncrypted>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~NpBOp/97wLwSIpvvOdPfTyFBAus9FhLIRjqqF/3c95bA4x66RmIrsg&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -1662,8 +1635,50 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.3.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="POP_FULL_LU_HIERARCHY_IN_TDM_LU" luName="">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="UPDATE_MDB_EXPORTED_SCHEMA" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
+        <GenericInterface type="CUSTOM" enabled="false" version="">
+          <Name>AI_DB_External</Name>
+          <Properties>
+            <Property name="Host">
+              <Value>localhost</Value>
+            </Property>
+            <Property name="Port">
+              <Value>5432</Value>
+            </Property>
+            <Property name="User">
+              <Value></Value>
+            </Property>
+            <Property name="Password">
+              <Value></Value>
+            </Property>
+            <Property name="Data">
+              <Value>postgres</Value>
+            </Property>
+            <Property name="ioprovider">
+              <Value></Value>
+            </Property>
+            <Property name="TechType">
+              <Value></Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
         <GenericInterface type="HTTP" enabled="false" version="">
           <Name>AI_Execution</Name>
           <Properties>
@@ -1712,30 +1727,7 @@
             <Property name="TestConnectionValidStatus">
               <Value></Value>
             </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value>postgres</Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
+            <Property name="Certificate">
               <Value></Value>
             </Property>
           </Properties>

@@ -1,6 +1,6 @@
 tags: TDM
 stages:
-  Stage 1:
+  Get Inputs:
     actors:
       Get Values of Map:
         parent: JavaScript
@@ -14,13 +14,15 @@ stages:
         out:
           result:
             schema: '#ref'
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
-  Stage 2:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Check Env:
     actors:
       Synthetic:
         parent: EqualsIgnoreCase
@@ -55,7 +57,7 @@ stages:
           TDM_EID:
             schema: string
   Check if Generate Rule based:
-    dependsOn: Stage 2
+    dependsOn: Check Env
     actors:
       Or:
         parent: Or
@@ -68,7 +70,7 @@ stages:
     split: '--------------------'
   Else Check For Snapshot:
     else: true
-    dependsOn: Stage 2
+    dependsOn: Check Env
     actors:
       Verison execution id is empty:
         parent: EqualsIgnoreCase
@@ -92,7 +94,7 @@ stages:
     split: '--------------------'
   Else:
     else: true
-    dependsOn: Stage 2
+    dependsOn: Check Env
     actors:
       Get value of versionExeID:
         parent: Const
@@ -198,7 +200,7 @@ stages:
             const: ENTITY
             schema: string
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           rootEntityId:

@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="8.0.0">
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="8.2.0">
     <JdbcDriverName>PostgreSQL</JdbcDriverName>
     <Active>true</Active>
     <DataSource>postgres-service</DataSource>
     <PortNum>5432</PortNum>
     <DataBase>TDMDB</DataBase>
-    <UserId>tdm</UserId>
-    <Password>~encs2~tsbvhoF+p4U3clQqqaUZO0c2DjKGapqMNyVEqSRNiisClno=</Password>
+    <UserId>postgres</UserId>
+    <Password>~encs2~+kDanwEa8h0F+dmLerYiFEdMY3jtjs4mIAaj8HJIXA98gSctMtgiyg==</Password>
     <ConnectionStringServerSide>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
     <MinConnectionsNumber>0</MinConnectionsNumber>
     <MaxConnectionsNumber>60</MaxConnectionsNumber>
@@ -17,4 +17,5 @@
     <CommandList></CommandList>
     <ConnectionProperties></ConnectionProperties>
     <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+    <Certificate></Certificate>
 </DBConn>

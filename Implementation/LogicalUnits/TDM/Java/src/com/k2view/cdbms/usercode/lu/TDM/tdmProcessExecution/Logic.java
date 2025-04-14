@@ -35,7 +35,7 @@ import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.updatedFailedS
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnUpdateAIProcess;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends UserCode {
@@ -145,7 +145,9 @@ public class Logic extends UserCode {
                         sql = "SELECT execution_status FROM " + TDMDB_SCHEMA + ".task_execution_list WHERE task_execution_id= ? and process_id=? AND Lower(execution_status) in (?,?) ";
                         String status = db(TDM).fetch(sql,taskExecutionID, 0, "failed","stopped").firstValue().toString();
                         Util.rte(() -> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?,num_of_processed_entities = ?, " +
-                                                       "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", status , null, null, null, null, taskExecutionID, processID));
+                                                       "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, " +
+                                                       "start_execution_time = COALESCE(start_execution_time, (now() at time zone 'utc')) " +
+                                                       "WHERE task_execution_id=? and process_id=?", status , null, null, null, null, taskExecutionID, processID));
                     }
                 } else if ("Generating Data Subset".equalsIgnoreCase(processName) || "Importing Data Subset".equalsIgnoreCase(processName)) {
                     Map<String, String> executionInfo = executeGenerationJob(String.valueOf(taskExecutionID), processName, processID,numOfEntities,subsetID);
@@ -172,12 +174,16 @@ public class Logic extends UserCode {
                     executionId =  (String) fabric().fetch(batch, broadwayCommand).firstValue();
                     String finalExecutionId = executionId;
                     Util.rte(() -> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?,num_of_processed_entities = ?, " +
-                            "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "running", null, null, null, finalExecutionId, taskExecutionID, processID));
+                            "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, " +
+                            "start_execution_time = COALESCE(start_execution_time, (now() at time zone 'utc')) " +
+                            "WHERE task_execution_id=? and process_id=?", "running", null, null, null, finalExecutionId, taskExecutionID, processID));
                 }
             } catch (Exception e) {
                 String finalExecutionId1 = executionId;
                 Util.rte(() -> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?,num_of_processed_entities = ?, " +
-                        "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "failed", null, null, null, finalExecutionId1, taskExecutionID, processID));
+                        "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, " +
+                        "start_execution_time = COALESCE(start_execution_time, (now() at time zone 'utc')) " +
+                        "WHERE task_execution_id=? and process_id=?", "failed", null, null, null, finalExecutionId1, taskExecutionID, processID));
                 log.error("Process " + processName + "failed due to " + e.getMessage());
                 fabric().execute("stopjob USER_JOB name='TDM.tdmProcessExecution'");
                 throw new RuntimeException(e);

@@ -8,16 +8,19 @@ stages:
             const: TDM_TableLevel
           variableName:
             const: TDM_SOURCE_ENVIRONMENT_NAME
-      set Target Environment:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: setTargetEnv
       Task with BE:
         parent: Not
         in:
           value:
             external: tableLevelInd
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       Get Target Environment:
         parent: getLUVariable_Actor
         height: 189
@@ -39,9 +42,9 @@ stages:
               conditions:
                 message: ''
               actions:
-                suppress: true
-                log: false
-                flowName: ''
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
       Get List of Tables of Task:
@@ -158,6 +161,11 @@ stages:
             const: -1
           a:
             link: Get Order Of Tables/result/maxOrder
+      set Target Environment:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: setTargetEnv
   Delete Tables:
     transactional: false
     dependsOn: Set Start Point
@@ -270,20 +278,15 @@ stages:
             const: DeleteTables
           interface:
             link:
-              path: Get List of Tables of Task/result/interfaceName
+              path: Get List of Tables of Task/result/targetInterfaceName
               iterate: Iterate
             schema: string
             editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-              - CassandraLoader
-              interfaces:
-              - fabric
+              id: com.k2view.mTableKey
             mandatory: false
           schema:
             link:
-              path: Get List of Tables of Task/result/schemaName
+              path: Get List of Tables of Task/result/targetSchemaName
               iterate: Iterate
             schema: string
             editor:
@@ -293,21 +296,9 @@ stages:
             link: Get Tables by Order For Deletion/result
             schema: '#ref'
             mandatory: false
-          luName:
-            link:
-              path: Get List of Tables of Task/result/lu_name
-              iterate: Iterate
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
-          taskExecutionId:
-            external: taskExecutionId
-            schema: string
-            mandatory: false
-          sourceEnv:
-            link: Get Source Environment/variableValue
-            schema: string
+          targetTables:
+            link: Get List of Tables of Task/result/targetTableMap
+            schema: '#ref'
             mandatory: false
     split: '--------------------'
   Do Nothing 2:
@@ -345,54 +336,6 @@ stages:
         out:
           result:
             schema: '#ref'
-  Get Source Table Details:
-    transactional: false
-    actors:
-      Get Source Details By Target:
-        parent: InnerFlow
-        height: 235
-        in:
-          flowName:
-            const: GetSourceDetailsByTarget
-          luName:
-            link:
-              path: Get List of Tables of Task/result/lu_name
-              iterate: Iterate
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
-          tableName:
-            link:
-              path: Get Tables by Order For Handling1/result
-              iterate: Iterate
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
-          interfaceName:
-            link:
-              path: Get List of Tables of Task/result/interfaceName
-              iterate: Iterate
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
-          schemaName:
-            link:
-              path: Get List of Tables of Task/result/schemaName
-              iterate: Iterate
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
-        out:
-          sourceTableName:
-            schema: string
-          sourceInterface:
-            schema: string
-          sourceSchema:
-            schema: string
   Create IIDs:
     transactional: false
     actors:
@@ -406,7 +349,9 @@ stages:
             schema: string
             mandatory: false
           tableName:
-            link: Get Source Details By Target/sourceTableName
+            link:
+              path: Get Tables by Order For Handling1/result
+              iterate: Iterate
             schema: string
             mandatory: false
           taskExecutionId:
@@ -414,11 +359,15 @@ stages:
             schema: string
             mandatory: false
           interfaceName:
-            link: Get Source Details By Target/sourceInterface
+            link:
+              path: Get List of Tables of Task/result/interfaceName
+              iterate: Iterate
             schema: string
             mandatory: false
           schemaName:
-            link: Get Source Details By Target/sourceSchema
+            link:
+              path: Get List of Tables of Task/result/schemaName
+              iterate: Iterate
             schema: string
             mandatory: false
         out:
@@ -434,7 +383,7 @@ stages:
             const: TDM
           sql:
             const: |
-              SELECT count(1) CNT from @TDMDB_SCHEMA@.task_exe_error_detailed
+              SELECT count(1) CNT from ${@TDMDB_SCHEMA}.task_exe_error_detailed
               WHERE task_execution_id = ${taskExecutionId}
               AND lu_name = ${luName}
               AND iid = ${tableName}
@@ -449,7 +398,13 @@ stages:
             schema: string
             mandatory: false
           tableName:
-            link: Get Source Details By Target/sourceTableName
+            link:
+              path: Get Tables by Order For Handling1/result
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:
@@ -482,7 +437,8 @@ stages:
         in:
           input:
             link:
-              path: Get Source Details By Target/sourceTableName
+              path: Get Tables by Order For Handling1/result
+              iterate: Iterate
               pos: 0
   Create Batch Command:
     transactional: false
@@ -581,13 +537,15 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "update @TDMDB_SCHEMA@.task_ref_exe_stats es\r\nset job_uid = ${batchId},\r\
-              \n    execution_status = 'running',\r\n    start_time = CURRENT_TIMESTAMP\
-              \ AT TIME ZONE 'UTC'\r\nwhere task_execution_id = ${taskExecutionId}\r\
-              \nand task_ref_table_id in (select t.task_ref_table_id from @TDMDB_SCHEMA@.task_ref_tables\
-              \ t \r\n    where t.task_id = es.task_id and t.ref_table_name = any(string_to_array(${tableList},\
-              \ ',')) and t.interface_name = ${interfaceName}\r\n    and schema_name\
-              \ = ${schemaName})"
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats es
+              set job_uid = ${batchId},
+                  execution_status = 'running',
+                  start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+              where task_execution_id = ${taskExecutionId}
+              and task_ref_table_id in (select t.task_ref_table_id from ${@TDMDB_SCHEMA}.task_ref_tables t
+                  where t.task_id = es.task_id and t.ref_table_name = any(string_to_array(${tableList}, ',')) and t.interface_name = ${interfaceName}
+                  and schema_name = ${schemaName})
           tableList:
             link: Build Table List/string
             schema: string
@@ -614,6 +572,10 @@ stages:
               iterate: First
             schema: string
             mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
       Wait  For Current Table Level to Finish:
         parent: BatchWait
         in:
@@ -633,11 +595,20 @@ schemas:
           type: array
           items:
             type: string
+        targetTableMap:
+          type: object
+          properties:
+            contract_offer_mapping:
+              type: string
         lu_name:
           type: string
         interfaceName:
           type: string
         schemaName:
+          type: string
+        targetInterfaceName:
+          type: string
+        targetSchemaName:
           type: string
   Get Order Of Tables.in.tableList:
     type: array
@@ -682,6 +653,10 @@ schemas:
     type: array
     items:
       type: string
+  Delete Tables of Current Index.in.targetTables:
+    type: object
+    properties: {
+      }
   Get Tables by Order For Handling1.in.tablesList:
     type: object
     properties:

@@ -37,6 +37,22 @@ stages:
         out:
           string:
             schema: string
+      getLUVariable:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          variableName:
+            const: CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
   'MDB_EXPORT ':
     actors:
       ErrorHandler1:
@@ -61,7 +77,7 @@ stages:
             const: fabric
           sql:
             const: MDB_EXPORT ${luName} WITH INTERFACE_NAME=${interfaceName} INCLUDED_TABLES=${includedTables}
-              EXCLUDED_TABLES=${excludedTables} FK='true'
+              EXCLUDED_TABLES=${excludedTables} FK='true' PHYSICAL_FK=${physicalFk}
           luName:
             external: luName
             schema: string
@@ -76,5 +92,9 @@ stages:
             mandatory: false
           includedTables:
             link: ParamsIncludedTables1/string
+            schema: string
+            mandatory: false
+          physicalFk:
+            link: getLUVariable/variableValue
             schema: string
             mandatory: false

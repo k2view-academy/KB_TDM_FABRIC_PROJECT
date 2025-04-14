@@ -16,7 +16,8 @@ import java.util.Map;
 
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnStartTask;
 
 public class TdmTaskScheduler {

@@ -16,12 +16,6 @@ stages:
         out:
           value:
             schema: string
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       isParamsCoupling:
         parent: LuFunction
         in:
@@ -30,6 +24,14 @@ stages:
         out:
           result:
             schema: boolean
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   ParamsCoupling:
     dependsOn: Get Inputs
     actors:
@@ -148,7 +150,7 @@ stages:
               = '${lu}' AND SOURCE_ENVIRONMENT = '${env}' AND field_name IN ( ${names}
               );
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           lu:

@@ -20,7 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.MAX_NUMBER_OF_ENTITIES_IN_LIST;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateOverrideSyncMode;
@@ -697,7 +698,10 @@ public class Logic extends WebServiceUserCode {
         String message = null;
         String errorCode = "";
         try {
-            String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " + "INNER JOIN " + TDMDB_SCHEMA + ".products p " + "ON (lu.product_id = p.product_id) " + "INNER JOIN " + TDMDB_SCHEMA + ".environment_products ep " + "ON (lu.product_id = ep.product_id " + "AND ep.status = \'Active\') " + "WHERE be_id = " + beId + " AND environment_id = " + envId;
+            String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " + "INNER JOIN " + TDMDB_SCHEMA + ".products p " +
+            "ON (lu.product_id = p.product_id) " + "INNER JOIN " + TDMDB_SCHEMA + ".environment_products ep " +
+            "ON (lu.product_id = ep.product_id " + "AND ep.status = \'Active\') " + "WHERE be_id = " + beId + 
+            " AND environment_id = " + envId + " AND ep.enable_product=true";
             Db.Rows rows = db(TDM).fetch(sql);
             List<HashMap<String, Object>> result = new ArrayList<>();
 
@@ -1459,7 +1463,16 @@ public class Logic extends WebServiceUserCode {
                             refInfo.put("logical_unit_name", luName);
                             Set fields = map.keySet();
                             for (Object f : fields) {
-                                refInfo.put((String) f, map.get(f));
+                                if ("schema_name".equalsIgnoreCase(f.toString())) {
+                                     String schemaName = "" + map.get("schema_name");
+                                     if (schemaName.startsWith("@")) {
+                                        String globalName = schemaName.replaceAll("@", "");
+                                        schemaName = getGlobal(globalName, luName);
+                                    }
+                                    refInfo.put("schema_name", schemaName);
+                                } else {
+                                    refInfo.put((String) f, map.get(f));
+                                }
                             }
                             refTablesList.add(refInfo);
                         }
@@ -2370,10 +2383,16 @@ public class Logic extends WebServiceUserCode {
         Map<String, Object> mapInnerFailedRefBuf = new HashMap<>();
         Map<String, String> mapRootsStatus = new HashMap<>();
 
-        String sqlSelect = "select ENTITY_ID as sourceId, TARGET_ENTITY_ID as targetId, BE_ROOT_ENTITY_ID as rootSourceId, " + "TARGET_ROOT_ENTITY_ID as rootTargetId, Case when PARENT_LU_NAME = '' then LU_NAME else PARENT_LU_NAME end as parentLuName, " + "Case when PARENT_ENTITY_ID = '' then BE_ROOT_ENTITY_ID else PARENT_ENTITY_ID end as parentSourceId, " + "Case when TARGET_PARENT_ID = '' then TARGET_ROOT_ENTITY_ID else TARGET_PARENT_ID end as parentTargetId, " + "Case when EXECUTION_STATUS ='completed' then 'Copied' else 'Failed' end as copyEntityStatus, " + "Case when ROOT_ENTITY_STATUS <> 'completed' then 'Failed' else 'Copied' end as copyHierarchyStatus, " + "LU_NAME as luName " + "from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where ";
+        String sqlSelect = "select ENTITY_ID as sourceId, TARGET_ENTITY_ID as targetId, BE_ROOT_ENTITY_ID as rootSourceId, " +
+            "TARGET_ROOT_ENTITY_ID as rootTargetId, Case when PARENT_LU_NAME = '' then LU_NAME else PARENT_LU_NAME end as parentLuName, " +
+            "Case when PARENT_ENTITY_ID = '' then BE_ROOT_ENTITY_ID else PARENT_ENTITY_ID end as parentSourceId, " +
+            "Case when TARGET_PARENT_ID = '' then TARGET_ROOT_ENTITY_ID else TARGET_PARENT_ID end as parentTargetId, " +
+            "Case when EXECUTION_STATUS ='completed' then 'Copied' else 'Failed' end as copyEntityStatus, " +
+            "Case when ROOT_ENTITY_STATUS <> 'completed' then 'Failed' else 'Copied' end as copyHierarchyStatus, " +
+            "LU_NAME as luName " + "from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where id_type = '" + luIdType + "' and ";
 
         String sqlSelectOrder = " order by TARGET_ENTITY_ID";
-        String sqlSelectCnt = "select count(1) from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where ";
+        String sqlSelectCnt = "select count(1) from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where id_type = '" + luIdType + "' and ";
 
         fabric().execute("get TDM.?", taskExecutionId);
         String entity_id_alone = "";
@@ -2403,7 +2422,7 @@ public class Logic extends WebServiceUserCode {
         // TDM 6.0 - Check if the parent LU name is given or not
         // Get Completed entities
 
-        if ("ENTITY".equals(luIdType)) {//If looking only for reference fo directly to reference section
+        if ("ENTITY".equals(luIdType)) {//If looking only for reference go directly to reference section
             if (isRootLu) { //If root LU
 
                 //log.info("wsGetTDMTaskExecutionStats - Handling Root Entity");

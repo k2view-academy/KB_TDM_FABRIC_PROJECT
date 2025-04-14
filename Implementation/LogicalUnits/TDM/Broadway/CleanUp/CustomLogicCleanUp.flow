@@ -2,11 +2,14 @@ tags: CleanUp
 stages:
   Inputs:
     actors:
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       Const1:
         parent: Const
         in:
@@ -40,7 +43,7 @@ stages:
                   AND t.selection_method = 'C'
                   AND t.task_last_updated_date < ${truncate_date};
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           truncate_date:
@@ -116,7 +119,7 @@ stages:
           sql:
             const: DROP TABLE IF EXISTS ${@TDMDB_SCHEMA}.${@entity_table}
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           entity_table:
@@ -145,7 +148,7 @@ stages:
             schema: integer
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
     split: '--------------------'
@@ -163,7 +166,7 @@ stages:
             const: select  table_name from INFORMATION_SCHEMA.tables where table_schema
               = ${schema} and table_name like 'entity_list_%'
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:
@@ -193,7 +196,7 @@ stages:
             const: "SELECT count(1) as cnt from ${@schema}.task_execution_list \r\n\
               where task_execution_id = ${taskExecutionId}"
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           taskExecutionId:
@@ -229,6 +232,7 @@ stages:
             schema: string
             mandatory: false
           schema:
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
 schemas:

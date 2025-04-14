@@ -27,11 +27,14 @@ stages:
         in:
           key:
             const: BE_ID
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   'Build IIDS ':
     actors:
       trainingExcludedTables:
@@ -64,7 +67,7 @@ stages:
             const: select be_name from ${@TDMDB_SCHEMA}.business_entities where be_id
               = ?
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           params:

@@ -1,4 +1,14 @@
 stages:
+  Get TDMDB Schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Get IID Components:
     actors:
       SOURCE Env:
@@ -47,9 +57,9 @@ stages:
           interface:
             const: TDM
           sql:
-            const: |
+            const: |-
               select case when t.task_type = 'LOAD' and rt.version_task_execution_id is not null and t.sync_mode = 'OFF' then rt.version_task_execution_id else ${taskExecutionId} end as version_task_execution_id
-              from @TDMDB_SCHEMA@.task_execution_list l, @TDMDB_SCHEMA@.task_ref_tables rt, @TDMDB_SCHEMA@.tasks t
+              from ${@TDMDB_SCHEMA}.task_execution_list l, ${@TDMDB_SCHEMA}.task_ref_tables rt, ${@TDMDB_SCHEMA}.tasks t
               where l.task_execution_id = ${taskExecutionId} and l.task_id = rt.task_id and l.task_id = t.task_id
               and rt.ref_table_name = ${tableName}
           taskExecutionId:
@@ -59,6 +69,10 @@ stages:
           tableName:
             external: tableName
             schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
         out:
           result:

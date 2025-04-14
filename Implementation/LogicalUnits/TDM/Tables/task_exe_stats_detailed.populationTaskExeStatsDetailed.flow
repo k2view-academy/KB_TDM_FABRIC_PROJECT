@@ -1,317 +1,163 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Input",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "SyncDeleteMode",
-                            "actorType": {
-                                "parentType": "SyncDeleteMode",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Source",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Query",
-                            "actorType": {
-                                "parentType": "SourceDbQuery",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "Select * From @TDMDB_SCHEMA@.task_exe_stats_detailed"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_execution_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lu_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "entity_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "target_entity_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "table_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "stage_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "flow_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "actor_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "creation_date": {
-                                                        "type": "date"
-                                                    },
-                                                    "source_count": {
-                                                        "type": "string"
-                                                    },
-                                                    "target_count": {
-                                                        "type": "string"
-                                                    },
-                                                    "diff": {
-                                                        "type": "string"
-                                                    },
-                                                    "results": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "LU Table",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "task_exe_stats_detailed",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": "TASK_EXE_STATS_DETAILED"
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "TASK_EXECUTION_ID",
-                                            "LU_NAME",
-                                            "ENTITY_ID",
-                                            "TARGET_ENTITY_ID",
-                                            "TABLE_NAME",
-                                            "STAGE_NAME",
-                                            "FLOW_NAME",
-                                            "ACTOR_NAME",
-                                            "CREATION_DATE",
-                                            "SOURCE_COUNT",
-                                            "TARGET_COUNT",
-                                            "DIFF",
-                                            "RESULTS"
-                                        ]
-                                    },
-                                    {
-                                        "name": "keys",
-                                        "const": [
-                                            "TASK_EXECUTION_ID",
-                                            "LU_NAME",
-                                            "TARGET_ENTITY_ID",
-                                            "TABLE_NAME"
-                                        ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "sqlite"
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ENTITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_ENTITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TABLE_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "STAGE_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "FLOW_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ACTOR_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "CREATION_DATE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_COUNT",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_COUNT",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "DIFF",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "RESULTS",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Post Load",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Query",
-                "name": "parent_rows"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_exe_stats_detailed",
-                "name": "params"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "task_execution_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "SyncDeleteMode",
-                "name": "table"
-            }
-        }
-    ]
-}
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Source:
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: Select * From ${@TDMDB_SCHEMA}.task_exe_stats_detailed
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+  Stage 1: {
+    }
+  LU Table:
+    last: 1
+    actors:
+      task_exe_stats_detailed:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_STATS_DETAILED
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - entity_id
+            - target_entity_id
+            - table_name
+            - stage_name
+            - flow_name
+            - actor_name
+            - creation_date
+            - source_count
+            - target_count
+            - diff
+            - results
+            - suppressed_error_count
+          keys:
+            const:
+            - TASK_EXECUTION_ID
+            - LU_NAME
+            - TARGET_ENTITY_ID
+            - TABLE_NAME
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            schema: any
+            mandatory: false
+          LU_NAME:
+            schema: any
+            mandatory: false
+          ENTITY_ID:
+            schema: any
+            mandatory: false
+          TARGET_ENTITY_ID:
+            schema: any
+            mandatory: false
+          TABLE_NAME:
+            schema: any
+            mandatory: false
+          STAGE_NAME:
+            schema: any
+            mandatory: false
+          FLOW_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_NAME:
+            schema: any
+            mandatory: false
+          CREATION_DATE:
+            schema: any
+            mandatory: false
+          SOURCE_COUNT:
+            schema: any
+            mandatory: false
+          TARGET_COUNT:
+            schema: any
+            mandatory: false
+          DIFF:
+            schema: any
+            mandatory: false
+          RESULTS:
+            schema: any
+            mandatory: false
+          suppressed_error_count:
+            schema: any
+            mandatory: false
+          params:
+            link:
+              path: Query/result
+              iterate: Iterate
+  Post Load: {
+    }
+schemas:
+  Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: integer
+        lu_name:
+          type: string
+        entity_id:
+          type: string
+        target_entity_id:
+          type: string
+        table_name:
+          type: string
+        stage_name:
+          type: string
+        flow_name:
+          type: string
+        actor_name:
+          type: string
+        creation_date:
+          type: date
+        source_count:
+          type: string
+        target_count:
+          type: string
+        diff:
+          type: string
+        results:
+          type: string

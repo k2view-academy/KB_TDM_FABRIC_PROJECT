@@ -167,12 +167,6 @@ stages:
         in:
           string:
             link: luName/value
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       'Format the current date to load it ':
         parent: DateFormat
         in:

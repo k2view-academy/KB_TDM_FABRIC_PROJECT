@@ -16,7 +16,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 import java.sql.*;
@@ -1816,6 +1817,7 @@ public class Logic extends WebServiceUserCode {
                         !"SYNTHETIC_ENVIRONMENT".equals(keyParts[2]) &&
                         !"TABLE_LEVEL_SEPARATOR".equals(keyParts[2]) &&
 						!"POP_FULL_LU_HIERARCHY_IN_TDM_LU".equals(keyParts[2]) &&
+						!"CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA".equals(keyParts[2]) &&
 						!keyParts[2].contains("MASKING_FLAG")
 					) 
 					{

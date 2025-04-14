@@ -17,12 +17,14 @@ stages:
           key:
             const: TDM_TASK_EXE_ID
             default: false
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Get Training ID:
     actors:
       'DbFetchField   ':
@@ -38,7 +40,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:

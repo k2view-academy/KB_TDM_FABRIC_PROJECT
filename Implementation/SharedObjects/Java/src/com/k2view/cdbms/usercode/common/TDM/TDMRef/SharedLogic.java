@@ -14,7 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
 

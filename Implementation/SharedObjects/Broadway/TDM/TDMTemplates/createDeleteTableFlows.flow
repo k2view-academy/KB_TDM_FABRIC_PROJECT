@@ -21,9 +21,7 @@ stages:
             const: ENVIRONMENT
             default: false
           value:
-            const: null
             external: TARGET_ENVIRONMENT
-            default: false
       Create Folder:
         parent: InnerFlow
         in:

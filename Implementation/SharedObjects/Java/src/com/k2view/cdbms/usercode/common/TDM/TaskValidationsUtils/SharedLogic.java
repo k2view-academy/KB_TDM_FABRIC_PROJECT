@@ -8,6 +8,7 @@ import com.k2view.cdbms.lut.DbInterface;
 import com.k2view.cdbms.lut.InterfacesManager;
 import com.k2view.cdbms.lut.LUType;
 import com.k2view.cdbms.lut.LudbColumn;
+import com.k2view.cdbms.lut.LudbObject;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
@@ -26,7 +27,8 @@ import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.getActiveEnvironmentName;
 import static com.k2view.cdbms.shared.user.UserCode.getConnection;
@@ -505,29 +507,38 @@ public class SharedLogic {
         return details;
         
     }
-    public static Boolean fnValidateFabricTableAndColumns(String table_name , String luName , String column_name){
+    
+    public static Boolean fnValidateFabricTableAndColumns(String table_name, String luName, String column_name) {
         LUType luType = null;
         if (luName == null || Util.isEmpty(luName)) {
             luType = getLuType();
         } else {
             luType = LUType.getTypeByName(luName);
         }
+        
+        // Get the LudbObject for the specified table
+        LudbObject tableObject = luType.ludbObjects.get(table_name);
+        if (tableObject == null || tableObject.getLudbObjectColumns() == null) {
+            throw new IllegalArgumentException("Table " + table_name+ " with column " +column_name+ " does not exists in schema " + luName);
+        }
+        
         // Get columns for the specified table
-        HashMap<String, LudbColumn> originalColumns = new HashMap<>(luType.ludbObjects.get(table_name).getLudbObjectColumns());
-
+        HashMap<String, LudbColumn> originalColumns = new HashMap<>(tableObject.getLudbObjectColumns());
+    
         // Create a new map with lower case keys to handle issue if mtable returns param all caps 
         HashMap<String, LudbColumn> columns = new HashMap<>();
         for (Map.Entry<String, LudbColumn> entry : originalColumns.entrySet()) {
             columns.put(entry.getKey().toLowerCase(), entry.getValue());
         }
-         if (column_name != null && !Util.isEmpty(column_name)) {
-             // If column name is found return true
-             if (columns.containsKey(column_name)) {
-                 return true;
-             }
-         }
+        
+        if (column_name != null && !Util.isEmpty(column_name)) {
+            // If column name is found, return true
+            if (columns.containsKey(column_name.toLowerCase())) {
+                return true;
+            }
+        }
         return false;
-    } 
+    }
 
     public static String getDBNameFromInterface(String interfaceName) throws Exception {
         try{

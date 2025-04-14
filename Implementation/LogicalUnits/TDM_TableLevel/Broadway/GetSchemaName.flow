@@ -1,0 +1,126 @@
+stages:
+  Stage 1:
+    actors:
+      Does source schema contain @1:
+        parent: StringPos
+        in:
+          substring:
+            const: '@'
+          string:
+            external: schemaName
+      Source Or Target?:
+        parent: IfElse
+        in:
+          a:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            schema: string
+          b:
+            const: TDM_TAR_ENV_NAME
+            schema: string
+          test:
+            external: sourceEnvInd
+        out:
+          result:
+            schema: string
+      Get Current Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: environment
+            default: false
+  Stage 2:
+    dependsOn: Stage 1
+    actors:
+      Schema Name contains @?:
+        parent: GreaterThanEquals
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Does source schema contain @1/position
+      Get environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: null
+            link: Source Or Target?/result
+            default: false
+    split: '--------------------'
+  Stage 6:
+    else: true
+    dependsOn: Stage 1
+    actors:
+      Schema Name Given:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schemaName
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+  Stage 3:
+    dependsOn: Stage 2
+    actors:
+      Set environment:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: Get environment/result
+            default: false
+    split: '--------------------'
+  Stage 7:
+    dependsOn: Stage 6
+  Stage 4:
+    dependsOn: Stage 3
+    actors:
+      Remove @:
+        parent: Replace
+        in:
+          search:
+            const: '@'
+          string:
+            external: schemaName
+    split: '--------------------'
+  Stage 8:
+    dependsOn: Stage 7
+  Stage 5:
+    dependsOn: Stage 4
+    actors:
+      Get Schema Value:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          variableName:
+            link: Remove @/string
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            external: result
+            schema: string
+      Restore Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: Get Current Environment/result
+            default: false
+    split: '--------------------'
+  Stage 11:
+    dependsOn: Stage 8

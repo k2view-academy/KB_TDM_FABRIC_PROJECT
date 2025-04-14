@@ -33,6 +33,28 @@ stages:
           key:
             const: SOURCE_ENTITY_ID
             default: false
+  Target Table:
+    actors:
+      Get Target Table Name:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var tableName = targetTables[sourceTableName];
+              tableName;
+          sourceTableName:
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          targetTables:
+            external: targetTables
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   Delete One Table:
     last: 1
     actors:
@@ -61,15 +83,19 @@ stages:
               id: com.k2view.dbtable
             mandatory: false
           table:
-            link:
-              path: List Of Tables/value
-              iterate: Iterate
+            link: Get Target Table Name/result
             schema: string
             editor:
               id: com.k2view.dbtable
             mandatory: false
           deleteOrTruncate:
             link: Get Delete Or Truncate Indicator/truncate_indicator
+            schema: string
+            mandatory: false
+          sourceTable:
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
             schema: string
             mandatory: false
         out:

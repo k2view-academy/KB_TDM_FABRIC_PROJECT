@@ -123,16 +123,7 @@ stages:
             link: Synthetic/result
           b:
             link: AI/result
-      Default value for version exe id:
-        parent: Const
-        in:
-          value:
-            const: 0
-            schema: integer
-        out:
-          value:
-            schema: integer
-  'Null':
+  Check For Version:
     transactional: false
     dependsOn: 'Else '
     actors:
@@ -155,7 +146,7 @@ stages:
           value:
             schema: integer
     split: '--------------------'
-  'versionExeID  ':
+  'versionExeID   ':
     else: true
     transactional: false
     dependsOn: 'Else '
@@ -169,19 +160,18 @@ stages:
         out:
           value:
             schema: string
-      Default value1:
-        parent: Const
-        in:
-          value:
-            const: 0
-            schema: integer
-        out:
-          value:
-            schema: integer
     split: '--------------------'
-  Do Nothing:
+  'Continue ':
     transactional: false
     dependsOn: Check if Generate Rule based
+  Continue:
+    dependsOn:
+    - 'versionExeID   '
+    - Check For Version
+    split: '--------------------'
+  Check for Subset:
+    transactional: false
+    dependsOn: 'Continue '
     actors:
       Subset execution id is empty:
         parent: EqualsIgnoreCase
@@ -205,7 +195,7 @@ stages:
   'subsetExeID  ':
     else: true
     transactional: false
-    dependsOn: Check if Generate Rule based
+    dependsOn: 'Continue '
     actors:
       subsetExeID:
         parent: Const
@@ -252,12 +242,14 @@ stages:
             const: yyyy-MMM-dd HH:mm:ss.SSS
           date:
             link: Now/date
-      Get TDMDB Schema:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       Calculate Total Get Duration:
         parent: DateDuration
         in:
@@ -276,10 +268,10 @@ stages:
             const: |-
               INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE,
               IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, FABRIC_GET_TIME,
-              TOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID, ROOT_LU_NAME, ROOT_TARGET_ENTITY_ID, PARENT_LU_NAME)
+              TOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID, ROOT_LU_NAME, ROOT_TARGET_ENTITY_ID, PARENT_LU_NAME,VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID)
               VALUES (${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, ${targetEnvId}, ${executionStatus}, ${idType},
                ${iid},${sourceEnv},Now(), ${entityStartTime}, ${entityEndTime}, ${fabticTime},
-              ${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}, ${rootTargetEntityId}, '')
+              ${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}, ${rootTargetEntityId}, '',${versionTaskExeID},${subsetTaskExeID})
               ON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}
           luName:
             link: Get LU Type/result
@@ -318,7 +310,7 @@ stages:
             link: Get Clone No/result
             schema: string
           schema:
-            link: Get TDMDB Schema/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           rootEntityId:
@@ -340,4 +332,16 @@ stages:
           sourceEnv:
             external: sourceEnv
             schema: string
+            mandatory: false
+          versionTaskExeID:
+            link:
+            - Default value/value
+            - versionExeID/value
+            schema: any
+            mandatory: false
+          subsetTaskExeID:
+            link:
+            - Default value  /value
+            - subsetExeID/value
+            schema: any
             mandatory: false

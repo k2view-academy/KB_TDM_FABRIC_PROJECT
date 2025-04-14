@@ -1,0 +1,38 @@
+tags: TDM
+stages:
+  Dummy First  Stage to Allow Split: {
+    }
+  Enable Sequencing:
+    dependsOn: Dummy First  Stage to Allow Split
+    actors:
+      Enable Sequences At Extract?:
+        parent: And
+        condition: result
+        in:
+          a:
+            external: replaceSeqAtSync
+          b:
+            external: replaceSeq
+      Set enable_sequences  To True:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'true'
+            default: false
+    split: '--------------------'
+  Disable Sequences:
+    else: true
+    dependsOn: Dummy First  Stage to Allow Split
+    actors:
+      Set enable_sequences  To False:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'false'
+            default: false

@@ -64,12 +64,6 @@ stages:
         out:
           value:
             schema: string
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       LuID:
         parent: Const
         in:
@@ -89,6 +83,14 @@ stages:
             const: null
             external: luName
             default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Insert new Generate task:
     actors:
       ErrorHandler 1:
@@ -148,7 +150,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
   Execute Generate Task:
@@ -249,7 +251,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
   AI Task Failed:

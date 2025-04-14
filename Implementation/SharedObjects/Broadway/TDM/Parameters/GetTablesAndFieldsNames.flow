@@ -2,18 +2,6 @@ tags: TDM
 stages:
   Get Inputs:
     actors:
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
-      COMBO_MAX_COUNT:
-        parent: FabricSetRead
-        in:
-          key:
-            const: COMBO_MAX_COUNT
-            default: false
       sourceEnv:
         parent: Const
         in:
@@ -23,11 +11,6 @@ stages:
         out:
           value:
             schema: string
-      Uppercase luName:
-        parent: Uppercase
-        in:
-          string:
-            external: luName
       TDM_PARAMETERS_SEPARATOR:
         parent: FabricSetRead
         in:

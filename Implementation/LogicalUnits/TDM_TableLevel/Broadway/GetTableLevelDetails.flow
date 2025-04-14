@@ -13,6 +13,14 @@ stages:
         out:
           result:
             schema: '#ref'
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Get Task Execution Id:
     actors:
       Task Execution ID:
@@ -47,12 +55,13 @@ stages:
             const: |
               select rt.lu_name,rt.task_ref_table_id as ref_table_id, rt.ref_table_name, ${source_env} as source_env, t.task_type,t.selection_method,
                   rt.interface_name, rt.schema_name, es.task_execution_id, rt.task_id, rt.filter_type, COALESCE(rt.table_filter, '') as table_filter,
+                  COALESCE(rt.gui_filter, '') as gui_filter,
                   COALESCE(rt.filter_parameters, '') as filter_parameters, rt.filter_fields, t.retention_period_type, t.retention_period_value,
                   rt.interface_name as target_interface,
                   rt.schema_name as target_schema,
                   coalesce(rt.target_table_prefix,'')|| rt.ref_table_name || coalesce(rt.target_table_suffix,'') as target_table_name,
                   coalesce(es.number_of_records_to_process, -1) as number_of_records_to_process
-              from @TDMDB_SCHEMA@.task_ref_tables rt, @TDMDB_SCHEMA@.task_ref_exe_stats es, @TDMDB_SCHEMA@.tasks t
+              from ${@TDMDB_SCHEMA}.task_ref_tables rt, ${@TDMDB_SCHEMA}.task_ref_exe_stats es, ${@TDMDB_SCHEMA}.tasks t
               where es.task_execution_id = ${task_execution_id}
               and es.task_id = rt.task_id
               and es.task_ref_table_id = rt.task_ref_table_id
@@ -80,12 +89,16 @@ stages:
             link: Get Table Instance Fields/result/schema_name
             schema: string
             mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
         out:
           result:
             schema: '#ref'
   Get Target Details:
     actors:
-      GetTargetDetailsBySource1:
+      Get Target Details By Source:
         parent: InnerFlow
         in:
           flowName:
@@ -121,6 +134,14 @@ stages:
             schema: string
           targetTableName:
             schema: string
+          truncate_indicator:
+            schema: string
+          count_indicator:
+            schema: string
+          count_flow:
+            schema: string
+          sourceSchemaName:
+            schema: string
   Create Target Table Details:
     actors:
       Create Map for Target Interface:
@@ -130,7 +151,7 @@ stages:
             const: target_interface
             schema: string
           value:
-            link: GetTargetDetailsBySource1/targetInterface
+            link: Get Target Details By Source/targetInterface
             schema: string
         out:
           map:
@@ -142,12 +163,12 @@ stages:
             const: target_table_name
             schema: string
           value:
-            link: GetTargetDetailsBySource1/targetTableName
+            link: Get Target Details By Source/targetTableName
             schema: string
         out:
           map:
             schema: '#ref'
-      JsonParser1:
+      Parse Filter Inputs:
         parent: JsonParser
         in:
           stream:
@@ -180,7 +201,7 @@ stages:
             const: TARGET_ENTITY_ID
             default: false
           value:
-            link: Get Table Details/result/target_table_name
+            link: Get Target Details By Source/targetTableName
       Check if There is a Schema:
         parent: MTableLookup
         in:
@@ -210,7 +231,7 @@ stages:
           b:
             const: 'true'
             schema: string
-      Create Map for Source Schema:
+      Create Map for Source Schema With Empty Value:
         parent: MapBuild
         in:
           key:
@@ -239,6 +260,18 @@ stages:
     else: true
     dependsOn: Get Retention
     actors:
+      Create Map for Source Schema:
+        parent: MapBuild
+        in:
+          key:
+            const: schema_name
+            schema: string
+          value:
+            link: Get Target Details By Source/sourceSchemaName
+            schema: string
+        out:
+          map:
+            schema: '#ref'
       Create Map for Target Scherna:
         parent: MapBuild
         in:
@@ -246,7 +279,7 @@ stages:
             const: target_schema
             schema: string
           value:
-            link: GetTargetDetailsBySource1/targetSchema
+            link: Get Target Details By Source/targetSchema
             schema: string
         out:
           map:
@@ -272,7 +305,7 @@ stages:
             const: filter_fields
             schema: string
           value:
-            link: JsonParser1/object
+            link: Parse Filter Inputs/object
             schema: integer
         out:
           map:
@@ -292,7 +325,7 @@ stages:
               pos: 2
             - path: Create Map for Target Interface/map
               pos: 3
-            - path: Create Map for Source Schema/map
+            - path: Create Map for Source Schema With Empty Value/map
               pos: 4
             - path: Create Map for Target Schema with Empty Value/map
               pos: 5
@@ -300,6 +333,8 @@ stages:
               pos: 5
             - path: Create Map for  Filter Fields Info/map
               pos: 6
+            - path: Create Map for Source Schema/map
+              pos: 7
         out:
           map:
             external: result
@@ -341,14 +376,16 @@ schemas:
         type: integer
       task_id:
         type: integer
-      filter_type:
-        type: string
+      filter_type: {
+        }
       table_filter:
+        type: string
+      gui_filter:
         type: string
       filter_parameters:
         type: string
-      filter_fields:
-        type: string
+      filter_fields: {
+        }
       retention_period_type:
         type: string
       retention_period_value:
@@ -371,7 +408,7 @@ schemas:
     properties:
       retention:
         type: integer
-  JsonParser1.out.object:
+  Parse Filter Inputs.out.object:
     type: array
     items:
       type: object
@@ -397,12 +434,17 @@ schemas:
           }
         no_schema:
           type: string
-  Create Map for Source Schema.out.map:
+  Create Map for Source Schema With Empty Value.out.map:
     type: object
     properties:
       retention:
         type: integer
   Create Map for Target Schema with Empty Value.out.map:
+    type: object
+    properties:
+      retention:
+        type: integer
+  Create Map for Source Schema.out.map:
     type: object
     properties:
       retention:

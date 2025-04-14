@@ -12,7 +12,8 @@ import com.k2view.broadway.actors.masking.Masking;
 
 import static com.k2view.cdbms.shared.user.UserCode.fabric;
 import static com.k2view.cdbms.shared.user.UserCode.getLuType;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;

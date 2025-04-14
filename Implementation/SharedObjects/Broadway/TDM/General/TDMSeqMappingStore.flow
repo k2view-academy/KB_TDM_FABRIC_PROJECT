@@ -14,12 +14,6 @@ stages:
           key:
             const: TDM_SEQ_REPORT
             default: false
-      Get TDMDB Schema:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       Get Source Environment:
         parent: getLUVariable_Actor
         in:
@@ -27,6 +21,14 @@ stages:
             const: TDM_SOURCE_ENVIRONMENT_NAME
           luName:
             external: lu_type
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Check If Sequences Enabled And Report is required:
     actors:
       If sequences enabled and report requested:
@@ -110,7 +112,7 @@ stages:
             const: TDM
           schema:
             const: null
-            link: Get TDMDB Schema/result
+            link: getTDMDBSchema/schema
           table:
             const: tdm_seq_mapping
           fields:

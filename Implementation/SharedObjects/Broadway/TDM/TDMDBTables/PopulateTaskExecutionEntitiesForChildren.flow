@@ -40,6 +40,14 @@ stages:
           key:
             const: clone_id
             default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Check If Child LU is Part Of The Task:
     actors:
       Check Child LU:
@@ -49,7 +57,7 @@ stages:
             const: TDM
           sql:
             const: |-
-              select child.lu_name from @TDMDB_SCHEMA@.task_execution_list l, @TDMDB_SCHEMA@.tasks_logical_units parent, @TDMDB_SCHEMA@.tasks_logical_units child
+              select child.lu_name from ${@TDMDB_SCHEMA}.task_execution_list l, ${@TDMDB_SCHEMA}.tasks_logical_units parent, ${@TDMDB_SCHEMA}.tasks_logical_units child
               where l.task_execution_id = ${taskExecutionId} and parent.lu_name = ${parentLuName} and child.lu_name = ${childLuName}
               and parent.lu_id = l.parent_lu_id and child.lu_id = l.lu_id and l.task_id = parent.task_id and l.task_id = child.task_id
           taskExecutionId:
@@ -65,6 +73,10 @@ stages:
               path: Get Queries Of Child LUs/result/child_lu
               iterate: Iterate
             schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
           params:
             link: Get Queries Of Child LUs/result/child_lu

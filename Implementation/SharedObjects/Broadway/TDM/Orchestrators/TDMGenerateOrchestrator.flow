@@ -125,6 +125,15 @@ stages:
             default: false
           value:
             link: Split IID/versionExeID
+      Set enable_sequences  To True:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'true'
+            default: false
   Get Synthetic Entities:
     actors:
       Set Start Processing Time:

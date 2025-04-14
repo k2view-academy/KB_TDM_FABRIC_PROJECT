@@ -38,9 +38,29 @@ stages:
         out:
           result:
             schema: '#ref'
+      TDM_TableLeve:
+        parent: Const
+        in:
+          value:
+            const: TDM_TableLevel
+            schema: string
+        out:
+          value:
+            schema: string
+  Add TDM_TableLevel LU:
+    actors:
+      Concat1:
+        parent: Concat
+        in:
+          elements:
+            link:
+            - path: Fetch Task Type/result/lu_list
+              pos: 0
+            - path: TDM_TableLeve/value
+              pos: 1
   Add quote:
     actors:
-      Replace1:
+      Add quote to LU Names:
         parent: Replace
         in:
           search:
@@ -48,23 +68,35 @@ stages:
           replace:
             const: ''','''
           string:
-            link: Fetch Task Type/result/lu_list
+            link: Concat1/string
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Build Query:
     actors:
-      StringFormat1:
+      Format Query:
         parent: StringFormat
         in:
           format:
             const: "select distinct task_execution_id,lu_name,entity_id,iid,target_entity_id,\
               \ error_category, error_code,\r\nerror_message, creation_date, flow_name,\
-              \ stage_name, actor_name, actor_parameters\r\nfrom @TDMDB_SCHEMA@.TASK_EXE_ERROR_DETAILED\
+              \ stage_name, actor_name, actor_parameters\r\nfrom ${TDMDB_SCHEMA}.TASK_EXE_ERROR_DETAILED\
               \ where lu_name in ('${LU_LIST}') and task_execution_id = ${TASK_EXECUTION_ID}"
           TASK_EXECUTION_ID:
             link: PopulationArgs/iid
             schema: string
             mandatory: false
           LU_LIST:
-            link: Replace1/string
+            link: Add quote to LU Names/string
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
   Fetch errTableData:
@@ -76,7 +108,7 @@ stages:
             const: TDM
           sql:
             const: null
-            link: StringFormat1/string
+            link: Format Query/string
         out:
           result:
             schema: '#ref'

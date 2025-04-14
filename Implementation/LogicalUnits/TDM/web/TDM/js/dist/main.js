@@ -911,7 +911,7 @@ function TDMInput(props) {
       placeholder: placeholder,
       type: type,
       name: name,
-      value: value,
+      value: value || '',
       onChange: onChangeLocal,
       disabled: disabled
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
@@ -2477,8 +2477,8 @@ var exampleAPIs = {
         "LU_NAME": "Customer",
         "PARAM_NAME": "CUSTOMER.NO_OF_OPEN_CASES",
         "PARAM_TYPE": "INTEGER",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["0"],
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": null,
         "MIN_VALUE": "0",
         "MAX_VALUE": "0",
         "LU_PARAMS_TABLE_NAME": "customer_params"
@@ -3468,34 +3468,50 @@ var getCheckIfParamsCoupling = /*#__PURE__*/function () {
     return _ref36.apply(this, arguments);
   };
 }();
-var saveTaskAPI = /*#__PURE__*/function () {
-  var _ref37 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee37(taskData) {
+var getTaskLuEditForTesters = /*#__PURE__*/function () {
+  var _ref37 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee37() {
     return regenerator_default.a.wrap(function _callee37$(_context37) {
       while (1) switch (_context37.prev = _context37.next) {
         case 0:
-          if (!taskData.task_id) {
-            _context37.next = 2;
-            break;
-          }
-          return _context37.abrupt("return", invokeFabricWebService("task/".concat(taskData.task_id), taskData, 'PUT'));
-        case 2:
-          return _context37.abrupt("return", invokeFabricWebService('task', taskData, 'POST'));
-        case 3:
+          return _context37.abrupt("return", invokeFabricWebService("wsGetTaskLuEditForTesters", {}, 'GET'));
+        case 1:
         case "end":
           return _context37.stop();
       }
     }, _callee37);
   }));
-  return function saveTaskAPI(_x55) {
+  return function getTaskLuEditForTesters() {
     return _ref37.apply(this, arguments);
   };
 }();
-var getVersionsForLoad = /*#__PURE__*/function () {
-  var _ref38 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee38(fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) {
+var saveTaskAPI = /*#__PURE__*/function () {
+  var _ref38 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee38(taskData) {
     return regenerator_default.a.wrap(function _callee38$(_context38) {
       while (1) switch (_context38.prev = _context38.next) {
         case 0:
-          return _context38.abrupt("return", invokeFabricWebService('tasks/versionsForLoad', {
+          if (!taskData.task_id) {
+            _context38.next = 2;
+            break;
+          }
+          return _context38.abrupt("return", invokeFabricWebService("task/".concat(taskData.task_id), taskData, 'PUT'));
+        case 2:
+          return _context38.abrupt("return", invokeFabricWebService('task', taskData, 'POST'));
+        case 3:
+        case "end":
+          return _context38.stop();
+      }
+    }, _callee38);
+  }));
+  return function saveTaskAPI(_x55) {
+    return _ref38.apply(this, arguments);
+  };
+}();
+var getVersionsForLoad = /*#__PURE__*/function () {
+  var _ref39 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee39(fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) {
+    return regenerator_default.a.wrap(function _callee39$(_context39) {
+      while (1) switch (_context39.prev = _context39.next) {
+        case 0:
+          return _context39.abrupt("return", invokeFabricWebService('tasks/versionsForLoad', {
             fromDate: fromDate,
             toDate: toDate,
             entitiesList: entitiesList,
@@ -3507,20 +3523,20 @@ var getVersionsForLoad = /*#__PURE__*/function () {
           }, 'POST'));
         case 1:
         case "end":
-          return _context38.stop();
+          return _context39.stop();
       }
-    }, _callee38);
+    }, _callee39);
   }));
   return function getVersionsForLoad(_x56, _x57, _x58, _x59, _x60, _x61, _x62, _x63) {
-    return _ref38.apply(this, arguments);
+    return _ref39.apply(this, arguments);
   };
 }();
 var getGenerationExecutions = /*#__PURE__*/function () {
-  var _ref39 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee39(fromDate, toDate, envName, beID, selectedLogicalUnits) {
-    return regenerator_default.a.wrap(function _callee39$(_context39) {
-      while (1) switch (_context39.prev = _context39.next) {
+  var _ref40 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee40(fromDate, toDate, envName, beID, selectedLogicalUnits) {
+    return regenerator_default.a.wrap(function _callee40$(_context40) {
+      while (1) switch (_context40.prev = _context40.next) {
         case 0:
-          return _context39.abrupt("return", invokeFabricWebService('tasks/getGenerationModels', {
+          return _context40.abrupt("return", invokeFabricWebService('tasks/getGenerationModels', {
             fromDate: fromDate,
             toDate: toDate,
             envName: envName,
@@ -3529,12 +3545,12 @@ var getGenerationExecutions = /*#__PURE__*/function () {
           }, 'POST'));
         case 1:
         case "end":
-          return _context39.stop();
+          return _context40.stop();
       }
-    }, _callee39);
+    }, _callee40);
   }));
   return function getGenerationExecutions(_x64, _x65, _x66, _x67, _x68) {
-    return _ref39.apply(this, arguments);
+    return _ref40.apply(this, arguments);
   };
 }();
 var taskAPIs = {
@@ -3573,7 +3589,8 @@ var taskAPIs = {
   validateReservedEntitiesList: validateReservedEntitiesList,
   getExecutionProcessParams: getExecutionProcessParams,
   getParamsLUName: getParamsLUName,
-  getCheckIfParamsCoupling: getCheckIfParamsCoupling
+  getCheckIfParamsCoupling: getCheckIfParamsCoupling,
+  getTaskLuEditForTesters: getTaskLuEditForTesters
 };
 /* harmony default export */ var apis_task = (taskAPIs);
 // CONCATENATED MODULE: ./src/components/task/AdvancedBE/styles.ts
@@ -3669,6 +3686,7 @@ function Tabs(props) {
 
 
 
+
 function AdvancedBE() {
   var _useContext = Object(react["useContext"])(TaskContext),
     taskData = _useContext.taskData,
@@ -3688,7 +3706,8 @@ function AdvancedBE() {
   var selected_logical_units = taskData.selected_logical_units,
     execution_mode = taskData.execution_mode,
     dataSourceType = taskData.dataSourceType,
-    source_type = taskData.source_type;
+    source_type = taskData.source_type,
+    enable_advanced_for_testers = taskData.enable_advanced_for_testers;
   var _useState5 = Object(react["useState"])(false),
     _useState6 = slicedToArray_default()(_useState5, 2),
     open = _useState6[0],
@@ -3706,6 +3725,8 @@ function AdvancedBE() {
     _useState12 = slicedToArray_default()(_useState11, 2),
     selectedTab = _useState12[0],
     setSelectedTab = _useState12[1];
+  var AuthService = getService('AuthService');
+  var role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
   Object(react["useEffect"])(function () {
     if (execution_mode) {
       setLocalExecutionMode(execution_mode);
@@ -3958,6 +3979,7 @@ function AdvancedBE() {
                 onChange: function onChange() {
                   systemToggle(it.system);
                 },
+                disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
                 value: it.selected
               }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Icon, {
                 onClick: function onClick() {
@@ -3974,6 +3996,7 @@ function AdvancedBE() {
                     onChange: function onChange() {
                       logicalUnitToggle(luItem.lu_id, it.system);
                     },
+                    disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
                     value: luItem.selected
                   })
                 });
@@ -4015,7 +4038,7 @@ function AdvancedBE() {
       });
     }
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
-  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle]);
+  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle, role, enable_advanced_for_testers]);
   var getLogicalUnitTemplate = function getLogicalUnitTemplate() {
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitsContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitTitle, {
@@ -13866,7 +13889,38 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       }));
       return _fetchEnableParamsLUName.apply(this, arguments);
     }
+    function fetchEnableAdvancedSystemsForTesters() {
+      return _fetchEnableAdvancedSystemsForTesters.apply(this, arguments);
+    }
+    function _fetchEnableAdvancedSystemsForTesters() {
+      _fetchEnableAdvancedSystemsForTesters = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3() {
+        var result;
+        return regenerator_default.a.wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              _context3.next = 3;
+              return apis_task.getTaskLuEditForTesters();
+            case 3:
+              result = _context3.sent;
+              saveForm({
+                enable_advanced_for_testers: result === "true"
+              });
+              _context3.next = 9;
+              break;
+            case 7:
+              _context3.prev = 7;
+              _context3.t0 = _context3["catch"](0);
+            case 9:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[0, 7]]);
+      }));
+      return _fetchEnableAdvancedSystemsForTesters.apply(this, arguments);
+    }
     fetchEnableParamsLUName();
+    fetchEnableAdvancedSystemsForTesters();
   }, []);
   var _useState = Object(react["useState"])(8),
     _useState2 = slicedToArray_default()(_useState, 2),
@@ -13881,51 +13935,18 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       return _fetchEnableParamWidth.apply(this, arguments);
     }
     function _fetchEnableParamWidth() {
-      _fetchEnableParamWidth = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3() {
+      _fetchEnableParamWidth = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4() {
         var result;
-        return regenerator_default.a.wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-              _context3.prev = 0;
-              _context3.next = 3;
-              return apis_task.getEnableParamWidth();
-            case 3:
-              result = _context3.sent;
-              saveForm({
-                enable_param_auto_width: result === "true"
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context3.next = 10;
-              break;
-            case 8:
-              _context3.prev = 8;
-              _context3.t0 = _context3["catch"](0);
-            case 10:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3, null, [[0, 8]]);
-      }));
-      return _fetchEnableParamWidth.apply(this, arguments);
-    }
-    function fetchParamCoupling() {
-      return _fetchParamCoupling.apply(this, arguments);
-    }
-    function _fetchParamCoupling() {
-      _fetchParamCoupling = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4() {
-        var coupling_result;
         return regenerator_default.a.wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
               _context4.prev = 0;
               _context4.next = 3;
-              return apis_task.getCheckIfParamsCoupling();
+              return apis_task.getEnableParamWidth();
             case 3:
-              coupling_result = _context4.sent;
+              result = _context4.sent;
               saveForm({
-                isCoupling: coupling_result === "true"
+                enable_param_auto_width: result === "true"
               });
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
@@ -13941,6 +13962,39 @@ var useInit_useInit = function useInit(saveForm, taskData) {
           }
         }, _callee4, null, [[0, 8]]);
       }));
+      return _fetchEnableParamWidth.apply(this, arguments);
+    }
+    function fetchParamCoupling() {
+      return _fetchParamCoupling.apply(this, arguments);
+    }
+    function _fetchParamCoupling() {
+      _fetchParamCoupling = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5() {
+        var coupling_result;
+        return regenerator_default.a.wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              _context5.prev = 0;
+              _context5.next = 3;
+              return apis_task.getCheckIfParamsCoupling();
+            case 3:
+              coupling_result = _context5.sent;
+              saveForm({
+                isCoupling: coupling_result === "true"
+              });
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              _context5.next = 10;
+              break;
+            case 8:
+              _context5.prev = 8;
+              _context5.t0 = _context5["catch"](0);
+            case 10:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, null, [[0, 8]]);
+      }));
       return _fetchParamCoupling.apply(this, arguments);
     }
     if (!taskData.task_id) {
@@ -13954,16 +14008,16 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       return _fetchTaskPostExecutionProcess.apply(this, arguments);
     }
     function _fetchTaskPostExecutionProcess() {
-      _fetchTaskPostExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5() {
+      _fetchTaskPostExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee6() {
         var data;
-        return regenerator_default.a.wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+        return regenerator_default.a.wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              _context5.prev = 0;
-              _context5.next = 3;
+              _context6.prev = 0;
+              _context6.next = 3;
               return apis_task.getTaskPostExecutionProcess(task_id);
             case 3:
-              data = _context5.sent;
+              data = _context6.sent;
               saveForm({
                 postExecutionProcesses: data.map(function (it) {
                   if (!it.parameters) {
@@ -13980,39 +14034,6 @@ var useInit_useInit = function useInit(saveForm, taskData) {
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
-              _context5.next = 10;
-              break;
-            case 8:
-              _context5.prev = 8;
-              _context5.t0 = _context5["catch"](0);
-            case 10:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, null, [[0, 8]]);
-      }));
-      return _fetchTaskPostExecutionProcess.apply(this, arguments);
-    }
-    function fetchTaskVariables() {
-      return _fetchTaskVariables.apply(this, arguments);
-    }
-    function _fetchTaskVariables() {
-      _fetchTaskVariables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee6() {
-        var data;
-        return regenerator_default.a.wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
-            case 0:
-              _context6.prev = 0;
-              _context6.next = 3;
-              return apis_task.getTaskVariables(task_id);
-            case 3:
-              data = _context6.sent;
-              saveForm({
-                globals: data
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
               _context6.next = 10;
               break;
             case 8:
@@ -14024,22 +14045,55 @@ var useInit_useInit = function useInit(saveForm, taskData) {
           }
         }, _callee6, null, [[0, 8]]);
       }));
+      return _fetchTaskPostExecutionProcess.apply(this, arguments);
+    }
+    function fetchTaskVariables() {
       return _fetchTaskVariables.apply(this, arguments);
     }
-    function fetchTaskPreExecutionProcess() {
-      return _fetchTaskPreExecutionProcess.apply(this, arguments);
-    }
-    function _fetchTaskPreExecutionProcess() {
-      _fetchTaskPreExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee7() {
+    function _fetchTaskVariables() {
+      _fetchTaskVariables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee7() {
         var data;
         return regenerator_default.a.wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
             case 0:
               _context7.prev = 0;
               _context7.next = 3;
-              return apis_task.getTaskPreExecutionProcess(task_id);
+              return apis_task.getTaskVariables(task_id);
             case 3:
               data = _context7.sent;
+              saveForm({
+                globals: data
+              });
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              _context7.next = 10;
+              break;
+            case 8:
+              _context7.prev = 8;
+              _context7.t0 = _context7["catch"](0);
+            case 10:
+            case "end":
+              return _context7.stop();
+          }
+        }, _callee7, null, [[0, 8]]);
+      }));
+      return _fetchTaskVariables.apply(this, arguments);
+    }
+    function fetchTaskPreExecutionProcess() {
+      return _fetchTaskPreExecutionProcess.apply(this, arguments);
+    }
+    function _fetchTaskPreExecutionProcess() {
+      _fetchTaskPreExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee8() {
+        var data;
+        return regenerator_default.a.wrap(function _callee8$(_context8) {
+          while (1) switch (_context8.prev = _context8.next) {
+            case 0:
+              _context8.prev = 0;
+              _context8.next = 3;
+              return apis_task.getTaskPreExecutionProcess(task_id);
+            case 3:
+              data = _context8.sent;
               saveForm({
                 preExecutionProcesses: data.map(function (it) {
                   if (!it.parameters) {
@@ -14056,16 +14110,16 @@ var useInit_useInit = function useInit(saveForm, taskData) {
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
-              _context7.next = 10;
+              _context8.next = 10;
               break;
             case 8:
-              _context7.prev = 8;
-              _context7.t0 = _context7["catch"](0);
+              _context8.prev = 8;
+              _context8.t0 = _context8["catch"](0);
             case 10:
             case "end":
-              return _context7.stop();
+              return _context8.stop();
           }
-        }, _callee7, null, [[0, 8]]);
+        }, _callee8, null, [[0, 8]]);
       }));
       return _fetchTaskPreExecutionProcess.apply(this, arguments);
     }
@@ -14073,60 +14127,13 @@ var useInit_useInit = function useInit(saveForm, taskData) {
       return _fetchTaskTables.apply(this, arguments);
     }
     function _fetchTaskTables() {
-      _fetchTaskTables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee8() {
-        var data;
-        return regenerator_default.a.wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
-            case 0:
-              _context8.prev = 0;
-              if (!(taskData.refcount === 0)) {
-                _context8.next = 4;
-                break;
-              }
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              return _context8.abrupt("return");
-            case 4:
-              _context8.next = 6;
-              return apis_task.getTaskTables(task_id);
-            case 6:
-              data = _context8.sent;
-              saveForm({
-                tableList: data.map(function (it) {
-                  return useInit_objectSpread(useInit_objectSpread({}, it), {}, {
-                    filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
-                    reference_table_name: it.ref_table_name
-                  });
-                })
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context8.next = 13;
-              break;
-            case 11:
-              _context8.prev = 11;
-              _context8.t0 = _context8["catch"](0);
-            case 13:
-            case "end":
-              return _context8.stop();
-          }
-        }, _callee8, null, [[0, 11]]);
-      }));
-      return _fetchTaskTables.apply(this, arguments);
-    }
-    function fetchSourceEnvironment() {
-      return _fetchSourceEnvironment.apply(this, arguments);
-    }
-    function _fetchSourceEnvironment() {
-      _fetchSourceEnvironment = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee9() {
+      _fetchTaskTables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee9() {
         var data;
         return regenerator_default.a.wrap(function _callee9$(_context9) {
           while (1) switch (_context9.prev = _context9.next) {
             case 0:
               _context9.prev = 0;
-              if (taskData.source_environment_id) {
+              if (!(taskData.refcount === 0)) {
                 _context9.next = 4;
                 break;
               }
@@ -14136,14 +14143,17 @@ var useInit_useInit = function useInit(saveForm, taskData) {
               return _context9.abrupt("return");
             case 4:
               _context9.next = 6;
-              return apis_task.getEnvironmentByID(taskData.source_environment_id);
+              return apis_task.getTaskTables(task_id);
             case 6:
               data = _context9.sent;
-              if (data && data[0]) {
-                saveForm({
-                  mask_sensitive_data: data[0].mask_sensitive_data
-                });
-              }
+              saveForm({
+                tableList: data.map(function (it) {
+                  return useInit_objectSpread(useInit_objectSpread({}, it), {}, {
+                    filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
+                    reference_table_name: it.ref_table_name
+                  });
+                })
+              });
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
@@ -14158,22 +14168,66 @@ var useInit_useInit = function useInit(saveForm, taskData) {
           }
         }, _callee9, null, [[0, 11]]);
       }));
+      return _fetchTaskTables.apply(this, arguments);
+    }
+    function fetchSourceEnvironment() {
+      return _fetchSourceEnvironment.apply(this, arguments);
+    }
+    function _fetchSourceEnvironment() {
+      _fetchSourceEnvironment = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee10() {
+        var data;
+        return regenerator_default.a.wrap(function _callee10$(_context10) {
+          while (1) switch (_context10.prev = _context10.next) {
+            case 0:
+              _context10.prev = 0;
+              if (taskData.source_environment_id) {
+                _context10.next = 4;
+                break;
+              }
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              return _context10.abrupt("return");
+            case 4:
+              _context10.next = 6;
+              return apis_task.getEnvironmentByID(taskData.source_environment_id);
+            case 6:
+              data = _context10.sent;
+              if (data && data[0]) {
+                saveForm({
+                  mask_sensitive_data: data[0].mask_sensitive_data
+                });
+              }
+              setFetchCounter(function (prevCount) {
+                return prevCount - 1;
+              });
+              _context10.next = 13;
+              break;
+            case 11:
+              _context10.prev = 11;
+              _context10.t0 = _context10["catch"](0);
+            case 13:
+            case "end":
+              return _context10.stop();
+          }
+        }, _callee10, null, [[0, 11]]);
+      }));
       return _fetchSourceEnvironment.apply(this, arguments);
     }
     function fetchLogicalUntis() {
       return _fetchLogicalUntis.apply(this, arguments);
     }
     function _fetchLogicalUntis() {
-      _fetchLogicalUntis = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee10() {
+      _fetchLogicalUntis = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee11() {
         var selectedData;
-        return regenerator_default.a.wrap(function _callee10$(_context10) {
-          while (1) switch (_context10.prev = _context10.next) {
+        return regenerator_default.a.wrap(function _callee11$(_context11) {
+          while (1) switch (_context11.prev = _context11.next) {
             case 0:
-              _context10.prev = 0;
-              _context10.next = 3;
+              _context11.prev = 0;
+              _context11.next = 3;
               return apis_task.getTaskLogicalUnits(taskData.task_id || 0);
             case 3:
-              selectedData = _context10.sent;
+              selectedData = _context11.sent;
               saveForm({
                 selected_logical_units: selectedData.map(function (it) {
                   return it.lu_id;
@@ -14185,16 +14239,16 @@ var useInit_useInit = function useInit(saveForm, taskData) {
               setFetchCounter(function (prevCount) {
                 return prevCount - 1;
               });
-              _context10.next = 10;
+              _context11.next = 10;
               break;
             case 8:
-              _context10.prev = 8;
-              _context10.t0 = _context10["catch"](0);
+              _context11.prev = 8;
+              _context11.t0 = _context11["catch"](0);
             case 10:
             case "end":
-              return _context10.stop();
+              return _context11.stop();
           }
-        }, _callee10, null, [[0, 8]]);
+        }, _callee11, null, [[0, 8]]);
       }));
       return _fetchLogicalUntis.apply(this, arguments);
     }

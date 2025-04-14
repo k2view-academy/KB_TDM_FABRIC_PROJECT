@@ -479,10 +479,10 @@ INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
      select 'tdm_gui_params','{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'tdm_gui_params');
-    
+
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '9.3.0' 
+    select 'TDM_VERSION', '9.3.1' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -520,6 +520,8 @@ INSERT INTO ${@schema}.tdm_general_parameters(
         param_name, param_value)
     VALUES ('ADD_LU_NAME_TO_PARAM_NAME', 'false') ON CONFLICT DO NOTHING;
 
+INSERT INTO ${@schema}.tdm_general_parameters (param_name, param_value)
+VALUES ('ENABLE_TASK_LU_EDITING_FOR_TESTERS', 'true') ON CONFLICT DO NOTHING;
 -- Table: ${@schema}.task_globals
 
 --DROP TABLE IF EXISTS ${@schema}.task_globals;
@@ -688,6 +690,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_detailed
     source_count text,
     target_count text,
     diff text,
+    suppressed_error_count text,
     results text
 );
 

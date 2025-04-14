@@ -96,7 +96,6 @@
                     "isLast": 0,
 					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
                     "actors": [
-						{{#if TABLE_SEQ_DATA}}
                         {
                             "name": "Transformation Error Handler",
                             "onError": "result",
@@ -123,33 +122,68 @@
                                 "outputs": []
                             }
                         },
-						{{#each TABLE_SEQ_DATA~}}
                         {
-                            "name": "Get Sequence for {{getFieldName this}}",
+                            "name": "Handle Masked And Sequential Fields",
                             "actorType": {
-                                "parentType": "{{getSequenceActorName this}}",
+                                "parentType": "InnerFlow",
                                 "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "HandleMaskAndSeqFields"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{LU_NAME}}"
+                                    },
                                     {
                                         "name": "tableName",
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "{{getTableName this}}"
+                                        "const": "{{LU_TABLE}}"
                                     },
                                     {
-                                        "name": "columName",
+                                        "name": "dataPlatform",
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "{{getFieldName this}}"
+                                        "const": "{TARGET_INTERFACE}"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{TARGET_SCHEMA}}"
+                                    },
+                                    {
+                                        "name": "row",
+                                        "schema": {
+                                            "type": "any"
+                                        }
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                {{#each LU_TABLE_COLUMNS~}}
+                                                "{{this}}": {"type": "Any"}{{#if @last}}{{^}},{{/if}}
+                                                {{/each}}
+                                            }
+                                        }
+                                    }
+                                ]
 							}
-                        {{#if @last}} } {{else}} }, {{/if}}
-						{{/each}}
-
-						{{/if}}
+                        }
                     ]
 
                 }
@@ -337,49 +371,36 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Load {{{TARGET_TABLE}}} Table",
-                "name": "params"
+                "actor": "Handle Masked And Sequential Fields",
+                "name": "row"
             },
             "iterate": "Iterate"
         },
-		{{#each TABLE_SEQ_DATA~}}
-        {
-            "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Sequence for {{getFieldName this}}",
-                "name": "OriginalSeqValue"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "{{getSourceFieldName this}}"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Sequence for {{getFieldName this}}",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "Load {{{TARGET_TABLE}}} Table",
-                "name": "{{getFieldName this}}"
-            }
-        },
-		{{/each}}
 		{{#neq MAIN_TABLE_SEQ_ID "NO_ID"}}
         {
             "leftPort": {
-                "actor": "Get Sequence for {{MAIN_TABLE_SEQ_ID}}",
-                "name": "NewSeqValue"
+                "actor": "Handle Masked And Sequential Fields",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Set Target Entity ID",
                 "name": "value"
-            }
+            },
+            "path": [
+                "{{MAIN_TABLE_SEQ_ID}}"
+            ]
         },
 		{{/neq}}
+        {
+            "leftPort": {
+                "actor": "Handle Masked And Sequential Fields",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load {{{TARGET_TABLE}}} Table",
+                "name": "params"
+            }
+        },
         {
             "leftPort": {
                "actor": "Read Stats",

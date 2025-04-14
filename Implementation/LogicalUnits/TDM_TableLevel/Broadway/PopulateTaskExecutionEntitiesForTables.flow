@@ -10,6 +10,14 @@ stages:
             default: false
       Now:
         parent: Now
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Coming from Regular Cases:
     dependsOn: Prepare the Data
     actors:
@@ -128,7 +136,7 @@ stages:
             const: '0'
             schema: string
           schema:
-            const: '@TDMDB_SCHEMA@'
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           rootEntityId:

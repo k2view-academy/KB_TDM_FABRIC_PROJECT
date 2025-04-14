@@ -1,6 +1,6 @@
 tags: TDM
 stages:
-  Stage 1:
+  PWD:
     actors:
       Get Project Directory:
         parent: InnerFlow
@@ -10,7 +10,7 @@ stages:
         out:
           PROJECT_FOLDER:
             schema: string
-  Stage 2:
+  Templates Path:
     actors:
       FlowTemplate:
         parent: FileRead
@@ -20,9 +20,9 @@ stages:
             link: Get Project Directory/PROJECT_FOLDER
           path:
             const: SharedObjects/Templates/populationRootTable.pop.flow.template
-  Stage 3:
+  SharedObjects/Templates/populationRootTable.pop.flow.template:
     actors:
-      Const1:
+      Const:
         parent: Const
         in:
           value:
@@ -31,9 +31,9 @@ stages:
         out:
           value:
             schema: '#ref'
-  Stage 4:
+  Search For {{LU_NAME}}:
     actors:
-      Replace1:
+      Replace:
         parent: Replace
         in:
           search:
@@ -42,10 +42,10 @@ stages:
             const: null
             external: LU_NAME
           string:
-            link: Const1/value
-  Stage 5:
+            link: Const/value
+  Search For {{TABLE_NAME}}:
     actors:
-      Replace2:
+      'Replace ':
         parent: Replace
         in:
           search:
@@ -54,10 +54,10 @@ stages:
             const: null
             external: TABLE_NAME
           string:
-            link: Replace1/string
-  Stage 6:
+            link: Replace/string
+  Search For {{KEY}}:
     actors:
-      Replace3:
+      'Replace  ':
         parent: Replace
         in:
           search:
@@ -66,10 +66,10 @@ stages:
             const: null
             external: TABLE_KEY
           string:
-            link: Replace2/string
-  Stage 7:
+            link: Replace /string
+  Search For {{SOURCE_INTERFACE}}:
     actors:
-      Replace4:
+      'Replace       ':
         parent: Replace
         in:
           search:
@@ -78,9 +78,9 @@ stages:
             const: null
             external: SOURCE_INTERFACE
           string:
-            link: Replace3/string
-  Stage 8:
-    dependsOn: Stage 7
+            link: Replace  /string
+  'Check for Schema ':
+    dependsOn: Search For {{SOURCE_INTERFACE}}
     actors:
       Schema is Not Null?:
         parent: NotNull
@@ -88,12 +88,12 @@ stages:
         in:
           value:
             external: SOURCE_SCHEMA
-      Const2:
+      'Const  ':
         parent: Const
         in:
           value:
             const: null
-            link: Replace4/string
+            link: Replace       /string
             schema: string
         out:
           value:
@@ -101,18 +101,18 @@ stages:
     split: '--------------------'
   Schema is NULL:
     else: true
-    dependsOn: Stage 7
+    dependsOn: Search For {{SOURCE_INTERFACE}}
     actors:
-      Replace7:
+      'Replace         ':
         parent: Replace
         in:
           search:
             const: '{{SOURCE_SCHEMA}}.'
           string:
-            link: Replace4/string
-  Stage 12:
+            link: Replace       /string
+  'Search For  {{SOURCE_SCHEMA}} ':
     actors:
-      Replace5:
+      'Replace   ':
         parent: Replace
         in:
           search:
@@ -122,11 +122,11 @@ stages:
             external: SOURCE_SCHEMA
           string:
             link:
-            - Const2/value
-            - Replace7/string
-  Stage 9:
+            - Const  /value
+            - Replace         /string
+  Search For {{{SOURCE_TABLE}}}:
     actors:
-      Replace6:
+      'Replace               ':
         parent: Replace
         in:
           search:
@@ -135,7 +135,7 @@ stages:
             const: null
             external: SOURCE_TABLE
           string:
-            link: Replace5/string
+            link: Replace   /string
       LU Folder:
         parent: StringFormat
         in:
@@ -145,9 +145,9 @@ stages:
             external: LU_PATH
             schema: string
             mandatory: false
-  Stage 11:
+  Get Population Flow Path:
     actors:
-      StringFormat1:
+      StringFormat:
         parent: StringFormat
         in:
           format:
@@ -156,20 +156,20 @@ stages:
             external: TABLE_NAME
             schema: string
             mandatory: false
-  Stage 10:
+  'Write Population ':
     actors:
-      FileWrite1:
+      FileWrite:
         parent: FileWrite
         in:
           interface:
             const: null
             link: LU Folder/string
           stream:
-            link: Replace6/string
+            link: Replace               /string
           path:
-            link: StringFormat1/string
+            link: StringFormat/string
 schemas:
-  Const1.out.value:
+  Const.out.value:
     type: array
     items:
       type: blob

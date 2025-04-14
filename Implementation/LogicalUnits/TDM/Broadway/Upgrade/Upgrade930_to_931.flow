@@ -1,0 +1,76 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+  Stage 2:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/PROJECT_FOLDER
+      Params Coupling ?:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select param_value from ${@TDMDB_SCHEMA}.tdm_general_parameters
+              where param_name='PARAMS_COUPLING';
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 3:
+    actors:
+      UpgradeTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTDMDBSchema
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: any
+            mandatory: false
+  Stage 4:
+    actors:
+      RemoveSchemaGlobal1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveSchemaGlobal
+  Stage 5:
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: Params Coupling ?/result
+      CopyBeIidsPopulations1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CopyBeIidsPopulations
