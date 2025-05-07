@@ -76,6 +76,14 @@ stages:
             schema: string
           a:
             link: _k2v_user/found
+      getTDMDBSchemaName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
     split: '--------------------'
   'False':
     else: true
@@ -94,12 +102,16 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "INSERT INTO public.permission_groups_mapping(\n\tdescription,\
+            const: "INSERT INTO ${@schema}.permission_groups_mapping(\n\tdescription,\
               \ fabric_role, permission_group, created_by, updated_by, creation_date,\
               \ update_date)\n\tVALUES ('Initial mapping for tester user',${k2v_user}\
               \ ,'tester', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\n"
           k2v_user:
             link: DbCommand/result/name
+            schema: string
+            mandatory: false
+          schema:
+            link: getTDMDBSchemaName1/schema
             schema: string
             mandatory: false
     split: '--------------------'
@@ -158,6 +170,10 @@ stages:
           sql:
             const: null
             link: Get  SQL Resource File To insert data to TDM tables/result
+          schema:
+            link: getTDMDBSchemaName1/schema
+            schema: string
+            mandatory: false
     split: '--------------------'
   Stage 7:
     last: 1
