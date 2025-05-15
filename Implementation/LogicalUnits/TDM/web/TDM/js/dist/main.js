@@ -5770,7 +5770,7 @@ function ReferenceTables(props) {
                   var tables = schema[schemaKey].filter(function (it) {
                     return (sync_mode === 'OFF' && it.taskExecutionId || sync_mode !== 'OFF') && ((selected_logical_units_names || []).indexOf(it.luName) >= 0 || !be_name);
                   }).map(function (table) {
-                    var old = tableList !== null && tableList !== void 0 ? tableList : [];
+                    var old = tableList ? tableList : [];
                     var isFound = old.find(function (el) {
                       return el.reference_table_name === table.tableName;
                     });
@@ -5839,7 +5839,7 @@ function ReferenceTables(props) {
     fetchData();
   }, [be_name, source_environment_name, source_type, sync_mode, selected_logical_units_names]);
   Object(react["useEffect"])(function () {
-    var old = tableList !== null && tableList !== void 0 ? tableList : [];
+    var old = tableList ? tableList : [];
     setTablesData(function (prevEnvsState) {
       return prevEnvsState.map(function (env) {
         var updatedSchemas = Object.keys(env.schemas).reduce(function (acc, schemaKey) {
@@ -5947,10 +5947,10 @@ function ReferenceTables(props) {
     });
   }, [filter, getTable, toggleBE, toggleTables]);
   var movedTables = Object(react["useMemo"])(function () {
-    return tableList !== null && tableList !== void 0 ? tableList : [];
+    return tableList ? tableList : [];
   }, [tableList]);
   var moveTables = function moveTables() {
-    var old = tableList !== null && tableList !== void 0 ? tableList : [];
+    var old = tableList ? tableList : [];
     var updatedTables = [];
     tablesData.forEach(function (env) {
       // Iterate over each schema within the environment
@@ -13738,7 +13738,7 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
         saveForm({
           sourceUserRole: undefined
         });
-      } else if (source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity)) {
+      } else if (source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity) && environment_id != source_environment_id) {
         promises.push(getEnvironmentOwners(source_environment_id, true));
       }
       if (environment_id) {
@@ -13778,33 +13778,6 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
       }());
     }
   }, [userFabricRoles, source_environment_id, environment_id, load_entity, reserve_ind, delete_before_load, sync_mode]);
-
-  // useEffect(() => {
-  //     saveForm({
-  //         userRole: {
-  //             allowed_random_entity_selection: systemUserRole?.type !== 'tester',
-  //             allowed_creation_of_synthetic_data: systemUserRole?.type !== 'tester',
-  //             allowed_refresh_reference_data: systemUserRole?.type !== 'tester',
-  //             allowed_request_of_fresh_data: systemUserRole?.type !== 'tester',
-  //             allowed_delete_before_load: systemUserRole?.type !== 'tester',
-  //             allowed_task_scheduling: systemUserRole?.type !== 'tester',
-  //             allowed_replace_sequences: systemUserRole?.type !== 'tester',
-  //             default: true,
-  //         },
-  //         sourceUserRole: {
-  //             allowed_random_entity_selection: systemUserRole?.type !== 'tester',
-  //             allowed_creation_of_synthetic_data: systemUserRole?.type !== 'tester',
-  //             allowed_refresh_reference_data: systemUserRole?.type !== 'tester',
-  //             allowed_request_of_fresh_data: systemUserRole?.type !== 'tester',
-  //             allowed_delete_before_load: systemUserRole?.type !== 'tester',
-  //             allowed_task_scheduling: systemUserRole?.type !== 'tester',
-  //             allowed_replace_sequences: systemUserRole?.type !== 'tester',
-  //             default: true,
-  //         },
-  //         maxToCopy: 100000000,
-  //     });
-  // }, []);
-
   return {};
 };
 /* harmony default export */ var Main_useRoles = (useRoles_useRoles);
