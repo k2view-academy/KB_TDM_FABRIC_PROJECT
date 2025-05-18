@@ -10102,7 +10102,7 @@ var PeriodUnitType = /*#__PURE__*/function (PeriodUnitType) {
   PeriodUnitType["Do_Not_Retain"] = "Do Not Retain";
   return PeriodUnitType;
 }({});
-var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourceType, source_type, retention_period_value, retention_period_type, reserve_retention_period_value) {
+var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourceType, source_type, retention_period_value, retention_period_type, reserve_retention_period_value, reserve_retention_period_type) {
   var AuthService = getService('AuthService');
   var prevDataSourceType = Object(usehooks["c" /* usePrevious */])(dataSourceType);
   var previousSource_type = Object(usehooks["c" /* usePrevious */])(source_type);
@@ -10110,7 +10110,7 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
     _useState2 = slicedToArray_default()(_useState, 2),
     periodsData = _useState2[0],
     setPeriodsData = _useState2[1];
-  var updatePeriods = Object(react["useCallback"])(function (onLoad) {
+  var updatePeriods = Object(react["useCallback"])(function () {
     if (!periodsData) {
       return;
     }
@@ -10201,22 +10201,26 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
     updateData.reservationPeriodTypes = reservationPeriodTypes;
     updateData.maxReservationPeriod = maxReservationPeriod;
     updateData.maxRetentionPeriod = maxRetentionPeriod;
-    if (onLoad && retention_period_value === undefined) {
+    if (periodTypes.findIndex(function (it) {
+      return it.name === retention_period_type;
+    }) < 0) {
       if (retentionDefaultPeriod) {
         updateData.retention_period_type = retentionDefaultPeriod.units;
         updateData.retention_period_value = retentionDefaultPeriod.value;
       }
     }
-    if (onLoad && reserve_retention_period_value === undefined) {
+    if (reservationPeriodTypes.findIndex(function (it) {
+      return it.name === reserve_retention_period_type;
+    }) < 0) {
       if (reservationDefaultPeriod) {
         updateData.reserve_retention_period_type = reservationDefaultPeriod.units;
         updateData.reserve_retention_period_value = reservationDefaultPeriod.value;
       }
     }
     saveForm(updateData);
-  }, [saveForm, version_ind, periodsData, AuthService, reserve_retention_period_value, retention_period_value, dataSourceType, source_type]);
+  }, [saveForm, version_ind, periodsData, AuthService, reserve_retention_period_value, reserve_retention_period_type, retention_period_value, dataSourceType, source_type]);
   Object(react["useEffect"])(function () {
-    updatePeriods(true);
+    updatePeriods();
   }, [periodsData]);
   Object(react["useEffect"])(function () {
     if (retention_period_type === 'reset') {
@@ -14492,7 +14496,7 @@ function TaskMain(props) {
   var _useInit = Main_useInit(saveForm, taskData),
     initFinished = _useInit.initFinished;
   var allLogicalUnits = Main_useLogicalUnits(initFinished, saveForm, initTask, taskData === null || taskData === void 0 ? void 0 : taskData.dataSourceType, taskData === null || taskData === void 0 ? void 0 : taskData.source_type, taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units_names, taskData === null || taskData === void 0 ? void 0 : taskData.be_type, taskData === null || taskData === void 0 ? void 0 : taskData.be_id, taskData === null || taskData === void 0 ? void 0 : taskData.source_environment_id, taskData === null || taskData === void 0 ? void 0 : taskData.environment_id);
-  Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.retention_period_type, taskData.reserve_retention_period_value);
+  Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.retention_period_type, taskData.reserve_retention_period_value, taskData.reserve_retention_period_type);
   Main_useExecutionMode(initFinished, taskData);
   Main_useRoles(saveForm, taskData);
   Main_useGenerationParams(saveForm, taskData.dataSourceType, taskData.task_id, taskData.selected_logical_units_names, taskData.dataGenerationParams);
