@@ -26,6 +26,12 @@ stages:
           key:
             const: IID
             default: false
+      Get Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
       Get Target Entity ID:
         parent: FabricSetRead
         height: 99
@@ -35,13 +41,6 @@ stages:
             default: false
   Continue Preparing:
     actors:
-      Get Task Execution ID:
-        parent: getLUVariable_Actor
-        in:
-          variableName:
-            const: TDM_TASK_EXE_ID
-          luName:
-            link: Get LU Type/result
       Get Timing of Processing Start:
         parent: FabricSetRead
         in:
@@ -53,6 +52,12 @@ stages:
         in:
           key:
             const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Get Timing of Processing End:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IID_AFTER_GET_DATETIME
             default: false
       Now:
         parent: Now
@@ -82,12 +87,6 @@ stages:
           b:
             const: NO_ID
             schema: string
-      Get Timing of Processing End:
-        parent: FabricSetRead
-        in:
-          key:
-            const: IID_AFTER_GET_DATETIME
-            default: false
   Check env:
     actors:
       Synthetic:
@@ -214,6 +213,21 @@ stages:
           key:
             const: clone_id
             default: false
+      Format the Current Time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyy-MMM-dd HH:mm:ss.SSS
+          date:
+            link: Now/date
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       Calculate Total Processing Duration:
         parent: DateDuration
         in:
@@ -234,21 +248,6 @@ stages:
             link: Check if Target Entity ID is Not Set/result
         out:
           result:
-            schema: string
-      Format the Current Time:
-        parent: DateFormat
-        in:
-          format:
-            const: yyyy-MMM-dd HH:mm:ss.SSS
-          date:
-            link: Now/date
-      getTDMDBSchema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: getTDMDBSchema
-        out:
-          schema:
             schema: string
       Calculate Total Get Duration:
         parent: DateDuration
@@ -277,7 +276,7 @@ stages:
             link: Get LU Type/result
             schema: string
           taskexecutionId:
-            link: Get Task Execution ID/variableValue
+            link: Get Task Execution ID/result
             schema: string
           sourceEntityId:
             link: Get Source Entity ID/result

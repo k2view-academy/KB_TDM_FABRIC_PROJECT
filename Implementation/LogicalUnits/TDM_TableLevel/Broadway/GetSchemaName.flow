@@ -1,13 +1,6 @@
 stages:
   Stage 1:
     actors:
-      Does source schema contain @1:
-        parent: StringPos
-        in:
-          substring:
-            const: '@'
-          string:
-            external: schemaName
       Source Or Target?:
         parent: IfElse
         in:
@@ -28,6 +21,13 @@ stages:
           key:
             const: environment
             default: false
+      Does source schema contain @1:
+        parent: StringPos
+        in:
+          substring:
+            const: '@'
+          string:
+            external: schemaName
   Stage 2:
     dependsOn: Stage 1
     actors:
@@ -94,6 +94,16 @@ stages:
   Stage 5:
     dependsOn: Stage 4
     actors:
+      Restore Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: Get Current Environment/result
+            default: false
       Get Schema Value:
         parent: InnerFlow
         in:
@@ -111,16 +121,6 @@ stages:
           variableValue:
             external: result
             schema: string
-      Restore Environment:
-        parent: FabricSet
-        in:
-          key:
-            const: environment
-            default: false
-          value:
-            const: null
-            link: Get Current Environment/result
-            default: false
     split: '--------------------'
   Stage 11:
     dependsOn: Stage 8

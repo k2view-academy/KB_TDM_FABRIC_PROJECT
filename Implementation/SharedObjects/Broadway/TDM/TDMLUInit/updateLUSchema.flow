@@ -164,6 +164,10 @@ stages:
             link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
             schema: string
             mandatory: false
+          ROOT_TABLE_KEY:
+            external: TABLE_KEY
+            schema: string
+            mandatory: false
         out:
           rootInfo:
             schema: '#ref'
@@ -493,39 +497,6 @@ stages:
         out:
           result:
             schema: '#ref'
-      Create Root Population:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createRootTablePopulation
-          LU_NAME:
-            external: LU_NAME
-            schema: string
-            mandatory: false
-          TABLE_NAME:
-            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
-            schema: string
-            mandatory: false
-          TABLE_KEY:
-            external: TABLE_KEY
-            schema: string
-            mandatory: false
-          SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
-            schema: string
-            mandatory: false
-          LU_PATH:
-            external: LU_PATH
-            schema: string
-            mandatory: false
-          SOURCE_SCHEMA:
-            external: SOURCE_SCHEMA
-            schema: string
-            mandatory: false
-          SOURCE_TABLE:
-            external: SOURCE_TABLE
-            schema: string
-            mandatory: false
       Set TDM Tables Relations:
         parent: JavaScript
         in:
@@ -745,22 +716,58 @@ stages:
             link: Get Root Table IID/rootInfo
             schema: '#ref'
             mandatory: false
-      Update TAR Root Population:
+  'Replace Main Table Population ':
+    actors:
+      Create Root Population:
         parent: InnerFlow
-        disabled: true
         in:
           flowName:
-            const: updateRootPopulationTAR
+            const: createRootTablePopulation
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          TABLE_NAME:
+            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
+            schema: string
+            mandatory: false
+          TABLE_KEY:
+            external: TABLE_KEY
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
           LU_PATH:
             external: LU_PATH
             schema: string
             mandatory: false
-          ROOT_TABLE:
-            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          SOURCE_TABLE:
+            external: SOURCE_TABLE
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
             schema: string
             mandatory: false
   Merge With Source Tables:
     actors:
+      root Info:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Root Table IID/rootInfo
+            schema: '#ref'
+        out:
+          value:
+            external: rootInfo
+            schema: '#ref'
       Merge with Original XML:
         parent: MapMerge
         height: 256
@@ -780,17 +787,6 @@ stages:
             mandatory: false
         out:
           map:
-            schema: '#ref'
-      root Info:
-        parent: Const
-        in:
-          value:
-            const: null
-            link: Get Root Table IID/rootInfo
-            schema: '#ref'
-        out:
-          value:
-            external: rootInfo
             schema: '#ref'
   Add Tag:
     actors:
@@ -1104,10 +1100,10 @@ schemas:
           type: string
         column_name:
           type: string
-        population:
-          type: string
-        id:
-          type: string
+        active:
+          type: boolean
+        population: {
+          }
   Add TDM tables.in.objIn:
     type: object
     properties:
@@ -1301,6 +1297,32 @@ schemas:
           type: string
         id:
           type: string
+  root Info.in.value:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }
+  root Info.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }
   Merge with Original XML.out.map:
     type: object
     properties:
@@ -1505,32 +1527,6 @@ schemas:
                                   type: string
                                 viewType:
                                   type: string
-  root Info.in.value:
-    type: array
-    items:
-      type: object
-      properties:
-        table_name:
-          type: string
-        column_name:
-          type: string
-        active:
-          type: boolean
-        population: {
-          }
-  root Info.out.value:
-    type: array
-    items:
-      type: object
-      properties:
-        table_name:
-          type: string
-        column_name:
-          type: string
-        active:
-          type: boolean
-        population: {
-          }
   Add back version tag.in.newXML:
     type: object
     properties:

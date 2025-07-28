@@ -10,7 +10,36 @@ stages:
         out:
           PROJECT_FOLDER:
             schema: string
-      buildTemplateData:
+      Get Template:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: delete_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 2:
+    actors:
+      Read Flow Template:
+        parent: FileRead
+        height: 164
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            link: Get Template/result
+      build Template Data:
         parent: LuFunction
         in:
           functionName:
@@ -52,17 +81,6 @@ stages:
             schema: '#ref'
   Stage 3:
     actors:
-      FlowTemplate:
-        parent: FileRead
-        height: 164
-        in:
-          interface:
-            const: null
-            link: Get Project Directory/PROJECT_FOLDER
-          path:
-            const: SharedObjects/Templates/TDM/tdmDeleteTable.flow.template
-  Stage 4:
-    actors:
       flow folder:
         parent: StringFormat
         in:
@@ -81,17 +99,17 @@ stages:
           functionName:
             const: transform
           templateContent:
-            link: FlowTemplate/stream
+            link: Read Flow Template/stream
             schema: string
           data:
-            link: buildTemplateData/res
+            link: build Template Data/res
             schema: string
         out:
           result:
             schema: string
-  Stage 7:
+  Stage 4:
     actors:
-      FileWrite1:
+      Write Delete Flow:
         parent: FileWrite
         in:
           interface:
@@ -102,7 +120,7 @@ stages:
           path:
             external: FLOW_NAME
 schemas:
-  buildTemplateData.out.res:
+  build Template Data.out.res:
     type: object
     properties:
       DELETE_TABLE:

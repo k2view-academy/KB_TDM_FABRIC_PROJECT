@@ -10,7 +10,7 @@ stages:
         out:
           schema:
             schema: string
-      Const1:
+      truncate date:
         parent: Const
         in:
           value:
@@ -47,7 +47,7 @@ stages:
             schema: string
             mandatory: false
           truncate_date:
-            link: Const1/value/date_trunc
+            link: truncate date/value/date_trunc
             schema: '#ref'
             mandatory: false
         out:
@@ -174,7 +174,7 @@ stages:
             schema: '#ref'
   Get Task Execution ID:
     actors:
-      Substring1:
+      'Substring   ':
         parent: Substring
         in:
           begin:
@@ -200,7 +200,7 @@ stages:
             schema: string
             mandatory: false
           taskExecutionId:
-            link: Substring1/string
+            link: Substring   /string
             schema: string
             mandatory: false
         out:
@@ -218,7 +218,7 @@ stages:
             schema: integer
           a:
             link: Check If Task Execution Still Exists/result
-      Drop Table1:
+      'Drop Table   ':
         parent: DbCommand
         in:
           interface:
@@ -236,7 +236,7 @@ stages:
             schema: string
             mandatory: false
 schemas:
-  Const1.out.value:
+  truncate date.out.value:
     type: object
     properties:
       date_trunc:

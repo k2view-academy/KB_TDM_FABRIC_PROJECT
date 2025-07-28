@@ -322,7 +322,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-    public static Object wsGetTasks(@param(description="list of task IDs separated by a comma") String task_ids,String mode) throws Exception {
+    public static Object wsGetTasks(@param(description="list of task IDs separated by a comma") String task_ids,
+                                    @param(description = "Specifies the task status to retrieve. Options: 'Active' to get only active tasks, 'Inactive' for only inactive tasks, or 'Both' to retrieve all tasks regardless of status.")
+                                    String mode) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         String message = null;
         String errorCode = "";
@@ -361,11 +363,11 @@ public class Logic extends WebServiceUserCode {
             
             ResultSet resultSet = row.resultSet();
             String userRoles = "";
+            Long targetEnvId = resultSet.getLong("environment_id");
+            Long sourceEnvId = resultSet.getLong("source_environment_id");
             if (resultSet.getString("task_created_by") != null) {
                 List<String> creatorFabricRoles = new ArrayList<>();
                 String taskCreatedBy = resultSet.getString("task_created_by");
-                Long targetEnvId = resultSet.getLong("environment_id");
-                Long sourceEnvId = resultSet.getLong("source_environment_id");
                 String taskKey = taskCreatedBy + TASK_CREATED_BY_SEPARATOR + sourceEnvId + 
                     TASK_CREATED_BY_SEPARATOR + targetEnvId;
                 
@@ -519,7 +521,21 @@ public class Logic extends WebServiceUserCode {
                     roleArr.add(roleMap);
                 }
             }
-    
+            //check for evalaution indicator
+            Long task_id = resultSet.getLong("task_id");
+            if(task_id != 0L && sourceEnvId == -2){
+                String sql = "Select Count(1) as count from " + TDMDB_SCHEMA + ".tasks_exe_process where task_id = " +
+                                            task_id + " AND process_id = -3"  +
+                                            " AND process_name = 'Evaluating Data Subset'";
+                Object cnt = db(TDM).fetch(sql).firstValue();
+                Long evaluation_ind = Long.valueOf("" + cnt).longValue();
+                if(evaluation_ind == 1){
+                    newRow.put("evaluation_ind", true);
+                }else{
+                    newRow.put("evaluation_ind", false);
+                }
+            }
+                
             if (task != null) {
                 List<Map<String, Object>> owners = (List<Map<String, Object>>) task.get("owners");
                 Map<String, Object> owner = null;
@@ -603,7 +619,6 @@ public class Logic extends WebServiceUserCode {
                 String target_env_id = resultSet.getString("environment_id");
                 String sync_mode = resultSet.getString("sync_mode");
                 String task_type = resultSet.getString("task_type");
-                Long task_id = resultSet.getLong("task_id");
                 // check for any disabled systems of source environment
                 String inactive_source_products = fnValidateProductForTask(source_env_id,source_env_name,task_type,sync_mode,"SOURCE",task_id);
                 if(!"".equalsIgnoreCase(inactive_source_products)){
@@ -748,7 +763,7 @@ public class Logic extends WebServiceUserCode {
             String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, 
             String filterout_reserved, HashMap<String, Object> generateParams, Boolean mask_sensitive_data, 
             String task_description, String custom_logic_lu_name,Long selected_subset_task_exe_id,Boolean clone_ind,
-            String execution_mode) throws Exception {
+            String execution_mode, boolean evaluation_ind) throws Exception {
         Long taskId;
         String msg =fnValidateOverrideSyncMode(source_environment_id,source_env_name,sync_mode);
         if (!"".equalsIgnoreCase(msg)){
@@ -775,14 +790,20 @@ public class Logic extends WebServiceUserCode {
             if("TABLES".equalsIgnoreCase(selection_method)){
                 return wrapWebServiceResults("FAILED", "AI-based training is not supported for Table-Level tasks", null);
             }
-		postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses, "Training Data Subset", "training_ai", -1, "Exporting Data Subset", "export_entities", -2);
+		    postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses, "Training Data Subset", "training_ai", -1, "Exporting Data Subset", "export_entities", -2);
 	   }
        if ("Load".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "Importing Data Subset", "export_entities", -1);
-       }
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
+        }
        if ("AI_GENERATED".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "", "", 0);
-       }
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
+        }
 
         db(TDM).beginTransaction();
         //try {
@@ -990,7 +1011,7 @@ public class Logic extends WebServiceUserCode {
             Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value,
             String reserve_note, String filterout_reserved, HashMap<String, Object> generateParams,
             Boolean mask_sensitive_data, String task_description, String custom_logic_lu_name,
-            Long selected_subset_task_exe_id, Boolean clone_ind, String execution_mode) throws Exception {
+            Long selected_subset_task_exe_id, Boolean clone_ind, String execution_mode,boolean evaluation_ind) throws Exception {
         Long newTaskId = null;
 
         String msg =fnValidateOverrideSyncMode(source_environment_id,source_env_name,sync_mode);
@@ -1019,9 +1040,15 @@ public class Logic extends WebServiceUserCode {
 		}
         if ("Load".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "Importing Data Subset", "export_entities", -1);
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
         }
         if ("AI_GENERATED".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "", "", 0);
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
         }
         
         db(TDM).beginTransaction();
@@ -2387,9 +2414,9 @@ public class Logic extends WebServiceUserCode {
             "TARGET_ROOT_ENTITY_ID as rootTargetId, Case when PARENT_LU_NAME = '' then LU_NAME else PARENT_LU_NAME end as parentLuName, " +
             "Case when PARENT_ENTITY_ID = '' then BE_ROOT_ENTITY_ID else PARENT_ENTITY_ID end as parentSourceId, " +
             "Case when TARGET_PARENT_ID = '' then TARGET_ROOT_ENTITY_ID else TARGET_PARENT_ID end as parentTargetId, " +
-            "Case when EXECUTION_STATUS ='completed' then 'Copied' else 'Failed' end as copyEntityStatus, " +
-            "Case when ROOT_ENTITY_STATUS <> 'completed' then 'Failed' else 'Copied' end as copyHierarchyStatus, " +
-            "LU_NAME as luName " + "from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where id_type = '" + luIdType + "' and ";
+            "Case when EXECUTION_STATUS ='completed' then 'Successful' else 'Failed' end as copyEntityStatus, " +
+            "Case when ROOT_ENTITY_STATUS <> 'completed' then 'Failed' else 'Successful' end as copyHierarchyStatus, " +
+            "LU_NAME as luName, EXECUTION_NOTE as entityExecutionNote " + "from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where id_type = '" + luIdType + "' and ";
 
         String sqlSelectOrder = " order by TARGET_ENTITY_ID";
         String sqlSelectCnt = "select count(1) from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where id_type = '" + luIdType + "' and ";
@@ -2551,6 +2578,9 @@ public class Logic extends WebServiceUserCode {
                 mapInnerCopiedEnt.put("parentTargetId", copiedEnt.get("parentTargetId"));
                 mapInnerCopiedEnt.put("copyEntityStatus", copiedEnt.get("copyEntityStatus"));
                 mapInnerCopiedEnt.put("copyHierarchyStatus", copiedEnt.get("copyHierarchyStatus"));
+                mapInnerCopiedEnt.put("entityExecutionNote", copiedEnt.get("entityExecutionNote"));
+
+                
 
                 if (!prevTargetID.equals(targetID)) {
                     prevTargetID = targetID;
@@ -2587,6 +2617,8 @@ public class Logic extends WebServiceUserCode {
                 mapInnerFailedEnt.put("parentTargetId", failedEnt.get("parentTargetId"));
                 mapInnerFailedEnt.put("copyEntityStatus", copyEntityStatus);
                 mapInnerFailedEnt.put("copyHierarchyStatus", failedEnt.get("copyHierarchyStatus"));
+                mapInnerFailedEnt.put("entityExecutionNote", failedEnt.get("entityExecutionNote"));
+
                 //log.info ("Failed - luName: " + failedEnt.get("luName") + ", rootSourceId: " + failedEnt.get("rootSourceId"));
                 // TDM 6.1.1 - 20-may-20, add the error msg that casued the failure
                 String errorMsgSql = "select error_message from task_exe_error_detailed where " + "task_execution_id = ? and lu_name = ? and target_entity_id = ?  ORDER BY ERROR_CATEGORY LIMIT 5";
@@ -2978,7 +3010,8 @@ public class Logic extends WebServiceUserCode {
             "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS_LOGICAL_UNITS U, " + TDMDB_SCHEMA + ".TASKS T " + 
             "WHERE t.task_id = l.task_id AND u.task_id = l.task_id AND u.lu_id = l.lu_id AND T.task_id = " + taskID + 
             " AND l.task_execution_id = " + executionIdWhere + " and process_id = 0 " + 
-            "UNION SELECT task_execution_id, execution_status, fabric_execution_id, process_type, process_name as name, task_title, 'Process' as type " + 
+            "UNION SELECT task_execution_id, execution_status, fabric_execution_id, process_name as name, task_title, " + 
+            "CASE WHEN lower(process_type) = 'pre' THEN 'Pre Process' ELSE 'Post Process' END as type " + 
             "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS_EXE_PROCESS P, " + TDMDB_SCHEMA + ".TASKS T " +
             "WHERE t.task_id = l.task_id AND p.task_id = l.task_id AND p.process_id = l.process_id AND T.task_id = " + taskID + 
             " AND l.task_execution_id = " + executionIdWhere + " AND lu_id = 0";
@@ -3167,7 +3200,7 @@ public class Logic extends WebServiceUserCode {
                         env_name = "" + sourceEnvMap.get("environment_name");
 
                         //check if source env satisfies all relevant cases
-                        if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap,null).isEmpty()) {
+                        if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap,null,0L).isEmpty()) {
                             Map<String, Object> envData = new HashMap<>();
                             envData.put("environment_id", env_id);
                             envData.put("environment_name", env_name);
@@ -3186,7 +3219,7 @@ public class Logic extends WebServiceUserCode {
                         env_name = "" + targetEnvMap.get("environment_name");
                         int noOfEntities = -1;
                         //check if target env satisfies all relevant cases
-                        if (fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, reserve_ind, noOfEntities, targetEnvMap, clone_ind,sync_mode,null).isEmpty()) {
+                        if (fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, reserve_ind, noOfEntities, targetEnvMap, clone_ind,sync_mode,null,0L).isEmpty()) {
                             Map<String, Object> envData = new HashMap<>();
                             envData.put("environment_id", env_id);
                             envData.put("environment_name", env_name);

@@ -1,0 +1,124 @@
+tags: Upgrade
+stages:
+  Get Mtable:
+    actors:
+      MTableLookup:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: null
+            external: mtable
+        out:
+          result:
+            schema: '#ref'
+      MapCreate:
+        parent: MapCreate
+        in:
+          description:
+            const: ''
+            schema: string
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+  Add Description:
+    actors:
+      MapMerge:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: MTableLookup/result
+              iterate: Iterate
+              pos: 0
+            - path: MapCreate/map
+              pos: 1
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+  Build Data:
+    last: 1
+    actors:
+      ArrayBuilder:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: MapMerge/map
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  'Convert to CSV ':
+    actors:
+      CsvBuilder:
+        parent: CsvBuilder
+        in:
+          columns:
+            const: null
+            external: columns
+          maps:
+            link: ArrayBuilder/array
+  Write To File:
+    actors:
+      FileWrite:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          stream:
+            link: CsvBuilder/csv
+          path:
+            external: path
+      MTableLoad:
+        parent: MTableLoad
+        in:
+          mtable:
+            const: LuParams
+          columns:
+            const: null
+            external: columns
+          data:
+            link: ArrayBuilder/array
+schemas:
+  MTableLookup.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        column_name:
+          type: string
+        sql:
+          type: string
+  MapCreate.out.map:
+    type: object
+    properties:
+      description:
+        type: string
+  MapMerge.out.map:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      column_name:
+        type: string
+      sql:
+        type: string
+      description:
+        type: string
+  ArrayBuilder.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        column_name:
+          type: string
+        sql:
+          type: string
+        description:
+          type: string

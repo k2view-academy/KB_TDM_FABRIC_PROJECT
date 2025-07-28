@@ -408,11 +408,8 @@
                                         "const": "{{{SOURCE_TABLE}}}"
                                     },
                                     {
-                                        "name": "ttl",
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false
+                                        "name": "TTL",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -731,7 +728,7 @@
             },
             "rightPort": {
                 "actor": "Catalog Masking Mapper",
-                "name": "ttl"
+                "name": "TTL"
             }
         },
         {

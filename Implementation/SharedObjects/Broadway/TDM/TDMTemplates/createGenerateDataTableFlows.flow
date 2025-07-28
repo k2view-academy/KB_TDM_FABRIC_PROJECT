@@ -123,7 +123,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: Get List Of Tables/res/luTable
@@ -140,24 +139,40 @@ stages:
             external: SOURCE_INTERFACE
             schema: string
             editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
+              id: com.k2view.mTableKey
             mandatory: false
           sourceSchema:
             external: SOURCE_SCHEMA
             schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false
           sourceTable:
             link:
               path: Get List Of Tables/res/sourceTable
               iterate: Iterate
             schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false
           params:
             schema: '#ref'
             editor:
               id: com.k2view.strings
+            mandatory: false
+          DOCUMENT_IND:
+            external: DOCUMENT_IND
+            schema: boolean
+            mandatory: false
+          mainTableName:
+            external: ROOT_TABLE_NAME
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
             mandatory: false
   Create New Flow:
     last: 1
@@ -183,7 +198,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: Get List Of Tables/res/luTable
@@ -200,24 +214,40 @@ stages:
             external: SOURCE_INTERFACE
             schema: string
             editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
+              id: com.k2view.mTableKey
             mandatory: false
           sourceSchema:
             external: SOURCE_SCHEMA
             schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false
           sourceTable:
             link:
               path: Get List Of Tables/res/sourceTable
               iterate: Iterate
             schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false
           params:
             schema: '#ref'
             editor:
               id: com.k2view.strings
+            mandatory: false
+          DOCUMENT_IND:
+            external: DOCUMENT_IND
+            schema: boolean
+            mandatory: false
+          mainTableName:
+            external: ROOT_TABLE_NAME
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
             mandatory: false
     split: '--------------------'
   Flow Already Exists:

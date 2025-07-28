@@ -188,5 +188,6 @@ WHERE
     AND ts.task_id               = tt.task_id
     AND ts.task_id = ep.task_id AND tt.process_id = ep.process_id
     AND (ep.process_type = 'pre' OR (ep.process_type = 'post' AND
-        NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST tt2 WHERE tt2.task_execution_id = tt.task_execution_id 
-        AND tt2.process_id != ep.process_id and upper(execution_status) in ('PENDING', 'RUNNING') )))
+        NOT EXISTS  (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST tt2 inner join ${@TDMDB_SCHEMA}.tasks_exe_process ep2 ON ep2.process_id = tt2.process_id 
+        AND ep2.task_id = tt2.task_id  WHERE tt2.task_execution_id = tt.task_execution_id
+        AND tt2.process_id != ep.process_id and ep2.process_type='pre' and upper(execution_status) in ('PENDING', 'RUNNING') )))

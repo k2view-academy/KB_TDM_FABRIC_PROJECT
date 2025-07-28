@@ -1,0 +1,134 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Template For Main table Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: load_all_tables_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 2:
+    dependsOn: Stage 1
+    actors:
+      Tempate Found?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Template For Main table Population/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Create Load Table Flows From Template:
+        parent: createLoadTableFlows
+        in:
+          LU_NAME:
+            external: LU_NAME
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+          useFabric:
+            const: true
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+    split: '--------------------'
+  Stage 3:
+    else: true
+    dependsOn: Stage 1
+    actors:
+      Create Load Flow For One Data Set:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateLoadFlowForOneDataSet
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          sourceTable:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          targetDbInterface:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+          targetDbSchema:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          targetDbTable:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          sourceDBIneterface:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+          sourceDBSchema:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          rootFieldName:
+            external: ROOT_FIELD_NAME
+            schema: string
+            mandatory: false
+  Stage 4:
+    dependsOn: Stage 2
+    actors:
+      Create Load All Tables Flow From Template:
+        parent: createLoadAllTablesFlow
+        in:
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+    split: '--------------------'
+  Stage 5:
+    dependsOn: Stage 3

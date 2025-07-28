@@ -2,12 +2,11 @@ stages:
   Initiation:
     actors:
       Get Source Environment:
-        parent: getLUVariable_Actor
+        parent: FabricSetRead
         in:
-          luName:
-            const: TDM_TableLevel
-          variableName:
+          key:
             const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
       Task with BE:
         parent: Not
         in:
@@ -21,14 +20,6 @@ stages:
         out:
           schema:
             schema: string
-      Get Target Environment:
-        parent: getLUVariable_Actor
-        height: 189
-        in:
-          luName:
-            const: TDM_TableLevel
-          variableName:
-            const: TDM_TAR_ENV_NAME
   Get List of Tables:
     transactional: false
     actors:
@@ -143,10 +134,6 @@ stages:
           tableList:
             link: Get List of Tables of Task/result/tableSet
             schema: '#ref'
-            mandatory: false
-          environmentName:
-            link: Get Target Environment/variableValue
-            schema: string
             mandatory: false
         out:
           result:
@@ -345,7 +332,7 @@ stages:
           flowName:
             const: BuildIID
           sourceEnv:
-            link: Get Source Environment/variableValue
+            link: Get Source Environment/result
             schema: string
             mandatory: false
           tableName:
@@ -366,7 +353,7 @@ stages:
             mandatory: false
           schemaName:
             link:
-              path: Get List of Tables of Task/result/schemaName
+              path: Get List of Tables of Task/result/taskSchemaName
               iterate: Iterate
             schema: string
             mandatory: false
@@ -424,14 +411,6 @@ stages:
           b:
             const: 0
             schema: integer
-      Build Instance List:
-        parent: StringBuild
-        height: 199
-        in:
-          input:
-            link:
-              path: Build IIDs/iid
-              pos: 0
       Build Table List:
         parent: StringBuild
         in:
@@ -439,6 +418,14 @@ stages:
             link:
               path: Get Tables by Order For Handling1/result
               iterate: Iterate
+              pos: 0
+      Build Instance List:
+        parent: StringBuild
+        height: 199
+        in:
+          input:
+            link:
+              path: Build IIDs/iid
               pos: 0
   Create Batch Command:
     transactional: false
@@ -496,7 +483,7 @@ stages:
             const: fabric
           sql:
             const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
-              WITH ASYNC='true';
+              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
           command:
             link: Broadway Command/string
             schema: string
@@ -504,6 +491,10 @@ stages:
           instanceList:
             link: Build Instance List/string
             schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
             mandatory: false
         out:
           result:
@@ -558,7 +549,7 @@ stages:
             mandatory: false
           schemaName:
             link:
-              path: Get List of Tables of Task/result/schemaName
+              path: Get List of Tables of Task/result/taskSchemaName
               iterate: Iterate
             schema: string
             mandatory: false
@@ -598,18 +589,20 @@ schemas:
         targetTableMap:
           type: object
           properties:
-            contract_offer_mapping:
+            addresses:
               type: string
         lu_name:
           type: string
+        taskSchemaName:
+          type: string
         interfaceName:
           type: string
-        schemaName:
-          type: string
+        schemaName: {
+          }
         targetInterfaceName:
           type: string
-        targetSchemaName:
-          type: string
+        targetSchemaName: {
+          }
   Get Order Of Tables.in.tableList:
     type: array
     items:

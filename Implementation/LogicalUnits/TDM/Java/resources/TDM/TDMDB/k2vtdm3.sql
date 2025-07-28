@@ -360,7 +360,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_seq_mapping
   source_id       text,
   target_id       text,
   is_instance_id  text,
-  entity_sequence bigint
+  entity_sequence bigint,
+   CONSTRAINT tdm_seq_mapping_pkey PRIMARY KEY (task_execution_id,lu_type,source_env,entity_target_id,seq_name,table_name,source_id)
 );
 
 Create INDEX IF NOT EXISTS TDM_SEQ_MAPPING_IX on ${@schema}.tdm_seq_mapping (task_execution_id,lu_type,source_env);
@@ -396,6 +397,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
   root_lu_name text, -- TDM 8.1
   root_entity_id text, -- TDM 8.0
   root_target_entity_id text, -- TDM 9.3
+  execution_note text, -- TDM 9.4
   CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, clone_no, root_entity_id, root_target_entity_id)
 );
 
@@ -482,7 +484,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '9.3.1' 
+    select 'TDM_VERSION', '9.4.0' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -671,6 +673,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks_exe_process (
 	execution_order integer NOT NULL,
     process_type TEXT,
     parameters TEXT,
+    status text DEFAULT 'Active',
 	CONSTRAINT tasks_exe_pkey PRIMARY KEY (task_id, process_id)
 );
 

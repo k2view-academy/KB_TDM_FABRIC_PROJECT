@@ -8,6 +8,9 @@ stages:
           task_execution_id:
             external: task_execution_id
             schema: any
+        out:
+          parent_rows:
+            schema: '#ref'
       SyncDeleteMode:
         parent: SyncDeleteMode
         in:
@@ -62,20 +65,28 @@ stages:
         in:
           date:
             link: Now1/date
-  Stage 1:
+  Set Result:
     actors:
       Set the match result:
-        parent: IfElse
-        height: 306
+        parent: JavaScript
         in:
-          a:
-            const: Mismatch
-            schema: string
-          b:
-            const: OK
-            schema: string
-          test:
+          script:
+            const: |-
+              var result = "OK";
+              if (diff > 0 && suppressedErrorCount == 0) {
+                  result = "Mismatch";
+              } else if (suppressedErrorCount > 0) {
+                   result = "FAIL";
+              }
+              result;
+          diff:
             link: Query/result/diff
+            schema: integer
+            mandatory: false
+          suppressedErrorCount:
+            link: Query/result/suppressed_error_count
+            schema: integer
+            mandatory: false
         out:
           result:
             schema: string
@@ -137,6 +148,13 @@ stages:
   Post Load: {
     }
 schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string
   Query.out.result:
     type: array
     items:
@@ -151,4 +169,6 @@ schemas:
         source_count:
           type: integer
         diff:
+          type: integer
+        suppressed_error_count:
           type: integer

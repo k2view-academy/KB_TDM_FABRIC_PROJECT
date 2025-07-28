@@ -393,7 +393,7 @@ stages:
             external: sourceInterface
           schema:
             const: null
-            external: sourceSchema
+            external: catalogSchema
           dataset:
             const: null
             external: tableName

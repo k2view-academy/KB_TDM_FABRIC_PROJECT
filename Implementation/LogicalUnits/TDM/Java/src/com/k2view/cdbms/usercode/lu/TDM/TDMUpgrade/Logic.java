@@ -12,9 +12,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -175,7 +177,7 @@ public class Logic extends UserCode {
     public static void removeRelationTables(String SchemaLocation) throws Exception {
         
         String inputFile = SchemaLocation + "/vdb.k2vdb.xml";
-        String outputFile = SchemaLocation + "/vdb.k2vdb.xml";
+        String outputFile = SchemaLocation + "/vdb.k2vdb2.xml";
 
         BufferedReader reader = new BufferedReader(new FileReader(inputFile));
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
@@ -204,7 +206,7 @@ public class Logic extends UserCode {
         writer.close();
 
         StringBuffer tdmBuffer = new StringBuffer();
-        Scanner schemaFile = new Scanner(new File(SchemaLocation + "/vdb.k2vdb.xml"));
+        Scanner schemaFile = new Scanner(new File(SchemaLocation + "/vdb.k2vdb2.xml"));
         while (schemaFile.hasNextLine()) {
             tdmBuffer.append(schemaFile.nextLine() + "\n");
         }
@@ -216,9 +218,203 @@ public class Logic extends UserCode {
         newSchema = newSchema.replaceAll("<Node name=\"TDM_LU_TYPE_RELATION_EID\".*? viewType=\"Table\" />","");
         newSchema = newSchema.replaceAll("<Node name=\"TDM_LU_TYPE_REL_TAR_EID\".*? viewType=\"Table\" />","");
 
-        FileWriter fwTdm = new FileWriter(SchemaLocation + "/vdb.k2vdb4.xml", false);
+        FileWriter fwTdm = new FileWriter(SchemaLocation + "/vdb.k2vdb.xml", false);
         fwTdm.write(newSchema);
         fwTdm.close();
 
+    }
+
+    private static class FileContent {
+        Map<String, String> fields;
+        Set<String> imports;
+        List<String> headerLines;
+
+        public FileContent() {
+            this.fields = new LinkedHashMap<>();
+            this.imports = new TreeSet<>(); // TreeSet for unique, sorted imports
+            this.headerLines = new ArrayList<>(); // ArrayList to maintain order of header lines
+        }
+
+        public Map<String, String> getFields() {
+            return fields;
+        }
+
+        public Set<String> getImports() {
+            return imports;
+        }
+
+        public List<String> getHeaderLines() {
+            return headerLines;
+        }
+
+        public void addImport(String importStatement) {
+            this.imports.add(importStatement);
+        }
+
+    }
+
+    public static void mergeJavaFiles(String oldFilePath, String newFilePath, String outputFilePath, String className,
+            List<String> ignoreFieldsArray) {
+        Set<String> ignoreFields = new HashSet<>(ignoreFieldsArray);
+        // Read content (header, fields, and imports) from both files
+        FileContent oldFileContent = readFileAndExtractContent(oldFilePath);
+        FileContent newFileContent = readFileAndExtractContent(newFilePath);
+
+        // --- Merge Imports ---
+        Set<String> mergedImports = new TreeSet<>();
+        mergedImports.addAll(oldFileContent.getImports());
+        mergedImports.addAll(newFileContent.getImports());
+
+        // --- Merge Fields ---
+        Map<String, String> mergedFields = new LinkedHashMap<>();
+        // 1. Add all fields from the old file content. This sets the base order and
+        // initial values.
+        mergedFields.putAll(oldFileContent.getFields()); // CHANGED: Populate with old fields first
+
+        // 2. Iterate through new fields and add only those that are truly new (not in
+        // old file).
+        // Existing fields in newFileContent will be ignored here, preserving old values
+        // and positions.
+        for (Map.Entry<String, String> newFieldEntry : newFileContent.getFields().entrySet()) { // CHANGED: Iteration
+                                                                                                // logic
+            String newFieldName = newFieldEntry.getKey();
+            String newFieldDeclaration = newFieldEntry.getValue();
+
+            // If the field name does NOT exist in the old fields (i.e., in mergedFields),
+            // add it.
+            if (!mergedFields.containsKey(newFieldName)) { // CHANGED: Conditional add
+                mergedFields.put(newFieldName, newFieldDeclaration); // Added to the end
+            }
+            // If it DOES exist, we do nothing. The old field's value and position are
+            // preserved.
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+            // 1. Write top-level header lines (comments, package declaration) from the old
+            // file
+            for (String headerLine : oldFileContent.getHeaderLines()) {
+                writer.write(headerLine + "\n");
+            }           
+
+            // 2. Write merged import statements
+            for (String importStmt : mergedImports) {
+                writer.write(importStmt + "\n");
+            }
+            writer.write("\n"); // Add a blank line after imports for readability
+
+            // 3. Write the class declaration
+            writer.write("public class " + className + " {\n\n");
+
+            // 4. Write all merged fields, excluding ignored ones
+            for (String fieldName : mergedFields.keySet()) {
+                if (!ignoreFields.contains(fieldName)) {
+                    writer.write("    " + mergedFields.get(fieldName) + "\n");
+                    writer.write("\n");
+                }
+            }
+
+            writer.write("\n}\n"); // Close the class declaration
+
+            log.info("Successfully merged fields into: " + outputFilePath);
+
+        } catch (IOException e) {
+            log.error("Error writing to output file: " + e.getMessage());
+        }
+    }
+
+    private static FileContent readFileAndExtractContent(String filePath) {
+        FileContent fileContent = new FileContent();
+        StringBuilder classBodyContent = new StringBuilder();
+        boolean inHeader = true; // NEW: Flag for the header parsing phase
+        boolean inClassScope = false;
+        int braceCount = 0;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String trimmedLine = line.trim();
+
+                // Phase 1: Capture Header Lines (comments, package declaration, etc.)
+                if (inHeader) {
+                    if (trimmedLine.startsWith("import ") || trimmedLine.startsWith("public class")
+                            || trimmedLine.startsWith("class ")) {
+                        inHeader = false; // Transition out of header phase, process this line in next phase
+                        // Fall through to the next conditions to process this line as an import or
+                        // class declaration
+                    } else {
+                        fileContent.headerLines.add(line); // Add the line as a header line
+                        continue; // Move to the next line in the file
+                    }
+                }
+
+                // Phase 2: Capture Import Statements (if not yet in class scope)
+                if (!inClassScope) {
+                    if (trimmedLine.startsWith("import ")) {
+                        fileContent.addImport(trimmedLine);
+                        continue; // Move to the next line in the file
+                    }
+                    // Detect the start of the class declaration
+                    else if (trimmedLine.startsWith("public class") || trimmedLine.startsWith("class ")) {
+                        inClassScope = true; // Transition into class scope
+                        // Count braces on the class declaration line itself
+                        for (char c : trimmedLine.toCharArray()) {
+                            if (c == '{')
+                                braceCount++;
+                            if (c == '}')
+                                braceCount--;
+                        }
+                        continue; // Skip adding the class declaration line itself to classBodyContent
+                    }
+                }
+
+                // Phase 3: Capture Class Body Content (for field extraction)
+                if (inClassScope) {
+                    // Update brace count for the current line
+                    for (char c : trimmedLine.toCharArray()) {
+                        if (c == '{')
+                            braceCount++;
+                        if (c == '}')
+                            braceCount--;
+                    }
+
+                    // If braceCount is 0 AND we've just encountered a closing brace, it's the end
+                    // of the main class.
+                    if (braceCount == 0 && trimmedLine.equals("}")) {
+                        inClassScope = false; // Exit class scope
+                        break; // Stop reading this file, as we're done with the main class body
+                    }
+                    // Append lines that are part of the class body (not the declaration or its
+                    // final closing brace)
+                    classBodyContent.append(line).append("\n");
+                }
+            }
+            // Parse the collected class body content for field declarations
+            fileContent.fields = extractFieldsFromString(classBodyContent.toString());
+        } catch (IOException e) {
+            log.error("Error reading file: " + filePath + " - " + e.getMessage());
+        }
+        return fileContent;
+    }
+
+    private static Map<String, String> extractFieldsFromString(String content) {
+        Map<String, String> fields = new LinkedHashMap<>();
+        Pattern pattern = Pattern.compile(
+                "((?:\\s*@\\w+\\s*\\(.*?\\)\\s*)*" + // Optional annotations (Group 1 part 1)
+                        "\\s*(?:public|protected|private)?(?:\\s+static)?(?:\\s+final)?\\s+" + // Modifiers
+                        "([\\w\\[\\].<>?]+)\\s+" + // Type (Group 2)
+                        "(\\w+)\\s*" + // Field Name (Group 3)
+                        "(?:=\\s*[^;]*)?" + // Optional initialization (non-greedy, stops at ';')
+                        ";)", // Must end with a semicolon (Group 1 part 2)
+                Pattern.DOTALL);
+
+        Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            String fullDeclarationWithAnnotations = matcher.group(1).trim();
+            String fieldName = matcher.group(3);
+
+            fields.put(fieldName, fullDeclarationWithAnnotations);
+        }
+        return fields;
     }
 }

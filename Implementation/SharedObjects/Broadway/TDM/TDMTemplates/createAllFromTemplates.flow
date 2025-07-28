@@ -49,6 +49,10 @@ stages:
             external: TARGET_ENVIRONMENT
             schema: string
             mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
     split: '--------------------'
   Do Not Create Delete Tables:
     else: true
@@ -146,4 +150,14 @@ stages:
             external: useFabric
             schema: boolean
             default: true
+            mandatory: false
+          DOCUMENT_IND:
+            external: DOCUMENT_IND
+            schema: boolean
+            mandatory: false
+          ROOT_TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false

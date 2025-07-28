@@ -2,14 +2,6 @@ tags: TDM
 stages:
   Get Project Directory and Create Template Inputs:
     actors:
-      Get Project Directory:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: GetProjectFolder
-        out:
-          PROJECT_FOLDER:
-            schema: string
       Create Template Inputs:
         parent: InnerFlow
         in:
@@ -43,19 +35,53 @@ stages:
             editor:
               id: com.k2view.mTableKey
             mandatory: false
+          DOCUMENT_IND:
+            external: DOCUMENT_IND
+            schema: boolean
+            mandatory: false
+          mainTableName:
+            external: mainTableName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema:
+            external: sourceSchema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
         out:
           tableDefaultMapping:
             schema: '#ref'
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Get Template For Main table Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: role_base_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   Get Template for Generators:
     actors:
-      Read Template of Generators:
-        parent: FileRead
-        in:
-          interface:
-            const: null
-            link: Get Project Directory/PROJECT_FOLDER
-          path:
-            const: SharedObjects/Templates/TDM/tdmCreateGenerateDataPop.pop.flow.template
       Set Indicator For Generate Flow:
         parent: FabricSet
         in:
@@ -64,6 +90,15 @@ stages:
             default: false
           value:
             const: 'true'
+            default: false
+      Read Template of Generators:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            link: Get Template For Main table Population/result
       Read Template of Default Generators:
         parent: FileRead
         height: 189

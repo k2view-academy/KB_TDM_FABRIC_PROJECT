@@ -1,0 +1,47 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Stage 2:
+    actors:
+      Templates Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/Implementation/SharedObjects/Templates/TDM/TDMOrchestrator.doc.flow.template
+          projectDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+      LU New Orchestrator:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/Implementation/LogicalUnits/${LU_NAME}/Broadway/TDMOrchestrator.flow
+          projectDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+  Stage 3:
+    actors:
+      Copy Orchestrator:
+        parent: cp
+        in:
+          interface:
+            const: file://
+          from:
+            link: Templates Folder/string
+          to:
+            link: LU New Orchestrator/string

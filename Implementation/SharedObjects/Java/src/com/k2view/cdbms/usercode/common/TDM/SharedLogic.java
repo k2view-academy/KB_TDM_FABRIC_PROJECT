@@ -28,7 +28,6 @@ import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.DecisionFunction;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.RootFunction;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_BATCH_LIMIT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_TASK_ID;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 
@@ -318,26 +317,28 @@ public class SharedLogic {
 	}
     
     public static Map<String,Map<String,Object>> fnUpdateDistinctFieldData(String columnName,String columnType, Map<String,Map<String,Object>> distinctTable,
-																		   HashSet<String> newValuesSet) {
-		Long maxNumOfValues = Long.parseLong(getGlobal("COMBO_MAX_COUNT", "TDM"));
-        Map<String, Object> currFieldData = new HashMap<>();
-		if (distinctTable.containsKey("\"" + columnName + "\"")) {
+																				   HashSet<String> newValuesSet) {
+		long maxNumOfValues = Long.parseLong(getGlobal("COMBO_MAX_COUNT", "TDM"));
+		String quotedColumn = "\"" + columnName + "\"";
+		boolean exsitingField = distinctTable.containsKey(quotedColumn);
+		Map<String, Object> currFieldData = exsitingField ? distinctTable.get(quotedColumn) : new HashMap<>();
+		if (exsitingField) {
 			//log.info("fnUpdateDistinctFieldData - Found: " + columnName);
-			currFieldData = distinctTable.get("\"" + columnName + "\"");
-			if (Long.parseLong(currFieldData.get("numberOfValues").toString()) <= maxNumOfValues) {
-				HashSet <String> curreValues = (HashSet <String>)currFieldData.get("fieldValues");
-				if (newValuesSet.size() +  curreValues.size() >= maxNumOfValues + 1) {
+			long currentCount = Long.parseLong(currFieldData.get("numberOfValues").toString());
+			if (currentCount <= maxNumOfValues) {
+				HashSet<String> curreValues = (HashSet<String>) currFieldData.get("fieldValues");
+				// Symmetric difference newValuesSet - curreValues keep only the new potential values 
+				HashSet<String> addedValues = new HashSet<>(newValuesSet);
+				addedValues.removeAll(curreValues);
+				int newNumberOfValues = curreValues.size() + addedValues.size();
+				if (newNumberOfValues > maxNumOfValues) {
 					currFieldData.put("numberOfValues", maxNumOfValues + 1);
 					currFieldData.put("fieldValues", new HashSet<String>());
-				} else {
-					if (newValuesSet != null && newValuesSet.size() > 0) {
-						curreValues.addAll(newValuesSet);
-					}
-
+				} else if (!addedValues.isEmpty()) {
+					curreValues.addAll(addedValues);
 					currFieldData.put("numberOfValues", curreValues.size());
 					currFieldData.put("fieldValues", curreValues);
 				}
-
 			}
 
 			if(Boolean.parseBoolean(currFieldData.get("isNumeric").toString())) {
@@ -514,7 +515,7 @@ public class SharedLogic {
 
 			//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table
 			String DELETE_TAR_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
-			String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
+			String targetEnv = "" + ludb().fetch("SET TDM_TAR_ENV_NAME").firstValue();
 
 			Map<String,Object> childLuInputs = new HashMap<>();
 			childLuInputs.put("parent_lu",parentLU);
@@ -1066,8 +1067,7 @@ public class SharedLogic {
 	@type(DecisionFunction)
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionInsertToTarget() throws Exception {
-		String luName = getLuType().luName;
-		if(("" + ludb().fetch("SET " + luName + ".TDM_INSERT_TO_TARGET").firstValue()).equals("true"))
+		if(("" + ludb().fetch("SET TDM_INSERT_TO_TARGET").firstValue()).equals("true"))
 		{
 			return true;
 		}
@@ -1080,8 +1080,7 @@ public class SharedLogic {
 	@type(DecisionFunction)
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionDeleteFromTarget() throws Exception {
-		String luName = getLuType().luName;
-		if(("" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
+		if(("" + ludb().fetch("SET TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
 		{
 			return true;
 		}
@@ -1122,7 +1121,7 @@ public class SharedLogic {
 		// Fix- TDM 7.0.1 - Check the main source LU tables only if the TDM_INSERT_TO_TARGET is true
 		String luName = getLuType().luName;
 
-		if (("" + ludb().fetch("SET " + luName + ".TDM_INSERT_TO_TARGET").firstValue()).equals("true")) {
+		if (("" + ludb().fetch("SET TDM_INSERT_TO_TARGET").firstValue()).equals("true")) {
 
 			// Get the list of root tables from the Global
 			String[] rootTables = ("" + ludb().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue()).split(",");
@@ -1159,8 +1158,6 @@ public class SharedLogic {
 					try {
 						//log.info("setGlobals - setting "+key+"='"+value+ "'");
 						fabric().execute("set " + key + "='" + value + "'");
-						// TDM 7.1 - Handle Masking and Sequence Broadway Actors flags
-						//setBroadwayActorFlags("" + key, "" + value);
 					} catch (SQLException e) {
                         log.error("Failed to set Globals due to: " + e.getMessage());
 						e.printStackTrace();

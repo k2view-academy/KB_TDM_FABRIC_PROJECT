@@ -24,8 +24,6 @@ stages:
         in:
           key:
             const: TDM_TASK_EXE_ID
-      Get Start Time:
-        parent: Now
       trainingIncludedTables1:
         parent: InnerFlow
         in:
@@ -38,8 +36,15 @@ stages:
         out:
           tables:
             schema: string
+      Get Start Time:
+        parent: Now
   'Remote IID ':
     actors:
+      Format Start Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Start Time/date
       Target IID:
         parent: StringFormat
         in:
@@ -53,11 +58,6 @@ stages:
             link: TDM_TASK_EXE_ID/result
             schema: string
             mandatory: false
-      Format Start Time:
-        parent: DateFormat
-        in:
-          date:
-            link: Get Start Time/date
   Set Globals:
     actors:
       Set Start Processing Time:
@@ -100,7 +100,7 @@ stages:
             const: fabric
           sql:
             const: MDB_EXPORT ${luName}.${IID} WITH INTERFACE_NAME=${Interfacename}
-              EXCLUDED_TABLES=${excludedTables} FK='true' REMOTE_IID=${remoteIID}
+              EXCLUDED_TABLES=${excludedTables} FK='true' PHYSICAL_FK='true' REMOTE_IID=${remoteIID}
           luName:
             external: luName
             schema: string
@@ -147,7 +147,7 @@ stages:
           sql:
             const: MDB_EXPORT ${luName}.${IID} WITH INTERFACE_NAME=${Interfacename}
               INCLUDED_TABLES=${includedTables} EXCLUDED_TABLES=${excludedTables}
-              FK='true' REMOTE_IID=${remoteIID}
+              FK='true' PHYSICAL_FK='true' REMOTE_IID=${remoteIID}
           luName:
             external: luName
             schema: string

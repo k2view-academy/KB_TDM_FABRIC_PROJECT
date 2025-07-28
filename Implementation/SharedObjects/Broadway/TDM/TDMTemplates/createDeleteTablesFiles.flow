@@ -2,14 +2,6 @@ tags: TDM
 stages:
   Get Project Directory and Create Template Inputs:
     actors:
-      Get Project Directory:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: GetProjectFolder
-        out:
-          PROJECT_FOLDER:
-            schema: string
       Create Template Inputs:
         parent: InnerFlow
         in:
@@ -40,6 +32,32 @@ stages:
         out:
           tableDefaultMapping:
             schema: '#ref'
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Get Template:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: delete_table_population_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   Get Template for Generators:
     actors:
       Read Template of Table XML:
@@ -57,7 +75,7 @@ stages:
             const: null
             link: Get Project Directory/PROJECT_FOLDER
           path:
-            const: SharedObjects/Templates/TDM/deleteTablePopulation.flow.template
+            link: Get Template/result
   Create Flow:
     actors:
       flow folder:
@@ -123,6 +141,16 @@ stages:
     remark: Only Populations based on Broadway Flows will have equivalent Generator
       flow
     actors:
+      Write Table Population to Folder:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: flow folder/string
+          path:
+            link: Format Table Population Name/string
+          stream:
+            link: Apply Template For Table Population/result
       Write Table XML to Folder:
         parent: FileWrite
         height: 215
@@ -134,16 +162,6 @@ stages:
             link: Format Table XML Name/string
           stream:
             link: Apply Template For Table XML/result
-      Write Table Population to Folder:
-        parent: FileWrite
-        in:
-          interface:
-            const: null
-            link: flow folder/string
-          path:
-            link: Format Table Population Name/string
-          stream:
-            link: Apply Template For Table Population/result
 schemas:
   Create Template Inputs.out.tableDefaultMapping:
     type: object
@@ -160,6 +178,8 @@ schemas:
             datatype:
               type: string
             name:
+              type: string
+            upperName:
               type: string
       PARENT_TABLE_DATA:
         type: array

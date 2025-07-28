@@ -12,12 +12,11 @@ stages:
   Initiation:
     actors:
       Get Source Environment:
-        parent: getLUVariable_Actor
+        parent: FabricSetRead
         in:
-          luName:
-            const: TDM_TableLevel
-          variableName:
+          key:
             const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
       Build Select Statement:
         parent: StringFormat
         in:
@@ -104,7 +103,7 @@ stages:
           flowName:
             const: BuildIID
           sourceEnv:
-            link: Get Source Environment/variableValue
+            link: Get Source Environment/result
             schema: string
             mandatory: false
           tableName:
@@ -136,14 +135,6 @@ stages:
     last: 1
     transactional: false
     actors:
-      Build Instance List:
-        parent: StringBuild
-        height: 199
-        in:
-          input:
-            link:
-              path: Build IIDs/iid
-              pos: 0
       Build Table List:
         parent: StringBuild
         in:
@@ -151,6 +142,14 @@ stages:
             link:
               path: Get Tables List/result/table_name
               iterate: Iterate
+              pos: 0
+      Build Instance List:
+        parent: StringBuild
+        height: 199
+        in:
+          input:
+            link:
+              path: Build IIDs/iid
               pos: 0
   Create Batch Command:
     transactional: false
@@ -196,7 +195,7 @@ stages:
             const: fabric
           sql:
             const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
-              WITH ASYNC='true';
+              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
           command:
             link: Broadway Command/string
             schema: string
@@ -204,6 +203,10 @@ stages:
           instanceList:
             link: Build Instance List/string
             schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
             mandatory: false
         out:
           result:

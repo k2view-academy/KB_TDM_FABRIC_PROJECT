@@ -1,0 +1,10 @@
+template_type,template_name
+orchestrator_template,TDMOrchestrator.flow.template
+main_table_population_template,populationRootTable.pop.flow.template
+load_all_tables_template,tdmLoadAllTables.flow.template
+load_template,tdmLoadTable.flow.template
+delete_all_tables_template,tdmDeleteAllTables.flow.template
+delete_template,tdmDeleteTable.flow.template
+role_base_template,tdmCreateGenerateDataPop.pop.flow.template
+sequence_table_template,table_sequences.flow.template
+delete_table_population_template,deleteTablePopulation.flow.template

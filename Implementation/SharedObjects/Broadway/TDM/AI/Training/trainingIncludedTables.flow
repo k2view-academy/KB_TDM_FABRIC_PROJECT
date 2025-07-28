@@ -8,6 +8,9 @@ stages:
           value:
             const: null
             external: luName
+        out:
+          value:
+            schema: string
   Check For Excluded Columns:
     actors:
       AITableFieldsInclusion:

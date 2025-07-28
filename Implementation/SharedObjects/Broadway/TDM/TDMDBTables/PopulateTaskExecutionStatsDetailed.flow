@@ -8,7 +8,7 @@ stages:
           interface:
             const: fabric
           sql:
-            const: select * from ${@luName}._k2_objects_info
+            const: select distinct table_name from ${@luName}._k2_objects_info
           luName:
             external: luName
             schema: string
@@ -63,14 +63,34 @@ stages:
             link: Table Name/string
           luName:
             external: luName
-  Load Into Stats Detailed:
+  Count records:
     actors:
-      'NotNull ':
+      NotNull:
         parent: NotNull
         condition: result
         in:
           value:
             link: filterOutTDMTables /tableNameOut
+      select count:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: select count(*) from ${@luName}.${@tableName}
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          tableName:
+            link: filterOutTDMTables /tableNameOut
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Load Into Stats Detailed:
+    actors:
       DbLoad task_exe_stats_detailed:
         parent: DbLoad
         in:
@@ -133,15 +153,11 @@ stages:
             schema: string
             mandatory: false
           source_count:
-            link:
-              path: luName k2_objects_info/result/number_of_records
-              iterate: Iterate
+            link: select count/result
             schema: integer
             mandatory: false
           target_count:
-            link:
-              path: luName k2_objects_info/result/number_of_records
-              iterate: Iterate
+            link: select count/result
             schema: integer
             mandatory: false
           diff:
@@ -163,28 +179,4 @@ schemas:
       type: object
       properties:
         table_name:
-          type: string
-        object_name:
-          type: string
-        type:
-          type: string
-        verified_time:
-          type: integer
-        start_sync_time:
-          type: integer
-        end_sync_time:
-          type: integer
-        start_write_time:
-          type: integer
-        last_write_time:
-          type: integer
-        number_of_records:
-          type: integer
-        time_to_populate_in_sec:
-          type: number
-        next_time_to_populate_object:
-          type: integer
-        version:
-          type: integer
-        sync_error:
           type: string

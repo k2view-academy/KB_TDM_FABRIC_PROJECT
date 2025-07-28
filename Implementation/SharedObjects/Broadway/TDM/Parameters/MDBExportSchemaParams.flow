@@ -77,7 +77,7 @@ stages:
             const: fabric
           sql:
             const: MDB_EXPORT ${luName} WITH INTERFACE_NAME=${interfaceName} INCLUDED_TABLES=${includedTables}
-              EXCLUDED_TABLES=${excludedTables} FK='true' PHYSICAL_FK=${physicalFk}
+              EXCLUDED_TABLES=${excludedTables} FK='true' PHYSICAL_FK='${physicalFk}'
           luName:
             external: luName
             schema: string

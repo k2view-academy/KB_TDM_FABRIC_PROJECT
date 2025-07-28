@@ -31,7 +31,7 @@ stages:
         parent: {{getSequenceActorName this}}
         in:
           tableName:
-            const: {{getTableName this}}
+            const: {{{TARGET_TABLE}}}
           columName:
             const: {{getFieldName this}}
           OriginalSeqValue:

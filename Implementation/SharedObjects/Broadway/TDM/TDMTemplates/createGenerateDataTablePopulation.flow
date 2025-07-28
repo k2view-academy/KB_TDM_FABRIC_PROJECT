@@ -81,27 +81,27 @@ stages:
             external: table
             schema: string
             mandatory: false
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
           interface:
             external: sourceInterface
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
-          schema:
-            external: sourceSchema
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
           table:
-            external: sourceTable
+            external: table
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
-          luName:
-            external: luType
+          schema:
+            external: schema
             schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false
         out:
           SEQ_FIELD_NAME:
@@ -251,6 +251,47 @@ stages:
         out:
           result:
             schema: '#ref'
+  In Case of Document DB:
+    dependsOn: Get Sequences
+    actors:
+      Document DB?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: DOCUMENT_IND
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Get Document's Main Table And Class:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableClass
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceTable:
+            external: sourceTable
+            schema: string
+            mandatory: false
+          mainTableName:
+            external: mainTableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Not A Document DB:
+    else: true
+    dependsOn: Get Sequences
   Template's Input 1:
     actors:
       LU Name:
@@ -340,6 +381,12 @@ stages:
         out:
           result:
             schema: '#ref'
+      ToString1:
+        parent: ToString
+        in:
+          value:
+            external: DOCUMENT_IND
+            schema: boolean
   Template's Input 2:
     actors:
       Sequences List:
@@ -362,6 +409,18 @@ stages:
             schema: string
           value:
             link: get Population Argument List/result
+        out:
+          map:
+            schema: '#ref'
+      Document Indicator:
+        parent: MapBuild
+        in:
+          key:
+            const: DOCUMENT_IND
+            schema: string
+          value:
+            link: ToString1/string
+            schema: string
         out:
           map:
             schema: '#ref'
@@ -388,6 +447,10 @@ stages:
               pos: 6
             - path: Population Arguments List/map
               pos: 7
+            - path: Document Indicator/map
+              pos: 8
+            - path: Get Document's Main Table And Class/result
+              pos: 9
         out:
           map:
             external: tableDefaultMapping
@@ -478,6 +541,13 @@ schemas:
         SEQUENCE_NAME:
           type: string
         FABRIC_FIELD_NAME:
+          type: string
+  Get Document's Main Table And Class.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        CATALOG_CLASS_NAME:
           type: string
   LU Name.out.map:
     type: object
@@ -626,6 +696,22 @@ schemas:
             TABLE:
               type: string
   Population Arguments List.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Document Indicator.out.map:
     type: object
     properties:
       TABLE_FIELDS:

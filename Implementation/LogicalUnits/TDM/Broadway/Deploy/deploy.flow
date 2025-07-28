@@ -120,6 +120,13 @@ stages:
         in:
           flowName:
             const: TDMDB
+  Craete Web Role:
+    actors:
+      Add Web Role:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: AddWebRole
   Create K2System If Relevant:
     actors:
       create K2system Schema:
@@ -142,18 +149,6 @@ stages:
           key:
             const: SEQ_CACHE_INTERFACE
             default: false
-      SEQ_DROP_KEYSPACE:
-        parent: FabricSetRead
-        in:
-          key:
-            const: SEQ_DROP_KEYSPACE
-            default: false
-      SEQ_DO_TRUNCATE:
-        parent: FabricSetRead
-        in:
-          key:
-            const: SEQ_DO_TRUNCATE
-            default: false
   Create k2masking if it does not exists:
     actors:
       maskingCreateCacheTable:
@@ -169,16 +164,8 @@ stages:
               interfaceType:
               - database
               - CassandraLoader
-              interfaces:
-              - fabric
-            mandatory: false
-          dropKeySpace:
-            link: SEQ_DROP_KEYSPACE/result
-            schema: boolean
-            mandatory: false
-          doTruncate:
-            link: SEQ_DO_TRUNCATE/result
-            schema: boolean
+              interfaces: [
+                ]
             mandatory: false
   End:
     actors:

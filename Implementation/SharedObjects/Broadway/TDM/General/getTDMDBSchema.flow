@@ -2,24 +2,13 @@ tags: TDM
 stages:
   Get TDMDB_SCHEMA:
     actors:
-      TDMDBSchema:
-        parent: TDMDBSchema
-        out:
-          table:
-            schema: '#ref'
+      FabricSetRead1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
   'Check value ':
     actors:
-      'Value ':
-        parent: Const
-        in:
-          value:
-            const: null
-            link:
-              path: TDMDBSchema/table/schema_value
-              iterate: First
-        out:
-          value:
-            schema: '#ref'
       SysEnv:
         parent: SysEnv
         in:
@@ -39,21 +28,7 @@ stages:
             const: null
             link: SysEnv/value
           string:
-            link: Value /value
+            link: FabricSetRead1/result
         out:
           string:
             external: schema
-schemas:
-  TDMDBSchema.out.table:
-    type: array
-    items:
-      type: object
-      properties:
-        schema_name:
-          type: string
-        schema_value:
-          type: string
-  Value .out.value:
-    type: array
-    items:
-      type: string

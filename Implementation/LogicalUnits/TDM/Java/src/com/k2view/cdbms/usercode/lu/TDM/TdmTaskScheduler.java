@@ -5,7 +5,6 @@ import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
-
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;

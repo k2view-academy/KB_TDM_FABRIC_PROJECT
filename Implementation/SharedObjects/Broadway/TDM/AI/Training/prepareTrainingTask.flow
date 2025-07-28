@@ -194,13 +194,17 @@ stages:
             const: fabric
           sql:
             const: batch ${@luName} from TDM using(?) FABRIC_COMMAND='${@command}'
-              WITH ASYNC='true';
+              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
           luName:
             link: luName/value
             schema: string
             mandatory: false
           command:
             link: Broadway Command Sync And Export/string
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
             schema: string
             mandatory: false
           params:
@@ -221,7 +225,7 @@ stages:
             const: fabric
           sql:
             const: batch ${@luName} from TDM using(?) FABRIC_COMMAND='${@command}'
-              WITH AFFINITY=${dcName} ASYNC='true';
+              WITH AFFINITY=${dcName} ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
           luName:
             link: luName/value
             schema: string
@@ -232,6 +236,10 @@ stages:
             mandatory: false
           dcName:
             link: dcName/value
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
             schema: string
             mandatory: false
           params:

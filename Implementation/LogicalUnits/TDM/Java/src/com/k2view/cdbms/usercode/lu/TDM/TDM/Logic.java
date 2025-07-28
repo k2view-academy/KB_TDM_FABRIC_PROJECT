@@ -364,16 +364,15 @@ public class Logic extends UserCode {
 								}//if (refSummaryStats != null)
 
 								//log.info("fnCheckMigrateAndUpdateTDMDB - finished updating TASK_EXECUTION_ENTITIES");
-								if(processID != null && processID != 0){
+								if(processID>0){
+									total=null;
+									copied =null ;
+									failed =null;
 									num_of_processed_ref_tables=null;
 									num_of_copied_ref_tables=null;
 									num_of_failed_ref_tables=null;
-									if(processID>0){
-										total=null;
-										copied =null ;
-										failed =null;
-									}
 								}
+
                                 if("completed".equalsIgnoreCase(status) && processID==-2 && "pre".equalsIgnoreCase(processType)){
 									Map num = fnUpdateAIProcess(taskExecutionID,"-2");
 									total= "" + num.get("total");
@@ -385,7 +384,7 @@ public class Logic extends UserCode {
 								//log.info("Updating task for luName: " + luName + " to status: " + status + " with:");
 								//log.info("numOfProcessedRefTables: " + num_of_processed_ref_tables);
 								//log.info("numOfCopiedRefTables: " + num_of_copied_ref_tables + ", numOfFailedRefTables: " + num_of_failed_ref_tables);
-								if("completed".equalsIgnoreCase(status) && processID==-1 && "post".equalsIgnoreCase(processType)){
+								if("completed".equalsIgnoreCase(status) && (processID == -1 || processID == -3) && "post".equalsIgnoreCase(processType)){
 									Map num = fnUpdateAIProcess(taskExecutionID,"-2");
 									total= "" + num.get("total");
 									copied= "" + num.get("copied");
@@ -901,9 +900,8 @@ public class Logic extends UserCode {
 		return originalStatus.toString().toLowerCase();
 	}
 	@out(name = "result", type = Map.class, desc = "")
-	public static Map<String,String> getCommandForAll(String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, String closeSeparator,String versionExeID,String dcName, Long luId, String sessionGlobals) throws Exception {
+	public static Map<String,String> getCommandForAll(String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, String closeSeparator,String versionExeID,String dcName, Long luId, String sessionGlobals, String taskTitle) throws Exception {
 		String modified_sql = "";
-		String batchCommand = "";
 		String interface_name = null;
 		String sql = null;
 		String externalTableFlow = null;
@@ -1036,17 +1034,17 @@ public class Logic extends UserCode {
 			//modified_sql = getCommandForAllCL(luName, externalTableFlow, taskExecutionId, luId, dcName);
 			Long numberOfEntities = -1L;
 			Map<String,String> BFCmdAndInterface = getCustomLogicBatch(luName, externalTableFlow, taskExecutionId, luId, 
-					dcName, numberOfEntities, "", sessionGlobals, false);
+					dcName, numberOfEntities, "", sessionGlobals, false, taskTitle);
 			modified_sql = BFCmdAndInterface.get("batchQuery");
 			interface_name = BFCmdAndInterface.get("batchInterface");
 			batchStrings.put("mode","external_flow");
 		}
 		
-		if (dcName != null && !dcName.isEmpty()) {
-			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH AFFINITY='" + dcName + "' ASYNC=true";
-		} else {// input DC is empty
-			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
-		}
+		String affinityClause = !Util.isEmpty(dcName) ? " AFFINITY='" + dcName + "'" : "";
+
+		String batchCommand = "BATCH " + luName + " from " + interface_name +
+				" using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH" +
+				affinityClause + " ASYNC=true" + " BATCH_ID_PREFIX ='" + taskTitle + "'";
 		
 		batchStrings.put("batchCommand", batchCommand);
 		batchStrings.put("usingClause", modified_sql);
@@ -1056,7 +1054,7 @@ public class Logic extends UserCode {
 
 	@out(name = "result", type = Map.class, desc = "")
 	public static Map<String,String> getCustomLogicBatch(String luName, String customLogicFlow, String taskExecutionId, Long luId, 
-        String dcName, Long entitiesLimit, String flowParams, String sessionGlobals, Boolean cloneInd) throws Exception {
+        String dcName, Long entitiesLimit, String flowParams, String sessionGlobals, Boolean cloneInd, String taskTitle) throws Exception {
 		String batchQuery = "";
 		String batchInterface = TDM;
 		Map<String, String> result = new HashMap<>();
@@ -1089,7 +1087,7 @@ public class Logic extends UserCode {
 				if("".equals(paramValue)){
 					paramValue=null;
 				}
-				fabricCommandParams += ", " + clFlowParamMap.get("name") + "=\"" + paramValue + "\"";
+				fabricCommandParams += ", '" + clFlowParamMap.get("name") + "'=\"" + paramValue + "\"";
 			}
 		}
 		
@@ -1116,7 +1114,7 @@ public class Logic extends UserCode {
 			fabric().execute(createEntityListTab);
 			
 			String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
-			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true";
+			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
 			//log.info("Custom Logic batchCommand: " + batchCommand);
 			
 			String broadwayCommand = "broadway " + luName + "."  +  customLogicFlow +  " iid=?," + fabricCommandParams;
@@ -1143,14 +1141,14 @@ public class Logic extends UserCode {
 	}
 
     public static Map<String,String> getEntityListByBF(String luName, String broadwayCommand, String taskExecutionId,Long luId, 
-    String dcName, Long entitiesLimit,  Boolean cloneInd) throws Exception {
+    String dcName, Long entitiesLimit,  Boolean cloneInd, String taskTitle) throws Exception {
         Map<String, String> result = new HashMap<>();
         String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable taskExecutionId = " + taskExecutionId;
 			//log.info("createEntityListTab: " + createEntityListTab);
 			fabric().execute(createEntityListTab);
 			
 			String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
-			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true";
+			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
 			//log.info("Custom Logic batchCommand: " + batchCommand);
 		
 			//log.info("Custom Logic broadwayCommand: " + broadwayCommand);

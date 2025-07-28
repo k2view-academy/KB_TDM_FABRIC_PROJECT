@@ -69,38 +69,14 @@ stages:
         parent: StringFormat
         in:
           format:
-            const: ${targetTable}.csv
+            const: target/${targetTable}.csv
           targetTable:
             external: targetTable
             schema: string
             mandatory: false
   Load Data To Target:
-    transactional: true
+    transactional: false
     actors:
-      Load Table:
-        parent: DbLoad
-        disabled: true
-        in:
-          interface:
-            const: null
-            external: targetInterface
-          schema:
-            const: null
-            external: targetSchema
-          table:
-            const: null
-            external: targetTable
-          fields:
-            const: null
-            link: Table's fields Names /value
-          keys:
-            const: null
-          batch:
-            const: true
-          params:
-            link:
-              path: Input Records/value
-              iterate: Iterate
       Count Records:
         parent: JavaScript
         in:
@@ -134,31 +110,18 @@ stages:
               path: Input Records/value
               iterate: Iterate
   Stage 2:
-    transactional: true
+    last: 1
+    transactional: false
     actors:
       FileWrite1:
         parent: FileWrite
         in:
           interface:
-            const: localfilesystem
+            const: LFS
           path:
             link: StringFormat1/string
           stream:
             link: CsvBuilder1/csv
-  Stage 1:
-    last: 1
-    transactional: false
-    actors:
-      Equals1:
-        parent: Equals
-        condition: result
-        in:
-          a:
-            link: Count Records/result
-            schema: boolean
-          b:
-            const: true
-            schema: boolean
   Return Current Count:
     transactional: false
     actors:

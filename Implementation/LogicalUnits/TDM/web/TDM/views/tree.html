@@ -1,4 +1,4 @@
-<ul style="list-style: none;padding: 0;position: relative;">
+<ul style="list-style: none;padding: 0;position: relative;width: 100%; padding-right: 15px">
     <li ng-repeat="item in content track by $index" style="padding-bottom: 10px">
         <div style="cursor: pointer;padding-top:5px" 
             ng-style="
@@ -15,14 +15,15 @@
                 class="fa fa-exclamation-circle"></i>
             <i ng-click="treeCtrl.collapse(item)" style="margin-left:5px;" class="fa" 
                 ng-class="{'fa-caret-right' : item.collapsed ,'fa-caret-down' : !item.collapsed}" ng-if="item.hasChildren"></i>
-            <span ng-click="treeCtrl.updateTable(item)" 
+            <span ng-click="treeCtrl.updateTable(item)" style="word-break: break-all;"
                 ng-style="{
                     'color': item.lu_status === 'failed' && 'red'
-                }">{{item.lu_name}} 
-                <span ng-show="(item.sourceId || item.targetId) && (!item.brothers || item.brothers.length <= 1)">
-                    : Source={{item.sourceId}}, Target ID={{item.targetId}}
+                }">
+                {{item.lu_name}} 
+                    <span style="word-break: break-all;" ng-show="(item.sourceId || item.targetId) && (!item.brothers || item.brothers.length <= 1)">
+                        : Source={{item.sourceId}}, Target ID={{item.targetId}}
                     </span>
-                </span>
+            </span>
                 
         </div>
         <div style="margin-left: 15px;margin-top:5px;" ng-if="!item.collapsed && item.children.length > 0">
