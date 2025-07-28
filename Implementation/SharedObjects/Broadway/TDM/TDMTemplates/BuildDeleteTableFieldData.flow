@@ -1,233 +1,148 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Add Field Name",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "name"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "JavaScript1",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "var newDataType = \"\";\r\nswitch(datatype) {\r\n  case 'TEXT':\r\n    newDataType = 'Text';\r\n    break;\r\n  case 'INTEGER':\r\n    newDataType = 'Integer';\r\n    break;\r\n  case 'REAL':\r\n    newDataType = 'Real';\r\n    break;\r\n  case 'DATETIME':\r\n    newDataType = 'Datetime';\r\n    break;\r\n  case 'DATE':\r\n    newDataType = 'Date';\r\n    break;\r\n  case 'TIME':\r\n    newDataType = 'Time';\r\n    break;\r\n  default:\r\n    newDataType = datatype;\r\n    break;\r\n}\r\nnewDataType;",
-                                            "script": "var newDataType = \"\";\n\nswitch (datatype) {\n  case 'TEXT':\n    newDataType = 'Text';\n    break;\n\n  case 'INTEGER':\n    newDataType = 'Integer';\n    break;\n\n  case 'REAL':\n    newDataType = 'Real';\n    break;\n\n  case 'DATETIME':\n    newDataType = 'Datetime';\n    break;\n\n  case 'DATE':\n    newDataType = 'Date';\n    break;\n\n  case 'TIME':\n    newDataType = 'Time';\n    break;\n\n  default:\n    newDataType = datatype;\n    break;\n}\n\nnewDataType;"
-                                        }
-                                    },
-                                    {
-                                        "name": "datatype",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "columnType": {
-                                                    "type": "string"
-                                                },
-                                                "columnName": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Add Field Name:
+        parent: MapBuild
+        in:
+          key:
+            const: name
+            schema: string
+          value:
+            external: value
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Set Field Type:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var newDataType = \"\";\r\nswitch(datatype) {\r\n  case 'TEXT':\r\
+                \n    newDataType = 'Text';\r\n    break;\r\n  case 'INTEGER':\r\n\
+                \    newDataType = 'Integer';\r\n    break;\r\n  case 'REAL':\r\n\
+                \    newDataType = 'Real';\r\n    break;\r\n  case 'DATETIME':\r\n\
+                \    newDataType = 'Datetime';\r\n    break;\r\n  case 'DATE':\r\n\
+                \    newDataType = 'Date';\r\n    break;\r\n  case 'TIME':\r\n   \
+                \ newDataType = 'Time';\r\n    break;\r\n  default:\r\n    newDataType\
+                \ = datatype;\r\n    break;\r\n}\r\nnewDataType;"
+              script: |-
+                var newDataType = "";
+
+                switch (datatype) {
+                  case 'TEXT':
+                    newDataType = 'Text';
+                    break;
+
+                  case 'INTEGER':
+                    newDataType = 'Integer';
+                    break;
+
+                  case 'REAL':
+                    newDataType = 'Real';
+                    break;
+
+                  case 'DATETIME':
+                    newDataType = 'Datetime';
+                    break;
+
+                  case 'DATE':
+                    newDataType = 'Date';
+                    break;
+
+                  case 'TIME':
+                    newDataType = 'Time';
+                    break;
+
+                  default:
+                    newDataType = datatype;
+                    break;
                 }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Add Field Type",
-                            "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "datatype"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "NAME": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Marge Name with Type",
-                            "actorType": {
-                                "parentType": "MapMerge",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "map",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "datatype": {
-                                                    "type": "string"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Add Field Name",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Marge Name with Type",
-                "name": "maps"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "JavaScript1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Field Type",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add Field Type",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "Marge Name with Type",
-                "name": "maps"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Add Field Name",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "datatype"
-            },
-            "rightPort": {
-                "actor": "JavaScript1",
-                "name": "datatype"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Marge Name with Type",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "deleteFieldData"
-            }
-        }
-    ]
-}
+
+                newDataType;
+          datatype:
+            external: datatype
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Field Name - Uppercase:
+        parent: Uppercase
+        in:
+          string:
+            external: value
+  Stage 2:
+    actors:
+      Add Field Type:
+        parent: MapBuild
+        in:
+          key:
+            const: datatype
+            schema: string
+          value:
+            link: Set Field Type/result
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Add Field Name Upper Case:
+        parent: MapBuild
+        in:
+          key:
+            const: upperName
+            schema: string
+          value:
+            link: Field Name - Uppercase/string
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      Marge Name with Type:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Add Field Type/map
+              pos: 0
+            - path: Add Field Name/map
+              pos: 1
+            - path: Add Field Name Upper Case/map
+              pos: 2
+        out:
+          map:
+            external: deleteFieldData
+            schema: '#ref'
+schemas:
+  Add Field Name.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Set Field Type.out.result:
+    type: object
+    properties:
+      columnType:
+        type: string
+      columnName:
+        type: string
+  Add Field Type.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Add Field Name Upper Case.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Marge Name with Type.out.map:
+    type: object
+    properties:
+      datatype:
+        type: string
+      name:
+        type: string

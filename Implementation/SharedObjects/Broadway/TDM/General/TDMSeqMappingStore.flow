@@ -15,12 +15,11 @@ stages:
             const: TDM_SEQ_REPORT
             default: false
       Get Source Environment:
-        parent: getLUVariable_Actor
+        parent: FabricSetRead
         in:
-          variableName:
+          key:
             const: TDM_SOURCE_ENVIRONMENT_NAME
-          luName:
-            external: lu_type
+            default: false
       getTDMDBSchema:
         parent: InnerFlow
         in:
@@ -61,6 +60,15 @@ stages:
           b:
             const: true
             schema: boolean
+      Instance Indicator is No:
+        parent: Const
+        in:
+          value:
+            const: Y
+            schema: string
+        out:
+          value:
+            schema: string
       target_id:
         parent: Const
         height: 224
@@ -68,15 +76,6 @@ stages:
           value:
             const: null
             external: target_value
-            schema: string
-        out:
-          value:
-            schema: string
-      Instance Indicator is No:
-        parent: Const
-        in:
-          value:
-            const: Y
             schema: string
         out:
           value:
@@ -110,6 +109,8 @@ stages:
         in:
           interface:
             const: TDM
+          command:
+            const: upsert
           schema:
             const: null
             link: getTDMDBSchema/schema
@@ -127,6 +128,15 @@ stages:
             - source_id
             - target_id
             - is_instance_id
+          keys:
+            const:
+            - task_execution_id
+            - lu_type
+            - source_env
+            - entity_target_id
+            - seq_name
+            - table_name
+            - source_id
           dialect:
             const: postgres
           task_execution_id:
@@ -136,7 +146,7 @@ stages:
             external: lu_type
             schema: string
           source_env:
-            link: Get Source Environment/variableValue
+            link: Get Source Environment/result
             schema: string
           entity_target_id:
             link:

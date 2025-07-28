@@ -59,6 +59,9 @@ BEGIN
             END IF;
         END LOOP;
         CLOSE curr_cursor;
+
+        ALTER TABLE ${@schema}.task_execution_entities  ADD CONSTRAINT task_execution_entities_pkey
+            PRIMARY KEY (task_execution_id, lu_name, entity_id, clone_no, root_entity_id, root_target_entity_id);
     END IF;
 END;
 $BODY$;
@@ -69,9 +72,6 @@ drop procedure ${@schema}.update_parent_root_info(IN TEXT);
 ANALYZE  ${@schema}.task_execution_entities;
 
 UPDATE ${@schema}.task_execution_entities SET root_target_entity_id = '' WHERE root_target_entity_id IS NULL;
-
-ALTER TABLE ${@schema}.task_execution_entities  ADD CONSTRAINT task_execution_entities_pkey
-PRIMARY KEY (task_execution_id, lu_name, entity_id, clone_no, root_entity_id, root_target_entity_id);
 
 INSERT INTO ${@schema}.tdm_general_parameters(
         param_name, param_value)

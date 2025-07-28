@@ -125,6 +125,8 @@ stages:
       Filter Reserved And Format IIDs:
         parent: customLogicDirectFlowUtil
         in:
+          innerFlowClose:
+            const: false
           NUM_OF_ENTITIES:
             external: NUM_OF_ENTITIES
             schema: integer

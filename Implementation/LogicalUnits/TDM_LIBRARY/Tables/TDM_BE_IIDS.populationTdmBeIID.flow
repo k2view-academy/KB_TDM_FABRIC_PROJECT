@@ -33,6 +33,20 @@ stages:
         out:
           schema:
             schema: string
+      Get source env:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      get lui:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetLUI
+        out:
+          result:
+            schema: any
   Source:
     actors:
       Get Sync Source Data Indicator:
@@ -116,7 +130,7 @@ stages:
             const: |
               SELECT *
               FROM ${@schema}.tdm_be_iids
-              WHERE iid = ${iid} AND be_id <> ${be_id}
+              WHERE __iid = ${lui} and iid = ${iid} and source_env = ${source_env} AND be_id <> ${be_id}
           iid:
             link: FABRIC_TDM_ROOT/result/IID
             schema: string
@@ -127,6 +141,14 @@ stages:
             mandatory: false
           schema:
             link: postgres schema/string
+            schema: string
+            mandatory: false
+          lui:
+            link: get lui/result
+            schema: string
+            mandatory: false
+          source_env:
+            link: Get source env/result
             schema: string
             mandatory: false
         out:

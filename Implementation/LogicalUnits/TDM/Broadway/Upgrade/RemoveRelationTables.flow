@@ -39,7 +39,7 @@ stages:
           script:
             const: |
               var upgradeLU = true;
-              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
+              if (luName == 'TDM' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
                   upgradeLU = false;
               }
               upgradeLU;
@@ -69,7 +69,7 @@ stages:
               iterate: Iterate
             schema: string
             mandatory: false
-      LU folder1:
+      Temporary Schema File Name:
         parent: StringFormat
         in:
           format:
@@ -82,7 +82,7 @@ stages:
             mandatory: false
   Stage 5:
     actors:
-      LuFunction1:
+      Update Schema File:
         parent: LuFunction
         in:
           functionName:
@@ -91,14 +91,89 @@ stages:
             link: LU folder/string
             schema: string
             mandatory: false
-      rm1:
+      Remove Temporary Schema File:
         parent: rm
         in:
           interface:
             const: null
             link: Get Project Folder/PROJECT_FOLDER
           path:
-            link: LU folder1/string
+            link: Temporary Schema File Name/string
+  Stage 6:
+    actors:
+      Pattern for List of Populations for Deletion:
+        parent: ConstStrings
+        in:
+          strings:
+            const:
+            - TDM_LU_TYPE_RELATION_EID.*.flow
+            - TDM_LU_TYPE_RELATION_EID.*.xml
+            - TDM_LU_TYPE_REL_TAR_EID.*.flow
+            - TDM_LU_TYPE_REL_TAR_EID.*.xml
+      Relation File Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${interface}/LogicalUnits/${LU_NAME}/
+          interface:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Stage 7:
+    actors:
+      Look for Populations:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: Relation File Location/string
+          path:
+            const: Tables
+          pattern:
+            const: null
+            link:
+              path: Pattern for List of Populations for Deletion/strings
+              iterate: Iterate
+        out:
+          result:
+            schema: '#ref'
+  Stage 8:
+    actors:
+      Population Exists?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Look for Populations/result/name
+              iterate: First
+      Population File:
+        parent: StringFormat
+        in:
+          format:
+            const: Tables/${fileName}
+          fileName:
+            link:
+              path: Look for Populations/result/name
+              iterate: First
+            schema: string
+            mandatory: false
+  Stage 9:
+    actors:
+      Remove File:
+        parent: rm
+        in:
+          interface:
+            const: null
+            link: Relation File Location/string
+          path:
+            link: Population File/string
 schemas:
   Get List of LUs.out.result:
     type: array
@@ -109,3 +184,20 @@ schemas:
           type: string
         Project Version:
           type: string
+  Look for Populations.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

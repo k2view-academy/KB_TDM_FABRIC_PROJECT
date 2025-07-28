@@ -1,4 +1,12 @@
 
+<style>
+    td {
+        word-wrap: break-word;
+        white-space: normal;
+        word-break: break-all;
+        overflow: unset;
+    }
+</style>
 <div class="col-lg-12" style="min-height: 590px;display:flex; padding-top: 30px; background: white">
 
     <div class="ibox float-e-margins col-lg-3" ng-if="!taskStatesCtrl.hideLogicalUnit">
@@ -13,10 +21,12 @@
         </div>
         <div class="k2-body" style="margin:0">
             <div class="row">
-                <tree content="luTreeMenu"
-                 collapse="taskStatesCtrl.collapseNode"
-                update-table="taskStatesCtrl.updateTDMStats"
-                 selected-lu="taskStatesCtrl.selectedLU"></tree>
+                <div class="col-lg-12">
+                    <tree content="luTreeMenu"
+                     collapse="taskStatesCtrl.collapseNode"
+                    update-table="taskStatesCtrl.updateTDMStats"
+                     selected-lu="taskStatesCtrl.selectedLU"></tree>
+                </div>
             </div>
         </div>
     </div>

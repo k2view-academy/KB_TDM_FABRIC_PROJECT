@@ -2,21 +2,6 @@ tags: Upgrade
 stages:
   Start:
     actors:
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
-  'Check If Global Null ':
-    dependsOn: Start
-    actors:
-      IsNull:
-        parent: IsNull
-        condition: result
-        in:
-          value:
-            link: TDMDB_SCHEMA/result
       getTDMDBSchema:
         parent: InnerFlow
         in:
@@ -25,17 +10,6 @@ stages:
         out:
           schema:
             schema: string
-    split: '--------------------'
-  Take Global Value:
-    else: true
-    dependsOn: Start
-    actors:
-      'Schema Name ':
-        parent: Const
-        in:
-          value:
-            const: null
-            link: TDMDB_SCHEMA/result
   Schema Name:
     actors:
       TDMDB_SCHEMA Value:
@@ -43,11 +17,15 @@ stages:
         in:
           value:
             const: null
-            link:
-            - getTDMDBSchema/schema
-            - Schema Name /value
+            link: getTDMDBSchema/schema
   Get Versions:
     actors:
+      Get Target Version:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_TDM_VERSION
+            default: false
       Get Current Version:
         parent: DbFetchField
         in:
@@ -63,22 +41,16 @@ stages:
         out:
           result:
             schema: string
-      Get Target Version:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TARGET_TDM_VERSION
-            default: false
   Get List of Upgrade Scripts:
     actors:
       NotEquals:
         parent: NotEquals
         condition: result
         in:
-          a:
-            link: Get Current Version/result
           b:
             link: Get Target Version/result
+          a:
+            link: Get Current Version/result
       List of Upgrade Scripts:
         parent: TDMDBUpgradeScripts
         height: 303

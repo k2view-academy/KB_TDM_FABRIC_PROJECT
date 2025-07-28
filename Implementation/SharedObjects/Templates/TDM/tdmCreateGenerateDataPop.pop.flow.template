@@ -381,10 +381,21 @@
                                         "name": "schema",
                                         "const": "{{{SOURCE_SCHEMA}}}"
                                     },
+                                    {{#eq DOCUMENT_IND "true"}}{
+                                        "name": "dataset",
+                                        "const": "{{getMainTableName this}}"
+                                    },
                                     {
+                                        "name": "catalogClassName",
+                                         "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getTableClass this}}"
+                                    },
+                                    {{else}}{
                                         "name": "dataset",
                                         "const": "{{{SOURCE_TABLE}}}"
-                                    },
+                                    },{{/eq}}
                                     {
                                         "name": "mtable",
                                         "schema": {}

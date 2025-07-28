@@ -1,0 +1,79 @@
+tags: TDM
+stages:
+  Get Template:
+    actors:
+      Get Orchestrator Template:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: orchestrator_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Prepare Inputs:
+    actors:
+      Template Found?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Orchestrator Template/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Templates Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/Implementation/${templateFile}
+          projectDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          templateFile:
+            link: Get Orchestrator Template/result
+            schema: string
+            mandatory: false
+      LU New Orchestrator:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/Implementation/LogicalUnits/${LU_NAME}/Broadway/TDMOrchestrator.flow
+          projectDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+  Copy Flow:
+    actors:
+      Copy Orchestrator:
+        parent: cp
+        in:
+          interface:
+            const: file://
+          from:
+            link: Templates Folder/string
+          to:
+            link: LU New Orchestrator/string

@@ -28,32 +28,20 @@ stages:
         parent: JavaScript
         in:
           script:
-            const:
-              userCode: |-
-                var result = false;
-                if (tableFilter == "" || (retention != 0 && syncMode != 'OFF')) {
-                    result = true;
-                }
-                result;
-              script: |-
-                var result = false;
-
-                if (tableFilter == "" || retention != 0 && syncMode != 'OFF') {
-                  result = true;
-                }
-
-                result;
+            const: |
+              var result = true;
+              var version = parseInt(versionTaskExeID, 10);
+              if (tableFilter !== "" && version !== 0) {
+                  result = false;
+              }
+              result;
           tableFilter:
             external: tableFilter
             schema: string
             mandatory: false
-          retention:
-            external: retention
+          versionTaskExeID:
+            external: versionTaskExeID
             schema: integer
-            mandatory: false
-          syncMode:
-            external: syncMode
-            schema: string
             mandatory: false
         out:
           result:
@@ -211,6 +199,8 @@ stages:
             link: Get Records Count From Fabric/result
             schema: integer
             mandatory: false
+  Stage 1:
+    transactional: false
 schemas:
   Add  Wherer Clause to Select Statement.out.paramters:
     type: array

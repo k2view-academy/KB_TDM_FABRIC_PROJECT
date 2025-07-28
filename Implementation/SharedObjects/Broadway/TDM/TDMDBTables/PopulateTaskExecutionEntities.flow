@@ -27,15 +27,14 @@ stages:
           key:
             const: TARGET_ENTITY_ID
             default: false
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
   Continue Preparing:
     actors:
-      Get Task Execution ID:
-        parent: getLUVariable_Actor
-        in:
-          variableName:
-            const: TDM_TASK_EXE_ID
-          luName:
-            link: Get LU Type/result
       Get Timing of Processing Start:
         parent: FabricSetRead
         in:
@@ -211,13 +210,6 @@ stages:
           key:
             const: clone_id
             default: false
-      Calculate Total Processing Duration:
-        parent: DateDuration
-        in:
-          from:
-            link: Get Timing of Processing Start/result
-          to:
-            link: Now/date
       Get root_iid:
         parent: FabricSetRead
         in:
@@ -230,20 +222,6 @@ stages:
           key:
             const: root_lu_name
             default: false
-      If Target Entity ID is not set, use source ID:
-        parent: IfElse
-        in:
-          a:
-            external: iid
-            schema: string
-          b:
-            link: Get Target Entity ID/result
-            schema: string
-          test:
-            link: Check if Target Entity ID is Not Set/result
-        out:
-          result:
-            schema: string
       Format the Current Time:
         parent: DateFormat
         in:
@@ -258,6 +236,27 @@ stages:
             const: getTDMDBSchema
         out:
           schema:
+            schema: string
+      Calculate Total Processing Duration:
+        parent: DateDuration
+        in:
+          from:
+            link: Get Timing of Processing Start/result
+          to:
+            link: Now/date
+      If Target Entity ID is not set, use source ID:
+        parent: IfElse
+        in:
+          a:
+            external: iid
+            schema: string
+          b:
+            link: Get Target Entity ID/result
+            schema: string
+          test:
+            link: Check if Target Entity ID is Not Set/result
+        out:
+          result:
             schema: string
   Load Data to Entities table:
     actors:
@@ -283,7 +282,7 @@ stages:
             link: Get LU Type/result
             schema: string
           taskexecutionId:
-            link: Get Task Execution ID/variableValue
+            link: TDM_TASK_EXE_ID/result
             schema: string
           sourceEntityId:
             link: Get Source Entity ID/result

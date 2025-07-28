@@ -107,10 +107,6 @@ stages:
             external: schemaName
             schema: string
             mandatory: false
-          envName:
-            external: environmentName
-            schema: string
-            mandatory: false
         out:
           result:
             schema: object

@@ -78,7 +78,7 @@ stages:
             external: iid
           luName:
             external: luName
-  Set No Trx For Fabric:
+  Set No Trx For Fabric & TDM:
     transactional: true
     actors:
       No Trx - Fabric:
@@ -154,7 +154,7 @@ stages:
         parent: InnerFlow
         in:
           flowName:
-            const: DeleteAllTables
+            const: DeleteFromTarget
     split: '--------------------'
   No Data Deletion:
     else: true
@@ -200,11 +200,11 @@ stages:
                 flowName: PopulateTableErrorsWithFailed
                 number_of_retries: ''
                 retry_interval: ''
-      Load All Tables:
+      Load To Target:
         parent: InnerFlow
         in:
           flowName:
-            const: LoadAllTables
+            const: LoadToTarget
     split: '--------------------'
   No Data Loading:
     else: true

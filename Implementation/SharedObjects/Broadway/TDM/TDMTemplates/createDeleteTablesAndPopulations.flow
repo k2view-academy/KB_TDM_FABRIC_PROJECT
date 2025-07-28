@@ -2,21 +2,6 @@ tags: TDM
 stages:
   Get List of Tables:
     actors:
-      geLuTables:
-        parent: LuFunction
-        in:
-          functionName:
-            const: getLuTables
-          luName:
-            external: LU_NAME
-            schema: string
-            editor:
-              id: com.k2view.logicalUnit
-              addEmptyEntry: true
-            mandatory: false
-        out:
-          res:
-            schema: '#ref'
       Set Target Environment:
         parent: FabricSet
         in:
@@ -33,6 +18,21 @@ stages:
           key:
             const: TDM_DELETE_TABLES_PREFIX
             default: false
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTables
+          luName:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
   Create the Name Of Delete Table:
     actors:
       Build Delete Table Name:
@@ -113,6 +113,10 @@ stages:
             external: useFabric
             schema: boolean
             mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
   Create New:
     last: 1
     dependsOn: Check If Table Already Exists
@@ -154,6 +158,10 @@ stages:
           useFabric:
             external: useFabric
             schema: boolean
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
             mandatory: false
     split: '--------------------'
   Table Already Exists:

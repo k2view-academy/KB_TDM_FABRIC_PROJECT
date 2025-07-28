@@ -85,23 +85,7 @@ public class SharedLogic {
 	public static Map<String, List<Map<String, Object>>> allTables = new HashMap<>();
 	private static HashMap<String, String> luShortMap = new HashMap<>();
     private static HashMap<String, String> tdmSeparators = new HashMap<>();
-    public static void setBroadwayActorFlags(String key, String value) throws SQLException {
-        //TDM 7.1 - Masking and Sequence Broadway Actors have special flags to enable/disable them, and they need
-        // to be set based on the input globals of the task
-
-        // Masking Actor - If MASKING_FLAG is set to false set the indicator of masking actor to false to suppress the masking in
-        // both Load and Extract tasks. If MASKING_FLAG is not set or set to true then nothing to do as the Masking is enabled by default.
-        if (key.contains("MASKING_FLAG") && "false".equals(value)) {
-            //log.info("setBroadawayActorFlags - Disabling Masking");
-            fabric().execute("set enable_masking = false");
-        }
-        // Sequence Actor - If TDM_REPLACE_SEQUENCES is set, used its value to disable/enable the sequence actor
-        if (key.contains("TDM_REPLACE_SEQUENCES")) {
-            //log.info("setBroadawayActorFlags - Setting Sequence Actor to: " + value);
-            fabric().execute("set enable_sequences = ?", value);
-        }
-    }
-
+  
     public static Object fnBatchStatistics(String i_batchId, String i_runMode) throws Exception {
         Object response;
         switch (i_runMode) {
@@ -1578,7 +1562,7 @@ public class SharedLogic {
 						}
 						Map<String, String> sourceValidationsErrorMessages = fnValidateSourceEnvForTask(be_lus, taskData.getInt("refcount"),
 								selectionMethod,
-								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role,taskId);
+								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role,taskId,validateReadNumber);
 						//log.info("validateNumber: " + validateNumber);
 		
 						if (validateReadNumber!=-1 && (allowedEntitySize > validateReadNumber)) {
@@ -1637,7 +1621,7 @@ public class SharedLogic {
 								selectionMethod,
 								taskData.getBoolean("version_ind"),
 								taskData.getBoolean("replace_sequences"), taskData.getBoolean("delete_before_load"), taskType,
-								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role, cloneInd,taskData.getString("sync_mode"),taskId);
+								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role, cloneInd,taskData.getString("sync_mode"),taskId,validateNumber);
 						//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
 						if (validateNumber != -1 && (allowedEntitySize>validateNumber)) {
 							targetValidationsErrorMessages.put("Number of entity", "The number of entities exceeds the number of entities in the "+ permission+ " permission");
@@ -1818,111 +1802,89 @@ public class SharedLogic {
     }
 
 
-    public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String SchemaName, String tableName) throws Exception {
+    public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String schemaName, String tableName, String catalogSchema) throws Exception {
 
-        Map<String,Object> interfaceInput = new HashMap<>();
+		Map<String,Object> interfaceInput = new HashMap<>();
         interfaceInput.put("dataPlatform", dbInterfaceName);
-        interfaceInput.put("schema", SchemaName);
+        interfaceInput.put("schema", catalogSchema);
         interfaceInput.put("dataset", tableName);
 
         List<Map<String, Object>> interfaceTables =  MtableLookup("catalog_field_info",interfaceInput, MTable.Feature.caseInsensitive);
 		if (interfaceTables == null  || interfaceTables.isEmpty()) {
-            return getTableFieldsByJDBC(dbInterfaceName, SchemaName, tableName);
+            return getTableFieldsByJDBC(dbInterfaceName, schemaName, tableName);
         } else {
-            return getTableFieldsByCatalog(dbInterfaceName, SchemaName, tableName, interfaceTables);
+            return getTableFieldsByCatalog(interfaceTables);
         }
 
     }
 
-    private static List<HashMap<String, String>> getTableFieldsByJDBC(String dbInterfaceName, String SchemaName, String tableName) throws SQLException {
+   	private static List<HashMap<String, String>> getTableFieldsByJDBC(String dbInterfaceName, String schemaName,
+			String tableName) throws SQLException {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
-        DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
-        ResultSet columns = metaData.getColumns(null, SchemaName, tableName, null);
-        
-        while (columns.next()) {
-            HashMap<String, String> map = new HashMap<>();
-            
-            map.put("column_name", columns.getString("COLUMN_NAME"));
-            int dataType = columns.getInt("DATA_TYPE");
-            String columnType = toSqliteType(dataType);
-            String generalColumnType = "TEXT";
-            Boolean addField = true;
-            switch (columnType) {
-                case "INTEGER":
-                case "REAL":
-                    generalColumnType = "NUMBER";
-                    break;
-                case "TEXT":
-                    generalColumnType = "TEXT";
-                    break;
-                case "BLOB":
-                    generalColumnType = "BLOB";
-                    break;
-                default:
-                    generalColumnType = "TEXT";
-                    break;
-            }
-            if (addField) {
-                map.put("column_name", columns.getString("COLUMN_NAME"));
-                map.put("column_type", generalColumnType);
-				map.put("column_sqlite_type", columnType);
-                result.add(map);
-            }
-        }
+		DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
+		ResultSet columns = metaData.getColumns(null, schemaName, tableName, null);
 
-        if (columns != null) {
-            columns.close();
-        }
+		while (columns.next()) {
+			HashMap<String, String> map = new HashMap<>();
 
-        return result;
-    }
+			map.put("column_name", columns.getString("COLUMN_NAME"));
+			int dataType = columns.getInt("DATA_TYPE");
+			String typeName = columns.getString("TYPE_NAME");
+			String columnType = toSqliteType(dataType, typeName);
 
-    private static List<HashMap<String, String>> getTableFieldsByCatalog(String dbInterfaceName, String SchemaName, String tableName, List<Map<String, Object>> interfaceTables) throws SQLException {
+			String columnName = columns.getString("COLUMN_NAME");
+			boolean startsWithNumber = columnName.matches("^[0-9].*");
+			if (startsWithNumber) {
+				columnName = "\"" + columnName + "\"";
+			}
+			map.put("column_name", columnName);
+			map.put("column_type", columnType);
+			map.put("column_sqlite_type", columnType);
+			result.add(map);
+
+		}
+
+		if (columns != null) {
+			columns.close();
+		}
+
+		return result;
+	}
+
+   	private static List<HashMap<String, String>> getTableFieldsByCatalog(List<Map<String, Object>> interfaceTables) throws SQLException {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
-        for (Map<String, Object> fieldRec : interfaceTables) {
-            HashMap<String, String> map = new HashMap<>();
-            String fieldName = fieldRec.get("field").toString();
-            map.put("column_name", fieldName);
+		for (Map<String, Object> fieldRec : interfaceTables) {
+			HashMap<String, String> map = new HashMap<>();
+			String fieldName = fieldRec.get("field").toString();
 
 			String columnType = "TEXT";
-            String generalColumnType = "TEXT";
-            Boolean addField = true;
-            Object sourceEntityType = fieldRec.get("sourceEntityType");
-            if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
-            int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
-            columnType = toSqliteType(fieldDataType);
-           
-            switch (columnType) {
-                case "INTEGER":
-                case "REAL":
-                    generalColumnType = "NUMBER";
-                    break;
-                case "TEXT":
-                    generalColumnType = "TEXT";
-                    break;
-                case "BLOB":
-                    generalColumnType = "BLOB";
-                    break;
-                default:
-                    generalColumnType = "TEXT";
-                    break;
-                }
-            } else {
-                addField = false; 
-            }
-            if (addField) {
-                map.put("column_name", fieldName);
-                map.put("column_type", generalColumnType);
+			Boolean addField = true;
+			Object sourceEntityType = fieldRec.get("sourceEntityType");
+			if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
+				int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
+				String sourceDataType = fieldRec.get("sourceDataType").toString();
+				columnType = toSqliteType(fieldDataType, sourceDataType);
+
+			} else {
+				addField = false;
+			}
+			if (addField) {
+				boolean startsWithNumber = fieldName.matches("^[0-9].*");
+				if (startsWithNumber) {
+					fieldName = "\"" + fieldName + "\"";
+				}
+				map.put("column_name", fieldName);
+				map.put("column_type", columnType);
 				map.put("column_sqlite_type", columnType);
-                result.add(map);
-            }
+				result.add(map);
+			}
 
-        }
+		}
 
-        return result;
-    }
+		return result;
+	}
 
     private record LuTable(String luName, String luTable) {
         @Override

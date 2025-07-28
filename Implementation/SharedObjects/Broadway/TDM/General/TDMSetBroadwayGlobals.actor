@@ -1,0 +1,16 @@
+{
+    "type": "TDMSetBroadwayGlobals",
+    "badge": "TD",
+    "inputs": [
+        {
+            "name": "params",
+            "schema": {},
+            "mandatory": false
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "TDM"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.TDM.TDMSetBroadwayGlobals"
+}

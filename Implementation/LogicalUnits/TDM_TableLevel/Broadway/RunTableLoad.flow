@@ -82,14 +82,11 @@ stages:
             link: Get Table Details/result/number_of_records_to_process
             schema: integer
             mandatory: false
-          retention:
-            link: Get Table Details/result/retention
+          versionTaskExeID:
+            link: Get Table Details/result/version_execution_id
             schema: integer
             mandatory: false
-          syncMode:
-            external: syncMode
-            schema: string
-            mandatory: false
+            createdBy: flowName
         out:
           result:
             schema: '#ref'
@@ -154,6 +151,7 @@ stages:
             schema: any
             mandatory: false
           filterGUI:
+            link: Get Table Details/result/gui_filter
             schema: any
             mandatory: false
         out:
@@ -177,11 +175,6 @@ stages:
                 flowName: ''
                 number_of_retries: ''
                 retry_interval: ''
-      Set Target Environment:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: setTargetEnv
       Load To Target:
         parent: InnerFlow
         in:
@@ -225,6 +218,10 @@ stages:
             link: Get Table Details/result/ref_table_id
             schema: integer
             mandatory: false
+          catalogSchema:
+            link: Get Table Details/result/catalog_schema_name
+            schema: string
+            mandatory: false
 schemas:
   Get Table Details.out.result:
     type: object
@@ -253,10 +250,21 @@ schemas:
         type: string
       table_filter:
         type: string
+      gui_filter:
+        type: string
       filter_parameters:
         type: string
-      filter_fields: {
-        }
+      filter_fields:
+        type: array
+        items:
+          type: object
+          properties:
+            field_name:
+              type: string
+            field_type:
+              type: string
+            field_value:
+              type: string
       retention_period_type:
         type: string
       retention_period_value:
@@ -269,7 +277,13 @@ schemas:
         type: string
       number_of_records_to_process:
         type: integer
+      version_task_execution_id:
+        type: integer
       retention:
+        type: integer
+      catalog_schema_name:
+        type: string
+      version_execution_id:
         type: integer
   Get Data From Fabric.out.result:
     type: array

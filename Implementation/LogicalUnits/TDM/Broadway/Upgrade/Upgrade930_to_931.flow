@@ -40,24 +40,6 @@ stages:
         out:
           result:
             schema: string
-  Stage 3:
-    actors:
-      UpgradeTDMDBSchema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: UpgradeTDMDBSchema
-          TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
-            schema: any
-            mandatory: false
-  Stage 4:
-    actors:
-      RemoveSchemaGlobal1:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: RemoveSchemaGlobal
   Stage 5:
     actors:
       'True':

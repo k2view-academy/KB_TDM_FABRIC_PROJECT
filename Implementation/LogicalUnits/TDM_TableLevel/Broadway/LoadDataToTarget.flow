@@ -1,6 +1,8 @@
 stages:
   Get Table's Fields:
     actors:
+      set Source Environment:
+        parent: setSourceEnv_Actor
       Get List of Table's Fields:
         parent: LuFunction
         in:
@@ -10,17 +12,26 @@ stages:
             external: sourceInterfaceName
             schema: string
             mandatory: false
-          SchemaName:
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          schemaName:
             external: sourceSchemaName
             schema: string
             mandatory: false
-          tableName:
-            external: sourceTableName
+          catalogSchema:
+            external: catalogSchema
             schema: string
             mandatory: false
         out:
           result:
             schema: '#ref'
+      Set Target Environment:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: setTargetEnv
   List of Fields:
     last: 1
     actors:
@@ -66,7 +77,7 @@ stages:
             schema: string
             mandatory: false
           schemaName:
-            external: sourceSchemaName
+            external: catalogSchema
             schema: string
             mandatory: false
           tableName:

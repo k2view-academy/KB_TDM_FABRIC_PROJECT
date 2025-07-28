@@ -1,0 +1,112 @@
+tags: Upgrade
+stages:
+  Get Folders:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      TDM_LIBRARY:
+        parent: Const
+        in:
+          value:
+            const: /LogicalUnits/TDM_LIBRARY/Tables/
+            schema: string
+        out:
+          value:
+            schema: string
+  TDM Library Tables:
+    actors:
+      TDM_LIBRARY folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}${Lu}
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          Lu:
+            link: TDM_LIBRARY/value
+            schema: string
+            mandatory: false
+  Get Files:
+    actors:
+      ls TDM_LIBRARY tables:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: TDM_LIBRARY folder/string
+          path:
+            const: .
+        out:
+          result:
+            schema: '#ref'
+  Search For Relations:
+    actors:
+      JavaScript:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = false;
+              if (fileName.startsWith('TDM_LU_TYPE_REL')) {
+                  result = true;
+              }
+              result;
+          fileName:
+            link:
+              path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${path}/${file}
+          path:
+            link: TDM_LIBRARY/value
+            schema: string
+            mandatory: false
+          file:
+            link: ls TDM_LIBRARY tables/result/name
+            schema: string
+            mandatory: false
+  Remove Files:
+    actors:
+      rm file:
+        parent: rm
+        in:
+          interface:
+            const: null
+            link: Get Project Folder/PROJECT_FOLDER
+          path:
+            link: StringFormat1/string
+schemas:
+  ls TDM_LIBRARY tables.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

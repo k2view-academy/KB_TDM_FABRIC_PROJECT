@@ -45,6 +45,7 @@ public class Logic extends WebServiceUserCode {
 	public static final String LU_NAME = "LU_NAME";
 	public static final String PARAM_NAME = "PARAM_NAME";
 	public static final String PARAM_TYPE = "PARAM_TYPE";
+	public static final String DESCRIPTION = "DESCRIPTION";
 
 	public static final String COMBO_INDICATOR = "COMBO_INDICATOR";
 	public static final String VALID_VALUES = "VALID_VALUES";
@@ -312,56 +313,67 @@ public class Logic extends WebServiceUserCode {
 
 
 
-	@desc("Gets a list of deployed Logical Units with potential parents .")
-	@webService(path = "logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\n" +
-			"    \"result\": [\n" +
-			"        {\n" +
-			"            \"lu_name\": \"Orders\",\n" +
-			"            \"lu_parents\": [\n" +
-			"                \"Customer\",\n" +
-			"                \"Billing\"\n" +
-			"            ]\n" +
-			"        },\n" +
-			"        {\n" +
-			"            \"lu_name\": \"Customer\",\n" +
-			"            \"lu_parents\": []\n" +
-			"        },\n" +
-			"        {\n" +
-			"            \"lu_name\": \"Billing\",\n" +
-			"            \"lu_parents\": [\n" +
-			"                \"Customer\"\n" +
-			"            ]\n" +
-			"        },\n" +
-			"        {\n" +
-			"            \"lu_name\": \"Collection\",\n" +
-			"            \"lu_parents\": [\n" +
-			"                \"Customer\"\n" +
-			"            ]\n" +
-			"        }\n" +
-			"    ],\n" +
-			"    \"errorCode\": \"SUCCESS\",\n" +
-			"    \"message\": null\n" +
-			"}")
+	@desc("Gets a list of deployed Logical Units with potential parents sorted by lu_name.")
+	@webService(path = "logicalunits", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+				"result": [
+				  {
+					"lu_name": "Billing",
+					"lu_parents": [
+					  "Customer"
+					]
+				  },
+				  {
+					"lu_name": "Collection",
+					"lu_parents": [
+					  "Customer"
+					]
+				  },
+				  {
+					"lu_name": "Customer",
+					"lu_parents": [
+					  "Billing"
+					]
+				  },
+				  {
+					"lu_name": "Orders",
+					"lu_parents": [
+					  "Customer",
+					  "Billing"
+					]
+				  }
+				],
+				"errorCode": "SUCCESS",
+				"message": null
+			  }
+				""")
 	public static Object wsGetLogicalUnits() throws Exception {
-		ArrayList result=new ArrayList();
-		JSONObject json = new JSONObject();
-		String BroadwayCommand="broadway TDM.childLinkLookup RESULT_STRUCTURE=COLUMN";
+		ArrayList result = new ArrayList();
+		String BroadwayCommand = "broadway TDM.childLinkLookup RESULT_STRUCTURE=COLUMN";
 		Db.Rows rows = fabric().fetch(BroadwayCommand);
-		for (Db.Row row :rows) {
+		for (Db.Row row : rows) {
 			Map<?, ?> maps = ParamConvertor.toMap(row.get("map"));
 			Set<?> keys = maps.keySet();
-			int i = 0;
-			for (Object key:keys){
-					json.put("lu_name",key);
-					json.put("lu_parents",maps.get(key));
-					result.add(i,json.toMap());
-					i++;
+			List<Object> sortedKeys = new ArrayList<>(keys);
+			Collections.sort(sortedKeys, (o1, o2) -> {
+				if (o1 instanceof String && o2 instanceof String) {
+					return ((String) o1).compareTo((String) o2);
+				}
+				return o1.toString().compareTo(o2.toString());
+			});
 
+			for (Object key : sortedKeys) {
+				Map<String, Object> luEntry = new HashMap<>();
+				luEntry.put("lu_name", key);
+				luEntry.put("lu_parents", maps.get(key));
+				result.add(luEntry);
 			}
 
 		}
-		
+
 		if (rows != null) {
 			rows.close();
 		}
@@ -1509,6 +1521,7 @@ public class Logic extends WebServiceUserCode {
             for (Db.Row fieldValuesRec : luFieldsValues) {
                 String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
                 Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
+				String descirption = getParamDescription(colNameUpper,paramCoupling);
 
                 String isCombo = "false";
                 Boolean isNumeric = Boolean.parseBoolean(fieldValuesRec.get("is_numeric").toString());
@@ -1533,7 +1546,7 @@ public class Logic extends WebServiceUserCode {
                     paramType = fieldType;
                 }
 				beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-                                                                    PARAM_TYPE, paramType, COMBO_INDICATOR, isCombo, 
+                                                                    PARAM_TYPE, paramType,DESCRIPTION, descirption, COMBO_INDICATOR, isCombo, 
                                                                     VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, 
                                                                     LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
                     
@@ -1618,5 +1631,24 @@ public class Logic extends WebServiceUserCode {
         
         return result.toString();
     }
+	private static String getParamDescription(String colNameUpper,boolean paramCoupling) throws Exception{
+		String description="";
+		try{
+			Map<String, Object> mapListInputs = new HashMap<>();
+			String luName = colNameUpper.split(("\\."))[0];
+			String col = colNameUpper.split("\\.")[1];
+			mapListInputs.put("lu_name",luName);
+			mapListInputs.put(paramCoupling ? "param_name" : "column_name", col);
+			List<Map<String, Object>> mapList = MtableLookup(paramCoupling ? "LuParamsMapping" : "LuParams",mapListInputs,MTable.Feature.caseInsensitive);
+			if (!mapList.isEmpty()) {
+			Object descObj = mapList.get(0).get("description");
+			description = descObj != null ? descObj.toString() : "";
+        }
+
+    	} catch (Exception e) {
+        	log.error("Failed to get param description: " + e.getMessage());
+    	}
+    	return description;
+	}
     
 }

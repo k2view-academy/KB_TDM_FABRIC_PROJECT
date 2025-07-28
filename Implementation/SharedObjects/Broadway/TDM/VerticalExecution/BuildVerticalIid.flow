@@ -22,7 +22,7 @@ stages:
           interface:
             const: fabric
           sql:
-            const: set TDM.TDM_VERSION_TASK_EXECUTION_ID
+            const: set TDM_VERSION_TASK_EXECUTION_ID
         out:
           result:
             schema: string

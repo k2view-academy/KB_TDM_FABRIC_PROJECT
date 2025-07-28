@@ -1,0 +1,94 @@
+{
+  "type": "PopulateTDMAIGenIIDMapping",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "lu_name",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "env_name",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "task_execution_id",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "generated_iid",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "imported_lui",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "root_lu_name",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "root_generated_iid",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "root_imported_lui",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "PopulateTDMAIGenIIDMapping",
+      "mandatory": true,
+      "hidden": true
+    },
+    {
+      "name": "innerFlowConst",
+      "schema": {
+        "type": "string"
+      },
+      "const": "PopulateTDMAIGenIIDMapping",
+      "mandatory": true,
+      "hidden": true
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "tdm"
+  ],
+  "doc": ""
+}

@@ -5,11 +5,11 @@
   <ColumnsCollation>BINARY</ColumnsCollation>
   <FullTextSearch>false</FullTextSearch>
   <Columns>
-    <Column name="task_execution_id" id="tblCol_61ada4a4d80a451992114103b8ad30e1" index="0" datatype="Integer" mandatory="true" />
-    <Column name="lu_name" id="tblCol_823d7e374fd645709b0f68d94388e059" index="1" datatype="Text" mandatory="true" />
+    <Column name="task_execution_id" id="tblCol_61ada4a4d80a451992114103b8ad30e1" index="0" datatype="Integer" mandatory="false" />
+    <Column name="lu_name" id="tblCol_823d7e374fd645709b0f68d94388e059" index="1" datatype="Text" mandatory="false" />
     <Column name="entity_id" id="tblCol_8ba6e691656548b1bcb8dc848e4cd61d" index="2" datatype="text" />
-    <Column name="target_entity_id" id="tblCol_36f5bdf3a31d48f8a5a7a44467f9f5fa" index="3" datatype="text" mandatory="true" />
-    <Column name="table_name" id="tblCol_faad0ce69eee45d092f5fd32a8b5a40e" index="4" datatype="Text" mandatory="true" />
+    <Column name="target_entity_id" id="tblCol_36f5bdf3a31d48f8a5a7a44467f9f5fa" index="3" datatype="text" mandatory="false" />
+    <Column name="table_name" id="tblCol_faad0ce69eee45d092f5fd32a8b5a40e" index="4" datatype="Text" mandatory="false" />
     <Column name="stage_name" id="tblCol_dbd8b9259b4941cbb857cf352be66954" index="5" datatype="text" />
     <Column name="flow_name" id="tblCol_69115b10371e48b9808eb7d23d193409" index="6" datatype="text" />
     <Column name="actor_name" id="tblCol_be61165bed3046bd8820f0e80f286e8d" index="7" datatype="text" />
@@ -21,7 +21,7 @@
     <Column name="suppressed_error_count" id="suppressed_error_count" index="13" datatype="Text" />
   </Columns>
   <IndexesList>
-    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_61ada4a4d80a451992114103b8ad30e1,tblCol_823d7e374fd645709b0f68d94388e059,tblCol_36f5bdf3a31d48f8a5a7a44467f9f5fa,tblCol_faad0ce69eee45d092f5fd32a8b5a40e" />
+    <Index id="1" pk="false" unique="false" instanceOnly="true" columnsIdsList="tblCol_61ada4a4d80a451992114103b8ad30e1,tblCol_823d7e374fd645709b0f68d94388e059,tblCol_36f5bdf3a31d48f8a5a7a44467f9f5fa,tblCol_faad0ce69eee45d092f5fd32a8b5a40e" />
   </IndexesList>
   <EnrichmentList>
   </EnrichmentList>

@@ -33,12 +33,12 @@
     </TableProperties>
 	 <TableProperties name="task_exe_stats_detailed">
       <Populations>
-        <Population name="populationTaskExeStatsDetailed.flow" order="2" disabled="false" populationType="Flow" />
+        <Population name="populationTaskExeStatsDetailed.flow" order="3" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
 	 <TableProperties name="task_exe_stats_summary">
       <Populations>
-        <Population name="populationTaskExeStatsSummary.flow" order="2" disabled="false" populationType="Flow" />
+        <Population name="populationTaskExeStatsSummary.flow" order="4" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
 	 <TableProperties name="TASK_EXECUTION">

@@ -506,7 +506,7 @@ public class Logic extends WebServiceUserCode {
         interfaceInput.put("schema", dbInterfaceName);
         interfaceInput.put("dataset", dbInterfaceName);
 
-       result = fnGetTableFields(dbInterfaceName, SchemaName, tableName);
+       result = fnGetTableFields(dbInterfaceName, SchemaName, tableName, SchemaName);
 
        response.put("errorCode",errorCode);
        response.put("message", message);

@@ -75,7 +75,7 @@ stages:
         out:
           array:
             schema: '#ref'
-  Stage 1:
+  Get Table and PK columns:
     actors:
       get Table PK Columns:
         parent: LuFunction
@@ -121,8 +121,29 @@ stages:
         out:
           result:
             schema: '#ref'
+  Stage 18:
+    actors:
+      NotEquals2:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link:
+              path: get Table PK Columns/pks
+              iterate: Iterate
+            schema: string
+          b:
+            const: ''
+            schema: string
+      PK Field Upper Case:
+        parent: Uppercase
+        in:
+          string:
+            link:
+              path: get Table PK Columns/pks
+              iterate: Iterate
   Stage 7:
-    dependsOn: Stage 1
+    dependsOn: Stage 18
     actors:
       Lookup1:
         parent: Lookup
@@ -130,37 +151,33 @@ stages:
         in:
           lookupKeys:
             const:
-            - name
+            - upperName
           lookupData:
             const: null
             link: Create Array of Fields with Types/array
             schema: '#ref'
-          name:
-            link:
-              path: get Table PK Columns/pks
-              iterate: Iterate
+          upperName:
+            link: PK Field Upper Case/string
             schema: string
             mandatory: false
     split: '--------------------'
   Stage 2:
     else: true
     transactional: false
-    dependsOn: Stage 1
+    dependsOn: Stage 18
     actors:
       Lookup2:
         parent: Lookup
         in:
           lookupKeys:
             const:
-            - columnName
+            - upperColumnName
           lookupData:
             const: null
             link: get Lu Table Columns And Types/result
             schema: '#ref'
-          columnName:
-            link:
-              path: get Table PK Columns/pks
-              iterate: Iterate
+          upperColumnName:
+            link: PK Field Upper Case/string
             schema: string
             mandatory: false
         out:
@@ -405,20 +422,54 @@ stages:
             schema: boolean
       Loop Stop:
         parent: LoopStop
-  Template's Input 2:
+  'Template''s Input ':
     actors:
-      Table PK Fields:
-        parent: MapBuild
+      Remove duplicate fields:
+        parent: JavaScript
         in:
-          key:
-            const: Columns
-            schema: string
-          value:
+          script:
+            const:
+              userCode: |-
+                var arrIn = [];
+                arrIn = [...fieldsArray];
+                var fieldList = [];
+                //const uniqueArr = [...new Set(arrIn)];
+                var arrOut = [];
+                for(var i=0; i<arrIn.length; i++) {
+                    var fieldName = arrIn[i].upperName;
+                    if (fieldList.indexOf(fieldName)=== -1) {
+                        fieldList.push(fieldName)
+                        arrOut.push(arrIn[i]);
+                    }
+
+                }
+
+                arrOut;
+              script: |-
+                var arrIn = [];
+                arrIn = [].concat(fieldsArray);
+                var fieldList = []; //const uniqueArr = [...new Set(arrIn)];
+
+                var arrOut = [];
+
+                for (var i = 0; i < arrIn.length; i++) {
+                  var fieldName = arrIn[i].upperName;
+
+                  if (fieldList.indexOf(fieldName) === -1) {
+                    fieldList.push(fieldName);
+                    arrOut.push(arrIn[i]);
+                  }
+                }
+
+                arrOut;
+          fieldsArray:
             link:
             - Const1/value
             - JavaScript1/result
+            schema: '#ref'
+            mandatory: false
         out:
-          map:
+          result:
             schema: '#ref'
       Parent Table Data:
         parent: MapBuild
@@ -475,8 +526,19 @@ stages:
         out:
           result:
             schema: boolean
-  Stage 6:
+  Template's Input 2:
     actors:
+      Table PK Fields:
+        parent: MapBuild
+        in:
+          key:
+            const: Columns
+            schema: string
+          value:
+            link: Remove duplicate fields/result
+        out:
+          map:
+            schema: '#ref'
       LU Name:
         parent: MapBuild
         in:
@@ -600,6 +662,8 @@ schemas:
         type: string
       name:
         type: string
+      upperName:
+        type: string
   Create Array of Fields with Types.out.array:
     type: array
     items:
@@ -608,6 +672,8 @@ schemas:
         datatype:
           type: string
         name:
+          type: string
+        upperName:
           type: string
   get Table PK Columns.out.pks:
     type: array
@@ -619,6 +685,8 @@ schemas:
       type: object
       properties:
         columnType:
+          type: string
+        upperColumnName:
           type: string
         columnName:
           type: string
@@ -639,6 +707,8 @@ schemas:
     properties:
       columnType:
         type: string
+      upperColumnName:
+        type: string
       columnName:
         type: string
   InnerFlow2.out.deleteFieldData:
@@ -648,6 +718,8 @@ schemas:
         type: string
       name:
         type: string
+      upperName:
+        type: string
   Create Array of Fields with Types1.out.array:
     type: array
     items:
@@ -656,6 +728,8 @@ schemas:
         datatype:
           type: string
         name:
+          type: string
+        upperName:
           type: string
   Const2.out.value:
     type: array
@@ -705,6 +779,8 @@ schemas:
           type: string
         name:
           type: string
+        upperName:
+          type: string
   JavaScript1.in.array1:
     type: array
     items:
@@ -731,6 +807,8 @@ schemas:
         datatype:
           type: string
         name:
+          type: string
+        upperName:
           type: string
   Sync Method.out.map:
     type: object
@@ -780,11 +858,28 @@ schemas:
               type: string
             TABLE:
               type: string
-  Table PK Fields.out.map:
-    type: object
-    properties:
-      NAME:
-        type: string
+  Remove duplicate fields.in.fieldsArray:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+        upperName:
+          type: string
+  Remove duplicate fields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        datatype:
+          type: string
+        name:
+          type: string
+        upperName:
+          type: string
   Parent Table Data.out.map:
     type: object
     properties:
@@ -827,6 +922,11 @@ schemas:
               type: string
             TABLE:
               type: string
+  Table PK Fields.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
   LU Name.out.map:
     type: object
     properties:

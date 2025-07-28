@@ -1,5 +1,14 @@
 tags: Create
 stages:
+  Check Global For Creation:
+    actors:
+      Create TDMDB Flag:
+        parent: FabricSetRead
+        condition: result
+        in:
+          key:
+            const: CREATE_TDMDB
+            default: false
   Check If Active:
     actors:
       Error Handler For Test Connection:

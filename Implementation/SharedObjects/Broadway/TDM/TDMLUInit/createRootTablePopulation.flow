@@ -1,7 +1,37 @@
 tags: TDM
 stages:
+  Get Template:
+    actors:
+      Get Template For Main table Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: main_table_population_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   PWD:
     actors:
+      Tempate Found?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Template For Main table Population/result
+            schema: string
+          b:
+            const: ''
+            schema: string
       Get Project Directory:
         parent: InnerFlow
         in:
@@ -12,22 +42,22 @@ stages:
             schema: string
   Templates Path:
     actors:
-      FlowTemplate:
+      ReadTemplate:
         parent: FileRead
         in:
           interface:
             const: null
             link: Get Project Directory/PROJECT_FOLDER
           path:
-            const: SharedObjects/Templates/populationRootTable.pop.flow.template
-  SharedObjects/Templates/populationRootTable.pop.flow.template:
+            link: Get Template For Main table Population/result
+  Template Content:
     actors:
       Const:
         parent: Const
         in:
           value:
             const: null
-            link: FlowTemplate/stream
+            link: ReadTemplate/stream
         out:
           value:
             schema: '#ref'

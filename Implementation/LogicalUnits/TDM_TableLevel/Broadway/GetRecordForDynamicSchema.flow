@@ -50,7 +50,7 @@ stages:
             const: 0
           a:
             link: Does source schema contain @/position
-      Replace1:
+      'Remove ':
         parent: Replace
         in:
           search:
@@ -59,10 +59,10 @@ stages:
             link:
               path: Get record by source/result/schema_name
               iterate: Iterate
-  Stage 2:
+  Get Schema Name:
     last: 1
     actors:
-      getLUVariable1:
+      Get Schema:
         parent: InnerFlow
         in:
           flowName:
@@ -72,7 +72,7 @@ stages:
             schema: string
             mandatory: false
           variableName:
-            link: Replace1/string
+            link: Remove /string
             schema: string
             mandatory: false
         out:
@@ -82,16 +82,12 @@ stages:
         parent: LoopStop
   Stage 1:
     actors:
-      Equals1:
-        parent: Equals
+      NotNull1:
+        parent: NotNull
         condition: result
         in:
-          a:
-            link: getLUVariable1/variableValue
-            schema: string
-          b:
-            external: schema_name
-            schema: string
+          value:
+            link: Get Schema/variableValue
       Global Schema:
         parent: Const
         in:

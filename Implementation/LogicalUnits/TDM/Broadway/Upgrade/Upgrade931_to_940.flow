@@ -1,0 +1,141 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      getTDMDBSchema1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Stage 2:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/PROJECT_FOLDER
+      Params Coupling ?:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select param_value from ${@TDMDB_SCHEMA}.tdm_general_parameters
+              where param_name='PARAMS_COUPLING';
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema1/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 3:
+    actors:
+      UpgradeTableLevelDefinitions9_41:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTableLevelDefinitions9_4
+      RemoveRelationTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveRelationTables
+  Stage 4:
+    actors:
+      UpgradeParamsAddDescription1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeParamsAddDescription
+          mtable:
+            const: LuParams
+            schema: string
+            editor:
+              id: com.k2view.mTable
+            mandatory: false
+          columns:
+            const:
+            - lu_name
+            - column_name
+            - sql
+            - description
+            schema: '#ref'
+            editor:
+              id: com.k2view.strings
+            mandatory: false
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParams.csv
+            schema: string
+            mandatory: false
+      UpgradeParamsAddDescription11:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeParamsAddDescription
+          mtable:
+            const: LuParamsMapping
+            schema: string
+            editor:
+              id: com.k2view.mTable
+            mandatory: false
+          columns:
+            const:
+            - lu_name
+            - param_name
+            - lu_table
+            - lu_table_field
+            - description
+            schema: '#ref'
+            editor:
+              id: com.k2view.strings
+            mandatory: false
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParamsMapping.csv
+            schema: string
+            mandatory: false
+  Stage 5:
+    actors:
+      RenameLoadAndDeleteFlows1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RenameLoadAndDeleteFlows
+  Stage 6:
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: Params Coupling ?/result
+      CopyRootAndBeIidsPopulations1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CopyRootAndBeIidsPopulations
+schemas:
+  UpgradeParamsAddDescription1.in.columns:
+    type: array
+    items:
+      type: string
+  UpgradeParamsAddDescription11.in.columns:
+    type: array
+    items:
+      type: string

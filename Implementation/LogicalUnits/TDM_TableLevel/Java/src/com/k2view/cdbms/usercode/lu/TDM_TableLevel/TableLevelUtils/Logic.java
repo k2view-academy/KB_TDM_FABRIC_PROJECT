@@ -35,6 +35,9 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.Globals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
+import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.fnGetInterfaceType;
+
+
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
 public class Logic extends UserCode {
@@ -58,12 +61,14 @@ public class Logic extends UserCode {
         
         lookupInputs.put("table_name", tableName);
 		List<Map<String, Object>> tableDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
-
+        //List<Map<String, Object>> tableDefinitions =  fnGetInterfaceInfo(lookupInputs, interfaceName);
         //TDM 9.3.1 - Check if the schema is dynamic
         if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
-            lookupInputs.put("schema_name", null);
+            //lookupInputs.put("schema_name", null);
+            lookupInputs.remove("schema_name");
             List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
-            if (tableDefinitions2 != null && tableDefinitions.size() > 0) {
+            //List<Map<String, Object>> tableDefinitions2 =  fnGetInterfaceInfo(lookupInputs, interfaceName);
+            if (tableDefinitions2 != null && tableDefinitions2.size() > 0) {
                 String dynamicSchema = tableDefinitions2.get(0).get("schema_name").toString();
                 if (dynamicSchema.startsWith("@")) {
                     dynamicSchema = dynamicSchema.replaceAll("@", "");
@@ -72,12 +77,20 @@ public class Logic extends UserCode {
                     }
                 }   
             }
-            lookupInputs.put("schema_name", schemaName);
+            if (!"".equals(schemaName)) {
+                lookupInputs.put("schema_name", schemaName);
+            }
         }
-		lookupInputs.put("table_name", null);
+
+		//lookupInputs.put("table_name", null);
+        lookupInputs.remove("table_name");
         List<Map<String, Object>> schemaDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
-        lookupInputs.put("schema_name", null);
-        List<Map<String, Object>> interfaceDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+        //List<Map<String, Object>> schemaDefinitions = fnGetInterfaceInfo(lookupInputs, interfaceName);
+        //lookupInputs.put("schema_name", null);
+        lookupInputs.remove("schema_name");
+        //List<Map<String, Object>> interfaceDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+        List<Map<String, Object>> interfaceDefinitions = fnGetInterfaceInfo(lookupInputs, interfaceName);
+
         Boolean tableExists = false;
         Boolean schemaExists = false;
         Boolean interfaceExists = false;
@@ -143,13 +156,15 @@ public class Logic extends UserCode {
             String tableName = tableEntry.getKey();
             Integer order = tableEntry.getValue();
             lookupInputs.put("table_name",tableName);
-            List<Map<String, Object>> tableDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+            //List<Map<String, Object>> tableDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+            List<Map<String, Object>> tableDefinitions = fnGetInterfaceInfo(lookupInputs, interfaceName);
             if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
                 //TDM 9.3.1 - Check if the schema is dynamic
                 if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
                     lookupInputs.put("schema_name", null);
-                    List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
-                    if (tableDefinitions2 != null && tableDefinitions.size() > 0) {
+                    //List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+                    List<Map<String, Object>> tableDefinitions2 = fnGetInterfaceInfo(lookupInputs, interfaceName);
+                    if (tableDefinitions2 != null && tableDefinitions2.size() > 0) {
                         String dynamicSchema = tableDefinitions2.get(0).get("schema_name").toString();
                         if (dynamicSchema.startsWith("@")) {
                             dynamicSchema = dynamicSchema.replaceAll("@", "");
@@ -191,6 +206,22 @@ public class Logic extends UserCode {
         return result;
     }
 
+    private static List<Map<String, Object>> fnGetInterfaceInfo(Map<String,Object> lookupInputs, String interfaceName) throws Exception {
+        List<Map<String, Object>> result = MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+        
+        if (result == null || result.size() == 0) {
+            
+            String environmentName = getGlobal("TDM_SOURCE_ENVIRONMENT_NAME", "TDM");
+            String interfaceType = fnGetInterfaceType(interfaceName, environmentName);
+            if (interfaceType != null && !interfaceType.isEmpty()) {
+                lookupInputs.clear();
+                lookupInputs.put("interface_type", interfaceType);
+                result = MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
+            }
+        }
+
+        return result;
+    }
     @out(name = "result", type = List.class, desc = "")
     public static List<Map<String, Object>> fnGetTablesOfTask(String taskExecutionId) throws Exception {
 
@@ -213,7 +244,9 @@ public class Logic extends UserCode {
             String targetInterfaceName = row.get("interface_name").toString();
             String targetSchemaName = row.get("schema_name").toString();
             String targetTableName = row.get("table_name").toString();
-        
+            String taskSchemaName = row.get("schema_name").toString();
+            String taskInterfaceName = row.get("interface_name").toString();
+
             Map<String,Object> lookupInputs = new HashMap<>();
             lookupInputs.put("lu_name",luName);
             lookupInputs.put("interface_name",interfaceName);
@@ -273,12 +306,37 @@ public class Logic extends UserCode {
                 targetTableMap.put(tableName, targetTableName);
 
             } else {
+                if ((taskSchemaName.equals(schemaName) && taskInterfaceName.equals(interfaceName)) || 
+                    (taskSchemaName.equals(targetSchemaName) && taskInterfaceName.equals(targetInterfaceName))) {
+                    Map<String,Object> interfaceInput = new HashMap<>();
+                    interfaceInput.put("interface_name", interfaceName);
+
+                    List<Map<String, Object>> interfaceParams =  MtableLookup("TableLevelInterfaces",interfaceInput, MTable.Feature.caseInsensitive);
+                    if (interfaceParams != null  && !interfaceParams.isEmpty()) {
+                        Boolean noSchema = false;
+                        Object obj = interfaceParams.get(0).get("no_schema");
+                        if (obj != null) {
+                            noSchema = Boolean.parseBoolean(obj.toString());
+                        }
+                         
+                        if (noSchema) {
+                            if (taskSchemaName.equals(schemaName) && taskInterfaceName.equals(interfaceName)) {
+                                schemaName = null;
+                            }
+                            if (taskSchemaName.equals(targetSchemaName) && taskInterfaceName.equals(targetInterfaceName)) {                       
+                                targetSchemaName = null;
+                            }
+                        }
+                    }
+                }
+
                 Map<String, Object> newEntry = new HashMap<>();
                 newEntry.put("lu_name", luName);
                 newEntry.put("interfaceName", interfaceName);
                 newEntry.put("schemaName", schemaName);
                 newEntry.put("targetInterfaceName", targetInterfaceName);
                 newEntry.put("targetSchemaName", targetSchemaName);
+                newEntry.put("taskSchemaName", taskSchemaName);
                 Set<String> tableSet = new HashSet<>();
                 Map<String, String>  targetTableMap = new HashMap<>();
                 

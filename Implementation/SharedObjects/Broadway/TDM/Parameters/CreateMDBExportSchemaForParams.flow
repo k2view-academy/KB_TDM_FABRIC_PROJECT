@@ -66,13 +66,13 @@ stages:
             mandatory: false
           luName:
             external: luName
-            schema: any
+            schema: string
             mandatory: false
         out:
           value:
             schema: string
     split: '--------------------'
-  'Do Nothing ':
+  Do Nothing:
     dependsOn: Doesn't Exists
   Update Schema:
     dependsOn: Check Global
@@ -97,4 +97,4 @@ stages:
             mandatory: false
     split: '--------------------'
   'Do Nothing  ':
-    dependsOn: 'Do Nothing '
+    dependsOn: Do Nothing

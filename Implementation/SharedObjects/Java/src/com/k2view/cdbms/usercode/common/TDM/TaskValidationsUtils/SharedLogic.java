@@ -147,12 +147,12 @@ public class SharedLogic {
     
     public static Map<String, String> fnValidateSourceEnvForTask(Map<String, Object> be_lus, Integer refCount, String selection_method,
                                                                  String sync_mode, Boolean version_ind, String task_type,
-                                                                 Map<String, Object> envDetails,Long task_id) throws Exception {
+                                                                 Map<String, Object> envDetails,Long task_id, Long validateReadNumber) throws Exception {
 
         Object res = null;
         Boolean ownerOrAdminRole;
         ArrayList<String> lusList;
-        String env_id, role_id, beId, env_name;
+        String beId, env_name;
         Map<String, String> errorMessages = new HashMap<>();
         //log.info("fnValidateSourceEnvForTask - selection_method: " + selection_method);
         String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + TDMDB_SCHEMA + ".environment_products ep Inner Join " + TDMDB_SCHEMA + ".product_logical_units p " +
@@ -160,8 +160,8 @@ public class SharedLogic {
         String reference_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
         String syncMode_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_request_of_fresh_data = true;";
         String versioning_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_entity_versioning = true;";
-
-
+        String role_id = "";
+        String env_id = "";
         beId = (String) be_lus.get("be_id");
         lusList = (ArrayList<String>) be_lus.get("LU List");
         for (String lu_str : lusList) {
@@ -196,9 +196,9 @@ public class SharedLogic {
                     errorMessages.put("reference", "The user has no permissions to run tasks on Reference tables on source environment");
             }
             //check if source env satisfy selection method filtering
-            if ("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
+            if ("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole  && validateReadNumber!=-1) {
                 //log.info("fnValidateSourceEnvForTask - User is not allowed to run Extract ALL");
-                errorMessages.put("selectionMethod", "The User has no permissions to run 'Extract ALL' on the task's source environment. Only admin and owner users are allowed to execute 'Extract ALL'");
+                errorMessages.put("selectionMethod", "The user has no permissions to run 'Extract ALL' on the task's source environment. Only admin, owner and tester with unlimited entities permession are allowed to execute 'Extract ALL'");
             }
             // in case task type is load, "selection method" and "reference" filtering are not relevant(not required)
         }
@@ -210,13 +210,19 @@ public class SharedLogic {
             res = UserCode.db(TDM).fetch(syncMode_sql, role_id).firstValue();
             if (res == null) {
                 //log.info("fnValidateSourceEnvForTask - user not allowed to force sync");
-                errorMessages.put("syncMode", "the user has no permissions to ask to always sync the data from the source.");
+                errorMessages.put("syncMode", "The user has no permissions to ask to always sync the data from the source.");
             }
             //else {
             //    log.info("fnValidateSourceEnvForTask - res: " + res);
             //}
         }
-
+        if (role_id.equalsIgnoreCase("0") && !"OFF".equalsIgnoreCase(sync_mode)){
+            errorMessages.put("permissionSet", "The user does not have the required permissions to execute in source environment '" + env_name + "'.");
+        
+        }
+        if (role_id.equalsIgnoreCase("0") && Long.valueOf(env_id) < 0){
+            errorMessages.put("permissionSet", "The user does not have the required permissions to execute synthetic data generation tasks on the source environment '" + env_name +"'.");
+        }
         //check if source env satisfy versioning filtering
         if (version_ind != null && version_ind && !ownerOrAdminRole && !"OFF".equalsIgnoreCase(sync_mode)) {
             res = UserCode.db(TDM).fetch(versioning_sql, role_id).firstValue();
@@ -231,12 +237,14 @@ public class SharedLogic {
 
     public static Map<String, String> fnValidateTargetEnvForTask(Map<String, Object> be_lus, Integer refCount, String selection_method,
         Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load,
-        String task_type, Boolean reserve_ind, int noOfEntities, Map<String, Object> envDetails, Boolean clone_ind, String sync_mode, Long task_id) throws Exception {
+        String task_type, Boolean reserve_ind, int noOfEntities, Map<String, Object> envDetails, Boolean clone_ind, String sync_mode, Long task_id, Long validateNumber) throws Exception {
         Map<String, String> errorMessages = new HashMap<>();
         Object res = null;
         Boolean ownerOrAdminRole;
         ArrayList<String> lusList;
-        String env_id, role_id, beId, env_name;
+        String  beId, env_name;
+        String role_id = "";
+        String env_id = "";
         //log.info("fnValidateTargetEnvForTask - selection_method: " + selection_method);
         String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + TDMDB_SCHEMA + ".environment_products ep Inner Join " + TDMDB_SCHEMA + ".product_logical_units p " +
                 "On ep.product_id = p.product_id Where p.be_id = (?) And ep.environment_id = (?) And Lower(ep.status) = 'active') lu Where 1 = 1 ";
@@ -256,13 +264,19 @@ public class SharedLogic {
         for (String lu_str : lusList) {
             beAndLus_sql += "and " + lu_str + "=ANY(lu.lu_list) ";
         }
-
+        
         env_id = "" + envDetails.get("environment_id");
         env_name = "" + envDetails.get("environment_name");
         role_id = "" + envDetails.get("role_id");
         ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
         //log.info("fnValidateTargetEnvForTask - role_id: " + role_id);
+        if (role_id.equalsIgnoreCase("0") && !"OFF".equalsIgnoreCase(sync_mode)){
+            errorMessages.put("permissionSet", "The user does not have the required permissions to execute in target environment '" + env_name +"'.");
         
+        }
+        if (role_id.equalsIgnoreCase("0") && Long.valueOf(env_id) < 0){
+            errorMessages.put("permissionSet", "The user does not have the required permissions to execute synthetic data generation tasks on the target environment '" + env_name +"'.");
+        }
         //check if system are diabled in the target environment 
         String inactive_target_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"TARGET",task_id);
 
@@ -287,13 +301,13 @@ public class SharedLogic {
             if ("R".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
                 res = UserCode.db(TDM).fetch(randomSelection_sql, role_id).firstValue();
                 if (res == null)
-                    errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
+                    errorMessages.put("selectionMethod", "The user has no permissions to run the task's selection method on the task's target environment");
             } else if (clone_ind && !ownerOrAdminRole) {
                 res = UserCode.db(TDM).fetch(cloningData_sql, role_id).firstValue();
                 if (res == null)
-                    errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
-            } else if ("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole && (version_ind == null || !version_ind))
-                errorMessages.put("selectionMethod", "The User has no permissions to run 'Load ALL' on the task's source environment. Only admin and owner users are allowed to execute 'Load ALL'");
+                    errorMessages.put("selectionMethod", "The user has no permissions to run the task's selection method on the task's target environment");
+            } else if ("ALL".equalsIgnoreCase(selection_method) && validateNumber!=-1 && !ownerOrAdminRole && (version_ind == null || !version_ind))
+                errorMessages.put("selectionMethod", "The user has no permissions to run 'Load ALL' on the task's source environment. Only admin, owner and tester with unlimited entities permession are allowed to execute 'Load ALL'");
         }
 
         //check if target env satisfy versioning filtering
@@ -547,6 +561,17 @@ public class SharedLogic {
             return dbInterface.dbScheme;
         } catch (Exception e) {
             throw new SQLException("Error retrieving database name for interface: " + interfaceName, e);
+        }
+    }
+    
+    public static String getDBUserFromInterface(String interfaceName) throws Exception {
+        try{
+            String env = getActiveEnvironmentName();
+            DbInterface dbInterface = (DbInterface)InterfacesManager.getInstance().getInterface(interfaceName, env.isEmpty()?"_dev":env);
+            return dbInterface.getDbUser();
+        } catch (Exception e) {
+            throw new SQLException("Error retrieving database user for interface: " + interfaceName, e);
+
         }
     }
 }

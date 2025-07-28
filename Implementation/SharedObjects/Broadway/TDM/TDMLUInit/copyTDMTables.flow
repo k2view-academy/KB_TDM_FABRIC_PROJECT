@@ -35,6 +35,26 @@ stages:
             schema: '#ref'
   'Check for Table extension ':
     actors:
+      JavaScript:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = true;
+              if (fileName.startsWith('TDM_LU_TYPE_REL')) {
+                  result = false;
+              }
+              result;
+          fileName:
+            link:
+              path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
       Replace Table extension:
         parent: Replace
         height: 282

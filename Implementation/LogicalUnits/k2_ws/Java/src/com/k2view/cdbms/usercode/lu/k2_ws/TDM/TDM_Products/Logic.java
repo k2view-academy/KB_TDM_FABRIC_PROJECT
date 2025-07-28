@@ -603,8 +603,8 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String errorCode="";
 		String message=null;
-		      final String SYNTHETIC = "Synthetic";
-		
+		final String SYNTHETIC = "Synthetic";
+		final String AI = "AI";
 		try{
 			String sql="SELECT products.product_id, products.product_versions, products.product_name, COUNT(product_logical_units.lu_id) as lus " +
 					"FROM " + schema + ".products " +
@@ -618,11 +618,13 @@ public class Logic extends WebServiceUserCode {
 			for(Db.Row row:rows) {
 				product=new HashMap<>();
 				product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
-		              if (envId != null && envId < 0) {
-		                  product.put("product_versions", SYNTHETIC);
-		              } else {
-				    product.put("product_versions", row.get("product_versions"));
-		              }
+		            if (envId != null && envId == -1) {
+		            	product.put("product_versions", SYNTHETIC);
+		            }else if (envId != null && envId == -2){
+						product.put("product_versions", AI);
+					} else {
+				    	product.put("product_versions", row.get("product_versions"));
+		            }
 				product.put("product_name",row.get("product_name"));
 				product.put("lus", Integer.parseInt(row.get("lus").toString()));
 				result.add(product);
@@ -643,6 +645,7 @@ public class Logic extends WebServiceUserCode {
 		response.put("message", message);
 		return response;
 	}
+
 
 
 	static void fnUpdateProductDate(long prodId,String username) throws Exception{

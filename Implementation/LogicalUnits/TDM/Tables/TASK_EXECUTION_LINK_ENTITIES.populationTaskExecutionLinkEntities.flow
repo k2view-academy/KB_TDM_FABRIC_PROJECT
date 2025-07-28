@@ -1,6 +1,14 @@
 stages:
   Input:
     actors:
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
       PopulationArgs:
         parent: PopulationArgs
         readonly: true
@@ -12,14 +20,6 @@ stages:
         out:
           parent_rows:
             schema: '#ref'
-      SyncDeleteMode:
-        parent: SyncDeleteMode
-        in:
-          interface:
-            schema: any
-          table:
-            const: null
-            external: table
   Get Globals:
     actors:
       POP_FULL_LU_HIERARCHY_IN_TDM_LU:
@@ -80,7 +80,8 @@ stages:
                   parent_target_entity_id,
                   root_entity_id,
                   root_target_entity_id,
-                  root_lu_name
+                  root_lu_name,
+                  execution_note
               FROM
                   ${@TDMDB_SCHEMA}.task_execution_entities
               WHERE
@@ -124,7 +125,8 @@ stages:
                   '' AS parent_target_entity_id,
                   CASE WHEN t.lu_name = t.root_lu_name then t.root_entity_id else '' end as root_entity_id,
                   CASE WHEN t.lu_name = t.root_lu_name then t.root_target_entity_id else '' end as root_target_entity_id,
-                  t.root_lu_name
+                  t.root_lu_name,
+                  t.execution_note
               FROM
                   ${@TDMDB_SCEHMA}.task_execution_entities t
               WHERE
@@ -173,6 +175,7 @@ stages:
             - VERSION_TASK_EXECUTION_ID
             - SUBSET_TASK_EXECUTION_ID
             - ID_TYPE
+            - EXECUTION_NOTE
           keys:
             const:
             - TASK_EXECUTION_ID
@@ -274,6 +277,12 @@ stages:
               iterate: Iterate
             schema: string
             mandatory: false
+          EXECUTION_NOTE:
+            link:
+              path: Query All Records/result/execution_note
+              iterate: Iterate
+            schema: string
+            mandatory: false
     split: '--------------------'
   'Insert Limited Entries Into TASK_EXECUTION_LINK_ENTITIES ':
     last: 1
@@ -303,7 +312,8 @@ stages:
                       ROOT_ENTITY_STATUS,
                       VERSION_TASK_EXECUTION_ID,
                       SUBSET_TASK_EXECUTION_ID,
-                      ID_TYPE)
+                      ID_TYPE,
+                      EXECUTION_NOTE)
                   values(
                       ${TASK_EXECUTION_ID},
                       ${IID},
@@ -320,31 +330,32 @@ stages:
                       ${ROOT_ENTITY_STATUS},
                       ${VERSION_TASK_EXECUTION_ID},
                       ${SUBSET_TASK_EXECUTION_ID},
-                      ${ID_TYPE})
+                      ${ID_TYPE},
+                      ${EXECUTION_NOTE})
               on conflict do nothing
           TASK_EXECUTION_ID:
             link:
               path: Query With Limited Records/result/task_execution_id
               iterate: Iterate
-            schema: any
+            schema: integer
             mandatory: false
           ID_TYPE:
             link:
               path: Query With Limited Records/result/id_type
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           SUBSET_TASK_EXECUTION_ID:
             link:
               path: Query With Limited Records/result/subset_task_execution_id
               iterate: Iterate
-            schema: any
+            schema: integer
             mandatory: false
           VERSION_TASK_EXECUTION_ID:
             link:
               path: Query With Limited Records/result/version_task_execution_id
               iterate: Iterate
-            schema: any
+            schema: integer
             mandatory: false
           ROOT_ENTITY_STATUS:
             schema: any
@@ -353,65 +364,71 @@ stages:
             link:
               path: Query With Limited Records/result/root_lu_name
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           TARGET_PARENT_ID:
             link:
               path: Query With Limited Records/result/parent_target_entity_id
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           EXECUTION_STATUS:
             link:
               path: Query With Limited Records/result/execution_status
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           TARGET_ROOT_ENTITY_ID:
             link:
               path: Query With Limited Records/result/root_target_entity_id
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           BE_ROOT_ENTITY_ID:
             link:
               path: Query With Limited Records/result/root_entity_id
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           PARENT_ENTITY_ID:
             link:
               path: Query With Limited Records/result/parent_entity_id
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           ENTITY_ID:
             link:
               path: Query With Limited Records/result/entity_id
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           TARGET_ENTITY_ID:
             link:
               path: Query With Limited Records/result/target_entity_id
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           PARENT_LU_NAME:
             link:
               path: Query With Limited Records/result/parent_lu_name
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           LU_NAME:
             link:
               path: Query With Limited Records/result/lu_name
               iterate: Iterate
-            schema: any
+            schema: string
             mandatory: false
           IID:
             link:
               path: Query With Limited Records/result/iid
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          EXECUTION_NOTE:
+            link:
+              path: Query With Limited Records/result/execution_note
               iterate: Iterate
             schema: any
             mandatory: false
@@ -585,6 +602,8 @@ schemas:
           type: string
         root_lu_name:
           type: string
+        execution_note:
+          type: string
   Query With Limited Records.out.result:
     type: array
     items:
@@ -619,6 +638,8 @@ schemas:
         root_target_entity_id:
           type: string
         root_lu_name:
+          type: string
+        execution_note:
           type: string
   DbCommand Root Status .out.result:
     type: array

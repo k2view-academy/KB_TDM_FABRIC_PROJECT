@@ -49,6 +49,24 @@ stages:
         out:
           res:
             schema: '#ref'
+      Get Template For Load Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: load_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   Read Templates:
     actors:
       Load Flow Template:
@@ -59,9 +77,25 @@ stages:
             const: null
             link: Get Project Directory/PROJECT_FOLDER
           path:
-            const: SharedObjects/Templates/TDM/tdmLoadTable.yaml.flow.template
+            link: Get Template For Load Flow/result
   Apply Templates:
     actors:
+      Get TDM_USING_CATALOG_SEQUENCES:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          variableName:
+            const: TDM_USING_CATALOG_SEQUENCES
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
       Load Flow Folder:
         parent: StringFormat
         in:
@@ -88,24 +122,14 @@ stages:
         out:
           result:
             schema: string
-      Get TDM_USING_CATALOG_SEQUENCES:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: getLUVariable
-          luName:
-            external: luType
-            schema: string
-            mandatory: false
-          variableName:
-            const: TDM_USING_CATALOG_SEQUENCES
-            schema: string
-            mandatory: false
-        out:
-          variableValue:
-            schema: string
   Write Flows:
     actors:
+      Not (TDM_USING_CATALOG_SEQUENCES):
+        parent: Not
+        in:
+          value:
+            link: Get TDM_USING_CATALOG_SEQUENCES/variableValue
+            schema: string
       Write Load File:
         parent: FileWrite
         in:
@@ -116,13 +140,7 @@ stages:
             link: Apply Load Template/result
           path:
             external: FLOW_NAME
-      Not (TDM_USING_CATALOG_SEQUENCES):
-        parent: Not
-        in:
-          value:
-            link: Get TDM_USING_CATALOG_SEQUENCES/variableValue
-            schema: string
-  Create Sequences Flow:
+  Create Sequences' Flow?:
     actors:
       Sequences Exists and Not Using Catalog?:
         parent: And
@@ -132,6 +150,36 @@ stages:
             link: Prepare Template Data/res/TABLE_SEQ_DATA
           a:
             link: Not (TDM_USING_CATALOG_SEQUENCES)/result
+      Get Template For Sequence Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: sequence_table_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Create Sequences Flow:
+    actors:
+      Tempate Found?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Template For Sequence Flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
       Sequences Flow Template:
         parent: FileRead
         in:
@@ -139,7 +187,7 @@ stages:
             const: null
             link: Get Project Directory/PROJECT_FOLDER
           path:
-            const: SharedObjects/Templates/TDM/table_sequences.yaml.flow.template
+            link: Get Template For Sequence Flow/result
       Sequences Fiow Name:
         parent: StringFormat
         in:

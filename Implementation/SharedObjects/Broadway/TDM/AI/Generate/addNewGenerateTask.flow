@@ -7,8 +7,6 @@ stages:
         in:
           key:
             const: AI_DB_INTERFACE
-      Now:
-        parent: Now
       trainingTaskId:
         parent: Const
         in:
@@ -35,6 +33,8 @@ stages:
         out:
           result:
             schema: string
+      Now:
+        parent: Now
   k2system.entity_list:
     actors:
       'k2systementity_list    ':
@@ -73,9 +73,8 @@ stages:
               \   \"batch_size_child\": 256,\r\n    \"main_entity_table_n_samples\"\
               : ${numOfEntities}\r\n  },\r\n  \"special_column_generation\": {\r\n\
               \    \"batch_size\": 2048,\r\n    \"temperature\": 0.8\r\n  },\r\n \
-              \ \"schemas\": [\"${schema}\"],\r\n  \"logical_relations\": {\r\n  \
-              \  \"root_table_n_rows_for_memory_estimation_for_fully_joined_table\"\
-              : 20,\r\n    \"ram_safety_factor_for_fully_joined_table\": 0.4,\r\n\
+              \ \"schemas\": [\"${schema}\"],\r\n  \"patching\": {\r\n    \"root_table_n_rows_for_memory_estimation_for_fully_joined_table\"\
+              : 20,\r\n    \"ram_safety_factor_for_fully_joined_table\": 0.2,\r\n\
               \    \"group_proximity_intersection_weight\": 0.9\r\n  },\r\n  \"random_state\"\
               : 42,\r\n  \"verbose\": true\r\n}"
           trainingTaskID:

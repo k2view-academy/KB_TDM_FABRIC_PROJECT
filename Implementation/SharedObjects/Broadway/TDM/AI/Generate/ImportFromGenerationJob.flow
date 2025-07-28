@@ -277,24 +277,24 @@ stages:
   Mapping:
     transactional: true
     actors:
-      PopulateTDMAIGenIIDMapping_Actor2:
-        parent: PopulateTDMAIGenIIDMapping_Actor
+      PopulateTDMAIGenIIDMapping1:
+        parent: PopulateTDMAIGenIIDMapping
         in:
-          ' env_name':
+          env_name:
             link: AI_ENVIRONMENT/result
-          ' task_execution_id':
+          task_execution_id:
             link: TDM_TASK_EXE_ID/result
-          ' root_imported_lui':
+          imported_lui:
             link: buildTDMEidForAI/string
-          ' imported_lui':
+          root_imported_lui:
             link: buildTDMEidForAI/string
-          ' root_lu_name ':
+          root_lu_name:
             external: luName
-          ' lu_name':
-            external: luName
-          ' root_generated_iid ':
+          generated_iid:
             external: IID
-          ' generated_iid':
+          lu_name:
+            external: luName
+          root_generated_iid:
             external: IID
   Get Sync Off:
     transactional: true

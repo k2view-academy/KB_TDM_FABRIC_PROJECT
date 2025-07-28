@@ -32,6 +32,9 @@ stages:
       Empty String:
         parent: EqualsIgnoreCase
         in:
+          b:
+            const: ''
+            schema: string
           a:
             link: tdm_general_parameters/result/param_value
       'Null':

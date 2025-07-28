@@ -2,18 +2,6 @@ tags: TDM
 stages:
   Stage 1:
     actors:
-      geLuTables:
-        parent: LuFunction
-        in:
-          functionName:
-            const: getLuTables
-          luName:
-            external: LU_NAME
-            schema: string
-            mandatory: false
-        out:
-          res:
-            schema: '#ref'
       Set Target Environment:
         parent: FabricSet
         in:
@@ -35,6 +23,18 @@ stages:
             const: DeleteFlows
             schema: string
             mandatory: false
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTables
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
   Stage 7:
     actors:
       Set Target Table Name:
@@ -121,6 +121,10 @@ stages:
             schema: boolean
             default: true
             mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
   Stage 3:
     last: 1
     dependsOn: Stage 2
@@ -165,6 +169,10 @@ stages:
             external: useFabric
             schema: boolean
             default: true
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
             mandatory: false
     split: '--------------------'
   Stage 8:

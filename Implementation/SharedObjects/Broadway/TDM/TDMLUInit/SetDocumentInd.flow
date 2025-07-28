@@ -1,0 +1,60 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Template For Main table Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: load_all_tables_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 2:
+    dependsOn: Stage 1
+    actors:
+      Tempate Found?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Template For Main table Population/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Not A Document DB:
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean
+    split: '--------------------'
+  Stage 3:
+    else: true
+    dependsOn: Stage 1
+    actors:
+      A Document DB:
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean

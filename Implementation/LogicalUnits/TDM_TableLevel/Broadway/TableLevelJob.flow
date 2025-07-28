@@ -64,6 +64,10 @@ stages:
             external: taskType
             schema: string
             mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
+            mandatory: false
     split: '--------------------'
   No Extract:
     else: true
@@ -126,6 +130,10 @@ stages:
           retentionPeriodValue:
             external: retentionPeriodValue
             schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
             mandatory: false
     split: '--------------------'
   No Load:

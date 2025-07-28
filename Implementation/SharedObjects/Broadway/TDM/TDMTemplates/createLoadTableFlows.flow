@@ -2,18 +2,6 @@ tags: TDM
 stages:
   Stage 1:
     actors:
-      geLuTables:
-        parent: LuFunction
-        in:
-          functionName:
-            const: getLuTables
-          luName:
-            external: LU_NAME
-            schema: string
-            mandatory: false
-        out:
-          res:
-            schema: '#ref'
       Set Target Environment:
         parent: FabricSet
         in:
@@ -50,6 +38,18 @@ stages:
             const: SequencesFlows
             schema: string
             mandatory: false
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTables
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
   Stage 10:
     actors:
       Set Target Table Name:
@@ -63,16 +63,6 @@ stages:
             external: LU_NAME
   Stage 7:
     actors:
-      flowName:
-        parent: StringFormat
-        height: 239
-        in:
-          format:
-            const: load_${0}.flow
-          params:
-            link:
-              path: Set Target Table Name/TARGET_TABLE_NAME
-              pos: 0
       check Main Table And Sequential IID:
         parent: InnerFlow
         in:
@@ -92,13 +82,13 @@ stages:
             schema: string
             mandatory: false
           interface:
-            external: TARGET_INTERFACE
+            external: SOURCE_INTERFACE
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
           schema:
-            external: TARGET_SCHEMA
+            external: SOURCE_SCHEMA
             schema: string
             editor:
               id: com.k2view.mTableKey
@@ -114,6 +104,16 @@ stages:
             schema: string
           SEQUENCE_NAME:
             schema: string
+      flowName:
+        parent: StringFormat
+        height: 239
+        in:
+          format:
+            const: load_${0}.flow
+          params:
+            link:
+              path: Set Target Table Name/TARGET_TABLE_NAME
+              pos: 0
   Stage 2:
     dependsOn: Stage 7
     actors:
@@ -182,6 +182,10 @@ stages:
             schema: boolean
             default: true
             mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
   Stage 3:
     last: 1
     dependsOn: Stage 2
@@ -232,6 +236,10 @@ stages:
             external: useFabric
             schema: boolean
             default: true
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
             mandatory: false
     split: '--------------------'
   Stage 9:
