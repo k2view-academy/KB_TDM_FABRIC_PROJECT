@@ -105,7 +105,8 @@ stages:
             const: "INSERT INTO ${@schema}.permission_groups_mapping(\n\tdescription,\
               \ fabric_role, permission_group, created_by, updated_by, creation_date,\
               \ update_date)\n\tVALUES ('Initial mapping for tester user',${k2v_user}\
-              \ ,'tester', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\n"
+              \ ,'tester', 'admin', 'admin', NOW(), NOW())\n\tON CONFLICT (fabric_role)\
+              \ DO UPDATE SET permission_group='tester' ;\n"
           k2v_user:
             link: DbCommand/result/name
             schema: string
