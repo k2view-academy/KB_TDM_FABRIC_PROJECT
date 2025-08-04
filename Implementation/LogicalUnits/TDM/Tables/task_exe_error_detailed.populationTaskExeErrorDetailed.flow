@@ -1,1018 +1,470 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Input",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_execution_id": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "SyncDeleteMode",
-                            "actorType": {
-                                "parentType": "SyncDeleteMode",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Root Function",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Fetch Task Type",
-                            "actorType": {
-                                "parentType": "DbFetchFirstRow",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select task_type from tasks where task_execution_id=${@task_execution_id}"
-                                    },
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "TASK_TYPE": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Fetch errTableData",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "errTableData",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select distinct task_execution_id,lu_name,entity_id,iid,target_entity_id, error_category, error_code,\r\nerror_message, creation_date, flow_name, stage_name, actor_name, actor_parameters\r\nfrom @TDMDB_SCHEMA@.TASK_EXE_ERROR_DETAILED where task_execution_id = ${@TASK_EXECUTION_ID}"
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_execution_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lu_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "entity_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "iid": {
-                                                        "type": "string"
-                                                    },
-                                                    "target_entity_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "error_category": {
-                                                        "type": "string"
-                                                    },
-                                                    "error_code": {
-                                                        "type": "string"
-                                                    },
-                                                    "error_message": {
-                                                        "type": "string"
-                                                    },
-                                                    "creation_date": {
-                                                        "type": "date"
-                                                    },
-                                                    "flow_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "stage_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "actor_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "actor_parameters": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Extract Task",
-                    "dependsOnList": [
-                        "Fetch errTableData"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "extract",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "extract"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "TASK_EXE_ERROR_DETAILED extract",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": "TASK_EXE_ERROR_DETAILED"
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "TASK_EXECUTION_ID",
-                                            "LU_NAME",
-                                            "ENTITY_ID",
-                                            "IID",
-                                            "TARGET_ENTITY_ID",
-                                            "ERROR_CATEGORY",
-                                            "ERROR_CODE",
-                                            "ERROR_MESSAGE",
-                                            "CREATION_DATE",
-                                            "FLOW_NAME",
-                                            "STAGE_NAME",
-                                            "ACTOR_NAME",
-                                            "ACTOR_PARAMETERS"
-                                        ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "sqlite"
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ENTITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "IID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_ENTITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_CATEGORY",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_CODE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_MESSAGE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "CREATION_DATE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "FLOW_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "STAGE_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ACTOR_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ACTOR_PARAMETERS",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Load Task",
-                    "dependsOnList": [
-                        "Fetch errTableData"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "task_execution_entities",
-                            "actorType": {
-                                "parentType": "DbFetchFirstRow",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select id_type, target_entity_id, iid from task_execution_entities \r\nwhere TASK_EXECUTION_ID = ${TASK_EXECUTION_ID} AND LU_NAME = ${LU_NAME} AND ENTITY_ID = ${ENTITY_ID}"
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ENTITY_ID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "ID_TYPE": {},
-                                                "TARGET_ENTITY_ID": {
-                                                    "type": "string"
-                                                },
-                                                "IID": {}
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Extract Task"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                },
-                {
-                    "name": "idType=entity",
-                    "dependsOnList": [
-                        "Load Task"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "entity",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "entity"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "TASK_EXE_ERROR_DETAILED load1",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": "TASK_EXE_ERROR_DETAILED"
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "TASK_EXECUTION_ID",
-                                            "LU_NAME",
-                                            "ENTITY_ID",
-                                            "IID",
-                                            "TARGET_ENTITY_ID",
-                                            "ERROR_CATEGORY",
-                                            "ERROR_CODE",
-                                            "ERROR_MESSAGE",
-                                            "CREATION_DATE",
-                                            "FLOW_NAME",
-                                            "STAGE_NAME",
-                                            "ACTOR_NAME",
-                                            "ACTOR_PARAMETERS"
-                                        ]
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ENTITY_ID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "IID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_ENTITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_CATEGORY",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_CODE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_MESSAGE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "CREATION_DATE",
-                                        "schema": {
-                                            "type": "date"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "FLOW_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "STAGE_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ACTOR_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ACTOR_PARAMETERS",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "else",
-                    "dependsOnList": [
-                        "Load Task"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "TASK_EXE_ERROR_DETAILED load2",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": "TASK_EXE_ERROR_DETAILED"
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "TASK_EXECUTION_ID",
-                                            "LU_NAME",
-                                            "ENTITY_ID",
-                                            "IID",
-                                            "TARGET_ENTITY_ID",
-                                            "ERROR_CATEGORY",
-                                            "ERROR_CODE",
-                                            "ERROR_MESSAGE",
-                                            "CREATION_DATE",
-                                            "FLOW_NAME",
-                                            "STAGE_NAME",
-                                            "ACTOR_NAME",
-                                            "ACTOR_PARAMETERS"
-                                        ]
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ENTITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "IID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_ENTITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_CATEGORY",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_CODE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ERROR_MESSAGE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "CREATION_DATE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "FLOW_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "STAGE_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ACTOR_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ACTOR_PARAMETERS",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [
-                        "Stage 2"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                },
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [
-                        "idType=entity"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                },
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [
-                        "else"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Get Task Type and List of LUs:
+    actors:
+      Fetch Task Type:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: |-
+              select t.task_type, group_concat(l.lu_name, ',') as lu_list from tasks t, task_execution_list l where t.task_execution_id=${@task_execution_id}
+                  and t.task_execution_id = l.task_execution_id
+          task_execution_id:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      TDM_TableLeve:
+        parent: Const
+        in:
+          value:
+            const: TDM_TableLevel
+            schema: string
+        out:
+          value:
+            schema: string
+  Add TDM_TableLevel LU:
+    actors:
+      Concat1:
+        parent: Concat
+        in:
+          elements:
+            link:
+            - path: Fetch Task Type/result/lu_list
+              pos: 0
+            - path: TDM_TableLeve/value
+              pos: 1
+  Add quote:
+    actors:
+      Add quote to LU Names:
+        parent: Replace
+        in:
+          search:
+            const: ','
+          replace:
+            const: ''','''
+          string:
+            link: Concat1/string
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Build Query:
+    actors:
+      Format Query:
+        parent: StringFormat
+        in:
+          format:
+            const: "select distinct task_execution_id,lu_name,entity_id,iid,target_entity_id,\
+              \ error_category, error_code,\r\nerror_message, creation_date, flow_name,\
+              \ stage_name, actor_name, actor_parameters\r\nfrom ${TDMDB_SCHEMA}.TASK_EXE_ERROR_DETAILED\
+              \ where lu_name in ('${LU_LIST}') and task_execution_id = ${TASK_EXECUTION_ID}"
+          TASK_EXECUTION_ID:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+          LU_LIST:
+            link: Add quote to LU Names/string
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+  Fetch errTableData:
+    actors:
+      errTableData:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Format Query/string
+        out:
+          result:
+            schema: '#ref'
+  Extract Task:
+    dependsOn: Fetch errTableData
+    actors:
+      extract:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: extract
+            schema: string
+          a:
+            link: Fetch Task Type/result/TASK_TYPE
+      TASK_EXE_ERROR_DETAILED extract:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_ERROR_DETAILED
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - LU_NAME
+            - ENTITY_ID
+            - IID
+            - TARGET_ENTITY_ID
+            - ERROR_CATEGORY
+            - ERROR_CODE
+            - ERROR_MESSAGE
+            - CREATION_DATE
+            - FLOW_NAME
+            - STAGE_NAME
+            - ACTOR_NAME
+            - ACTOR_PARAMETERS
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            schema: any
+            mandatory: false
+          LU_NAME:
+            schema: any
+            mandatory: false
+          ENTITY_ID:
+            schema: any
+            mandatory: false
+          IID:
+            schema: any
+            mandatory: false
+          TARGET_ENTITY_ID:
+            schema: any
+            mandatory: false
+          ERROR_CATEGORY:
+            schema: any
+            mandatory: false
+          ERROR_CODE:
+            schema: any
+            mandatory: false
+          ERROR_MESSAGE:
+            schema: any
+            mandatory: false
+          CREATION_DATE:
+            schema: any
+            mandatory: false
+          FLOW_NAME:
+            schema: any
+            mandatory: false
+          STAGE_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_PARAMETERS:
+            schema: any
+            mandatory: false
+          params:
+            link:
+              path: errTableData/result
+              iterate: Iterate
+    split: '--------------------'
+  Load Task:
+    else: true
+    transactional: false
+    dependsOn: Fetch errTableData
+    actors:
+      task_execution_entities:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: |-
+              select id_type, target_entity_id, iid from task_execution_link_entities
+              where TASK_EXECUTION_ID = ${TASK_EXECUTION_ID} AND LU_NAME = ${LU_NAME} AND ENTITY_ID = ${ENTITY_ID}
+          TASK_EXECUTION_ID:
+            link: errTableData/result/task_execution_id
+            schema: integer
+            mandatory: false
+          LU_NAME:
+            link: errTableData/result/lu_name
+            schema: string
+            mandatory: false
+          ENTITY_ID:
+            link:
+              path: errTableData/result/entity_id
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Do Nothing:
+    transactional: false
+    dependsOn: Extract Task
+    split: '--------------------'
+  idType=entity:
+    transactional: false
+    dependsOn: Load Task
+    actors:
+      entity:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: entity
+            schema: string
+          a:
+            link: task_execution_entities/result/ID_TYPE
+      TASK_EXE_ERROR_DETAILED load1:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_ERROR_DETAILED
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - LU_NAME
+            - ENTITY_ID
+            - IID
+            - TARGET_ENTITY_ID
+            - ERROR_CATEGORY
+            - ERROR_CODE
+            - ERROR_MESSAGE
+            - CREATION_DATE
+            - FLOW_NAME
+            - STAGE_NAME
+            - ACTOR_NAME
+            - ACTOR_PARAMETERS
+          TASK_EXECUTION_ID:
+            link:
+              path: errTableData/result/task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          LU_NAME:
+            link:
+              path: errTableData/result/lu_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ENTITY_ID:
+            link:
+              path: errTableData/result/entity_id
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          IID:
+            link: task_execution_entities/result/IID
+            schema: string
+            mandatory: false
+          TARGET_ENTITY_ID:
+            link: task_execution_entities/result/TARGET_ENTITY_ID
+            schema: string
+            mandatory: false
+          ERROR_CATEGORY:
+            link:
+              path: errTableData/result/error_category
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ERROR_CODE:
+            link:
+              path: errTableData/result/error_code
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ERROR_MESSAGE:
+            link:
+              path: errTableData/result/error_message
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          CREATION_DATE:
+            link:
+              path: errTableData/result/creation_date
+              iterate: Iterate
+            schema: date
+            mandatory: false
+          FLOW_NAME:
+            link:
+              path: errTableData/result/flow_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          STAGE_NAME:
+            link:
+              path: errTableData/result/stage_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ACTOR_NAME:
+            link:
+              path: errTableData/result/actor_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ACTOR_PARAMETERS:
+            link:
+              path: errTableData/result/actor_parameters
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  else:
+    else: true
+    transactional: false
+    dependsOn: Load Task
+    actors:
+      TASK_EXE_ERROR_DETAILED load2:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_ERROR_DETAILED
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - LU_NAME
+            - ENTITY_ID
+            - IID
+            - TARGET_ENTITY_ID
+            - ERROR_CATEGORY
+            - ERROR_CODE
+            - ERROR_MESSAGE
+            - CREATION_DATE
+            - FLOW_NAME
+            - STAGE_NAME
+            - ACTOR_NAME
+            - ACTOR_PARAMETERS
+          TASK_EXECUTION_ID:
+            schema: any
+            mandatory: false
+          LU_NAME:
+            schema: any
+            mandatory: false
+          ENTITY_ID:
+            schema: any
+            mandatory: false
+          IID:
+            schema: any
+            mandatory: false
+          TARGET_ENTITY_ID:
+            schema: any
+            mandatory: false
+          ERROR_CATEGORY:
+            schema: any
+            mandatory: false
+          ERROR_CODE:
+            schema: any
+            mandatory: false
+          ERROR_MESSAGE:
+            schema: any
+            mandatory: false
+          CREATION_DATE:
+            schema: any
+            mandatory: false
+          FLOW_NAME:
+            schema: any
+            mandatory: false
+          STAGE_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_PARAMETERS:
+            schema: any
+            mandatory: false
+          params:
+            link:
+              path: errTableData/result
+              iterate: Iterate
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string
+  Fetch Task Type.out.result:
+    type: object
+    properties:
+      TASK_TYPE:
+        type: string
+      lu_list:
+        type: string
+  errTableData.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: integer
+        lu_name:
+          type: string
+        entity_id:
+          type: string
+        iid:
+          type: string
+        target_entity_id:
+          type: string
+        error_category:
+          type: string
+        error_code:
+          type: string
+        error_message:
+          type: string
+        creation_date:
+          type: date
+        flow_name:
+          type: string
+        stage_name:
+          type: string
+        actor_name:
+          type: string
+        actor_parameters:
+          type: string
+  task_execution_entities.out.result:
+    type: object
+    properties:
+      ID_TYPE: {
         }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "errTableData",
-                "name": "TASK_EXECUTION_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Fetch Task Type",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Fetch Task Type",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "extract",
-                "name": "a"
-            },
-            "path": [
-                "TASK_TYPE"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED extract",
-                "name": "params"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load2",
-                "name": "params"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_entities",
-                "name": "TASK_EXECUTION_ID"
-            },
-            "path": [
-                "task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_entities",
-                "name": "LU_NAME"
-            },
-            "path": [
-                "lu_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_execution_entities",
-                "name": "ENTITY_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "entity_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "TASK_EXECUTION_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "LU_NAME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "lu_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "ENTITY_ID"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "entity_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "ERROR_CATEGORY"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "error_category"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "ERROR_CODE"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "error_code"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "ERROR_MESSAGE"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "error_message"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "CREATION_DATE"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "creation_date"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "FLOW_NAME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "flow_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "STAGE_NAME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "stage_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "ACTOR_NAME"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "actor_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "errTableData",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "ACTOR_PARAMETERS"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "actor_parameters"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "task_execution_entities",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "entity",
-                "name": "a"
-            },
-            "path": [
-                "ID_TYPE"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "task_execution_entities",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "TARGET_ENTITY_ID"
-            },
-            "path": [
-                "TARGET_ENTITY_ID"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "task_execution_entities",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TASK_EXE_ERROR_DETAILED load1",
-                "name": "IID"
-            },
-            "path": [
-                "IID"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "task_execution_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "SyncDeleteMode",
-                "name": "table"
-            }
+      TARGET_ENTITY_ID:
+        type: string
+      IID: {
         }
-    ]
-}

@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_products
     last_updated_by text,
     status text NOT NULL,
     data_center_name text,
+    enable_product Boolean DEFAULT 'true',
     CONSTRAINT environment_products_pkey PRIMARY KEY (environment_product_id)
 );
 
@@ -317,6 +318,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     task_description text,
     clone_ind boolean NOT NULL DEFAULT false,
     execution_mode text DEFAULT 'INHERITED',
+    enable_execution boolean DEFAULT 'true',
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
@@ -358,7 +360,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_seq_mapping
   source_id       text,
   target_id       text,
   is_instance_id  text,
-  entity_sequence bigint
+  entity_sequence bigint,
+   CONSTRAINT tdm_seq_mapping_pkey PRIMARY KEY (task_execution_id,lu_type,source_env,entity_target_id,seq_name,table_name,source_id)
 );
 
 Create INDEX IF NOT EXISTS TDM_SEQ_MAPPING_IX on ${@schema}.tdm_seq_mapping (task_execution_id,lu_type,source_env);
@@ -370,7 +373,7 @@ Create INDEX IF NOT EXISTS TDM_SEQ_MAPPING_IX on ${@schema}.tdm_seq_mapping (tas
 
 CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
 (
-  task_execution_id text NOT NULL,
+  task_execution_id bigint NOT NULL,
   lu_name text NOT NULL,
   entity_id text NOT NULL,
   target_entity_id text,
@@ -388,50 +391,15 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
   fabric_get_time bigint,
   total_processing_time bigint,
   clone_no text DEFAULT '0',
-  root_entity_id text, -- TDM 8.0
+  parent_lu_name text, -- TDM 9.3
+  parent_entity_id text, -- TDM 9.3
+  parent_target_entity_id text, -- TDM 9.3
   root_lu_name text, -- TDM 8.1
-  CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, target_entity_id)
+  root_entity_id text, -- TDM 8.0
+  root_target_entity_id text, -- TDM 9.3
+  execution_note text, -- TDM 9.4
+  CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, clone_no, root_entity_id, root_target_entity_id)
 );
-
-CREATE INDEX IF NOT EXISTS task_execution_entities_2ix ON ${@schema}.task_execution_entities (task_execution_id, lu_name, source_env, iid, version_task_execution_id); --TDM 9.0
-
--- Table: ${@schema}.tdm_lu_type_relation_eid
-
---DROP TABLE IF EXISTS ${@schema}.tdm_lu_type_relation_eid;
-
-CREATE TABLE IF NOT EXISTS ${@schema}.tdm_lu_type_relation_eid
-(
-  source_env text NOT NULL,
-  lu_type_1 text NOT NULL,
-  lu_type_2 text NOT NULL,
-  lu_type1_eid text NOT NULL,
-  lu_type2_eid text NOT NULL,
-  creation_date timestamp without time zone,
-  version_task_execution_id bigint NOT NULL DEFAULT 0, --TDM 9.0 
-  subset_task_execution_id bigint DEFAULT 0,--TDM 9.0
-  CONSTRAINT tdm_lu_type_relation_eid_pk PRIMARY KEY (source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,version_task_execution_id)
-);
-
-CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_1ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_1,lu_type1_eid,version_task_execution_id); -- TDM 9.0
-CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_2ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_2,lu_type2_eid,version_task_execution_id); -- TDM 9.0
-
- -- Table: ${@schema}.tdm_lu_type_rel_tar_eid
-				  
---DROP TABLE IF EXISTS ${@schema}.tdm_lu_type_rel_tar_eid;
-				  
-CREATE TABLE IF NOT EXISTS ${@schema}.tdm_lu_type_rel_tar_eid
-(
-	target_env text NOT NULL,
-	lu_type_1 text NOT NULL,
-	lu_type_2 text NOT NULL,
-	lu_type1_eid text NOT NULL,
-	lu_type2_eid text NOT NULL,
-	creation_date timestamp without time zone,
-	CONSTRAINT tdm_lu_type_rel_tar_eid_pk PRIMARY KEY (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid)
-);
-
-CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_2ix ON ${@schema}.tdm_lu_type_rel_tar_eid (lu_type_1, lu_type1_eid); -- TDM 6.1
-CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_3ix ON ${@schema}.tdm_lu_type_rel_tar_eid (lu_type_2, lu_type2_eid); -- TDM 6.1
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tasks_logical_units
 (
@@ -462,6 +430,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
   version_task_name text,
   gui_filter text,
   filter_parameters text,
+  filter_fields text,
   CONSTRAINT task_ref_tables_pkey PRIMARY KEY (task_ref_table_id) 
 );
 
@@ -510,13 +479,17 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-     select 'tdm_gui_params','{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False ,"masking_only":True}'
+     select 'tdm_gui_params','{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'tdm_gui_params');
-    
+
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '9.2' 
+    select 'TDM_VERSION', '9.4.0' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
+
+INSERT INTO ${@schema}.tdm_general_parameters(
+        param_name, param_value)
+    VALUES ('FOOTER_TEXT', 'Copyright K2view') ON CONFLICT DO NOTHING;  
 
 insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
@@ -543,12 +516,14 @@ INSERT INTO ${@schema}.tdm_general_parameters(param_name, param_value)
 
 INSERT INTO ${@schema}.tdm_general_parameters(
         param_name, param_value)
-    VALUES ('PARAMS_COUPLING', 'true') ON CONFLICT DO NOTHING;
+    VALUES ('PARAMS_COUPLING', 'false') ON CONFLICT DO NOTHING;
 
 INSERT INTO ${@schema}.tdm_general_parameters(
         param_name, param_value)
     VALUES ('ADD_LU_NAME_TO_PARAM_NAME', 'false') ON CONFLICT DO NOTHING;
 
+INSERT INTO ${@schema}.tdm_general_parameters (param_name, param_value)
+VALUES ('ENABLE_TASK_LU_EDITING_FOR_TESTERS', 'true') ON CONFLICT DO NOTHING;
 -- Table: ${@schema}.task_globals
 
 --DROP TABLE IF EXISTS ${@schema}.task_globals;
@@ -686,7 +661,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_exe_process (
 	execution_order integer NOT NULL,
 	CONSTRAINT be_exe_process_pkey PRIMARY KEY (process_id,be_id,process_type)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_exe_process_ix1 ON ${@schema}.tdm_be_exe_process (process_name, be_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_exe_process_ix1 ON ${@schema}.tdm_be_exe_process (process_name, be_id, process_type);
 
 -- Table ${@schema}.tasks_exe_process
 --DROP TABLE IF EXISTS ${@schema}.tasks_exe_process;
@@ -697,6 +673,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks_exe_process (
 	execution_order integer NOT NULL,
     process_type TEXT,
     parameters TEXT,
+    status text DEFAULT 'Active',
 	CONSTRAINT tasks_exe_pkey PRIMARY KEY (task_id, process_id)
 );
 
@@ -716,6 +693,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_detailed
     source_count text,
     target_count text,
     diff text,
+    suppressed_error_count text,
     results text
 );
 
@@ -871,3 +849,32 @@ begin
 end;
 $body$
 LANGUAGE plpgsql;
+
+INSERT INTO ${@schema}.environments (environment_name, environment_description, environment_expiration_date, environment_point_of_contact_first_name, 
+	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
+	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
+	allow_read, sync_mode,mask_sensitive_data) 
+	VALUES ('Synthetic','This is the synthetic environment.',
+        NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE', false) ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, 
+	allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, allowed_number_of_entities_to_copy, role_id, role_created_by, 
+	role_creation_date, role_last_updated_date, role_expiration_date, role_last_updated_by, role_status, allowed_refresh_reference_data, allowed_replace_sequences, 
+	allow_read, allow_write, allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, allowed_number_of_reserved_entities)
+	VALUES (-1,'Synthetic','Role for Synethetic Environment',false,false,false,false,false,0,-1,'admin',NOW(),NOW(),NULL,'admin','Active',
+	false,false,true,false,1000,false,false,0) ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.environments (environment_name, environment_description, environment_expiration_date, environment_point_of_contact_first_name, 
+	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
+	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
+	allow_read, sync_mode,mask_sensitive_data) 
+	VALUES ('AI','This is the AI Generationa and Training environment.',
+        NULL,NULL,NULL,NULL,NULL,NULL,-2,'admin',NOW(),NOW(),'admin','Active',true,true,'OFF', false) ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-2, -2, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
+	allowed_creation_of_synthetic_data,allowed_random_entity_selection,allowed_request_of_fresh_data,
+	allowed_task_scheduling,allowed_number_of_entities_to_copy, role_id, role_created_by, role_creation_date, 
+	role_last_updated_date,role_last_updated_by,role_status,allowed_refresh_reference_data, allowed_replace_sequences, 
+	allow_read, allow_write,allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, 
+	allowed_number_of_reserved_entities) VALUES(-2,'AI','Role for AI Environment',false,false,false,false,false,1000,-2,
+	'admin',NOW(),NOW(),'admin','Active',false,false,true,true,1000,false,false,1000) ON CONFLICT DO NOTHING;

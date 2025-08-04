@@ -1,0 +1,178 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+      SharedGlobals folder path:
+        parent: Const
+        in:
+          value:
+            const: SharedObjects/Java/src/com/k2view/cdbms/usercode/common
+            schema: string
+        out:
+          value:
+            schema: string
+      SharedGlobals template file path:
+        parent: Const
+        in:
+          value:
+            const: Implementation/SharedObjects/Templates/TDMGlobals/SharedGlobals.java.temp
+            schema: string
+        out:
+          value:
+            schema: string
+      SharedGlobals file path:
+        parent: Const
+        in:
+          value:
+            const: Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/SharedGlobals.java
+            schema: string
+        out:
+          value:
+            schema: string
+  Stage 2:
+    actors:
+      Implementation Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: file://${ProjDir}/Implementation/${globalsPath}
+          ProjDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          globalsPath:
+            link: SharedGlobals folder path/value
+            schema: string
+            mandatory: false
+      newSharedGlobal:
+        parent: StringFormat
+        in:
+          format:
+            const: ${ProjDir}/${sharedGlobalsTemplatePath}
+          ProjDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          sharedGlobalsTemplatePath:
+            link: SharedGlobals template file path/value
+            schema: string
+            mandatory: false
+      oldSharedGlobal:
+        parent: StringFormat
+        in:
+          format:
+            const: ${ProjDir}/${sharedGlobalsFilePath}
+          ProjDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          sharedGlobalsFilePath:
+            link: SharedGlobals file path/value
+            schema: string
+            mandatory: false
+  Stage 3:
+    actors:
+      CheckIfFileExists1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: Implementation Folder/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+            mandatory: false
+          pattern:
+            const: SharedGlobals.java
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      fieldsToIgnore:
+        parent: ConstStrings
+        in:
+          strings:
+            const:
+            - SEQ_DO_TRUNCATE
+            - SEQ_DROP_KEYSPACE
+            - USER_PERMISSION_GROUP
+            - EXTRACT_MASKING_FLAG
+            - TDM_DELETE_BEFORE_LOAD
+            - TDM_INSERT_TO_TARGET
+            - TDM_SYNC_SOURCE_DATA
+            - TDM_TARGET_PRODUCT_VERSION
+            - TDM_SOURCE_PRODUCT_VERSION
+            - TDM_REPLACE_SEQUENCES
+            - TDM_TASK_EXE_ID
+            - TDM_SOURCE_ENVIRONMENT_NAME
+            - TDM_TAR_ENV_NAME
+            - TDM_CLONING_DATA
+            - TDM_TASK_ID
+            - TDM_DATAFLUX_TASK
+            - clone_id
+            - LOAD_MASKING_FLAG
+            - TDM_VERSION_TASK_EXECUTION_ID
+            - TDM_DELETE_ONLY_TASK
+            - USER_NAME
+            - USER_FABRIC_ROLES
+            - TDM_RESERVE_IND
+            - RESERVE_RETENTION_PERIOD_TYPE
+            - RESERVE_RETENTION_PERIOD_VALUE
+            - BE_ID
+            - TASK_TYPE
+            - enable_sequences
+            - enable_masking
+            - BUILD_TDMDB
+  Stage 4:
+    actors:
+      file exist?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: CheckIfFileExists1/FILE_FOUND
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      mergeFiles:
+        parent: LuFunction
+        in:
+          functionName:
+            const: mergeJavaFiles
+          oldFilePath:
+            link: oldSharedGlobal/string
+            schema: any
+            mandatory: false
+          newFilePath:
+            link: newSharedGlobal/string
+            schema: any
+            mandatory: false
+          outputFilePath:
+            link: oldSharedGlobal/string
+            schema: any
+            mandatory: false
+          className:
+            const: SharedGlobals
+            schema: string
+            mandatory: false
+          ignoreFieldsArray:
+            link: fieldsToIgnore/strings
+            schema: any
+            mandatory: false

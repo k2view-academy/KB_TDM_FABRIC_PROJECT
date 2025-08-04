@@ -1,0 +1,228 @@
+tags: TDM
+stages:
+  Add Orchestrator:
+    actors:
+      Add Orchestrator If Needed:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: AddLuOrchestrator
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+  Update Distribution Of Main Table:
+    actors:
+      Update Main Table Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateMainTablePopulation
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+  Create Sequences:
+    actors:
+      create Sequence Flows:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createSeqFlowsOnlyFromTemplates
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+  Create Load Flow:
+    actors:
+      Create Load Flows From Template:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateLoadFlowsFromTemplate
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          useFabric:
+            const: true
+            schema: boolean
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          ROOT_TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          ROOT_FIELD_NAME:
+            external: ROOT_FIELD_NAME
+            schema: string
+            mandatory: false
+  Handle Delete Tables And Flows:
+    dependsOn: Create Load Flow
+    actors:
+      Create TAR Tables?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Create Delete Flows From Template:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateDeleteFlowsFromTemplate
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+          ROOT_TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Do Not Create Delete Tables:
+    else: true
+    transactional: false
+    dependsOn: Create Load Flow
+  Create Generate Flows:
+    actors:
+      Create Generate Flows?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: CREATE_GENERATE_FLOWS
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      create Generate Data Table Flows:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createGenerateDataTableFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          DOCUMENT_IND:
+            external: DOCUMENT_IND
+            schema: boolean
+            mandatory: false
+          ROOT_TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false

@@ -8,13 +8,15 @@ stages:
             const: TableLevelInterfaces
           interface_name:
             external: interface
-            schema: any
+            schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
         out:
+          result:
+            schema: '#ref'
           truncate_indicator:
-            schema: any
+            schema: string
       List Of Tables:
         parent: Const
         in:
@@ -25,39 +27,44 @@ stages:
         out:
           value:
             schema: '#ref'
-  Delete One Table:
-    last: 1
-    actors:
-      Error Handler:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: true
-                flowName: PopulateTableErrorsForTableLevel
-      Set Target Entity ID:
-        parent: FabricSet
+      Get Source Entity ID:
+        parent: FabricSetRead
         in:
           key:
-            const: TARGET_ENTITY_ID
+            const: SOURCE_ENTITY_ID
             default: false
-          value:
-            const: null
+  Target Table:
+    actors:
+      Get Target Table Name:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var tableName = targetTables[sourceTableName];
+              tableName;
+          sourceTableName:
             link:
               path: List Of Tables/value
               iterate: Iterate
-            default: false
+            schema: string
+            mandatory: false
+          targetTables:
+            external: targetTables
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Delete One Table:
+    last: 1
+    actors:
       Delete Table:
         parent: InnerFlowAsync
         in:
           flowName:
             const: DeleteOneTable
+          saveResults:
+            const: false
           interface:
             external: interface
             schema: string
@@ -76,9 +83,7 @@ stages:
               id: com.k2view.dbtable
             mandatory: false
           table:
-            link:
-              path: List Of Tables/value
-              iterate: Iterate
+            link: Get Target Table Name/result
             schema: string
             editor:
               id: com.k2view.dbtable
@@ -87,11 +92,32 @@ stages:
             link: Get Delete Or Truncate Indicator/truncate_indicator
             schema: string
             mandatory: false
+          sourceTable:
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
         out:
           results:
             schema: '#ref'
   Wait for All Tables:
     actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Wait for All Tables to be Deleted:
         parent: InnerFlowJoin
         in:
@@ -99,13 +125,24 @@ stages:
             link: Delete Table/remaining
           failures:
             link: Delete Table/failures
-      Sleep1:
-        parent: Sleep
-        disabled: true
-        in:
-          millis:
-            const: 30000
 schemas:
+  Get Delete Or Truncate Indicator.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        suppress_indicator:
+          type: string
+        truncate_indicator:
+          type: string
+        count_indicator: {
+          }
+        order_flow: {
+          }
+        no_schema: {
+          }
   List Of Tables.in.value:
     type: array
     items:

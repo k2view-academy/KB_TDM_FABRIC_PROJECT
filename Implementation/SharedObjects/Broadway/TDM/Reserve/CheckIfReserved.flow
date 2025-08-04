@@ -121,14 +121,32 @@ stages:
         out:
           value:
             schema: string
+    split: '--------------------'
+  Keep Entity:
+    else: true
+    transactional: false
+    dependsOn: Need to Check Reservation?
+    actors:
+      'Keep Entry  ':
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: value
+            schema: boolean
   Prepare Inputs For Query:
     actors:
-      Get TDMDB Schema:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       BE ID To Number:
         parent: ToNumber
         in:
@@ -177,7 +195,7 @@ stages:
             - Query Without Check Owner/value
             - Query With Check Owner/value
           schema:
-            link: Get TDMDB Schema/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           entityId:

@@ -31,6 +31,9 @@ stages:
             link: PopulationArgs/iid
             schema: string
             mandatory: false
+          taskExeId:
+            schema: integer
+            mandatory: false
         out:
           result:
             schema: '#ref'
@@ -67,6 +70,7 @@ stages:
             - target_interface
             - target_schema
             - target_table_name
+            - gui_filter
           dialect:
             const: sqlite
           ref_instance_id:
@@ -104,6 +108,9 @@ stages:
             schema: any
             mandatory: false
           target_table_name:
+            schema: any
+            mandatory: false
+          gui_filter:
             schema: any
             mandatory: false
           params:
@@ -151,6 +158,18 @@ stages:
             link: Get Table Details/result/task_type
             schema: string
             mandatory: false
+          filterParametersInfo:
+            link: Get Table Details/result/filter_fields
+            schema: string
+            mandatory: false
+          filterGUI:
+            link: Get Table Details/result/gui_filter
+            schema: string
+            mandatory: false
+          catalogSchema:
+            link: Get Table Details/result/catalog_schema_name
+            schema: string
+            mandatory: false
       End Indicator:
         parent: Const
         in:
@@ -195,8 +214,12 @@ schemas:
         }
       table_filter:
         type: string
+      gui_filter:
+        type: string
       filter_parameters:
         type: string
+      filter_fields: {
+        }
       retention_period_type:
         type: string
       retention_period_value:
@@ -211,3 +234,5 @@ schemas:
         type: integer
       retention:
         type: integer
+      catalog_schema_name:
+        type: string

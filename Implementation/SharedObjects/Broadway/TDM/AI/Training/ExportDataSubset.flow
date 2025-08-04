@@ -39,90 +39,216 @@ stages:
         out:
           value:
             schema: string
-      Now:
-        parent: Now
+      JsonParser1:
+        parent: JsonParser
+        in:
+          stream:
+            const:
+              categorical_cardinality_column_ratio_threshold: 0.1
+              categorical_force_if_nunique_lt: 10
+              categorical_reject_gte_nunique_values: 150
+              categorical_table_columns: {
+                }
+              high_cardinality_column_ratio_threshold: 0.2
+              logical_relations:
+                border_tolerance: 0.25
+                correlation_strength: strong
+                cut_off_threshold: 10
+                cut_off_threshold_for_corr: 50
+                cut_off_threshold_for_eq: 90
+                cut_off_threshold_for_less_than: 50
+                cut_off_threshold_for_sub: 90
+                dense_1_to_n_threshold: 3
+                identification_joined_max_na_ratio: 0.8
+                identification_max_na_ratio: 0.5
+                identification_min_non_na: 100
+                logical_relations_overrides:
+                  groups: [
+                    ]
+                  participation: [
+                    ]
+                logical_relations_root_table_sampling: null
+                logical_relations_training_rows_sampling: 400000
+                lt_random_pairs_percent_threshold: 20
+                max_fully_joined_n_rows: 1000000
+                max_n_categories_for_ranges: 50
+                max_one_to_many_rows: 10
+                meaningful_less_than_comparison_threshold: 0.5
+                prevalence_threshold_1_1: 0.98
+                prevalence_threshold_1_n: 0.85
+                prevalence_threshold_eq: 0.98
+                ram_safety_factor_for_fully_joined_table: 0.2
+                root_table_n_rows_for_fully_joined_table: null
+                root_table_n_rows_for_memory_estimation_for_fully_joined_table: 20
+                set_forming_threshold: 0.12
+                sig_level: 0.01
+              logical_relations_table_generation:
+                batch_size: 768
+                n_samples: 268800
+                skip_row_pruning_threshold: 0.8
+              logical_relations_table_training:
+                batch_size: 8
+                early_stopping_patience: 5
+                early_stopping_threshold: 0
+                max_fully_joined_n_rows: null
+                max_one_to_many_rows: 500
+                n_epochs: 3
+                n_gradient_accumulation_steps: 1
+                ram_safety_factor_for_fully_joined_table: 0.6
+                root_table_n_rows_for_fully_joined_table: null
+                root_table_n_rows_for_memory_estimation_for_fully_joined_table: 20
+                train_size: 0.8
+              numeric_normalisation_max_val: 1
+              numeric_normalisation_min_val: -1
+              random_state: 42
+              skip_logical_relations: false
+              special_column_force_gte_nunique_values: 5000
+              special_column_ratio_threshold: 0.05
+              special_column_training:
+                batch_size: 1024
+                bidirectional: false
+                dropout: 0
+                early_stopping_patience: 2
+                embedding_dim: 128
+                gradient_clipping_max_norm: 5
+                learning_rate: 7.5E-4
+                max_samples: 16384
+                meta_token: <meta>
+                min_samples: 32
+                n_epochs: 60
+                num_workers: 0
+                pad_token: <pad>
+                print_every_n_epochs: 1
+                rnn_layers: 3
+                rnn_size: 256
+                shuffle: true
+                window_size: 32
+              table_training:
+                batch_size: 8
+                early_stopping_patience: 5
+                early_stopping_threshold: 0
+                max_one_to_many_rows: 400
+                n_embd: 128
+                n_epochs: 2
+                n_gradient_accumulation_steps: 1
+                n_head: 2
+                n_layer: 1
+                output_max_length: 4096
+                root_table_sampling: null
+                train_size: 0.8
+              verbose: true
       Execution Params Base:
         parent: Const
         in:
           value:
             const: |-
               {
-                "skip_logical_relations": false,
-                "numeric_normalisation_min_val": -1,
-                "numeric_normalisation_max_val": 1,
-                "high_cardinality_column_ratio_threshold": 0.2,
-                "categorical_cardinality_column_ratio_threshold": 0.1,
-                "categorical_force_if_nunique_lt": 10,
-                "categorical_reject_gte_nunique_values": 150,
-                "logical_relations": {
-                 "prevalence_threshold_eq": 0.98,
-                 "prevalence_threshold_1_1": 0.98,
-                 "prevalence_threshold_1_n": 0.85,
-                 "lt_random_pairs_percent_threshold": 20,
-                 "cut_off_threshold": 10,
-                 "sig_level": 0.01,
-                 "correlation_strength": "strong",
-                 "logical_relations_root_table_sampling": 1000,
-                 "logical_relations_training_rows_sampling": 200000,
-                 "root_table_n_rows_for_fully_joined_table": null,
-                 "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
-                 "ram_safety_factor_for_fully_joined_table": 0.4,
-                 "meaningful_less_than_comparison_threshold": 0.5,
-                 "set_forming_threshold": 0.12,
-                 "border_tolerance": 0.25,
-                 "dense_1_to_n_threshold": 3,
-                 "logical_relations_overrides": {
-                    "groups": [],
-                    "participation": []
-                  }
-                },
-                "logical_relations_table_training": {
-                  "n_epochs": 3,
-                  "batch_size": 8,
-                  "n_gradient_accumulation_steps": 1,
-                  "train_size": 0.8,
-                  "early_stopping_patience": 5,
-                  "early_stopping_threshold": 0
-                },
-                "logical_relations_table_generation": {
-                  "batch_size": 64,
-                  "n_samples": 10000
-                },
+                  "categorical_cardinality_column_ratio_threshold": 0.1,
+                  "categorical_force_if_nunique_lt": 10,
+                  "categorical_reject_gte_nunique_values": 150,
+                  "categorical_table_columns": {
+                  },
+                  "high_cardinality_column_ratio_threshold": 0.2,
+                  "logical_relations": {
+                      "border_tolerance": 0.25,
+                      "correlation_strength": "strong",
+                      "cut_off_threshold": 10,
+                      "cut_off_threshold_for_corr": 50,
+                      "cut_off_threshold_for_eq": 90,
+                      "cut_off_threshold_for_less_than": 50,
+                      "cut_off_threshold_for_sub": 90,
+                      "dense_1_to_n_threshold": 3,
+                      "identification_joined_max_na_ratio": 0.8,
+                      "identification_max_na_ratio": 0.5,
+                      "identification_min_non_na": 100,
+                      "logical_relations_overrides": {
+                          "groups": [
+                          ],
+                          "participation": [
+                          ]
+                      },
+                      "logical_relations_root_table_sampling": null,
+                      "logical_relations_training_rows_sampling": 400000,
+                      "lt_random_pairs_percent_threshold": 20,
+                      "max_fully_joined_n_rows": 1000000,
+                      "max_n_categories_for_ranges": 50,
+                      "max_one_to_many_rows": 10,
+                      "meaningful_less_than_comparison_threshold": 0.5,
+                      "prevalence_threshold_1_1": 0.98,
+                      "prevalence_threshold_1_n": 0.85,
+                      "prevalence_threshold_eq": 0.98,
+                      "ram_safety_factor_for_fully_joined_table": 0.2,
+                      "root_table_n_rows_for_fully_joined_table": null,
+                      "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
+                      "set_forming_threshold": 0.12,
+                      "sig_level": 0.01
+                  },
+                  "logical_relations_table_generation": {
+                      "batch_size": 768,
+                      "n_samples": 268800,
+                      "skip_row_pruning_threshold": 0.8
+                  },
+                  "logical_relations_table_training": {
+                      "batch_size": 8,
+                      "early_stopping_patience": 5,
+                      "early_stopping_threshold": 0,
+                      "max_fully_joined_n_rows": null,
+                      "max_one_to_many_rows": 500,
+                      "n_epochs": 3,
+                      "n_gradient_accumulation_steps": 1,
+                      "ram_safety_factor_for_fully_joined_table": 0.6,
+                      "root_table_n_rows_for_fully_joined_table": null,
+                      "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
+                      "train_size": 0.8
+                  },
+                  "numeric_normalisation_max_val": 1,
+                  "numeric_normalisation_min_val": -1,
+                  "random_state": 42,
+                  "skip_logical_relations": false,
+                  "special_column_force_gte_nunique_values": 5000,
+                  "special_column_ratio_threshold": 0.05,
+                  "special_column_training": {
+                      "batch_size": 1024,
+                      "bidirectional": false,
+                      "dropout": 0,
+                      "early_stopping_patience": 2,
+                      "embedding_dim": 128,
+                      "gradient_clipping_max_norm": 5,
+                      "learning_rate": 0.00075,
+                      "max_samples": 16384,
+                      "meta_token": "<meta>",
+                      "min_samples": 32,
+                      "n_epochs": 60,
+                      "num_workers": 0,
+                      "pad_token": "<pad>",
+                      "print_every_n_epochs": 1,
+                      "rnn_layers": 3,
+                      "rnn_size": 256,
+                      "shuffle": true,
+                      "window_size": 32
+                  },
                 "table_training": {
-                  "n_epochs": 2,
-                  "batch_size": 8,
-                  "n_gradient_accumulation_steps": 1,
-                  "train_size": 0.8,
-                  "early_stopping_patience": 5,
-                  "early_stopping_threshold": 0,
-                  "root_table_sampling": null,
-                  "output_max_length": null
-                },
-                "special_column_training": {
-                  "n_epochs": 5,
-                  "batch_size": 32,
-                  "shuffle": true,
-                  "window_size": 32,
-                  "num_workers": 1,
-                  "print_every_n_epochs": 1,
-                  "learning_rate": 0.0005,
-                  "meta_token": "<meta>",
-                  "pad_token": "<pad>",
-                  "embedding_dim": 128,
-                  "rnn_size": 128,
-                  "rnn_layers": 1,
-                  "dropout": 0,
-                  "bidirectional": false,
-                  "gradient_clipping_max_norm": 5
-                },
-                "special_column_ratio_threshold": 0.05,
-                "random_state": 42,
-                "verbose": true
+                      "batch_size": 8,
+                      "early_stopping_patience": 5,
+                      "early_stopping_threshold": 0,
+                      "max_one_to_many_rows": 400,
+                      "n_embd": 128,
+                      "n_epochs": 2,
+                      "n_gradient_accumulation_steps": 1,
+                      "n_head": 2,
+                      "n_layer": 1,
+                      "output_max_length": 4096,
+                      "root_table_sampling": null,
+                      "train_size": 0.8
+                  },
+                  "verbose": true
               }
             schema: string
         out:
           value:
             schema: string
+      Now:
+        parent: Now
       getMappingAndSpecialColumns1:
         parent: InnerFlow
         in:
@@ -162,12 +288,6 @@ stages:
         in:
           string:
             link: luName/value
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       'Format the current date to load it ':
         parent: DateFormat
         in:
@@ -299,6 +419,10 @@ stages:
             link: Training Execution Params/string
             schema: string
             mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: string
+            mandatory: false
         out:
           entityList:
             schema: '#ref'
@@ -328,8 +452,8 @@ stages:
             link: AI_DB_K2SYSTEM1/result
           sql:
             const: |-
-              insert into ${@K2SCHEMA_NAME}.entity_list (task_execution_id,schema,iid,creation_time)
-              Values (${task_execution_id},${schema_name},${iid},${creation_time})
+              insert into ${@K2SCHEMA_NAME}.entity_list (task_execution_id,task_type,schema,iid,creation_time)
+              Values (${task_execution_id},'TRAINING',${schema_name},${iid},${creation_time})
           task_execution_id:
             link: taskExecutionID/value
             schema: string

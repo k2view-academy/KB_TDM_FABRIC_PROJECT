@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Tasks.Logic.wsGetTasks;
@@ -356,7 +357,7 @@ public class Logic extends WebServiceUserCode {
 			
 			List<Map<String, Object>> allUserTasks = (List<Map<String, Object>>) wsUserTasks.get("result");
 			for (Map<String, Object> task : allUserTasks) {
-				HashMap<String, Object> wsTaskDetails = (HashMap<String, Object>) wsGetTasks(task.get("task_id").toString());
+				HashMap<String, Object> wsTaskDetails = (HashMap<String, Object>) wsGetTasks(task.get("task_id").toString(),"BOTH");
 				List<Map<String, Object>> allTaskDetails = (List<Map<String, Object>>) wsTaskDetails.get("result");
 				if (task_type != null && !task_type.equalsIgnoreCase(allTaskDetails.get(0).get("task_type").toString()))
 					continue;

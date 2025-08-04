@@ -1,8 +1,8 @@
 tags: TDM
 stages:
-  Stage 1:
+  Check for Schema Backup:
     actors:
-      ls1:
+      'ls ':
         parent: ls
         in:
           interface:
@@ -15,15 +15,15 @@ stages:
         out:
           result:
             schema: '#ref'
-  Stage 10:
-    dependsOn: Stage 1
+  Read From Backup:
+    dependsOn: Check for Schema Backup
     actors:
-      NotNull1:
+      'NotNull ':
         parent: NotNull
         condition: result
         in:
           value:
-            link: ls1/result/name
+            link: ls /result/name
       Read vdb from BKP:
         parent: FileRead
         in:
@@ -33,10 +33,10 @@ stages:
           path:
             const: Java/resources/vdb_bkp.xml
     split: '--------------------'
-  Stage 11:
+  Read From Schema File:
     else: true
     transactional: false
-    dependsOn: Stage 1
+    dependsOn: Check for Schema Backup
     actors:
       Read vdb File:
         parent: FileRead
@@ -46,7 +46,7 @@ stages:
             external: LU_PATH
           path:
             const: vdb.k2vdb.xml
-      cp1:
+      Create Backup:
         parent: cp
         in:
           interface:
@@ -56,7 +56,7 @@ stages:
             const: vdb.k2vdb.xml
           to:
             const: Java/resources/vdb_bkp.xml
-  Stage 2:
+  Parse Schema XML:
     actors:
       Parse vdb XML:
         parent: XmlParser
@@ -70,7 +70,7 @@ stages:
             schema: '#ref'
           info:
             schema: '#ref'
-  Stage 9:
+  Get Root Info:
     actors:
       Set TAR Diagram Graph:
         parent: JavaScript
@@ -171,7 +171,7 @@ stages:
         out:
           rootInfo:
             schema: '#ref'
-  Stage 3:
+  Get Tables Data And Attributes:
     actors:
       Add TDM tables:
         parent: JavaScript
@@ -497,39 +497,6 @@ stages:
         out:
           result:
             schema: '#ref'
-      Create Root Population:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createRootTablePopulation
-          LU_NAME:
-            external: LU_NAME
-            schema: string
-            mandatory: false
-          TABLE_NAME:
-            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
-            schema: string
-            mandatory: false
-          TABLE_KEY:
-            external: TABLE_KEY
-            schema: string
-            mandatory: false
-          SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
-            schema: string
-            mandatory: false
-          LU_PATH:
-            external: LU_PATH
-            schema: string
-            mandatory: false
-          SOURCE_SCHEMA:
-            external: SOURCE_SCHEMA
-            schema: string
-            mandatory: false
-          SOURCE_TABLE:
-            external: SOURCE_TABLE
-            schema: string
-            mandatory: false
       Set TDM Tables Relations:
         parent: JavaScript
         in:
@@ -749,22 +716,58 @@ stages:
             link: Get Root Table IID/rootInfo
             schema: '#ref'
             mandatory: false
-      Update TAR Root Population:
+  'Replace Main Table Population ':
+    actors:
+      Create Root Population:
         parent: InnerFlow
-        disabled: true
         in:
           flowName:
-            const: updateRootPopulationTAR
+            const: createRootTablePopulation
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          TABLE_NAME:
+            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
+            schema: string
+            mandatory: false
+          TABLE_KEY:
+            external: TABLE_KEY
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
           LU_PATH:
             external: LU_PATH
             schema: string
             mandatory: false
-          ROOT_TABLE:
-            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
             schema: string
             mandatory: false
-  Stage 4:
+          SOURCE_TABLE:
+            external: SOURCE_TABLE
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+  Merge With Source Tables:
     actors:
+      root Info:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Root Table IID/rootInfo
+            schema: '#ref'
+        out:
+          value:
+            external: rootInfo
+            schema: '#ref'
       Merge with Original XML:
         parent: MapMerge
         height: 256
@@ -785,18 +788,7 @@ stages:
         out:
           map:
             schema: '#ref'
-      Const1:
-        parent: Const
-        in:
-          value:
-            const: null
-            link: Get Root Table IID/rootInfo
-            schema: '#ref'
-        out:
-          value:
-            external: rootInfo
-            schema: '#ref'
-  Stage 5:
+  Add Tag:
     actors:
       Add back version tag:
         parent: JavaScript
@@ -827,14 +819,14 @@ stages:
         out:
           result:
             schema: '#ref'
-  Stage 6:
+  From Object To XmL:
     actors:
       Convert Obj to XML:
         parent: XmlStringify
         in:
           object:
             link: Add back version tag/result
-  Stage 7:
+  Save Schema:
     actors:
       Save vdb File:
         parent: FileWrite
@@ -847,7 +839,7 @@ stages:
           stream:
             link: Convert Obj to XML/xmlString
 schemas:
-  ls1.out.result:
+  ls .out.result:
     type: array
     items:
       type: object
@@ -1305,6 +1297,32 @@ schemas:
           type: string
         id:
           type: string
+  root Info.in.value:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }
+  root Info.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }
   Merge with Original XML.out.map:
     type: object
     properties:
@@ -1509,32 +1527,6 @@ schemas:
                                   type: string
                                 viewType:
                                   type: string
-  Const1.in.value:
-    type: array
-    items:
-      type: object
-      properties:
-        table_name:
-          type: string
-        column_name:
-          type: string
-        active:
-          type: boolean
-        population: {
-          }
-  Const1.out.value:
-    type: array
-    items:
-      type: object
-      properties:
-        table_name:
-          type: string
-        column_name:
-          type: string
-        active:
-          type: boolean
-        population: {
-          }
   Add back version tag.in.newXML:
     type: object
     properties:

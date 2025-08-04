@@ -7,11 +7,14 @@ stages:
         in:
           key:
             const: AI_DB_INTERFACE
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
       AI_DB_K2SYSTEM1:
         parent: FabricSetRead
         in:
@@ -86,7 +89,7 @@ stages:
               select param_value as hash_value from ${@TDMDB_SCHEMA}.tdm_general_parameters
               where param_name=${param_name}
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           param_name:
@@ -159,7 +162,7 @@ stages:
             schema: integer
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
       MDB_EXPORT LuName:
@@ -276,7 +279,7 @@ stages:
             schema: integer
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
       MDB_EXPORT LuName1:

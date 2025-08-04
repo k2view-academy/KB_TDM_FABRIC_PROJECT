@@ -93,6 +93,18 @@ stages:
         out:
           value:
             schema: string
+      'Array of The Query''s Parameters ':
+        parent: Const
+        remark: An array with the map of name, type and value of each parameter sent
+          in the filter.
+        in:
+          value:
+            const: null
+            external: filterParametersInfo
+            schema: Any
+        out:
+          value:
+            schema: string
   Execute Queries:
     transactional: false
     actors:
@@ -118,11 +130,13 @@ stages:
             const: TableLevelInterfaces
           interface_name:
             external: sourceInterface
-            schema: any
+            schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
         out:
+          result:
+            schema: '#ref'
           count_indicator:
             schema: any
   Count Total Records:
@@ -185,3 +199,20 @@ schemas:
           type: string
         last_name:
           type: string
+  Get count Indocator.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        suppress_indicator:
+          type: string
+        truncate_indicator:
+          type: string
+        count_indicator: {
+          }
+        order_flow: {
+          }
+        no_schema: {
+          }

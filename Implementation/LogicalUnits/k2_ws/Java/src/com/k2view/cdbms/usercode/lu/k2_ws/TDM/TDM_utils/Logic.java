@@ -19,7 +19,8 @@ import com.k2view.fabric.common.Json;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
@@ -166,6 +167,11 @@ public class Logic extends WebServiceUserCode {
 		
 		return wrapWebServiceResults("SUCCESS", null, tdmVersion);
 	}
+	public static Object wsGetTDMFooterText() throws Exception {
+		Object tdmVersion =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'FOOTER_TEXT'").firstValue();
+		
+		return wrapWebServiceResults("SUCCESS", null, tdmVersion);
+	}
 
     public static Object wsGetParamsAutoWidth() throws Exception {
 		Object paramWidth =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ENABLE_PARAMETERS_AUTO_WIDTH'").firstValue();
@@ -173,12 +179,23 @@ public class Logic extends WebServiceUserCode {
 		return wrapWebServiceResults("SUCCESS", null, paramWidth);
 	}
 
+	public static Object wsCheckIfParamsCoupling() throws Exception {
+		Object isCoupling =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'PARAMS_COUPLING'").firstValue();
+		
+		return wrapWebServiceResults("SUCCESS", null, isCoupling);
+	}
+
     public static Object wsGetParamsLUName() throws Exception {
 		Object paramLuName =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ADD_LU_NAME_TO_PARAM_NAME'").firstValue();
 		
 		return wrapWebServiceResults("SUCCESS", null, paramLuName);
 	}
-
+	
+	public static Object wsGetTaskLuEditForTesters() throws Exception {
+		Object editIndicator =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ENABLE_TASK_LU_EDITING_FOR_TESTERS'").firstValue();
+		
+		return wrapWebServiceResults("SUCCESS", null, editIndicator);
+	}
 
 	@desc("This API provides Retention Period Info for TDM GUI")
 	@webService(path = "retentionperiodinfo", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)

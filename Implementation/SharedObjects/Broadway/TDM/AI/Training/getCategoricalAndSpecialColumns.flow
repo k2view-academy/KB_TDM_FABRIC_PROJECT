@@ -24,7 +24,7 @@ stages:
             editor:
               id: com.k2view.mTableKey
             mandatory: false
-          special:
+          override_special:
             const: 'true'
             schema: string
             editor:
@@ -44,7 +44,7 @@ stages:
             editor:
               id: com.k2view.mTableKey
             mandatory: false
-          categorical:
+          override_categorical:
             const: 'true'
             schema: string
             editor:

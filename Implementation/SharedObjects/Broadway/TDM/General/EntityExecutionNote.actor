@@ -1,0 +1,86 @@
+{
+  "type": "EntityExecutionNote",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "execution_note",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "task_execution_id",
+      "schema": {
+        "type": "integer"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "lu_name",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "entity_id",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "root_entity_id",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "root_target_entity_id",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "clone_no",
+      "schema": {
+        "type": "string"
+      },
+      "mandatory": true,
+      "hidden": false
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "EntityExecutionNote",
+      "mandatory": true,
+      "hidden": true
+    },
+    {
+      "name": "innerFlowConst",
+      "schema": {
+        "type": "string"
+      },
+      "const": "EntityExecutionNote",
+      "mandatory": true,
+      "hidden": true
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "tdm"
+  ],
+  "doc": ""
+}

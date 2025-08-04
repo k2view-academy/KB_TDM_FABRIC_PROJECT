@@ -21,44 +21,81 @@
                     </div>
                     <div class="col-lg-12" ng-if="environmentCtrl.environmentDataOrig.allow_read">
                         <div class="row">
-                            <div class="col-lg-3" style="margin-top: 18px;">
-                                <div class="form-group option-button">
+                            <div class="col-lg-12" >
+                                <div class="form-group option-button" style="align-items: flex-start">
                                     <input
                                         id="environment_new_role_allow_read"
                                         ng-disabled="environmentCtrl.roleData.allow_read == true && !environmentCtrl.roleData.allow_write"
                                         type="checkbox" ng-change="environmentCtrl.checkBoxChanged()"
                                         ng-model="environmentCtrl.roleData.allow_read" />
-                                    <label class="control-label option-button-label">Read</label>
+                                    <label class="control-label option-button-label">Read permissions</label>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_read">
+                            <div class="col-lg-1" ></div>
+                            <div class="form-group col-lg-8">
+                                <div class="form-group option-button">
+                                    <input id="environment_role_allow_read_unlimited" ng-disabled="environmentCtrl.disableChangeRole || !environmentCtrl.roleData.allow_read"
+                                        ng-change="!environmentCtrl.roleData.read_unlimited_entities && environmentCtrl.roleData.allowed_number_of_entities_to_read < 0 ? environmentCtrl.roleData.allowed_number_of_entities_to_read = 0 : environmentCtrl.roleData.allowed_number_of_entities_to_read" 
+                                        type="checkbox" ng-model="environmentCtrl.roleData.read_unlimited_entities"/>
+                                    <label class="control-label option-button-label">Unlimited entities</label>
+                                </div>
+                                <div class="form-group option-button" style="flex-direction: column;align-items: flex-start;">
+                                    <label>Maximum number of entities</label>
+                                    <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1" 
+                                        ng-disabled="environmentCtrl.disableChangeRole || environmentCtrl.roleData.read_unlimited_entities || !environmentCtrl.roleData.allow_read"
+                                        ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_read === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_read = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_read" 
+                                        ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_read"
+                                        ng-value="!environmentCtrl.roleData.read_unlimited_entities ? environmentCtrl.roleData.allowed_number_of_entities_to_read : undefined"
+                                    />
+                                </div>
+                            </div>
+                            <!-- <div class="form-group col-lg-8" ng-if="environmentCtrl.roleData.allow_read">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
                                 <input 
                                     id="environment_new_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1"
                                     ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_read === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_read = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_read"
                                     ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_read" />
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="col-lg-12" ng-if="environmentCtrl.environmentDataOrig.allow_write">
                         <div class="row">
-                            <div class="col-lg-3" style="margin-top: 18px;">
-                                <div class="form-group option-button">
+                            <div class="col-lg-12">
+                                <div class="form-group option-button" style="align-items: flex-start;">
                                     <input
                                         id="environment_new_role_allow_write"
                                         ng-disabled="!environmentCtrl.roleData.allow_read && environmentCtrl.roleData.allow_write == true"
                                         type="checkbox" ng-change="environmentCtrl.checkBoxChanged()"
                                         ng-model="environmentCtrl.roleData.allow_write" />
-                                    <label class="control-label option-button-label">Write</label>
+                                    <label class="control-label option-button-label">Write permissions</label>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_write">
+                            <div class="col-lg-1" ></div>
+                            <div class="form-group col-lg-8">
+                                <div class="form-group option-button" ng-click="environmentCtrl.roleData.write_unlimited_entities">
+                                    <input id="environment_role_allow_write_unlimited" ng-disabled="environmentCtrl.disableChangeRole || !environmentCtrl.roleData.allow_write" 
+                                        ng-change="!environmentCtrl.roleData.write_unlimited_entities && environmentCtrl.roleData.allowed_number_of_entities_to_copy < 0 ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 0 : environmentCtrl.roleData.allowed_number_of_entities_to_copy" 
+
+                                        type="checkbox" ng-model="environmentCtrl.roleData.write_unlimited_entities"/>
+                                    <label class="control-label option-button-label">Unlimited entities</label>
+                                </div>
+                                <div class="form-group option-button" style="flex-direction: column;align-items: flex-start;">
+                                    <label>Maximum number of entities</label>
+                                    <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1" 
+                                        ng-disabled="environmentCtrl.disableChangeRole || environmentCtrl.roleData.write_unlimited_entities || !environmentCtrl.roleData.allow_write"
+                                        ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_copy === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_copy" 
+                                        ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_copy"
+                                        ng-value="!environmentCtrl.roleData.write_unlimited_entities ? environmentCtrl.roleData.allowed_number_of_entities_to_copy : undefined"
+                                    />
+                                </div>
+                            </div>
+                            <!-- <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_write">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
                                 <input 
                                     id="environment_new_role_entities_write" style="width: 100%" type="number" class="form-control1" min="0"
                                     ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_copy === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_copy"
                                     ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_copy" />
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="form-group col-lg-12" ng-if="!environmentCtrl.hideUsersInput">
@@ -69,7 +106,7 @@
                                 ng-model="environmentCtrl.testers"
                                 ng-options="option as option.username for option in environmentCtrl.allTesters track by option.user_id">
                             </select>
-                            <div off-click="environmentCtrl.isOpen1 = false" off-click-activator="environmentCtrl.isOpen1">
+                            <div style="position: relative;" off-click="environmentCtrl.isOpen1 = false" off-click-activator="environmentCtrl.isOpen1">
                                 <button  id="environment_new_role_add_testers"
                                     uib-tooltip="Add Tester" tooltip-placement="top" popover-placement="left"
                                     ng-click="environmentCtrl.initAddNewTesterPopup()" type="button"

@@ -14,16 +14,25 @@ stages:
     dependsOn: In Case of Resume Task
     actors:
       Run Extract?:
-        parent: NotEquals
+        parent: JavaScript
         condition: result
         in:
-          a:
+          script:
+            const: |-
+              var result = true;
+              if (retentionPeriodValue == '0' || syncMode == 'OFF') {
+                  result = false;
+              }
+              result;
+          retentionPeriodValue:
             external: retentionPeriodValue
             schema: string
-          b:
-            const: '0'
+            mandatory: false
+          syncMode:
+            external: syncMode
             schema: string
-      ErrorHandler1:
+            mandatory: false
+      Extract Error Handler:
         parent: ErrorHandler
         error: result
         in:
@@ -55,6 +64,10 @@ stages:
             external: taskType
             schema: string
             mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
+            mandatory: false
     split: '--------------------'
   No Extract:
     else: true
@@ -74,7 +87,7 @@ stages:
           b:
             const: 'true'
             schema: string
-      ErrorHandler2:
+      Load Error Handler:
         parent: ErrorHandler
         error: result
         in:
@@ -117,6 +130,10 @@ stages:
           retentionPeriodValue:
             external: retentionPeriodValue
             schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
             mandatory: false
     split: '--------------------'
   No Load:

@@ -2,65 +2,59 @@ tags: TDM
 stages:
   Prepare the Data:
     actors:
-      Get LU_TYPE:
-        parent: FabricSetRead
-        in:
-          key:
-            const: LU_TYPE
-            default: false
       Get Entity Status:
         parent: FabricSetRead
         in:
           key:
             const: ENTITY_STATUS
             default: false
-      Get TARGET_ENTITY_ID:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TARGET_ENTITY_ID
-            default: false
-      Get IID:
-        parent: FabricSetRead
-        in:
-          key:
-            const: IID
-            default: false
-      Get SOURCE_ENTITY_ID:
+      Get Source Entity ID:
         parent: FabricSetRead
         in:
           key:
             const: SOURCE_ENTITY_ID
             default: false
-  Continue Preparing:
-    actors:
-      Get Task Execution ID:
+      Get LU Type:
+        parent: FabricSetRead
+        in:
+          key:
+            const: LU_TYPE
+            default: false
+      Get Target Entity ID:
+        parent: FabricSetRead
+        height: 99
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      TDM_TASK_EXE_ID:
         parent: FabricSetRead
         in:
           key:
             const: TDM_TASK_EXE_ID
             default: false
+  Continue Preparing:
+    actors:
       Get Timing of Processing Start:
         parent: FabricSetRead
         in:
           key:
             const: IID_START_DATETIME
-            default: false
       Get Source Environment:
         parent: FabricSetRead
         in:
           key:
             const: TDM_SOURCE_ENVIRONMENT_NAME
             default: false
-      Now1:
+      Now:
         parent: Now
-      LuFunction1:
+      Split LU:
         parent: LuFunction
         in:
           functionName:
             const: fnSplitUID2
           uid:
-            link: Get SOURCE_ENTITY_ID/result
+            link: Get Source Entity ID/result
             schema: string
             mandatory: false
         out:
@@ -72,9 +66,10 @@ stages:
             schema: string
       Check if Target Entity ID is Not Set:
         parent: Equals
+        height: 105
         in:
           a:
-            link: Get TARGET_ENTITY_ID/result
+            link: Get Target Entity ID/result
             schema: string
           b:
             const: NO_ID
@@ -135,7 +130,7 @@ stages:
             const: ''
             schema: string
           a:
-            link: LuFunction1/versionExeID
+            link: Split LU/versionExeID
       Default value:
         parent: Const
         in:
@@ -156,7 +151,7 @@ stages:
         in:
           value:
             const: null
-            link: LuFunction1/versionExeID
+            link: Split LU/versionExeID
         out:
           value:
             schema: string
@@ -182,7 +177,7 @@ stages:
             const: ''
             schema: string
           a:
-            link: LuFunction1/versionExeID
+            link: Split LU/versionExeID
       'Default value  ':
         parent: Const
         in:
@@ -203,7 +198,7 @@ stages:
         in:
           value:
             const: null
-            link: LuFunction1/versionExeID
+            link: Split LU/versionExeID
         out:
           value:
             schema: string
@@ -215,13 +210,6 @@ stages:
           key:
             const: clone_id
             default: false
-      Calculate Total Processing Duration:
-        parent: DateDuration
-        in:
-          from:
-            link: Get Timing of Processing Start/result
-          to:
-            link: Now1/date
       Get root_iid:
         parent: FabricSetRead
         in:
@@ -234,27 +222,42 @@ stages:
           key:
             const: root_lu_name
             default: false
-      If Target Entity ID is not set, use source ID:
-        parent: IfElse
-        in:
-          a:
-            link: Get IID/result
-            schema: string
-          b:
-            link: Get TARGET_ENTITY_ID/result
-            schema: string
-          test:
-            link: Check if Target Entity ID is Not Set/result
-        out:
-          result:
-            schema: string
       Format the Current Time:
         parent: DateFormat
         in:
           format:
             const: yyyy-MMM-dd HH:mm:ss.SSS
           date:
-            link: Now1/date
+            link: Now/date
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Calculate Total Processing Duration:
+        parent: DateDuration
+        in:
+          from:
+            link: Get Timing of Processing Start/result
+          to:
+            link: Now/date
+      If Target Entity ID is not set, use source ID:
+        parent: IfElse
+        in:
+          a:
+            external: iid
+            schema: string
+          b:
+            link: Get Target Entity ID/result
+            schema: string
+          test:
+            link: Check if Target Entity ID is Not Set/result
+        out:
+          result:
+            schema: string
   Load Data to Entities table:
     actors:
       Add Entity to Entities Table:
@@ -263,31 +266,26 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID,\
-              \ LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE,\
-              \ \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME,\
-              \ ENTITY_END_TIME, VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID,\
-              \ FABRIC_GET_TIME,\r\nTOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID,\
-              \ ROOT_LU_NAME) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId},\
-              \ ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType},\
-              \ \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid},\
-              \ \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE\
-              \ THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime},\
-              \ ${entityEndTime}, ${version_task_execution_id},${subset_task_execution_id},\
-              \ ${fabticTime}, \r\n${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}\r\
-              \nFROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS\
-              \ E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID =\
-              \ T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON\
-              \ CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set\
-              \ execution_status = ${executionStatus}"
+            const: |-
+              INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE,
+              FABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID, FABRIC_GET_TIME,
+              TOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID, ROOT_LU_NAME, ROOT_ENTITY_ID, PARENT_LU_NAME, PARENT_ENTITY_ID, PARENT_TARGET_ENTITY_ID)
+              (SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType},
+              COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid},
+              CASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,
+              Now(), ${entityStartTime}, ${entityEndTime}, ${version_task_execution_id},${subset_task_execution_id}, ${fabticTime},
+              ${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}, ${root_entity_id}, ${parent_lu_name}, ${parent_entity_id}, ${parent_target_entity_id}
+              FROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS E
+              WHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1)
+              ON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}
           luName:
-            link: Get LU_TYPE/result
+            link: Get LU Type/result
             schema: string
           taskexecutionId:
-            link: Get Task Execution ID/result
+            link: TDM_TASK_EXE_ID/result
             schema: string
           sourceEntityId:
-            link: Get SOURCE_ENTITY_ID/result
+            link: Get Source Entity ID/result
             schema: string
           targetEntityId:
             link: If Target Entity ID is not set, use source ID/result
@@ -296,7 +294,7 @@ stages:
             link: Get Entity Status/result
             schema: string
           iid:
-            link: Get IID/result
+            external: iid
             schema: string
           entityStartTime:
             link: Get Timing of Processing Start/result
@@ -316,7 +314,7 @@ stages:
             link: Get Clone No/result
             schema: string
           schema:
-            const: '@TDMDB_SCHEMA@'
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           rootEntityId:
@@ -341,4 +339,16 @@ stages:
             - Default value  /value
             - subsetExeID/value
             schema: string
+            mandatory: false
+          root_entity_id:
+            schema: any
+            mandatory: false
+          parent_lu_name:
+            schema: any
+            mandatory: false
+          parent_entity_id:
+            schema: any
+            mandatory: false
+          parent_target_entity_id:
+            schema: any
             mandatory: false

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>task_exe_stats_summary</Name>
   <ID>tbl_task_exe_stats_summary</ID>
   <EntityId>tblCol_61ada4a4d80a451992114103b8ad30e1</EntityId>
@@ -12,13 +12,16 @@
     <Column name="target_count" id="tblCol_ea1b01093ba1480b84f08fbf5a9de26e" index="5" datatype="Text" />
     <Column name="diff" id="tblCol_71524825c7ff47429e9373409038babf" index="6" datatype="Text" />
     <Column name="results" id="tblCol_7f4d043f4f2b4a43a329aca67c02d360" index="7" datatype="Text" />
+    <Column name="suppressed_error_count" id="suppressed_error_count" index="8" datatype="Text" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_61ada4a4d80a451992114103b8ad30e1,tblCol_823d7e374fd645709b0f68d94388e059,tblCol_faad0ce69eee45d092f5fd32a8b5a40e" />
   </IndexesList>
-  <EnrichmentList />
+  <EnrichmentList>
+  </EnrichmentList>
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
+    <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
-  <TriggersList />
+  <TriggersList>
+  </TriggersList>
 </TableObject>

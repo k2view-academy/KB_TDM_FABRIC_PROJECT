@@ -24,7 +24,29 @@ stages:
             external: tableName
             schema: string
             mandatory: false
-  Add Filter If Exists:
+      Apply Filter?:
+        parent: JavaScript
+        in:
+          script:
+            const: |
+              var result = true;
+              var version = parseInt(versionTaskExeID, 10);
+              if (tableFilter !== "" && version !== 0) {
+                  result = false;
+              }
+              result;
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          versionTaskExeID:
+            external: versionTaskExeID
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Check Filter:
     transactional: false
     dependsOn: Build Statements
     actors:
@@ -33,11 +55,11 @@ stages:
         condition: result
         in:
           a:
-            external: tableFilter
-            schema: string
+            link: Apply Filter?/result
+            schema: boolean
           b:
-            const: ''
-            schema: string
+            const: true
+            schema: boolean
       Select Statement:
         parent: Const
         in:
@@ -59,7 +81,7 @@ stages:
           value:
             schema: string
     split: '--------------------'
-  No Filter:
+  Add Filter:
     else: true
     transactional: false
     dependsOn: Build Statements
@@ -173,10 +195,12 @@ stages:
             external: tableId
             schema: integer
             mandatory: false
-          totalCount:
-            link: Get Records Count From Fabric/result/CNT
+          recCount:
+            link: Get Records Count From Fabric/result
             schema: integer
             mandatory: false
+  Stage 1:
+    transactional: false
 schemas:
   Add  Wherer Clause to Select Statement.out.paramters:
     type: array

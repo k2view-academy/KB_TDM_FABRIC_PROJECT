@@ -1,6 +1,6 @@
 tags: TDM
 stages:
-  Stage 1:
+  Get Path:
     actors:
       LU Folder:
         parent: StringFormat
@@ -24,7 +24,7 @@ stages:
         out:
           value:
             schema: '#ref'
-  Stage 2:
+  Read Global File:
     actors:
       Read Globals file:
         parent: FileRead
@@ -52,7 +52,7 @@ stages:
             link: LU_ROOT_TABLE/value/column_name
             schema: '#ref'
             mandatory: false
-  Stage 3:
+  File Content:
     actors:
       Create A String of File Content:
         parent: StringBuild
@@ -61,7 +61,7 @@ stages:
             const: ''
           input:
             link: Read Globals file/stream
-  Stage 4:
+  Add Root Table Gloabls:
     actors:
       File Already Includes the ROOT_TABLE_NAME?:
         parent: JavaScript
@@ -111,7 +111,7 @@ stages:
         out:
           result:
             schema: string
-  Stage 5:
+  Write to Gloabls.java:
     actors:
       Write Global File:
         parent: FileWrite

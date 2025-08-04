@@ -14,14 +14,13 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class SharedLogic {
-
 	private static final String TDM = "TDM";
 	private static final String TABLES = "TABLES";
 	private static final String TASKS = TDMDB_SCHEMA + ".tasks";

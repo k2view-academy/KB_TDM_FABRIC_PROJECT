@@ -19,7 +19,6 @@ import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
-
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.Blob;
@@ -35,12 +34,13 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends UserCode {
 
 	public static final String PENDING = "pending";
-
 	public static final String TABLES = "TABLES";
     public static final String TABLE_LEVEL_LU = "TDM_TableLevel";
 	public static final String TASKS = TDMDB_SCHEMA + ".TASKS";
@@ -95,7 +95,7 @@ public class Logic extends UserCode {
                 "tlu.lu_name, tel.task_type, tel.process_id, tpost.process_name, tpost.process_type, " + 
                 "tel.task_execution_id, tel.parent_lu_id, t.execution_mode, tel.be_id, t.clone_ind " +
                 "from " + TDMDB_SCHEMA + ".task_execution_list tel " +
-                "left join " + TDMDB_SCHEMA + ".tasks t on tel.task_id = t.task_id " + 
+                "left join " + TDMDB_SCHEMA + ".tasks t on tel.task_id = t.task_id " +
 				"left join " + TDMDB_SCHEMA + ".tasks_logical_units tlu on tel.task_id = tlu.task_id And tel.lu_id = tlu.lu_id " +
 				"left join " + TDMDB_SCHEMA + ".tasks_exe_process tpost On tel.task_id = tpost.task_id " +
 				"and tel.process_id = tpost.process_id Where Lower(tel.execution_status) = 'running'";
@@ -128,7 +128,7 @@ public class Logic extends UserCode {
 				Long luID = 0L;
 				Long parentLuID = 0L;
 				Long processID = 0L;
-                String total="0";
+				String total="0";
                 String failed="0";
                 String copied="0";
 				String luName = "";
@@ -137,8 +137,8 @@ public class Logic extends UserCode {
 
                 //TDM 9.1 - Params Coupling
                 Boolean paramsCoupling = isParamsCoupling();
-
-                //TDM 9.2 - Vertical Execution
+                
+				//TDM 9.2 - Vertical Execution
                 Boolean verticalExecution = false;
                 
 				try {
@@ -364,16 +364,15 @@ public class Logic extends UserCode {
 								}//if (refSummaryStats != null)
 
 								//log.info("fnCheckMigrateAndUpdateTDMDB - finished updating TASK_EXECUTION_ENTITIES");
-								if(processID != null && processID != 0){
+								if(processID>0){
+									total=null;
+									copied =null ;
+									failed =null;
 									num_of_processed_ref_tables=null;
 									num_of_copied_ref_tables=null;
 									num_of_failed_ref_tables=null;
-									if(processID>0){
-										total=null;
-										copied =null ;
-										failed =null;
-									}
 								}
+
                                 if("completed".equalsIgnoreCase(status) && processID==-2 && "pre".equalsIgnoreCase(processType)){
 									Map num = fnUpdateAIProcess(taskExecutionID,"-2");
 									total= "" + num.get("total");
@@ -385,14 +384,14 @@ public class Logic extends UserCode {
 								//log.info("Updating task for luName: " + luName + " to status: " + status + " with:");
 								//log.info("numOfProcessedRefTables: " + num_of_processed_ref_tables);
 								//log.info("numOfCopiedRefTables: " + num_of_copied_ref_tables + ", numOfFailedRefTables: " + num_of_failed_ref_tables);
-								if("completed".equalsIgnoreCase(status) && processID==-1 && "post".equalsIgnoreCase(processType)){
+								if("completed".equalsIgnoreCase(status) && (processID == -1 || processID == -3) && "post".equalsIgnoreCase(processType)){
 									Map num = fnUpdateAIProcess(taskExecutionID,"-2");
 									total= "" + num.get("total");
 									copied= "" + num.get("copied");
 									failed= "" + num.get("failed");
 
 								}
-                                //log.info("verticalExecution: " + verticalExecution);
+								//log.info("verticalExecution: " + verticalExecution);
                                 // TDM 9.2 - in case of vertical execution, the statistics of the child LUs will be taken from task_execution_entities.
                                 if (verticalExecution && parentLuID != 0) {
                                     //log.info("Handling Vertical for luName: " + luName);
@@ -410,7 +409,7 @@ public class Logic extends UserCode {
 
                                 }
 
-                                
+
 								db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, //taskStartDate.toString(),  -- no need to set the start time
 										taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables,
 										taskID, taskExecutionID, luID, processID});
@@ -642,20 +641,25 @@ public class Logic extends UserCode {
 
 		// SQL queries on TDM DB
 
-		String getTotProcessedRootIdsSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'ENTITY') entList";
+		String getTotProcessedRootIdsSQL = "select num_of_processed_entities from " + TDMDB_SCHEMA + ".task_execution_list where task_Execution_id = ? " +
+                "and parent_lu_id is null and lu_id <> 0 limit 1";
 
-		String getTotCopiedRootIdsSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities t1 where task_Execution_id = ? and id_type = 'ENTITY' " +
-				" and execution_status = 'completed' and not exists (select 1 from " + TDMDB_SCHEMA + ".task_execution_entities t2 " +
-				" where t2.task_execution_id = t1.task_execution_id and t2.id_type = 'ENTITY' and t2.root_entity_id = t1.root_entity_id and t2.execution_status <> 'completed')) entList";
+		//String getTotCopiedRootIdsSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities t1 where task_Execution_id = ? and id_type = 'ENTITY' " +
+		//		" and execution_status = 'completed' and not exists (select 1 from " + TDMDB_SCHEMA + ".task_execution_entities t2 " +
+		//		" where t2.task_execution_id = t1.task_execution_id and t2.id_type = 'ENTITY' and t2.root_entity_id = t1.root_entity_id and t2.execution_status <> 'completed')) entList";
 
-		String getTotFailedRootIdsSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? " +
-				" and execution_status <> 'completed' and id_type = 'ENTITY') entList";
+		String getTotFailedRootIdsSQL = "select count(distinct root_entity_id) from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? " +
+				"and execution_status <> 'completed' and id_type = 'ENTITY'";
 
-		String getTotProcessedTablesSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'REFERENCE') entList";
+        String getTableStaticsSQL = "select sum(num_of_processed_ref_tables) as num_of_processed_ref_tables, " +
+                "sum(num_of_copied_ref_tables) as num_of_copied_ref_tables, sum(num_of_failed_ref_tables) as num_of_failed_ref_tables " +
+                "from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ?";
+		
+        //String getTotProcessedTablesSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'REFERENCE') entList";
 
-		String getTotCopiedTablesSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'REFERENCE' and execution_status = 'completed' ) entList";
+		//String getTotCopiedTablesSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'REFERENCE' and execution_status = 'completed' ) entList";
 
-		String getTotFailedTablesSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'REFERENCE' and execution_status <> 'completed' ) entList";
+		//String getTotFailedTablesSQL = "select count(*) from (select distinct root_entity_id from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? and id_type = 'REFERENCE' and execution_status <> 'completed' ) entList";
 
 		String getTotProcessedPostExeProcesses = "select count(*) from " + TDMDB_SCHEMA + ".task_execution_list l inner join " + TDMDB_SCHEMA + ".tasks_exe_process p on l.task_id=p.task_id and l.process_id=p.process_id where l.task_execution_id = ? and l.process_id != 0 and p.process_type ='post' ";
 
@@ -669,21 +673,24 @@ public class Logic extends UserCode {
 
 		String getTotFailedPreExeProcesses = "select count(*) from " + TDMDB_SCHEMA + ".task_execution_list l inner join " + TDMDB_SCHEMA + ".tasks_exe_process p on l.task_id=p.task_id and l.process_id=p.process_id where l.task_execution_id = ? and l.process_id != 0 and p.process_type ='pre' and l.execution_status <> 'completed' ";
 
-		String getRootTaskStatus = "select execution_status from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? and parent_lu_id is null ";
+		String getRootTaskStatus = "select execution_status from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? and parent_lu_id is null and lu_id <> 0";
 
 		// Get data from the TDM DB
 
 		totProcessedRootEnt = Long.valueOf(db(TDM).fetch(getTotProcessedRootIdsSQL, taskExecId).firstValue().toString());
 
-		totCopiedRootEnt = Long.valueOf(db(TDM).fetch(getTotCopiedRootIdsSQL, taskExecId).firstValue().toString());
+		//totCopiedRootEnt = Long.valueOf(db(TDM).fetch(getTotCopiedRootIdsSQL, taskExecId).firstValue().toString());
 
 		totFailedRootEnt  = Long.valueOf(db(TDM).fetch(getTotFailedRootIdsSQL, taskExecId).firstValue().toString());
+        totCopiedRootEnt = totProcessedRootEnt - totFailedRootEnt;
 
-		totProcessedRefTabs = Long.valueOf(db(TDM).fetch(getTotProcessedTablesSQL, taskExecId).firstValue().toString());
+        Db.Row tablesStatics = db(TDM).fetch(getTableStaticsSQL, taskExecId).firstRow();
 
-		totCopiedRefTabs = Long.valueOf(db(TDM).fetch(getTotCopiedTablesSQL, taskExecId).firstValue().toString());
+		totProcessedRefTabs = Long.valueOf(tablesStatics.get("num_of_processed_ref_tables").toString());
 
-		totFailedRefTabs =Long.valueOf(db(TDM).fetch(getTotFailedTablesSQL, taskExecId).firstValue().toString());
+		totCopiedRefTabs = Long.valueOf(tablesStatics.get("num_of_copied_ref_tables").toString());
+
+		totFailedRefTabs =Long.valueOf(tablesStatics.get("num_of_failed_ref_tables").toString());
 
 		Long totNumOfProcessedPostExecutions =  Long.valueOf(db(TDM).fetch(getTotProcessedPostExeProcesses, taskExecId).firstValue().toString());
 		Long totNumOfSucceededPostExecutions =  Long.valueOf(db(TDM).fetch(getTotSucceededPostExeProcesses, taskExecId).firstValue().toString());
@@ -705,7 +712,7 @@ public class Logic extends UserCode {
 		}
 
 		startExecTime = "" + db(TDM).fetch("select min(start_execution_time) from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
-		endExecTime = "" + db(TDM).fetch("select max(end_execution_time) from task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
+		endExecTime = "" + db(TDM).fetch("select max(end_execution_time) from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
 
         versionExeID = "" + db(TDM).fetch("select version_task_execution_id from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
         subsetExeID = "" + db(TDM).fetch("select subset_task_execution_id from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
@@ -761,267 +768,6 @@ public class Logic extends UserCode {
 		db(TDM).execute(sqlUpdateTaskSummaryTable,params);
         
 	}
-
-	public static void tdmUpdateTaskExecutionEntities(String taskExecutionId, Long luId, String luName) throws Exception {
-		// TALI- 5-May-20- add a select of selection_method  + fabric_Execution_uid columns. 
-		//Remove the condition of fabric_execution_id is not null to support reference only task
-
-		String taskExeListSql = "SELECT L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
-						"L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, T.TASK_TITLE, L.VERSION_TASK_EXECUTION_ID,L.SUBSET_TASK_EXECUTION_ID, T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
-						"FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS T " +
-						"WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
-		
-		String fabricExecID = "";
-		String srcEnvName = "";
-		String creationDate = "";
-		String startExecDate = "";
-		String endExecDate = "";
-		String envID = "";
-		String entityID = "";
-		String targetEntityID = "";
-		String execStatus = "";
-		String idType = "ENTITY";
-		String IID = "";
-		String versionInd = "";
-		String versionExecutionID = "";
-        String subsetExecutionID = "";
-		// Add selectionMethod
-		String selectionMethod = "";
-		
-		final String UIDLIST = "UIDList";
-		
-		String insertSql = "INSERT INTO " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES(" +
-				"TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, " +
-				"FABRIC_EXECUTION_ID, IID, SOURCE_ENV, ROOT_ENTITY_ID, ROOT_LU_NAME,SUBSET_TASK_EXECUTION_ID ";
-		String insertBinding = "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?";
-		
-		Db.Row taskData = db(TDM).fetch(taskExeListSql, taskExecutionId, luId).firstRow();
-		
-		
-		//log.info("tdmUpdateTaskExecutionEntities: TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", LU_ID: " + LU_ID + ", LU_NAME: " + LU_NAME);
-		if(!taskData.isEmpty()) {
-			fabricExecID = "" + taskData.get("fabric_execution_id");
-			srcEnvName = "" + taskData.get("source_env_name");
-			creationDate = "" + taskData.get("creation_date");
-			startExecDate = "" + taskData.get("start_execution_time");
-			endExecDate = "" + taskData.get("end_execution_time");
-			envID = "" + taskData.get("environment_id");
-			versionInd = "" + taskData.get("version_ind");
-			versionExecutionID = "" + taskData.get("version_task_execution_id");
-            subsetExecutionID = "" + taskData.get("subset_task_execution_id");
-
-		
-			// Add selection method and fabric_execution_id
-			selectionMethod = "" + taskData.get("selection_method");
-						
-			//log.info("creationDate: " + creationDate + ", startExecDate: " + startExecDate + ", endExecDate: " + endExecDate + ", SELECTION METHOD: " + selectionMethod);
-			 
-			if(!"null".equals(creationDate) && !"".equals(creationDate)) {
-				insertSql += ", CREATION_DATE";
-				creationDate = creationDate.substring(1);
-				insertBinding += ", ?";
-			} 
-			
-			if(!"null".equals(startExecDate) && !"".equals(startExecDate)) {
-				insertSql += ", ENTITY_START_TIME";
-				insertBinding += ", ?";
-			}
-			
-			if(!"null".equals(endExecDate) && !"".equals(endExecDate)) {
-				insertSql += ", ENTITY_END_TIME";
-				insertBinding += ", ?";
-			}
-			
-			if ("true".equals(versionInd) && !"0".equalsIgnoreCase(versionExecutionID)) {
-				insertSql += ", VERSION_TASK_EXECUTION_ID";
-				insertBinding += ", ?";
-			}
-			
-			insertBinding += ")";
-			insertSql += ") " + insertBinding;
-			insertSql += " ON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ?";
-		
-			// TALI- 5-May-20 - add a check of the sectionMethod. Do not get the list of IIDs for reference only task
-		
-			Map<String, Map> migrationList = new LinkedHashMap<String, Map>();
-
-			if(!selectionMethod.equals("TABLES") && !fabricExecID.equals("")) {
-				migrationList = (Map<String, Map>) fnGetIIDListForMigration(fabricExecID, null);
-			}
-			
-			//log.info ("tdmUpdateTaskExecutionEntities - insertSql: " + insertSql);
-			if (migrationList.containsKey("Copied entities per execution")) {
-				LinkedHashMap<String, Object> m1 = (LinkedHashMap<String, Object>) migrationList.get("Copied entities per execution");
-				
-				if (m1.containsKey(UIDLIST)) {
-					List<Object> copied_UID_list = (List<Object>) m1.get(UIDLIST);
-					//log.info("Size of copied_UID_list: " + copied_UID_list.size());
-					for (Object UID : copied_UID_list) {
-						Map<Object, Object> innerCopiedUIDMap = (Map<java.lang.Object, java.lang.Object>) UID;
-			
-						for (Map.Entry<Object, Object> copiedUID : innerCopiedUIDMap.entrySet()) {
-							targetEntityID = (String) copiedUID.getKey();
-							IID = (String) copiedUID.getKey();
-							entityID = (String) copiedUID.getValue();
-							execStatus = COMPLETED;
-							
-							ArrayList<String> paramList = new ArrayList<>();
-							
-							paramList.add(taskExecutionId);
-							paramList.add(luName);
-							paramList.add(entityID);
-							paramList.add(targetEntityID);
-							paramList.add(envID);
-							paramList.add(execStatus);
-							paramList.add(idType);
-							paramList.add(fabricExecID);
-							paramList.add(IID);
-							paramList.add(srcEnvName);
-
-                            //TDM 8.1 set the root info in the entities table.
-                            String rootIID = fabric().fetch("set root_iid").firstValue().toString();
-                            String rootLuName = fabric().fetch("set root_lu_name").firstValue().toString();
-
-                            paramList.add(rootIID);
-							paramList.add(rootLuName);
-                            paramList.add(subsetExecutionID);
-
-							//log.info("Inserting Copied: LU_NAME: " + LU_NAME + ", TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", entityID: " + entityID);
-							//In postgres, timestamp fields cannot be set to empty string,
-							//therefore date fields should be insterted only if they have value		
-							//log.info("Inserting: TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", LU_NAME: " + LU_NAME + ", entityID: " + entityID);			
-							if(!"null".equals(creationDate) && !"".equals(creationDate)) paramList.add(creationDate);
-							if(!"null".equals(startExecDate) && !"".equals(startExecDate)) paramList.add(startExecDate);
-							if(!"null".equals(endExecDate) && !"".equals(endExecDate)) paramList.add(endExecDate);
-							if ("true".equals(versionInd)&& !"0".equalsIgnoreCase(versionExecutionID)) paramList.add(versionExecutionID);
-
-
-							
-							//Adding additional parameter for execution_status, in case the insert failed on primary key constraint,
-							//in that case only the status will be updated,such case can happen in case of cancel resume
-							paramList.add(execStatus);
-							
-							Object[] params = paramList.toArray();
-			
-							//log.info ("insertSql - Copied Entities: " + insertSql);
-							db(TDM).execute(insertSql, params);
-						}
-			
-					}
-				}
-			}
-			
-			if (migrationList.containsKey("Failed entities per execution")) {
-				LinkedHashMap<String, Object> m2 = (LinkedHashMap<String, Object>) migrationList.get("Failed entities per execution");
-				if (m2.containsKey(UIDLIST)) {
-					List<Object> failed_UID_list = (List<Object>) m2.get(UIDLIST);
-					for (Object UID : failed_UID_list) {
-						Map<Object, Object> innerFailedUIDMap = (Map<java.lang.Object, java.lang.Object>) UID;
-			
-						for (Map.Entry<Object, Object> failedUID : innerFailedUIDMap.entrySet()) {
-							targetEntityID = (String) failedUID.getKey();
-							IID = (String) failedUID.getKey();
-							entityID = (String) failedUID.getValue();
-							execStatus = FAILED;
-							
-							ArrayList<String> paramList = new ArrayList<>();
-							
-							paramList.add(taskExecutionId);
-							paramList.add(luName);
-							paramList.add(entityID);
-							paramList.add(targetEntityID);
-							paramList.add(envID);
-							paramList.add(execStatus);
-							paramList.add(idType);
-							paramList.add(fabricExecID);
-							paramList.add(IID);
-							paramList.add(srcEnvName);
-							
-                             //TDM 8.1 set the root info in the entities table.
-                             String rootIID = fabric().fetch("set root_iid").firstValue().toString();
-                             String rootLuName = fabric().fetch("set root_lu_name").firstValue().toString();
- 
-                             paramList.add(rootIID);
-                             paramList.add(rootLuName);
-                             paramList.add(subsetExecutionID);
-
-
-							//log.info("Inserting Failed: TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", LU_NAME: " + LU_NAME + ", entityID: " + entityID);
-							if(!"null".equals(creationDate) && !"".equals(creationDate)) paramList.add(creationDate);
-							if(!"null".equals(startExecDate) && !"".equals(startExecDate)) paramList.add(startExecDate);
-							if(!"null".equals(endExecDate) && !"".equals(endExecDate)) paramList.add(endExecDate);
-							if ("true".equals(versionInd) && !"0".equalsIgnoreCase(versionExecutionID)) paramList.add(versionExecutionID);
-
-
-							//Adding additional parameter for execution_status, in case the insert failed on primary key constraint,
-							//in that case only the status will be updated,such case can happen in case of cancel resume
-							paramList.add(execStatus);
-							
-							Object[] params = paramList.toArray();
-			
-							//log.info ("insertSql - Failed Entities: " + insertSql);
-							db(TDM).execute(insertSql, params);
-						}
-			
-					}
-				}
-			}
-			
-			//Add reference Entities to TASK_EXECUTION_ENTITIES table
-			String refListSql = "SELECT REF_TABLE_NAME, EXECUTION_STATUS FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS ES WHERE " +
-					"TASK_EXECUTION_ID = ? AND TASK_REF_TABLE_ID IN (SELECT TASK_REF_TABLE_ID FROM TASK_REF_TABLES RT " +
-						"WHERE RT.TASK_ID = ES.TASK_ID AND RT.TASK_REF_TABLE_ID = ES.TASK_REF_TABLE_ID AND RT.LU_NAME = ?)";
-			
-			idType = "REFERENCE";
-			
-			Db.Rows refList = db(TDM).fetch(refListSql, taskExecutionId, luName);
-			
-			for (Db.Row refTable : refList) {
-				entityID = "" + refTable.get("ref_table_name");
-				targetEntityID = entityID;
-				execStatus = "" + refTable.get("execution_status");
-				IID = entityID;
-							
-				ArrayList<String> paramList = new ArrayList<>();
-							
-				paramList.add(taskExecutionId);
-				paramList.add(luName);
-				paramList.add(entityID);
-				paramList.add(targetEntityID);
-				paramList.add(envID);
-				paramList.add(execStatus);
-				paramList.add(idType);
-				paramList.add(fabricExecID);
-				paramList.add(IID);
-				paramList.add(srcEnvName);
-
-                 //TDM 8.1 set the root info in the entities table.
-                 paramList.add(entityID);
-                 paramList.add(luName);
-                 paramList.add(subsetExecutionID);
-
-				if(!"null".equals(creationDate) && !"".equals(creationDate)) paramList.add(creationDate);
-				if(!"null".equals(startExecDate) && !"".equals(startExecDate)) paramList.add(startExecDate);
-				if(!"null".equals(endExecDate) && !"".equals(endExecDate)) paramList.add(endExecDate);
-				if ("true".equals(versionInd)  && !"0".equalsIgnoreCase(versionExecutionID)) paramList.add(versionExecutionID);
-
-				//Adding additional parameter for execution_status, in case the insert failed on primary key constraint,
-				//in that case only the status will be updated,such case can happen in case of cancel resume
-				paramList.add(execStatus);
-				
-				Object[] params = paramList.toArray();
-				
-				//log.info("Inserting Reference: TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", LU_NAME: " + LU_NAME + ", entityID: " + entityID);
-				//log.info ("insertSql - Reference Entity: " + insertSql);
-				db(TDM).execute(insertSql, params);
-			}
-			
-			if (refList != null) {
-				refList.close();
-			}
-		}
-	}
-
 
 	@desc("This function runs the Fabric command migrate_summary and returns its output")
 	@out(name = "migrateSummaryOutput", type = Map.class, desc = "")
@@ -1154,9 +900,8 @@ public class Logic extends UserCode {
 		return originalStatus.toString().toLowerCase();
 	}
 	@out(name = "result", type = Map.class, desc = "")
-	public static Map<String,String> getCommandForAll(String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, String closeSeparator,String versionExeID,String dcName, Long luId, String sessionGlobals) throws Exception {
+	public static Map<String,String> getCommandForAll(String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, String closeSeparator,String versionExeID,String dcName, Long luId, String sessionGlobals, String taskTitle) throws Exception {
 		String modified_sql = "";
-		String batchCommand = "";
 		String interface_name = null;
 		String sql = null;
 		String externalTableFlow = null;
@@ -1227,10 +972,11 @@ public class Logic extends UserCode {
 			migrateListQueryFormatsInput.put("version_ind", versionInd);
 			List<Map<String, Object>> migrateListQueryFormats = MtableLookup("MigrateListQueryFormats", migrateListQueryFormatsInput, MTable.Feature.caseInsensitive);
 			String query_format = null;
-			for (Map<String, Object> t : migrateListQueryFormats) {
-				query_format = "" + t.get("query_format");
-		
-			}
+            if (migrateListQueryFormats != null) {
+			    for (Map<String, Object> t : migrateListQueryFormats) {
+				    query_format = "" + t.get("query_format");
+    		    }
+            }
 			if (!(query_format == null || query_format.isEmpty() || "null".equalsIgnoreCase(query_format))){
 				// TDM 5.1- add the handle of configurable separator for special formats- the separator may need to be added to the trnMigrateListQueryFormats
                 String sql_part1 = sql.toLowerCase().substring(0, sql.toLowerCase().indexOf(qry_entity_col));
@@ -1249,15 +995,15 @@ public class Logic extends UserCode {
 					sql_part1 = select + " " + sqlStr.toString();
 				}
                 sql_part1 = query_format;
-					sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
+									sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
 					sql_part1 = sql_part1.replace("<entity_id>", qry_entity_col);
-                if (versionInd.equals("true")) {
+					if (versionInd.equals("true")) {
                     String taskId = "0".equalsIgnoreCase(versionExeID) ? taskExecutionId : versionExeID;
-                    sql_part1 = sql_part1.replace("<task_execution_id>", "'" + taskId + "'");
+						sql_part1 = sql_part1.replace("<task_execution_id>", "'" + taskId + "'");
 					}
                 // Escape single quotes and build the final query
-                modified_sql = select + " " + sql_part1.replace("'", "''") + sql_part2;
-
+					modified_sql = select + " " + sql_part1.replace("'", "''") + sql_part2;
+				
 			}
 			//No query format --> modify query by using || concatenation operator
 			else {
@@ -1288,17 +1034,17 @@ public class Logic extends UserCode {
 			//modified_sql = getCommandForAllCL(luName, externalTableFlow, taskExecutionId, luId, dcName);
 			Long numberOfEntities = -1L;
 			Map<String,String> BFCmdAndInterface = getCustomLogicBatch(luName, externalTableFlow, taskExecutionId, luId, 
-					dcName, numberOfEntities, "", sessionGlobals, false);
+					dcName, numberOfEntities, "", sessionGlobals, false, taskTitle);
 			modified_sql = BFCmdAndInterface.get("batchQuery");
 			interface_name = BFCmdAndInterface.get("batchInterface");
 			batchStrings.put("mode","external_flow");
 		}
 		
-		if (dcName != null && !dcName.isEmpty()) {
-			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH AFFINITY='" + dcName + "' ASYNC=true";
-		} else {// input DC is empty
-			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
-		}
+		String affinityClause = !Util.isEmpty(dcName) ? " AFFINITY='" + dcName + "'" : "";
+
+		String batchCommand = "BATCH " + luName + " from " + interface_name +
+				" using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH" +
+				affinityClause + " ASYNC=true" + " BATCH_ID_PREFIX ='" + taskTitle + "'";
 		
 		batchStrings.put("batchCommand", batchCommand);
 		batchStrings.put("usingClause", modified_sql);
@@ -1308,7 +1054,7 @@ public class Logic extends UserCode {
 
 	@out(name = "result", type = Map.class, desc = "")
 	public static Map<String,String> getCustomLogicBatch(String luName, String customLogicFlow, String taskExecutionId, Long luId, 
-        String dcName, Long entitiesLimit, String flowParams, String sessionGlobals, Boolean cloneInd) throws Exception {
+        String dcName, Long entitiesLimit, String flowParams, String sessionGlobals, Boolean cloneInd, String taskTitle) throws Exception {
 		String batchQuery = "";
 		String batchInterface = TDM;
 		Map<String, String> result = new HashMap<>();
@@ -1341,7 +1087,7 @@ public class Logic extends UserCode {
 				if("".equals(paramValue)){
 					paramValue=null;
 				}
-				fabricCommandParams += ", " + clFlowParamMap.get("name") + "=\"" + paramValue + "\"";
+				fabricCommandParams += ", '" + clFlowParamMap.get("name") + "'=\"" + paramValue + "\"";
 			}
 		}
 		
@@ -1368,7 +1114,7 @@ public class Logic extends UserCode {
 			fabric().execute(createEntityListTab);
 			
 			String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
-			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true";
+			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
 			//log.info("Custom Logic batchCommand: " + batchCommand);
 			
 			String broadwayCommand = "broadway " + luName + "."  +  customLogicFlow +  " iid=?," + fabricCommandParams;
@@ -1395,14 +1141,14 @@ public class Logic extends UserCode {
 	}
 
     public static Map<String,String> getEntityListByBF(String luName, String broadwayCommand, String taskExecutionId,Long luId, 
-    String dcName, Long entitiesLimit,  Boolean cloneInd) throws Exception {
+    String dcName, Long entitiesLimit,  Boolean cloneInd, String taskTitle) throws Exception {
         Map<String, String> result = new HashMap<>();
         String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable taskExecutionId = " + taskExecutionId;
 			//log.info("createEntityListTab: " + createEntityListTab);
 			fabric().execute(createEntityListTab);
 			
 			String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
-			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true";
+			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
 			//log.info("Custom Logic batchCommand: " + batchCommand);
 		
 			//log.info("Custom Logic broadwayCommand: " + broadwayCommand);
@@ -1547,6 +1293,7 @@ public class Logic extends UserCode {
     
     public static void fnInsertValuestoDistinctParamsTable(String srcEnv , String luName,Map<String, Map<String, Object>> disitnctValuesMap){
         try{
+			
             for (String key : disitnctValuesMap.keySet()) {
                 Map<String, Object> fieldinfo = disitnctValuesMap.get(key);
                 Long numberOfValues = Long.parseLong(fieldinfo.get("numberOfValues").toString());
@@ -1597,9 +1344,9 @@ public class Logic extends UserCode {
                         String newSelClause = String.join(",", columnsArr);
                         String query = "SELECT " + newSelClause + " FROM "  + luName.toLowerCase() + "." + tableName +
                             " p INNER JOIN " +luName.toLowerCase()+ ".fabric_tdm_root r ON p.__iid=r.__iid INNER JOIN " + TDMDB_SCHEMA + ".task_execution_entities t ON r.__iid=t.entity_id" +
-                            " WHERE r.source_env=t.source_env AND r.task_execution_id::text=t.task_execution_id" +
-                            " AND t.task_execution_id = '" + taskExecId +
-                            "' AND t.lu_name = '" + luName + "' AND r.source_env = '" + srcEnv + "' AND t.execution_status = 'completed'";
+                            " WHERE r.source_env=t.source_env AND r.task_execution_id=t.task_execution_id::TEXT" +
+                            " AND t.task_execution_id = " + taskExecId +
+                            " AND t.lu_name = '" + luName + "' AND r.source_env = '" + srcEnv + "' AND t.execution_status = 'completed'";
 
                         disitnctValuesMap = fnReturnDistinctMapValues(query,luName,disitnctValuesMap);
                     }
@@ -1638,8 +1385,8 @@ public class Logic extends UserCode {
                 String newSelClause = String.join(",", columnsArr);
                 String query = "SELECT " + newSelClause + " FROM "  + TDMDB_SCHEMA + "." + tableName +
                     " p, "  + TDMDB_SCHEMA + ".task_execution_entities t WHERE p.root_lu_name = t.root_lu_name " +
-                    "AND p.root_iid = t.root_entity_id and p.entity_id = t.iid AND t.task_execution_id = '" + taskExecId +
-                    "' AND t.lu_name = '" + luName + "' AND p.source_environment = '" + srcEnv + "' AND t.execution_status = 'completed'";
+                    "AND p.root_iid = t.root_entity_id and p.entity_id = t.iid AND t.task_execution_id = " + taskExecId +
+                    " AND t.lu_name = '" + luName + "' AND p.source_environment = '" + srcEnv + "' AND t.execution_status = 'completed'";
 
                 disitnctValuesMap = fnReturnDistinctMapValues(query,luName,disitnctValuesMap);
                 fnInsertValuestoDistinctParamsTable(srcEnv,luName,disitnctValuesMap);

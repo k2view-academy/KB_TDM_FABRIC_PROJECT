@@ -1,6 +1,16 @@
 tags: Upgrade
 stages:
-  Masking Only:
+  Get TDMDB schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  'Masking Only ':
     actors:
       Add Masking Only Indocator:
         parent: DbCommand
@@ -9,5 +19,9 @@ stages:
             const: TDM
           sql:
             const: |-
-              update @TDMDB_SCHEMA@.tdm_general_parameters
+              update ${@TDMDB_SCHEMA}.tdm_general_parameters
               set param_value = substr(param_value, 0, length(param_value) ) || ',"masking_only":true}' where param_name = 'tdm_gui_params'
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false

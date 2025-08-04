@@ -22,18 +22,25 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.management.RuntimeErrorException;
+
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.DecisionFunction;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.RootFunction;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_BATCH_LIMIT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_TASK_ID;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
-
+ public static String TDMDB_SCHEMA;
+    static {
+        try {
+            TDMDB_SCHEMA = fabric().fetch("Broadway TDM.getTDMDBSchema").firstValue().toString();
+        } catch (Exception e) {
+            log.error("Failed to fetch TDMDB schema", e);
+        }
+    }	
 	public static final String TDM = "TDM";
 	public static final String TASKS = "TASKS";
 	public static final String TASK_EXECUTION_LIST = "task_execution_list";
@@ -310,26 +317,28 @@ public class SharedLogic {
 	}
     
     public static Map<String,Map<String,Object>> fnUpdateDistinctFieldData(String columnName,String columnType, Map<String,Map<String,Object>> distinctTable,
-																		   HashSet<String> newValuesSet) {
-		Long maxNumOfValues = Long.parseLong(getGlobal("COMBO_MAX_COUNT", "TDM"));
-        Map<String, Object> currFieldData = new HashMap<>();
-		if (distinctTable.containsKey("\"" + columnName + "\"")) {
+																				   HashSet<String> newValuesSet) {
+		long maxNumOfValues = Long.parseLong(getGlobal("COMBO_MAX_COUNT", "TDM"));
+		String quotedColumn = "\"" + columnName + "\"";
+		boolean exsitingField = distinctTable.containsKey(quotedColumn);
+		Map<String, Object> currFieldData = exsitingField ? distinctTable.get(quotedColumn) : new HashMap<>();
+		if (exsitingField) {
 			//log.info("fnUpdateDistinctFieldData - Found: " + columnName);
-			currFieldData = distinctTable.get("\"" + columnName + "\"");
-			if (Long.parseLong(currFieldData.get("numberOfValues").toString()) <= maxNumOfValues) {
-				HashSet <String> curreValues = (HashSet <String>)currFieldData.get("fieldValues");
-				if (newValuesSet.size() +  curreValues.size() >= maxNumOfValues + 1) {
+			long currentCount = Long.parseLong(currFieldData.get("numberOfValues").toString());
+			if (currentCount <= maxNumOfValues) {
+				HashSet<String> curreValues = (HashSet<String>) currFieldData.get("fieldValues");
+				// Symmetric difference newValuesSet - curreValues keep only the new potential values 
+				HashSet<String> addedValues = new HashSet<>(newValuesSet);
+				addedValues.removeAll(curreValues);
+				int newNumberOfValues = curreValues.size() + addedValues.size();
+				if (newNumberOfValues > maxNumOfValues) {
 					currFieldData.put("numberOfValues", maxNumOfValues + 1);
 					currFieldData.put("fieldValues", new HashSet<String>());
-				} else {
-					if (newValuesSet != null && newValuesSet.size() > 0) {
-						curreValues.addAll(newValuesSet);
-					}
-
+				} else if (!addedValues.isEmpty()) {
+					curreValues.addAll(addedValues);
 					currFieldData.put("numberOfValues", curreValues.size());
 					currFieldData.put("fieldValues", curreValues);
 				}
-
 			}
 
 			if(Boolean.parseBoolean(currFieldData.get("isNumeric").toString())) {
@@ -402,7 +411,11 @@ public class SharedLogic {
 			Long longValue = null;
 			Double doubleValue = null;
 			value = value.replace("\"", "");
-
+ 			if (value.startsWith("0")) {
+                currMinMax.put("MIN", "\\N");
+                currMinMax.put("MAX", "\\N");
+                return currMinMax;
+            }
 			try {
 				intValue = Integer.parseInt(value);
 				if (min == null || intValue < Integer.parseInt(min)) {
@@ -502,7 +515,7 @@ public class SharedLogic {
 
 			//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table
 			String DELETE_TAR_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
-			String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
+			String targetEnv = "" + ludb().fetch("SET TDM_TAR_ENV_NAME").firstValue();
 
 			Map<String,Object> childLuInputs = new HashMap<>();
 			childLuInputs.put("parent_lu",parentLU);
@@ -919,7 +932,7 @@ public class SharedLogic {
 		// ((Current time (UTC) – start_time (UTC) )/ number_of_processed_records) * (number_of_records_to_process- number_of_processed_records)
 
 		String selectDetailedRefTablesStats = "SELECT rt.lu_name, es.ref_table_name, es.execution_status, es.start_time, es.end_time, " +
-				"CASE WHEN execution_status = 'running' and number_of_processed_records > 0 THEN " +
+				"CASE WHEN execution_status = 'running' and number_of_processed_records > 0 and coalesce(number_of_records_to_process, 0) > 0 THEN " +
 				"to_char(((CURRENT_TIMESTAMP AT TIME ZONE 'UTC' - start_time )/number_of_processed_records) * " +
 				"(number_of_records_to_process - number_of_processed_records), 'HH24:MI:SS') " +
 				"ELSE '0' END estimated_remaining_duration, coalesce(number_of_records_to_process, 0) as number_of_records_to_process, " +
@@ -1054,8 +1067,7 @@ public class SharedLogic {
 	@type(DecisionFunction)
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionInsertToTarget() throws Exception {
-		String luName = getLuType().luName;
-		if(("" + ludb().fetch("SET " + luName + ".TDM_INSERT_TO_TARGET").firstValue()).equals("true"))
+		if(("" + ludb().fetch("SET TDM_INSERT_TO_TARGET").firstValue()).equals("true"))
 		{
 			return true;
 		}
@@ -1068,8 +1080,7 @@ public class SharedLogic {
 	@type(DecisionFunction)
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionDeleteFromTarget() throws Exception {
-		String luName = getLuType().luName;
-		if(("" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
+		if(("" + ludb().fetch("SET TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
 		{
 			return true;
 		}
@@ -1110,7 +1121,7 @@ public class SharedLogic {
 		// Fix- TDM 7.0.1 - Check the main source LU tables only if the TDM_INSERT_TO_TARGET is true
 		String luName = getLuType().luName;
 
-		if (("" + ludb().fetch("SET " + luName + ".TDM_INSERT_TO_TARGET").firstValue()).equals("true")) {
+		if (("" + ludb().fetch("SET TDM_INSERT_TO_TARGET").firstValue()).equals("true")) {
 
 			// Get the list of root tables from the Global
 			String[] rootTables = ("" + ludb().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue()).split(",");
@@ -1147,8 +1158,6 @@ public class SharedLogic {
 					try {
 						//log.info("setGlobals - setting "+key+"='"+value+ "'");
 						fabric().execute("set " + key + "='" + value + "'");
-						// TDM 7.1 - Handle Masking and Sequence Broadway Actors flags
-						//setBroadwayActorFlags("" + key, "" + value);
 					} catch (SQLException e) {
                         log.error("Failed to set Globals due to: " + e.getMessage());
 						e.printStackTrace();
@@ -1234,6 +1243,10 @@ public class SharedLogic {
 		//log.info("fnReleaseReservedEntity - deleteSql: " + deleteSql + returnClause);
 		//Delete record
 		String deleteEntityID = "";
+		 if (userName.contains("##")) {
+            String[] userData = userName.split("##");
+            userName = userData[0]; 
+        }
 		if (isTester) {
 			deleteEntityID = "" + db(TDM).fetch(deleteSql + returnClause, entityID, beID, envID, userName).firstValue();
 		} else {
@@ -1342,18 +1355,18 @@ public class SharedLogic {
 	}
 
     @out(name = "taskStatus", type = String.class, desc = "")
-	public static String fnCheckMedoidTaskStatus(String interface_name, String task_id) throws Exception {
+	public static String fnCheckMedoidTaskStatus(String interface_name, String task_id,String task_type) throws Exception {
         String k2systemSchema = "k2system";
         // Object clusterId = fabric().fetch("clusterid").firstValue();
         // if (clusterId != null && !"".equals(clusterId)) {
         //     k2systemSchema = k2systemSchema + "_" + clusterId;
         // }
-		String sql = "SELECT distinct status FROM " + k2systemSchema + ".task_executions where id=?";
+		String sql = "SELECT distinct status FROM " + k2systemSchema + ".task_executions where id=? AND task_type=?";
 		String taskStatus = "";
 		Boolean taskFinish = false;
 		
 		while(!taskFinish) { 
-			taskStatus = (String) db(interface_name).fetch(sql, task_id).firstValue();
+			taskStatus = (String) db(interface_name).fetch(sql, task_id,task_type).firstValue();
 			
 			if(taskStatus.equals("DONE") || taskStatus.equals("FAILED") || taskStatus.equals("STOPPED")) {
 				taskFinish = true;
@@ -1504,68 +1517,77 @@ public class SharedLogic {
         return paramCoupling ;
     }
 
-    public static void fnRunVerticalChildren(String iid, String syncMode) throws Exception {
-		
-		String parentLU = getLuType().luName;
+   public static void fnRunVerticalChildren(String taskExecutionId, String iid, String syncMode) throws Exception {
+        String parentLU = getLuType().luName;
 
-		String tableName = parentLU + ".tdm_lu_type_relation_eid";
-		String tableNameTar = parentLU + ".tdm_lu_type_rel_tar_eid";
-		log.info("fnRunVerticalChildren - parentLU: " + parentLU + ", Fabric Table: " + tableName);
-		
-        //TDM 9.2 - support Vertical Execution
-        String exeuctionMode = getGlobal("EXECUTION_MODE", parentLU);
+        // TDM 9.2 - support Vertical Execution
         String taskAction = getGlobal("TASK_TYPE", parentLU);
         String versionInd = getGlobal("TDM_DATAFLUX_TASK", parentLU);
         String couplingInd = getGlobal("PARAMS_COUPLING", parentLU);
-        String reserveInd = getGlobal("TDM_RESERVE_IND", parentLU);
-        String currentLuName = "";
-
+    
         Object[] insRs = fnSplitUID(iid);
         Object entityId = insRs[0];
         String srcEnv = "" + insRs[1];
-        
-		Map<String,Object> childLuInputs = new HashMap<>();
-
-        fabric().execute("set sync off");
-        fabric().execute("get ?.?" ,parentLU,iid);
-        fabric().execute("set sync " + syncMode);
+    
+        Map<String, String> luChildrenMap = new HashMap<>();
+    
         Db.Rows rows;
-        // TDM 9.2 - Support Vertical Execution - aggragate the child IDs to start their execution as part of the parent ID execution
-        rows = fabric().fetch("select lu_type_2, lu_type2_eid from " + tableName + " order by lu_type_2");
-        String childrenList = "";
+    
         String separator = TDM_PARAMETERS_SEPARATOR;
-        for (Db.Row row : rows) {
-            if (!currentLuName.equals(row.get("lu_type_2").toString())) {
-                currentLuName = row.get("lu_type_2").toString();
-            }
-            childrenList += row.get("lu_type2_eid") + separator;
-        }
+            
+		String sql = "select distinct lu_name, iid from " + TDMDB_SCHEMA + ".task_execution_entities " +
+		"where task_execution_id = ? and  parent_lu_name = ? and parent_entity_id = ? order by lu_name";
+        rows = db(TDM).fetch(sql, Integer.parseInt(taskExecutionId), parentLU, entityId);
+        processRows(rows, luChildrenMap, separator);//Build a map with current child and its IIDS
+    
         if (rows != null) {
             rows.close();
         }
-        if (fnDecisionDeleteFromTarget() && "".equals(childrenList)) {
-            rows = fabric().fetch("select lu_type_2, lu_type2_eid from " + tableNameTar + " order by lu_type_2");
-            for (Db.Row row : rows) {
-                if (!currentLuName.equals(row.get("lu_type_2").toString())) {
-                    currentLuName = row.get("lu_type_2").toString();
+    
+    
+        // Execute the broadwayCommand for each luName and its associated childrenList Loop over the map
+        for (Map.Entry<String, String> entry : luChildrenMap.entrySet()) {
+            String luName = entry.getKey();
+            String childrenList = entry.getValue();
+    
+            if (!childrenList.isEmpty()) {
+                if ("false".equalsIgnoreCase(getGlobal("CHILD_LU_IND").toString())) {
+                    fabric().execute("set root_lu_name = " + parentLU);
+                    fabric().execute("set root_iid = " + entityId);
                 }
-                childrenList += row.get("lu_type2_eid") + separator;
+                //log.info("Calling ExecuteChildInstances flow");
+                String broadwayCommand = "broadway " + luName + ".ExecuteChildInstances instanceList='" + childrenList +
+                        "', luName=" + luName + ", taskAction='" + taskAction + "', syncMode='" + syncMode + "', srcEnv=" + srcEnv +
+                        ", versionInd=" + versionInd + ", isParamCoupling=" + couplingInd +
+                        ", separator='" + separator + "', taskExecutionId=" + taskExecutionId;
+                //log.info("Calling ExecuteChildInstances flow - " + broadwayCommand) ;
+                fabric().execute(broadwayCommand);
             }
         }
-        if (!"".equals(childrenList)) {
-            if ("false".equalsIgnoreCase(getGlobal("CHILD_LU_IND").toString())) {
-                fabric().execute("set root_lu_name = " + parentLU);
-                fabric().execute("set root_iid = " + entityId);
+    }
+    
+    private static void processRows(Db.Rows rows, Map<String, String> luChildrenMap, String separator) throws Exception {
+        String currentLuName = "";
+		StringBuilder childrenListBuilder = new StringBuilder();
+
+		for (Db.Row row : rows) {
+            String luName = row.get("lu_name").toString();
+    
+            if (!luName.equals(currentLuName)) {
+                // Store the current list and start a new one if the child name is different
+                if (!currentLuName.isEmpty()) {
+                    luChildrenMap.put(currentLuName, childrenListBuilder.toString());
+                }
+                currentLuName = luName;
+                childrenListBuilder.setLength(0); 
             }
-            int index = childrenList.lastIndexOf(separator);
-            childrenList = childrenList.substring(0, index);
-            //log.info("Calling ExecuteChildInstances flow");
-            String broadwayCommand = "broadway " + currentLuName + ".ExecuteChildInstances instanceList='" + childrenList + 
-                "', luName=" + currentLuName + ", taskAction='" + taskAction + "', syncMode='" + syncMode +"', srcEnv=" + srcEnv +
-                ", versionInd="+ versionInd + ", isParamCoupling=" + couplingInd +
-                ", separator='" + separator + "'";
-            //log.info("Calling ExecuteChildInstances flow - " + broadwayCommand) ;
-            fabric().execute(broadwayCommand);
+            childrenListBuilder.append(row.get("iid")).append(separator);
+        }
+    
+        if (!currentLuName.isEmpty() && childrenListBuilder.length() > 0) {
+            // trim
+            childrenListBuilder.setLength(childrenListBuilder.length() - separator.length());
+            luChildrenMap.put(currentLuName, childrenListBuilder.toString());
         }
     }
 }

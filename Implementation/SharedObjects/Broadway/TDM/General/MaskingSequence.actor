@@ -1,0 +1,95 @@
+{
+    "type": "MaskingSequence",
+    "parentType": "Masking",
+    "badge": "TSQ",
+    "actorClass": "com.k2view.cdbms.usercode.common.TDM.TDMMasking",
+    "tags": [
+        "masking"
+    ],
+    "doc": [
+        "This sequence implements a unique sequential number. If the initial value is not provided or empty, the sequence is still generated."
+    ],
+    "inputs": [
+        {
+            "name": "flowName",
+            "const": "Sequence.actor",
+            "hidden": true
+        },
+        {
+            "const": "",
+            "name": "sequenceId",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false,
+            "doc": [
+                "The sequence name to separate different sequences.",
+                "This is optional parameter, in case it is empty will be used masking ID as sequence ID.",
+                "In case the sequence interface is DB (Postgres, Oracle, DB2) and the sequence doesn't exist the actor will create it in the DB."
+            ]
+        },
+        {
+            "const": "",
+            "name": "sequenceInterface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "REDIS",
+                    "database"
+                ],
+                "interfaces": [
+                    "IN-MEMORY"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The interface where the sequence is defined with the name stored in the 'maskingId' argument. The following use cases are supported:",
+                "- IN-MEMORY, useful for testing only since it can be used only in a single node configuration.",
+                "- Redis or DB sequence. To implement the DB sequence, set the maskingId to hold the sequence name defined in the sequenceInterface DB."
+            ]
+        },
+        {
+            "const": "1",
+            "name": "initialValue",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "The sequence initial value, can be either a number or a string.",
+                "When set to a string, the actor will try to find the Broadway flow with such name. Note that the flow must return an external output named \"initialValue\"."
+            ]
+        },
+        {
+            "const": 1,
+            "name": "increment",
+            "schema": {
+                "type": "number"
+            },
+            "mandatory": true,
+            "doc": [
+                "The incremental value."
+            ]
+        },
+        {
+            "name": "category",
+            "const": "enable_sequences"
+        },
+        {
+            "name": "onEmpty",
+            "const": "MASK_NO_CACHE"
+        },
+        {
+            "const": "",
+            "name": "sequenceSchema",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        }
+    ],
+    "outputs": []
+}

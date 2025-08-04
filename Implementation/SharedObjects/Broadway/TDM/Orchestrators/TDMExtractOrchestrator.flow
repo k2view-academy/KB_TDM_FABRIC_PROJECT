@@ -229,8 +229,19 @@ stages:
         out:
           value:
             schema: string
+  'Populate Statistic Report ':
+    actors:
+      PopulateTaskExecutionStatsDetailed1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionStatsDetailed
+          luName:
+            external: luName
+            schema: any
+            mandatory: false
   'Is Params Coupling ':
-    dependsOn: Get Synthetic Entities
+    dependsOn: 'Populate Statistic Report '
     actors:
       'True':
         parent: EqualsIgnoreCase
@@ -261,19 +272,32 @@ stages:
     split: '--------------------'
   'False':
     else: true
-    dependsOn: Get Synthetic Entities
+    dependsOn: 'Populate Statistic Report '
   Populate Tables:
+    transactional: true
     actors:
       Format Current Time:
         parent: DateFormat
         in:
           date:
             link: Get Time After Get/date
-      Populate Task Execution Entities:
-        parent: PopulateTaskExecutionEntities_Actor
+      Handle Task Execution Entities:
+        parent: InnerFlow
         in:
-          idType:
-            const: ENTITY
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: true
+            schema: boolean
+            mandatory: false
   Get Execution Mode:
     actors:
       get EXECUTION_MODE:
@@ -306,6 +330,10 @@ stages:
             mandatory: false
           syncMode:
             external: syncMode
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
             schema: string
             mandatory: false
     split: '--------------------'

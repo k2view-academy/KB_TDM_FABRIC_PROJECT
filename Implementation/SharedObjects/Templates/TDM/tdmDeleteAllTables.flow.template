@@ -9,16 +9,14 @@
                     "actors": []
                 }
             ]
-        },
-		{{~#each this}}
+        },{{#each Tables~}}
 		{
             "stages": [
                 {
                     "name": "Delete Tables Level {{indexPlus @index}}",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-						{{~#each this}}
+                    "actors": [{{~#each this}}
                         {
                             "name": "delete_{{this}}",
                             "actorType": {
@@ -31,13 +29,11 @@
                                 ],
                                 "outputs": []
                             }
-                        }{{#if @last}}{{^}},{{/if}}
-						{{~/each}}
+                        }{{#if @last}}{{^}},{{/if}}{{~/each}}
                     ]
                 }
             ]
-        },
-		{{~/each}}
+        },{{/each}}
         {
             "stages": [
                 {

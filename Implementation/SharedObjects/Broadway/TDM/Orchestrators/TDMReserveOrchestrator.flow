@@ -125,9 +125,22 @@ stages:
               addEmptyEntry: true
             default: false
   Stage 4:
+    transactional: true
     actors:
-      Populate Task Execution Entities:
-        parent: PopulateTaskExecutionEntities_Actor
+      Handle Task Execution Entities:
+        parent: InnerFlow
         in:
-          idType:
-            const: ENTITY
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: ''
+            schema: boolean
+            mandatory: false

@@ -69,17 +69,16 @@ stages:
           isParamCoupling:
             external: isParamCoupling
             schema: string
-            editor:
-              id: com.k2view.dropdown
-              options:
-              - 'true'
-              - 'false'
+            mandatory: false
+          parentLuName:
+            external: parentLuName
+            schema: any
             mandatory: false
           iid:
             external: iid
           luName:
             external: luName
-  Set No Trx For Fabric:
+  Set No Trx For Fabric & TDM:
     transactional: true
     actors:
       No Trx - Fabric:
@@ -155,7 +154,7 @@ stages:
         parent: InnerFlow
         in:
           flowName:
-            const: DeleteAllTables
+            const: DeleteFromTarget
     split: '--------------------'
   No Data Deletion:
     else: true
@@ -201,11 +200,11 @@ stages:
                 flowName: PopulateTableErrorsWithFailed
                 number_of_retries: ''
                 retry_interval: ''
-      Load All Tables:
+      Load To Target:
         parent: InnerFlow
         in:
           flowName:
-            const: LoadAllTables
+            const: LoadToTarget
     split: '--------------------'
   No Data Loading:
     else: true
@@ -233,59 +232,25 @@ stages:
           reserveInd:
             external: reserveInd
   Post Load Entity:
-    remark: |-
-      Activities to be done after the handling of the entity was done:
-      1. Add entity to TDM_TASK_EXECUTION_ETITIES TDMDB Table
-      2. Add entity's Sequence Mappings to TDM_SEQ_MAPPING TDMDB Table
-    transactional: false
+    transactional: true
     actors:
-      Populate Task Execution Entities:
-        parent: PopulateTaskExecutionEntities_Actor
-        in:
-          idType:
-            const: ENTITY
-  'Update Root Info In Sync OFF ':
-    transactional: false
-    dependsOn: Post Load Entity
-    actors:
-      Sync Mode is OFF:
-        parent: EqualsIgnoreCase
-        condition: result
-        in:
-          a:
-            external: syncMode
-            schema: string
-            editor:
-              id: com.k2view.dropdown
-              options:
-              - ''
-              - 'ON'
-              - 'OFF'
-              - FORCE
-          b:
-            const: 'OFF'
-            schema: string
-      UpdateTaskExecutionEntitiesRoot:
+      Handle Task Execution Entities:
         parent: InnerFlow
         in:
           flowName:
-            const: UpdateTaskExecutionEntitiesRoot
-          iid:
-            external: iid
-            schema: string
-            mandatory: false
+            const: HandleTaskExecutionEntities
           luName:
             external: luName
             schema: string
-            editor:
-              id: com.k2view.logicalUnit
-              addEmptyEntry: true
             mandatory: false
-    split: '--------------------'
-  No Update:
-    else: true
-    transactional: false
-    dependsOn: Post Load Entity
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: true
+            schema: boolean
+            mandatory: false
   Get Execution Mode:
     transactional: false
     actors:
@@ -320,6 +285,10 @@ stages:
             mandatory: false
           syncMode:
             external: syncMode
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
             schema: string
             mandatory: false
     split: '--------------------'

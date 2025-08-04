@@ -100,6 +100,10 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: sourceTable
+            schema: string
+            mandatory: false
       Delete Table By DBCommand:
         parent: InnerFlow
         in:
@@ -107,10 +111,6 @@ stages:
             const: DeleteTableByDBCommand
           schema:
             external: schema
-            schema: string
-            mandatory: false
-          tableName:
-            external: table
             schema: string
             mandatory: false
           interface:
@@ -123,6 +123,10 @@ stages:
               - CassandraLoader
               interfaces:
               - fabric
+            mandatory: false
+          table:
+            external: table
+            schema: string
             mandatory: false
     split: '--------------------'
   Custom Delete Flow:
@@ -144,6 +148,10 @@ stages:
                 flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
+          tableName:
+            external: sourceTable
+            schema: string
+            mandatory: false
       Run Delete Flow:
         parent: InnerFlow
         in:

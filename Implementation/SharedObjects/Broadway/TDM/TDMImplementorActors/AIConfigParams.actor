@@ -1,0 +1,67 @@
+{
+    "type": "AIConfigParams",
+    "badge": "TD",
+    "inputs": [
+        {
+            "name": "table",
+            "doc": "1. AI_cloud_provider\nSpecifies the cloud provider (GCP, AWS, Azure) to enable platform-specific behavior like storage or node selection.\n2. AI_training_image\nDocker image for running the AI training phase. Includes training code and dependencies.\n3. AI_generation_image\nDocker image for generating synthetic data or AI outputs.\n4. AI_evaluation_image\nDocker image for evaluating model performance or output quality.\n5. PVC_storage_size\nSize of the Persistent Volume Claim (e.g., 200Gi). Used for storing artifacts or data.\n6. PVC_storage_class\nDefines the storage class type (e.g., standard-rwo, gp2) based on the cloud provider.\n7. JOB_memory_request\nAmount of memory requested for job scheduling (e.g., 150Gi).\n8. JOB_memory_limit\nMax memory allowed for the container (e.g., 165Gi). Must be ≥ request value.\n9. JOB_node_selector\nConstraints to schedule jobs on specific node groups (e.g., GPU or high-memory nodes).",
+            "const": [
+                {
+                    "param_name": "AI_cloud_provider",
+                    "param_value": "GCP"
+                },
+                {
+                    "param_name": "AI_training_image",
+                    "param_value": "europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-training-task:2.1.4_15"
+                },
+                {
+                    "param_name": "AI_generation_image",
+                    "param_value": "europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-generation-task:2.1.4_15"
+                },
+                {
+                    "param_name": "AI_evaluation_image",
+                    "param_value": "europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-evaluation-task:2.1.4_15"
+                },
+                {
+                    "param_name": "PVC_storage_size",
+                    "param_value": "200"
+                },
+                {
+                    "param_name": "PVC_storage_class",
+                    "param_value": "standard-rwo"
+                },
+                {
+                    "param_name": "JOB_memory_request",
+                    "param_value": "150"
+                },
+                {
+                    "param_name": "JOB_memory_limit",
+                    "param_value": "165"
+                },
+                {
+                    "param_name": "JOB_node_selector",
+                    "param_value": ""
+                }
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "param_name": {
+                            "type": "string"
+                        },
+                        "param_value": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "TDM"
+    ],
+    "parentType": "ConstTable"
+}

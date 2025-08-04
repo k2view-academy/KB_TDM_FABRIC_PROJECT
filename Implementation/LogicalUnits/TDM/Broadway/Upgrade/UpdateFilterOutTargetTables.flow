@@ -2,6 +2,14 @@ tags: Upgrade
 stages:
   Stage 1:
     actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
       TDMFilterOutTargetTables1:
         parent: TDMFilterOutTargetTables
         out:
@@ -9,6 +17,12 @@ stages:
             schema: '#ref'
   Stage 2:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
       Lookup1:
         parent: Lookup
         in:
@@ -73,14 +87,6 @@ stages:
         out:
           array:
             schema: '#ref'
-      PROJECT_DIR:
-        parent: SysEnv
-        in:
-          name:
-            const: PROJECT_DIR
-        out:
-          value:
-            schema: string
   Stage 5:
     actors:
       ArrayConcat1:

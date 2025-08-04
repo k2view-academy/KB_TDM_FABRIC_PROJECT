@@ -39,11 +39,14 @@ stages:
         out:
           value:
             schema: string
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Lu External List Table:
     actors:
       createLuExternalEntityListTable:
@@ -98,7 +101,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
       Broadway Command Sync And Export:
@@ -191,13 +194,17 @@ stages:
             const: fabric
           sql:
             const: batch ${@luName} from TDM using(?) FABRIC_COMMAND='${@command}'
-              WITH ASYNC='true';
+              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
           luName:
             link: luName/value
             schema: string
             mandatory: false
           command:
             link: Broadway Command Sync And Export/string
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
             schema: string
             mandatory: false
           params:
@@ -218,7 +225,7 @@ stages:
             const: fabric
           sql:
             const: batch ${@luName} from TDM using(?) FABRIC_COMMAND='${@command}'
-              WITH AFFINITY=${dcName} ASYNC='true';
+              WITH AFFINITY=${dcName} ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
           luName:
             link: luName/value
             schema: string
@@ -229,6 +236,10 @@ stages:
             mandatory: false
           dcName:
             link: dcName/value
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
             schema: string
             mandatory: false
           params:
@@ -261,7 +272,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           lu_id:

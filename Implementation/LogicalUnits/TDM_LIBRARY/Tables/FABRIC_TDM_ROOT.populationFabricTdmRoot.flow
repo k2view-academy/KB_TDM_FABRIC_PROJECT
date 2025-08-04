@@ -2,6 +2,14 @@ tags: population
 stages:
   Input:
     actors:
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
       PopulationArgs:
         parent: PopulationArgs
         readonly: true
@@ -13,14 +21,6 @@ stages:
         out:
           parent_rows:
             schema: '#ref'
-      SyncDeleteMode:
-        parent: SyncDeleteMode
-        in:
-          interface:
-            schema: any
-          table:
-            const: null
-            external: table
   '"#params#"':
     actors:
       Split IID And Clone Number:
@@ -49,12 +49,6 @@ stages:
             default: false
   LU Table:
     actors:
-      get root_lu_name:
-        parent: FabricSetRead
-        in:
-          key:
-            const: root_lu_name
-            default: false
       FABRIC_TDM_ROOT:
         parent: DbLoad
         in:
@@ -85,6 +79,12 @@ stages:
           task_execution_id:
             link: get TDM_TASK_EXE_ID/result
             schema: string
+      get root_lu_name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: root_lu_name
+            default: false
       get clone_id:
         parent: FabricSetRead
         in:
@@ -105,10 +105,6 @@ stages:
         in:
           functionName:
             const: fnGetRootEntityId
-          luId:
-            link: get LU_ID/result
-            schema: string
-            mandatory: false
           luName:
             external: schema
             schema: string
@@ -121,9 +117,9 @@ stages:
             link: get TDM_TASK_EXE_ID/result
             schema: string
             mandatory: false
-          sourceEnv:
-            link: Split IID And Clone Number/envName
-            schema: string
+          entityId:
+            link: PopulationArgs/parent_rows/TDM_INSTANCE_ID
+            schema: any
             mandatory: false
         out:
           result:
@@ -165,24 +161,6 @@ stages:
         in:
           flowName:
             const: LoadGDParamsFromTableIntoSession
-  Set clone_id if not set:
-    actors:
-      Clone ID not Set?:
-        parent: IsNull
-        condition: result
-        in:
-          value:
-            link: get clone_id/result
-      Set clone_id to be sused by Masking/Sequences actors:
-        parent: FabricSet
-        in:
-          key:
-            const: clone_id
-            default: false
-          value:
-            const: null
-            link: Split IID And Clone Number/cloneNo
-            default: false
 schemas:
   PopulationArgs.out.parent_rows:
     type: array

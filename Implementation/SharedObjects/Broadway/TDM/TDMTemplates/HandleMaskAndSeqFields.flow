@@ -1,0 +1,316 @@
+tags: TDM
+stages:
+  Get Flags:
+    actors:
+      Get TDM_USING_CATALOG_SEQUENCES:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          variableName:
+            const: TDM_USING_CATALOG_SEQUENCES
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
+      Get enable_sequences:
+        parent: FabricSetRead
+        in:
+          key:
+            const: enable_sequences
+            default: false
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+  Check if Sequence Flow should Run:
+    actors:
+      Prepare Sequence FLow Indicator:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var seqFlowInd = false;
+              if (useCatalog == 'false' && enableSeq == 'true') {
+                  seqFlowInd = true;
+              }
+              seqFlowInd;
+          useCatalog:
+            link: Get TDM_USING_CATALOG_SEQUENCES/variableValue
+            schema: string
+            mandatory: false
+          enableSeq:
+            link: Get enable_sequences/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Save enable_sequences of Task:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get enable_sequences/result
+            schema: string
+        out:
+          value:
+            schema: string
+  Set enable_sequences:
+    dependsOn: Check if Sequence Flow should Run
+    actors:
+      Not Using Catalog For Sequences?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get TDM_USING_CATALOG_SEQUENCES/variableValue
+            schema: string
+          b:
+            const: 'false'
+            schema: string
+      Set enable_sequences to false:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'false'
+            default: false
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    dependsOn: Check if Sequence Flow should Run
+  Catalog Masking:
+    actors:
+      Catalog Masking Record:
+        parent: CatalogMaskingRecord
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          dataPlatform:
+            const: null
+            external: dataPlatform
+          schema:
+            const: null
+            external: schema
+          dataset:
+            const: null
+            external: tableName
+          mtable:
+            schema: any
+          value:
+            external: row
+  Task with Sequences But not through Catalog:
+    dependsOn: Catalog Masking
+    actors:
+      Run Sequence Flow?:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: Prepare Sequence FLow Indicator/result
+      Prepare Command to Get Sequences Flow:
+        parent: StringFormat
+        in:
+          format:
+            const: list bf lu_name=${luName} name=${tableName}_sequences
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Look For Sequences Flow:
+    else: true
+    dependsOn: Catalog Masking
+    actors:
+      Return Masked Record:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Catalog Masking Record/value
+            schema: object
+        out:
+          value:
+            schema: object
+  Catalog Exists:
+    dependsOn: Task with Sequences But not through Catalog
+    actors:
+      ErrorHandler1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: No results found for the given input
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      get Sequences Flow:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link: Prepare Command to Get Sequences Flow/string
+        out:
+          result:
+            schema: '#ref'
+      Restore enable_sequences:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: null
+            link: Save enable_sequences of Task/value
+            default: false
+    split: '--------------------'
+  'Do Nothing ':
+    dependsOn: Look For Sequences Flow
+  Sequences Flow:
+    dependsOn: Catalog Exists
+    actors:
+      Sequences Flow Exists?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: get Sequences Flow/result
+      Call Sequences Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: get Sequences Flow/result/object_name
+          row:
+            link: Catalog Masking Record/value
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: any
+    split: '--------------------'
+  Stage 1:
+    else: true
+    dependsOn: Catalog Exists
+    actors:
+      Return Masked Record without Sequences:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Catalog Masking Record/value
+            schema: object
+        out:
+          value:
+            schema: object
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: 'Do Nothing '
+  Output:
+    actors:
+      Masked Record:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - Return Masked Record/value
+            - Call Sequences Flow/result
+            - Return Masked Record without Sequences/value
+            schema: object
+        out:
+          value:
+            external: result
+            schema: '#ref'
+schemas:
+  get Sequences Flow.out.result:
+    type: object
+    properties:
+      param:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      schema:
+        type: string
+      mandatory:
+        type: boolean
+      default: {
+        }
+      remark:
+        type: string
+      editor:
+        type: string
+      context:
+        type: object
+        properties:
+          row:
+            type: object
+            properties:
+              self:
+                type: string
+      hidden:
+        type: boolean
+      object_name:
+        type: string
+  Call Sequences Flow.in.row:
+    type: object
+    properties:
+      CUSTOMER_ID:
+        type: string
+      SSN:
+        type: string
+      FIRST_NAME:
+        type: string
+      LAST_NAME:
+        type: string
+      EMAIL:
+        type: string
+      AGE:
+        type: integer
+      DRIVER_TYPE:
+        type: string
+  Masked Record.out.value:
+    type: object
+    properties:
+      CUSTOMER_ID:
+        type: string
+      SSN:
+        type: string
+      FIRST_NAME:
+        type: string
+      LAST_NAME:
+        type: string
+      EMAIL:
+        type: string
+      AGE:
+        type: integer
+      DRIVER_TYPE:
+        type: string

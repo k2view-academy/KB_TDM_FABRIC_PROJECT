@@ -12,10 +12,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnStartTask;
 
 public class TdmTaskScheduler {
@@ -59,11 +61,25 @@ public class TdmTaskScheduler {
             if(executionTime.isMatch(now) || (timeToNextExecution.toMinutes() == 0 && timeToNextExecution.getSeconds() <= 10)){
                 //log.info(" ----------------- calling wsStartTask ----------------- ");
                 try {
-                    fnStartTask(taskID,true,null,null,null,null,null,null,null,null,null,null);
+                    Object responseObj = fnStartTask(taskID, true, null, null, null, null, null, null, null, null, null, null);
+                
+                    if (responseObj instanceof Map) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> response = (Map<String, Object>) responseObj;
+                        String errorCode = (String) response.get("errorCode");
+                        String errorMessage = (String) response.get("message");
+                
+                        if ("FAILED".equalsIgnoreCase(errorCode)) {
+                            throw new RuntimeException("Task Execution Failed: " + errorMessage);
+                        }
+                    } else {
+                        throw new RuntimeException("Unexpected response type from fnStartTask.");
+                    }
                 } catch (Exception e) {
-                    log.error(e.getMessage());
+                    log.error("Error executing task: " + e.getMessage(), e);
                     throw new RuntimeException(e);
                 }
+                
             }
 
         });

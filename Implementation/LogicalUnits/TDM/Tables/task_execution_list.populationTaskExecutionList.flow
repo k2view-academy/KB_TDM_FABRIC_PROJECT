@@ -20,6 +20,14 @@ stages:
           table:
             const: null
             external: table
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Source:
     actors:
       Query:
@@ -28,13 +36,17 @@ stages:
           interface:
             const: TDM
           sql:
-            const: SELECT * FROM @TDMDB_SCHEMA@.task_execution_list
+            const: SELECT * FROM ${@TDMDB_SCHEMA}.task_execution_list
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
           parent_rows:
             link: PopulationArgs/parent_rows
         out:
           result:
             schema: '#ref'
-  Stage 2:
+  Set LU_ID to Integer:
     actors:
       Integer lu_id:
         parent: ToNumber
@@ -44,7 +56,7 @@ stages:
               path: Query/result/lu_id
               iterate: Iterate
   check condition:
-    dependsOn: Stage 2
+    dependsOn: Set LU_ID to Integer
     actors:
       lu_id not zero:
         parent: NotEquals
@@ -59,7 +71,7 @@ stages:
   lu_id is zero:
     else: true
     transactional: false
-    dependsOn: Stage 2
+    dependsOn: Set LU_ID to Integer
     actors:
       Integer task_id:
         parent: ToNumber
@@ -84,11 +96,15 @@ stages:
           interface:
             const: TDM
           sql:
-            const: SELECT lu_name, lu_parent_name, product_name from @TDMDB_SCHEMA@.product_logical_units
+            const: SELECT lu_name, lu_parent_name, product_name from ${@TDMDB_SCHEMA}.product_logical_units
               where lu_id = ${lu_id}
           lu_id:
             link: Integer lu_id/number
             schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
         out:
           result:
@@ -104,7 +120,7 @@ stages:
           interface:
             const: TDM
           sql:
-            const: SELECT process_name, process_type from @TDMDB_SCHEMA@.tasks_exe_process
+            const: SELECT process_name, process_type from ${@TDMDB_SCHEMA}.tasks_exe_process
               where task_id =${task_id} and process_id = ${process_id}
           task_id:
             link: Integer task_id/number
@@ -114,9 +130,33 @@ stages:
             link: Integer process_id/number
             schema: integer
             mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
         out:
           result:
             schema: '#ref'
+  LU Name:
+    actors:
+      Set LU Name:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var result = luName;
+              if(luName == null || luName == '' || luId < 0) {
+                  result = 'TDM_TableLevel';
+              }
+              result;
+          luName:
+            link: product_logical_units/result/lu_name
+            schema: string
+            mandatory: false
+          luId:
+            link: Integer lu_id/number
+            schema: integer
+            mandatory: false
   Task Type:
     actors:
       task_type:
@@ -165,9 +205,9 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
-              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
-              \ = ${environment_id}"
+            const: |-
+              select product_version from ${@TDMDB_SCHEMA}.environment_products
+              where status = 'Active' and product_id = ${product_id} and environment_id = ${environment_id}
           product_id:
             link:
               path: Query/result/product_id
@@ -180,6 +220,10 @@ stages:
               iterate: Iterate
             schema: integer
             mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
         out:
           result:
             schema: string
@@ -189,9 +233,9 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
-              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
-              \ = ${environment_id}"
+            const: |-
+              select product_version from ${@TDMDB_SCHEMA}.environment_products
+              where status = 'Active' and product_id = ${product_id} and environment_id = ${environment_id}
           product_id:
             link:
               path: Query/result/product_id
@@ -203,6 +247,10 @@ stages:
               path: Query/result/source_environment_id
               iterate: Iterate
             schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
         out:
           result:
@@ -219,9 +267,9 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
-              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
-              \ = ${environment_id}"
+            const: |-
+              select product_version from ${@TDMDB_SCHEMA}.environment_products
+              where status = 'Active' and product_id = ${product_id} and environment_id = ${environment_id}
           product_id:
             link:
               path: Query/result/product_id
@@ -233,6 +281,10 @@ stages:
               path: Query/result/source_environment_id
               iterate: Iterate
             schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
             mandatory: false
         out:
           result:
@@ -346,7 +398,7 @@ stages:
             schema: integer
             mandatory: false
           LU_NAME:
-            link: product_logical_units/result/lu_name
+            link: Set LU Name/result
             schema: string
             mandatory: false
           PARENT_LU_ID:
@@ -480,8 +532,6 @@ stages:
               iterate: Iterate
             schema: any
             mandatory: false
-  Stage 1:
-    transactional: false
 schemas:
   PopulationArgs.out.parent_rows:
     type: array

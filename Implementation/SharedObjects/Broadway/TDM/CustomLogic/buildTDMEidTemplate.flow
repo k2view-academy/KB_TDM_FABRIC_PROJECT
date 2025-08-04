@@ -1,582 +1,176 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get Inputs",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Version Indicator",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_DATAFLUX_TASK",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "get TDM Separators",
-                            "actorType": {
-                                "parentType": "getTDMSeparators",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "TDM_SOURCE_ENVIRONMENT_NAME",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "AI_ENVIRONMENT",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "AI_ENVIRONMENT",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check Close",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "IsNull",
-                            "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Equals1",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check Close Seperator",
-                    "dependsOnList": [
-                        "Check Close"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Or ",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Or",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "NullValue",
-                            "actorType": {
-                                "parentType": "NullValue",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Check Close"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Format Close Separator",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "||'${iidCloseSeparator}'"
-                                    },
-                                    {
-                                        "name": "iidCloseSeparator",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check AI Task or Version",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "AI Gen Task",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Data Versioning ",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check AI or Version  ",
-                    "dependsOnList": [
-                        "Check AI Task or Version"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Or1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Or",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "TDM_TASK_EXE_ID",
-                            "minHeight": 234,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_TASK_EXE_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Build Simple TDM_EID",
-                    "dependsOnList": [
-                        "Check AI Task or Version"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Format Simple EID",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "'${sourceEnv}${iidSeparator}${iidOpenSeparator}'||nextval('instance_id_seq')||'${iidCloseSeparator}'"
-                                    },
-                                    {
-                                        "name": "sourceEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iidSeparator",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iidOpenSeparator",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iidCloseSeparator",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Build DataFlux IID",
-                    "dependsOnList": [
-                        "Check AI or Version  "
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Format Versioning EID",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "'${sourceEnv}${iidSeparator}${iidOpenSeparator}'||nextval('instance_id_seq')||'${iidCloseSeparator}${iidSeparator}${versionExeID}'"
-                                    },
-                                    {
-                                        "name": "sourceEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iidSeparator",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iidOpenSeparator",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "iidCloseSeparator",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "versionExeID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do Nothing",
-                    "dependsOnList": [
-                        "Build Simple TDM_EID"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Version Indicator",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Data Versioning ",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_OPEN_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "iidOpenSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "iidSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Versioning EID",
-                "name": "iidSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_OPEN_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Versioning EID",
-                "name": "iidOpenSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_CLOSE_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Close Separator",
-                "name": "iidCloseSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_CLOSE_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_CLOSE_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "IsNull",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_SOURCE_ENVIRONMENT_NAME",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "AI Gen Task",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "AI_ENVIRONMENT",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "AI Gen Task",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "IsNull",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Or ",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Equals1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Or ",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "NullValue",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Format Versioning EID",
-                "name": "iidCloseSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "NullValue",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "iidCloseSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Close Separator",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "iidCloseSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Close Separator",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Format Versioning EID",
-                "name": "iidCloseSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "AI Gen Task",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Or1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Data Versioning ",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Or1",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_TASK_EXE_ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Format Versioning EID",
-                "name": "versionExeID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Simple EID",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "TDM_EID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "source_env_name"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "sourceEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Versioning EID",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "TDM_EID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "source_env_name"
-            },
-            "rightPort": {
-                "actor": "Format Versioning EID",
-                "name": "sourceEnv"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      Get Version Indicator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DATAFLUX_TASK
+            default: false
+      get TDM Separators:
+        parent: getTDMSeparators
+      TDM_SOURCE_ENVIRONMENT_NAME:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      AI_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_ENVIRONMENT
+            default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Check Close:
+    actors:
+      IsNull:
+        parent: IsNull
+        in:
+          value:
+            link: get TDM Separators/IID_CLOSE_SEPARATOR
+      Equals1:
+        parent: Equals
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: get TDM Separators/IID_CLOSE_SEPARATOR
+  Check Close Seperator:
+    dependsOn: Check Close
+    actors:
+      'Or ':
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: IsNull/result
+          b:
+            link: Equals1/result
+      NullValue:
+        parent: NullValue
+    split: '--------------------'
+  'Close Separator  ':
+    else: true
+    transactional: false
+    dependsOn: Check Close
+    actors:
+      'Close Separator     ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: get TDM Separators/IID_CLOSE_SEPARATOR
+  Check AI Task or Version:
+    actors:
+      AI Gen Task:
+        parent: EqualsIgnoreCase
+        in:
+          a:
+            link: TDM_SOURCE_ENVIRONMENT_NAME/result
+          b:
+            link: AI_ENVIRONMENT/result
+      'Data Versioning ':
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: Get Version Indicator/result
+  'Check AI or Version  ':
+    dependsOn: Check AI Task or Version
+    actors:
+      Or1:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: AI Gen Task/result
+          b:
+            link: Data Versioning /result
+      TDM_VERSION_TASK_EXECUTION_ID:
+        parent: FabricSetRead
+        height: 234
+        in:
+          key:
+            const: TDM_VERSION_TASK_EXECUTION_ID
+            default: false
+    split: '--------------------'
+  Build Simple TDM_EID:
+    else: true
+    transactional: false
+    dependsOn: Check AI Task or Version
+    actors:
+      Format Simple EID:
+        parent: StringFormat
+        in:
+          format:
+            const: '''${sourceEnv}${iidSeparator}${iidOpenSeparator}''||nextval(''${schema}.instance_id_seq'')||''${iidCloseSeparator}'''
+          sourceEnv:
+            external: source_env_name
+            schema: string
+          iidSeparator:
+            link: get TDM Separators/IID_SEPARATOR
+            schema: string
+          iidOpenSeparator:
+            link: get TDM Separators/IID_OPEN_SEPARATOR
+            schema: string
+          iidCloseSeparator:
+            link:
+            - NullValue/value
+            - Close Separator     /value
+            schema: string
+          schema:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+        out:
+          string:
+            external: TDM_EID
+  Build DataFlux IID:
+    dependsOn: 'Check AI or Version  '
+    actors:
+      Format Versioning EID:
+        parent: StringFormat
+        in:
+          format:
+            const: '''${sourceEnv}${iidSeparator}${iidOpenSeparator}''||nextval(''${schema}.instance_id_seq'')||''${iidCloseSeparator}${iidSeparator}${versionExeID}'''
+          sourceEnv:
+            external: source_env_name
+            schema: string
+          iidSeparator:
+            link: get TDM Separators/IID_SEPARATOR
+            schema: string
+          iidOpenSeparator:
+            link: get TDM Separators/IID_OPEN_SEPARATOR
+            schema: string
+          iidCloseSeparator:
+            link:
+            - NullValue/value
+            - Close Separator     /value
+            schema: string
+          versionExeID:
+            link: TDM_VERSION_TASK_EXECUTION_ID/result
+            schema: string
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+        out:
+          string:
+            external: TDM_EID
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: Build Simple TDM_EID

@@ -16,7 +16,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 import java.sql.*;
@@ -41,6 +42,58 @@ public class Logic extends WebServiceUserCode {
 	static final String admin = "admin";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	static final String adi_only = "false";
+	private static final Set<String> EXCLUDED_GLOBALS = Set.of(
+			"TDM_DELETE_BEFORE_LOAD",
+			"TDM_INSERT_TO_TARGET",
+			"TDM_SOURCE_PRODUCT_VERSION",
+			"TDM_TARGET_PRODUCT_VERSION",
+			"TDM_SYNC_SOURCE_DATA",
+			"ROOT_TABLE_NAME",
+			"ROOT_COLUMN_NAME",
+			"TDM_REPLACE_SEQUENCES",
+			"TDM_TASK_EXE_ID",
+			"TDM_SOURCE_ENVIRONMENT_NAME",
+			"TDM_TAR_ENV_NAME",
+			"TDM_TASK_ID",
+			"COMBO_MAX_COUNT",
+			"TDM_CLONING_DATA",
+			"TDM_DATAFLUX_TASK",
+			"MASKING_CACHE_TTL",
+			"MAX_NUMBER_OF_ENTITIES_IN_LIST",
+			"TDM_LU_RETENTION_PERIOD_TYPE",
+			"TDM_LU_RETENTION_PERIOD_VALUE",
+			"GET_RESERVED_ENTITIES_LIMIT",
+			"USER_NAME",
+			"USER_FABRIC_ROLES",			
+			"TDM_RESERVE_IND",
+			"RESERVE_RETENTION_PERIOD_TYPE",
+			"RESERVE_RETENTION_PERIOD_VALUE",
+			"BE_ID",
+			"TASK_TYPE",
+			"enable_masking",
+			"enable_sequences",
+			"clone_id",
+			"TDMDB_SCHEMA",
+			"TDM_PARAMETERS_SEPARATOR",
+			"SEQ_CACHE_INTERFACE",
+			"TDM_POPULATE_JMX_STATS",
+			"TDM_SEQ_REPORT",
+			"TDM_BATCH_LIMIT",
+			"TDM_DELETE_TABLES_PREFIX",
+			"TDM_SUMMARY_REPORT_LIMIT",
+			"TDM_REF_UPD_SIZE",
+			"AI_DB_INTERFACE",
+			"TDM_VERSION_TASK_EXECUTION_ID",
+			"AI_ENVIRONMENT",
+			"TDM_DEBUG_MODE",
+			"TDM_DELETE_ONLY_TASK",
+			"CREATE_AI_K2SYSTEM_DB",
+			"SYNTHETIC_ENVIRONMENT",
+			"TABLE_LEVEL_SEPARATOR",
+			"POP_FULL_LU_HIERARCHY_IN_TDM_LU",
+			"CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA",
+			"REPLACE_SEQ_BY_LUI_SYNC",
+			"TDM_USING_CATALOG_SEQUENCES");
 
 	@desc("Gets Environments")
 	@webService(path = "environments", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -1546,16 +1599,16 @@ public class Logic extends WebServiceUserCode {
 			
 			if (row == null || row.isEmpty()) {
 		
-				String fabricRoles = String.join(",", (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result"));
+				String fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result"));
 				//log.info("fabricRoles: " + fabricRoles);
 				String sqlUserGRoup = "SELECT * FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
 					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
 					"WHERE u.environment_id = ? " + 
-					"AND  u.user_id = ANY(string_to_array(?, ',')) AND u.user_type = 'GROUP' ";	
+					"AND  u.user_id = ANY(string_to_array(?, ?)) AND u.user_type = 'GROUP' ";	
 				//log.info("wsGetRoleForUserInEnv - sqlUserGRoup: " + sqlUserGRoup);
 		
 				
-				Db.Rows rows2 = db(TDM).fetch(sqlUserGRoup, envId, fabricRoles);
+				Db.Rows rows2 = db(TDM).fetch(sqlUserGRoup, envId, fabricRoles,TDM_PARAMETERS_SEPARATOR);
 				row = rows2.firstRow();
 				if (row == null || row.isEmpty()) {
 					String sqlAll = "SELECT * FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
@@ -1698,16 +1751,6 @@ public class Logic extends WebServiceUserCode {
 	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"LOAD_MASKING_FLAG\",\r\n" +
-			"      \"Description\": \"\",\r\n" +
-			"      \"luList\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"false\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
 			"      \"globalName\": \"GET_RESERVED_ENTITIES_LIMIT\",\r\n" +
 			"      \"Description\": \"\",\r\n" +
 			"      \"luList\": [\r\n" +
@@ -1764,59 +1807,7 @@ public class Logic extends WebServiceUserCode {
 			((List) getFabricResponse("set")).forEach(var -> {
 				String[] keyParts = ((String) ((Map) var).get("key")).split("\\.");
 				if (keyParts.length == 3 && "Global".equals(keyParts[0])) {
-					if (!"TDM_DELETE_BEFORE_LOAD".equals(keyParts[2]) &&
-						!"TDM_INSERT_TO_TARGET".equals(keyParts[2]) &&
-						!"TDM_SOURCE_PRODUCT_VERSION".equals(keyParts[2]) &&
-						!"TDM_TARGET_PRODUCT_VERSION".equals(keyParts[2]) &&
-						!"TDM_SYNC_SOURCE_DATA".equals(keyParts[2]) &&
-						!"ROOT_TABLE_NAME".equals(keyParts[2]) &&
-						!"ROOT_COLUMN_NAME".equals(keyParts[2]) &&
-						!"TDM_REPLACE_SEQUENCES".equals(keyParts[2]) &&
-						!"TDM_TASK_EXE_ID".equals(keyParts[2]) &&
-						!"TDM_SOURCE_ENVIRONMENT_NAME".equals(keyParts[2]) &&
-						!"TDM_TAR_ENV_NAME".equals(keyParts[2]) &&
-						!"TDM_TASK_ID".equals(keyParts[2]) &&
-						!"COMBO_MAX_COUNT".equals(keyParts[2]) &&
-						!"TDM_CLONING_DATA".equals(keyParts[2]) &&
-						!"TDM_DATAFLUX_TASK".equals(keyParts[2]) &&
-						!"MASKING_CACHE_TTL".equals(keyParts[2]) &&
-						!"MAX_NUMBER_OF_ENTITIES_IN_LIST".equals(keyParts[2]) &&
-						!"TDM_LU_RETENTION_PERIOD_TYPE".equals(keyParts[2]) &&
-						!"TDM_LU_RETENTION_PERIOD_VALUE".equals(keyParts[2]) &&
-						!"GET_RESERVED_ENTITIES_LIMIT".equals(keyParts[2]) &&
-						!"USER_NAME".equals(keyParts[2]) &&
-						!"USER_FABRIC_ROLES".equals(keyParts[2]) &&
-						!"USER_PERMISSION_GROUP".equals(keyParts[2]) &&
-						!"TDM_RESERVE_IND".equals(keyParts[2]) &&
-						!"RESERVE_RETENTION_PERIOD_TYPE".equals(keyParts[2]) &&
-						!"RESERVE_RETENTION_PERIOD_VALUE".equals(keyParts[2]) &&
-						!"BE_ID".equals(keyParts[2]) &&
-						!"TASK_TYPE".equals(keyParts[2]) &&
-						!"enable_masking".equals(keyParts[2]) &&
-						!"enable_sequences".equals(keyParts[2]) &&
-						!"BUILD_TDMDB".equals(keyParts[2]) &&
-						!"clone_id".equals(keyParts[2]) &&
-						!"TDMDB_SCHEMA".equals(keyParts[2]) &&
-                        !"TDM_PARAMETERS_SEPARATOR".equals(keyParts[2]) &&
-                        !"SEQ_CACHE_INTERFACE".equals(keyParts[2]) &&
-                        !"SEQ_DROP_KEYSPACE".equals(keyParts[2]) &&
-                        !"SEQ_DO_TRUNCATE".equals(keyParts[2]) &&
-                        !"TDM_POPULATE_JMX_STATS".equals(keyParts[2]) &&
-                        !"TDM_SEQ_REPORT".equals(keyParts[2]) &&
-                        !"TDM_BATCH_LIMIT".equals(keyParts[2]) &&
-                        !"TDM_DELETE_TABLES_PREFIX".equals(keyParts[2]) &&
-                        !"TDM_SUMMARY_REPORT_LIMIT".equals(keyParts[2]) &&
-                        !"TDM_REF_UPD_SIZE".equals(keyParts[2]) &&
-                        !"AI_DB_INTERFACE".equals(keyParts[2]) &&
-				        !"TDM_VERSION_TASK_EXECUTION_ID".equals(keyParts[2]) &&
-				        !"AI_ENVIRONMENT".equals(keyParts[2]) &&
-                        !"TDM_DEBUG_MODE".equals(keyParts[2]) &&
-                        !"TDM_DELETE_ONLY_TASK".equals(keyParts[2]) &&
-                        !"CREATE_AI_K2SYSTEM_DB".equals(keyParts[2]) &&
-                        !"SYNTHETIC_ENVIRONMENT".equals(keyParts[2]) &&
-                        !"TABLE_LEVEL_SEPARATOR".equals(keyParts[2]) &&
-						!keyParts[2].contains("MASKING_FLAG")
-					) 
+					if (!EXCLUDED_GLOBALS.contains(keyParts[2]) && !keyParts[2].contains("MASKING_FLAG"))
 					{
 						if ("k2_ws".equals(keyParts[1])) {
 							// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
@@ -2855,14 +2846,14 @@ public class Logic extends WebServiceUserCode {
 			"}")
     public static Object wsGetEnvironmentsByUserAndBE(String be_name) throws Exception {
         Map<String,Object> response=new HashMap<>();
-        List<Map<String, Object>> result = new ArrayList<>();
+        Set<Map<String, Object>> result = new HashSet<>();
         String message=null;
         String errorCode="SUCCESS";
         String userId = sessionUser().name();
         String permissionGroup = fnGetUserPermissionGroup("");
         Boolean hasSyntheticEnvironment = false ;
         Boolean hasAIEnvironment = false ;
-        List<Map<String, Object>> userEnvs = new ArrayList<>();
+        Set<Map<String, Object>> userEnvs = new HashSet<>();
         try {
             String allEnvs = "Select env.environment_id,env.environment_name," +
                                 "  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'" +
@@ -3074,12 +3065,12 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetUserEnvironments(String be_name) throws Exception {
 		Map<String,Object> response=new HashMap<>();
-		List<Map<String, Object>> result = new ArrayList<>();
+		Set<Map<String, Object>> result = new HashSet<>();
 		String message=null;
 		String errorCode="SUCCESS";
 		String userId = sessionUser().name();
 		String permissionGroup = fnGetUserPermissionGroup("");
-		List<Map<String, Object>> userEnvs = new ArrayList<>();
+		Set<Map<String, Object>> userEnvs = new HashSet<>();
 		try {
 		
 			if (admin.equalsIgnoreCase(permissionGroup)){
@@ -3118,10 +3109,10 @@ public class Logic extends WebServiceUserCode {
 		
 				Map<String, Object> map = new HashMap<>();
 				if ("tester".equalsIgnoreCase(permissionGroup)) {
-					int num_of_reserved = Integer.parseInt("" + env.get("allowed_number_of_reserved_entities"));
-					int num_of_read = Integer.parseInt("" + env.get("allowed_number_of_entities_to_read"));
-					int num_of_write = Integer.parseInt("" + env.get("allowed_number_of_entities_to_copy"));
-                    Boolean allowed_refresh_reference_data = Boolean.parseBoolean("" + env.get("allowed_refresh_reference_data"));
+					int num_of_reserved = env.get("allowed_number_of_reserved_entities") != null ? Integer.parseInt(env.get("allowed_number_of_reserved_entities").toString()) : 0;
+					int num_of_read = env.get("allowed_number_of_entities_to_read") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_read").toString()) : 0;
+					int num_of_write = env.get("allowed_number_of_entities_to_copy") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_copy").toString()) : 0;
+					Boolean allowed_refresh_reference_data = env.get("allowed_refresh_reference_data") != null ? Boolean.parseBoolean(env.get("allowed_refresh_reference_data").toString()) : false;
 					String permission;
 					switch (env_type) {
 						case "SOURCE":
@@ -3177,6 +3168,7 @@ public class Logic extends WebServiceUserCode {
 				map.put("mask_sensitive_data", env.get("mask_sensitive_data"));
 		        map.put("environment_sync_mode", env.get("sync_mode"));
 				result.add(map);
+			}
                 // After processing userEnvs, manually add AI and Synthetic environments if they are not already present
                 boolean foundAI = false;
                 boolean foundSynthetic = false;
@@ -3220,7 +3212,8 @@ public class Logic extends WebServiceUserCode {
                     result.add(syntheticEnv);
                 }
 
-			}
+		
+
 		} catch(Exception e){
 			message=e.getMessage();
 			errorCode="FAILED";

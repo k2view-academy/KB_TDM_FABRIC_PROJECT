@@ -10,6 +10,7 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Json;
+import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -20,11 +21,19 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.Date;
+import java.util.regex.Pattern;
 import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipInputStream;
+import java.io.ByteArrayInputStream;
+import java.util.zip.ZipEntry;
+import java.io.ByteArrayInputStream;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIDListForMigration;
@@ -32,6 +41,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.getDBCollection;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.toSqliteType;
 
 import static java.lang.Math.min;
@@ -75,24 +85,7 @@ public class SharedLogic {
 	public static Map<String, List<Map<String, Object>>> allTables = new HashMap<>();
 	private static HashMap<String, String> luShortMap = new HashMap<>();
     private static HashMap<String, String> tdmSeparators = new HashMap<>();
-
-    public static void setBroadwayActorFlags(String key, String value) throws SQLException {
-        //TDM 7.1 - Masking and Sequence Broadway Actors have special flags to enable/disable them, and they need
-        // to be set based on the input globals of the task
-
-        // Masking Actor - If MASKING_FLAG is set to false set the indicator of masking actor to false to suppress the masking in
-        // both Load and Extract tasks. If MASKING_FLAG is not set or set to true then nothing to do as the Masking is enabled by default.
-        if (key.contains("MASKING_FLAG") && "false".equals(value)) {
-            //log.info("setBroadawayActorFlags - Disabling Masking");
-            fabric().execute("set enable_masking = false");
-        }
-        // Sequence Actor - If TDM_REPLACE_SEQUENCES is set, used its value to disable/enable the sequence actor
-        if (key.contains("TDM_REPLACE_SEQUENCES")) {
-            //log.info("setBroadawayActorFlags - Setting Sequence Actor to: " + value);
-            fabric().execute("set enable_sequences = ?", value);
-        }
-    }
-
+  
     public static Object fnBatchStatistics(String i_batchId, String i_runMode) throws Exception {
         Object response;
         switch (i_runMode) {
@@ -281,7 +274,7 @@ public class SharedLogic {
 	}
 
 	static void expandSql(Long beID, String sourceEnv, Set<LuTable> usedTables, StringBuffer ret, Set<String> usedLu) {
-		StringBuffer prep = new StringBuffer("select distinct be1.root_iid as iid from \n");
+		StringBuffer prep = new StringBuffer("select distinct be1.root_iid as iid, root1.task_execution_id from \n");
 		processLUs(beID, sourceEnv, usedLu, prep);
 		StringBuffer ret1 = processTableDependencies(usedTables);
 		processUsedTables(usedTables, prep);
@@ -294,7 +287,7 @@ public class SharedLogic {
 	private static void processLUs(Long beID, String sourceEnv, Set<String> usedLu, StringBuffer prep) {
 		int i = 1;
 		boolean first = true;
-		for (String 	luName : usedLu) {
+		for (String luName : usedLu) {
 			// Customer.tdm_be_iids be1
 			//    INNER JOIN Customer.fabric_tdm_root root1 ON be1.be_id = 1 and root1.iid =  be1.iid  and root1.source_env = 'Production'
 			//
@@ -555,7 +548,7 @@ public class SharedLogic {
             UserCode.log.info(matchQuery.sql);
 			return matchQuery.sql;
 		}
-        String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+        String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where LOWER(param_name) = 'iid_separator'").firstValue();
         //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
         String separator = "_";
         if (!Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator)) {
@@ -582,301 +575,37 @@ public class SharedLogic {
 		return paramsSql;
 	}
 
-	public static void fnTdmUpdateTaskExecutionEntities(String taskExecutionId, Long luId, String luName) throws Exception {
-		// TALI- 5-May-20- add a select of selection_method  + fabric_Execution_uid columns.
-		//Remove the condition of fabric_execution_id is not null to support reference only task
-		
-		//String taskExeListSql = "SELECT L.FABRIC_EXECUTION_ID, L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
-		//	"L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, T.TASK_TITLE, L.VERSION_DATETIME, T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
-		//    "FROM TASK_EXECUTION_LIST L, TASKS T " +
-		//	"WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
-		
-		String taskExeListSql = "SELECT L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
-		        "L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, L.VERSION_TASK_EXECUTION_ID, " +
-		        "T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
-		        "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS T " +
-		        "WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
-		
-		String fabricExecID = "";
-		String srcEnvName = "";
-		String creationDate = "";
-		String startExecDate = "";
-		String endExecDate = "";
-		String envID = "";
-		String entityID = "";
-		String targetEntityID = "";
-		String execStatus = "";
-		String idType = "ENTITY";
-		String IID = "";
-		String versionInd = "";
-		String versionExeID = "";
-		// Add selectionMethod
-		String selectionMethod = "";
-		
-		final String UIDLIST = "UIDList";
-		
-		String insertSql = "INSERT INTO " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES(" +
-		        "TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, " +
-		        "FABRIC_EXECUTION_ID, IID, SOURCE_ENV, ROOT_ENTITY_ID, ROOT_LU_NAME";
-		String insertBinding = "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
-		
-		Db.Row taskData = db(TDM).fetch(taskExeListSql, taskExecutionId, luId).firstRow();
-		
-		
-		//log.info("tdmUpdateTaskExecutionEntities: TASK_EXECUTION_ID: " + taskExecutionId + ", LU_ID: " + luId + ", LU_NAME: " + luName);
-		if (!taskData.isEmpty()) {
-		    fabricExecID = "" + taskData.get("fabric_execution_id");
-		    srcEnvName = "" + taskData.get("source_env_name");
-		    creationDate = "" + taskData.get("creation_date");
-		    startExecDate = "" + taskData.get("start_execution_time");
-		    endExecDate = "" + taskData.get("end_execution_time");
-		    envID = "" + taskData.get("environment_id");
-		    versionInd = "" + taskData.get("version_ind");
-			versionExeID = "" + taskData.get("version_task_execution_id");
-		    // Add selection method and fabric_execution_id
-		    selectionMethod = "" + taskData.get("selection_method");
-		
-		    //log.info("creationDate: " + creationDate + ", startExecDate: " + startExecDate + ", endExecDate: " + endExecDate + ", SELECTION METHOD: " + selectionMethod);
-		
-		    if (!"null".equals(creationDate) && !"".equals(creationDate)) {
-		        insertSql += ", CREATION_DATE";
-		        creationDate = creationDate.substring(1);
-		        insertBinding += ", ?";
-		    }
-		
-		    if (!"null".equals(startExecDate) && !"".equals(startExecDate)) {
-		        insertSql += ", ENTITY_START_TIME";
-		        insertBinding += ", ?";
-		    }
-		
-		    if (!"null".equals(endExecDate) && !"".equals(endExecDate)) {
-		        insertSql += ", ENTITY_END_TIME";
-		        insertBinding += ", ?";
-		    }
-		
-		    if ("true".equals(versionInd) && !"0".equalsIgnoreCase(versionExeID)) {
-		        insertSql += ", VERSION_TASK_EXECUTION_ID";
-		        insertBinding += ", ?";
-		    }
-		
-		    insertBinding += ")";
-		    insertSql += ") " + insertBinding;
-		    insertSql += " ON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ?";
-		
-		    // TALI- 5-May-20 - add a check of the sectionMethod. Do not get the list of IIDs for reference only task
-		
-		    Map<String, Map> migrationList = new LinkedHashMap<String, Map>();
-		    //Map<String, Map> migrationList = (Map<String, Map>) fnGetIIDListForMigration(fabricExecID, null);
-		    if (!selectionMethod.equals(TABLES) && !fabricExecID.equals("")) {
-		        migrationList = (Map<String, Map>) fnGetIIDListForMigration(fabricExecID, null);
-		    }
-		
-		    //log.info ("tdmUpdateTaskExecutionEntities - insertSql: " + insertSql);
-		    if (migrationList.containsKey("Copied entities per execution")) {
-		        LinkedHashMap<String, Object> m1 = (LinkedHashMap<String, Object>) migrationList.get("Copied entities per execution");
-		
-		        if (m1.containsKey(UIDLIST)) {
-		            List<Object> copied_UID_list = (List<Object>) m1.get(UIDLIST);
-		            //log.info("Size of copied_UID_list: " + copied_UID_list.size());
-		            for (Object UID : copied_UID_list) {
-		                Map<Object, Object> innerCopiedUIDMap = (Map<java.lang.Object, java.lang.Object>) UID;
-		
-		                for (Map.Entry<Object, Object> copiedUID : innerCopiedUIDMap.entrySet()) {
-		                    targetEntityID = (String) copiedUID.getKey();
-		                    IID = (String) copiedUID.getKey();
-		                    entityID = (String) copiedUID.getValue();
-		                    execStatus = COMPLETED;
-		
-		                    ArrayList<String> paramList = new ArrayList<>();
-		
-		                    paramList.add(taskExecutionId);
-		                    paramList.add(luName);
-		                    paramList.add(entityID);
-		                    paramList.add(targetEntityID);
-		                    paramList.add(envID);
-		                    paramList.add(execStatus);
-		                    paramList.add(idType);
-		                    paramList.add(fabricExecID);
-		                    paramList.add(IID);
-		                    paramList.add(srcEnvName);
-		                          
-		                    Map<String, String> rootEntityInfo = fnGetRootEntityId(luId, luName, IID, taskExecutionId, srcEnvName);
-		                    paramList.add(rootEntityInfo.get("rootEntityId"));
-		                    paramList.add(rootEntityInfo.get("rootLuName"));
-		
-		                    //log.info("Inserting Copied: LU_NAME: " + LU_NAME + ", TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", entityID: " + entityID);
-		                    //In postgres, timestamp fields cannot be set to empty string,
-		                    //therefore date fields should be insterted only if they have value
-		                    //log.info("Inserting: TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", LU_NAME: " + LU_NAME + ", entityID: " + entityID);
-		                    if (!"null".equals(creationDate) && !"".equals(creationDate)) paramList.add(creationDate);
-		                    if (!"null".equals(startExecDate) && !"".equals(startExecDate))
-		                        paramList.add(startExecDate);
-		                    if (!"null".equals(endExecDate) && !"".equals(endExecDate)) paramList.add(endExecDate);
-							if ("true".equals(versionInd) && !"0".equalsIgnoreCase(versionExeID)){
-		                        paramList.add(versionExeID);
-		                    }
-		
-		                    //Adding additional parameter for execution_status, in case the insert failed on primary key constraint,
-		                    //in that case only the status will be updated,such case can happen in case of cancel resume
-		                    paramList.add(execStatus);
-		
-		                    Object[] params = paramList.toArray();
-		
-		                    //log.info ("insertSql - Copied Entities: " + insertSql);
-		                    db(TDM).execute(insertSql, params);
-		                }
-		
-		            }
-		        }
-		    }
-		
-		    if (migrationList.containsKey("Failed entities per execution")) {
-		        LinkedHashMap<String, Object> m2 = (LinkedHashMap<String, Object>) migrationList.get("Failed entities per execution");
-		        if (m2.containsKey(UIDLIST)) {
-		            List<Object> failed_UID_list = (List<Object>) m2.get(UIDLIST);
-		            for (Object UID : failed_UID_list) {
-		                Map<Object, Object> innerFailedUIDMap = (Map<java.lang.Object, java.lang.Object>) UID;
-					
-		                for (Map.Entry<Object, Object> failedUID : innerFailedUIDMap.entrySet()) {
-		                    targetEntityID = (String) failedUID.getKey();
-		                    IID = (String) failedUID.getKey();
-		                    entityID = (String) failedUID.getValue();
-		                    execStatus = FAILED;
-		
-		                    ArrayList<String> paramList = new ArrayList<>();
-		
-		                    paramList.add(taskExecutionId);
-		                    paramList.add(luName);
-		                    paramList.add(entityID);
-		                    paramList.add(targetEntityID);
-		                    paramList.add(envID);
-		                    paramList.add(execStatus);
-		                    paramList.add(idType);
-		                    paramList.add(fabricExecID);
-		                    paramList.add(IID);
-		                    paramList.add(srcEnvName);
-		
-		                          Map<String, String> rootEntityInfo = fnGetRootEntityId(luId, luName, IID, taskExecutionId, srcEnvName);
-		                          paramList.add(rootEntityInfo.get("rootEntityId"));
-		                          paramList.add(rootEntityInfo.get("rootLuName"));
-		
-		                    //log.info("Inserting Failed: TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", LU_NAME: " + LU_NAME + ", entityID: " + entityID);
-		                    if (!"null".equals(creationDate) && !"".equals(creationDate)) paramList.add(creationDate);
-		                    if (!"null".equals(startExecDate) && !"".equals(startExecDate))
-		                        paramList.add(startExecDate);
-		                    if (!"null".equals(endExecDate) && !"".equals(endExecDate)) paramList.add(endExecDate);
-							if ("true".equals(versionInd) && !"0".equalsIgnoreCase(versionExeID)){
-								paramList.add(versionExeID);
-							}
-		                    //Adding additional parameter for execution_status, in case the insert failed on primary key constraint,
-		                    //in that case only the status will be updated,such case can happen in case of cancel resume
-		                    paramList.add(execStatus);
-		
-		                    Object[] params = paramList.toArray();
-		
-		                    //log.info ("insertSql - Failed Entities: " + insertSql);
-		                    db(TDM).execute(insertSql, params);
-		                }
-		
-		            }
-		        }
-		    }
-		
-		    //Add reference Entities to TASK_EXECUTION_ENTITIES table
-		    String refListSql = "SELECT REF_TABLE_NAME, EXECUTION_STATUS FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS ES WHERE " +
-		            "TASK_EXECUTION_ID = ? AND TASK_REF_TABLE_ID IN (SELECT TASK_REF_TABLE_ID FROM " + TDMDB_SCHEMA + ".TASK_REF_TABLES RT " +
-		            "WHERE RT.TASK_ID = ES.TASK_ID AND RT.TASK_REF_TABLE_ID = ES.TASK_REF_TABLE_ID AND RT.LU_NAME = ?)";
-		
-		    idType = "REFERENCE";
-		
-		    Db.Rows refList = db(TDM).fetch(refListSql, taskExecutionId, luName);
-		
-		    for (Db.Row refTable : refList) {
-		        entityID = "" + refTable.get("ref_table_name");
-		        targetEntityID = entityID;
-		        execStatus = "" + refTable.get("execution_status");
-		        IID = entityID;
-		
-		        ArrayList<String> paramList = new ArrayList<>();
-		
-		        paramList.add(taskExecutionId);
-		        paramList.add(luName);
-		        paramList.add(entityID);
-		        paramList.add(targetEntityID);
-		        paramList.add(envID);
-		        paramList.add(execStatus);
-		        paramList.add(idType);
-		        paramList.add(fabricExecID);
-		        paramList.add(IID);
-		        paramList.add(srcEnvName);
-		
-		              paramList.add(TABLES);
-		              paramList.add(luName);
-		
-		        if (!"null".equals(creationDate) && !"".equals(creationDate)) paramList.add(creationDate);
-		        if (!"null".equals(startExecDate) && !"".equals(startExecDate)) paramList.add(startExecDate);
-		        if (!"null".equals(endExecDate) && !"".equals(endExecDate)) paramList.add(endExecDate);
-				if ("true".equals(versionInd) && !"0".equalsIgnoreCase(versionExeID)) {
-					paramList.add(versionExeID);
-				}
-		        //Adding additional parameter for execution_status, in case the insert failed on primary key constraint,
-		        //in that case only the status will be updated,such case can happen in case of cancel resume
-		        paramList.add(execStatus);
-		
-		        Object[] params = paramList.toArray();
-		
-		        db(TDM).execute(insertSql, params);
-		    }
-		
-		    if (refList != null) {
-		        refList.close();
-		    }
-		}
-	}
 	@out(name = "result", type = Map.class, desc = "")
-	public static Map<String,String> fnGetRootEntityId(Long luId, String luName, String iid, String taskExecId, String sourceEnv) throws Exception {
+	public static Map<String,String> fnGetRootEntityId(String luName, String iid, String entityId, String taskExecId) throws Exception {
 		Map<String, String> rootEntityInfo = new HashMap<>();
 
-        String deleteOnly  = fabric().fetch("set TDM_DELETE_ONLY_TASK").firstValue().toString();
+        Boolean childLUInd  = false;
+        Object childLUObj = fabric().fetch("set CHILD_LU_IND").firstValue();
+        if (childLUObj != null) {
+            childLUInd  = Boolean.parseBoolean(childLUObj.toString());
+        } 
 		
 		String rootEntityId = iid;
 		String rootLuName = luName;
-		String parentLuSql = "SELECT u.lu_name as parent_lu_name " +
-		        "FROM " + TDMDB_SCHEMA + ".task_execution_list l, " + TDMDB_SCHEMA + ".tasks_logical_units u " +
-		        "WHERE l.task_execution_id = ? AND l.lu_id = ? " +
-		        "AND l.task_id = u.task_id AND l.parent_lu_id = u.lu_id";
+        String parentEntityId = null;
+        String parentLuName = "";
 		
-		String rootEntityIdSql = "SELECT e.root_lu_name, e.root_entity_id " +
-		        "FROM " + TDMDB_SCHEMA + ".task_execution_entities e, " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid t " +
-		        "WHERE e.task_execution_id = ? AND e.lu_name = ? " +
-		        "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ? " +
-		        "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
-                "AND e.source_env = t.source_env " +   
-		        "AND t.source_env = ? " +
-                "LIMIT 1";
-        if("true".equalsIgnoreCase(deleteOnly)) {
-            rootEntityIdSql = "SELECT e.root_lu_name, e.root_entity_id " +
-                "FROM " + TDMDB_SCHEMA + ".task_execution_entities e, " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid t " +
-                "WHERE e.task_execution_id = ? AND e.lu_name = ? " +
-                "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ? " +
-                "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
-                "AND t.target_env = ? " +
-                "LIMIT 1";
-        }
+        if(childLUInd) {
+		    String parentRootSql = "SELECT parent_lu_name, parent_entity_id, root_lu_name, root_entity_id " +
+		            "FROM " + TDMDB_SCHEMA + ".task_execution_entities " +
+		            "WHERE task_execution_id = ? AND lu_name = ? AND entity_id = ?";
 		
-		Object parenLUName = db(TDM).fetch(parentLuSql, taskExecId, luId).firstValue();
 		
-		if (parenLUName != null) {
-		    Db.Row row = db(TDM).fetch(rootEntityIdSql,
-		        taskExecId, parenLUName.toString(),
-		        parenLUName.toString(), luName, iid, sourceEnv).firstRow();
-		
-		    rootLuName = "" + row.get("root_lu_name");
-		    rootEntityId = "" + row.get("root_entity_id");
+		    Db.Row parentRootFields = db(TDM).fetch(parentRootSql, taskExecId, luName, entityId).firstRow();
+            rootEntityId = parentRootFields.get("root_entity_id").toString();
+		    rootLuName = parentRootFields.get("root_lu_name").toString();
+            parentEntityId = parentRootFields.get("parent_entity_id").toString();
+            parentLuName = parentRootFields.get("parent_lu_name").toString();
 		}
-		
 		rootEntityInfo.put("rootLuName", rootLuName);
 		rootEntityInfo.put("rootEntityId", rootEntityId);
+            rootEntityInfo.put("parentLuName", parentLuName);
+		    rootEntityInfo.put("parentEntityId", parentEntityId);
 		return rootEntityInfo;
 	}
 
@@ -955,6 +684,15 @@ public class SharedLogic {
 	
 	public static String fnGetUserPermissionGroup(String userName) {
         try {
+			String fabricRoles = fnGetUserRoles(userName);
+            return fnGetPermissionGroupByRoles(fabricRoles);
+        } catch (Throwable t) {
+            throw new RuntimeException(t.getMessage());
+        }
+    }
+	
+    public static String fnGetUserRoles(String userName) {
+        try {
             String fabricRoles = "";
             if (userName == null || "".equals(userName) || userName.equalsIgnoreCase(sessionUser().name())) {
                 Set<String> roles = new HashSet<>(sessionUser().roles());
@@ -967,23 +705,20 @@ public class SharedLogic {
                     String rolePart = userData[1];    
                     if (rolePart.contains(TDM_PARAMETERS_SEPARATOR)) {
                         String[] roleGroups = rolePart.split(TDM_PARAMETERS_SEPARATOR);
-                        for (String roleGroup : roleGroups) {
-                            roles.addAll(Arrays.asList(roleGroup.split(",")));
-                        }
+                        roles.addAll(Arrays.asList(roleGroups));
                     } else {
-                        roles.addAll(Arrays.asList(rolePart.split(",")));
+                        roles.add(rolePart); 
                     }
                 } else {
-                    final String user = userName;
-                    fabric().fetch("list users;").forEach(r -> {
-                        if (user.equals(r.get("user"))) {
-                            roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
+                    String command = "list users user_filter=" + "'" + userName + "'";
+                    String found = "" + fabric().fetch(command).firstRow().get("user");
+                        if (userName.equals(found)) {
+                            roles.add(found);
                         }
-                    });
-                }
+                    }
                 fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, roles);
             }
-            return fnGetPermissionGroupByRoles(fabricRoles);
+            return fabricRoles;
         } catch (Throwable t) {
             throw new RuntimeException(t.getMessage());
         }
@@ -1123,8 +858,8 @@ public class SharedLogic {
 	@out(name = "result", type = Integer.class, desc = "")
 	public static Integer fnGetPermissionGroupWeight(String roles) throws Exception {
 		Integer[] weight = {0};
-		String sql = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role = ANY (string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "'))";
-		Util.rte(() -> db(TDM).fetch(sql, roles).forEach(row -> {
+		String sql = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role = ANY (string_to_array(?,?))";
+		Util.rte(() -> db(TDM).fetch(sql, roles,TDM_PARAMETERS_SEPARATOR).forEach(row -> {
 			Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
 			if (nextWeight != null && nextWeight > weight[0]) {
 				weight[0] = nextWeight;
@@ -1134,22 +869,11 @@ public class SharedLogic {
 	}
 
 	@out(name = "result", type = List.class, desc = "")
-	public static List<Map<String,Object>> fnGetEnvsByUser(String userName) throws Exception {
-		List<Map<String, Object>> rowsList = new ArrayList<>();
-		List<String> roles=new ArrayList<>();
-		String fabricRoles="";
+	public static Set<Map<String,Object>> fnGetEnvsByUser(String userName) throws Exception {
+        Set<Map<String, Object>> rowsList = new HashSet<>();
+        String fabricRoles="";
 		try{
-		    if(userName==null||"".equals(userName)||userName.equalsIgnoreCase(sessionUser().name())){
-		        fabricRoles=String.join(TDM_PARAMETERS_SEPARATOR,sessionUser().roles());
-		}else {
-		        fabric().fetch("list users;").
-		                forEach(r -> {
-		                    if (userName.equals(r.get("user"))) {
-		                        roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
-		                    }
-		                });
-		        fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, roles);
-		    }
+			fabricRoles=fnGetUserRoles(userName);
 		} catch(Throwable t) {
 		    throw new RuntimeException(t.getMessage());
 		}
@@ -1190,7 +914,7 @@ public class SharedLogic {
 		        "and lower(r.role_status) = 'active' " +
 		        "and r.role_id = u.role_id " +
 		        "and u.user_id = (?) " +
-		"and u.user_type = 'ID' " +
+				"and u.user_type = 'ID' " +
 		        "and env.environment_status = 'Active'";
 		// remove the list of environments returned by query 1;
 		query2 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
@@ -1263,7 +987,7 @@ public class SharedLogic {
 		rows = db(TDM).fetch(query4);
 		
 		//log.info(" fnGetEnvsByuser - query 4 (get ALL roles) is: " + query4);
-		
+
 		columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
 		    ResultSet resultSet = row.resultSet();
@@ -1273,10 +997,54 @@ public class SharedLogic {
 		    }
 		    rowsList.add(rowMap);
 		}
-		if (rows != null) {
-		rows.close();
+		envIds = "(";
+		if (!rowsList.isEmpty()) {
+		    for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+		    envIds = envIds.substring(0, envIds.length() - 1);
+		}
+		envIds += ")";
+		// Query 5: Fetch all active environments that the user is not 
+		String query5 = "WITH categorized_env AS ( " +
+					"SELECT env.*, " +
+					"CASE " +
+					"  WHEN env.allow_read = true AND env.allow_write = true THEN 'BOTH' " +
+					"  WHEN env.allow_write = true THEN 'TARGET' " +
+					"  ELSE 'SOURCE' " +
+					"END AS environment_type, " +
+					"'user' AS assignment_type, " +
+					"0 AS role_id " +
+					"FROM " + TDMDB_SCHEMA + ".environments env " +
+					"WHERE env.environment_status = 'Active' " +
+				") " +
+				"SELECT * FROM categorized_env " +
+				"WHERE environment_type IN ('BOTH', 'SOURCE')";
+		// remove the list of environments returned by queries 1+2+3+4;
+		query5 += "()".equals(envIds) ? "" : "and categorized_env.environment_id not in " + envIds;
+		rows = db(TDM).fetch(query5);
+
+		// log.info("fnGetEnvsByuser - query 5 (get ALL Env) is: " + query5);
+
+		columnNames = rows.getColumnNames();
+		for (Db.Row row : rows) {
+		    ResultSet resultSet = row.resultSet();
+		    Map<String, Object> rowMap = new HashMap<>();
+		    for (String columnName : columnNames) {
+				if("sync_mode".equalsIgnoreCase(columnName)){
+					rowMap.put(columnName, "OFF");			
+				}else if ("environment_type".equalsIgnoreCase(columnName)){
+					rowMap.put(columnName, "SOURCE");			
+				}else{
+					rowMap.put(columnName, resultSet.getObject(columnName));
 				}
+		    }
+		    rowsList.add(rowMap);
+		}
+		if (rows != null) {
+			rows.close();
+		}
+		// Return the final set of environments
 		return rowsList;
+
 	}
 
 	//TDM 7.2 - This function gets the Override Attributes supplied when the task was executed.
@@ -1341,6 +1109,9 @@ public class SharedLogic {
 			}
 	
 		} else {
+            if("TDM.tdmTaskScheduler".equalsIgnoreCase(userId)){
+                userId = userName;
+            }
 			rowsList.addAll(fnGetEnvsByUser(userId));
 		}
 	
@@ -1594,7 +1365,7 @@ public class SharedLogic {
 		try {
 			//taskData = ((List<Map<String, Object>>) ((Map<String, Object>) wsGetTasks(taskId.toString())).get("result")).get(0);
 			
-			taskRows = (fnGetTasks(taskId.toString()));
+			taskRows = (fnGetTasks(taskId.toString(),"Active"));
 			
 		} catch(Exception e) {
 			throw new Exception("Task is not found");
@@ -1604,6 +1375,7 @@ public class SharedLogic {
 			if(!fnIsTaskActive(taskId)) throw new Exception("Task is not active");
 			String taskType = "" + taskData.getString("task_type");
             String createdBy = taskData.getString("task_created_by");
+			String userName="";
 			Boolean deleteBeforeLoad = taskData.getBoolean("delete_before_load");
 			Boolean insertToTarget = taskData.getBoolean("load_entity");
             Boolean cloneInd = taskData.getBoolean("clone_ind");
@@ -1707,7 +1479,7 @@ public class SharedLogic {
 			Map<String, String> validateMessages ;
 			if (dataVersionRetentionPeriod!=null) {
 				validateMessages = fnValidateRetentionPeriodParams(dataVersionRetentionPeriod,
-						"retention", targetExeEnvName,versionInd);
+						"retention", targetExeEnvName,versionInd,createdBy);
 				if (validateMessages != null && !validateMessages.isEmpty()) {
 					return wrapWebServiceResults("FAILED", "RetentionPeriod", validateMessages.get("retention"));
 				}
@@ -1718,7 +1490,7 @@ public class SharedLogic {
                     dataRetentionPeriod.put("units", taskData.getString("retention_period_type"));
                     dataRetentionPeriod.put("value", String.valueOf(taskData.getLong("retention_period_value")));
                     validateMessages = fnValidateRetentionPeriodParams(dataRetentionPeriod,
-                            "retention", targetExeEnvName, versionInd);
+                            "retention", targetExeEnvName, versionInd,createdBy);
                     if (validateMessages != null && !validateMessages.isEmpty()) {
                         return wrapWebServiceResults("FAILED", "RetentionPeriod", validateMessages.get("retention"));
                     }
@@ -1727,7 +1499,7 @@ public class SharedLogic {
 			if(reserveInd) {
 				if (reserveRetention != null) {
 					validateMessages = fnValidateRetentionPeriodParams(reserveRetention,
-							"reserve", targetExeEnvName, false);
+							"reserve", targetExeEnvName, false,createdBy);
 					if (validateMessages != null && !validateMessages.isEmpty()) {
 						return wrapWebServiceResults("FAILED", "ReservationPeriod", validateMessages.get("reservation"));
 					}
@@ -1737,7 +1509,7 @@ public class SharedLogic {
 					dataReservePeriod.put("units", taskData.getString("reserve_retention_period_type"));
 					dataReservePeriod.put("value", String.valueOf(taskData.getLong("reserve_retention_period_value")));
 					validateMessages = fnValidateRetentionPeriodParams(dataReservePeriod,
-							"reserve", targetExeEnvName, false);
+							"reserve", targetExeEnvName, false,createdBy);
 					if (validateMessages != null && !validateMessages.isEmpty()) {
 						return wrapWebServiceResults("FAILED", "ReservationPeriod", validateMessages.get("reservation"));
 					}
@@ -1748,6 +1520,7 @@ public class SharedLogic {
 		    List<Map<String,Object>> rolesList;
             
 		    if ("TDM.tdmTaskScheduler".equalsIgnoreCase(sessionUser().name())) {
+				userName=createdBy;
 		        rolesList = fnGetUserEnvs(createdBy);
 		    }else{
 		        rolesList = fnGetUserEnvs("");
@@ -1771,6 +1544,7 @@ public class SharedLogic {
 			Long validateWriteNumber=-1L;
 			Long validateNumber =-1L;
 			String permission = "";
+
             //UserCode.log.info("fnStartTask - taskType: " + taskType + ", deleteBeforeLoad: " + deleteBeforeLoad + ", insertToTarget: " + insertToTarget);
 			if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
 				if (sourceRolesList == null || sourceRolesList.isEmpty()) {
@@ -1780,14 +1554,15 @@ public class SharedLogic {
 					//Check if the current role is related to input environment, and not to other environment
 					if (sourceEnvName.equals(role.get("environment_name"))) {
 						srcEnvFound = true;
+						String roleID=role.get("role_id").toString();
 						int allowedEntitySize = getAllowedEntitySize(entityListSize, numberOfRequestedEntities);
-						if ("tester".equalsIgnoreCase(fnGetUserPermissionGroup(""))) { // extract || generate
-							validateReadNumber = (long) fnValidateNumberOfReadEntities(role.get("role_id").toString(), sourceEnvName);
+						if ("tester".equalsIgnoreCase(fnGetUserPermissionGroup(userName))) { // extract || generate
+							validateReadNumber = (long) fnValidateNumberOfReadEntities(roleID, sourceEnvName);
 							permission = "read" ;
 						}
 						Map<String, String> sourceValidationsErrorMessages = fnValidateSourceEnvForTask(be_lus, taskData.getInt("refcount"),
 								selectionMethod,
-								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role);
+								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role,taskId,validateReadNumber);
 						//log.info("validateNumber: " + validateNumber);
 		
 						if (validateReadNumber!=-1 && (allowedEntitySize > validateReadNumber)) {
@@ -1820,7 +1595,7 @@ public class SharedLogic {
 		
 						int allowedEntitySize = getAllowedEntitySize(entityListSize, numberOfRequestedEntities);
 		
-						if ("tester".equalsIgnoreCase(fnGetUserPermissionGroup(""))) {
+						if ("tester".equalsIgnoreCase(fnGetUserPermissionGroup(userName))) {
 							validateReserveNumber = (long) fnValidateNumberOfReserveEntities(role.get("role_id").toString(), targetExeEnvName);
 							validateWriteNumber = (long) fnValidateNumberOfCopyEntities(role.get("role_id").toString(), targetExeEnvName);
 							if ("load".equalsIgnoreCase(taskType)) {
@@ -1846,7 +1621,7 @@ public class SharedLogic {
 								selectionMethod,
 								taskData.getBoolean("version_ind"),
 								taskData.getBoolean("replace_sequences"), taskData.getBoolean("delete_before_load"), taskType,
-								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role, cloneInd);
+								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role, cloneInd,taskData.getString("sync_mode"),taskId,validateNumber);
 						//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
 						if (validateNumber != -1 && (allowedEntitySize>validateNumber)) {
 							targetValidationsErrorMessages.put("Number of entity", "The number of entities exceeds the number of entities in the "+ permission+ " permission");
@@ -1930,7 +1705,7 @@ public class SharedLogic {
 					String activityDesc = "Execution list of task " + taskData.getString("task_title");
 					fnInsertActivity("update", "Tasks", activityDesc);
 				} catch(Exception e){
-		                  UserCode.log.error(e.getMessage());
+		            UserCode.log.error(e.getMessage());
 				}
 			
 			
@@ -2027,107 +1802,122 @@ public class SharedLogic {
     }
 
 
-    public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String SchemaName, String tableName) throws Exception {
+    public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String schemaName, String tableName, String catalogSchema) throws Exception {
 
-        Map<String,Object> interfaceInput = new HashMap<>();
+		Map<String,Object> interfaceInput = new HashMap<>();
         interfaceInput.put("dataPlatform", dbInterfaceName);
-        interfaceInput.put("schema", SchemaName);
+        interfaceInput.put("schema", catalogSchema);
         interfaceInput.put("dataset", tableName);
 
         List<Map<String, Object>> interfaceTables =  MtableLookup("catalog_field_info",interfaceInput, MTable.Feature.caseInsensitive);
 		if (interfaceTables == null  || interfaceTables.isEmpty()) {
-            return getTableFieldsByJDBC(dbInterfaceName, SchemaName, tableName);
+            return getTableFieldsByJDBC(dbInterfaceName, schemaName, tableName);
         } else {
-            return getTableFieldsByCatalog(dbInterfaceName, SchemaName, tableName, interfaceTables);
+            return getTableFieldsByCatalog(interfaceTables);
         }
 
     }
 
-    private static List<HashMap<String, String>> getTableFieldsByJDBC(String dbInterfaceName, String SchemaName, String tableName) throws SQLException {
+   	private static List<HashMap<String, String>> getTableFieldsByJDBC(String dbInterfaceName, String schemaName,
+			String tableName) throws SQLException {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
-        DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
-        ResultSet columns = metaData.getColumns(null, SchemaName, tableName, null);
-        
-        while (columns.next()) {
-            HashMap<String, String> map = new HashMap<>();
-            
-            map.put("column_name", columns.getString("COLUMN_NAME"));
-            int dataType = columns.getInt("DATA_TYPE");
-            String columnType = toSqliteType(dataType);
-            String generalColumnType = "TEXT";
-            Boolean addField = true;
-            switch (columnType) {
-                case "INTEGER":
-                case "REAL":
-                    generalColumnType = "NUMBER";
-                    break;
-                case "TEXT":
-                    generalColumnType = "TEXT";
-                    break;
-                case "BLOB":
-                    generalColumnType = "BLOB";
-                    break;
-                default:
-                    generalColumnType = "TEXT";
-                    break;
-            }
-            if (addField) {
-                map.put("column_name", columns.getString("COLUMN_NAME"));
-                map.put("column_type", generalColumnType);
-                result.add(map);
-            }
-        }
+		DatabaseMetaData metaData = getConnection(dbInterfaceName).getMetaData();
+		ResultSet columns = metaData.getColumns(null, schemaName, tableName, null);
 
-        if (columns != null) {
-            columns.close();
-        }
+		while (columns.next()) {
+			HashMap<String, String> map = new HashMap<>();
 
-        return result;
-    }
+			map.put("column_name", columns.getString("COLUMN_NAME"));
+			int dataType = columns.getInt("DATA_TYPE");
+			String typeName = columns.getString("TYPE_NAME");
+			String columnType = toSqliteType(dataType, typeName);
 
-    private static List<HashMap<String, String>> getTableFieldsByCatalog(String dbInterfaceName, String SchemaName, String tableName, List<Map<String, Object>> interfaceTables) throws SQLException {
+			String columnName = columns.getString("COLUMN_NAME");
+			boolean startsWithNumber = columnName.matches("^[0-9].*");
+			if (startsWithNumber) {
+				columnName = "\"" + columnName + "\"";
+			}
+			map.put("column_name", columnName);
+			map.put("column_type", columnType);
+			map.put("column_sqlite_type", columnType);
+			result.add(map);
+
+		}
+
+		if (columns != null) {
+			columns.close();
+		}
+
+		return result;
+	}
+
+   	private static List<HashMap<String, String>> getTableFieldsByCatalog(List<Map<String, Object>> interfaceTables) throws Exception {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
-        for (Map<String, Object> fieldRec : interfaceTables) {
-            HashMap<String, String> map = new HashMap<>();
-            String fieldName = fieldRec.get("field").toString();
-            map.put("column_name", fieldName);
-            String generalColumnType = "TEXT";
-            Boolean addField = true;
-            Object sourceEntityType = fieldRec.get("sourceEntityType");
-            if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
-            int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
-            String columnType = toSqliteType(fieldDataType);
-           
-            switch (columnType) {
-                case "INTEGER":
-                case "REAL":
-                    generalColumnType = "NUMBER";
-                    break;
-                case "TEXT":
-                    generalColumnType = "TEXT";
-                    break;
-                case "BLOB":
-                    generalColumnType = "BLOB";
-                    break;
-                default:
-                    generalColumnType = "TEXT";
-                    break;
-                }
-            } else {
-                addField = false; 
-            }
-            if (addField) {
-                map.put("column_name", fieldName);
-                map.put("column_type", generalColumnType);
-                result.add(map);
-            }
+		for (Map<String, Object> fieldRec : interfaceTables) {
+			HashMap<String, String> map = new HashMap<>();
+			String fieldName = fieldRec.get("field").toString();
 
-        }
+			String columnType = "TEXT";
+			Boolean addField = true;
+			Object sourceEntityType = fieldRec.get("sourceEntityType");
+			if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
+				Object sqlDataType = fieldRec.get("sqlDataType");
+				if (sqlDataType != null) {
+					int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
+					String sourceDataType = fieldRec.get("sourceDataType").toString();
+					columnType = toSqliteType(fieldDataType, sourceDataType);
+				} else {
+					columnType = getFieldTypeBydefinedBy(fieldRec);
+				}
 
-        return result;
-    }
+			} else {
+				addField = false;
+			}
+			if (addField) {
+				boolean startsWithNumber = fieldName.matches("^[0-9].*");
+				if (startsWithNumber) {
+					fieldName = "\"" + fieldName + "\"";
+				}
+				map.put("column_name", fieldName);
+				map.put("column_type", columnType);
+				map.put("column_sqlite_type", columnType);
+				result.add(map);
+			}
+
+		}
+
+		return result;
+	}
+
+	private static String getFieldTypeBydefinedBy(Map<String, Object> fieldRec) throws Exception{
+		
+		String definedBy = fieldRec.get("definedBy").toString();
+		String fieldType = "";
+		switch (definedBy) {
+			case "STRING":
+				fieldType = "TEXT";
+				break;
+			case "BYTES":
+				fieldType = "BLOB";
+				break;
+			case "BOOLEAN":
+			fieldType = "INTEGER";
+				break;
+			case "COLLECTION":
+				fieldType = "TEXT";
+					break;
+			case "UNKNOWN":
+				fieldType = "TEXT";
+				break;
+			default:
+				fieldType = definedBy;
+				break;
+		}
+
+		return fieldType;
+	}
 
     private record LuTable(String luName, String luTable) {
         @Override
@@ -2155,13 +1945,13 @@ public class SharedLogic {
             tdmSeparators.put("IID_OPEN_SEPARATOR", null);
             tdmSeparators.put("IID_CLOSE_SEPARATOR", null);
             String sql = "SELECT param_name, param_value FROM " + TDMDB_SCHEMA + ".tdm_general_parameters WHERE " +
-                    "param_name in ('iid_separator', 'IID_OPEN_SEPARATOR', 'IID_CLOSE_SEPARATOR')";
+					"UPPER(param_name) in ('IID_SEPARATOR', 'IID_OPEN_SEPARATOR', 'IID_CLOSE_SEPARATOR')";
 
             Db.Rows rows = db(TDM).fetch(sql);
 
             for (Db.Row row : rows) {
-                switch (row.get("param_name").toString()) {
-                    case "iid_separator":
+                switch (row.get("param_name").toString().toUpperCase()) {
+                    case "IID_SEPARATOR":
                         tdmSeparators.put("IID_SEPARATOR", row.get("param_value").toString());
                         break;
                     case "IID_OPEN_SEPARATOR":
@@ -2196,4 +1986,43 @@ public class SharedLogic {
     
 		return executionMode;
 	}
+
+	public static void fnGetEvaluationReport(String evaluationExeID, String savedFilePath,String AI_Interface,String k2systemSchema) throws Exception {
+        
+        try (Connection conn = getConnection(AI_Interface);
+             PreparedStatement query = conn.prepareStatement(
+                 "SELECT evaluation_report FROM " + k2systemSchema + ".task_executions WHERE id = ? AND task_type = 'EVALUATION'")) {
+            
+            query.setString(1, evaluationExeID);
+            
+            try (ResultSet resultSet = query.executeQuery()) {
+                if (resultSet.next()) {
+                    byte[] reportBytes = resultSet.getBytes("evaluation_report");
+                    
+                    try (ZipInputStream zip_file = new ZipInputStream(new ByteArrayInputStream(reportBytes))) {
+                        ZipEntry entry;
+                        while ((entry = zip_file.getNextEntry()) != null) {
+                            File outputFile = new File(savedFilePath, entry.getName());
+                            
+                            outputFile.getParentFile().mkdirs();
+                            
+                            try (FileOutputStream report_file = new FileOutputStream(outputFile)) {
+                                byte[] buffer = new byte[1024];
+                                int len;
+                                while ((len = zip_file.read(buffer)) > 0) {
+                                    report_file.write(buffer, 0, len);
+                                }
+                            }
+                            zip_file.closeEntry();
+                        }
+                    }
+                } else {
+                    UserCode.log.error("No evaluation report found for ID: " + evaluationExeID);
+                }
+            }catch(Exception e){
+				e.printStackTrace();
+				throw new RuntimeException(e.getMessage());
+			}
+        }
+    }
 }

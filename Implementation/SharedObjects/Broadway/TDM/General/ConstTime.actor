@@ -1,21 +1,39 @@
 {
-    "type": "ConstTime",
-    "badge": "Co",
-    "inputs": [
-        {
-            "name": "value",
-            "schema": {
-                "type": "date"
-            }
-        }
-    ],
-    "outputs": [
-        {
-            "name": "value",
-            "schema": {
-                "type": "date"
-            }
-        }
-    ],
-    "parentType": "Const"
+  "type": "ConstTime",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "ConstDate",
+      "mandatory": true,
+      "hidden": true
+    },
+    {
+      "name": "innerFlowConst",
+      "schema": {
+        "type": "string"
+      },
+      "const": "ConstDate",
+      "mandatory": true,
+      "hidden": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "value",
+      "schema": {
+        "type": "date"
+      },
+      "mandatory": true,
+      "hidden": false
+    }
+  ],
+  "tags": [
+    "TDM"
+  ],
+  "doc": ""
 }

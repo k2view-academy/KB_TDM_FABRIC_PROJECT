@@ -1,6 +1,23 @@
 stages:
   Get List of Columns and Types:
     actors:
+      Error Handler For Extract By Query:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Get List of Table's Fields:
         parent: LuFunction
         in:
@@ -10,12 +27,16 @@ stages:
             external: sourceInterface
             schema: string
             mandatory: false
-          SchemaName:
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          schemaName:
             external: sourceSchema
             schema: string
             mandatory: false
-          tableName:
-            external: tableName
+          catalogSchema:
+            external: catalogSchema
             schema: string
             mandatory: false
         out:
@@ -23,6 +44,23 @@ stages:
             schema: '#ref'
   'Prepare SqliteTable ':
     actors:
+      Error Handler For Extract By Query1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Prepare SqliteTable & Inseet Command:
         parent: InnerFlow
         in:
@@ -109,6 +147,20 @@ stages:
             external: filterParameters
             schema: string
             mandatory: false
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: any
+            mandatory: false
+          filterGUI:
+            external: filterGUI
+            schema: string
+            mandatory: false
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
         out:
           result:
             schema: '#ref'
@@ -117,9 +169,34 @@ stages:
         in:
           flowName:
             const: setTargetEnv
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Load Data:
     transactional: false
     actors:
+      Error Handler For Extract By Query2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Insert Record to Sqlite Table:
         parent: DbCommand
         in:
@@ -173,15 +250,34 @@ stages:
         out:
           result:
             schema: boolean
+      Error Handler For Extract By Query3:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Update Table's Total Count1:
         parent: DbCommand
         in:
           interface:
             const: TDM
           sql:
-            const: "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset number_of_processed_records\
-              \ = ${recCount}\r\nwhere task_execution_id = ${taskExeId} \r\nand task_ref_table_id\
-              \ = ${tableId}"
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              set number_of_processed_records = ${recCount}
+              where task_execution_id = ${taskExeId}
+              and task_ref_table_id = ${tableId}
           taskExeId:
             external: taskExeId
             schema: integer
@@ -193,6 +289,10 @@ stages:
           recCount:
             link: Update Counter/result
             schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
             mandatory: false
   Get Number of Loaded Records:
     transactional: false
@@ -222,6 +322,23 @@ stages:
         out:
           result:
             schema: boolean
+      Error Handler For Extract By Query4:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Get Last  Count:
         parent: JavaScript
         in:
@@ -232,15 +349,34 @@ stages:
             schema: integer
   'Update number of Processed ':
     actors:
+      Error Handler For Extract By Query5:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Update Table's Total Count11:
         parent: DbCommand
         in:
           interface:
             const: TDM
           sql:
-            const: "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset number_of_processed_records\
-              \ = ${recCount}\r\nwhere task_execution_id = ${taskExeId} \r\nand task_ref_table_id\
-              \ = ${tableId}"
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              set number_of_processed_records = ${recCount}
+              where task_execution_id = ${taskExeId}
+              and task_ref_table_id = ${tableId}
           taskExeId:
             external: taskExeId
             schema: integer
@@ -253,6 +389,10 @@ stages:
             link: Get Last  Count/result
             schema: integer
             mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
 schemas:
   Get List of Table's Fields.out.result:
     type: array
@@ -262,6 +402,8 @@ schemas:
         column_name:
           type: string
         column_type:
+          type: string
+        column_sqlite_type:
           type: string
   Prepare SqliteTable & Inseet Command.in.TableColums:
     type: array

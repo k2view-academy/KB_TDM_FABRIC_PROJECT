@@ -64,12 +64,6 @@ stages:
         out:
           value:
             schema: string
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
-            default: false
       LuID:
         parent: Const
         in:
@@ -89,6 +83,19 @@ stages:
             const: null
             external: luName
             default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      AIConfigParams:
+        parent: AIConfigParams
+        out:
+          table:
+            schema: '#ref'
   Insert new Generate task:
     actors:
       ErrorHandler 1:
@@ -121,15 +128,18 @@ stages:
             link: numOfEntities/value
             schema: string
             mandatory: false
-      NameSpace:
-        parent: StringFormat
+      getNamespaceName1:
+        parent: InnerFlow
         in:
-          format:
-            const: tdmml${trainingTaskId}
-          trainingTaskId:
+          flowName:
+            const: getNamespaceName
+          taskExecutionID:
             link: trainingTaskId/value
-            schema: string
+            schema: any
             mandatory: false
+        out:
+          string:
+            schema: string
       Update task_execution_list1:
         parent: DbCommand
         in:
@@ -148,9 +158,26 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
+      AI_generation_image:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: AI_generation_image
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
   Execute Generate Task:
     actors:
       kubeCreateGenerationTaskGPU1:
@@ -159,11 +186,11 @@ stages:
           flowName:
             const: kubeCreateGenerationTaskGPU
           namespace:
-            link: NameSpace/string
+            link: getNamespaceName1/string
             schema: string
             mandatory: false
           generation_image:
-            const: europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-generation-task:2.1.1_2
+            link: AI_generation_image/result/param_value
             schema: string
             mandatory: false
           id:
@@ -196,6 +223,10 @@ stages:
             mandatory: false
           task_id:
             link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          task_type:
+            const: GENERATION
             schema: string
             mandatory: false
         out:
@@ -245,7 +276,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
   AI Task Failed:
@@ -269,3 +300,26 @@ stages:
   'Do nothing   ':
     transactional: false
     dependsOn: Update Num Of Entites
+schemas:
+  AIConfigParams.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        param_name:
+          type: string
+        param_value:
+          type: string
+  AI_generation_image.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  AI_generation_image.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string

@@ -20,18 +20,19 @@ import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.user.WebServiceUserCode.graphit;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.fnTdmReference;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
 
     public static final String TDM = "TDM";
     private static final String DB_FABRIC = "fabric";
-    private static String schema = TDMDB_SCHEMA;
+    public static String schema = TDMDB_SCHEMA;
 
     public static void fnAddTaskExecutionProcess(List<Map<String, Object>> postExecutionProcesses, Long taskId, String processType) throws Exception {
         String sql = "DELETE FROM " + schema + ".TASKS_EXE_PROCESS WHERE process_type = ? AND task_id = ? ";
@@ -182,12 +183,15 @@ public class SharedLogic {
             }
 
             try{
-                String updateTasksSql= "UPDATE \"public\".tasks " +
-                        "SET task_status= (?) " +
-                        "FROM ( SELECT " + schema + ".TASKS_EXE_PROCESS.task_id FROM " + schema + ".TASKS_EXE_PROCESS " +
-                        "WHERE " + schema + ".TASKS_EXE_PROCESS.process_id = " + process_id + " ) AS TaskPostExec " +
-                        "WHERE TaskPostExec.task_id = tasks.task_id ";
-                db(TDM).execute(updateTasksSql,"Inactive");
+				String updateTasksSql = "WITH ids AS ( SELECT task_id FROM " + schema + ".tasks WHERE be_id = ? ) " +
+					"UPDATE " + schema + ".tasks_exe_process tep SET status= 'Inactive' " +
+					"FROM ids " +
+					"WHERE tep.task_id = ids.task_id " +
+					"AND tep.process_id = ? " +
+					"AND tep.process_name = ? " +
+					"AND tep.process_type = ?";
+
+                db(TDM).execute(updateTasksSql,beId,process_id,process_name,process_type);
             }
             catch(Exception e){
                 log.error(e.getMessage());
@@ -211,7 +215,7 @@ public class SharedLogic {
         String message = null;
         String errorCode = "";
         try {
-            String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".TASKS_EXE_PROCESS  WHERE process_id > 0 AND process_type = '" + process_type +"' AND task_id =" + taskId;
+            String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".TASKS_EXE_PROCESS  WHERE process_id > 0 And status='Active' AND process_type = '" + process_type +"' AND task_id =" + taskId;
             Db.Rows rows = db(TDM).fetch(sql);
             List<Map<String, Object>> result = new ArrayList<>();
             List<String> columnNames = rows.getColumnNames();
@@ -237,52 +241,6 @@ public class SharedLogic {
         response.put("message", message);
         return response;
     }
-
-//public static List<Map<String, Object>> fnCheckTrainingPostExecutionProcess(List<Map<String, Object>> postExecutionProcesses) {
-//    final String TRAINING_PROCESS_NAME = "Training Data Subset";
-//    final String EXPORT_PROCESS_NAME = "Exporting Data Subset";
-//    final int TRAINING_PROCESS_ID = -1;
-//    final int EXPORT_PROCESS_ID = -2;
-//
-//    Map<String, Object> trainingProcesses = new HashMap<>();
-//    trainingProcesses.put("process_name", TRAINING_PROCESS_NAME);
-//    trainingProcesses.put("process_description", "training_ai");
-//    trainingProcesses.put("process_id", TRAINING_PROCESS_ID);
-//    trainingProcesses.put("execution_order", -1);
-//
-//    Map<String, Object> exportProcesses = new HashMap<>();
-//    exportProcesses.put("process_name", EXPORT_PROCESS_NAME);
-//    exportProcesses.put("process_description", "export_entities");
-//    exportProcesses.put("process_id", EXPORT_PROCESS_ID);
-//    exportProcesses.put("execution_order", -2);
-//
-//    if (postExecutionProcesses == null) {
-//        postExecutionProcesses = new ArrayList<>();
-//    }
-//
-//    // Check existence of processes
-//    boolean trainingExists = false;
-//    boolean exportExists = false;
-//    for (Map<String, Object> existingProcess : postExecutionProcesses) {
-//        String existingProcessName = (String) existingProcess.get("process_name");
-//        if (existingProcessName.equals(TRAINING_PROCESS_NAME)) {
-//            trainingExists = true;
-//        } else if (existingProcessName.equals(EXPORT_PROCESS_NAME)) {
-//            exportExists = true;
-//        }
-//    }
-//
-//    // Add processes if they don't exist
-//    if (!trainingExists) {
-//        postExecutionProcesses.add(trainingProcesses);
-//    }
-//    if (!exportExists) {
-//        postExecutionProcesses.add(exportProcesses);
-//    }
-//
-//    return postExecutionProcesses;
-//}
-
 
 	@out(name = "result", type = Object.class, desc = "")
 	public static Object fnExecutionSummaryReport(String i_taskExecutionId, String i_luName) throws Exception {
@@ -344,13 +302,11 @@ public class SharedLogic {
 		//log.info("fnStopTaskExecution - task_execution_id: " + task_execution_id);
         try {
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-            String sql = "select fabric_execution_id, execution_status, l.lu_id, l.task_type, " +
-            "case when  selection_method = 'TABLES' then 'TDM_TableLevel' else u.lu_name end as lu_name " +
-            "from " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units u, " + schema + ".tasks t where task_execution_id = ? " +
+            String sql = "select fabric_execution_id, execution_status, l.task_type " +
+            "from " + schema + ".task_execution_list l  where task_execution_id = ? " +
             "and (fabric_execution_id is not null) and UPPER(execution_status) IN " +
-            "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
-            "and (selection_method = 'TABLES' or (l.task_id = u.task_id and l.lu_id = u.lu_id)) and l.task_id = t.task_id";
-            log.info("AAAA - sql: " + sql);
+            "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED')" ;
+            //log.info("AAAA - sql: " + sql);
             batchIdList = db(TDM).fetch(sql, task_execution_id);
 
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
@@ -373,8 +329,6 @@ public class SharedLogic {
             //TDM 6.0 - Loop over the list of migrate IDs
             for (Db.Row batchInfo : batchIdList) {
                 String taskType = ("" + batchInfo.get("task_type")).toLowerCase();
-                Long luID = (Long) batchInfo.get("lu_id");
-                String luName = "" + batchInfo.get("lu_name");
                 String taskExecutionID = "" + task_execution_id;
 				//log.info("fabricExecID: <" + fabricExecID + ">");
 				if(batchInfo.get("fabric_execution_id") != null) {
@@ -383,11 +337,6 @@ public class SharedLogic {
                 // TDM 7.1 Fix, stop execution of reference tables.
                 //log.info("fnStopTaskExecution - Stopping the reference Handling for task_execution_id: " + task_execution_id + ", task_type: " + taskType);
                 fnTdmReference(String.valueOf(task_execution_id), taskType);
-
-               /* if (luID > 0 && ("extract".equals(taskType))) {
-                    //log.info("wsStopTaskExecution - Updating task_execution_entities");
-                    fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
-                }*/
             }
             return wrapWebServiceResults("SUCCESS", null, null);
         } catch (Exception e) {
@@ -401,9 +350,8 @@ public class SharedLogic {
         }
 	}
 
-
 	public static List<Map<String, Object>> fnGetTaskPostExecutionProcesses(Long taskId) throws Exception {
-        String query = "SELECT * FROM " + schema + ".TASKS_EXE_PROCESS  WHERE task_id =" + taskId;
+        String query = "SELECT * FROM " + schema + ".TASKS_EXE_PROCESS  WHERE status='Active' AND task_id =" + taskId;
         Db.Rows rows = db(TDM).fetch(query);
 
         List<Map<String, Object>> result = new ArrayList<>();
@@ -435,15 +383,17 @@ public class SharedLogic {
                     .withZone(ZoneOffset.UTC)
                     .format(Instant.now());
 
-            String query = "INSERT INTO " + schema + ".task_ref_exe_stats (task_id,task_execution_id,task_ref_table_id, ref_table_name, update_date, execution_status) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO " + schema + 
+                    ".task_ref_exe_stats (task_id,task_execution_id,task_ref_table_id, ref_table_name, update_date, execution_status, number_of_processed_records) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
             db(TDM).execute(query,
                     task_id,
                     taskExecutionId,
                     ref.get("task_ref_table_id"),
                     ref.get("ref_table_name"),
                     now,
-                    "pending");
+                    "pending",
+                    0);
         }
 
     }
@@ -560,19 +510,26 @@ public class SharedLogic {
                 }
             }         
             String username = sessionUser().name();
-            String userRoles = String.join(",", sessionUser().roles());
-            Set<String> tmpRoles = new HashSet<>();
-            //int size = sessionUser().roles().size();
-            for(String role :sessionUser().roles()){
-                if(!("Everybody".equalsIgnoreCase(role))){
-                    tmpRoles.add(role);}
+                        Set<String> tmpRoles = new HashSet<>();
+            for (String role : sessionUser().roles()) {
+                if (!"Everybody".equalsIgnoreCase(role)) {
+                    tmpRoles.add(role);
+				}
             }
-            if("".equals(username)){
-                if(!(fnIsAdminByRole(userRoles))){
+            
+			if ("".equals(username)) {
+				String userRoles = String.join(TDM_PARAMETERS_SEPARATOR, sessionUser().roles());
+                if (!fnIsAdminByRole(userRoles)) {
                     throw new RuntimeException("Executing With Token Without Admin Privileges");
                 }
             }
-			String executedBy = new StringBuilder().append(username).append("##").append(tmpRoles).toString();
+			
+			String executedBy = new StringBuilder()
+					.append(username)
+					.append("##")
+					.append(String.join(TDM_PARAMETERS_SEPARATOR, tmpRoles)) // Join roles with "<#>"
+					.toString();
+
 			//log.info("fnStartTaskExecutions - executedBy: " + executedBy);
             boolean includeProductInfo = Long.parseLong("" + entry.get("process_id")) == 0;
             db(TDM).execute(query,
@@ -585,7 +542,7 @@ public class SharedLogic {
                     includeProductInfo ? entry.get("product_version") : null,
                     entry.get("lu_id"),
                     entry.get("data_center_name"),
-                    "Pending",
+                    "pending",
                     entry.get("lu_parent_id"),
                     srcEnvName != null ? srcEnvName : entry.get("source_env_name"),
                     executedBy,
@@ -625,38 +582,38 @@ public class SharedLogic {
         String userID = sessionUser().name();
         String tarEnvID = "" + db(TDM).fetch("SELECT environment_id FROM " + TDMDB_SCHEMA + ".environments WHERE environment_name = ? AND environment_status = 'Active'", targetEnvName).firstValue();
         Db.Rows rows =  null;
-        String query = "";
-        query = "SELECT COUNT(distinct " + iidFieldName + ") FROM (" + paramsQuery
-                + " EXCEPT SELECT iid FROM "
-                + TDMDB_SCHEMA + ".tdm_reserved_entities tr, " + TDMDB_SCHEMA + ".task_execution_entities te"
-                + " WHERE tr.env_id = ? and tr.be_id = ?"
-                + " and (tr.end_datetime is null or tr.end_datetime > CURRENT_TIMESTAMP)"
-                + " and te.target_entity_id = tr.entity_id and te.env_id = ? "
-                + " and te.task_execution_id = cast (tr.task_execution_id as text) "
-                + " and te.lu_name in (select lu_name from " + TDMDB_SCHEMA + ".task_execution_list l, "
-                + TDMDB_SCHEMA + ".tasks_logical_units u "
-                + " where l.task_execution_id = tr.task_execution_id and l.parent_lu_id is null "
-                + " and l.lu_id = u.lu_id and l.task_id = u.task_id)"
-                + " ) AS final_count";
+        String countClause = paramCoupling ? "COUNT(*)" : "COUNT(distinct " + iidFieldName + ")";
+		String ExceptClause = paramCoupling ? "iid": "root_iid";
+		String query = "WITH params_condition AS (" + paramsQuery + ") "
+					+ "SELECT " + countClause + " FROM params_condition "
+					+ "WHERE " + ExceptClause + " NOT IN ("
+					+ "SELECT entity_id FROM " + TDMDB_SCHEMA + ".tdm_reserved_entities tr "
+					+ "WHERE tr.env_id = ? "
+					+ "AND tr.be_id = ? "
+					+ "AND (tr.end_datetime IS NULL OR tr.end_datetime > CURRENT_TIMESTAMP)"
+					+ ")";
         //log.info("fnGetNumberOfMatchingEntities1 - query: " + query);													
         if ("OTHERS".equalsIgnoreCase(filteroutReserved)) {
-        query = query.replace(" WHERE tr.env_id = ?", 
+        	query = query.replace(" WHERE tr.env_id = ?", 
                         " WHERE tr.env_id = ? and tr.reserve_owner != ?");
-        //log.info("fnGetNumberOfMatchingEntities2 - query: " + query);	
-            rows = db(TDM).fetch(query, tarEnvID, userID, beID, tarEnvID);
+			//log.info("fnGetNumberOfMatchingEntities2 - query: " + query);	
+            rows = db(TDM).fetch(query, tarEnvID, userID, beID);
         } else if ("ALL".equalsIgnoreCase(filteroutReserved)) {
-            rows = db(TDM).fetch(query, tarEnvID, beID, tarEnvID);
+			//log.info("fnGetNumberOfMatchingEntities3 - query: " + query);
+            rows = db(TDM).fetch(query, tarEnvID, beID);
         } else {
-            query = "SELECT COUNT(distinct " + iidFieldName + ") FROM (" + paramsQuery + " ) AS final_count";
-        //log.info("fnGetNumberOfMatchingEntities3 - query: " + query);													
-            rows =  db(TDM).fetch(query);
+            query = paramCoupling 
+					? "SELECT COUNT(*) FROM (" + paramsQuery + ") AS final_count" 
+					: "SELECT COUNT(distinct " + iidFieldName + ") FROM (" + paramsQuery + ") AS final_count";
+        	//log.info("fnGetNumberOfMatchingEntities4 - query: " + query);													
+            rows = db(TDM).fetch(query);
         }
 		Object numberOfMatches = rows.firstValue();
 		if (rows != null) {
 		rows.close();
 				}
 		return wrapWebServiceResults("SUCCESS", null, numberOfMatches);
-	}        
+	}
 
 
 	public static HashMap<String, Object> fnMigrateStatusWs(String migrateId, List<String> runModes) throws Exception {
@@ -760,6 +717,7 @@ public class SharedLogic {
         String[] lu_list_arr = lu_list.split(",");
         String entities_list_for_qry = "";
         String lu_list_for_qry = "";
+		String getStatusesSql = "";
 
         //create a string with added single quotes to each entity in the entities list + preliminary mark every entity in the list as exists,
         //since the entity was already validated against the root LU in the GUI
@@ -778,9 +736,14 @@ public class SharedLogic {
 
         fabric().execute("GET TDM.?", task_execution_id);
 
-        String getStatusesSql = "select distinct be_root_entity_id from task_execution_link_entities " +
+        boolean isFullHierarchyEnabled = "true".equalsIgnoreCase(fabric().fetch("Set POP_FULL_LU_HIERARCHY_IN_TDM_LU").firstValue().toString());
+        if(isFullHierarchyEnabled){
+             getStatusesSql = "select distinct be_root_entity_id from task_execution_link_entities " +
                 "where be_root_entity_id in (" + entities_list_for_qry + ") and lu_name in (" + lu_list_for_qry + ") and execution_status <> 'completed'";
-
+		}else{
+             getStatusesSql = "select distinct be_root_entity_id from task_execution_link_entities " +
+            "where be_root_entity_id in (" + entities_list_for_qry + ") and root_entity_status  <> 'completed'";
+        }
         Db.Rows getStatuses = fabric().fetch(getStatusesSql);
         //Only entities that failed on any of the LUs will be returned, therefore for all the returned entities set the status to false
         for (Db.Row entityStatus : getStatuses) {
@@ -1104,13 +1067,13 @@ public class SharedLogic {
             if (beLu.containsKey("lu_parent_name")) {
                 Object parentNameObj = beLu.get("lu_parent_name");
                 if (parentNameObj != null) {
-                    if (logicalUnitNames.contains(beLu.get("lu_name"))) {
-                        String parentName = parentNameObj.toString();
-                        if (!logicalUnitNames.contains(parentName)) {
-                            valid = false;
-                            throw new Exception("Missing parent for child Lu: " + beLu.get("lu_name"));
-                        }
-                    }
+					if (logicalUnitNames.contains(beLu.get("lu_name"))) {
+						String parentName = parentNameObj.toString();
+						if (!logicalUnitNames.contains(parentName)) {
+							valid = false;
+							throw new Exception("Missing parent for child Lu: " + beLu.get("lu_name"));
+						}
+					}
                 }
             }
         }
@@ -1223,7 +1186,7 @@ public class SharedLogic {
 				now,
 				entry.get("be_id"),
 				tarEnvId != null ? tarEnvId : entry.get("environment_id"),
-				"Pending",
+				"pending",
 				entry.get("start_execution_time"),
 				entry.get("end_execution_time"),
 				entry.get("tot_num_of_processed_root_entities"),
@@ -1292,10 +1255,17 @@ public class SharedLogic {
                     filterParamsStr = filterParams.stream().map(Object::toString)
                     .collect(Collectors.joining(TDM_PARAMETERS_SEPARATOR));
                 }
+
+				String filterFieldsStr = null;
+				if ( ref.get("filter_fields") != null) {
+					Object obj = ref.get("filter_fields");
+					filterFieldsStr = obj.toString();
+				}
+				
 				String sql = "INSERT INTO " + schema + ".task_ref_tables " + 
                     "(task_id, ref_table_name, lu_name, schema_name, interface_name, update_date, table_filter, filter_type, " +
-                    "target_table_prefix, target_table_suffix, version_task_execution_id, version_task_name, gui_filter, filter_parameters) " + 
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "target_table_prefix, target_table_suffix, version_task_execution_id, version_task_name, gui_filter, filter_parameters, filter_fields) " + 
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				db(TDM).execute(sql,
 						taskId, ref.get("reference_table_name") != null ? ref.get("reference_table_name") : ref.get("ref_table_name"),
 						ref.get("lu_name") != null ? ref.get("lu_name") : "TDM_TableLevel",
@@ -1311,7 +1281,8 @@ public class SharedLogic {
                         ref.get("version_task_execution_id"),
                         ref.get("version_task_name"),
                         ref.get("gui_filter"),
-                        filterParamsStr);
+                        filterParamsStr, 
+						filterFieldsStr);
 			}
 		//} catch (Exception e) {
 		//	log.error(e.getMessage());
@@ -1537,7 +1508,7 @@ public class SharedLogic {
 			clientQuery +=
 					" and (" + be_id + " != plu.be_id or (";
 			clientQuery += numOfEntities + " = (select count(1) from " + schema + ".task_execution_entities te " +
-					"where te.task_execution_id = cast (l1.task_execution_id as text) and te.lu_name = plu.lu_name and plu.lu_parent_id is null " +
+					"where te.task_execution_id = l1.task_execution_id and te.lu_name = plu.lu_name and plu.lu_parent_id is null " +
 					"and te.iid = ANY(string_to_array('" + entitiesList + "', ',')) and execution_status = 'completed'))) ) ";
 		} else {
 			clientQuery += ")";
@@ -1857,6 +1828,13 @@ public class SharedLogic {
 
 	public static void fnSaveTaskOverrideParameters(Long taskId, Map<String, Object> overrideParameters, Long taskExecutionId) throws Exception {
 		String sql = "INSERT INTO " + schema + ".task_execution_override_attrs (task_id,override_parameters,task_execution_id) VALUES (?,?,?)";
+		try {
+			if (overrideParameters.containsKey("TASK_GLOBALS")) {
+				Map<String, Object> overrideGlobals = Json.get().fromJson(overrideParameters.get("TASK_GLOBALS").toString());
+			}
+		} catch (Exception e) {
+			throw new Exception("Invalid Task Globals : " + e.getMessage());
+		}
 		String params_str = new JSONObject(overrideParameters).toString();
 		db(TDM).execute(sql, taskId, params_str, taskExecutionId);
 	}
@@ -1870,14 +1848,7 @@ public class SharedLogic {
 		Set<String> fabricRolesSet = sessionUser().roles();
 		//Boolean adminOrOwner = fnIsAdminOrOwner(envID, userName);
 		String message  = "";
-		
-		/*if (adminOrOwner) {
-			//log.info("The user: " + userName + " is an admin Or owner");
-			result.put("listOfEntities", entityList);
-			result.put("message", message);
-			return result;
-		}*/
-		
+
 		//log.info("The user: " + userName + " is tester");
 		String entities_list_for_qry = "";
 		//ArrayList<String> releasedEntitiesList = entitiesList;
@@ -1888,24 +1859,24 @@ public class SharedLogic {
 		// remove last ,
 		entities_list_for_qry = entities_list_for_qry.substring(0, entities_list_for_qry.length() - 1);
 		
-		//log.info("fnSaveTaskOverrideParameters - beID: " + beID + ", envID: " + envID);
-        String baseQuery = "SELECT * FROM " + schema + ".TDM_RESERVED_ENTITIES WHERE " +
-                        "be_id = ? AND env_id = ? AND entity_id IN (" + entities_list_for_qry + ") " +
-                        "AND CURRENT_TIMESTAMP >= start_datetime " +
+		//log.info("fnValidateReservedEntities - beID: " + beID + ", envID: " + envID);
+		String baseQuery = "SELECT * FROM " + schema + ".TDM_RESERVED_ENTITIES WHERE " +
+				"be_id = ? AND env_id = ? AND entity_id IN (" + entities_list_for_qry + ") " +
+				"AND CURRENT_TIMESTAMP >= start_datetime " +
                         "AND (end_datetime IS NULL OR CURRENT_TIMESTAMP < end_datetime)";
-
-        String query="";
+		
+		String query="";
         Db.Rows reservedEntities;
         try {
-            if ("OTHER".equalsIgnoreCase(filterout_reserved)) {
-            query = baseQuery + " AND reserve_owner != ?";
-            reservedEntities = db(TDM).fetch(query, beID, envID, userName);
+            if ("OTHERS".equalsIgnoreCase(filterout_reserved)) {
+				query = baseQuery + " AND reserve_owner != ?";
+				reservedEntities = db(TDM).fetch(query, beID, envID, userName);
             } else {
-            query = baseQuery;
-            reservedEntities = db(TDM).fetch(query, beID, envID);
+				query = baseQuery;
+				reservedEntities = db(TDM).fetch(query, beID, envID);
             }		
-		//log.info("-------- query: " + query);		
-			for (Db.Row row : reservedEntities) {
+		//log.info("-------- query: " + query);
+					for (Db.Row row : reservedEntities) {
 				String entityID = "" + row.get("entity_id");
 				String owner = "" + row.get("reserve_owner");
 				//remove entity from released Entities as it is not reserved
@@ -1961,12 +1932,12 @@ public class SharedLogic {
 				String type = "" + paramValue.get("type");
 				Long order = (Long)paramValue.get("order");
 				if (value != null) {
-					if (paramValue.has("default")) {
-						Object defaultVal = paramValue.get("default");
-						if(value.toString().equals(defaultVal.toString())) {
-							continue;
-						}
-					}
+					// if (paramValue.has("default")) {
+					// 	Object defaultVal = paramValue.get("default");
+					// 	if(value.toString().equals(defaultVal.toString())) {
+					// 		continue;
+					// 	}
+					// }
 		
 		        	String insertSql  = "broadway " + luName + ".InsertIntoGenDataParamMappings task_id=?" +
 						", param_name=?, param_type=?, param_value=?, param_order=?";
@@ -1978,175 +1949,54 @@ public class SharedLogic {
 	}
 
 
-	public static Db.Rows fnGetTasks(String task_ids) throws Exception {
-		String sql= "SELECT tasks.*,environments.*,business_entities.*,environment_owners.user_name as owner,environment_owners.user_type as owner_type,environment_role_users.username as tester,environment_role_users.user_type as tester_type,environment_role_users.role_id  as role_id_orig, tasks.sync_mode," +
-				"( SELECT COUNT(*) FROM " + schema + ".task_execution_list WHERE task_execution_list.task_id = tasks.task_id AND" +
-				" ( UPPER(task_execution_list.execution_status)" +
-				"  IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED'))) AS executioncount, " +
-				" ( SELECT COUNT(*) FROM " + schema + ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount,  " +
-				" ( SELECT string_agg(process_name::text, ',') FROM " + schema + ".TASKS_EXE_PROCESS WHERE TASKS_EXE_PROCESS.task_id = tasks.task_id ) AS processnames " +
-				" FROM " + schema + ".tasks LEFT JOIN " + schema + ".environments" +
-				" ON (tasks.environment_id = environments.environment_id) LEFT JOIN " + schema + ".business_entities ON" +
-				" (tasks.be_id = business_entities.be_id) LEFT JOIN " + schema + ".environment_owners ON" +
-				" (tasks.environment_id = environment_owners.environment_id) " +
-				" LEFT JOIN " + schema + ".environment_role_users ON" +
-				" (tasks.environment_id = environment_role_users.environment_id)";
-
-		if(task_ids!=null&&task_ids.length()>0) {
-			sql+= " WHERE tasks.task_id in (" + task_ids + ")";
+	public static Db.Rows fnGetTasks(String task_ids, String mode) throws Exception {
+		String taskFilterCondition = "";
+		// If task_ids are provided, we add the first filtering condition
+		if (task_ids != null && !task_ids.isEmpty()) {
+			taskFilterCondition = " WHERE task_id IN (" + task_ids + ") ";
 		}
-		sql+= " ORDER BY task_id DESC";
-		Db.Rows result = db(TDM).fetch(sql);
-		return result;
-	}
-
-
-	//This function returns the details of the child records of the given entity. It is a recursive function that iterates till the leaves and go back, each child record will be added to the parent's children list.
-	public static Map<String,Object> fnGetChildHierarchy(String i_luName, String i_targetEntityID) throws Exception {
-		String entityStatus = "completed";
-		LinkedHashMap<String,Object> o_childHirarchyData =  new LinkedHashMap<>();
-		LinkedHashMap<String,Object> innerChild =  new LinkedHashMap<>();
-		List<Object> childData = new ArrayList<>();
-
-		//log.info("fnGetChildHierarchy inputs - Lu Name: " + i_luName + ", target ID: " + i_targetEntityID);
-
-		String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
-				"execution_status entityStatus, parent_lu_name parentLuName, TARGET_PARENT_ID parentTargetId, root_entity_status luStatus from TDM.task_Execution_link_entities " +
-				"where lu_name= ? and target_entity_id = ?";
-
-		String sqlGetChildren = "select lu_name, target_entity_id from TDM.task_Execution_link_entities " +
-				"where parent_lu_name= ? and target_parent_id = ?";
-
-		Db.Rows childRecs = fabric().fetch(sqlGetChildren, i_luName, i_targetEntityID);
-
-		ArrayList<String[]> childrenRecs = new ArrayList<>();
-
-		//Get the list of direct children of the current (input) entity if such exists
-		for (Db.Row childRec : childRecs) {
-			String[] childInfo = {"" + childRec.get("lu_name"), "" + childRec.get("target_entity_id")};
-			childrenRecs.add(childInfo);
-		}
-
-		if (childRecs != null) {
-			childRecs.close();
-		}
-		//log.info("fnGetChildHierarchy - Number of child Recs: " + childrenRecs.size());
-		//Loop over the direct children entities and call this function to get for each child it own children
-		for (int i=0; i< childrenRecs.size(); i++) {
-
-			String[] child = childrenRecs.get(i);
-			String childLuName = child[0];
-			String childTargetId = child[1];
-
-			//log.info("fnGetChildHierarchy - Child Rec: Lu Name: " + childLuName + ", target ID: " + childTargetId);
-			if (childLuName != null && !childLuName.isEmpty()) {
-				//a recursive call to this function until we get to a leaf entity
-				innerChild = (LinkedHashMap<String, Object>)fnGetChildHierarchy(childLuName, childTargetId);
-
-				childData.add(innerChild);
+		// If mode is not "both", we add filtering for task status
+		if (!"both".equalsIgnoreCase(mode)) {
+			if (!taskFilterCondition.isEmpty()) {
+				taskFilterCondition += " AND "; 
+			} else {
+				taskFilterCondition = " WHERE ";
 			}
+			taskFilterCondition += "task_status = '" + (mode.equalsIgnoreCase("active") ? "Active" : "Inactive") + "'";
 		}
-		// This point is reached, either the current entity has no children (leaf) or all it direct children (and their own children) were
-		// already processed.
-		Db.Row entityRec = (fabric().fetch(sqlGetEntityData, i_luName, i_targetEntityID)).firstRow();
-
-		o_childHirarchyData.put("luName", "" + entityRec.get("luName"));
-		o_childHirarchyData.put("targetId", "" + entityRec.get("targetId"));
-
-		//Get instance ID from entity id
-		//log.info("fnGetChildHierarchy - entity_id: " + entityRec.get("sourceId"));
-		Object[] splitId = fnSplitUID("" + entityRec.get("sourceId"));
-		String instanceId = "" + splitId[0];
-		o_childHirarchyData.put("sourceId", "" + instanceId);
-
-		o_childHirarchyData.put("entityStatus", "" + entityRec.get("entityStatus"));
-		o_childHirarchyData.put("parentLuName", "" + entityRec.get("parentLuName"));
-		o_childHirarchyData.put("parentTargetId", "" + entityRec.get("parentTargetId"));
-
-		//log.info("fnGetChildHierarchy - Adding children Data, size: " + childData.size());
-		if (childData.size() > 0){
-			o_childHirarchyData.put("children", childData);
-		}
-
-		//log.info("fnGetChildHierarchy - LU status: " + entityStatus);
-		o_childHirarchyData.put("luStatus",  "" + entityRec.get("entityStatus"));
-
-		return o_childHirarchyData;
+		String baseQuery =
+			"WITH pre_filtered_tasks AS ( " +
+			"   SELECT * FROM " + schema + ".tasks " + taskFilterCondition +
+			"), " +
+			"task_execution AS ( " +
+			"   SELECT task_id, 1 AS executioncount FROM " + schema + ".task_execution_summary " +
+			"   WHERE UPPER(execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
+			"), " +
+			"task_references AS ( " +
+			"   SELECT DISTINCT task_id, 1 AS refcount FROM " + schema + ".task_ref_tables " +
+			"), " +
+			"task_processes AS ( " +
+			"   SELECT task_id, STRING_AGG(process_name::TEXT, ',') AS processnames " +
+			"   FROM " + schema + ".TASKS_EXE_PROCESS where status='Active' GROUP BY task_id " +
+			") " +
+			"SELECT t.*, e.*, be.*, eo.user_name AS owner, eo.user_type AS owner_type, " +
+			"eru.username AS tester, eru.user_type AS tester_type, eru.role_id AS role_id_orig, " +
+			"t.sync_mode, te.executioncount, tr.refcount, tp.processnames " +
+			"FROM pre_filtered_tasks t " +
+			"LEFT JOIN " + schema + ".environments e ON t.environment_id = e.environment_id " +
+			"LEFT JOIN " + schema + ".business_entities be ON t.be_id = be.be_id " +
+			"LEFT JOIN " + schema + ".environment_owners eo ON t.environment_id = eo.environment_id " +
+			"LEFT JOIN " + schema + ".environment_role_users eru ON t.environment_id = eru.environment_id " +
+			"LEFT JOIN task_execution te ON t.task_id = te.task_id " +
+			"LEFT JOIN task_references tr ON t.task_id = tr.task_id " +
+			"LEFT JOIN task_processes tp ON t.task_id = tp.task_id " +
+			"ORDER BY t.task_id DESC";	
+		return db(TDM).fetch(baseQuery);
 	}
+	
+	
 
-
-	//This function returns the details of the ancestors records of the given entity, if such exists. It is a recursive function, that travels until  it reaches the root and goes back. Each Ancestor will get the data of its children and will added it to its record as children data, The final data prepared for the root entity, will be eventually returned from this function
-	public static Map<String,Object> fnGetParentHierarchy(String i_luName, String i_targetEntityID, Object i_children) throws Exception {
-		String entityStatus = "completed";
-		LinkedHashMap<String,Object> currentEntity =  new LinkedHashMap<>();
-		LinkedHashMap<String,Object> upperParent =  new LinkedHashMap<>();
-
-		//LinkedHashMap<String,Object> childrenRecs = new LinkedHashMap<>();
-		List<Object> childrenRecs = new ArrayList<>();
-
-		if (i_children != null){
-			childrenRecs.add(i_children);
-		}
-
-		//log.info("fnGetParentHierarchy inputs - Lu Name: " + i_luName + ", target ID: " + i_targetEntityID);
-
-		String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
-				"execution_status entityStatus, parent_lu_name parentLuName, TARGET_PARENT_ID parentTargetId, root_entity_status luStatus " +
-				"from TDM.task_Execution_link_entities where lu_name= ? and target_entity_id = ?";
-
-		String sqlGetParent = "select parent_lu_name, target_parent_id from TDM.task_Execution_link_entities " +
-				"where lu_name= ? and target_entity_id = ? limit 1";
-
-		//Get the data of the current (input) entity
-		Db.Row entityRec = (fabric().fetch(sqlGetEntityData, i_luName, i_targetEntityID)).firstRow();
-
-		currentEntity.put("luName", "" + entityRec.get("luName"));
-		currentEntity.put("targetId", "" + entityRec.get("targetId"));
-
-		//Get instance ID from entity id
-		//log.info("fnGetParentHierarchy - entity_id: " + entityRec.get(""));
-		Object[] splitId = fnSplitUID("" + entityRec.get("sourceId"));
-		String instanceId = "" + splitId[0];
-		currentEntity.put("sourceId", "" + instanceId);
-
-		currentEntity.put("entityStatus", "" + entityRec.get("entityStatus"));
-		currentEntity.put("parentLuName", "" + entityRec.get("parentLuName"));
-		currentEntity.put("parentTargetId", "" + entityRec.get("parentTargetId"));
-
-		currentEntity.put("children",childrenRecs);
-
-		//log.info("fnGetParentHierarchy - LU status: " + entityStatus);
-		currentEntity.put("luStatus", "" + entityRec.get("luStatus"));
-
-		String parentLuName = "";
-		String parentTargetId = "";
-
-		//Get the parent record, as each entity can have only one parent, only one row wil be returned
-		Db.Row parentRec = fabric().fetch(sqlGetParent, i_luName, i_targetEntityID).firstRow();
-		if (!parentRec.isEmpty()) {
-			parentLuName = "" + parentRec.get("parent_lu_name");
-			parentTargetId = "" + parentRec.get("target_parent_id");
-		}
-		//log.info("fnGetParentHierarchy - parent Rec: Lu Name: " + parentLuName + ", Parent target ID: " + parentTargetId);
-
-		if ( parentLuName != null && !"".equals(parentLuName) ) {
-
-			//log.info("fnGetParentHierarchy - parent Rec: Lu Name: " + parentLuName + ", Parent target ID: " + parentTargetId);
-			//a recursive call to this function until we get to a leaf entity
-			upperParent = (LinkedHashMap<String, Object>)fnGetParentHierarchy(parentLuName, parentTargetId, currentEntity);
-			//log.info("fnGetParentHierarchy - parent Status: " + upperParent.get("luStatus"));
-
-		}
-
-		//No parent, therefore a root, and return the root data, as it already includes the data of all the children
-		if (upperParent == null || upperParent.isEmpty()){
-			return currentEntity;
-		}
-
-		//Return the parent, so eventually return the root record with the whole hierarchy data
-		return upperParent;
-	}
-    public static List<HashMap<String, Object>> fnGetExecutionProcesses (Long be_id, String process_type) throws SQLException {
+public static List<HashMap<String, Object>> fnGetExecutionProcesses (Long be_id, String process_type) throws SQLException {
         try {
             String sql = "SELECT * FROM " + schema + ".TDM_BE_EXE_PROCESS  WHERE process_type= '" + process_type + "' AND be_id = " + be_id;
             Db.Rows rows = db(TDM).fetch(sql);
@@ -2171,5 +2021,262 @@ public class SharedLogic {
             log.error(e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+	 private static Map<String, Object> fnGetChildHierarchy(String i_luName, String i_targetEntityID, String i_taskExecutionID, String sqlGetEntityData, String sqlGetChildren ) throws Exception {
+		LinkedHashMap<String, Object> o_childHirarchyData = new LinkedHashMap<>();
+		LinkedHashMap<String, Object> innerChild;
+		List<Object> childData = new ArrayList<>();
+
+		Db.Rows childRecs;
+        if (i_taskExecutionID != null) {
+            childRecs = db(TDM).fetch(sqlGetChildren, i_luName, i_targetEntityID, i_taskExecutionID);
+        } else {
+            childRecs = fabric().fetch(sqlGetChildren, i_luName, i_targetEntityID);
+		}
+
+		ArrayList<String[]> childrenRecs = new ArrayList<>();
+
+		// Get the list of direct children of the current (input) entity if such exists
+		for (Db.Row childRec : childRecs) {
+			String[] childInfo = {"" + childRec.get("lu_name"), "" + childRec.get("target_entity_id")};
+			childrenRecs.add(childInfo);
+		}
+
+		if (childRecs != null) {
+			childRecs.close();
+		}
+		
+			// Recursively process each child
+        for (String[] child : childrenRecs) {
+			String childLuName = child[0];
+			String childTargetId = child[1];
+
+						if (childLuName != null && !childLuName.isEmpty()) {
+				innerChild = (LinkedHashMap<String, Object>) fnGetChildHierarchy(childLuName, childTargetId, i_taskExecutionID, sqlGetEntityData,sqlGetChildren);
+				childData.add(innerChild);
+			}
+		}
+		
+        // Fetch entity details
+        Db.Row entityRec;
+        if (i_taskExecutionID != null) {
+            entityRec = db(TDM).fetch(sqlGetEntityData, i_luName, i_targetEntityID, i_taskExecutionID).firstRow();
+        } else {
+            entityRec = fabric().fetch(sqlGetEntityData, i_luName, i_targetEntityID).firstRow();
+		}
+
+		o_childHirarchyData.put("luName", "" + entityRec.get("luName"));
+		o_childHirarchyData.put("targetId", "" + entityRec.get("targetId"));
+
+		// Get instance ID from entity ID
+		Object[] splitId = fnSplitUID("" + entityRec.get("sourceId"));
+		String instanceId = "" + splitId[0];
+		o_childHirarchyData.put("sourceId", "" + instanceId);
+
+		o_childHirarchyData.put("entityStatus", "" + entityRec.get("entityStatus"));
+		o_childHirarchyData.put("parentLuName", "" + entityRec.get("parentLuName"));
+		o_childHirarchyData.put("parentTargetId", "" + entityRec.get("parentTargetId"));
+
+		if (childData.size() > 0) {
+			o_childHirarchyData.put("children", childData);
+		}
+
+		o_childHirarchyData.put("luStatus", "" + entityRec.get("entityStatus"));
+
+		return o_childHirarchyData;
+	}
+
+private static LinkedHashMap<String, Object> fnGetParentHierarchy(String i_luName, String i_targetEntityID, Object i_children, String sqlGetEntityData, String sqlGetParent, String i_taskExecutionID) throws Exception {
+		LinkedHashMap<String, Object> currentEntity = new LinkedHashMap<>();
+		LinkedHashMap<String, Object> upperParent = new LinkedHashMap<>();
+		List<Object> childrenRecs = new ArrayList<>();
+
+		if (i_children != null) {
+			childrenRecs.add(i_children);
+		}
+Db.Row entityRec;
+        // Get the data of the current (input) entity
+        if (i_taskExecutionID != null) {
+            entityRec = db(TDM).fetch(sqlGetEntityData, i_luName, i_targetEntityID, i_taskExecutionID).firstRow();
+        } else {
+            entityRec = fabric().fetch(sqlGetEntityData, i_luName, i_targetEntityID).firstRow();
+		}
+
+		currentEntity.put("luName", "" + entityRec.get("luName"));
+		currentEntity.put("targetId", "" + entityRec.get("targetId"));
+
+		// Get instance ID from entity id
+				Object[] splitId = fnSplitUID("" + entityRec.get("sourceId"));
+		String instanceId = "" + splitId[0];
+		currentEntity.put("sourceId", "" + instanceId);
+
+		currentEntity.put("entityStatus", "" + entityRec.get("entityStatus"));
+		currentEntity.put("parentLuName", "" + entityRec.get("parentLuName"));
+		currentEntity.put("parentTargetId", "" + entityRec.get("parentTargetId"));
+currentEntity.put("children", childrenRecs);
+        currentEntity.put("luStatus", "" + entityRec.get("luStatus"));
+    
+        String parentLuName = "";
+        String parentTargetId = "";
+    
+        // Get the parent record, as each entity can have only one parent
+        Db.Row parentRec;
+        if (i_taskExecutionID != null) {
+            parentRec = db(TDM).fetch(sqlGetParent, i_luName, i_targetEntityID, i_taskExecutionID).firstRow();
+        } else {
+            parentRec = fabric().fetch(sqlGetParent, i_luName, i_targetEntityID).firstRow();
+        }
+        if (!parentRec.isEmpty()) {
+            parentLuName = "" + parentRec.get("parent_lu_name");
+            parentTargetId = "" + parentRec.get("target_parent_id");
+        }
+    
+        // Recursive call to get parent hierarchy if a parent exists
+        if (parentLuName != null && !"".equals(parentLuName)) {
+            upperParent = (LinkedHashMap<String, Object>) fnGetParentHierarchy(parentLuName, parentTargetId, currentEntity, sqlGetEntityData, sqlGetParent, i_taskExecutionID);
+        }
+    
+        // If no parent exists, return the current entity as it's a root
+        if (upperParent == null || upperParent.isEmpty()) {
+            return currentEntity;
+        }
+    
+        // Return the parent, which includes all hierarchy data
+        return upperParent;
+    }
+    private static Map<String, Object> fnGetTaskExeStatsForEntity(String taskExecutionId, String luName, String targetId, boolean isTDMDB,String sqlGetEntityData, String sqlGetParent ) throws Exception {
+        Map<String, Object> mainOutput = new HashMap<>();
+        Map<String, Object> childHierarchyDetails;
+        Map<String, Object> parentHierarchyDetails = new HashMap<>();
+    
+        if (isTDMDB) {
+            childHierarchyDetails = fnGetChildHierarchyFromTDMDB(luName, targetId, taskExecutionId);
+        } else {
+            childHierarchyDetails = fnGetChildHierarchyFromTDMLU(luName, targetId);
+        }
+
+		String parentLuName = "";
+		String parentTargetId = "";
+
+		// Get the parent of the given LU
+        Db.Row parentRec = isTDMDB 
+            ? db(TDM).fetch(sqlGetParent, luName, targetId, taskExecutionId).firstRow() 
+            : fabric().fetch(sqlGetParent, luName, targetId).firstRow();
+
+		if (!parentRec.isEmpty()) {
+			parentLuName = "" + parentRec.get("parent_lu_name");
+			parentTargetId = "" + parentRec.get("target_parent_id");
+		}
+		
+        // Get parent hierarchy if the input entity has parents
+        if (parentLuName != null && !"".equals(parentLuName)) {
+            parentHierarchyDetails = isTDMDB 
+                ? fnGetParentHierarchyFromTDMDB(parentLuName, parentTargetId, childHierarchyDetails, taskExecutionId) 
+                : fnGetParentHierarchyFromTDMLU(parentLuName, parentTargetId, childHierarchyDetails);
+        } else {
+            parentHierarchyDetails = childHierarchyDetails;
+        }
+    
+        String rootLUName = "" + parentHierarchyDetails.get("luName");
+        String rootTargetID = "" + parentHierarchyDetails.get("targetId");
+        String rootSourceID = "" + parentHierarchyDetails.get("sourceId");
+    
+        mainOutput.put(rootLUName, parentHierarchyDetails);
+    
+        // Fetch other root entities with the same root entity ID
+        Db.Rows otherRootRecs = isTDMDB 
+            ? db(TDM).fetch(sqlGetEntityData, rootLUName, rootTargetID, rootSourceID, taskExecutionId) 
+            : fabric().fetch(sqlGetEntityData, rootLUName, rootTargetID, rootSourceID);
+    
+        for (Db.Row rootRec : otherRootRecs) {
+            Map<String, Object> rootDetails = new HashMap<>();
+            String currRootLuName = "" + rootRec.get("luName");
+            rootDetails.put("luName", currRootLuName);
+            rootDetails.put("targetId", "" + rootRec.get("targetId"));
+    
+            // Get instance ID from entity ID
+            Object[] splitId = fnSplitUID("" + rootRec.get("sourceId"));
+            String instanceId = "" + splitId[0];
+            rootDetails.put("sourceId", "" + instanceId);
+            rootDetails.put("entityStatus", "" + rootRec.get("luStatus"));
+    
+            mainOutput.put(currRootLuName, rootDetails);
+        }
+    
+        if (otherRootRecs != null) {
+            otherRootRecs.close();
+        }
+    
+        return mainOutput;
+    }
+    
+    private static Map<String, Object> fnGetParentHierarchyFromTDMLU(String i_luName, String i_targetEntityID, Object i_children) throws Exception {
+        String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
+                "execution_status entityStatus, parent_lu_name parentLuName, TARGET_PARENT_ID parentTargetId, root_entity_status luStatus " +
+                "from TDM.task_Execution_link_entities where lu_name= ? and target_entity_id = ?";
+    
+        String sqlGetParent = "select parent_lu_name, target_parent_id from TDM.task_Execution_link_entities " +
+                "where lu_name= ? and target_entity_id = ? limit 1";
+    
+        return fnGetParentHierarchy(i_luName, i_targetEntityID, i_children, sqlGetEntityData, sqlGetParent, null);
+    }
+    
+    private static Map<String, Object> fnGetParentHierarchyFromTDMDB(String i_luName, String i_targetEntityID, Object i_children, String i_taskExecutionID) throws Exception {
+        String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
+                "execution_status entityStatus, parent_lu_name parentLuName, parent_target_entity_id parentTargetId, " +
+                "CASE WHEN t.execution_status <> 'completed' THEN 'failed' " +
+                     "WHEN t.execution_status IS NULL THEN 'completed' " +
+                     "ELSE t.execution_status END AS luStatus " +
+                "from " + TDMDB_SCHEMA + ".task_execution_entities t where lu_name= ? and target_entity_id = ? and task_execution_id= ?";
+    
+        String sqlGetParent = "select parent_lu_name, parent_target_entity_id target_parent_id from " + TDMDB_SCHEMA + ".task_execution_entities " +
+                "where lu_name= ? and target_entity_id = ? and task_execution_id= ? limit 1";
+    
+        return fnGetParentHierarchy(i_luName, i_targetEntityID, i_children, sqlGetEntityData, sqlGetParent, i_taskExecutionID);
+    }
+
+    private static Map<String, Object> fnGetChildHierarchyFromTDMLU(String i_luName, String i_targetEntityID) throws Exception {
+
+        String sqlGetEntityData = "SELECT lu_name luName, target_entity_id targetId, entity_id sourceId, " +
+                              "execution_status entityStatus, parent_lu_name parentLuName, TARGET_PARENT_ID parentTargetId, root_entity_status luStatus " +
+                              "FROM TDM.task_Execution_link_entities WHERE lu_name= ? AND target_entity_id = ?";
+
+        String sqlGetChildren = "SELECT lu_name, target_entity_id FROM TDM.task_Execution_link_entities " +
+                            "WHERE parent_lu_name= ? AND target_parent_id = ?";
+        return fnGetChildHierarchy(i_luName, i_targetEntityID, null,sqlGetEntityData,sqlGetChildren );
+    }
+
+    private static Map<String, Object> fnGetChildHierarchyFromTDMDB(String i_luName, String i_targetEntityID, String i_taskExecutionID) throws Exception {
+
+        String sqlGetEntityData = "SELECT lu_name luName, target_entity_id targetId, entity_id sourceId, " +
+            "execution_status entityStatus, parent_lu_name parentLuName, parent_target_entity_id parentTargetId, " +
+            "CASE WHEN t.execution_status <> 'completed' THEN 'failed' " +
+            "WHEN t.execution_status IS NULL THEN 'completed' ELSE t.execution_status END AS luStatus " +
+            "FROM " + TDMDB_SCHEMA + ".task_execution_entities t WHERE lu_name= ? AND target_entity_id = ? AND task_execution_id = ?";
+
+        String sqlGetChildren = "SELECT lu_name, target_entity_id FROM " + TDMDB_SCHEMA + ".task_execution_entities " +
+            "WHERE parent_lu_name= ? AND parent_target_entity_id = ? AND task_execution_id = ?";
+        return fnGetChildHierarchy(i_luName, i_targetEntityID, i_taskExecutionID,sqlGetEntityData,sqlGetChildren );
+
+    }
+
+   
+    public static Map<String, Object> fnGetTaskExeStatsForEntityFromTDMLU(String taskExecutionId, String luName, String targetId) throws Exception {
+        
+        String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " + "execution_status luStatus from TDM.task_Execution_link_entities  " + "where lu_name <> ? and target_entity_id = ? and entity_id = ?";
+        String sqlGetParent = "select parent_lu_name, target_parent_id from TDM.task_Execution_link_entities " + "where lu_name= ? and target_entity_id = ? and parent_lu_name <> ''";
+        return fnGetTaskExeStatsForEntity(taskExecutionId, luName, targetId, false,sqlGetEntityData,sqlGetParent);
+
+    }
+
+    public static Map<String, Object> fnGetTaskExeStatsForEntityFromTDMDB(String taskExecutionId, String luName, String targetId) throws Exception {
+        String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, execution_status luStatus from " + TDMDB_SCHEMA +".task_execution_entities where lu_name <> ? and target_entity_id = ? and entity_id = ? and task_execution_id=?";
+        String sqlGetParent = "select parent_lu_name, parent_target_entity_id target_parent_id from " + TDMDB_SCHEMA + ".task_execution_entities where lu_name= ? and target_entity_id = ? and parent_lu_name <> '' and task_execution_id=?";
+        return fnGetTaskExeStatsForEntity(taskExecutionId, luName, targetId, true,sqlGetEntityData,sqlGetParent);
+
+    }
+	
+	public static String fnGetLUI() throws Exception {
+        return getInstanceID();
     }
 }

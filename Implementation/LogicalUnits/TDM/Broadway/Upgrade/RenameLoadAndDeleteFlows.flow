@@ -1,0 +1,198 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Stage 2:
+    actors:
+      Get List of LUs:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: list lut
+        out:
+          result:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      Project LU?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |
+              var upgradeLU = true;
+              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
+                  upgradeLU = false;
+              }
+              upgradeLU;
+          luName:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Prepare name and pathes:
+    actors:
+      Old load file name:
+        parent: Const
+        in:
+          value:
+            const: LoadAllTables.flow
+            schema: string
+        out:
+          value:
+            schema: string
+      New load file name:
+        parent: Const
+        in:
+          value:
+            const: LoadToTarget.flow
+            schema: string
+        out:
+          value:
+            schema: string
+      Old delete file name:
+        parent: Const
+        in:
+          value:
+            const: DeleteAllTables.flow
+            schema: string
+        out:
+          value:
+            schema: string
+      New delete file name:
+        parent: Const
+        in:
+          value:
+            const: DeleteFromTarget.flow
+            schema: string
+        out:
+          value:
+            schema: string
+      LU folder LoadFlows:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/${LU_NAME}/Broadway/LoadFlows
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+      LU folder DeleteFlows:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/${LU_NAME}/Broadway/DeleteFlows
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Handle load flows:
+    actors:
+      Check If File Exists:
+        parent: InnerFlow
+        condition: FILE_FOUND
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: LU folder LoadFlows/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+            mandatory: false
+          pattern:
+            link: Old load file name/value
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      Rename the file:
+        parent: mv
+        in:
+          interface:
+            const: null
+            link: LU folder LoadFlows/string
+          from:
+            link: Old load file name/value
+          to:
+            link: New load file name/value
+  Handle delete flows:
+    actors:
+      Check If File Exists1:
+        parent: InnerFlow
+        condition: FILE_FOUND
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: LU folder DeleteFlows/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+            mandatory: false
+          pattern:
+            link: Old delete file name/value
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      Rename the delete file:
+        parent: mv
+        in:
+          interface:
+            const: null
+            link: LU folder DeleteFlows/string
+          from:
+            link: Old delete file name/value
+          to:
+            link: New delete file name/value
+schemas:
+  Get List of LUs.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+        Project Version:
+          type: string

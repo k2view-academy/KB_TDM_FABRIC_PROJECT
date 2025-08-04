@@ -12,6 +12,12 @@ stages:
             schema: string
   Get Lu and TDM LIB Path:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/PROJECT_FOLDER
       TDM_LIBRARY folder:
         parent: StringFormat
         in:
@@ -264,7 +270,7 @@ stages:
             schema: '#ref'
             mandatory: false
           tables:
-            const: '[{"table_name":"FABRIC_TDM_ROOT","column_name":"IID","active":true,"population":"FABRIC_TDM_ROOT.populationFabricTdmRoot.flow","id":"IID"},{"table_name":"TDM_LU_TYPE_REL_TAR_EID","column_name":"lu_type1_eid","active":true,"id":"IID"},{"table_name":"TDM_LU_TYPE_RELATION_EID","column_name":"lu_type1_eid","active":true,"population":"TDM_LU_TYPE_RELATION_EID.populationTdmLuTypeRealtionEid.flow","id":"IID"},{"table_name":"LU_PARAMS","column_name":"ENTITY_ID","active":true,"population":"LU_PARAMS.populationLuParams.flow","id":"IID"},{"table_name":"TDM_BE_IIDS","column_name":"iid,source_env,be_id","active":true,"population":"TDM_BE_IIDS.populationTdmBeIID.flow","id":"iid,source_env,be_id,root_iid"}]'
+            const: '[{"table_name":"FABRIC_TDM_ROOT","column_name":"IID","active":true,"population":"FABRIC_TDM_ROOT.populationFabricTdmRoot.flow","id":"IID"},{"table_name":"LU_PARAMS","column_name":"ENTITY_ID","active":true,"population":"LU_PARAMS.populationLuParams.flow","id":"IID"},{"table_name":"TDM_BE_IIDS","column_name":"iid,source_env,be_id","active":true,"population":"TDM_BE_IIDS.populationTdmBeIID.flow","id":"iid,source_env,be_id,root_iid"}]'
             schema: string
             mandatory: false
         out:

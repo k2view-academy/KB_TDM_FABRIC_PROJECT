@@ -1,6 +1,3 @@
--- Update TDM version
-update ${@schema}.tdm_general_parameters set param_value = '8.1' where param_name = 'TDM_VERSION' ;
-
 ALTER TABLE ${@schema}.product_logical_units
 DROP COLUMN IF EXISTS lu_dc_name;
 

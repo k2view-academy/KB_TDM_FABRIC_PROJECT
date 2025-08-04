@@ -148,295 +148,295 @@
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([232,1]);
+/******/ 	deferredModules.push([226,1]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 232:
+/***/ 226:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(322);
+module.exports = __webpack_require__(320);
 
 
 /***/ }),
 
-/***/ 268:
+/***/ 266:
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./af": 84,
-	"./af.js": 84,
-	"./ar": 85,
-	"./ar-dz": 86,
-	"./ar-dz.js": 86,
-	"./ar-kw": 87,
-	"./ar-kw.js": 87,
-	"./ar-ly": 88,
-	"./ar-ly.js": 88,
-	"./ar-ma": 89,
-	"./ar-ma.js": 89,
-	"./ar-sa": 90,
-	"./ar-sa.js": 90,
-	"./ar-tn": 91,
-	"./ar-tn.js": 91,
-	"./ar.js": 85,
-	"./az": 92,
-	"./az.js": 92,
-	"./be": 93,
-	"./be.js": 93,
-	"./bg": 94,
-	"./bg.js": 94,
-	"./bm": 95,
-	"./bm.js": 95,
-	"./bn": 96,
-	"./bn-bd": 97,
-	"./bn-bd.js": 97,
-	"./bn.js": 96,
-	"./bo": 98,
-	"./bo.js": 98,
-	"./br": 99,
-	"./br.js": 99,
-	"./bs": 100,
-	"./bs.js": 100,
-	"./ca": 101,
-	"./ca.js": 101,
-	"./cs": 102,
-	"./cs.js": 102,
-	"./cv": 103,
-	"./cv.js": 103,
-	"./cy": 104,
-	"./cy.js": 104,
-	"./da": 105,
-	"./da.js": 105,
-	"./de": 106,
-	"./de-at": 107,
-	"./de-at.js": 107,
-	"./de-ch": 108,
-	"./de-ch.js": 108,
-	"./de.js": 106,
-	"./dv": 109,
-	"./dv.js": 109,
-	"./el": 110,
-	"./el.js": 110,
-	"./en-au": 111,
-	"./en-au.js": 111,
-	"./en-ca": 112,
-	"./en-ca.js": 112,
-	"./en-gb": 113,
-	"./en-gb.js": 113,
-	"./en-ie": 114,
-	"./en-ie.js": 114,
-	"./en-il": 115,
-	"./en-il.js": 115,
-	"./en-in": 116,
-	"./en-in.js": 116,
-	"./en-nz": 117,
-	"./en-nz.js": 117,
-	"./en-sg": 118,
-	"./en-sg.js": 118,
-	"./eo": 119,
-	"./eo.js": 119,
-	"./es": 120,
-	"./es-do": 121,
-	"./es-do.js": 121,
-	"./es-mx": 122,
-	"./es-mx.js": 122,
-	"./es-us": 123,
-	"./es-us.js": 123,
-	"./es.js": 120,
-	"./et": 124,
-	"./et.js": 124,
-	"./eu": 125,
-	"./eu.js": 125,
-	"./fa": 126,
-	"./fa.js": 126,
-	"./fi": 127,
-	"./fi.js": 127,
-	"./fil": 128,
-	"./fil.js": 128,
-	"./fo": 129,
-	"./fo.js": 129,
-	"./fr": 130,
-	"./fr-ca": 131,
-	"./fr-ca.js": 131,
-	"./fr-ch": 132,
-	"./fr-ch.js": 132,
-	"./fr.js": 130,
-	"./fy": 133,
-	"./fy.js": 133,
-	"./ga": 134,
-	"./ga.js": 134,
-	"./gd": 135,
-	"./gd.js": 135,
-	"./gl": 136,
-	"./gl.js": 136,
-	"./gom-deva": 137,
-	"./gom-deva.js": 137,
-	"./gom-latn": 138,
-	"./gom-latn.js": 138,
-	"./gu": 139,
-	"./gu.js": 139,
-	"./he": 140,
-	"./he.js": 140,
-	"./hi": 141,
-	"./hi.js": 141,
-	"./hr": 142,
-	"./hr.js": 142,
-	"./hu": 143,
-	"./hu.js": 143,
-	"./hy-am": 144,
-	"./hy-am.js": 144,
-	"./id": 145,
-	"./id.js": 145,
-	"./is": 146,
-	"./is.js": 146,
-	"./it": 147,
-	"./it-ch": 148,
-	"./it-ch.js": 148,
-	"./it.js": 147,
-	"./ja": 149,
-	"./ja.js": 149,
-	"./jv": 150,
-	"./jv.js": 150,
-	"./ka": 151,
-	"./ka.js": 151,
-	"./kk": 152,
-	"./kk.js": 152,
-	"./km": 153,
-	"./km.js": 153,
-	"./kn": 154,
-	"./kn.js": 154,
-	"./ko": 155,
-	"./ko.js": 155,
-	"./ku": 156,
-	"./ku.js": 156,
-	"./ky": 157,
-	"./ky.js": 157,
-	"./lb": 158,
-	"./lb.js": 158,
-	"./lo": 159,
-	"./lo.js": 159,
-	"./lt": 160,
-	"./lt.js": 160,
-	"./lv": 161,
-	"./lv.js": 161,
-	"./me": 162,
-	"./me.js": 162,
-	"./mi": 163,
-	"./mi.js": 163,
-	"./mk": 164,
-	"./mk.js": 164,
-	"./ml": 165,
-	"./ml.js": 165,
-	"./mn": 166,
-	"./mn.js": 166,
-	"./mr": 167,
-	"./mr.js": 167,
-	"./ms": 168,
-	"./ms-my": 169,
-	"./ms-my.js": 169,
-	"./ms.js": 168,
-	"./mt": 170,
-	"./mt.js": 170,
-	"./my": 171,
-	"./my.js": 171,
-	"./nb": 172,
-	"./nb.js": 172,
-	"./ne": 173,
-	"./ne.js": 173,
-	"./nl": 174,
-	"./nl-be": 175,
-	"./nl-be.js": 175,
-	"./nl.js": 174,
-	"./nn": 176,
-	"./nn.js": 176,
-	"./oc-lnc": 177,
-	"./oc-lnc.js": 177,
-	"./pa-in": 178,
-	"./pa-in.js": 178,
-	"./pl": 179,
-	"./pl.js": 179,
-	"./pt": 180,
-	"./pt-br": 181,
-	"./pt-br.js": 181,
-	"./pt.js": 180,
-	"./ro": 182,
-	"./ro.js": 182,
-	"./ru": 183,
-	"./ru.js": 183,
-	"./sd": 184,
-	"./sd.js": 184,
-	"./se": 185,
-	"./se.js": 185,
-	"./si": 186,
-	"./si.js": 186,
-	"./sk": 187,
-	"./sk.js": 187,
-	"./sl": 188,
-	"./sl.js": 188,
-	"./sq": 189,
-	"./sq.js": 189,
-	"./sr": 190,
-	"./sr-cyrl": 191,
-	"./sr-cyrl.js": 191,
-	"./sr.js": 190,
-	"./ss": 192,
-	"./ss.js": 192,
-	"./sv": 193,
-	"./sv.js": 193,
-	"./sw": 194,
-	"./sw.js": 194,
-	"./ta": 195,
-	"./ta.js": 195,
-	"./te": 196,
-	"./te.js": 196,
-	"./tet": 197,
-	"./tet.js": 197,
-	"./tg": 198,
-	"./tg.js": 198,
-	"./th": 199,
-	"./th.js": 199,
-	"./tk": 200,
-	"./tk.js": 200,
-	"./tl-ph": 201,
-	"./tl-ph.js": 201,
-	"./tlh": 202,
-	"./tlh.js": 202,
-	"./tr": 203,
-	"./tr.js": 203,
-	"./tzl": 204,
-	"./tzl.js": 204,
-	"./tzm": 205,
-	"./tzm-latn": 206,
-	"./tzm-latn.js": 206,
-	"./tzm.js": 205,
-	"./ug-cn": 207,
-	"./ug-cn.js": 207,
-	"./uk": 208,
-	"./uk.js": 208,
-	"./ur": 209,
-	"./ur.js": 209,
-	"./uz": 210,
-	"./uz-latn": 211,
-	"./uz-latn.js": 211,
-	"./uz.js": 210,
-	"./vi": 212,
-	"./vi.js": 212,
-	"./x-pseudo": 213,
-	"./x-pseudo.js": 213,
-	"./yo": 214,
-	"./yo.js": 214,
-	"./zh-cn": 215,
-	"./zh-cn.js": 215,
-	"./zh-hk": 216,
-	"./zh-hk.js": 216,
-	"./zh-mo": 217,
-	"./zh-mo.js": 217,
-	"./zh-tw": 218,
-	"./zh-tw.js": 218
+	"./af": 81,
+	"./af.js": 81,
+	"./ar": 82,
+	"./ar-dz": 83,
+	"./ar-dz.js": 83,
+	"./ar-kw": 84,
+	"./ar-kw.js": 84,
+	"./ar-ly": 85,
+	"./ar-ly.js": 85,
+	"./ar-ma": 86,
+	"./ar-ma.js": 86,
+	"./ar-sa": 87,
+	"./ar-sa.js": 87,
+	"./ar-tn": 88,
+	"./ar-tn.js": 88,
+	"./ar.js": 82,
+	"./az": 89,
+	"./az.js": 89,
+	"./be": 90,
+	"./be.js": 90,
+	"./bg": 91,
+	"./bg.js": 91,
+	"./bm": 92,
+	"./bm.js": 92,
+	"./bn": 93,
+	"./bn-bd": 94,
+	"./bn-bd.js": 94,
+	"./bn.js": 93,
+	"./bo": 95,
+	"./bo.js": 95,
+	"./br": 96,
+	"./br.js": 96,
+	"./bs": 97,
+	"./bs.js": 97,
+	"./ca": 98,
+	"./ca.js": 98,
+	"./cs": 99,
+	"./cs.js": 99,
+	"./cv": 100,
+	"./cv.js": 100,
+	"./cy": 101,
+	"./cy.js": 101,
+	"./da": 102,
+	"./da.js": 102,
+	"./de": 103,
+	"./de-at": 104,
+	"./de-at.js": 104,
+	"./de-ch": 105,
+	"./de-ch.js": 105,
+	"./de.js": 103,
+	"./dv": 106,
+	"./dv.js": 106,
+	"./el": 107,
+	"./el.js": 107,
+	"./en-au": 108,
+	"./en-au.js": 108,
+	"./en-ca": 109,
+	"./en-ca.js": 109,
+	"./en-gb": 110,
+	"./en-gb.js": 110,
+	"./en-ie": 111,
+	"./en-ie.js": 111,
+	"./en-il": 112,
+	"./en-il.js": 112,
+	"./en-in": 113,
+	"./en-in.js": 113,
+	"./en-nz": 114,
+	"./en-nz.js": 114,
+	"./en-sg": 115,
+	"./en-sg.js": 115,
+	"./eo": 116,
+	"./eo.js": 116,
+	"./es": 117,
+	"./es-do": 118,
+	"./es-do.js": 118,
+	"./es-mx": 119,
+	"./es-mx.js": 119,
+	"./es-us": 120,
+	"./es-us.js": 120,
+	"./es.js": 117,
+	"./et": 121,
+	"./et.js": 121,
+	"./eu": 122,
+	"./eu.js": 122,
+	"./fa": 123,
+	"./fa.js": 123,
+	"./fi": 124,
+	"./fi.js": 124,
+	"./fil": 125,
+	"./fil.js": 125,
+	"./fo": 126,
+	"./fo.js": 126,
+	"./fr": 127,
+	"./fr-ca": 128,
+	"./fr-ca.js": 128,
+	"./fr-ch": 129,
+	"./fr-ch.js": 129,
+	"./fr.js": 127,
+	"./fy": 130,
+	"./fy.js": 130,
+	"./ga": 131,
+	"./ga.js": 131,
+	"./gd": 132,
+	"./gd.js": 132,
+	"./gl": 133,
+	"./gl.js": 133,
+	"./gom-deva": 134,
+	"./gom-deva.js": 134,
+	"./gom-latn": 135,
+	"./gom-latn.js": 135,
+	"./gu": 136,
+	"./gu.js": 136,
+	"./he": 137,
+	"./he.js": 137,
+	"./hi": 138,
+	"./hi.js": 138,
+	"./hr": 139,
+	"./hr.js": 139,
+	"./hu": 140,
+	"./hu.js": 140,
+	"./hy-am": 141,
+	"./hy-am.js": 141,
+	"./id": 142,
+	"./id.js": 142,
+	"./is": 143,
+	"./is.js": 143,
+	"./it": 144,
+	"./it-ch": 145,
+	"./it-ch.js": 145,
+	"./it.js": 144,
+	"./ja": 146,
+	"./ja.js": 146,
+	"./jv": 147,
+	"./jv.js": 147,
+	"./ka": 148,
+	"./ka.js": 148,
+	"./kk": 149,
+	"./kk.js": 149,
+	"./km": 150,
+	"./km.js": 150,
+	"./kn": 151,
+	"./kn.js": 151,
+	"./ko": 152,
+	"./ko.js": 152,
+	"./ku": 153,
+	"./ku.js": 153,
+	"./ky": 154,
+	"./ky.js": 154,
+	"./lb": 155,
+	"./lb.js": 155,
+	"./lo": 156,
+	"./lo.js": 156,
+	"./lt": 157,
+	"./lt.js": 157,
+	"./lv": 158,
+	"./lv.js": 158,
+	"./me": 159,
+	"./me.js": 159,
+	"./mi": 160,
+	"./mi.js": 160,
+	"./mk": 161,
+	"./mk.js": 161,
+	"./ml": 162,
+	"./ml.js": 162,
+	"./mn": 163,
+	"./mn.js": 163,
+	"./mr": 164,
+	"./mr.js": 164,
+	"./ms": 165,
+	"./ms-my": 166,
+	"./ms-my.js": 166,
+	"./ms.js": 165,
+	"./mt": 167,
+	"./mt.js": 167,
+	"./my": 168,
+	"./my.js": 168,
+	"./nb": 169,
+	"./nb.js": 169,
+	"./ne": 170,
+	"./ne.js": 170,
+	"./nl": 171,
+	"./nl-be": 172,
+	"./nl-be.js": 172,
+	"./nl.js": 171,
+	"./nn": 173,
+	"./nn.js": 173,
+	"./oc-lnc": 174,
+	"./oc-lnc.js": 174,
+	"./pa-in": 175,
+	"./pa-in.js": 175,
+	"./pl": 176,
+	"./pl.js": 176,
+	"./pt": 177,
+	"./pt-br": 178,
+	"./pt-br.js": 178,
+	"./pt.js": 177,
+	"./ro": 179,
+	"./ro.js": 179,
+	"./ru": 180,
+	"./ru.js": 180,
+	"./sd": 181,
+	"./sd.js": 181,
+	"./se": 182,
+	"./se.js": 182,
+	"./si": 183,
+	"./si.js": 183,
+	"./sk": 184,
+	"./sk.js": 184,
+	"./sl": 185,
+	"./sl.js": 185,
+	"./sq": 186,
+	"./sq.js": 186,
+	"./sr": 187,
+	"./sr-cyrl": 188,
+	"./sr-cyrl.js": 188,
+	"./sr.js": 187,
+	"./ss": 189,
+	"./ss.js": 189,
+	"./sv": 190,
+	"./sv.js": 190,
+	"./sw": 191,
+	"./sw.js": 191,
+	"./ta": 192,
+	"./ta.js": 192,
+	"./te": 193,
+	"./te.js": 193,
+	"./tet": 194,
+	"./tet.js": 194,
+	"./tg": 195,
+	"./tg.js": 195,
+	"./th": 196,
+	"./th.js": 196,
+	"./tk": 197,
+	"./tk.js": 197,
+	"./tl-ph": 198,
+	"./tl-ph.js": 198,
+	"./tlh": 199,
+	"./tlh.js": 199,
+	"./tr": 200,
+	"./tr.js": 200,
+	"./tzl": 201,
+	"./tzl.js": 201,
+	"./tzm": 202,
+	"./tzm-latn": 203,
+	"./tzm-latn.js": 203,
+	"./tzm.js": 202,
+	"./ug-cn": 204,
+	"./ug-cn.js": 204,
+	"./uk": 205,
+	"./uk.js": 205,
+	"./ur": 206,
+	"./ur.js": 206,
+	"./uz": 207,
+	"./uz-latn": 208,
+	"./uz-latn.js": 208,
+	"./uz.js": 207,
+	"./vi": 209,
+	"./vi.js": 209,
+	"./x-pseudo": 210,
+	"./x-pseudo.js": 210,
+	"./yo": 211,
+	"./yo.js": 211,
+	"./zh-cn": 212,
+	"./zh-cn.js": 212,
+	"./zh-hk": 213,
+	"./zh-hk.js": 213,
+	"./zh-mo": 214,
+	"./zh-mo.js": 214,
+	"./zh-tw": 215,
+	"./zh-tw.js": 215
 };
 
 
@@ -457,11 +457,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 268;
+webpackContext.id = 266;
 
 /***/ }),
 
-/***/ 322:
+/***/ 320:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -472,78 +472,153 @@ __webpack_require__.r(__webpack_exports__);
 var react = __webpack_require__(1);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/asyncToGenerator.js
-var asyncToGenerator = __webpack_require__(11);
-var asyncToGenerator_default = /*#__PURE__*/__webpack_require__.n(asyncToGenerator);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/toConsumableArray.js
-var toConsumableArray = __webpack_require__(22);
-var toConsumableArray_default = /*#__PURE__*/__webpack_require__.n(toConsumableArray);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
-var defineProperty = __webpack_require__(17);
-var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
-var slicedToArray = __webpack_require__(6);
-var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/regenerator/index.js
-var regenerator = __webpack_require__(4);
-var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/taggedTemplateLiteral.js
-var taggedTemplateLiteral = __webpack_require__(2);
-var taggedTemplateLiteral_default = /*#__PURE__*/__webpack_require__.n(taggedTemplateLiteral);
-
 // EXTERNAL MODULE: ./node_modules/styled-components/dist/styled-components.browser.esm.js
-var styled_components_browser_esm = __webpack_require__(3);
+var styled_components_browser_esm = __webpack_require__(2);
 
 // CONCATENATED MODULE: ./src/containers/Task/Main/styles.ts
 
-var _templateObject, _templateObject2, _templateObject3, _templateObject4;
-
-var Container = styled_components_browser_esm["b" /* default */].div(_templateObject || (_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    min-height: calc(100vh - 42px);\n    background-color: white;\n    position: relative;\n"])));
-var WidgetWrapper = styled_components_browser_esm["b" /* default */].div(_templateObject2 || (_templateObject2 = taggedTemplateLiteral_default()(["\n    width: calc(100vw - 24px);\n    height: 280px;\n    background-color: #f2f2f2;\n"])));
-var WidgetContainer = styled_components_browser_esm["b" /* default */].div(_templateObject3 || (_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    height: 277px;\n    display: flex;\n    justify-content: center;\n"])));
-var FormContainer = styled_components_browser_esm["b" /* default */].div(_templateObject4 || (_templateObject4 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    width: ", "px;\n    left: calc(100% - ", "px;\n    height: auto;\n    background-color: #fff;\n"])), function (props) {
-  return props.width;
-}, function (props) {
-  return props.width / 2;
-});
+const Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    min-height: calc(100vh - 42px);
+    background-color: white;
+    position: relative;
+`;
+const WidgetWrapper = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100vw - 24px);
+    height: 280px;
+    background-color: #f2f2f2;
+`;
+const WidgetContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    height: 277px;
+    display: flex;
+    justify-content: center;
+`;
+const FormContainer = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    width: ${props => props.width}px;
+    left: calc(100% - ${props => props.width / 2}px;
+    height: auto;
+    background-color: #fff;
+`;
 // EXTERNAL MODULE: ./node_modules/react-hook-form/dist/index.esm.mjs
-var index_esm = __webpack_require__(228);
+var index_esm = __webpack_require__(20);
 
 // CONCATENATED MODULE: ./src/components/task/TaskForm/styles.ts
 
-var styles_templateObject, styles_templateObject2, styles_templateObject3, styles_templateObject4, _templateObject5, _templateObject6, _templateObject7, _templateObject8, _templateObject9, _templateObject10, _templateObject11, _templateObject12, _templateObject13, _templateObject14, _templateObject15;
-
-var Wrapper = styled_components_browser_esm["b" /* default */].div(styles_templateObject || (styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100vw;\n    height: auto;\n    display: flex;\n    justify-content: center;\n"])));
+const Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100vw;
+    height: auto;
+    display: flex;
+    justify-content: center;
+`;
 
 // min-width: ${(props) => props.width - 42 - 50}px;
-var InnerWrapper = styled_components_browser_esm["b" /* default */].div(styles_templateObject2 || (styles_templateObject2 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    min-width: 80vw;\n    max-width: 95vw;\n    padding-bottom: 90px;\n    top: 214px;\n"])));
-var styles_Container = styled_components_browser_esm["b" /* default */].div(styles_templateObject3 || (styles_templateObject3 = taggedTemplateLiteral_default()(["\n    background-color: #fff;\n    border-radius: 6px;\n    box-shadow: 0 0 21px 0 rgba(51, 51, 51, 0.2);\n"])));
-var TitleContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject4 || (styles_templateObject4 = taggedTemplateLiteral_default()(["\n    display: flex;\n    justify-content: center;\n    width: auto;\n    position: relative;\n    margin: auto;\n"])));
-var Title = styled_components_browser_esm["b" /* default */].div(_templateObject5 || (_templateObject5 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    justify-content: flex-start;\n    font-family: Roboto;\n    font-size: 20px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: center;\n    color: var(--secondary-color);\n    margin-bottom: 12px;\n"])));
-var Body = styled_components_browser_esm["b" /* default */].div(_templateObject6 || (_templateObject6 = taggedTemplateLiteral_default()(["\n    margin-top: 15px;\n    position: relative;\n    padding: 0px 44px 44px 50px;\n"])));
-var ResetButton = styled_components_browser_esm["b" /* default */].div(_templateObject7 || (_templateObject7 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    right: 0px;\n    top: 0px;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1683f2;\n    display: flex;\n    gap: 6px;\n    align-items: center;\n    cursor: pointer;\n"])));
-var CloseButton = styled_components_browser_esm["b" /* default */].div(_templateObject8 || (_templateObject8 = taggedTemplateLiteral_default()(["\n    bottom: -107px;\n    left: ", "px;\n    position: absolute;\n    width: 54px;\n    height: 54px;\n    border-radius: 50%;\n    background-color: #1483f3;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    cursor: pointer;\n"])), function (props) {
-  return props.width / 2 - 27;
-});
-var Icon = styled_components_browser_esm["b" /* default */].img(_templateObject9 || (_templateObject9 = taggedTemplateLiteral_default()(["\n"])));
-var Form = styled_components_browser_esm["b" /* default */].form(_templateObject10 || (_templateObject10 = taggedTemplateLiteral_default()(["\n"])));
-var DashedContainer = styled_components_browser_esm["b" /* default */].div(_templateObject11 || (_templateObject11 = taggedTemplateLiteral_default()(["\n    height: 5px;\n    width: 100%;\n\n"])));
-var StickyHeader = styled_components_browser_esm["b" /* default */].div(_templateObject12 || (_templateObject12 = taggedTemplateLiteral_default()(["\n    position: sticky;\n    top: 0;\n    padding: 20px 44px 0px 50px;\n    z-index: 100;\n    background-color: white;\n"])));
-var RegularContainer = styled_components_browser_esm["b" /* default */].div(_templateObject13 || (_templateObject13 = taggedTemplateLiteral_default()(["\n    height: 3px;\n    width: 100%;\n    background-image: ", ";\n    background-size: ", ";\n    position: absolute;\n    bottom: 0px;\n\n"])), function (props) {
+const InnerWrapper = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    min-width: 80vw;
+    max-width: 95vw;
+    padding-bottom: 90px;
+    top: 214px;
+`;
+const styles_Container = styled_components_browser_esm["b" /* default */].div`
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 21px 0 rgba(51, 51, 51, 0.2);
+`;
+const TitleContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: center;
+    width: auto;
+    position: relative;
+    margin: auto;
+`;
+const Title = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--secondary-color);
+    margin-bottom: 12px;
+`;
+const Body = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 15px;
+    position: relative;
+    padding: 0px 44px 44px 50px;
+`;
+const ResetButton = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1683f2;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    cursor: pointer;
+`;
+const CloseButton = styled_components_browser_esm["b" /* default */].div`
+    bottom: -107px;
+    left: ${props => props.width / 2 - 27}px;
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: #1483f3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+`;
+const styles_Icon = styled_components_browser_esm["b" /* default */].img`
+`;
+const Form = styled_components_browser_esm["b" /* default */].form`
+`;
+const DashedContainer = styled_components_browser_esm["b" /* default */].div`
+    height: 5px;
+    width: 100%;
+
+`;
+const StickyHeader = styled_components_browser_esm["b" /* default */].div`
+    position: sticky;
+    top: 0;
+    padding: 20px 44px 0px 50px;
+    z-index: 100;
+    background-color: white;
+`;
+const RegularContainer = styled_components_browser_esm["b" /* default */].div`
+    height: 3px;
+    width: 100%;
+    background-image: ${props => {
   if (props.dashed) {
-    return "linear-gradient(90deg, ".concat(props.color1, " 50%, transparent 50%)");
+    return `linear-gradient(90deg, ${props.color1} 50%, transparent 50%)`;
   }
-  return "linear-gradient(to right, ".concat(props.color1, ",  ").concat(props.color2, ")");
-}, function (props) {
-  return props.dashed ? '30px 10px,40px 10px,40px 10px,40px 10px' : '';
-});
-var SaveFormButton = styled_components_browser_esm["b" /* default */].button(_templateObject14 || (_templateObject14 = taggedTemplateLiteral_default()(["\n    display: none;\n"])));
-var MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span(_templateObject15 || (_templateObject15 = taggedTemplateLiteral_default()(["\n    color: red;\n"])));
+  return `linear-gradient(to right, ${props.color1},  ${props.color2})`;
+}};
+    background-size: ${props => props.dashed ? '30px 10px,40px 10px,40px 10px,40px 10px' : ''};
+    position: absolute;
+    bottom: 0px;
+
+`;
+const SaveFormButton = styled_components_browser_esm["b" /* default */].button`
+    display: none;
+`;
+const MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span`
+    color: red;
+`;
 // CONCATENATED MODULE: ./src/images/revert-icon.svg
 /* harmony default export */ var revert_icon = ("js/dist/7ce9dc66c632361100775a2c723eb394.svg");
 // EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
@@ -553,9 +628,11 @@ var jsx_runtime = __webpack_require__(0);
 
 
 function HeaderTitleBorder(props) {
-  var dashed = props.dashed,
-    color1 = props.color1,
-    color2 = props.color2;
+  const {
+    dashed,
+    color1,
+    color2
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(RegularContainer, {
     dashed: dashed,
     color1: color1,
@@ -568,18 +645,18 @@ function HeaderTitleBorder(props) {
 
 
 
-
-
 function TaskForm(props) {
-  var title = props.title,
-    width = props.width,
-    hideReset = props.hideReset,
-    children = props.children,
-    mandatory = props.mandatory,
-    onReset = props.onReset,
-    dashed = props.dashed,
-    title_border_color = props.title_border_color,
-    title_border_color2 = props.title_border_color2;
+  const {
+    title,
+    width,
+    hideReset,
+    children,
+    mandatory,
+    onReset,
+    dashed,
+    title_border_color,
+    title_border_color2
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Wrapper, {
     children: /*#__PURE__*/Object(jsx_runtime["jsx"])(InnerWrapper, {
       width: width,
@@ -592,7 +669,7 @@ function TaskForm(props) {
               })]
             }), hideReset ? /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}) : /*#__PURE__*/Object(jsx_runtime["jsxs"])(ResetButton, {
               onClick: onReset,
-              children: ["Clear form", /*#__PURE__*/Object(jsx_runtime["jsx"])(Icon, {
+              children: ["Clear form", /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Icon, {
                 src: revert_icon
               })]
             }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskForm_HeaderTitleBorder, {
@@ -610,7 +687,7 @@ function TaskForm(props) {
 }
 /* harmony default export */ var task_TaskForm = (TaskForm);
 // CONCATENATED MODULE: ./src/containers/Task/Main/config.ts
-var stepsConfig = {
+const stepsConfig = {
   be: {
     width: 968,
     title: 'Data movement settings',
@@ -677,7 +754,7 @@ var stepsConfig = {
     title: 'Task name'
   }
 };
-var taskTypeHints = {
+const taskTypeHints = {
   '10000': ['Extract the data from source environment into the TDM warehouse'],
   '10100': ['Refresh data from source and load (provision) it to target environment'],
   '10101': ['Extract the data from source environment', 'Provision (load) the data to the target environment and mark the entities as reserved'],
@@ -697,50 +774,148 @@ var taskTypeHints = {
 };
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSourceSettings/styles.ts
 
-var DataSourceSettings_styles_templateObject, DataSourceSettings_styles_templateObject2, DataSourceSettings_styles_templateObject3, DataSourceSettings_styles_templateObject4, styles_templateObject5, styles_templateObject6, styles_templateObject7, styles_templateObject8, styles_templateObject9, styles_templateObject10, styles_templateObject11, styles_templateObject12, styles_templateObject13, styles_templateObject14;
+const styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+`;
+const DataSourceTypes = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding-bottom: 30px;
+    margin-top: 10px;
+    border-bottom: solid 1px #ccc;
+    width: 100%;
+`;
+const MaskDataContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    margin-top: 27px;
+    align-self: center;
+    min-width: 203px;
+`;
+const DataSourceTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+`;
+const DataSourceSettings_styles_Icon = styled_components_browser_esm["b" /* default */].img`
 
-var styles_Wrapper = styled_components_browser_esm["b" /* default */].div(DataSourceSettings_styles_templateObject || (DataSourceSettings_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    gap: 20px;\n    align-items: flex-start;\n"])));
-var DataSourceTypes = styled_components_browser_esm["b" /* default */].div(DataSourceSettings_styles_templateObject2 || (DataSourceSettings_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 15px;\n    padding-bottom: 30px;\n    margin-top: 10px;\n    border-bottom: solid 1px #ccc;\n    width: 100%;\n"])));
-var MaskDataContainer = styled_components_browser_esm["b" /* default */].div(DataSourceSettings_styles_templateObject3 || (DataSourceSettings_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 13px;\n    align-items: center;\n    margin-top: 27px;\n    align-self: center;\n    min-width: 203px;\n"])));
-var DataSourceTitle = styled_components_browser_esm["b" /* default */].div(DataSourceSettings_styles_templateObject4 || (DataSourceSettings_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n"])));
-var styles_Icon = styled_components_browser_esm["b" /* default */].img(styles_templateObject5 || (styles_templateObject5 = taggedTemplateLiteral_default()(["\n\n"])));
-var EnvironmentsContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject6 || (styles_templateObject6 = taggedTemplateLiteral_default()(["\n    display: ", ";\n    align-items: flex-start;\n    flex-direction: column;\n    width: 560px;\n    gap: 10px;\n\n"])), function (props) {
-  return props.data_source ? 'flex' : 'none';
-});
-var FetchDataPolicyContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject7 || (styles_templateObject7 = taggedTemplateLiteral_default()(["\n    margin-top: 10px;\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    gap: 20px;\n"])));
-var styles_Title = styled_components_browser_esm["b" /* default */].div(styles_templateObject8 || (styles_templateObject8 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: normal;\n    letter-spacing: -0.32px;\n    color: #2e2e2e;\n"])));
-var TitleBold = styled_components_browser_esm["b" /* default */].div(styles_templateObject9 || (styles_templateObject9 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: normal;\n    letter-spacing: -0.32px;\n    color: #2e2e2e;\n"])));
-var SyntheticContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject10 || (styles_templateObject10 = taggedTemplateLiteral_default()(["\n    border-left: ", ";\n    display: flex;\n    gap: 30px;\n    align-items: center;\n    padding: ", " ;\n"])), function (props) {
-  return props.widthBorder ? ' #ccc solid 1px' : '';
-}, function (props) {
-  return props.widthBorder ? ' 0px 0px 0px 20px' : '';
-});
-var SyntheticEntitiesOptions = styled_components_browser_esm["b" /* default */].div(styles_templateObject11 || (styles_templateObject11 = taggedTemplateLiteral_default()(["\n    align-self: flex-start;\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n"])));
-var EnvironmentAndMaskData = styled_components_browser_esm["b" /* default */].div(styles_templateObject12 || (styles_templateObject12 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    gap: 40px;\n"])));
-var DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject13 || (styles_templateObject13 = taggedTemplateLiteral_default()(["\n    margin-bottom: 10px;\n"])));
-var DataSourceContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject14 || (styles_templateObject14 = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 25px;\n    width: 100%;\n"])));
+`;
+const EnvironmentsContainer = styled_components_browser_esm["b" /* default */].div`
+    display: ${props => props.data_source ? 'flex' : 'none'};
+    align-items: flex-start;
+    flex-direction: column;
+    width: 560px;
+    gap: 10px;
+
+`;
+const FetchDataPolicyContainer = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+`;
+const styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: -0.32px;
+    color: #2e2e2e;
+`;
+const TitleBold = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: -0.32px;
+    color: #2e2e2e;
+`;
+const SyntheticContainer = styled_components_browser_esm["b" /* default */].div`
+    border-left: ${props => props.widthBorder ? ' #ccc solid 1px' : ''};
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    padding: ${props => props.widthBorder ? ' 0px 0px 0px 20px' : ''} ;
+`;
+const SyntheticEntitiesOptions = styled_components_browser_esm["b" /* default */].div`
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+const EnvironmentAndMaskData = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 40px;
+`;
+const DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div`
+    margin-bottom: 10px;
+`;
+const DataSourceContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 25px;
+    width: 100%;
+`;
 // CONCATENATED MODULE: ./src/components/radio/styles.ts
 
-var radio_styles_templateObject, radio_styles_templateObject2, radio_styles_templateObject3, radio_styles_templateObject4;
+const radio_styles_Container = styled_components_browser_esm["b" /* default */].label`
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+`;
+const radio_styles_Title = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: -0.32px;
+    text-align: center;
+    color: #2e2e2e;
+`;
+const RadioInput = styled_components_browser_esm["b" /* default */].input`
+    margin: 0px 5px 0px 0px !important;
+    width: 20px;
+    height: 20px;
+`;
+const radio_styles_Icon = styled_components_browser_esm["b" /* default */].img`
 
-var radio_styles_Container = styled_components_browser_esm["b" /* default */].label(radio_styles_templateObject || (radio_styles_templateObject = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    cursor: pointer;\n"])));
-var radio_styles_Title = styled_components_browser_esm["b" /* default */].span(radio_styles_templateObject2 || (radio_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: normal;\n    letter-spacing: -0.32px;\n    text-align: center;\n    color: #2e2e2e;\n"])));
-var RadioInput = styled_components_browser_esm["b" /* default */].input(radio_styles_templateObject3 || (radio_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    margin: 0px 5px 0px 0px !important;\n    width: 20px;\n    height: 20px;\n"])));
-var radio_styles_Icon = styled_components_browser_esm["b" /* default */].img(radio_styles_templateObject4 || (radio_styles_templateObject4 = taggedTemplateLiteral_default()(["\n\n"])));
+`;
 // CONCATENATED MODULE: ./src/components/radio/index.tsx
 
 
 
-
 function Radio(props) {
-  var title = props.title,
-    name = props.name,
-    value = props.value,
-    onChange = props.onChange,
-    selectedValue = props.selectedValue,
-    disabled = props.disabled,
-    tooltip = props.tooltip;
-  var onChangeLocal = Object(react["useCallback"])(function (event) {
+  const {
+    title,
+    name,
+    value,
+    onChange,
+    selectedValue,
+    disabled,
+    tooltip
+  } = props;
+  const onChangeLocal = Object(react["useCallback"])(event => {
     onChange(event.target.value || null);
   }, [onChange]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(radio_styles_Container, {
@@ -760,53 +935,165 @@ function Radio(props) {
 /* harmony default export */ var components_radio = (Radio);
 // CONCATENATED MODULE: ./src/components/DataGenerationParameters/styles.ts
 
-var DataGenerationParameters_styles_templateObject, DataGenerationParameters_styles_templateObject2, DataGenerationParameters_styles_templateObject3, DataGenerationParameters_styles_templateObject4, DataGenerationParameters_styles_templateObject5, DataGenerationParameters_styles_templateObject6, DataGenerationParameters_styles_templateObject7, DataGenerationParameters_styles_templateObject8, DataGenerationParameters_styles_templateObject9, DataGenerationParameters_styles_templateObject10, DataGenerationParameters_styles_templateObject11, DataGenerationParameters_styles_templateObject12, DataGenerationParameters_styles_templateObject13, DataGenerationParameters_styles_templateObject14, styles_templateObject15, _templateObject16;
+const DataGenerationParameters_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 30px;
+    position: relative;
+    width: 100%;
+`;
+const ParamsContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 350px;
+`;
+const ParamsList = styled_components_browser_esm["b" /* default */].ul`
+    padding: 0;
+    width: 100%;
+    margin: 0;
+    max-height: 235px;
+    overflow: auto;
+    max-width: 100%;
+    border-radius: 3px;
+    box-shadow: 0 0 9px 1px rgba(51, 51, 51, 0.2);
+    border: solid 1px #ccc;
+    background-color: #fff;
 
-var DataGenerationParameters_styles_Container = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject || (DataGenerationParameters_styles_templateObject = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 30px;\n    position: relative;\n    width: 100%;\n"])));
-var ParamsContainer = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject2 || (DataGenerationParameters_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 350px;\n"])));
-var ParamsList = styled_components_browser_esm["b" /* default */].ul(DataGenerationParameters_styles_templateObject3 || (DataGenerationParameters_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    padding: 0;\n    width: 100%;\n    margin: 0;\n    max-height: 235px;\n    overflow: auto;\n    max-width: 100%;\n    border-radius: 3px;\n    box-shadow: 0 0 9px 1px rgba(51, 51, 51, 0.2);\n    border: solid 1px #ccc;\n    background-color: #fff;\n\n"])));
-var ParamsItem = styled_components_browser_esm["b" /* default */].li(DataGenerationParameters_styles_templateObject4 || (DataGenerationParameters_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    max-height: 250px;\n    overflow: auto;\n    overflow-x: hidden;\n    padding: 13px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    background-color: ", ";\n"])), function (props) {
-  return props.chosen ? '#f2f2f2' : 'transparent';
-});
-var ParamsItemText = styled_components_browser_esm["b" /* default */].span(DataGenerationParameters_styles_templateObject5 || (DataGenerationParameters_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    width: calc(100% - 16px);\n"])));
-var DataGenerationParameters_styles_Icon = styled_components_browser_esm["b" /* default */].img(DataGenerationParameters_styles_templateObject6 || (DataGenerationParameters_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    width: 16px;\n"])));
-var DummyIcon = styled_components_browser_esm["b" /* default */].img(DataGenerationParameters_styles_templateObject7 || (DataGenerationParameters_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    padding-right: 16px;\n"])));
-var Leftside = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject8 || (DataGenerationParameters_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    border-right: ", ";\n    display: flex;\n    flex-direction: column;\n    gap: 25px;\n    padding-right: 30px;\n"])), function (props) {
-  return props.hideBorders ? '' : '1px solid #ccc';
-});
-var Middle = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject9 || (DataGenerationParameters_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    border-right: ", ";\n    padding-right: 30px;\n"])), function (props) {
-  return props.hideBorders ? '' : '1px solid #ccc';
-});
-var RightSide = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject10 || (DataGenerationParameters_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    flex: 1;\n"])));
-var DummyImg = styled_components_browser_esm["b" /* default */].img(DataGenerationParameters_styles_templateObject11 || (DataGenerationParameters_styles_templateObject11 = taggedTemplateLiteral_default()(["\n"])));
-var styles_SyntheticEntitiesOptions = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject12 || (DataGenerationParameters_styles_templateObject12 = taggedTemplateLiteral_default()(["\n    align-self: flex-start;\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n"])));
-var Seprator = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject13 || (DataGenerationParameters_styles_templateObject13 = taggedTemplateLiteral_default()(["\n    border-right: 1px solid #ccc;\n    width: 1px;\n    position: absolute;\n    height: calc(100% + 110px);\n    top: -30px;\n    left: 400px;\n"])));
-var PopoverTemplate = styled_components_browser_esm["b" /* default */].div(DataGenerationParameters_styles_templateObject14 || (DataGenerationParameters_styles_templateObject14 = taggedTemplateLiteral_default()(["\n    padding: 10px;\n    font-family: Roboto;\n    font-size: 14px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    width: max-content;\n    max-width: 250px;\n    max-height: 400px;\n    border-radius:3px;\n      border: solid 1px #ccc;\n      background-color: #fff;\n"])));
-var FieldDescription = styled_components_browser_esm["b" /* default */].div(styles_templateObject15 || (styles_templateObject15 = taggedTemplateLiteral_default()(["\n"])));
-var styles_DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div(_templateObject16 || (_templateObject16 = taggedTemplateLiteral_default()(["\n    border-bottom:  ", ";\n    padding-bottom: 10px;\n"])), function (props) {
-  return props.hideBorders ? '' : '1px solid #ccc';
-});
+`;
+const ParamsItem = styled_components_browser_esm["b" /* default */].li`
+    max-height: 250px;
+    overflow: auto;
+    overflow-x: hidden;
+    padding: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: ${props => props.chosen ? '#f2f2f2' : 'transparent'};
+`;
+const ParamsItemText = styled_components_browser_esm["b" /* default */].span`
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    width: calc(100% - 16px);
+`;
+const DataGenerationParameters_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+`;
+const DummyIcon = styled_components_browser_esm["b" /* default */].img`
+    padding-right: 16px;
+`;
+const Leftside = styled_components_browser_esm["b" /* default */].div`
+    border-right: ${props => props.hideBorders ? '' : '1px solid #ccc'};
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding-right: 30px;
+`;
+const Middle = styled_components_browser_esm["b" /* default */].div`
+    border-right: ${props => props.hideBorders ? '' : '1px solid #ccc'};
+    padding-right: 30px;
+`;
+const RightSide = styled_components_browser_esm["b" /* default */].div`
+    flex: 1;
+`;
+const DummyImg = styled_components_browser_esm["b" /* default */].img`
+`;
+const styles_SyntheticEntitiesOptions = styled_components_browser_esm["b" /* default */].div`
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+const Seprator = styled_components_browser_esm["b" /* default */].div`
+    border-right: 1px solid #ccc;
+    width: 1px;
+    position: absolute;
+    height: calc(100% + 110px);
+    top: -30px;
+    left: 400px;
+`;
+const PopoverTemplate = styled_components_browser_esm["b" /* default */].div`
+    padding: 10px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    width: max-content;
+    max-width: 250px;
+    max-height: 400px;
+    border-radius:3px;
+      border: solid 1px #ccc;
+      background-color: #fff;
+`;
+const FieldDescription = styled_components_browser_esm["b" /* default */].div`
+`;
+const styles_DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div`
+    border-bottom:  ${props => props.hideBorders ? '' : '1px solid #ccc'};
+    padding-bottom: 10px;
+`;
 // CONCATENATED MODULE: ./src/components/Input/styles.ts
 
-var Input_styles_templateObject, Input_styles_templateObject2, Input_styles_templateObject3, Input_styles_templateObject4, Input_styles_templateObject5;
-
-var Input_styles_Container = styled_components_browser_esm["b" /* default */].div(Input_styles_templateObject || (Input_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: ", ";\n    position: relative;\n"])), function (props) {
-  return props.width || '100%';
-});
-var Input_styles_Title = styled_components_browser_esm["b" /* default */].div(Input_styles_templateObject2 || (Input_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    margin-bottom: 7px;\n"])));
-var styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span(Input_styles_templateObject3 || (Input_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    color: red;\n"])));
-var ErrorContainer = styled_components_browser_esm["b" /* default */].small(Input_styles_templateObject4 || (Input_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    color: #ed5565;\n"])));
-var Input = styled_components_browser_esm["b" /* default */].input(Input_styles_templateObject5 || (Input_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    height: unset;\n    font-family: Roboto;\n    font-size: 15px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #666;\n    padding: 9px 10px;\n    border-radius: 3px;\n    border: solid 1px #ccc;\n    width: -webkit-fill-available;\n    width: -moz-available;\n    &:placeholder{\n        font-size: 15px;\n        font-weight: normal;\n        font-stretch: normal;\n        font-style: normal;\n        line-height: 1.33;\n        letter-spacing: normal;\n        text-align: left;\n        color: #999;\n    }\n"])));
+const Input_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: ${props => props.width || '100%'};
+    position: relative;
+`;
+const Input_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    margin-bottom: 7px;
+`;
+const styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span`
+    color: red;
+`;
+const ErrorContainer = styled_components_browser_esm["b" /* default */].small`
+    color: #ed5565;
+`;
+const Input = styled_components_browser_esm["b" /* default */].input`
+    height: unset;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666;
+    padding: ${props => props.small ? '5px' : '9px'} 10px;
+    border-radius: 3px;
+    border: solid 1px #ccc;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    &:placeholder{
+        font-size: 15px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.33;
+        letter-spacing: normal;
+        text-align: left;
+        color: #999;
+    }
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Main/TaskContext.ts
 
-var TaskContext = /*#__PURE__*/Object(react["createContext"])({
+const TaskContext = /*#__PURE__*/Object(react["createContext"])({
   resetField: null,
   unregister: null,
   register: null,
   clearErrors: null,
   errors: null,
   submittedForm: null,
-  saveForm: function saveForm() {},
+  saveForm: () => {},
   taskData: {
     globals: []
   },
@@ -818,39 +1105,33 @@ var TaskContext = /*#__PURE__*/Object(react["createContext"])({
 });
 // CONCATENATED MODULE: ./src/components/FieldError/styles.ts
 
-var FieldError_styles_templateObject;
-
-var FieldError_styles_Container = styled_components_browser_esm["b" /* default */].small(FieldError_styles_templateObject || (FieldError_styles_templateObject = taggedTemplateLiteral_default()(["\n    display: ", ";\n    color: ", ";\n    position: ", ";\n    bottom: ", ";\n    left: ", ";\n    font-size: ", "; \n    font-weight: ", ";\n    white-space: ", ";\n"])), function (props) {
-  return props.visible ? 'block' : 'none';
-}, function (props) {
-  return props.isInfo ? '#2e2e2e' : '#ed5565';
-}, function (props) {
-  return props.position ? 'relative' : 'absolute';
-}, function (props) {
-  return props.position ? '' : '-18px';
-}, function (props) {
-  return props.position ? '' : '2px';
-}, function (props) {
-  return props.isInfo ? '15px' : '';
-}, function (props) {
-  return props.isInfo ? '500' : '';
-}, function (props) {
-  return props.width ? 'pre-line' : 'nowrap';
-});
+const FieldError_styles_Container = styled_components_browser_esm["b" /* default */].small`
+    display: ${props => props.visible ? 'block' : 'none'};
+    color: ${props => props.isInfo ? '#2e2e2e' : '#ed5565'};
+    position: ${props => props.position ? 'relative' : 'absolute'};
+    bottom: ${props => props.position ? '' : '-18px'};
+    left: ${props => props.position ? '' : '2px'};
+    font-size: ${props => props.isInfo ? '15px' : ''}; 
+    font-weight: ${props => props.isInfo ? '500' : ''};
+    white-space: ${props => props.width ? 'pre-line' : 'nowrap'};
+`;
 // CONCATENATED MODULE: ./src/components/FieldError/index.tsx
 
 
 
 
 function FieldError(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    submittedForm = _useContext.submittedForm;
-  var error = props.error,
-    submit = props.submit,
-    relativePosition = props.relativePosition,
-    info = props.info,
-    width = props.width;
-  var visible = false;
+  const {
+    submittedForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    error,
+    submit,
+    relativePosition,
+    info,
+    width
+  } = props;
+  let visible = false;
   if (submit) {
     visible = true;
   }
@@ -871,26 +1152,28 @@ function FieldError(props) {
 
 
 
-
-var InputTypes = /*#__PURE__*/function (InputTypes) {
+let InputTypes = /*#__PURE__*/function (InputTypes) {
   InputTypes["number"] = "number";
   InputTypes["text"] = "text";
   return InputTypes;
 }({});
 function TDMInput(props) {
-  var title = props.title,
-    value = props.value,
-    onChange = props.onChange,
-    name = props.name,
-    type = props.type,
-    mandatory = props.mandatory,
-    placeholder = props.placeholder,
-    width = props.width,
-    min = props.min,
-    max = props.max,
-    error = props.error,
-    disabled = props.disabled;
-  var onChangeLocal = Object(react["useCallback"])(function (event) {
+  const {
+    title,
+    value,
+    onChange,
+    name,
+    type,
+    mandatory,
+    placeholder,
+    width,
+    min,
+    max,
+    error,
+    disabled,
+    small
+  } = props;
+  const onChangeLocal = Object(react["useCallback"])(event => {
     if (type === 'number') {
       onChange(isNaN(event.target.valueAsNumber) ? undefined : event.target.valueAsNumber);
     } else {
@@ -899,18 +1182,20 @@ function TDMInput(props) {
   }, [onChange, type]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Input_styles_Container, {
     width: width,
-    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Input_styles_Title, {
+    children: [title ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(Input_styles_Title, {
       children: [title, /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_MadatoryAsterisk, {
         children: mandatory && title ? '*' : ''
       })]
-    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Input, {
-      required: mandatory,
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Input
+    // required={mandatory}
+    , {
+      small: small,
       min: min,
       max: max,
       placeholder: placeholder,
       type: type,
       name: name,
-      value: value,
+      value: value || '',
       onChange: onChangeLocal,
       disabled: disabled
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
@@ -920,46 +1205,48 @@ function TDMInput(props) {
 }
 /* harmony default export */ var components_Input = (TDMInput);
 // EXTERNAL MODULE: ./node_modules/@uidotdev/usehooks/index.js
-var usehooks = __webpack_require__(35);
+var usehooks = __webpack_require__(30);
 
 // CONCATENATED MODULE: ./src/components/fabricWidget/index.tsx
 
 
 
 
-
-
 function FabricWidget(props) {
-  var luName = props.luName,
-    flowName = props.flowName,
-    editor = props.editor,
-    error = props.error,
-    updateValues = props.updateValues,
-    saveRef = props.saveRef;
-  var ref = Object(react["useRef"])(null);
-  var _useState = Object(react["useState"])(null),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    widgetRefData = _useState2[0],
-    setWidgetRefData = _useState2[1];
-  var refclickAway = Object(usehooks["a" /* useClickAway */])(function () {
-    var editors = widgetRefData === null || widgetRefData === void 0 ? void 0 : widgetRefData.getValues();
+  const {
+    luName,
+    flowName,
+    editor,
+    error,
+    updateValues,
+    saveRef
+  } = props;
+  const ref = Object(react["useRef"])(null);
+  const [widgetRefData, setWidgetRefData] = Object(react["useState"])(null);
+  const refclickAway = Object(usehooks["a" /* useClickAway */])(() => {
+    const editors = widgetRefData === null || widgetRefData === void 0 ? void 0 : widgetRefData.getValues();
     if (editors.length >= 0) {
-      updateValues(editors.map(function (it) {
-        return {
-          value: it.value,
-          name: it.name
-        };
-      }));
+      updateValues(editors.map(it => ({
+        value: it.value,
+        name: it.name,
+        schema: it.schema
+      })));
     }
   });
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     var _window, _window$k2widgets;
-    var onWidgetLoad = function onWidgetLoad(data) {
+    const onWidgetLoad = data => {
+      let editors = !Array.isArray(editor) ? [editor] : editor;
+      editors.forEach(editor => {
+        if (editor && editor.schema2) {
+          data.updateValue(editor.name, editor.value, editor.schema2);
+        }
+      });
       setWidgetRefData(data);
       saveRef(data);
       // save it in task Data
     };
-    var disposeWidget = function disposeWidget(ref) {
+    const disposeWidget = ref => {
       if (!ref) {
         return;
       }
@@ -983,30 +1270,24 @@ function FabricWidget(props) {
       flowName: flowName
     });
   }, [ref, setWidgetRefData, luName, flowName]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (!widgetRefData) {
       return;
     }
-    var values = widgetRefData.getValues();
-    var keys = values.map(function (it) {
-      return it.name;
-    }).filter(function (it) {
-      return it;
-    });
-    var editor_names = editor.map(function (it) {
-      return it.name;
-    });
-    var plugins_to_add = [];
-    for (var i = 0; i < editor_names.length; i++) {
-      var name = editor_names[i];
+    const values = widgetRefData.getValues();
+    const keys = values.map(it => it.name).filter(it => it);
+    const editor_names = editor.map(it => it.name);
+    const plugins_to_add = [];
+    for (let i = 0; i < editor_names.length; i++) {
+      const name = editor_names[i];
       if (keys.indexOf(name) < 0) {
         plugins_to_add.push(editor[i]);
       }
     }
-    for (var _i = 0; _i < keys.length; _i++) {
-      var key = keys[_i];
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
       if (editor_names.indexOf(key) < 0) {
-        widgetRefData.removePluginByName(keys[_i]);
+        widgetRefData.removePluginByName(keys[i]);
       }
     }
     if (plugins_to_add.length > 0) {
@@ -1044,13 +1325,9 @@ function FabricWidget(props) {
 /* harmony default export */ var widgetdemo = ("js/dist/e936100e064c6659e67aed82dd3610e1.png");
 // CONCATENATED MODULE: ./src/components/NumberOfEntities/styles.ts
 
-var NumberOfEntities_styles_templateObject;
-
-var NumberOfEntities_styles_Container = styled_components_browser_esm["b" /* default */].div(NumberOfEntities_styles_templateObject || (NumberOfEntities_styles_templateObject = taggedTemplateLiteral_default()(["\n"])));
+const NumberOfEntities_styles_Container = styled_components_browser_esm["b" /* default */].div`
+`;
 // CONCATENATED MODULE: ./src/components/NumberOfEntities/index.tsx
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
@@ -1058,71 +1335,115 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function NumberOfEntities(props) {
   var _errors$num_of_entiti;
-  var width = props.width,
-    title = props.title,
-    placeholder = props.placeholder;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var num_of_entities = taskData.num_of_entities,
-    maxToCopy = taskData.maxToCopy,
-    clone_ind = taskData.clone_ind;
-  var onChange = Object(react["useCallback"])(function (value) {
+  const {
+    width,
+    title,
+    placeholder
+  } = props;
+  const {
+    register,
+    clearErrors,
+    errors,
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    num_of_entities,
+    maxToCopy,
+    clone_ind,
+    selection_method
+  } = taskData;
+  const onChange = Object(react["useCallback"])(value => {
     saveForm({
       num_of_entities: value
     });
   }, [saveForm]);
+  let isRequired = true;
+  if (selection_method === 'P' || selection_method == 'PR' || selection_method == 'C') {
+    if ((maxToCopy || 0) == 9007199254740992) {
+      isRequired = false;
+    }
+  }
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(NumberOfEntities_styles_Container, {
-    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, _objectSpread(_objectSpread({}, register('num_of_entities', {
-      required: 'Populate Number of Entities',
-      min: {
-        value: 1,
-        message: 'Minimum Entites to Copy is 1'
-      },
-      max: {
-        value: maxToCopy,
-        message: "Maximum Entites to Copy is ".concat(maxToCopy)
-      }
-    })), {}, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+      ...register('num_of_entities', {
+        value: num_of_entities || '',
+        validate: value => {
+          console.log('value = ', value);
+          if ((maxToCopy || 0) === 9007199254740992 && isRequired === false) {
+            return true;
+          }
+          console.log('num_of_entities = ', num_of_entities);
+          if (isRequired && !value) {
+            return 'Populate Number of Entities';
+          }
+          if (value < 1) {
+            return 'Minimum Entities to Copy is 1';
+          }
+          if (maxToCopy !== undefined && value > maxToCopy) {
+            return `Maximum Entities to Copy is ${maxToCopy}`;
+          }
+          return true;
+        }
+      }),
       disabled: clone_ind,
       width: width || '100%',
       name: "num_of_entities",
-      mandatory: true,
-      min: 1,
+      mandatory: isRequired,
+      min: 0,
       placeholder: placeholder,
       type: InputTypes.number,
-      value: clone_ind ? 1 : num_of_entities,
+      value: clone_ind ? 1 : num_of_entities || '',
       onChange: onChange,
       title: title,
       max: maxToCopy,
       error: (_errors$num_of_entiti = errors.num_of_entities) === null || _errors$num_of_entiti === void 0 ? void 0 : _errors$num_of_entiti.message
-    }))
+    }, `num_of_entities_${isRequired}_${maxToCopy}`)
   });
 }
 /* harmony default export */ var components_NumberOfEntities = (NumberOfEntities);
 // CONCATENATED MODULE: ./src/components/checkbox/styles.ts
 
-var checkbox_styles_templateObject, checkbox_styles_templateObject2, checkbox_styles_templateObject3, checkbox_styles_templateObject4;
+const checkbox_styles_Container = styled_components_browser_esm["b" /* default */].label`
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+`;
+const checkbox_styles_Title = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: -0.32px;
+    text-align: center;
+    color: #2e2e2e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+const CheckboxInput = styled_components_browser_esm["b" /* default */].input`
+    margin: ${props => props.title ? '0px 10px 0px 0px !important' : '0px 0px 0px 0px !important'};
+    width: 20px;
+    height: 20px;
+`;
+const checkbox_styles_Icon = styled_components_browser_esm["b" /* default */].img`
 
-var checkbox_styles_Container = styled_components_browser_esm["b" /* default */].label(checkbox_styles_templateObject || (checkbox_styles_templateObject = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    cursor: pointer;\n"])));
-var checkbox_styles_Title = styled_components_browser_esm["b" /* default */].span(checkbox_styles_templateObject2 || (checkbox_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: normal;\n    letter-spacing: -0.32px;\n    text-align: center;\n    color: #2e2e2e;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n"])));
-var CheckboxInput = styled_components_browser_esm["b" /* default */].input(checkbox_styles_templateObject3 || (checkbox_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    margin: 0px 10px 0px 0px !important;\n    width: 20px;\n    height: 20px;\n"])));
-var checkbox_styles_Icon = styled_components_browser_esm["b" /* default */].img(checkbox_styles_templateObject4 || (checkbox_styles_templateObject4 = taggedTemplateLiteral_default()(["\n\n"])));
+`;
 // CONCATENATED MODULE: ./src/components/checkbox/index.tsx
 
 
 
-
 function Checkbox(props) {
-  var title = props.title,
-    name = props.name,
-    value = props.value,
-    onChange = props.onChange,
-    disabled = props.disabled;
-  var onChangeLocal = Object(react["useCallback"])(function (event) {
+  const {
+    title,
+    name,
+    value,
+    onChange,
+    disabled
+  } = props;
+  const onChangeLocal = Object(react["useCallback"])(event => {
     onChange(event.target.checked);
   }, [onChange]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(checkbox_styles_Container, {
@@ -1131,7 +1452,8 @@ function Checkbox(props) {
       disabled: disabled,
       name: name,
       checked: value,
-      onChange: onChangeLocal
+      onChange: onChangeLocal,
+      title: title
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(checkbox_styles_Title, {
       children: title
     })]
@@ -1140,29 +1462,27 @@ function Checkbox(props) {
 /* harmony default export */ var components_checkbox = (Checkbox);
 // CONCATENATED MODULE: ./src/components/TooltipPopover/styles.ts
 
-var TooltipPopover_styles_templateObject;
-
-var TooltipContainer = styled_components_browser_esm["b" /* default */].div(TooltipPopover_styles_templateObject || (TooltipPopover_styles_templateObject = taggedTemplateLiteral_default()(["\n  position: relative;\n"])));
+const TooltipContainer = styled_components_browser_esm["b" /* default */].div`
+  position: relative;
+`;
 // EXTERNAL MODULE: ./node_modules/react-tiny-popover/dist/Popover.js
-var Popover = __webpack_require__(33);
+var Popover = __webpack_require__(22);
 
 // CONCATENATED MODULE: ./src/components/TooltipPopover/index.tsx
-
 // Tooltip.tsx
 
 
 
 
 
-var TooltipPopover_TooltipPopover = function TooltipPopover(_ref) {
-  var children = _ref.children,
-    position = _ref.position,
-    body = _ref.body,
-    align = _ref.align;
-  var _useHover = Object(usehooks["b" /* useHover */])(),
-    _useHover2 = slicedToArray_default()(_useHover, 2),
-    ref = _useHover2[0],
-    hovering = _useHover2[1];
+const TooltipPopover = _ref => {
+  let {
+    children,
+    position,
+    body,
+    align
+  } = _ref;
+  const [ref, hovering] = Object(usehooks["b" /* useHover */])();
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(TooltipContainer, {
     ref: ref,
     children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
@@ -1175,88 +1495,239 @@ var TooltipPopover_TooltipPopover = function TooltipPopover(_ref) {
     })
   });
 };
-/* harmony default export */ var components_TooltipPopover = (TooltipPopover_TooltipPopover);
+/* harmony default export */ var components_TooltipPopover = (TooltipPopover);
 // CONCATENATED MODULE: ./src/components/task/DataMovmentSettings/styles.ts
 
-var DataMovmentSettings_styles_templateObject, DataMovmentSettings_styles_templateObject2, DataMovmentSettings_styles_templateObject3, DataMovmentSettings_styles_templateObject4, DataMovmentSettings_styles_templateObject5, DataMovmentSettings_styles_templateObject6, DataMovmentSettings_styles_templateObject7, DataMovmentSettings_styles_templateObject8;
-
-var DataMovmentSettings_styles_Container = styled_components_browser_esm["b" /* default */].div(DataMovmentSettings_styles_templateObject || (DataMovmentSettings_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n"])));
-var TabsContainer = styled_components_browser_esm["b" /* default */].div(DataMovmentSettings_styles_templateObject2 || (DataMovmentSettings_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    gap: 48px;\n    padding-bottom: 28px;\n"])));
-var TabItem = styled_components_browser_esm["b" /* default */].div(DataMovmentSettings_styles_templateObject3 || (DataMovmentSettings_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    display: flex;\n    align-items: center;\n    gap: 13px;\n    cursor: pointer;\n"])));
-var DataMovmentSettings_styles_Icon = styled_components_browser_esm["b" /* default */].img(DataMovmentSettings_styles_templateObject4 || (DataMovmentSettings_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var DataMovmentSettings_styles_Title = styled_components_browser_esm["b" /* default */].div(DataMovmentSettings_styles_templateObject5 || (DataMovmentSettings_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    padding: 22px 0px;\n"])));
-var TabTitle = styled_components_browser_esm["b" /* default */].div(DataMovmentSettings_styles_templateObject6 || (DataMovmentSettings_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    position: relative;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n"])));
-var SelectedTab = styled_components_browser_esm["b" /* default */].div(DataMovmentSettings_styles_templateObject7 || (DataMovmentSettings_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    height: 3px;\n    width: 100%;\n    border: solid 1px #f4f3ef;\n    background-color: #1483f3;\n"])));
-var styles_Body = styled_components_browser_esm["b" /* default */].div(DataMovmentSettings_styles_templateObject8 || (DataMovmentSettings_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    width: 100%;\n"])));
+const DataMovmentSettings_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+`;
+const TabsContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    gap: 48px;
+    padding-bottom: 28px;
+`;
+const TabItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    cursor: pointer;
+`;
+const DataMovmentSettings_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const DataMovmentSettings_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    padding: 22px 0px;
+`;
+const TabTitle = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+`;
+const SelectedTab = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    border: solid 1px #f4f3ef;
+    background-color: #1483f3;
+`;
+const styles_Body = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+`;
 // CONCATENATED MODULE: ./src/images/entity-icon.svg
 /* harmony default export */ var entity_icon = ("js/dist/4aa35f4bd77ca777c9c98d64b8169384.svg");
 // CONCATENATED MODULE: ./src/images/table-icon.svg
 /* harmony default export */ var table_icon = ("js/dist/f46cfe60fb2ec3de6aea40a9b9ea328a.svg");
 // CONCATENATED MODULE: ./src/components/Select/styles.ts
 
-var Select_styles_templateObject, Select_styles_templateObject2, Select_styles_templateObject3, Select_styles_templateObject4, Select_styles_templateObject5, Select_styles_templateObject6, Select_styles_templateObject7;
-
-var Select_styles_Container = styled_components_browser_esm["b" /* default */].div(Select_styles_templateObject || (Select_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: ", ";\n    min-width: ", ";\n    max-width: ", ";\n    max-width: 100%;\n    position: relative;\n    font-size: 16px;\n"])), function (props) {
-  return props.width || '100%';
-}, function (props) {
-  return props.minWidth || '';
-}, function (props) {
-  return props.maxWidth || '';
-});
-var Select_styles_Title = styled_components_browser_esm["b" /* default */].div(Select_styles_templateObject2 || (Select_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    margin-bottom: 7px;\n    display: flex;\n    align-items:center;\n    gap: 13px;\n"])));
-var OptionContainer = styled_components_browser_esm["b" /* default */].div(Select_styles_templateObject3 || (Select_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    min-height: 25px;\n"])));
-var Select_styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span(Select_styles_templateObject4 || (Select_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    color: red;\n"])));
-var Select_styles_Icon = styled_components_browser_esm["b" /* default */].img(Select_styles_templateObject5 || (Select_styles_templateObject5 = taggedTemplateLiteral_default()(["\n"])));
-var DescriptionContainer = styled_components_browser_esm["b" /* default */].div(Select_styles_templateObject6 || (Select_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    right: 42px;\n    bottom: 7px;\n"])));
-var styles_PopoverTemplate = styled_components_browser_esm["b" /* default */].div(Select_styles_templateObject7 || (Select_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    padding: 10px;\n    font-family: Roboto;\n    font-size: 14px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    width: max-content;\n    max-width: 250px;\n    max-height: 400px;\n    border-radius:3px;\n      border: solid 1px #ccc;\n      background-color: #fff;\n"])));
-// EXTERNAL MODULE: ./node_modules/react-select/dist/index-baa8dc4f.esm.js + 1 modules
-var index_baa8dc4f_esm = __webpack_require__(21);
+const Select_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: ${props => props.width || '100%'};
+    min-width: ${props => props.minWidth || ''};
+    max-width: ${props => props.maxWidth || ''};
+    max-width: 100%;
+    position: relative;
+    font-size: 16px;
+    .select__input {
+        height: unset;
+    }
+`;
+const Select_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    margin-bottom: 7px;
+    display: flex;
+    align-items:center;
+    gap: 13px;
+`;
+const OptionContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 25px;
+    width: 100%;
+    position: relative;
+`;
+const OptionText = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100% - 20px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+const Select_styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span`
+    color: red;
+`;
+const Select_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+`;
+const DescriptionContainer = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    right: 42px;
+    bottom: 7px;
+    z-index: 100000;
+`;
+const DescriptionContainer2 = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    right: 0px;
+    bottom: 1px;
+    z-index: 10000;
+`;
+const styles_PopoverTemplate = styled_components_browser_esm["b" /* default */].div`
+    padding: 10px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    width: max-content;
+    max-width: 250px;
+    max-height: 400px;
+    border-radius:3px;
+    border: solid 1px #ccc;
+    background-color: #fff;
+`;
+// EXTERNAL MODULE: ./node_modules/react-select/dist/index-641ee5b8.esm.js + 1 modules
+var index_641ee5b8_esm = __webpack_require__(16);
 
 // EXTERNAL MODULE: ./node_modules/react-select/dist/react-select.esm.js + 7 modules
-var react_select_esm = __webpack_require__(229);
+var react_select_esm = __webpack_require__(222);
 
 // CONCATENATED MODULE: ./src/components/Select/index.tsx
 
 
-function Select_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function Select_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? Select_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : Select_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
 
 
 
-
-
-
-
+const customStyles = {
+  control: provided => ({
+    ...provided,
+    minHeight: '30px',
+    height: '30px',
+    overflow: 'hidden'
+  }),
+  valueContainer: provided => ({
+    ...provided,
+    height: '30px',
+    padding: '0 6px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    overflow: 'auto' // allow scrolling if too many chips
+  }),
+  multiValue: provided => ({
+    ...provided,
+    height: '20px',
+    backgroundColor: '#e2e2e2',
+    borderRadius: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '2px',
+    margin: '2px'
+  }),
+  multiValueLabel: provided => ({
+    ...provided,
+    fontSize: '10px',
+    padding: '0 4px'
+  }),
+  multiValueRemove: provided => ({
+    ...provided,
+    padding: '0 4px',
+    fontSize: '10px'
+  }),
+  input: provided => ({
+    ...provided,
+    margin: '0px',
+    padding: '0px',
+    height: 'unset'
+  }),
+  indicatorsContainer: provided => ({
+    ...provided,
+    height: '30px'
+  })
+};
 function TDMSelect(props) {
-  var title = props.title,
-    options = props.options,
-    value = props.value,
-    mandatory = props.mandatory,
-    loading = props.loading,
-    onChange = props.onChange,
-    placeholder = props.placeholder,
-    width = props.width,
-    minWidth = props.minWidth,
-    maxWidth = props.maxWidth,
-    error = props.error,
-    isMulti = props.isMulti,
-    isClearable = props.isClearable,
-    disabled = props.disabled,
-    enableSelectAll = props.enableSelectAll,
-    titleIcon = props.titleIcon,
-    maxMenuHeight = props.maxMenuHeight;
-  var Option = index_baa8dc4f_esm["o" /* c */].Option;
-  var _useHover = Object(usehooks["b" /* useHover */])(),
-    _useHover2 = slicedToArray_default()(_useHover, 2),
-    ref = _useHover2[0],
-    hovering = _useHover2[1];
-  var getValues = function getValues(item) {
-    var temp = [];
+  const {
+    title,
+    options,
+    value,
+    mandatory,
+    loading,
+    onChange,
+    placeholder,
+    width,
+    minWidth,
+    maxWidth,
+    error,
+    isMulti,
+    isClearable,
+    disabled,
+    enableSelectAll,
+    titleIcon,
+    maxMenuHeight,
+    small
+  } = props;
+  const {
+    Option
+  } = index_641ee5b8_esm["o" /* c */];
+  const [ref, hovering] = Object(usehooks["b" /* useHover */])();
+  const getValues = item => {
+    let temp = [];
     if (Array.isArray(item)) {
-      item.forEach(function (it) {
+      item.forEach(it => {
         temp = temp.concat(getValues(it));
       });
     } else if (item.options) {
@@ -1266,9 +1737,9 @@ function TDMSelect(props) {
     }
     return temp;
   };
-  var localOptions = Object(react["useMemo"])(function () {
+  const localOptions = Object(react["useMemo"])(() => {
     if (isMulti && enableSelectAll) {
-      var allValues = getValues(options || []);
+      const allValues = getValues(options || []);
       if (!value || value.length === 0 || allValues.length !== value.length) {
         return [{
           label: 'All',
@@ -1278,33 +1749,35 @@ function TDMSelect(props) {
     }
     return options;
   }, [options, enableSelectAll, isMulti, value]);
-  var onLocalChange = Object(react["useCallback"])(function (item) {
+  const onLocalChange = Object(react["useCallback"])(item => {
     if (isMulti) {
-      if (item.findIndex(function (it) {
-        return it.label === 'All';
-      }) >= 0) {
-        var temp = getValues(options);
+      if (item.findIndex(it => it.label === 'All') >= 0) {
+        let temp = getValues(options);
         onChange(temp);
         return;
       }
     }
     onChange(item);
   }, [onChange, isMulti, options]);
-  var ValueOption = function ValueOption(props) {
-    var _props$data;
-    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Option, Select_objectSpread(Select_objectSpread({}, props), {}, {
+  const ValueOption = props => {
+    var _props$data, _props$data2;
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Option, {
+      ...props,
       children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(OptionContainer, {
-        children: [props.data.label, props !== null && props !== void 0 && (_props$data = props.data) !== null && _props$data !== void 0 && _props$data.description ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(OptionText, {
+          children: props.data.label
+        }), props !== null && props !== void 0 && (_props$data = props.data) !== null && _props$data !== void 0 && _props$data.description ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
+          title: props === null || props === void 0 ? void 0 : (_props$data2 = props.data) === null || _props$data2 === void 0 ? void 0 : _props$data2.description,
           src: info_icon
         }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
       })
-    }));
+    });
   };
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Select_styles_Container, {
     width: width,
     minWidth: minWidth,
     maxWidth: maxWidth,
-    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Select_styles_Title, {
+    children: [title ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(Select_styles_Title, {
       children: [titleIcon ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
         src: titleIcon
       }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("span", {
@@ -1312,9 +1785,9 @@ function TDMSelect(props) {
           children: mandatory && title ? '*' : ''
         })]
       })]
-    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(react_select_esm["a" /* default */], {
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(react_select_esm["a" /* default */], {
       isDisabled: disabled,
-      placeholder: placeholder,
+      placeholder: placeholder || '',
       className: "basic-single",
       value: value || null,
       defaultValue: isMulti ? [] : null,
@@ -1328,7 +1801,8 @@ function TDMSelect(props) {
       components: {
         Option: ValueOption
       },
-      maxMenuHeight: maxMenuHeight || undefined
+      maxMenuHeight: maxMenuHeight || undefined,
+      styles: small ? customStyles : undefined
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
       error: error
     }), value !== null && value !== void 0 && value.description ? /*#__PURE__*/Object(jsx_runtime["jsx"])(DescriptionContainer, {
@@ -1352,9 +1826,9 @@ function TDMSelect(props) {
 /* harmony default export */ var Select = (TDMSelect);
 // CONCATENATED MODULE: ./src/utils/react-to-angular.js
 // eslint-disable-next-line @typescript-eslint/no-var-requires,no-undef
-var React = __webpack_require__(1);
+const React = __webpack_require__(1);
 // eslint-disable-next-line @typescript-eslint/no-var-requires,no-undef
-var ReactDOM = __webpack_require__(30);
+const ReactDOM = __webpack_require__(26);
 function ReactToAngularJS(Component, directiveName, angularApp, bindings) {
   bindings = bindings || {};
   if (typeof window === "undefined" || typeof angularApp === "undefined") return;
@@ -1362,22 +1836,21 @@ function ReactToAngularJS(Component, directiveName, angularApp, bindings) {
     return {
       scope: bindings,
       replace: true,
-      link: function link(scope, element) {
+      link: function (scope, element) {
         // Add $scope
         scope.$scope = scope;
         // First render - needed?
         ReactDOM.render(React.createElement(Component, scope), element[0]);
 
         // Watch for any changes in bindings, then rerender
-        var keys = [];
-        for (var _i = 0, _Object$keys = Object.keys(bindings); _i < _Object$keys.length; _i++) {
-          var bindingKey = _Object$keys[_i];
+        const keys = [];
+        for (let bindingKey of Object.keys(bindings)) {
           if (bindings[bindingKey] !== "&") {
             keys.push(bindingKey);
           }
         }
         //debugger;
-        scope.$watchGroup(keys, function () {
+        scope.$watchGroup(keys, () => {
           ReactDOM.render(React.createElement(Component, scope), element[0]);
         });
         scope.$on("$destroy", function handler() {
@@ -1397,7 +1870,7 @@ function getService(serviceName) {
 
 /* harmony default export */ var react_to_angular = (ReactToAngularJS);
 // CONCATENATED MODULE: ./src/apis/example.ts
-var exampleAPIs = {
+const exampleAPIs = {
   getTableVersions: {
     result: [{
       "task_name": "aaaa",
@@ -1560,7 +2033,7 @@ var exampleAPIs = {
       "environment_sync_mode": "FORCE"
     }, {
       "synthetic_indicator": 'RuleBased',
-      "environment_id": 9999,
+      "environment_id": -1,
       "role_id": "admin",
       "assignment_type": "admin",
       "environment_type": "SOURCE",
@@ -2258,6 +2731,39 @@ var exampleAPIs = {
     "errorCode": "SUCCESS",
     "message": null
   },
+  "businessentity/1/environment/-1/logicalunits": {
+    result: [{
+      "lu_parent_name": null,
+      "lu_name": "PATIENT_LU",
+      "lu_id": 1,
+      "product_name": "PROD",
+      "value": 1,
+      "label": "PATIENT_LU"
+    }, {
+      "lu_parent_name": "PATIENT_LU",
+      "lu_name": "PATIENT_VISITS",
+      "lu_id": 15,
+      "product_name": "PROD",
+      "value": 15,
+      "label": "PATIENT_VISITS"
+    }, {
+      "lu_parent_name": null,
+      "lu_name": "PATIENT_LU_2",
+      "lu_id": 2,
+      "product_name": "PROD2",
+      "value": 2,
+      "label": "PATIENT_LU_2"
+    }, {
+      "lu_parent_name": "PATIENT_LU_2",
+      "lu_name": "PATIENT_VISITS_2",
+      "lu_id": 16,
+      "product_name": "PROD2",
+      "value": 16,
+      "label": "PATIENT_VISITS_2"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
   "businessentity/1/logicalunits": {
     result: [{
       "lu_parent_name": null,
@@ -2332,181 +2838,221 @@ var exampleAPIs = {
   },
   "businessentity/1/sourceEnv/ENV1/parameters": {
     "result": {
-      "CUSTOMER.NOTE_DATE": {
-        "BE_ID": "2",
-        "LU_NAME": "Customer",
-        "PARAM_NAME": "CUSTOMER.NOTE_DATE",
-        "PARAM_TYPE": "DATETIME",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": [" ", "2015-09-17 11:25:14.0", "2016-11-18 00:08:03.0", "2016-07-13 16:40:59.0"],
-        "MIN_VALUE": "\\N",
-        "MAX_VALUE": "\\N",
-        "LU_PARAMS_TABLE_NAME": "customer_params"
-      },
-      "BILLING.VIP_STATUS": {
-        "BE_ID": "2",
+      "BILLING.INVOICE_BALANCE": {
+        "BE_ID": "1",
         "LU_NAME": "Billing",
-        "PARAM_NAME": "BILLING.VIP_STATUS",
-        "PARAM_TYPE": "TEXT",
+        "PARAM_NAME": "BILLING.INVOICE_BALANCE",
+        "PARAM_TYPE": "INTEGER",
+        "DESCRIPTION": "Remaining balance on the customer's invoice.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
+        "MIN_VALUE": "1",
+        "MAX_VALUE": "1000",
+        "LU_PARAMS_TABLE_NAME": "billing_params"
+      },
+      "BILLING.NO_OF_OPEN_INVOICES": {
+        "BE_ID": "1",
+        "LU_NAME": "Billing",
+        "PARAM_NAME": "BILLING.NO_OF_OPEN_INVOICES",
+        "PARAM_TYPE": "INTEGER",
+        "DESCRIPTION": "Number of invoices that are currently open.",
         "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["Silver", "Gold", "Platinum"],
+        "VALID_VALUES": ["0", "1", "2", "3", "4", "5", "6", "7"],
         "MIN_VALUE": "\\N",
         "MAX_VALUE": "\\N",
         "LU_PARAMS_TABLE_NAME": "billing_params"
       },
-      "CUSTOMER.CASE_STATUS": {
-        "BE_ID": "2",
-        "LU_NAME": "Customer",
-        "PARAM_NAME": "CUSTOMER.CASE_STATUS",
+      "BILLING.OFFER_DESCRIPTION": {
+        "BE_ID": "1",
+        "LU_NAME": "Billing",
+        "PARAM_NAME": "BILLING.OFFER_DESCRIPTION",
         "PARAM_TYPE": "TEXT",
+        "DESCRIPTION": "Description of the promotional or service offer.",
         "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["Closed"],
+        "VALID_VALUES": ["5G LTE", "10G LTE", "Unlimited call", "450 min", "5G 3G", "100 text", "Roaming special", "5G tether", "10G 3G", "Unlimited text"],
         "MIN_VALUE": "\\N",
         "MAX_VALUE": "\\N",
-        "LU_PARAMS_TABLE_NAME": "customer_params"
+        "LU_PARAMS_TABLE_NAME": "billing_params"
+      },
+      "BILLING.OFFER_START_DATE": {
+        "BE_ID": "1",
+        "LU_NAME": "Billing",
+        "PARAM_NAME": "BILLING.OFFER_START_DATE",
+        "PARAM_TYPE": "DATETIME",
+        "DESCRIPTION": "Start date of the current offer.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
+        "LU_PARAMS_TABLE_NAME": "billing_params"
       },
       "BILLING.SUBSCRIBER_TYPE": {
-        "BE_ID": "2",
+        "BE_ID": "1",
         "LU_NAME": "Billing",
         "PARAM_NAME": "BILLING.SUBSCRIBER_TYPE",
         "PARAM_TYPE": "TEXT",
+        "DESCRIPTION": "Type or category of the subscriber (e.g. personal business).",
         "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["1", "3", "4"],
+        "VALID_VALUES": ["1", "2", "3", "4"],
         "MIN_VALUE": "1",
         "MAX_VALUE": "4",
         "LU_PARAMS_TABLE_NAME": "billing_params"
       },
-      "CUSTOMER.CASE_TYPE": {
-        "BE_ID": "2",
-        "LU_NAME": "Customer",
-        "PARAM_NAME": "CUSTOMER.CASE_TYPE",
-        "PARAM_TYPE": "TEXT",
-        "COMBO_INDICATOR": "false",
-        "VALID_VALUES": ["Billing Issue"],
-        "MIN_VALUE": "\\N",
-        "MAX_VALUE": "\\N",
-        "LU_PARAMS_TABLE_NAME": "customer_params"
-      },
-      "CUSTOMER.CONTRACT_START_DATE": {
-        "BE_ID": "2",
-        "LU_NAME": "Customer",
-        "PARAM_NAME": "CUSTOMER.CONTRACT_START_DATE",
-        "PARAM_TYPE": "DATETIME",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["2017-02-20 01:43:59.0", "2015-01-12 13:28:41.0", "2015-01-16 21:06:11.0", "2016-04-16 15:20:58.0", "2015-08-16 12:53:44.0"],
-        "MIN_VALUE": "\\N",
-        "MAX_VALUE": "\\N",
-        "LU_PARAMS_TABLE_NAME": "customer_params"
-      },
-      "BILLING.TOTAL_PAYMENT_AMOUNT": {
-        "BE_ID": "2",
-        "LU_NAME": "Billing",
-        "PARAM_NAME": "BILLING.TOTAL_PAYMENT_AMOUNT",
-        "PARAM_TYPE": "INTEGER",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["1216", "3416", "1356", "2230", "1416"],
-        "MIN_VALUE": "1216",
-        "MAX_VALUE": "3416",
-        "LU_PARAMS_TABLE_NAME": "billing_params"
-      },
-      "BILLING.NO_OF_OPEN_INVOICES": {
-        "BE_ID": "2",
-        "LU_NAME": "Billing",
-        "PARAM_NAME": "BILLING.NO_OF_OPEN_INVOICES",
-        "PARAM_TYPE": "INTEGER",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["0", "1", "2", "3"],
-        "MIN_VALUE": "0",
-        "MAX_VALUE": "3",
-        "LU_PARAMS_TABLE_NAME": "billing_params"
-      },
-      "BILLING.OFFER_START_DATE": {
-        "BE_ID": "2",
-        "LU_NAME": "Billing",
-        "PARAM_NAME": "BILLING.OFFER_START_DATE",
-        "PARAM_TYPE": "TEXT",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["2015-01-16 21:39:16.000", "2015-11-21 01:51:35.000", "2016-09-06 08:58:18.000", "2016-02-24 09:00:40.000"],
-        "MIN_VALUE": "\\N",
-        "MAX_VALUE": "\\N",
-        "LU_PARAMS_TABLE_NAME": "billing_params"
-      },
-      "CUSTOMER.STATE": {
-        "BE_ID": "2",
-        "LU_NAME": "Customer",
-        "PARAM_NAME": "CUSTOMER.STATE",
-        "PARAM_TYPE": "TEXT",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["KY"],
-        "MIN_VALUE": "\\N",
-        "MAX_VALUE": "\\N",
-        "LU_PARAMS_TABLE_NAME": "customer_params"
-      },
       "BILLING.TOTAL_BALANCE_AMOUNT": {
-        "BE_ID": "2",
+        "BE_ID": "1",
         "LU_NAME": "Billing",
         "PARAM_NAME": "BILLING.TOTAL_BALANCE_AMOUNT",
         "PARAM_TYPE": "INTEGER",
+        "DESCRIPTION": "Total outstanding balance for the subscriber.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
+        "MIN_VALUE": "24",
+        "MAX_VALUE": "6559",
+        "LU_PARAMS_TABLE_NAME": "billing_params"
+      },
+      "BILLING.VIP_STATUS": {
+        "BE_ID": "1",
+        "LU_NAME": "Billing",
+        "PARAM_NAME": "BILLING.VIP_STATUS",
+        "PARAM_TYPE": "TEXT",
+        "DESCRIPTION": "VIP classification status of the subscriber.",
         "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["2830", "1244", "4662", "3971", "4513"],
-        "MIN_VALUE": "1244",
-        "MAX_VALUE": "4662",
+        "VALID_VALUES": ["Bronze", "Silver", "Gold", "Platinum"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
         "LU_PARAMS_TABLE_NAME": "billing_params"
       },
       "CUSTOMER.ACTIVTY_DATE": {
-        "BE_ID": "2",
+        "BE_ID": "1",
         "LU_NAME": "Customer",
         "PARAM_NAME": "CUSTOMER.ACTIVTY_DATE",
         "PARAM_TYPE": "DATETIME",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["2016-03-17 16:16:47.0"],
+        "DESCRIPTION": "Date of the most recent customer activity or interaction.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
         "MIN_VALUE": "\\N",
         "MAX_VALUE": "\\N",
         "LU_PARAMS_TABLE_NAME": "customer_params"
       },
-      "CUSTOMER.NO_OF_OPEN_CASES": {
-        "BE_ID": "2",
+      "CUSTOMER.CASE_DATE": {
+        "BE_ID": "1",
         "LU_NAME": "Customer",
-        "PARAM_NAME": "CUSTOMER.NO_OF_OPEN_CASES",
-        "PARAM_TYPE": "INTEGER",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["0"],
-        "MIN_VALUE": "0",
-        "MAX_VALUE": "0",
+        "PARAM_NAME": "CUSTOMER.CASE_DATE",
+        "PARAM_TYPE": "DATETIME",
+        "DESCRIPTION": "Date when the case was created or logged.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
         "LU_PARAMS_TABLE_NAME": "customer_params"
       },
-      "CUSTOMER.CONTRACT_DESCRIPTION": {
-        "BE_ID": "2",
+      "CUSTOMER.CASE_STATUS": {
+        "BE_ID": "1",
         "LU_NAME": "Customer",
-        "PARAM_NAME": "CUSTOMER.CONTRACT_DESCRIPTION",
+        "PARAM_NAME": "CUSTOMER.CASE_STATUS",
         "PARAM_TYPE": "TEXT",
+        "DESCRIPTION": "Current status of the customer case (e.g. open closed in progress).",
         "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["Unlimited call", "450 min", "Roaming special", "5G tether", "10G 3G"],
+        "VALID_VALUES": ["Unresolved", "Closed", "Open"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
+        "LU_PARAMS_TABLE_NAME": "customer_params"
+      },
+      "CUSTOMER.CASE_TYPE": {
+        "BE_ID": "1",
+        "LU_NAME": "Customer",
+        "PARAM_NAME": "CUSTOMER.CASE_TYPE",
+        "PARAM_TYPE": "TEXT",
+        "DESCRIPTION": "Type/category of the customer case (e.g. billing technical).",
+        "COMBO_INDICATOR": "true",
+        "VALID_VALUES": ["Billing Issue", "Device Issue", "Network Issue"],
         "MIN_VALUE": "\\N",
         "MAX_VALUE": "\\N",
         "LU_PARAMS_TABLE_NAME": "customer_params"
       },
       "CUSTOMER.CITY": {
-        "BE_ID": "2",
+        "BE_ID": "1",
         "LU_NAME": "Customer",
         "PARAM_NAME": "CUSTOMER.CITY",
         "PARAM_TYPE": "TEXT",
-        "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["Pittsburg"],
+        "DESCRIPTION": "City of the customer's address.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
         "MIN_VALUE": "\\N",
         "MAX_VALUE": "\\N",
         "LU_PARAMS_TABLE_NAME": "customer_params"
       },
-      "BILLING.OFFER_DESCRIPTION": {
-        "BE_ID": "2",
-        "LU_NAME": "Billing",
-        "PARAM_NAME": "BILLING.OFFER_DESCRIPTION",
+      "CUSTOMER.CONTRACT_DESCRIPTION": {
+        "BE_ID": "1",
+        "LU_NAME": "Customer",
+        "PARAM_NAME": "CUSTOMER.CONTRACT_DESCRIPTION",
         "PARAM_TYPE": "TEXT",
+        "DESCRIPTION": "Description or title of the customer's contract.",
         "COMBO_INDICATOR": "true",
-        "VALID_VALUES": ["Unlimited call", "450 min", "Roaming special", "10G 3G"],
+        "VALID_VALUES": ["5G LTE", "Unlimited call", "10G LTE", "450 min", "5G 3G", "100 text", "Roaming special", "5G tether", "10G 3G", "Unlimited text"],
         "MIN_VALUE": "\\N",
         "MAX_VALUE": "\\N",
-        "LU_PARAMS_TABLE_NAME": "billing_params"
+        "LU_PARAMS_TABLE_NAME": "customer_params"
+      },
+      "CUSTOMER.CONTRACT_START_DATE": {
+        "BE_ID": "1",
+        "LU_NAME": "Customer",
+        "PARAM_NAME": "CUSTOMER.CONTRACT_START_DATE",
+        "PARAM_TYPE": "DATETIME",
+        "DESCRIPTION": "Start date of the customer contract.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
+        "LU_PARAMS_TABLE_NAME": "customer_params"
+      },
+      "CUSTOMER.NOTE_DATE": {
+        "BE_ID": "1",
+        "LU_NAME": "Customer",
+        "PARAM_NAME": "CUSTOMER.NOTE_DATE",
+        "PARAM_TYPE": "DATETIME",
+        "DESCRIPTION": "Date when a note was added to the customer case.",
+        "COMBO_INDICATOR": "false",
+        "VALID_VALUES": ["\\N"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
+        "LU_PARAMS_TABLE_NAME": "customer_params"
+      },
+      "CUSTOMER.NO_OF_OPEN_CASES": {
+        "BE_ID": "1",
+        "LU_NAME": "Customer",
+        "PARAM_NAME": "CUSTOMER.NO_OF_OPEN_CASES",
+        "PARAM_TYPE": "INTEGER",
+        "DESCRIPTION": "Number of active or unresolved customer support cases.",
+        "COMBO_INDICATOR": "true",
+        "VALID_VALUES": ["0", "1", "2", "3", "4", "5", "6", "7", "8"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
+        "LU_PARAMS_TABLE_NAME": "customer_params"
+      },
+      "CUSTOMER.NO_OF_SUBSCRIBERS": {
+        "BE_ID": "1",
+        "LU_NAME": "Customer",
+        "PARAM_NAME": "CUSTOMER.NO_OF_SUBSCRIBERS",
+        "PARAM_TYPE": "INTEGER",
+        "DESCRIPTION": "Number of active subscriber contracts associated with the customer.",
+        "COMBO_INDICATOR": "true",
+        "VALID_VALUES": ["0", "1", "2", "3", "4", "5"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
+        "LU_PARAMS_TABLE_NAME": "customer_params"
+      },
+      "CUSTOMER.STATE": {
+        "BE_ID": "1",
+        "LU_NAME": "Customer",
+        "PARAM_NAME": "CUSTOMER.STATE",
+        "PARAM_TYPE": "TEXT",
+        "DESCRIPTION": "State or region of the customer's address.",
+        "COMBO_INDICATOR": "true",
+        "VALID_VALUES": ["HI", "DE", "PR", "TX", "MA", "MD", "IA", "ME", "ID", "MI", "UT", "MN", "MO", "IL", "AE", "IN", "MS", "MT", "AK", "VA", "AL", "AP", "AR", "NC", "ND", "NE", "RI", "AZ", "NH", "NJ", "VT", "NM", "FL", "NV", "WA", "NY", "SC", "SD", "WI", "OH", "GA", "OK", "CA", "WV", "WY", "OR", "KS", "CO", "KY", "PA", "CT", "LA", "TN", "DC"],
+        "MIN_VALUE": "\\N",
+        "MAX_VALUE": "\\N",
+        "LU_PARAMS_TABLE_NAME": "customer_params"
       }
     },
     "errorCode": "SUCCESS"
@@ -2765,813 +3311,679 @@ var exampleAPIs = {
     }],
     "errorCode": "SUCCESS",
     "message": null
+  },
+  "taskgroup": {
+    "result": {
+      "allTaskGroups": [{
+        "task_group_id": 6,
+        "task_group_name": "sivangr3",
+        "task_group_desc": "sivan group3 favorite",
+        "created_by": "sivan",
+        "isPermittedUser": true,
+        "favorite": true,
+        "has_task_created_by_the_user": false
+      }, {
+        "task_group_id": 4,
+        "task_group_name": "tali1",
+        "task_group_desc": "tali1desc1",
+        "created_by": "tali",
+        "isPermittedUser": true,
+        "favorite": false,
+        "has_task_created_by_the_user": false
+      }, {
+        "task_group_id": 5,
+        "task_group_name": "sivangr1",
+        "task_group_desc": "sivan group1",
+        "created_by": "sivan",
+        "isPermittedUser": true,
+        "favorite": false,
+        "has_task_created_by_the_user": false
+      }, {
+        "task_group_id": 3,
+        "task_group_name": "zivtest1",
+        "task_group_desc": "zivtest desc1",
+        "created_by": "ziv.genat@k2view.com",
+        "isPermittedUser": true,
+        "favorite": false,
+        "has_task_created_by_the_user": false
+      }, {
+        "task_group_id": 2,
+        "task_group_name": "zivtest",
+        "task_group_desc": "zivtest desc",
+        "created_by": "ziv.genat@k2view.com",
+        "isPermittedUser": true,
+        "favorite": false,
+        "has_task_created_by_the_user": false
+      }, {
+        "task_group_id": 1,
+        "task_group_name": "General",
+        "task_group_desc": "General",
+        "created_by": "system",
+        "isPermittedUser": false,
+        "favorite": false,
+        "has_task_created_by_the_user": false
+      }],
+      "myTaskGroups": [],
+      "favoritesTaskGroups": []
+    },
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "getTasksPerTaskGroup": {
+    "result": [{
+      "task_id": 1,
+      "task_title": "dsf hjsdf hdlf dashflsd hlfh sdlafh lsdh glahg  lhkljsdf lsdhf lsd lf sadhlf fjlkhd sfhlasdhfl ",
+      "isPermittedUser": true,
+      "favorite": false,
+      "display_task_type": "EXTRACT"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "search": {
+    "result": {
+      "General": [{
+        "display_task_type": "Extract",
+        "task_title": "dsf",
+        "task_id": 1,
+        "isPermittedUser": true,
+        "favorite": true
+      }]
+    },
+    "errorCode": "SUCCESS"
+  },
+  "environmentsbyuser": {
+    "result": [{
+      "role_last_updated_by": "admin",
+      "allowed_delete_before_load": false,
+      "environment_id": -2,
+      "allowed_number_of_entities_to_read": 1000,
+      "environment_created_by": "admin",
+      "allowed_replace_sequences": false,
+      "environment_last_updated_by": "admin",
+      "allowed_random_entity_selection": false,
+      "role_created_by": "admin",
+      "allow_read": true,
+      "environment_type": "BOTH",
+      "role_description": "Role for AI Environment",
+      "environment_description": "This is the AI Generationa and Training environment.",
+      "user_type": "ID",
+      "allowed_task_scheduling": false,
+      "allowed_request_of_fresh_data": false,
+      "role_id": -2,
+      "allowed_number_of_reserved_entities": 1000,
+      "allowed_entity_versioning": false,
+      "role_last_updated_date": "2025-04-17 08:08:33.083747",
+      "allowed_number_of_entities_to_copy": 1000,
+      "environment_name": "AI",
+      "allow_write": true,
+      "role_expiration_date": null,
+      "environment_point_of_contact_phone1": null,
+      "environment_last_updated_date": "2025-04-17 08:08:33.083747",
+      "environment_status": "Active",
+      "allowed_creation_of_synthetic_data": false,
+      "allowed_refresh_reference_data": false,
+      "role_creation_date": "2025-04-17 08:08:33.083747",
+      "mask_sensitive_data": false,
+      "sync_mode": "OFF",
+      "role_name": "AI",
+      "environment_point_of_contact_first_name": null,
+      "user_id": "-1",
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "assignment_type": "all",
+      "role_status": "Active",
+      "allowed_test_conn_failure": false,
+      "environment_creation_date": "2025-04-17 08:08:33.083747",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "username": "ALL"
+    }, {
+      "role_last_updated_by": "admin",
+      "allowed_delete_before_load": false,
+      "environment_id": -1,
+      "allowed_number_of_entities_to_read": 1000,
+      "environment_created_by": "admin",
+      "allowed_replace_sequences": false,
+      "environment_last_updated_by": "admin",
+      "allowed_random_entity_selection": false,
+      "role_created_by": "admin",
+      "allow_read": true,
+      "environment_type": "SOURCE",
+      "role_description": "Role for Synethetic Environment",
+      "environment_description": "This is the synthetic environment.",
+      "user_type": "ID",
+      "allowed_task_scheduling": false,
+      "allowed_request_of_fresh_data": false,
+      "role_id": -1,
+      "allowed_number_of_reserved_entities": 0,
+      "allowed_entity_versioning": false,
+      "role_last_updated_date": "2025-04-17 08:08:33.083747",
+      "allowed_number_of_entities_to_copy": 0,
+      "environment_name": "Synthetic",
+      "allow_write": false,
+      "role_expiration_date": null,
+      "environment_point_of_contact_phone1": null,
+      "environment_last_updated_date": "2025-04-17 08:08:33.083747",
+      "environment_status": "Active",
+      "allowed_creation_of_synthetic_data": false,
+      "allowed_refresh_reference_data": false,
+      "role_creation_date": "2025-04-17 08:08:33.083747",
+      "mask_sensitive_data": false,
+      "sync_mode": "FORCE",
+      "role_name": "Synthetic",
+      "environment_point_of_contact_first_name": null,
+      "user_id": "-1",
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "assignment_type": "all",
+      "role_status": "Active",
+      "allowed_test_conn_failure": false,
+      "environment_creation_date": "2025-04-17 08:08:33.083747",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "username": "ALL"
+    }, {
+      "allow_write": true,
+      "environment_point_of_contact_phone1": null,
+      "environment_id": 2,
+      "environment_created_by": "admin",
+      "environment_last_updated_date": "2025-04-17 08:08:34.522128",
+      "environment_last_updated_by": "admin",
+      "environment_status": "Active",
+      "allow_read": true,
+      "environment_type": "SOURCE",
+      "mask_sensitive_data": false,
+      "sync_mode": "OFF",
+      "environment_description": "This is the Target environment.",
+      "environment_point_of_contact_first_name": null,
+      "role_id": 0,
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "assignment_type": "user",
+      "environment_creation_date": "2025-04-17 08:08:34.522128",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "environment_name": "UAT"
+    }, {
+      "allow_write": false,
+      "environment_point_of_contact_phone1": null,
+      "environment_id": 1,
+      "environment_created_by": "admin",
+      "environment_last_updated_date": "2025-04-17 08:08:34.522128",
+      "environment_last_updated_by": "admin",
+      "environment_status": "Active",
+      "allow_read": true,
+      "environment_type": "SOURCE",
+      "mask_sensitive_data": true,
+      "sync_mode": "OFF",
+      "environment_description": "This is the Source environment.",
+      "environment_point_of_contact_first_name": null,
+      "role_id": 0,
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "assignment_type": "user",
+      "environment_creation_date": "2025-04-17 08:08:34.522128",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "environment_name": "Production"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "tasks": {
+    "result": [{
+      "task_last_updated_date": "2025-04-17 11:48:29.56",
+      "task_description": "dsf",
+      "filterout_reserved": "NA",
+      "be_id": 1,
+      "reserve_retention_period_type": "Days",
+      "environment_id": 1,
+      "selection_method": "L",
+      "refresh_reference_data": false,
+      "tester": null,
+      "be_last_updated_date": "2025-04-17 08:08:34.522128",
+      "owners": [],
+      "refcount": 0,
+      "num_of_entities": 2,
+      "selected_subset_task_exe_id": 0,
+      "tester_type": null,
+      "reserve_note": null,
+      "load_entity": false,
+      "selected_version_task_exe_id": 0,
+      "task_created_by": "ziv.genat@k2view.com",
+      "be_last_updated_by": "admin",
+      "scheduling_end_date": null,
+      "retention_period_type": "Do Not Delete",
+      "environment_point_of_contact_phone1": null,
+      "processnames": null,
+      "testers": [],
+      "selection_param_value": "1,2",
+      "environment_status": "Active",
+      "be_status": "Active",
+      "task_last_updated_by": "ziv.genat@k2view.com",
+      "selected_ref_version_task_exe_id": 0,
+      "task_execution_status": "Active",
+      "mask_sensitive_data": true,
+      "sync_mode": "ON",
+      "enable_execution": true,
+      "execution_mode": "INHERITED",
+      "replace_sequences": false,
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "be_description": "This is a Business Entity created for the TDM GUI for AI/ML Demo.",
+      "reserve_retention_period_value": "5",
+      "parameters": null,
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "environment_created_by": "admin",
+      "clone_ind": false,
+      "roles": [],
+      "environment_last_updated_by": "admin",
+      "be_creation_date": "2025-04-17 08:08:34.522128",
+      "task_id": 1,
+      "be_created_by": "admin",
+      "custom_logic_lu_name": null,
+      "source_environment_id": 1,
+      "role_id_orig": 0,
+      "scheduler": "immediate",
+      "environment_description": "This is the Source environment.",
+      "source_env_name": "Production",
+      "reserve_ind": false,
+      "task_title": "dsf",
+      "environment_name": "Production",
+      "delete_before_load": false,
+      "allow_write": false,
+      "owner": null,
+      "task_status": "Active",
+      "retention_period_value": "-1",
+      "executioncount": 0,
+      "environment_last_updated_date": "2025-04-17 08:08:34.522128",
+      "be_name": "Customer",
+      "version_ind": true,
+      "task_creation_date": "2025-04-17 11:48:29.56",
+      "task_globals": false,
+      "environment_point_of_contact_first_name": null,
+      "task_type": "EXTRACT",
+      "environment_creation_date": "2025-04-17 08:08:34.522128",
+      "owner_type": null,
+      "creatorRoles": ["k2view_k2v_user"]
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
   }
 };
 // CONCATENATED MODULE: ./src/apis/task.ts
 
 
-
-
-var runningRequests = {};
-var task_toastr = getService('toastr');
-var task_fetchData = /*#__PURE__*/function () {
-  var _ref = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee(path, body, method) {
-    var response;
-    return regenerator_default.a.wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          _context.next = 2;
-          return window.k2api.invokeFabricWebService(path, body, method);
-        case 2:
-          response = _context.sent;
-          if (!response.isError) {
-            _context.next = 5;
-            break;
-          }
-          throw new Error(response.message);
-        case 5:
-          if (!(response.errorCode === 'FAILED')) {
-            _context.next = 10;
-            break;
-          }
-          task_toastr === null || task_toastr === void 0 ? void 0 : task_toastr.error(response.message);
-          throw new Error(response.message);
-        case 10:
-          if (response.errorCode === 'WARNING') {
-            task_toastr === null || task_toastr === void 0 ? void 0 : task_toastr.warning(response.message);
-          }
-        case 11:
-          return _context.abrupt("return", response.result);
-        case 12:
-        case "end":
-          return _context.stop();
-      }
-    }, _callee);
-  }));
-  return function fetchData(_x, _x2, _x3) {
-    return _ref.apply(this, arguments);
-  };
-}();
-var invokeFabricWebService = /*#__PURE__*/function () {
-  var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3(path, body, method, force) {
-    return regenerator_default.a.wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-          if (true) {
-            _context3.next = 2;
-            break;
-          }
-          return _context3.abrupt("return", JSON.parse(JSON.stringify(exampleAPIs[path].result)));
-        case 2:
-          if (!(window.k2api && window.k2api.invokeFabricWebService)) {
-            _context3.next = 7;
-            break;
-          }
-          if (!force) {
-            _context3.next = 5;
-            break;
-          }
-          return _context3.abrupt("return", task_fetchData(path, body, method));
-        case 5:
-          if (runningRequests[path]) {
-            clearTimeout(runningRequests[path]);
-          }
-          return _context3.abrupt("return", new Promise(function (resolve, reject) {
-            runningRequests[path] = setTimeout( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
-              var data;
-              return regenerator_default.a.wrap(function _callee2$(_context2) {
-                while (1) switch (_context2.prev = _context2.next) {
-                  case 0:
-                    _context2.prev = 0;
-                    _context2.next = 3;
-                    return task_fetchData(path, body, method);
-                  case 3:
-                    data = _context2.sent;
-                    resolve(data);
-                    _context2.next = 10;
-                    break;
-                  case 7:
-                    _context2.prev = 7;
-                    _context2.t0 = _context2["catch"](0);
-                    reject(_context2.t0);
-                  case 10:
-                  case "end":
-                    return _context2.stop();
-                }
-              }, _callee2, null, [[0, 7]]);
-            })), 100);
-          }));
-        case 7:
-          throw new Error('window.k2api is not defined');
-        case 8:
-        case "end":
-          return _context3.stop();
-      }
-    }, _callee3);
-  }));
-  return function invokeFabricWebService(_x4, _x5, _x6, _x7) {
-    return _ref2.apply(this, arguments);
-  };
-}();
-var getActiveBEs = /*#__PURE__*/function () {
-  var _ref4 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4() {
-    return regenerator_default.a.wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
-        case 0:
-          return _context4.abrupt("return", invokeFabricWebService('getActiveBusinessentities', {}, 'GET'));
-        case 1:
-        case "end":
-          return _context4.stop();
-      }
-    }, _callee4);
-  }));
-  return function getActiveBEs() {
-    return _ref4.apply(this, arguments);
-  };
-}();
-var getEnvironments = /*#__PURE__*/function () {
-  var _ref5 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5(be_name, force) {
-    return regenerator_default.a.wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
-        case 0:
-          if (!be_name) {
-            _context5.next = 2;
-            break;
-          }
-          return _context5.abrupt("return", invokeFabricWebService('userEnvironments', {
-            be_name: be_name
-          }, 'GET', force));
-        case 2:
-          return _context5.abrupt("return", invokeFabricWebService('userEnvironments', {}, 'GET', force));
-        case 3:
-        case "end":
-          return _context5.stop();
-      }
-    }, _callee5);
-  }));
-  return function getEnvironments(_x8, _x9) {
-    return _ref5.apply(this, arguments);
-  };
-}();
-var task_getDataGenerationParams = /*#__PURE__*/function () {
-  var _ref6 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee6(taskId, luList) {
-    var body;
-    return regenerator_default.a.wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
-        case 0:
-          body = {};
-          if (taskId) {
-            body.taskId = taskId;
-          }
-          if (luList) {
-            body.luList = luList;
-          }
-          return _context6.abrupt("return", invokeFabricWebService('getDMPopParams', body, 'GET'));
-        case 4:
-        case "end":
-          return _context6.stop();
-      }
-    }, _callee6);
-  }));
-  return function getDataGenerationParams(_x10, _x11) {
-    return _ref6.apply(this, arguments);
-  };
-}();
-var getTrainingModels = /*#__PURE__*/function () {
-  var _ref7 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee7(fromDate, toDate, be_name, lu_name) {
-    return regenerator_default.a.wrap(function _callee7$(_context7) {
-      while (1) switch (_context7.prev = _context7.next) {
-        case 0:
-          return _context7.abrupt("return", invokeFabricWebService('tasks/getTrainingModels', {
-            fromDate: fromDate,
-            toDate: toDate,
-            be_name: be_name,
-            lu_name: lu_name
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context7.stop();
-      }
-    }, _callee7);
-  }));
-  return function getTrainingModels(_x12, _x13, _x14, _x15) {
-    return _ref7.apply(this, arguments);
-  };
-}();
-var getCustomLogicFlows = /*#__PURE__*/function () {
-  var _ref8 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee8(beName, envName) {
-    return regenerator_default.a.wrap(function _callee8$(_context8) {
-      while (1) switch (_context8.prev = _context8.next) {
-        case 0:
-          return _context8.abrupt("return", invokeFabricWebService('getcustomlogicflows', {
-            beName: beName,
-            envName: envName
-          }, 'GET'));
-        case 1:
-        case "end":
-          return _context8.stop();
-      }
-    }, _callee8);
-  }));
-  return function getCustomLogicFlows(_x16, _x17) {
-    return _ref8.apply(this, arguments);
-  };
-}();
-var getCustomLogicParams = /*#__PURE__*/function () {
-  var _ref9 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee9(luName, flowName) {
-    return regenerator_default.a.wrap(function _callee9$(_context9) {
-      while (1) switch (_context9.prev = _context9.next) {
-        case 0:
-          return _context9.abrupt("return", invokeFabricWebService('getCustomLogicParams', {
-            flowName: flowName,
-            luName: luName
-          }, 'GET'));
-        case 1:
-        case "end":
-          return _context9.stop();
-      }
-    }, _callee9);
-  }));
-  return function getCustomLogicParams(_x18, _x19) {
-    return _ref9.apply(this, arguments);
-  };
-}();
-var getPreExecutionProcess = /*#__PURE__*/function () {
-  var _ref10 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee10(beId) {
-    return regenerator_default.a.wrap(function _callee10$(_context10) {
-      while (1) switch (_context10.prev = _context10.next) {
-        case 0:
-          return _context10.abrupt("return", invokeFabricWebService("businessentity/".concat(beId, "/preexecutionprocess"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context10.stop();
-      }
-    }, _callee10);
-  }));
-  return function getPreExecutionProcess(_x20) {
-    return _ref10.apply(this, arguments);
-  };
-}();
-var getPostExecutionProcess = /*#__PURE__*/function () {
-  var _ref11 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee11(beId) {
-    return regenerator_default.a.wrap(function _callee11$(_context11) {
-      while (1) switch (_context11.prev = _context11.next) {
-        case 0:
-          return _context11.abrupt("return", invokeFabricWebService("businessentity/".concat(beId, "/postexecutionprocess"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context11.stop();
-      }
-    }, _callee11);
-  }));
-  return function getPostExecutionProcess(_x21) {
-    return _ref11.apply(this, arguments);
-  };
-}();
-var getTaskPostExecutionProcess = /*#__PURE__*/function () {
-  var _ref12 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee12(taskId) {
-    return regenerator_default.a.wrap(function _callee12$(_context12) {
-      while (1) switch (_context12.prev = _context12.next) {
-        case 0:
-          return _context12.abrupt("return", invokeFabricWebService("task/".concat(taskId, "/postexecutionprocess"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context12.stop();
-      }
-    }, _callee12);
-  }));
-  return function getTaskPostExecutionProcess(_x22) {
-    return _ref12.apply(this, arguments);
-  };
-}();
-var getTaskPreExecutionProcess = /*#__PURE__*/function () {
-  var _ref13 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee13(taskId) {
-    return regenerator_default.a.wrap(function _callee13$(_context13) {
-      while (1) switch (_context13.prev = _context13.next) {
-        case 0:
-          return _context13.abrupt("return", invokeFabricWebService("task/".concat(taskId, "/preexecutionprocess"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context13.stop();
-      }
-    }, _callee13);
-  }));
-  return function getTaskPreExecutionProcess(_x23) {
-    return _ref13.apply(this, arguments);
-  };
-}();
-var getTaskTables = /*#__PURE__*/function () {
-  var _ref14 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee14(taskId) {
-    return regenerator_default.a.wrap(function _callee14$(_context14) {
-      while (1) switch (_context14.prev = _context14.next) {
-        case 0:
-          return _context14.abrupt("return", invokeFabricWebService("task/refsTable/".concat(taskId), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context14.stop();
-      }
-    }, _callee14);
-  }));
-  return function getTaskTables(_x24) {
-    return _ref14.apply(this, arguments);
-  };
-}();
-var getTaskVariables = /*#__PURE__*/function () {
-  var _ref15 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee15(taskId) {
-    return regenerator_default.a.wrap(function _callee15$(_context15) {
-      while (1) switch (_context15.prev = _context15.next) {
-        case 0:
-          return _context15.abrupt("return", invokeFabricWebService("task/".concat(taskId, "/globals"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context15.stop();
-      }
-    }, _callee15);
-  }));
-  return function getTaskVariables(_x25) {
-    return _ref15.apply(this, arguments);
-  };
-}();
-var getRetentionPeriodsData = /*#__PURE__*/function () {
-  var _ref16 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee16() {
-    return regenerator_default.a.wrap(function _callee16$(_context16) {
-      while (1) switch (_context16.prev = _context16.next) {
-        case 0:
-          return _context16.abrupt("return", invokeFabricWebService('retentionperiodinfo', {}, 'GET'));
-        case 1:
-        case "end":
-          return _context16.stop();
-      }
-    }, _callee16);
-  }));
-  return function getRetentionPeriodsData() {
-    return _ref16.apply(this, arguments);
-  };
-}();
-var getReferenceTables = /*#__PURE__*/function () {
-  var _ref17 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee17() {
-    return regenerator_default.a.wrap(function _callee17$(_context17) {
-      while (1) switch (_context17.prev = _context17.next) {
-        case 0:
-          return _context17.abrupt("return", invokeFabricWebService('task/getReferenceTaskTable', {}, 'POST'));
-        case 1:
-        case "end":
-          return _context17.stop();
-      }
-    }, _callee17);
-  }));
-  return function getReferenceTables() {
-    return _ref17.apply(this, arguments);
-  };
-}();
-var task_getEnvironmentOwners = /*#__PURE__*/function () {
-  var _ref18 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee18(environmentID) {
-    return regenerator_default.a.wrap(function _callee18$(_context18) {
-      while (1) switch (_context18.prev = _context18.next) {
-        case 0:
-          return _context18.abrupt("return", invokeFabricWebService("environment/".concat(environmentID, "/owners"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context18.stop();
-      }
-    }, _callee18);
-  }));
-  return function getEnvironmentOwners(_x26) {
-    return _ref18.apply(this, arguments);
-  };
-}();
-var getEnvironmentByID = /*#__PURE__*/function () {
-  var _ref19 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee19(environmentID) {
-    return regenerator_default.a.wrap(function _callee19$(_context19) {
-      while (1) switch (_context19.prev = _context19.next) {
-        case 0:
-          return _context19.abrupt("return", invokeFabricWebService("environment/".concat(environmentID), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context19.stop();
-      }
-    }, _callee19);
-  }));
-  return function getEnvironmentByID(_x27) {
-    return _ref19.apply(this, arguments);
-  };
-}();
-var getEnvironmentUserRole = /*#__PURE__*/function () {
-  var _ref20 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee20(environmentID) {
-    return regenerator_default.a.wrap(function _callee20$(_context20) {
-      while (1) switch (_context20.prev = _context20.next) {
-        case 0:
-          return _context20.abrupt("return", invokeFabricWebService("environment/".concat(environmentID, "/userRole"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context20.stop();
-      }
-    }, _callee20);
-  }));
-  return function getEnvironmentUserRole(_x28) {
-    return _ref20.apply(this, arguments);
-  };
-}();
-var getFabricRolesByUser = /*#__PURE__*/function () {
-  var _ref21 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee21(user) {
-    return regenerator_default.a.wrap(function _callee21$(_context21) {
-      while (1) switch (_context21.prev = _context21.next) {
-        case 0:
-          return _context21.abrupt("return", invokeFabricWebService("wsGetFabricRolesByUser", {
-            user: user
-          }, 'GET'));
-        case 1:
-        case "end":
-          return _context21.stop();
-      }
-    }, _callee21);
-  }));
-  return function getFabricRolesByUser(_x29) {
-    return _ref21.apply(this, arguments);
-  };
-}();
-var checkAIInstallation = /*#__PURE__*/function () {
-  var _ref22 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee22(taskType) {
-    return regenerator_default.a.wrap(function _callee22$(_context22) {
-      while (1) switch (_context22.prev = _context22.next) {
-        case 0:
-          return _context22.abrupt("return", invokeFabricWebService("tasks/checkAIInstallation", {
-            taskType: taskType
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context22.stop();
-      }
-    }, _callee22);
-  }));
-  return function checkAIInstallation(_x30) {
-    return _ref22.apply(this, arguments);
-  };
-}();
+const runningRequests = {};
+const task_toastr = getService('toastr');
+const task_fetchData = async (path, body, method) => {
+  const response = await window.k2api.invokeFabricWebService(path, body, method);
+  if (response.isError) {
+    throw new Error(response.message);
+  }
+  if (response.errorCode === 'FAILED') {
+    task_toastr === null || task_toastr === void 0 ? void 0 : task_toastr.error(response.message);
+    throw new Error(response.message);
+  } else if (response.errorCode === 'WARNING') {
+    task_toastr === null || task_toastr === void 0 ? void 0 : task_toastr.warning(response.message);
+  }
+  return response.result;
+};
+const invokeFabricWebService = async (path, body, method, force) => {
+  if (false) {}
+  if (window.k2api && window.k2api.invokeFabricWebService) {
+    if (force) {
+      return task_fetchData(path, body, method);
+    }
+    if (runningRequests[path]) {
+      clearTimeout(runningRequests[path]);
+    }
+    return new Promise((resolve, reject) => {
+      runningRequests[path] = setTimeout(async () => {
+        try {
+          const data = await task_fetchData(path, body, method);
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      }, 100);
+    });
+  }
+  throw new Error('window.k2api is not defined');
+};
+const getActiveBEs = async () => invokeFabricWebService('getActiveBusinessentities', {}, 'GET');
+const getEnvironments = async (be_name, force) => {
+  if (be_name) {
+    return invokeFabricWebService('userEnvironments', {
+      be_name
+    }, 'GET', force);
+  }
+  return invokeFabricWebService('userEnvironments', {}, 'GET', force);
+};
+const task_getDataGenerationParams = async (taskId, luList) => {
+  const body = {};
+  if (taskId) {
+    body.taskId = taskId;
+  }
+  if (luList) {
+    body.luList = luList;
+  }
+  return invokeFabricWebService('getDMPopParams', body, 'GET');
+};
+const getTrainingModels = async (fromDate, toDate, be_name, lu_name) => invokeFabricWebService('tasks/getTrainingModels', {
+  fromDate,
+  toDate,
+  be_name,
+  lu_name
+}, 'POST');
+const getCustomLogicFlows = async (beName, envName) => invokeFabricWebService('getcustomlogicflows', {
+  beName,
+  envName
+}, 'GET');
+const getCustomLogicParams = async (luName, flowName) => invokeFabricWebService('getCustomLogicParams', {
+  flowName,
+  luName
+}, 'GET');
+const getPreExecutionProcess = async beId => invokeFabricWebService(`businessentity/${beId}/preexecutionprocess`, {}, 'GET');
+const getPostExecutionProcess = async beId => invokeFabricWebService(`businessentity/${beId}/postexecutionprocess`, {}, 'GET');
+const getTaskPostExecutionProcess = async taskId => invokeFabricWebService(`task/${taskId}/postexecutionprocess`, {}, 'GET');
+const getTaskPreExecutionProcess = async taskId => invokeFabricWebService(`task/${taskId}/preexecutionprocess`, {}, 'GET');
+const getTaskTables = async taskId => invokeFabricWebService(`task/refsTable/${taskId}`, {}, 'GET');
+const getTaskVariables = async taskId => invokeFabricWebService(`task/${taskId}/globals`, {}, 'GET');
+const getRetentionPeriodsData = async () => invokeFabricWebService('retentionperiodinfo', {}, 'GET');
+const getReferenceTables = async () => invokeFabricWebService('task/getReferenceTaskTable', {}, 'POST');
+const task_getEnvironmentOwners = async environmentID => invokeFabricWebService(`environment/${environmentID}/owners`, {}, 'GET');
+const getEnvironmentByID = async environmentID => invokeFabricWebService(`environment/${environmentID}`, {}, 'GET');
+const getEnvironmentUserRole = async environmentID => invokeFabricWebService(`environment/${environmentID}/userRole`, {}, 'GET');
+const getFabricRolesByUser = async user => invokeFabricWebService(`wsGetFabricRolesByUser`, {
+  user
+}, 'GET');
+const checkAIInstallation = async taskType => invokeFabricWebService(`tasks/checkAIInstallation`, {
+  taskType
+}, 'POST');
 
 // const getTableByEnv = async(source_env: string) => invokeFabricWebService('getTableByEnv', {source_env}, 'POST');
-var getTableByBeAndEnv = /*#__PURE__*/function () {
-  var _ref23 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee23(source_env, be_name) {
-    return regenerator_default.a.wrap(function _callee23$(_context23) {
-      while (1) switch (_context23.prev = _context23.next) {
-        case 0:
-          return _context23.abrupt("return", invokeFabricWebService('getTableByBeAndEnv', {
-            source_env: source_env,
-            be_name: be_name
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context23.stop();
-      }
-    }, _callee23);
-  }));
-  return function getTableByBeAndEnv(_x31, _x32) {
-    return _ref23.apply(this, arguments);
-  };
-}();
-var getTableVersions = /*#__PURE__*/function () {
-  var _ref24 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee24(table_name, env_name) {
-    return regenerator_default.a.wrap(function _callee24$(_context24) {
-      while (1) switch (_context24.prev = _context24.next) {
-        case 0:
-          return _context24.abrupt("return", invokeFabricWebService('getTableVersions', {
-            table_name: table_name,
-            env_name: env_name
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context24.stop();
-      }
-    }, _callee24);
-  }));
-  return function getTableVersions(_x33, _x34) {
-    return _ref24.apply(this, arguments);
-  };
-}();
-var getGlobalVariables = /*#__PURE__*/function () {
-  var _ref25 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee25(lus) {
-    return regenerator_default.a.wrap(function _callee25$(_context25) {
-      while (1) switch (_context25.prev = _context25.next) {
-        case 0:
-          return _context25.abrupt("return", invokeFabricWebService('environment/getAllGlobals', {
-            lus: lus
-          }, 'GET'));
-        case 1:
-        case "end":
-          return _context25.stop();
-      }
-    }, _callee25);
-  }));
-  return function getGlobalVariables(_x35) {
-    return _ref25.apply(this, arguments);
-  };
-}();
-var validateReservedEntitiesList = /*#__PURE__*/function () {
-  var _ref26 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee26(beID, envID, listOfEntities, filterout_reserved) {
-    return regenerator_default.a.wrap(function _callee26$(_context26) {
-      while (1) switch (_context26.prev = _context26.next) {
-        case 0:
-          return _context26.abrupt("return", invokeFabricWebService('validateReservedEntitiesList', {
-            beID: beID,
-            envID: envID,
-            listOfEntities: listOfEntities,
-            filterout_reserved: filterout_reserved
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context26.stop();
-      }
-    }, _callee26);
-  }));
-  return function validateReservedEntitiesList(_x36, _x37, _x38, _x39) {
-    return _ref26.apply(this, arguments);
-  };
-}();
-var task_getLogicalUnits = /*#__PURE__*/function () {
-  var _ref27 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee27(be_id, env_id) {
-    return regenerator_default.a.wrap(function _callee27$(_context27) {
-      while (1) switch (_context27.prev = _context27.next) {
-        case 0:
-          if (!env_id) {
-            _context27.next = 2;
-            break;
-          }
-          return _context27.abrupt("return", invokeFabricWebService("businessentity/".concat(be_id, "/environment/").concat(env_id, "/logicalunits"), {}, 'GET'));
-        case 2:
-          return _context27.abrupt("return", invokeFabricWebService("businessentity/".concat(be_id, "/logicalunits"), {}, 'GET'));
-        case 3:
-        case "end":
-          return _context27.stop();
-      }
-    }, _callee27);
-  }));
-  return function getLogicalUnits(_x40, _x41) {
-    return _ref27.apply(this, arguments);
-  };
-}();
-var getTaskLogicalUnits = /*#__PURE__*/function () {
-  var _ref28 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee28(task_id) {
-    return regenerator_default.a.wrap(function _callee28$(_context28) {
-      while (1) switch (_context28.prev = _context28.next) {
-        case 0:
-          return _context28.abrupt("return", invokeFabricWebService("task/".concat(task_id, "/logicalunits"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context28.stop();
-      }
-    }, _callee28);
-  }));
-  return function getTaskLogicalUnits(_x42) {
-    return _ref28.apply(this, arguments);
-  };
-}();
-var getParameters = /*#__PURE__*/function () {
-  var _ref29 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee29(be_id, envName) {
-    return regenerator_default.a.wrap(function _callee29$(_context29) {
-      while (1) switch (_context29.prev = _context29.next) {
-        case 0:
-          return _context29.abrupt("return", invokeFabricWebService("businessentity/".concat(be_id, "/sourceEnv/").concat(envName, "/parameters"), {}, 'GET'));
-        case 1:
-        case "end":
-          return _context29.stop();
-      }
-    }, _callee29);
-  }));
-  return function getParameters(_x43, _x44) {
-    return _ref29.apply(this, arguments);
-  };
-}();
-var getEnableParamWidth = /*#__PURE__*/function () {
-  var _ref30 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee30() {
-    return regenerator_default.a.wrap(function _callee30$(_context30) {
-      while (1) switch (_context30.prev = _context30.next) {
-        case 0:
-          return _context30.abrupt("return", invokeFabricWebService("wsGetParamsAutoWidth", {}, 'GET'));
-        case 1:
-        case "end":
-          return _context30.stop();
-      }
-    }, _callee30);
-  }));
-  return function getEnableParamWidth() {
-    return _ref30.apply(this, arguments);
-  };
-}();
-var getParamsLUName = /*#__PURE__*/function () {
-  var _ref31 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee31() {
-    return regenerator_default.a.wrap(function _callee31$(_context31) {
-      while (1) switch (_context31.prev = _context31.next) {
-        case 0:
-          return _context31.abrupt("return", invokeFabricWebService("wsGetParamsLUName", {}, 'GET'));
-        case 1:
-        case "end":
-          return _context31.stop();
-      }
-    }, _callee31);
-  }));
-  return function getParamsLUName() {
-    return _ref31.apply(this, arguments);
-  };
-}();
-var getTableParameters = /*#__PURE__*/function () {
-  var _ref32 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee32(dbInterfaceName, SchemaName, tableName) {
-    return regenerator_default.a.wrap(function _callee32$(_context32) {
-      while (1) switch (_context32.prev = _context32.next) {
-        case 0:
-          return _context32.abrupt("return", invokeFabricWebService("getTableFields", {
-            tableName: tableName,
-            SchemaName: SchemaName,
-            dbInterfaceName: dbInterfaceName
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context32.stop();
-      }
-    }, _callee32);
-  }));
-  return function getTableParameters(_x45, _x46, _x47) {
-    return _ref32.apply(this, arguments);
-  };
-}();
-var getEntitiesCount = /*#__PURE__*/function () {
-  var _ref33 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee33(be_id, envName, body) {
-    return regenerator_default.a.wrap(function _callee33$(_context33) {
-      while (1) switch (_context33.prev = _context33.next) {
-        case 0:
-          return _context33.abrupt("return", invokeFabricWebService("businessentity/".concat(be_id, "/sourceEnv/").concat(envName, "/analysiscount"), body, 'POST'));
-        case 1:
-        case "end":
-          return _context33.stop();
-      }
-    }, _callee33);
-  }));
-  return function getEntitiesCount(_x48, _x49, _x50) {
-    return _ref33.apply(this, arguments);
-  };
-}();
-var task_deleteTask = /*#__PURE__*/function () {
-  var _ref34 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee34(task_id, task_title) {
-    return regenerator_default.a.wrap(function _callee34$(_context34) {
-      while (1) switch (_context34.prev = _context34.next) {
-        case 0:
-          return _context34.abrupt("return", invokeFabricWebService("task/".concat(task_id, "/taskname/").concat(task_title), {}, 'DELETE'));
-        case 1:
-        case "end":
-          return _context34.stop();
-      }
-    }, _callee34);
-  }));
-  return function deleteTask(_x51, _x52) {
-    return _ref34.apply(this, arguments);
-  };
-}();
-var getExecutionProcessParams = /*#__PURE__*/function () {
-  var _ref35 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee35(processType, processesList) {
-    return regenerator_default.a.wrap(function _callee35$(_context35) {
-      while (1) switch (_context35.prev = _context35.next) {
-        case 0:
-          return _context35.abrupt("return", invokeFabricWebService("getExecutionProcessParams", {
-            processType: processType,
-            processesList: processesList
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context35.stop();
-      }
-    }, _callee35);
-  }));
-  return function getExecutionProcessParams(_x53, _x54) {
-    return _ref35.apply(this, arguments);
-  };
-}();
-var saveTaskAPI = /*#__PURE__*/function () {
-  var _ref36 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee36(taskData) {
-    return regenerator_default.a.wrap(function _callee36$(_context36) {
-      while (1) switch (_context36.prev = _context36.next) {
-        case 0:
-          if (!taskData.task_id) {
-            _context36.next = 2;
-            break;
-          }
-          return _context36.abrupt("return", invokeFabricWebService("task/".concat(taskData.task_id), taskData, 'PUT'));
-        case 2:
-          return _context36.abrupt("return", invokeFabricWebService('task', taskData, 'POST'));
-        case 3:
-        case "end":
-          return _context36.stop();
-      }
-    }, _callee36);
-  }));
-  return function saveTaskAPI(_x55) {
-    return _ref36.apply(this, arguments);
-  };
-}();
-var getVersionsForLoad = /*#__PURE__*/function () {
-  var _ref37 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee37(fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) {
-    return regenerator_default.a.wrap(function _callee37$(_context37) {
-      while (1) switch (_context37.prev = _context37.next) {
-        case 0:
-          return _context37.abrupt("return", invokeFabricWebService('tasks/versionsForLoad', {
-            fromDate: fromDate,
-            toDate: toDate,
-            entitiesList: entitiesList,
-            lu_list: lu_list,
-            source_env_name: source_env_name,
-            target_env_name: target_env_name,
-            be_id: be_id,
-            filterout_reserved: filterout_reserved
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context37.stop();
-      }
-    }, _callee37);
-  }));
-  return function getVersionsForLoad(_x56, _x57, _x58, _x59, _x60, _x61, _x62, _x63) {
-    return _ref37.apply(this, arguments);
-  };
-}();
-var getGenerationExecutions = /*#__PURE__*/function () {
-  var _ref38 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee38(fromDate, toDate, envName, beID, selectedLogicalUnits) {
-    return regenerator_default.a.wrap(function _callee38$(_context38) {
-      while (1) switch (_context38.prev = _context38.next) {
-        case 0:
-          return _context38.abrupt("return", invokeFabricWebService('tasks/getGenerationModels', {
-            fromDate: fromDate,
-            toDate: toDate,
-            envName: envName,
-            beID: beID,
-            selectedLogicalUnits: selectedLogicalUnits
-          }, 'POST'));
-        case 1:
-        case "end":
-          return _context38.stop();
-      }
-    }, _callee38);
-  }));
-  return function getGenerationExecutions(_x64, _x65, _x66, _x67, _x68) {
-    return _ref38.apply(this, arguments);
-  };
-}();
-var taskAPIs = {
-  getActiveBEs: getActiveBEs,
-  getEnvironments: getEnvironments,
+const getTableByBeAndEnv = async (source_env, be_name) => invokeFabricWebService('getTableByBeAndEnv', {
+  source_env,
+  be_name
+}, 'POST');
+const getTableVersions = async (table_name, env_name) => invokeFabricWebService('getTableVersions', {
+  table_name,
+  env_name
+}, 'POST');
+const getEnvironmentsByUser = async () => invokeFabricWebService('environmentsbyuser', {}, 'GET');
+const getGlobalVariables = async lus => invokeFabricWebService('environment/getAllGlobals', {
+  lus
+}, 'GET');
+const validateReservedEntitiesList = async (beID, envID, listOfEntities, filterout_reserved) => invokeFabricWebService('validateReservedEntitiesList', {
+  beID,
+  envID,
+  listOfEntities,
+  filterout_reserved
+}, 'POST');
+const task_getLogicalUnits = async (be_id, env_id) => {
+  if (env_id) {
+    return invokeFabricWebService(`businessentity/${be_id}/environment/${env_id}/logicalunits`, {}, 'GET');
+  }
+  return invokeFabricWebService(`businessentity/${be_id}/logicalunits`, {}, 'GET');
+};
+const getTaskLogicalUnits = async task_id => invokeFabricWebService(`task/${task_id}/logicalunits`, {}, 'GET');
+const getParameters = async (be_id, envName) => invokeFabricWebService(`businessentity/${be_id}/sourceEnv/${envName}/parameters`, {}, 'GET');
+const getEnableParamWidth = async () => invokeFabricWebService(`wsGetParamsAutoWidth`, {}, 'GET');
+const getParamsLUName = async () => invokeFabricWebService(`wsGetParamsLUName`, {}, 'GET');
+const getTableParameters = async (dbInterfaceName, SchemaName, tableName) => invokeFabricWebService(`getTableFields`, {
+  tableName,
+  SchemaName,
+  dbInterfaceName
+}, 'POST');
+const getEntitiesCount = async (be_id, envName, body) => invokeFabricWebService(`businessentity/${be_id}/sourceEnv/${envName}/analysiscount`, body, 'POST');
+const task_deleteTask = async (task_id, task_title) => invokeFabricWebService(`task/${task_id}/taskname/${task_title}`, {}, 'DELETE');
+const getExecutionProcessParams = async (processType, processesList) => invokeFabricWebService(`getExecutionProcessParams`, {
+  processType,
+  processesList
+}, 'POST');
+const getCheckIfParamsCoupling = async () => invokeFabricWebService(`wsCheckIfParamsCoupling`, {}, 'GET');
+const getTaskLuEditForTesters = async () => invokeFabricWebService(`wsGetTaskLuEditForTesters`, {}, 'GET');
+const getTaskGroups = async () => invokeFabricWebService(`taskgroup`, {}, 'GET');
+const getTaskGroupById = async task_group_id => invokeFabricWebService(`getTasksPerTaskGroup`, {
+  task_group_id
+}, 'GET');
+const task_addTaskGroup = async (task_group_name, task_group_desc) => invokeFabricWebService(`taskgroup`, {
+  task_group_name,
+  task_group_desc
+}, 'POST');
+const updateTaskGroup = async (task_group_id, task_group_name, task_group_desc) => invokeFabricWebService(`taskgroup/${task_group_id}`, {
+  task_group_name,
+  task_group_desc
+}, 'PUT');
+const moveTasksToTaskGroup = async (taskIds, fromTaskGroup, toTaskGroup, keepCurrentGroup) => invokeFabricWebService(`moveTasks`, {
+  taskIds,
+  fromTaskGroup,
+  toTaskGroup,
+  keepCurrentGroup
+}, 'PUT');
+const deleteTaskGroup = async task_group_id => invokeFabricWebService(`taskgroup`, {
+  task_group_id
+}, 'DELETE');
+const searchTasks = async data => invokeFabricWebService(`search`, data, 'POST');
+const task_deleteTaskFromGroup = async (task_id, task_group_id) => invokeFabricWebService(`deleteTaskFromTaskGroup`, {
+  task_group_id,
+  task_id
+}, 'DELETE');
+const task_toggleTaskGroupFavorite = async (task_group_id, marked) => {
+  if (!marked) {
+    return invokeFabricWebService(`markFavorite`, {
+      task_group_id
+    }, 'POST');
+  }
+  return invokeFabricWebService(`unMarkFavorite`, {
+    task_group_id
+  }, 'DELETE');
+};
+const task_toggleTaskFavorite = async (task_id, marked) => {
+  if (!marked) {
+    return invokeFabricWebService(`markTaskFavorite`, {
+      task_id
+    }, 'POST');
+  }
+  return invokeFabricWebService(`unMarkTaskFavorite`, {
+    task_id
+  }, 'DELETE');
+};
+const getTaskById = async (task_ids, mode) => invokeFabricWebService(`tasks`, {
+  task_ids,
+  mode
+}, 'GET');
+const saveTaskAPI = async taskData => {
+  if (taskData.task_id) {
+    return invokeFabricWebService(`task/${taskData.task_id}`, taskData, 'PUT');
+  }
+  return invokeFabricWebService('task', taskData, 'POST');
+};
+const getVersionsForLoad = async (fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) => invokeFabricWebService('tasks/versionsForLoad', {
+  fromDate,
+  toDate,
+  entitiesList,
+  lu_list,
+  source_env_name,
+  target_env_name,
+  be_id,
+  filterout_reserved
+}, 'POST');
+const getGenerationExecutions = async (fromDate, toDate, envName, beID, selectedLogicalUnits) => invokeFabricWebService('tasks/getGenerationModels', {
+  fromDate,
+  toDate,
+  envName,
+  beID,
+  selectedLogicalUnits
+}, 'POST');
+const taskAPIs = {
+  getActiveBEs,
+  getEnvironments,
   getDataGenerationParams: task_getDataGenerationParams,
-  getTrainingModels: getTrainingModels,
-  getCustomLogicFlows: getCustomLogicFlows,
-  getCustomLogicParams: getCustomLogicParams,
-  getPreExecutionProcess: getPreExecutionProcess,
-  getPostExecutionProcess: getPostExecutionProcess,
-  getTaskVariables: getTaskVariables,
-  getRetentionPeriodsData: getRetentionPeriodsData,
-  getVersionsForLoad: getVersionsForLoad,
-  getReferenceTables: getReferenceTables,
+  getTrainingModels,
+  getCustomLogicFlows,
+  getCustomLogicParams,
+  getPreExecutionProcess,
+  getPostExecutionProcess,
+  getTaskVariables,
+  getRetentionPeriodsData,
+  getVersionsForLoad,
+  getReferenceTables,
   getLogicalUnits: task_getLogicalUnits,
-  getGenerationExecutions: getGenerationExecutions,
-  getParameters: getParameters,
-  getEnableParamWidth: getEnableParamWidth,
-  getEntitiesCount: getEntitiesCount,
-  saveTaskAPI: saveTaskAPI,
+  getGenerationExecutions,
+  getParameters,
+  getEnableParamWidth,
+  getEntitiesCount,
+  saveTaskAPI,
   deleteTask: task_deleteTask,
-  getTaskLogicalUnits: getTaskLogicalUnits,
-  getTableByBeAndEnv: getTableByBeAndEnv,
-  getTableVersions: getTableVersions,
-  getGlobalVariables: getGlobalVariables,
-  getTaskPostExecutionProcess: getTaskPostExecutionProcess,
-  getTaskPreExecutionProcess: getTaskPreExecutionProcess,
-  getTableParameters: getTableParameters,
-  getTaskTables: getTaskTables,
+  getTaskLogicalUnits,
+  getTableByBeAndEnv,
+  getTableVersions,
+  getGlobalVariables,
+  getTaskPostExecutionProcess,
+  getTaskPreExecutionProcess,
+  getTableParameters,
+  getTaskTables,
   getEnvironmentOwners: task_getEnvironmentOwners,
-  getFabricRolesByUser: getFabricRolesByUser,
-  getEnvironmentUserRole: getEnvironmentUserRole,
-  getEnvironmentByID: getEnvironmentByID,
-  checkAIInstallation: checkAIInstallation,
-  validateReservedEntitiesList: validateReservedEntitiesList,
-  getExecutionProcessParams: getExecutionProcessParams,
-  getParamsLUName: getParamsLUName
+  getFabricRolesByUser,
+  getEnvironmentUserRole,
+  getEnvironmentByID,
+  checkAIInstallation,
+  validateReservedEntitiesList,
+  getExecutionProcessParams,
+  getParamsLUName,
+  getCheckIfParamsCoupling,
+  getTaskLuEditForTesters,
+  getTaskGroups,
+  getTaskGroupById,
+  addTaskGroup: task_addTaskGroup,
+  toggleTaskGroupFavorite: task_toggleTaskGroupFavorite,
+  getTaskById,
+  toggleTaskFavorite: task_toggleTaskFavorite,
+  moveTasksToTaskGroup,
+  deleteTaskGroup,
+  updateTaskGroup,
+  searchTasks,
+  getEnvironmentsByUser,
+  deleteTaskFromGroup: task_deleteTaskFromGroup
 };
 /* harmony default export */ var apis_task = (taskAPIs);
 // CONCATENATED MODULE: ./src/components/task/AdvancedBE/styles.ts
 
-var AdvancedBE_styles_templateObject, AdvancedBE_styles_templateObject2, AdvancedBE_styles_templateObject3, AdvancedBE_styles_templateObject4, AdvancedBE_styles_templateObject5, AdvancedBE_styles_templateObject6, AdvancedBE_styles_templateObject7, AdvancedBE_styles_templateObject8, AdvancedBE_styles_templateObject9, AdvancedBE_styles_templateObject10, AdvancedBE_styles_templateObject11, AdvancedBE_styles_templateObject12, AdvancedBE_styles_templateObject13, AdvancedBE_styles_templateObject14, AdvancedBE_styles_templateObject15;
+const AdvancedBE_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 15px;
+    position: relative;
+`;
+const LogicalUnitsContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 400px;
+    position: relative;
+    z-index: 100;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 19px 0px 30px 0px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+`;
+const AdvancedBE_styles_Title = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const LogicalUnitTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    position: relative;
+    margin: 0px 20px;
+    margin-bottom: 19px;
+`;
+const LogicalUnitBody = styled_components_browser_esm["b" /* default */].div`
+    margin: 10px 25px 0px 30px;
+`;
+const styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border: solid 1px #ccc;
+`;
+const CloseIcon = styled_components_browser_esm["b" /* default */].img`
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    cursor: pointer;
+`;
+const AdvancedBE_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const Actions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    margin-top:5px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    border-bottom: ${props => props.border ? '1px solid #ccc' : ''};
+    padding-bottom: 13px;
+`;
+const ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const SystemHeader = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    padding: 10px 0px;
+    border-bottom: 1px solid #ccc;
+    justify-content: space-between;
+    padding-right: 11px;
+`;
+const SystemsContainer = styled_components_browser_esm["b" /* default */].div`
 
-var AdvancedBE_styles_Container = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject || (AdvancedBE_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    margin-top: 15px;\n    position: relative;\n"])));
-var LogicalUnitsContainer = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject2 || (AdvancedBE_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 400px;\n    position: relative;\n    z-index: 100;\n    max-height: 350px;\n    overflow-y: auto;\n    overflow-x: hidden;\n    padding: 19px 0px 30px 0px;\n    object-fit: contain;\n    border-radius: 6px;\n    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);\n    background-color: #fff;\n"])));
-var AdvancedBE_styles_Title = styled_components_browser_esm["b" /* default */].span(AdvancedBE_styles_templateObject3 || (AdvancedBE_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 14px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.43;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    cursor: pointer;\n"])));
-var LogicalUnitTitle = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject4 || (AdvancedBE_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 18px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.33;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    position: relative;\n    margin: 0px 20px;\n    margin-bottom: 19px;\n"])));
-var LogicalUnitBody = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject5 || (AdvancedBE_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    margin: 10px 25px 0px 30px;\n"])));
-var styles_Seprator = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject6 || (AdvancedBE_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    border: solid 1px #ccc;\n"])));
-var CloseIcon = styled_components_browser_esm["b" /* default */].img(AdvancedBE_styles_templateObject7 || (AdvancedBE_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    right: 0px;\n    top: 5px;\n    cursor: pointer;\n"])));
-var AdvancedBE_styles_Icon = styled_components_browser_esm["b" /* default */].img(AdvancedBE_styles_templateObject8 || (AdvancedBE_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var Actions = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject9 || (AdvancedBE_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    display: flex;\n    margin-top:5px;\n    align-items: center;\n    justify-content: flex-end;\n    gap: 18px;\n    border-bottom: ", ";\n    padding-bottom: 13px;\n"])), function (props) {
-  return props.border ? '1px solid #ccc' : '';
-});
-var ActionItem = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject10 || (AdvancedBE_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    cursor: pointer;\n"])));
-var SystemHeader = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject11 || (AdvancedBE_styles_templateObject11 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    padding: 10px 0px;\n    border-bottom: 1px solid #ccc;\n    justify-content: space-between;\n    padding-right: 11px;\n"])));
-var SystemsContainer = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject12 || (AdvancedBE_styles_templateObject12 = taggedTemplateLiteral_default()(["\n\n"])));
-var SystemBody = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject13 || (AdvancedBE_styles_templateObject13 = taggedTemplateLiteral_default()(["\n    padding: 13px 10px 15px 37px;\n    background-color: #f2f2f2;\n    display: flex;\n    gap: 12px;\n    flex-direction: column;\n    border-bottom: solid 1px #ccc;\n"])));
-var LogicalUnitContainer = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject14 || (AdvancedBE_styles_templateObject14 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    \n"])));
-var ExecutionModeContainer = styled_components_browser_esm["b" /* default */].div(AdvancedBE_styles_templateObject15 || (AdvancedBE_styles_templateObject15 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    align-items: flex-start;\n    border-bottom: 1px solid #ccc;\n    gap: 10px;\n    margin-top: 10px;\n    padding-bottom: 10px;\n"])));
+`;
+const SystemBody = styled_components_browser_esm["b" /* default */].div`
+    padding: 13px 10px 15px 37px;
+    background-color: #f2f2f2;
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    border-bottom: solid 1px #ccc;
+`;
+const LogicalUnitContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    
+`;
+const ExecutionModeContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: 1px solid #ccc;
+    gap: 10px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+`;
 // CONCATENATED MODULE: ./src/images/xclose.svg
 /* harmony default export */ var xclose = ("js/dist/f7db0cd4cd00f1f6bb2346432c313b0b.svg");
 // CONCATENATED MODULE: ./src/images/arrow-up.svg
@@ -3580,34 +3992,74 @@ var ExecutionModeContainer = styled_components_browser_esm["b" /* default */].di
 /* harmony default export */ var arrow_down = ("js/dist/e98a6f4185c19c2d8e0ebcb5b207d97e.svg");
 // CONCATENATED MODULE: ./src/components/Tabs/styles.ts
 
-var Tabs_styles_templateObject, Tabs_styles_templateObject2, Tabs_styles_templateObject3, Tabs_styles_templateObject4, Tabs_styles_templateObject5, Tabs_styles_templateObject6, Tabs_styles_templateObject7;
-
-var Tabs_styles_Container = styled_components_browser_esm["b" /* default */].div(Tabs_styles_templateObject || (Tabs_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    position: relative;\n    font-size: 16px;\n"])));
-var styles_TabTitle = styled_components_browser_esm["b" /* default */].div(Tabs_styles_templateObject2 || (Tabs_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    position: relative;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: ", ";\n"])), function (props) {
-  return props.changed ? '#1483f3' : '#2e2e2e';
-});
-var styles_SelectedTab = styled_components_browser_esm["b" /* default */].div(Tabs_styles_templateObject3 || (Tabs_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    height: 2px;\n    width: 100%;\n    background-color: #1483f3;\n"])));
-var styles_TabItem = styled_components_browser_esm["b" /* default */].div(Tabs_styles_templateObject4 || (Tabs_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    display: flex;\n    align-items: center;\n    gap: 13px;\n    cursor: pointer;\n"])));
-var Tabs_styles_Icon = styled_components_browser_esm["b" /* default */].img(Tabs_styles_templateObject5 || (Tabs_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n    margin-left: 5px;\n    height: 15px;\n    margin-bottom: 3px;\n"])));
-var Tabs_styles_Body = styled_components_browser_esm["b" /* default */].div(Tabs_styles_templateObject6 || (Tabs_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    width: 100%;\n"])));
-var Header = styled_components_browser_esm["b" /* default */].div(Tabs_styles_templateObject7 || (Tabs_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    gap: 48px;\n    padding-bottom: 28px;\n"])));
+const Tabs_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    position: relative;
+    font-size: 16px;
+`;
+const styles_TabTitle = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: ${props => props.changed ? '#1483f3' : '#2e2e2e'};
+`;
+const styles_SelectedTab = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background-color: #1483f3;
+`;
+const styles_TabItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    cursor: pointer;
+`;
+const Tabs_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    margin-left: 5px;
+    height: 15px;
+    margin-bottom: 3px;
+`;
+const Tabs_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+`;
+const Header = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    gap: 48px;
+    padding-bottom: 28px;
+`;
 // CONCATENATED MODULE: ./src/components/Tabs/index.tsx
 
 
 
-
-
 function Tabs(props) {
-  var tabs = props.tabs,
-    selected = props.selected,
-    setSelectedTab = props.setSelectedTab,
-    children = props.children,
-    changedTabs = props.changedTabs;
-  var getTab = Object(react["useCallback"])(function (tabData) {
+  const {
+    tabs,
+    selected,
+    setSelectedTab,
+    children,
+    changedTabs
+  } = props;
+  const getTab = Object(react["useCallback"])(tabData => {
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TabItem, {
-      onClick: function onClick() {
-        return setSelectedTab(tabData.name);
-      },
+      onClick: () => setSelectedTab(tabData.name),
       children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_TabTitle, {
         changed: (changedTabs || []).indexOf(tabData.name) >= 0,
         children: [tabData.name, (changedTabs || []).indexOf(tabData.name) >= 0 && tabData.icon ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Tabs_styles_Icon, {
@@ -3618,9 +4070,7 @@ function Tabs(props) {
   }, [selected, setSelectedTab, changedTabs]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Tabs_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Header, {
-      children: tabs.map(function (it) {
-        return getTab(it);
-      })
+      children: tabs.map(it => getTab(it))
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Tabs_styles_Body, {
       children: children
     })]
@@ -3641,65 +4091,50 @@ function Tabs(props) {
 
 
 
-
-
-
 function AdvancedBE() {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    register = _useContext.register,
-    errors = _useContext.errors,
-    unregister = _useContext.unregister,
-    allLogicalUnits = _useContext.allLogicalUnits;
-  var _useState = Object(react["useState"])([]),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    data = _useState2[0],
-    setData = _useState2[1];
-  var _useState3 = Object(react["useState"])([]),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    openedSystems = _useState4[0],
-    setOpenedSystems = _useState4[1];
-  var selected_logical_units = taskData.selected_logical_units,
-    execution_mode = taskData.execution_mode,
-    dataSourceType = taskData.dataSourceType,
-    source_type = taskData.source_type;
-  var _useState5 = Object(react["useState"])(false),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    open = _useState6[0],
-    setOpen = _useState6[1];
-  var _useState7 = Object(react["useState"])(''),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    error = _useState8[0],
-    setError = _useState8[1];
-  var _useState9 = Object(react["useState"])(''),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    localExecutionMode = _useState10[0],
-    setLocalExecutionMode = _useState10[1];
-  var ref = Object(react["useRef"])();
-  var _useState11 = Object(react["useState"])('Systems & Logical units'),
-    _useState12 = slicedToArray_default()(_useState11, 2),
-    selectedTab = _useState12[0],
-    setSelectedTab = _useState12[1];
-  Object(react["useEffect"])(function () {
+  const {
+    taskData,
+    saveForm,
+    register,
+    errors,
+    unregister,
+    allLogicalUnits
+  } = Object(react["useContext"])(TaskContext);
+  const [data, setData] = Object(react["useState"])([]);
+  const [openedSystems, setOpenedSystems] = Object(react["useState"])([]);
+  const {
+    selected_logical_units,
+    execution_mode,
+    dataSourceType,
+    source_type,
+    enable_advanced_for_testers
+  } = taskData;
+  const [open, setOpen] = Object(react["useState"])(false);
+  const [error, setError] = Object(react["useState"])('');
+  const [localExecutionMode, setLocalExecutionMode] = Object(react["useState"])('');
+  const ref = Object(react["useRef"])();
+  const [selectedTab, setSelectedTab] = Object(react["useState"])('Systems & Logical units');
+  const AuthService = getService('AuthService');
+  const role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
+  Object(react["useEffect"])(() => {
     if (execution_mode) {
       setLocalExecutionMode(execution_mode);
     }
   }, [execution_mode]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (open) {
       setError('');
       setSelectedTab('Systems & Logical units');
       setLocalExecutionMode(execution_mode || '');
     }
   }, [open]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (!allLogicalUnits || allLogicalUnits.length === 0 || !open) {
       return;
     }
-    var newData = [];
-    allLogicalUnits.forEach(function (logicalunitItem) {
-      var systemFound = newData.find(function (systemItem) {
+    const newData = [];
+    allLogicalUnits.forEach(logicalunitItem => {
+      const systemFound = newData.find(systemItem => {
         return systemItem.system === logicalunitItem.product_name;
       });
       if (systemFound) {
@@ -3722,24 +4157,20 @@ function AdvancedBE() {
         });
       }
     });
-    newData.forEach(function (it) {
-      var selectedLus = it.logicalUnits.filter(function (it) {
-        return it.selected;
-      });
+    newData.forEach(it => {
+      const selectedLus = it.logicalUnits.filter(it => it.selected);
       if (selectedLus.length > 0) {
         it.selected = true;
       }
     });
     setData(newData);
   }, [allLogicalUnits, selected_logical_units, open]);
-  var systemClick = Object(react["useCallback"])(function (system) {
-    setOpenedSystems(function (prevSystems) {
+  const systemClick = Object(react["useCallback"])(system => {
+    setOpenedSystems(prevSystems => {
       if (prevSystems.indexOf(system) >= 0) {
-        return prevSystems.filter(function (it) {
-          return it !== system;
-        });
+        return prevSystems.filter(it => it !== system);
       } else {
-        return [].concat(toConsumableArray_default()(prevSystems), [system]);
+        return [...prevSystems, system];
       }
     });
   }, [setOpenedSystems]);
@@ -3760,22 +4191,16 @@ function AdvancedBE() {
   //     }
   // }, [selected_logical_units, selected_logical_units_names, saveForm]);
 
-  var logicalUnitToggle = Object(react["useCallback"])(function (lu_id, system) {
-    setData(function (prevData) {
-      var newData = JSON.parse(JSON.stringify(prevData));
-      var found = newData.find(function (it) {
-        return it.system === system;
-      });
+  const logicalUnitToggle = Object(react["useCallback"])((lu_id, system) => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const found = newData.find(it => it.system === system);
       if (found) {
-        var luFound = found.logicalUnits.find(function (it) {
-          return it.lu_id === lu_id;
-        });
+        const luFound = found.logicalUnits.find(it => it.lu_id === lu_id);
         if (luFound) {
           luFound.selected = !luFound.selected;
         }
-        var selectedLus = found.logicalUnits.filter(function (it) {
-          return it.selected;
-        });
+        const selectedLus = found.logicalUnits.filter(it => it.selected);
         if (selectedLus.length > 0) {
           found.selected = true;
         } else {
@@ -3785,39 +4210,35 @@ function AdvancedBE() {
       return newData;
     });
   }, [setData]);
-  var systemToggle = Object(react["useCallback"])(function (system) {
-    setData(function (prevData) {
-      var newData = JSON.parse(JSON.stringify(prevData));
-      var found = newData.find(function (it) {
-        return it.system === system;
-      });
+  const systemToggle = Object(react["useCallback"])(system => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const found = newData.find(it => it.system === system);
       if (found) {
         found.selected = !found.selected;
-        found.logicalUnits.forEach(function (it) {
+        found.logicalUnits.forEach(it => {
           it.selected = found.selected;
         });
       }
       return newData;
     });
   }, [setData]);
-  var allAction = Object(react["useCallback"])(function (flag) {
-    setData(function (prevData) {
-      var newData = JSON.parse(JSON.stringify(prevData));
-      newData.forEach(function (it) {
+  const allAction = Object(react["useCallback"])(flag => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      newData.forEach(it => {
         it.selected = flag;
-        it.logicalUnits.forEach(function (it) {
+        it.logicalUnits.forEach(it => {
           it.selected = flag;
         });
       });
       return newData;
     });
   }, [setData]);
-  var isSelectedLU = function isSelectedLU(lu_name, selectedLus) {
-    return selectedLus.findIndex(function (it) {
-      return it.lu_name === lu_name;
-    }) >= 0;
+  const isSelectedLU = (lu_name, selectedLus) => {
+    return selectedLus.findIndex(it => it.lu_name === lu_name) >= 0;
   };
-  var checkGap = function checkGap(lu, selectedLus) {
+  const checkGap = (lu, selectedLus) => {
     if (lu.lu_parent_name && !isSelectedLU(lu.lu_parent_name, selectedLus)) {
       /**
        * If a logical unit has a parent and it has not being selected
@@ -3826,9 +4247,7 @@ function AdvancedBE() {
        * has a parent which is not missing. This will generate a gap.
        */
 
-      var luParent = allLogicalUnits.find(function (it) {
-        return it.lu_name === lu.lu_parent_name;
-      });
+      const luParent = allLogicalUnits.find(it => it.lu_name === lu.lu_parent_name);
       if (luParent) {
         if (luParent.lu_parent_name && isSelectedLU(luParent.lu_parent_name, selectedLus)) {
           return luParent.lu_name;
@@ -3837,15 +4256,13 @@ function AdvancedBE() {
     }
     return '';
   };
-  var checkIfRootIsMissing = function checkIfRootIsMissing(selectedLus) {
-    var missingRootLU = [];
+  let checkIfRootIsMissing = selectedLus => {
+    const missingRootLU = [];
 
     // check if there is lu which has a parent that does not have a parent (root)
-    selectedLus.forEach(function (lu) {
+    selectedLus.forEach(lu => {
       if (lu.lu_parent_name) {
-        var luParent = allLogicalUnits.find(function (it) {
-          return it.lu_name === lu.lu_parent_name;
-        });
+        const luParent = allLogicalUnits.find(it => it.lu_name === lu.lu_parent_name);
         if (luParent) {
           // if lu has a parent that does not have a parent which is missing then root is missing
           if (!luParent.lu_parent_name && !isSelectedLU(luParent.lu_name, selectedLus)) {
@@ -3856,10 +4273,10 @@ function AdvancedBE() {
     });
     return missingRootLU;
   };
-  var SaveData = Object(react["useCallback"])(function () {
-    var selectedLus = [];
-    data.forEach(function (it) {
-      it.logicalUnits.forEach(function (it) {
+  const SaveData = Object(react["useCallback"])(() => {
+    const selectedLus = [];
+    data.forEach(it => {
+      it.logicalUnits.forEach(it => {
         if (it.selected) {
           selectedLus.push(it);
         }
@@ -3869,35 +4286,31 @@ function AdvancedBE() {
       setError('Please choose at least one logical unit');
       return;
     }
-    var luGap = '';
-    selectedLus.forEach(function (lu) {
+    let luGap = '';
+    selectedLus.forEach(lu => {
       if (luGap) {
         return;
       }
       luGap = checkGap(lu, selectedLus);
     });
     if (luGap) {
-      setError("There is a gap in the LU hierarchy. Add ".concat(luGap, " to complete the gap."));
+      setError(`There is a gap in the LU hierarchy. Add ${luGap} to complete the gap.`);
       return;
     }
-    var missingRoot = checkIfRootIsMissing(selectedLus);
+    const missingRoot = checkIfRootIsMissing(selectedLus);
     if (missingRoot.length > 0) {
-      setError("Root LU missing, Please add ".concat(missingRoot.join(', '), " ."));
+      setError(`Root LU missing, Please add ${missingRoot.join(', ')} .`);
       return;
     }
     saveForm({
-      selected_logical_units: selectedLus.map(function (it) {
-        return it.lu_id;
-      }),
-      selected_logical_units_names: selectedLus.map(function (it) {
-        return it.lu_name;
-      }),
+      selected_logical_units: selectedLus.map(it => it.lu_id),
+      selected_logical_units_names: selectedLus.map(it => it.lu_name),
       execution_mode: localExecutionMode
     });
     setOpen(false);
   }, [data, saveForm, setError, localExecutionMode]);
-  var tabs = Object(react["useMemo"])(function () {
-    if ("".concat(dataSourceType, "_").concat(source_type) !== 'data_source_BE') {
+  const tabs = Object(react["useMemo"])(() => {
+    if (`${dataSourceType}_${source_type}` !== 'data_source_BE') {
       return [{
         name: 'Systems & Logical units'
       }];
@@ -3908,80 +4321,66 @@ function AdvancedBE() {
       name: 'Execution Mode'
     }];
   }, []);
-  var getSelectedTab = Object(react["useCallback"])(function () {
+  const getSelectedTab = Object(react["useCallback"])(() => {
     if (selectedTab === 'Systems & Logical units') {
       return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
         children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Actions, {
           border: true,
           children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
-            onClick: function onClick() {
-              return allAction(false);
-            },
+            onClick: () => allAction(false),
             children: "Clear all"
           }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
-            onClick: function onClick() {
-              return allAction(true);
-            },
+            onClick: () => allAction(true),
             children: "Add all"
           })]
-        }), data.map(function (it) {
-          return /*#__PURE__*/Object(jsx_runtime["jsxs"])(SystemsContainer, {
-            children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(SystemHeader, {
-              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
-                name: "system_".concat(it.system),
-                title: it.system,
-                onChange: function onChange() {
-                  systemToggle(it.system);
+        }), data.map(it => /*#__PURE__*/Object(jsx_runtime["jsxs"])(SystemsContainer, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(SystemHeader, {
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+              name: `system_${it.system}`,
+              title: it.system,
+              onChange: () => {
+                systemToggle(it.system);
+              },
+              disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
+              value: it.selected
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Icon, {
+              onClick: () => systemClick(it.system),
+              src: openedSystems.indexOf(it.system) >= 0 ? arrow_up : arrow_down
+            })]
+          }), openedSystems.indexOf(it.system) >= 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemBody, {
+            children: it.logicalUnits.map(luItem => /*#__PURE__*/Object(jsx_runtime["jsx"])(LogicalUnitContainer, {
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+                name: `logical_unit_${luItem.lu_name}}`,
+                title: luItem.lu_name,
+                onChange: () => {
+                  logicalUnitToggle(luItem.lu_id, it.system);
                 },
-                value: it.selected
-              }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Icon, {
-                onClick: function onClick() {
-                  return systemClick(it.system);
-                },
-                src: openedSystems.indexOf(it.system) >= 0 ? arrow_up : arrow_down
-              })]
-            }), openedSystems.indexOf(it.system) >= 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemBody, {
-              children: it.logicalUnits.map(function (luItem) {
-                return /*#__PURE__*/Object(jsx_runtime["jsx"])(LogicalUnitContainer, {
-                  children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
-                    name: "logical_unit_".concat(luItem.lu_name, "}"),
-                    title: luItem.lu_name,
-                    onChange: function onChange() {
-                      logicalUnitToggle(luItem.lu_id, it.system);
-                    },
-                    value: luItem.selected
-                  })
-                });
+                disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
+                value: luItem.selected
               })
-            }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
-          });
-        })]
+            }))
+          }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
+        }))]
       });
     } else if (selectedTab === 'Execution Mode') {
       return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ExecutionModeContainer, {
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
           tooltip: "Use the task's Business Entity execution mode",
-          onChange: function onChange() {
-            return setLocalExecutionMode('INHERITED');
-          },
+          onChange: () => setLocalExecutionMode('INHERITED'),
           name: "execution_mode",
           value: "INHERITED",
           selectedValue: localExecutionMode,
           title: "Use Business Entity execution mode"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
           tooltip: "Executes entire hierarchy for each entity ID",
-          onChange: function onChange() {
-            return setLocalExecutionMode('VERTICAL');
-          },
+          onChange: () => setLocalExecutionMode('VERTICAL'),
           name: "execution_mode",
           value: "VERTICAL",
           selectedValue: localExecutionMode,
           title: "Vertical execution"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
           tooltip: "Executes system by system, processing all entities for each system",
-          onChange: function onChange() {
-            return setLocalExecutionMode('HORIZONTAL');
-          },
+          onChange: () => setLocalExecutionMode('HORIZONTAL'),
           name: "execution_mode",
           value: "HORIZONTAL",
           selectedValue: localExecutionMode,
@@ -3990,14 +4389,12 @@ function AdvancedBE() {
       });
     }
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
-  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle]);
-  var getLogicalUnitTemplate = function getLogicalUnitTemplate() {
+  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle, role, enable_advanced_for_testers]);
+  const getLogicalUnitTemplate = () => {
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitsContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitTitle, {
         children: ["Advanced BE", /*#__PURE__*/Object(jsx_runtime["jsx"])(CloseIcon, {
-          onClick: function onClick() {
-            return setOpen(false);
-          },
+          onClick: () => setOpen(false),
           src: xclose
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitBody, {
@@ -4010,14 +4407,10 @@ function AdvancedBE() {
         }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Actions, {
           border: false,
           children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
-            onClick: function onClick() {
-              return setOpen(false);
-            },
+            onClick: () => setOpen(false),
             children: "Cancel"
           }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
-            onClick: function onClick() {
-              return SaveData();
-            },
+            onClick: () => SaveData(),
             children: "Save"
           })]
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
@@ -4041,9 +4434,7 @@ function AdvancedBE() {
       positions: ['right'],
       content: getLogicalUnitTemplate(),
       children: /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Title, {
-        onClick: function onClick() {
-          return setOpen(!open);
-        },
+        onClick: () => setOpen(!open),
         children: "Advanced"
       })
     })
@@ -4054,110 +4445,65 @@ function AdvancedBE() {
 
 
 
-function DataMovmentSettings_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function DataMovmentSettings_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? DataMovmentSettings_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : DataMovmentSettings_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
 
 
 
-
-
-
-
-
-
-var tabTypes = ['be', 'tables'];
-var tabNames = {
+const tabTypes = ['be', 'tables'];
+const tabNames = {
   be: 'Business Entity',
   tables: 'Tables'
 };
-var tabIcons = {
+const tabIcons = {
   be: entity_icon,
   tables: table_icon
 };
 function DataMovmentSettings(props) {
   var _errors$be_name;
-  var type = props.type,
-    enabledTabs = props.enabledTabs;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    register = _useContext.register,
-    errors = _useContext.errors,
-    statusesFuncMap = _useContext.statusesFuncMap;
-  var tableList = taskData.tableList,
-    be_id = taskData.be_id,
-    be_type = taskData.be_type;
-  var _useState = Object(react["useState"])([]),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    beData = _useState2[0],
-    setBeData = _useState2[1];
-  var _useState3 = Object(react["useState"])(),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    selectedTab = _useState4[0],
-    setSelectedTab = _useState4[1];
-  var _useState5 = Object(react["useState"])(false),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    loading = _useState6[0],
-    setLoading = _useState6[1];
-  var _useState7 = Object(react["useState"])(),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    selectedBe = _useState8[0],
-    setSelectedBe = _useState8[1];
-  var _useState9 = Object(react["useState"])([]),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    tabs = _useState10[0],
-    setTabs = _useState10[1];
-  var _useState11 = Object(react["useState"])(null),
-    _useState12 = slicedToArray_default()(_useState11, 2),
-    confirmOpen = _useState12[0],
-    setConfirmOpen = _useState12[1];
-  Object(react["useEffect"])(function () {
-    function fetchData() {
-      return _fetchData.apply(this, arguments);
-    }
-    function _fetchData() {
-      _fetchData = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return apis_task.getActiveBEs();
-            case 3:
-              data = _context.sent;
-              data.forEach(function (item) {
-                item.value = item.be_id;
-                item.label = item.be_name;
-              });
-              setBeData(data);
-              setLoading(false);
-              _context.next = 12;
-              break;
-            case 9:
-              _context.prev = 9;
-              _context.t0 = _context["catch"](0);
-              // use hook toast
-              setLoading(false);
-            case 12:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 9]]);
-      }));
-      return _fetchData.apply(this, arguments);
+  const {
+    type,
+    enabledTabs
+  } = props;
+  const {
+    taskData,
+    saveForm,
+    register,
+    errors,
+    statusesFuncMap
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    tableList,
+    be_id,
+    be_type
+  } = taskData;
+  const [beData, setBeData] = Object(react["useState"])([]);
+  const [selectedTab, setSelectedTab] = Object(react["useState"])();
+  const [loading, setLoading] = Object(react["useState"])(false);
+  const [selectedBe, setSelectedBe] = Object(react["useState"])();
+  const [tabs, setTabs] = Object(react["useState"])([]);
+  const [confirmOpen, setConfirmOpen] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    async function fetchData() {
+      try {
+        const data = await apis_task.getActiveBEs();
+        data.forEach(item => {
+          item.value = item.be_id;
+          item.label = item.be_name;
+        });
+        setBeData(data);
+        setLoading(false);
+      } catch (err) {
+        // use hook toast
+        setLoading(false);
+      }
     }
     fetchData();
   }, []);
-  Object(react["useEffect"])(function () {
-    // debugger;
+  Object(react["useEffect"])(() => {
     if (be_id && beData && beData.length > 0) {
-      var found = beData.find(function (it) {
-        return it.be_id === be_id;
-      });
+      const found = beData.find(it => it.be_id === be_id);
       if (found) {
         setSelectedBe(found);
       } else {
@@ -4169,15 +4515,16 @@ function DataMovmentSettings(props) {
       setSelectedBe(null);
     }
   }, [be_id, beData]);
-  var beChangeLocal = Object(react["useCallback"])(function (item, choose_option) {
+  const beChangeLocal = Object(react["useCallback"])((item, choose_option) => {
     if (item.be_id === be_id) {
       return;
     }
     setSelectedBe(item);
-    var updateData = {
+    const updateData = {
       be_id: item && item.be_id || undefined,
       be_name: item && item.be_name || '',
       selected_logical_units: [],
+      selected_logical_units_names: [],
       generation_type: 'all',
       selection_method: 'L',
       selection_param_value: undefined,
@@ -4194,16 +4541,14 @@ function DataMovmentSettings(props) {
     }
     saveForm(updateData);
   }, [saveForm, type, be_id, be_type]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (tabs && tabs.length > 0) {
       setSelectedTab(tabs[0]);
     }
   }, [tabs]);
-  var getTab = Object(react["useCallback"])(function (tabName) {
+  const getTab = Object(react["useCallback"])(tabName => {
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TabItem, {
-      onClick: function onClick() {
-        return setSelectedTab(tabName);
-      },
+      onClick: () => setSelectedTab(tabName),
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(DataMovmentSettings_styles_Icon, {
         src: tabIcons[tabName]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TabTitle, {
@@ -4211,8 +4556,8 @@ function DataMovmentSettings(props) {
       })]
     });
   }, [setSelectedTab, selectedTab]);
-  Object(react["useEffect"])(function () {
-    var filteredTabs = tabTypes.filter(function (it) {
+  Object(react["useEffect"])(() => {
+    const filteredTabs = tabTypes.filter(it => {
       if (!enabledTabs || enabledTabs.length === 0) {
         return true;
       }
@@ -4222,9 +4567,10 @@ function DataMovmentSettings(props) {
   }, [enabledTabs]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(DataMovmentSettings_styles_Container, {
     children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_Body, {
-      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, DataMovmentSettings_objectSpread(DataMovmentSettings_objectSpread({}, register('be_name', {
-        required: 'Please Choose Business Entity'
-      })), {}, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+        ...register('be_name', {
+          required: 'Please Choose Business Entity'
+        }),
         width: "290px",
         title: 'Select business entity',
         mandatory: true,
@@ -4233,7 +4579,7 @@ function DataMovmentSettings(props) {
         loading: loading,
         onChange: beChangeLocal,
         error: (_errors$be_name = errors.be_name) === null || _errors$be_name === void 0 ? void 0 : _errors$be_name.message
-      })), /*#__PURE__*/Object(jsx_runtime["jsx"])(task_AdvancedBE, {})]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(task_AdvancedBE, {})]
     })
   });
 }
@@ -4253,37 +4599,33 @@ function DataMovmentSettings(props) {
 
 
 
-
-
-
 function DataGenerationParameters(props) {
-  var dataGenerationParams = props.dataGenerationParams,
-    chosenParams = props.chosenParams,
-    updateParams = props.updateParams,
-    updateValues = props.updateValues;
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var synthetic_type = taskData.synthetic_type,
-    be_id = taskData.be_id,
-    sourceUserRole = taskData.sourceUserRole;
-  var _useState = Object(react["useState"])(null),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    paramsRefData = _useState2[0],
-    setParamsRefData = _useState2[1];
-  var _useState3 = Object(react["useState"])(''),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    paramSelectionName = _useState4[0],
-    setParamSelectionName = _useState4[1];
-  Object(react["useEffect"])(function () {
+  const {
+    dataGenerationParams,
+    chosenParams,
+    updateParams,
+    updateValues
+  } = props;
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    synthetic_type,
+    be_id,
+    sourceUserRole
+  } = taskData;
+  const [paramsRefData, setParamsRefData] = Object(react["useState"])(null);
+  const [paramSelectionName, setParamSelectionName] = Object(react["useState"])('');
+  Object(react["useEffect"])(() => {
     if (!paramsRefData) {
       return;
     }
     console.log(paramsRefData.getValues());
   }, [paramsRefData]);
-  var getInfoIcon = function getInfoIcon(data) {
+  const getInfoIcon = data => {
     if (data && data.description) {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TooltipPopover, {
         position: "top",
@@ -4298,24 +4640,24 @@ function DataGenerationParameters(props) {
     }
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(DummyIcon, {});
   };
-  var addItem = Object(react["useCallback"])(function (key) {
+  const addItem = Object(react["useCallback"])(key => {
     updateParams({
-      key: key,
+      key,
       action: 'add'
     });
   }, [updateParams]);
-  var removeItem = Object(react["useCallback"])(function (key) {
+  const removeItem = Object(react["useCallback"])(key => {
     updateParams({
-      key: key,
+      key,
       action: 'remove'
     });
   }, [updateParams]);
-  var getSelectedIcon = Object(react["useCallback"])(function (data, key) {
+  const getSelectedIcon = Object(react["useCallback"])((data, key) => {
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
-      name: "checkbox_generation_".concat(key),
+      name: `checkbox_generation_${key}`,
       title: key,
       disabled: data.mandatory && true || false,
-      onChange: function onChange(value) {
+      onChange: value => {
         if (value) {
           addItem(key);
         } else {
@@ -4325,7 +4667,7 @@ function DataGenerationParameters(props) {
       value: chosenParams.indexOf(key) >= 0
     });
   }, [chosenParams, removeItem, addItem]);
-  var getParamItem = Object(react["useCallback"])(function (key) {
+  const getParamItem = Object(react["useCallback"])(key => {
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ParamsItem, {
       chosen: chosenParams.indexOf(key) >= 0,
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ParamsItemText, {
@@ -4334,43 +4676,41 @@ function DataGenerationParameters(props) {
       }), getInfoIcon(dataGenerationParams[key])]
     });
   }, [dataGenerationParams, chosenParams, getSelectedIcon]);
-  var getEditorData = Object(react["useCallback"])(function () {
+  const getEditorData = Object(react["useCallback"])(() => {
     if (!dataGenerationParams) {
       return;
     }
-    var editor = [];
-    chosenParams.forEach(function (key) {
+    const editor = [];
+    chosenParams.forEach(key => {
       editor.push(dataGenerationParams[key].editor);
     });
     return editor;
   }, [chosenParams, dataGenerationParams]);
-  var editorData = getEditorData();
-  var getParamSelectionOptions = Object(react["useCallback"])(function () {
+  const editorData = getEditorData();
+  const getParamSelectionOptions = Object(react["useCallback"])(() => {
     if (!dataGenerationParams) {
       return [];
     }
-    var keys = Object.keys(dataGenerationParams).sort(function (item1, item2) {
+    const keys = Object.keys(dataGenerationParams).sort((item1, item2) => {
       return ('' + item1).localeCompare(item2);
     });
     if (!paramSelectionName) {
       return keys;
     }
-    return keys.filter(function (key) {
-      return key.indexOf(paramSelectionName) >= 0;
-    });
+    return keys.filter(key => key.indexOf(paramSelectionName) >= 0);
   }, [dataGenerationParams, paramSelectionName]);
-  var widgetAPIExist = window && window.k2widgets ? true : false;
-  var syntheticTypeChange = Object(react["useCallback"])(function (syntheticType) {
+  const widgetAPIExist = window && window.k2widgets ? true : false;
+  const syntheticTypeChange = Object(react["useCallback"])(syntheticType => {
     saveForm({
       synthetic_type: syntheticType
     });
   }, [saveForm]);
-  var updateFabricRefInData = Object(react["useCallback"])(function (ref) {
+  const updateFabricRefInData = Object(react["useCallback"])(ref => {
     saveForm({
       widgetRefData: ref
     });
   }, [saveForm]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (sourceUserRole && sourceUserRole.userType === 'tester' && !sourceUserRole.allow_read) {
       saveForm({
         synthetic_type: 'generated_data'
@@ -4416,13 +4756,11 @@ function DataGenerationParameters(props) {
           title: 'Data generation parameters',
           mandatory: false,
           value: paramSelectionName,
-          onChange: setParamSelectionName || function () {},
+          onChange: setParamSelectionName || (() => {}),
           type: InputTypes.text,
           placeholder: "Search..."
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ParamsList, {
-          children: getParamSelectionOptions().map(function (key) {
-            return getParamItem(key);
-          })
+          children: getParamSelectionOptions().map(key => getParamItem(key))
         })]
       })
     }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), be_id ? /*#__PURE__*/Object(jsx_runtime["jsx"])(RightSide, {
@@ -4439,27 +4777,91 @@ function DataGenerationParameters(props) {
 /* harmony default export */ var components_DataGenerationParameters = (DataGenerationParameters);
 // CONCATENATED MODULE: ./src/components/SelectTrainingModels/styles.ts
 
-var SelectTrainingModels_styles_templateObject, SelectTrainingModels_styles_templateObject2, SelectTrainingModels_styles_templateObject3, SelectTrainingModels_styles_templateObject4, SelectTrainingModels_styles_templateObject5, SelectTrainingModels_styles_templateObject6, SelectTrainingModels_styles_templateObject7, SelectTrainingModels_styles_templateObject8, SelectTrainingModels_styles_templateObject9;
-
-var SelectTrainingModels_styles_Container = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject || (SelectTrainingModels_styles_templateObject = taggedTemplateLiteral_default()(["\n  display: flex;\n  width: 100%;\n"])));
-var SelectTrainingModels_styles_Title = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject2 || (SelectTrainingModels_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n"])));
-var DatesContainer = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject3 || (SelectTrainingModels_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  margin-top: 20px;\n  margin-bottom: 38px;\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n  display: flex;\n  align-items: center;\n  gap: 30px;\n"])));
-var DateItem = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject4 || (SelectTrainingModels_styles_templateObject4 = taggedTemplateLiteral_default()(["\n  display: flex;\n  align-items: center;\n  gap: 10px;\n"])));
-var LeftSide = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject5 || (SelectTrainingModels_styles_templateObject5 = taggedTemplateLiteral_default()(["\n  border-right:  ", ";\n  display: flex;\n  flex-direction: column;\n  gap: 25px;\n  min-width: 350px;\n"])), function (props) {
-  return props.hideBorders ? '' : '1px solid #ccc';
-});
-var styles_RightSide = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject6 || (SelectTrainingModels_styles_templateObject6 = taggedTemplateLiteral_default()(["\n  margin-left: 30px;\n  height: 100% ;\n  width: calc(100% - 350px);\n"])));
-var SelectTrainingModels_styles_DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject7 || (SelectTrainingModels_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    border-bottom:  ", ";\n    padding-bottom: 10px;\n"])), function (props) {
-  return props.hideBorders ? '' : '1px solid #ccc';
-});
-var SelectTrainingModels_styles_SyntheticEntitiesOptions = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject8 || (SelectTrainingModels_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    align-self: flex-start;\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n"])));
-var LUError = styled_components_browser_esm["b" /* default */].div(SelectTrainingModels_styles_templateObject9 || (SelectTrainingModels_styles_templateObject9 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    margin-top: 20px;\n    margin-bottom: 20px;\n    color: #ed5565;\n"])));
+const SelectTrainingModels_styles_Container = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  width: 100%;
+`;
+const SelectTrainingModels_styles_Title = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+`;
+const DatesContainer = styled_components_browser_esm["b" /* default */].div`
+  margin-top: 20px;
+  margin-bottom: 38px;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+`;
+const DateItem = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const LeftSide = styled_components_browser_esm["b" /* default */].div`
+  border-right:  ${props => props.hideBorders ? '' : '1px solid #ccc'};
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  min-width: 350px;
+`;
+const styles_RightSide = styled_components_browser_esm["b" /* default */].div`
+  margin-left: 30px;
+  height: 100% ;
+  width: calc(100% - 350px);
+`;
+const SelectTrainingModels_styles_DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div`
+    border-bottom:  ${props => props.hideBorders ? '' : '1px solid #ccc'};
+    padding-bottom: 10px;
+`;
+const SelectTrainingModels_styles_SyntheticEntitiesOptions = styled_components_browser_esm["b" /* default */].div`
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+const LUError = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #ed5565;
+`;
+const DataGeneratorHeader = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0px;
+`;
+const DataGeneratorEvaluateContainer = styled_components_browser_esm["b" /* default */].div`
+  margin-top: 20px;
+`;
 // EXTERNAL MODULE: ./node_modules/moment/moment.js
-var moment = __webpack_require__(7);
+var moment = __webpack_require__(4);
 var moment_default = /*#__PURE__*/__webpack_require__.n(moment);
 
 // EXTERNAL MODULE: ./node_modules/@tanstack/table-core/build/lib/index.esm.js
-var lib_index_esm = __webpack_require__(56);
+var lib_index_esm = __webpack_require__(50);
 
 // CONCATENATED MODULE: ./src/components/SelectTrainingModels/hooks/useTable.tsx
 
@@ -4469,293 +4871,283 @@ var lib_index_esm = __webpack_require__(56);
 
 
 
-
-
-
-var useTable_useTable = function useTable(saveLocalData) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var selected_subset_task_exe_id = taskData.selected_subset_task_exe_id,
-    trainingStartDate = taskData.trainingStartDate,
-    trainingEndDate = taskData.trainingEndDate,
-    be_name = taskData.be_name,
-    selected_logical_units_names = taskData.selected_logical_units_names;
-  var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
-  var _useState = Object(react["useState"])(true),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    loading = _useState2[0],
-    setLoading = _useState2[1];
-  var _useState3 = Object(react["useState"])([]),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    data = _useState4[0],
-    setData = _useState4[1];
-  Object(react["useEffect"])(function () {
-    function fetchData() {
-      return _fetchData.apply(this, arguments);
-    }
-    function _fetchData() {
-      _fetchData = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var _data;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              if (!(!trainingStartDate || !trainingEndDate || !be_name || (selected_logical_units_names || []).length !== 1)) {
-                _context.next = 3;
-                break;
-              }
-              return _context.abrupt("return");
-            case 3:
-              _context.next = 5;
-              return apis_task.getTrainingModels(trainingStartDate, trainingEndDate, be_name, (selected_logical_units_names || [])[0]);
-            case 5:
-              _data = _context.sent;
-              _data.forEach(function (item) {
-                item.start_execution_time = moment_default()(item.start_execution_time).format('DD MMM YYYY, HH:mm');
-              });
-              setData(_data);
-              _context.next = 13;
-              break;
-            case 10:
-              _context.prev = 10;
-              _context.t0 = _context["catch"](0);
-              // use hook toast
-              setLoading(false);
-            case 13:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 10]]);
-      }));
-      return _fetchData.apply(this, arguments);
+const useTable = saveLocalData => {
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    selected_subset_task_exe_id,
+    trainingStartDate,
+    trainingEndDate,
+    be_name,
+    selected_logical_units_names
+  } = taskData;
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [data, setData] = Object(react["useState"])([]);
+  Object(react["useEffect"])(() => {
+    async function fetchData() {
+      try {
+        if (!trainingStartDate || !trainingEndDate || !be_name || (selected_logical_units_names || []).length !== 1) {
+          return;
+        }
+        // debugger;
+        const data = await apis_task.getTrainingModels(trainingStartDate, trainingEndDate, be_name, (selected_logical_units_names || [])[0]);
+        data.forEach(item => {
+          item.start_execution_time = moment_default()(item.start_execution_time).format('DD MMM YYYY, HH:mm');
+        });
+        setData(data);
+      } catch (err) {
+        // use hook toast
+        setLoading(false);
+      }
     }
     fetchData();
   }, [trainingStartDate, trainingEndDate, be_name, selected_logical_units_names]);
-  var setTrainingModel = Object(react["useCallback"])(function (data) {
+  const setTrainingModel = Object(react["useCallback"])(data => {
     saveLocalData({
       selected_subset_task_exe_id: data.task_execution_id
     });
   }, [saveLocalData]);
-  var columns = Object(react["useMemo"])(function () {
-    return [{
-      id: 'select',
-      header: '',
-      cell: function cell(_ref) {
-        var row = _ref.row;
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
-          className: "px-1",
-          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
-            onChange: function onChange() {
-              return setTrainingModel(row.original);
-            },
-            name: "select_training_model",
-            value: row.original.task_execution_id,
-            selectedValue: selected_subset_task_exe_id,
-            title: ''
-          })
-        });
-      }
-    }, columnHelper.accessor(function (row) {
-      return row.task_title;
-    }, {
-      id: 'task_title',
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      },
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Task name"
-        });
-      }
-    }), columnHelper.accessor('task_execution_id', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Task execution id"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('start_execution_time', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Execution time"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('num_of_entities', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Number of entities"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('task_executed_by', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Executed by"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('execution_note', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Exection note"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    })];
-  }, [columnHelper, selected_subset_task_exe_id, setTrainingModel]);
+  const columns = Object(react["useMemo"])(() => [{
+    id: 'select',
+    header: '',
+    cell: _ref => {
+      let {
+        row
+      } = _ref;
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "px-1",
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
+          onChange: () => setTrainingModel(row.original),
+          name: "select_training_model",
+          value: row.original.task_execution_id,
+          selectedValue: selected_subset_task_exe_id,
+          title: ''
+        })
+      });
+    }
+  }, columnHelper.accessor(row => row.task_title, {
+    id: 'task_title',
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Task name"
+    })
+  }), columnHelper.accessor('task_execution_id', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Task execution id"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  }), columnHelper.accessor('start_execution_time', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Execution time"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  }), columnHelper.accessor('num_of_entities', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Number of entities"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  }), columnHelper.accessor('task_executed_by', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Executed by"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  }), columnHelper.accessor('execution_note', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Execution note"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  })], [columnHelper, selected_subset_task_exe_id, setTrainingModel]);
   return {
-    columns: columns,
-    data: data,
-    loading: loading
+    columns,
+    data,
+    loading
   };
 };
-/* harmony default export */ var hooks_useTable = (useTable_useTable);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/objectWithoutProperties.js
-var objectWithoutProperties = __webpack_require__(70);
-var objectWithoutProperties_default = /*#__PURE__*/__webpack_require__.n(objectWithoutProperties);
-
+/* harmony default export */ var hooks_useTable = (useTable);
 // CONCATENATED MODULE: ./src/components/Table/Filter.tsx
 
 
 function Filter(_ref) {
-  var column = _ref.column,
-    table = _ref.table;
+  let {
+    column,
+    table
+  } = _ref;
+  let filterValue = column.getFilterValue() || '';
+  const meta = column.columnDef.meta;
   // const firstValue = table
   //   .getPreFilteredRowModel()
   //   .flatRows[0]?.getValue(column.id)
-
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
     title: "",
-    type: InputTypes.text,
-    onChange: function onChange(value) {
-      return column.setFilterValue(function (old) {
-        return [value, old === null || old === void 0 ? void 0 : old[1]];
-      });
+    type: (meta === null || meta === void 0 ? void 0 : meta.type) === 'string' || (meta === null || meta === void 0 ? void 0 : meta.type) === undefined ? InputTypes.text : InputTypes.number,
+    value: filterValue,
+    onChange: v => {
+      if ((meta === null || meta === void 0 ? void 0 : meta.type) === 'number') {
+        column.setFilterValue(Number.isFinite(v) ? v : undefined);
+      } else {
+        column.setFilterValue(v || undefined);
+      }
     }
   });
 }
 /* harmony default export */ var Table_Filter = (Filter);
 // CONCATENATED MODULE: ./src/components/Table/styles.ts
 
-var Table_styles_templateObject, Table_styles_templateObject2, Table_styles_templateObject3, Table_styles_templateObject4, Table_styles_templateObject5, Table_styles_templateObject6, Table_styles_templateObject7, Table_styles_templateObject8, Table_styles_templateObject9;
-
-var Table_styles_Container = styled_components_browser_esm["b" /* default */].div(Table_styles_templateObject || (Table_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    height: 100%;\n    padding: 0;\n    overflow-x: auto;\n"])));
-var TableContainer = styled_components_browser_esm["b" /* default */].table(Table_styles_templateObject2 || (Table_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    border-spacing: 0.5px;\n    background-color: #ccc;\n"])));
-var Thead = styled_components_browser_esm["b" /* default */].thead(Table_styles_templateObject3 || (Table_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    height: 100px;\n"])));
-var Tbody = styled_components_browser_esm["b" /* default */].tbody(Table_styles_templateObject4 || (Table_styles_templateObject4 = taggedTemplateLiteral_default()(["\n"])));
-var TableRow = styled_components_browser_esm["b" /* default */].tr(Table_styles_templateObject5 || (Table_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    height: 50px;\n"])));
-var TableHeaderText = styled_components_browser_esm["b" /* default */].div(Table_styles_templateObject6 || (Table_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    border: 0.5px solid #ccc;\n    height: 50px;\n    background-color: #1483f3;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: 500;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #fff;\n    padding: 0px 10px;\n    display: flex;\n    align-items: center;\n"])));
-var TableHeaderFilter = styled_components_browser_esm["b" /* default */].div(Table_styles_templateObject7 || (Table_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    border: 0.5px solid #ccc;\n    height: 50px;\n    background-color: #deebf9;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    padding: 0px 9px;\n"])));
-var TableHeadItem = styled_components_browser_esm["b" /* default */].th(Table_styles_templateObject8 || (Table_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    padding: 0px;\n"])));
-var TableRowItem = styled_components_browser_esm["b" /* default */].td(Table_styles_templateObject9 || (Table_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #666;\n    background-color: ", ";\n    padding-left: 8px;\n    border: 0.5px solid #ccc;\n"])), function (props) {
-  return props.row % 2 === 0 ? '#fff' : '#f2f2f2';
-});
+const Table_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow-x: auto;
+`;
+const TableContainer = styled_components_browser_esm["b" /* default */].table`
+    width: 100%;
+    border-spacing: 0.5px;
+    background-color: #ccc;
+`;
+const Thead = styled_components_browser_esm["b" /* default */].thead`
+    height: 100px;
+`;
+const Tbody = styled_components_browser_esm["b" /* default */].tbody`
+`;
+const TableRow = styled_components_browser_esm["b" /* default */].tr`
+    height: 50px;
+`;
+const TableHeaderText = styled_components_browser_esm["b" /* default */].div`
+    border: 0.5px solid #ccc;
+    height: 50px;
+    background-color: #1483f3;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #fff;
+    padding: 0px 10px;
+    display: flex;
+    align-items: center;
+`;
+const TableHeaderFilter = styled_components_browser_esm["b" /* default */].div`
+    border: 0.5px solid #ccc;
+    height: 50px;
+    background-color: #deebf9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 9px;
+`;
+const TableHeadItem = styled_components_browser_esm["b" /* default */].th`
+    padding: 0px;
+`;
+const TableRowItem = styled_components_browser_esm["b" /* default */].td`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666;
+    background-color: ${props => props.row % 2 === 0 ? '#fff' : '#f2f2f2'};
+    padding-left: 8px;
+    border: 0.5px solid #ccc;
+`;
 // EXTERNAL MODULE: ./node_modules/@tanstack/react-table/build/lib/index.esm.js
-var build_lib_index_esm = __webpack_require__(27);
+var build_lib_index_esm = __webpack_require__(23);
 
 // CONCATENATED MODULE: ./src/components/Table/index.tsx
-
-
-var _excluded = ["indeterminate", "className"];
-function Table_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function Table_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? Table_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : Table_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
 
 
 
 
 
 function IndeterminateCheckbox(_ref) {
-  var indeterminate = _ref.indeterminate,
-    _ref$className = _ref.className,
-    className = _ref$className === void 0 ? '' : _ref$className,
-    rest = objectWithoutProperties_default()(_ref, _excluded);
-  var ref = Object(react["useRef"])(null);
-  Object(react["useEffect"])(function () {
+  let {
+    indeterminate,
+    className = '',
+    ...rest
+  } = _ref;
+  const ref = Object(react["useRef"])(null);
+  Object(react["useEffect"])(() => {
     if (typeof indeterminate === 'boolean') {
       ref.current.indeterminate = !rest.checked && indeterminate;
     }
   }, [ref, indeterminate]);
-  return /*#__PURE__*/Object(jsx_runtime["jsx"])("input", Table_objectSpread({
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
     type: "checkbox",
     ref: ref,
-    className: className + ' cursor-pointer'
-  }, rest));
+    className: className + ' cursor-pointer',
+    ...rest
+  });
 }
 function Table(props) {
-  var data = props.data,
-    columns = props.columns,
-    isExpandable = props.isExpandable,
-    rowSelection = props.rowSelection;
-  var table = Object(build_lib_index_esm["b" /* useReactTable */])({
-    data: data,
-    columns: columns,
-    getCoreRowModel: Object(lib_index_esm["c" /* getCoreRowModel */])(),
-    getSubRows: function getSubRows(row) {
-      return row.subRows;
+  const {
+    data,
+    columns,
+    isExpandable
+  } = props;
+  const [columnFilters, setColumnFilters] = Object(react["useState"])([]);
+  console.log(columnFilters);
+  const table = Object(build_lib_index_esm["b" /* useReactTable */])({
+    data,
+    columns,
+    state: {
+      columnFilters // 👈  current filters
     },
+    onColumnFiltersChange: setColumnFilters,
+    // 👈  updater
+    getCoreRowModel: Object(lib_index_esm["c" /* getCoreRowModel */])(),
+    getFilteredRowModel: Object(lib_index_esm["e" /* getFilteredRowModel */])(),
+    // 👈  enable filtering
+    getSubRows: row => row.subRows,
     getExpandedRowModel: Object(lib_index_esm["d" /* getExpandedRowModel */])(),
+    enableExpanding: isExpandable,
     defaultColumn: {
       minSize: 0,
       size: Number.MAX_SAFE_INTEGER,
       maxSize: Number.MAX_SAFE_INTEGER
-    },
-    enableExpanding: isExpandable,
-    state: {
-      // rowSelection
     }
   });
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Table_styles_Container, {
     children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Thead, {
-        children: table.getHeaderGroups().map(function (headerGroup) {
-          return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
-            children: headerGroup.headers.map(function (header) {
-              return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeadItem, {
-                colSpan: header.colSpan,
-                children: header.isPlaceholder ? null : /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-                  children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeaderText, {
-                    children: Object(build_lib_index_esm["a" /* flexRender */])(header.column.columnDef.header, header.getContext())
-                  }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeaderFilter, {
-                    children: header.column.getCanFilter() ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Table_Filter, {
-                      column: header.column,
-                      table: table
-                    }) : null
-                  })]
-                })
-              }, header.id);
-            })
-          }, headerGroup.id);
-        })
+        children: table.getHeaderGroups().map(headerGroup => /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
+          children: headerGroup.headers.map(header => {
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeadItem, {
+              colSpan: header.colSpan,
+              children: header.isPlaceholder ? null : /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeaderText, {
+                  children: Object(build_lib_index_esm["a" /* flexRender */])(header.column.columnDef.header, header.getContext())
+                }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeaderFilter, {
+                  children: header.column.getCanFilter() ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Table_Filter, {
+                    column: header.column,
+                    table: table
+                  }) : null
+                })]
+              })
+            }, header.id);
+          })
+        }, headerGroup.id))
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Tbody, {
-        children: table.getRowModel().rows.map(function (row, index) {
+        children: table.getRowModel().rows.map((row, index) => {
           return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
-            children: row.getVisibleCells().map(function (cell) {
+            children: row.getVisibleCells().map(cell => {
               return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRowItem, {
                 row: index,
                 children: Object(build_lib_index_esm["a" /* flexRender */])(cell.column.columnDef.cell, cell.getContext())
@@ -4770,30 +5162,86 @@ function Table(props) {
 /* harmony default export */ var components_Table = (Table);
 // CONCATENATED MODULE: ./src/components/RangeDatePicker/styles.ts
 
-var RangeDatePicker_styles_templateObject, RangeDatePicker_styles_templateObject2, RangeDatePicker_styles_templateObject3, RangeDatePicker_styles_templateObject4;
-
-var RangeDatePicker_styles_Container = styled_components_browser_esm["b" /* default */].div(RangeDatePicker_styles_templateObject || (RangeDatePicker_styles_templateObject = taggedTemplateLiteral_default()(["\n margin-bottom: 38px;\n"])));
-var RangeDatePicker_styles_Title = styled_components_browser_esm["b" /* default */].div(RangeDatePicker_styles_templateObject2 || (RangeDatePicker_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n  margin-top: 20px;\n  margin-bottom: 20px;\n"])));
-var DateContainer = styled_components_browser_esm["b" /* default */].div(RangeDatePicker_styles_templateObject3 || (RangeDatePicker_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n  display: flex;\n  align-items: center;\n  gap: 30px;\n"])));
-var styles_DateItem = styled_components_browser_esm["b" /* default */].div(RangeDatePicker_styles_templateObject4 || (RangeDatePicker_styles_templateObject4 = taggedTemplateLiteral_default()(["\n  display: flex;\n  align-items: center;\n  gap: 10px;\n"])));
+const RangeDatePicker_styles_Container = styled_components_browser_esm["b" /* default */].div`
+ margin-bottom: 38px;
+`;
+const RangeDatePicker_styles_Title = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`;
+const DateContainer = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+`;
+const styles_DateItem = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
 // EXTERNAL MODULE: ./node_modules/react-datepicker/dist/react-datepicker.min.js
-var react_datepicker_min = __webpack_require__(222);
+var react_datepicker_min = __webpack_require__(219);
 var react_datepicker_min_default = /*#__PURE__*/__webpack_require__.n(react_datepicker_min);
 
 // EXTERNAL MODULE: ./node_modules/react-datepicker/dist/react-datepicker.css
-var react_datepicker = __webpack_require__(269);
+var react_datepicker = __webpack_require__(267);
 
 // EXTERNAL MODULE: ./node_modules/react-datepicker/dist/react-datepicker-cssmodules.css
-var react_datepicker_cssmodules = __webpack_require__(271);
+var react_datepicker_cssmodules = __webpack_require__(269);
 
 // CONCATENATED MODULE: ./src/components/DatePicker/styles.ts
 
-var DatePicker_styles_templateObject, DatePicker_styles_templateObject2, DatePicker_styles_templateObject3, DatePicker_styles_templateObject4;
+const DatePicker_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+`;
+const IconContainer = styled_components_browser_esm["b" /* default */].button`
+    width: 40px;
+    height: 40px;
+    border-radius: 3px;
+    border: solid 1px #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+`;
+const DatePicker_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: 15px;
+`;
+const CustomDatePickerInput = styled_components_browser_esm["b" /* default */].button`
+    border-radius: 3px;
+    border: solid 1px #ccc;
+    width: 120px;
+    height: 40px;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #666;
+    padding-left: 11px;
+    background-color: #fff;
+    cursor: pointer;
 
-var DatePicker_styles_Container = styled_components_browser_esm["b" /* default */].div(DatePicker_styles_templateObject || (DatePicker_styles_templateObject = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n"])));
-var IconContainer = styled_components_browser_esm["b" /* default */].button(DatePicker_styles_templateObject2 || (DatePicker_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 40px;\n    height: 40px;\n    border-radius: 3px;\n    border: solid 1px #ccc;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    background-color: #fff;\n"])));
-var DatePicker_styles_Icon = styled_components_browser_esm["b" /* default */].img(DatePicker_styles_templateObject3 || (DatePicker_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 15px;\n"])));
-var CustomDatePickerInput = styled_components_browser_esm["b" /* default */].button(DatePicker_styles_templateObject4 || (DatePicker_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    border-radius: 3px;\n    border: solid 1px #ccc;\n    width: 120px;\n    height: 40px;\n    font-size: 15px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    color: #666;\n    padding-left: 11px;\n    background-color: #fff;\n    cursor: pointer;\n\n"])));
+`;
 // CONCATENATED MODULE: ./src/images/calandar-icon.svg
 /* harmony default export */ var calandar_icon = ("js/dist/ddc82450adc11897f7d6cf5354ce7994.svg");
 // CONCATENATED MODULE: ./src/components/DatePicker/index.tsx
@@ -4804,14 +5252,17 @@ var CustomDatePickerInput = styled_components_browser_esm["b" /* default */].but
 
 
 
-
 function TDMDatePicker(props) {
-  var date = props.date,
-    onChange = props.onChange,
-    minDate = props.minDate;
-  var CustomInputRef = /*#__PURE__*/Object(react["forwardRef"])(function (_ref, ref) {
-    var value = _ref.value,
-      onClick = _ref.onClick;
+  const {
+    date,
+    onChange,
+    minDate
+  } = props;
+  const CustomInputRef = /*#__PURE__*/Object(react["forwardRef"])((_ref, ref) => {
+    let {
+      value,
+      onClick
+    } = _ref;
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(CustomDatePickerInput, {
       type: "button",
       onClick: onClick,
@@ -4840,20 +5291,21 @@ function TDMDatePicker(props) {
 
 
 
-
 function RangeDatePicker(props) {
-  var title = props.title,
-    startDate = props.startDate,
-    endDate = props.endDate,
-    startDateChange = props.startDateChange,
-    endDateChange = props.endDateChange;
-  var startDateUpdate = function startDateUpdate(startDate) {
+  const {
+    title,
+    startDate,
+    endDate,
+    startDateChange,
+    endDateChange
+  } = props;
+  const startDateUpdate = startDate => {
     if (startDate && endDate && startDate > endDate) {
       endDateChange(new Date(startDate.getTime() + 2592000000));
     }
     startDateChange(startDate);
   };
-  var endDateUpdate = function endDateUpdate(endDate) {
+  const endDateUpdate = endDate => {
     endDateChange(endDate);
   };
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(RangeDatePicker_styles_Container, {
@@ -4894,28 +5346,30 @@ function RangeDatePicker(props) {
 
 
 
-
-
-
 function SelectTrainingModels(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var trainingStartDate = taskData.trainingStartDate,
-    trainingEndDate = taskData.trainingEndDate,
-    be_name = taskData.be_name,
-    synthetic_type = taskData.synthetic_type,
-    selected_logical_units_names = taskData.selected_logical_units_names,
-    sourceUserRole = taskData.sourceUserRole,
-    disableGeneration = taskData.disableGeneration;
-  var _useTable = hooks_useTable(saveForm),
-    columns = _useTable.columns,
-    data = _useTable.data,
-    loading = _useTable.loading;
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  Object(react["useEffect"])(function () {
-    var updateData = {};
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    trainingStartDate,
+    trainingEndDate,
+    be_name,
+    synthetic_type,
+    selected_logical_units_names,
+    sourceUserRole,
+    disableGeneration,
+    evaluation_ind
+  } = taskData;
+  const {
+    columns,
+    data,
+    loading
+  } = hooks_useTable(saveForm);
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  Object(react["useEffect"])(() => {
+    const updateData = {};
     if (!trainingStartDate) {
       updateData.trainingStartDate = new Date(Date.now() - 2592000000);
     }
@@ -4925,59 +5379,45 @@ function SelectTrainingModels(props) {
     if (Object.keys(updateData).length > 0) {
       saveForm(updateData);
     }
-    function fetchCheckAIInstaltion() {
-      return _fetchCheckAIInstaltion.apply(this, arguments);
-    }
-    function _fetchCheckAIInstaltion() {
-      _fetchCheckAIInstaltion = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return apis_task.checkAIInstallation('AIGeneration');
-            case 3:
-              _context.next = 8;
-              break;
-            case 5:
-              _context.prev = 5;
-              _context.t0 = _context["catch"](0);
-              saveForm({
-                disableGeneration: true
-              });
-            case 8:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 5]]);
-      }));
-      return _fetchCheckAIInstaltion.apply(this, arguments);
+    async function fetchCheckAIInstaltion() {
+      try {
+        await apis_task.checkAIInstallation('AIGeneration');
+      } catch (err) {
+        saveForm({
+          disableGeneration: true
+        });
+      }
     }
     if (!disableGeneration) {
       fetchCheckAIInstaltion();
     }
   }, []);
-  var startDateUpdate = Object(react["useCallback"])(function (startDate) {
-    var updateData = {
+  const startDateUpdate = Object(react["useCallback"])(startDate => {
+    const updateData = {
       trainingStartDate: startDate
     };
     saveForm(updateData);
   }, [saveForm]);
-  var endDateUpdate = Object(react["useCallback"])(function (endDate) {
+  const endDateUpdate = Object(react["useCallback"])(endDate => {
     saveForm({
       trainingEndDate: endDate
     });
   }, [saveForm]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (sourceUserRole && sourceUserRole.userType === 'tester' && !sourceUserRole.allow_read || disableGeneration) {
       saveForm({
         synthetic_type: 'generated_data'
       });
     }
   }, [sourceUserRole, disableGeneration]);
-  var syntheticTypeChange = Object(react["useCallback"])(function (syntheticType) {
+  const syntheticTypeChange = Object(react["useCallback"])(syntheticType => {
     saveForm({
       synthetic_type: syntheticType
+    });
+  }, [saveForm]);
+  const evaluateGeneratedDataChange = Object(react["useCallback"])(value => {
+    saveForm({
+      evaluation_ind: value
     });
   }, [saveForm]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(SelectTrainingModels_styles_Container, {
@@ -5005,21 +5445,30 @@ function SelectTrainingModels(props) {
             selectedValue: synthetic_type,
             title: 'Use generated data in the Test data store'
           })]
-        }), be_name && synthetic_type === 'new_data' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_NumberOfEntities, {
-          width: '315px',
-          title: "Number of entities"
+        }), be_name && synthetic_type === 'new_data' ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_NumberOfEntities, {
+            width: '315px',
+            title: "Number of entities"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+            title: 'Evaluate generated data',
+            name: "evaluate_generated_data",
+            value: evaluation_ind,
+            onChange: evaluateGeneratedDataChange
+          })]
         }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
       }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
     }), be_name && synthetic_type === 'new_data' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_RightSide, {
       children: (selected_logical_units_names || []).length !== 1 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(LUError, {
         children: "Select only one LU."
       }) : /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_RangeDatePicker, {
-          title: 'Select data generator',
-          startDate: trainingStartDate,
-          startDateChange: startDateUpdate,
-          endDate: trainingEndDate,
-          endDateChange: endDateUpdate
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(DataGeneratorHeader, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_RangeDatePicker, {
+            title: 'Select data generator',
+            startDate: trainingStartDate,
+            startDateChange: startDateUpdate,
+            endDate: trainingEndDate,
+            endDateChange: endDateUpdate
+          })
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
           columns: columns,
           data: data
@@ -5031,31 +5480,29 @@ function SelectTrainingModels(props) {
 /* harmony default export */ var components_SelectTrainingModels = (SelectTrainingModels);
 // CONCATENATED MODULE: ./src/components/EnvironmentSelect/styles.ts
 
-var EnvironmentSelect_styles_templateObject;
-
-var EnvironmentSelect_styles_Container = styled_components_browser_esm["b" /* default */].div(EnvironmentSelect_styles_templateObject || (EnvironmentSelect_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: auto;\n    display: flex;\n    align-items: center;\n    cursor: pointer;\n    gap: 20px;\n    align-items: flex-end;\n    position: relative;\n"])));
+const EnvironmentSelect_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: auto;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 20px;
+    align-items: flex-end;
+    position: relative;
+`;
 // CONCATENATED MODULE: ./src/hooks/useToast.ts
 
 
-var useToast_useToast = function useToast() {
-  var toastr = getService('toastr');
-  return Object(react["useMemo"])(function () {
-    return {
-      success: function success(message, inForm) {
-        return toastr === null || toastr === void 0 ? void 0 : toastr.success(message);
-      },
-      error: function error(message, inForm) {
-        return toastr === null || toastr === void 0 ? void 0 : toastr.error(message);
-      },
-      warning: function warning(message, inForm) {
-        return toastr === null || toastr === void 0 ? void 0 : toastr.warning(message, '', {
-          containerId: inForm ? 'react-toast-container' : undefined
-        });
-      }
-    };
-  }, []);
+const useToast = () => {
+  const toastr = getService('toastr');
+  return Object(react["useMemo"])(() => ({
+    success: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.success(message),
+    error: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.error(message),
+    warning: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.warning(message, '', {
+      containerId: inForm ? 'react-toast-container' : undefined
+    })
+  }), []);
 };
-/* harmony default export */ var hooks_useToast = (useToast_useToast);
+/* harmony default export */ var hooks_useToast = (useToast);
 // CONCATENATED MODULE: ./src/components/EnvironmentSelect/index.tsx
 
 
@@ -5064,85 +5511,53 @@ var useToast_useToast = function useToast() {
 
 
 
-
-
-
 function EnvironmentSelect(props) {
-  var be_name = props.be_name,
-    environment_id = props.environment_id,
-    onChange = props.onChange,
-    syntheticType = props.syntheticType,
-    isMandatory = props.isMandatory,
-    mode = props.mode,
-    title = props.title;
-  var toast = hooks_useToast();
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData;
-  var dataSourceType = taskData.dataSourceType,
-    source_type = taskData.source_type;
-  var _useState = Object(react["useState"])(null),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    selectedEnviornment = _useState2[0],
-    setSelectedEnviornment = _useState2[1];
-  var _useState3 = Object(react["useState"])(true),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    loading = _useState4[0],
-    setLoading = _useState4[1];
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    environments = _useState6[0],
-    setEnvironments = _useState6[1];
-  Object(react["useEffect"])(function () {
-    function fetchData() {
-      return _fetchData.apply(this, arguments);
-    }
-    function _fetchData() {
-      _fetchData = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data, filteredData;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return apis_task.getEnvironments(be_name);
-            case 3:
-              data = _context.sent;
-              data.forEach(function (item) {
-                item.value = item.environment_id;
-                item.label = item.environment_name;
-              });
-              if (mode === 'SOURCE' && dataSourceType === 'data_source' && source_type === 'tables') {
-                filteredData = data.filter(function (it) {
-                  return it.allowed_refresh_reference_data !== false;
-                });
-                if (filteredData.length === 0 || filteredData.filter(function (it) {
-                  return it.synthetic_indicator === 'None';
-                }).length === 0) {
-                  toast.warning('You don’t have permissions to run tables');
-                }
-                setEnvironments(filteredData);
-              } else {
-                setEnvironments(data);
-              }
-              setLoading(false);
-              _context.next = 12;
-              break;
-            case 9:
-              _context.prev = 9;
-              _context.t0 = _context["catch"](0);
-              // use hook toast
-              setLoading(false);
-            case 12:
-            case "end":
-              return _context.stop();
+  const {
+    be_name,
+    environment_id,
+    onChange,
+    syntheticType,
+    isMandatory,
+    mode,
+    title
+  } = props;
+  const toast = hooks_useToast();
+  const {
+    taskData
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    dataSourceType,
+    source_type
+  } = taskData;
+  const [selectedEnviornment, setSelectedEnviornment] = Object(react["useState"])(null);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [environments, setEnvironments] = Object(react["useState"])([]);
+  Object(react["useEffect"])(() => {
+    async function fetchData() {
+      try {
+        const data = await apis_task.getEnvironments(be_name);
+        data.forEach(item => {
+          item.value = item.environment_id;
+          item.label = item.environment_name;
+        });
+        if (mode === 'SOURCE' && dataSourceType === 'data_source' && source_type === 'tables') {
+          const filteredData = data.filter(it => it.allowed_refresh_reference_data !== false);
+          if (filteredData.length === 0 || filteredData.filter(it => it.synthetic_indicator === 'None').length === 0) {
+            toast.warning('You don’t have permissions to run tables');
           }
-        }, _callee, null, [[0, 9]]);
-      }));
-      return _fetchData.apply(this, arguments);
+          setEnvironments(filteredData);
+        } else {
+          setEnvironments(data);
+        }
+        setLoading(false);
+      } catch (err) {
+        // use hook toast
+        setLoading(false);
+      }
     }
     fetchData();
   }, [be_name]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (loading) {
       return;
     }
@@ -5150,21 +5565,19 @@ function EnvironmentSelect(props) {
       if (selectedEnviornment && selectedEnviornment.synthetic_indicator === syntheticType) {
         return;
       }
-      var syntheticEnvironment = environments.find(function (it) {
-        return it.synthetic_indicator === syntheticType;
-      });
+      const syntheticEnvironment = environments.find(it => it.synthetic_indicator === syntheticType);
       setSelectedEnviornment(syntheticEnvironment || null);
       onChange(syntheticEnvironment || null);
     } else if (selectedEnviornment && selectedEnviornment.synthetic_indicator !== 'None') {
       onChange(null);
     }
   }, [syntheticType, environments, selectedEnviornment, loading]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (environment_id === undefined || environment_id === null) {
       setSelectedEnviornment(null);
       return;
     }
-    environments.forEach(function (item) {
+    environments.forEach(item => {
       item.value = item.environment_id;
       item.label = item.environment_name;
       if (environment_id && environment_id === item.environment_id) {
@@ -5179,9 +5592,7 @@ function EnvironmentSelect(props) {
       title: title,
       mandatory: isMandatory,
       value: selectedEnviornment,
-      options: environments.filter(function (it) {
-        return it.synthetic_indicator === 'None' && (it.environment_type === mode || it.environment_type === 'BOTH');
-      }),
+      options: environments.filter(it => it.synthetic_indicator === 'None' && (it.environment_type === mode || it.environment_type === 'BOTH')),
       loading: loading,
       onChange: onChange
     })
@@ -5192,24 +5603,108 @@ function EnvironmentSelect(props) {
 /* harmony default export */ var pii_icon = ("js/dist/4bace6bde9f0c66715224a842651a702.svg");
 // CONCATENATED MODULE: ./src/components/task/ReferenceTables/styles.ts
 
-var ReferenceTables_styles_templateObject, ReferenceTables_styles_templateObject2, ReferenceTables_styles_templateObject3, ReferenceTables_styles_templateObject4, ReferenceTables_styles_templateObject5, ReferenceTables_styles_templateObject6, ReferenceTables_styles_templateObject7, ReferenceTables_styles_templateObject8, ReferenceTables_styles_templateObject9, ReferenceTables_styles_templateObject10, ReferenceTables_styles_templateObject11, ReferenceTables_styles_templateObject12;
-
-var ReferenceTables_styles_Container = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject || (ReferenceTables_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    border-left: 2px solid #ccc;\n    padding-left: 25px;\n    display: flex;\n    flex-direction: column;\n    gap: 17px;\n"])));
-var TablesContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject2 || (ReferenceTables_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    gap: 7px;\n    align-items:center;\n    height: 269px;\n"])));
-var SourceTablesContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject3 || (ReferenceTables_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 260px;\n    background-color: #f2f2f2;\n    padding: 10px 20px 30px 20px;\n    height: calc(100% - 40px);\n    height: -webkit-fill-available;\n"])));
-var SourceTables = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject4 || (ReferenceTables_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    margin-top: 10px;\n    overflow-y: auto;\n    height: calc(100% - 30px);\n"])));
-var MoveTablesButton = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject5 || (ReferenceTables_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    width: 27px;\n    height: 27px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer;\n    border-radius: 3px;\n    background-color: #1483f3;\n"])));
-var SelectedTables = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject6 || (ReferenceTables_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    flex-grow: 1;\n    height: 269px;\n"])));
-var ReferenceTables_styles_Icon = styled_components_browser_esm["b" /* default */].img(ReferenceTables_styles_templateObject7 || (ReferenceTables_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n    width: ", ";\n"])), function (props) {
-  return props.width || '';
-});
-var ReferenceTables_styles_Title = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject8 || (ReferenceTables_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n"])));
-var EnvIconContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject9 || (ReferenceTables_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    margin-top: 10px;\n    cursor: pointer;\n"])));
-var TablesIconContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject10 || (ReferenceTables_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    padding-left: 23px;\n    margin-top: 7px;\n    cursor: pointer;\n"])));
-var Tables = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject11 || (ReferenceTables_styles_templateObject11 = taggedTemplateLiteral_default()([" \n    margin-top: 7px;\n"])));
-var TableItemContainer = styled_components_browser_esm["b" /* default */].div(ReferenceTables_styles_templateObject12 || (ReferenceTables_styles_templateObject12 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    cursor: pointer;\n    background-color: ", ";\n    padding-left: 55px;  \n"])), function (props) {
-  return props.selected ? '#e5e5e5' : '';
-});
+const ReferenceTables_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    border-left: 2px solid #ccc;
+    padding-left: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+`;
+const TablesContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    gap: 7px;
+    align-items:center;
+    height: 269px;
+`;
+const SourceTablesContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 260px;
+    background-color: #f2f2f2;
+    padding: 10px 20px 30px 20px;
+    height: calc(100% - 40px);
+    height: -webkit-fill-available;
+`;
+const SourceTables = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 0px;
+    overflow-y: auto;
+    height: calc(100% - 40px);
+`;
+const MoveTablesButton = styled_components_browser_esm["b" /* default */].div`
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 3px;
+    background-color: #1483f3;
+`;
+const SelectedTables = styled_components_browser_esm["b" /* default */].div`
+    flex-grow: 1;
+    height: 269px;
+`;
+const ReferenceTables_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    width: ${props => props.width || ''};
+`;
+const ReferenceTables_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+`;
+const EnvIconContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+`;
+const TablesIconContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 23px;
+    margin-top: 7px;
+    cursor: pointer;
+`;
+const Tables = styled_components_browser_esm["b" /* default */].div` 
+    margin-top: 7px;
+`;
+const TableItemContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    background-color: ${props => props.selected ? '#e5e5e5' : ''};
+    padding-left: 48px;  
+`;
+const ToggleAll = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+`;
+const ToggleTitle = styled_components_browser_esm["b" /* default */].div`
+    cursor: pointer;
+    font-size: 14px;
+`;
+const TableTitle = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+`;
+const SelectAllContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 12px;
+    cursor: pointer;
+`;
 // CONCATENATED MODULE: ./src/images/env-icon.svg
 /* harmony default export */ var env_icon = ("js/dist/7f89285037360b34caf7b2d2a1f8b24e.svg");
 // CONCATENATED MODULE: ./src/images/tables-folder-icon.svg
@@ -5218,16 +5713,67 @@ var TableItemContainer = styled_components_browser_esm["b" /* default */].div(Re
 /* harmony default export */ var arrow_right = ("js/dist/873f030ee47d4d2b143fcec667670d37.svg");
 // CONCATENATED MODULE: ./src/components/RegularTable/styles.ts
 
-var RegularTable_styles_templateObject, RegularTable_styles_templateObject2, RegularTable_styles_templateObject3, RegularTable_styles_templateObject4, RegularTable_styles_templateObject5, RegularTable_styles_templateObject6, RegularTable_styles_templateObject7, RegularTable_styles_templateObject8;
+const RegularTable_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow-x: auto;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+`;
+const styles_TableContainer = styled_components_browser_esm["b" /* default */].table`
+    width: 100%;
+    max-height: 100%;
+    border-spacing: 0.5px;
+`;
+const styles_Thead = styled_components_browser_esm["b" /* default */].thead`
+    height: 55px;
+    border-bottom: 1px solid #ccc;
+`;
+const styles_Tbody = styled_components_browser_esm["b" /* default */].tbody`
+`;
+const styles_TableRow = styled_components_browser_esm["b" /* default */].tr`
+    height: 34px;
+    background-color: ${props => props.isSelected ? '#e6f2ff !important' : 'transparent !important'};
+    border-left: ${props => props.isSelected ? '4px solid #1683f2' : '4px solid transparent'};
+    transition: 'background-color 0.2s, border 0.2s';
+`;
+const styles_TableHeaderText = styled_components_browser_esm["b" /* default */].div`
+    height: 50px;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    padding: 0px 10px;
+    display: flex;
+    align-items: center;
+`;
+const styles_TableHeadItem = styled_components_browser_esm["b" /* default */].th`
+    padding: 0px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+    background-color: transparent;
 
-var RegularTable_styles_Container = styled_components_browser_esm["b" /* default */].div(RegularTable_styles_templateObject || (RegularTable_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    height: 100%;\n    padding: 0;\n    overflow-x: auto;\n    border: 1px solid #ccc;\n    border-radius: 6px;\n"])));
-var styles_TableContainer = styled_components_browser_esm["b" /* default */].table(RegularTable_styles_templateObject2 || (RegularTable_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    max-height: 100%;\n    border-spacing: 0.5px;\n"])));
-var styles_Thead = styled_components_browser_esm["b" /* default */].thead(RegularTable_styles_templateObject3 || (RegularTable_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    height: 55px;\n    border-bottom: 1px solid #ccc;\n"])));
-var styles_Tbody = styled_components_browser_esm["b" /* default */].tbody(RegularTable_styles_templateObject4 || (RegularTable_styles_templateObject4 = taggedTemplateLiteral_default()(["\n"])));
-var styles_TableRow = styled_components_browser_esm["b" /* default */].tr(RegularTable_styles_templateObject5 || (RegularTable_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    height: 34px;\n    background-color: transparent !important;\n"])));
-var styles_TableHeaderText = styled_components_browser_esm["b" /* default */].div(RegularTable_styles_templateObject6 || (RegularTable_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    height: 50px;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: 500;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    padding: 0px 10px;\n    display: flex;\n    align-items: center;\n"])));
-var styles_TableHeadItem = styled_components_browser_esm["b" /* default */].th(RegularTable_styles_templateObject7 || (RegularTable_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    padding: 0px;\n    border: 0;\n    border-bottom: 1px solid #ccc;\n    background-color: transparent;\n\n"])));
-var styles_TableRowItem = styled_components_browser_esm["b" /* default */].td(RegularTable_styles_templateObject8 || (RegularTable_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #666;\n    padding-left: 18px;\n    border: 0;\n    border-bottom: 1px solid #ccc;\n"])));
+`;
+const styles_TableRowItem = styled_components_browser_esm["b" /* default */].td`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666;
+    padding-left: 18px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+`;
+// CONCATENATED MODULE: ./src/images/delete-icon-gray.svg
+/* harmony default export */ var delete_icon_gray = ("js/dist/5897937ebe94cc6e33a4e9596d08f998.svg");
 // CONCATENATED MODULE: ./src/components/RegularTable/index.tsx
 
 
@@ -5235,16 +5781,21 @@ var styles_TableRowItem = styled_components_browser_esm["b" /* default */].td(Re
 
 
 function RegularTable(props) {
-  var data = props.data,
-    columns = props.columns,
-    isExpandable = props.isExpandable;
-  var table = Object(build_lib_index_esm["b" /* useReactTable */])({
-    data: data,
-    columns: columns,
+  const {
+    data,
+    columns,
+    isExpandable,
+    onDeleteSelected,
+    enableSelection = false,
+    rowKey = 'id' // default key name
+  } = props;
+  const [selectedKeys, setSelectedKeys] = Object(react["useState"])(new Set());
+  const [lastSelectedKey, setLastSelectedKey] = Object(react["useState"])(null);
+  const table = Object(build_lib_index_esm["b" /* useReactTable */])({
+    data,
+    columns,
     getCoreRowModel: Object(lib_index_esm["c" /* getCoreRowModel */])(),
-    getSubRows: function getSubRows(row) {
-      return row.subRows;
-    },
+    getSubRows: row => row.subRows,
     getExpandedRowModel: Object(lib_index_esm["d" /* getExpandedRowModel */])(),
     defaultColumn: {
       minSize: 0,
@@ -5253,32 +5804,86 @@ function RegularTable(props) {
     },
     enableExpanding: isExpandable
   });
+  const keyOf = row => row[rowKey];
+  const isAllSelected = data.length > 0 && selectedKeys.size === data.length;
+  const toggleSelection = (clickedRow, event) => {
+    if (!enableSelection) return;
+    const clickedKey = keyOf(clickedRow);
+    setSelectedKeys(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (event.shiftKey && lastSelectedKey !== null) {
+        const lastIndex = data.findIndex(row => keyOf(row) === lastSelectedKey);
+        const clickedIndex = data.findIndex(row => keyOf(row) === clickedKey);
+        const [start, end] = [lastIndex, clickedIndex].sort((a, b) => a - b);
+        for (let i = start; i <= end; i++) {
+          newSelected.add(keyOf(data[i]));
+        }
+      } else if (event.ctrlKey || event.metaKey) {
+        newSelected.has(clickedKey) ? newSelected.delete(clickedKey) : newSelected.add(clickedKey);
+      } else {
+        newSelected.has(clickedKey) ? newSelected.delete(clickedKey) : newSelected.add(clickedKey);
+      }
+      return newSelected;
+    });
+    setLastSelectedKey(clickedKey);
+  };
+  const toggleSelectAll = () => {
+    if (!enableSelection) return;
+    setSelectedKeys(isAllSelected ? new Set() : new Set(data.map(keyOf)));
+  };
+  const deleteRows = () => {
+    if (!enableSelection) return;
+    const rowsToDelete = selectedKeys.size > 0 ? data.filter(row => selectedKeys.has(keyOf(row))) : [...data];
+    onDeleteSelected === null || onDeleteSelected === void 0 ? void 0 : onDeleteSelected(rowsToDelete);
+    setSelectedKeys(new Set());
+  };
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(RegularTable_styles_Container, {
     children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_TableContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Thead, {
-        children: table.getHeaderGroups().map(function (headerGroup) {
-          return /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableRow, {
-            children: headerGroup.headers.map(function (header) {
-              return /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableHeadItem, {
-                colSpan: header.colSpan,
-                children: header.isPlaceholder ? null : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
-                  children: /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableHeaderText, {
-                    children: Object(build_lib_index_esm["a" /* flexRender */])(header.column.columnDef.header, header.getContext())
-                  })
-                })
-              }, header.id);
+        children: table.getHeaderGroups().map(headerGroup => /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableRow, {
+          children: headerGroup.headers.map((header, colIdx, arr) => /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableHeadItem, {
+            colSpan: header.colSpan,
+            children: enableSelection && colIdx === arr.length - 1 ? /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+              style: {
+                display: 'flex',
+                alignItems: 'flex-start',
+                paddingLeft: '18px',
+                justifyContent: 'flex-start',
+                gap: '8px',
+                height: '100%'
+              },
+              children: data.length > 0 && /*#__PURE__*/Object(jsx_runtime["jsx"])("img", {
+                src: delete_icon_gray,
+                alt: selectedKeys.size > 0 ? "Delete selected" : "Delete all",
+                title: selectedKeys.size > 0 ? "Delete selected" : "Delete all",
+                style: {
+                  width: 16,
+                  height: 16,
+                  cursor: 'pointer',
+                  display: 'inline-block'
+                },
+                onClick: deleteRows
+              })
+            }) : !header.isPlaceholder && /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableHeaderText, {
+              children: Object(build_lib_index_esm["a" /* flexRender */])(header.column.columnDef.header, header.getContext())
             })
-          }, headerGroup.id);
-        })
+          }, header.id))
+        }, headerGroup.id))
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Tbody, {
-        children: table.getRowModel().rows.map(function (row, index) {
+        children: table.getRowModel().rows.map(row => {
+          const rowData = row.original;
+          const rowKeyValue = keyOf(rowData);
+          const isSelected = selectedKeys.has(rowKeyValue);
           return /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableRow, {
-            children: row.getVisibleCells().map(function (cell) {
-              return /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableRowItem, {
-                row: index,
-                children: Object(build_lib_index_esm["a" /* flexRender */])(cell.column.columnDef.cell, cell.getContext())
-              }, cell.id);
-            })
+            onClick: e => toggleSelection(rowData, e),
+            isSelected: isSelected,
+            style: {
+              cursor: enableSelection ? 'pointer' : 'default'
+            },
+            children: row.getVisibleCells().map(cell => /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TableRowItem, {
+              row: row.index,
+              children: Object(build_lib_index_esm["a" /* flexRender */])(cell.column.columnDef.cell, cell.getContext())
+            }, cell.id))
           }, row.id);
         })
       })]
@@ -5286,97 +5891,183 @@ function RegularTable(props) {
   });
 }
 /* harmony default export */ var components_RegularTable = (RegularTable);
-// CONCATENATED MODULE: ./src/images/delete-icon-gray.svg
-/* harmony default export */ var delete_icon_gray = ("js/dist/5897937ebe94cc6e33a4e9596d08f998.svg");
 // CONCATENATED MODULE: ./src/components/task/ReferenceTables/useTable.tsx
 
 
 
 
 
-
-var ReferenceTables_useTable_useTable = function useTable(deleteRow, toggleModalUpdateVersion, showVersion) {
-  var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+const useTable_useTable = (deleteRow, toggleModalUpdateVersion, showVersion) => {
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
 
   // const { } = useContext(TaskContext);
 
-  var columns = Object(react["useMemo"])(function () {
-    return [columnHelper.accessor('reference_table_name', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Table name"
-        });
-      },
-      cell: function cell(_ref) {
-        var row = _ref.row;
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          title: "Interface: ".concat(row.original.interface_name, ", schema: ").concat(row.original.schema_name, "."),
-          children: row.getValue('reference_table_name')
-        });
-      }
-    })].concat(toConsumableArray_default()(showVersion ? [columnHelper.accessor('version_task_name', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Table version"
-        });
-      },
-      cell: function cell(_ref2) {
-        var row = _ref2.row;
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          style: {
-            cursor: 'pointer',
-            color: '#1683f2'
-          },
-          onClick: function onClick() {
-            return toggleModalUpdateVersion(row.original);
-          },
-          children: row.getValue('version_task_name') || 'None'
-        });
-      }
-    })] : []), [{
-      id: 'actions',
-      header: '',
-      cell: function cell(_ref3) {
-        var row = _ref3.row;
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
-          onClick: function onClick() {
-            return deleteRow(row.original);
-          },
-          src: delete_icon_gray
-        });
-      }
-    }]);
-  }, [columnHelper, deleteRow, showVersion, toggleModalUpdateVersion]);
+  const columns = Object(react["useMemo"])(() => [columnHelper.accessor('reference_table_name', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Table name"
+    }),
+    cell: _ref => {
+      let {
+        row
+      } = _ref;
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: `Interface: ${row.original.interface_name}, schema: ${row.original.schema_name}.`,
+        children: row.original.reference_table_name
+      });
+    }
+  }), ...(showVersion ? [columnHelper.accessor('version_task_name', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Table version"
+    }),
+    cell: _ref2 => {
+      let {
+        row
+      } = _ref2;
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          cursor: 'pointer',
+          color: '#1683f2'
+        },
+        onClick: () => toggleModalUpdateVersion(row.original),
+        children: row.original.version_task_name || 'None'
+      });
+    }
+  })] : []), {
+    id: 'actions',
+    header: '',
+    cell: _ref3 => {
+      let {
+        row
+      } = _ref3;
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
+        onClick: $event => {
+          $event.stopPropagation();
+          deleteRow(row.original);
+        },
+        src: delete_icon_gray
+      });
+    }
+  }], [columnHelper, deleteRow, showVersion, toggleModalUpdateVersion]);
   return {
-    columns: columns
+    columns
   };
 };
-/* harmony default export */ var ReferenceTables_useTable = (ReferenceTables_useTable_useTable);
+/* harmony default export */ var ReferenceTables_useTable = (useTable_useTable);
 // CONCATENATED MODULE: ./src/components/CustomerTypeTable/styles.ts
 
-var CustomerTypeTable_styles_templateObject, CustomerTypeTable_styles_templateObject2, CustomerTypeTable_styles_templateObject3, CustomerTypeTable_styles_templateObject4, CustomerTypeTable_styles_templateObject5, CustomerTypeTable_styles_templateObject6, CustomerTypeTable_styles_templateObject7, CustomerTypeTable_styles_templateObject8, CustomerTypeTable_styles_templateObject9;
+const UpdateTableVersionContainerstyled = styled_components_browser_esm["b" /* default */].div`
+  box-sizing: border-box ;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+`;
+const styles_animation = styled_components_browser_esm["c" /* keyframes */]`
+  from {
+    transform: scale(0.9);
+  }
 
-var UpdateTableVersionContainerstyled = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject || (CustomerTypeTable_styles_templateObject = taggedTemplateLiteral_default()(["\n  box-sizing: border-box ;\n    position: fixed;\n    width: 100%;\n    height: 100%;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    z-index: 100;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    background-color: rgba(0, 0, 0, 0.2);\n"])));
-var styles_animation = Object(styled_components_browser_esm["c" /* keyframes */])(CustomerTypeTable_styles_templateObject2 || (CustomerTypeTable_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  from {\n    transform: scale(0.9);\n  }\n\n  to {\n    transform: scale(1);\n  }\n"])));
-var CustomerTypeTable_styles_Wrapper = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject3 || (CustomerTypeTable_styles_templateObject3 = taggedTemplateLiteral_default()(["\nbox-sizing: border-box ;\n    background: white;\n    box-sizing: border-box;\n    border-radius: 4px;\n    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.16);\n    display: flex;\n    flex-direction: column;\n    position: relative;\n    animation: ", " 0.2s linear;\n    width: 85%;\n    background-color: #ffffff;\n    flex-direction: column;\n    justify-content: space-between;\n    align-items: center;\n"])), styles_animation);
-var HeaderWrapper = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject4 || (CustomerTypeTable_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    box-sizing: border-box;\n    background-color: #1483f3;\n    width: 100%;\n    height: 40px;\n    display: flex;\n    justify-content: space-between;\n    align-self: start;\n    align-items: center ;\n\n    color: white;\n    gap: 10px;\n    font-size: 18px ;\n    padding: 0 10px;\n"])));
-var WrapperTop = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject5 || (CustomerTypeTable_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    box-sizing: border-box;\n    width: 100%;\n    height: 100px;\n    display: flex;\n    justify-content: start;\n    align-items: center;\n    gap: 10px;\n    padding: 20px;\n"])));
-var WrapperBottom = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject6 || (CustomerTypeTable_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    box-sizing: border-box;\n    width: 100%;\n    height: 300px;\n    display: flex;\n    justify-content: start;\n    align-items: center;\n    padding: 20px;\n    gap: 10px;\n"])));
-var WrapperFooter = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject7 || (CustomerTypeTable_styles_templateObject7 = taggedTemplateLiteral_default()(["\nbox-sizing: border-box ;\n    width: 100%;\n    padding: 0 20px;\n    display: flex;\n    align-items: center ;\n    justify-content: flex-end;\n"])));
-var styles_Actions = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject8 || (CustomerTypeTable_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    display: flex;\n    margin-top:5px;\n    align-items: center;\n    justify-content: flex-end;\n    gap: 18px;\n    border-bottom: ", ";\n    padding-bottom: 13px;\n"])), function (props) {
-  return props.border ? '1px solid #ccc' : '';
-});
-var styles_ActionItem = styled_components_browser_esm["b" /* default */].div(CustomerTypeTable_styles_templateObject9 || (CustomerTypeTable_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    cursor: pointer;\n"])));
+  to {
+    transform: scale(1);
+  }
+`;
+const CustomerTypeTable_styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+box-sizing: border-box ;
+    background: white;
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.16);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation: ${styles_animation} 0.2s linear;
+    width: 85%;
+    background-color: #ffffff;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+`;
+const HeaderWrapper = styled_components_browser_esm["b" /* default */].div`
+    box-sizing: border-box;
+    background-color: #1483f3;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-self: start;
+    align-items: center ;
+
+    color: white;
+    gap: 10px;
+    font-size: 18px ;
+    padding: 0 10px;
+`;
+const WrapperTop = styled_components_browser_esm["b" /* default */].div`
+    box-sizing: border-box;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+`;
+const WrapperBottom = styled_components_browser_esm["b" /* default */].div`
+    box-sizing: border-box;
+    width: 100%;
+    height: 300px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 20px;
+    gap: 10px;
+`;
+const WrapperFooter = styled_components_browser_esm["b" /* default */].div`
+box-sizing: border-box ;
+    width: 100%;
+    padding: 0 20px;
+    display: flex;
+    align-items: center ;
+    justify-content: flex-end;
+`;
+const styles_Actions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    margin-top:5px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    border-bottom: ${props => props.border ? '1px solid #ccc' : ''};
+    padding-bottom: 13px;
+`;
+const styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
 // CONCATENATED MODULE: ./src/components/CustomerTypeTable/index.tsx
 
 
 
 
 
-
-var CustomerTypeTable_MyIcon = function MyIcon(_ref) {
-  var _ref$color = _ref.color,
-    color = _ref$color === void 0 ? 'white' : _ref$color;
+const MyIcon = _ref => {
+  let {
+    color = 'white'
+  } = _ref;
   return /*#__PURE__*/Object(jsx_runtime["jsx"])("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "14",
@@ -5390,13 +6081,15 @@ var CustomerTypeTable_MyIcon = function MyIcon(_ref) {
     })
   });
 };
-var CustomerTypeTable_CustomerTypeTable = function CustomerTypeTable(_ref2) {
-  var onClose = _ref2.onClose,
-    data = _ref2.data,
-    column = _ref2.column,
-    onClickSave = _ref2.onClickSave,
-    tableName = _ref2.tableName;
-  var onSave = function onSave() {
+const CustomerTypeTable = _ref2 => {
+  let {
+    onClose,
+    data,
+    column,
+    onClickSave,
+    tableName
+  } = _ref2;
+  const onSave = () => {
     onClickSave();
     onClose();
   };
@@ -5408,15 +6101,15 @@ var CustomerTypeTable_CustomerTypeTable = function CustomerTypeTable(_ref2) {
           style: {
             cursor: 'pointer'
           },
-          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(CustomerTypeTable_MyIcon, {})
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(MyIcon, {})
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(WrapperTop, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_RangeDatePicker, {
           title: '',
           startDate: new Date(),
-          startDateChange: function startDateChange() {},
+          startDateChange: () => {},
           endDate: new Date(),
-          endDateChange: function endDateChange() {}
+          endDateChange: () => {}
         })
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(WrapperBottom, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
@@ -5427,9 +6120,7 @@ var CustomerTypeTable_CustomerTypeTable = function CustomerTypeTable(_ref2) {
         children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_Actions, {
           border: false,
           children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ActionItem, {
-            onClick: function onClick() {
-              return onClose();
-            },
+            onClick: () => onClose(),
             children: "Cancel"
           }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ActionItem, {
             onClick: onSave,
@@ -5440,14 +6131,8 @@ var CustomerTypeTable_CustomerTypeTable = function CustomerTypeTable(_ref2) {
     })
   });
 };
-/* harmony default export */ var components_CustomerTypeTable = (CustomerTypeTable_CustomerTypeTable);
+/* harmony default export */ var components_CustomerTypeTable = (CustomerTypeTable);
 // CONCATENATED MODULE: ./src/components/task/ReferenceTables/useCustomerTypeTable.tsx
-
-
-
-function useCustomerTypeTable_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function useCustomerTypeTable_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? useCustomerTypeTable_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : useCustomerTypeTable_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 // {
 
 //     "task_name": "aaaa",
@@ -5470,180 +6155,155 @@ function useCustomerTypeTable_objectSpread(target) { for (var i = 1; i < argumen
 
 
 
-var useCustomerTypeTable_useCustomerTable = function useCustomerTable() {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    _useContext$taskData = _useContext.taskData,
-    source_environment_name = _useContext$taskData.source_environment_name,
-    tableList = _useContext$taskData.tableList,
-    saveForm = _useContext.saveForm;
-  var _useState = Object(react["useState"])([]),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    data = _useState2[0],
-    setData = _useState2[1];
-  var _useState3 = Object(react["useState"])(null),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    selected = _useState4[0],
-    setSelected = _useState4[1];
-  var _useState5 = Object(react["useState"])(null),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    current = _useState6[0],
-    setCurrent = _useState6[1];
-  var selectRow = function selectRow(row) {
+const useCustomerTable = () => {
+  const {
+    taskData: {
+      source_environment_name,
+      tableList
+    },
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const [data, setData] = Object(react["useState"])([]);
+  const [selected, setSelected] = Object(react["useState"])(null);
+  const [current, setCurrent] = Object(react["useState"])(null);
+  const selectRow = row => {
     setSelected({
       task_execution_id: row.task_execution_id,
       task_name: row.task_name
     });
   };
-  var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
-  var _useState7 = Object(react["useState"])(false),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    showModal = _useState8[0],
-    setShowModal = _useState8[1];
-  var columns = Object(react["useMemo"])(function () {
-    return [{
-      id: 'select',
-      header: '',
-      cell: function cell(_ref) {
-        var row = _ref.row;
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
-          className: "px-1",
-          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
-            onChange: function onChange() {
-              return selectRow(row.original);
-            },
-            name: "select",
-            value: row.original.task_execution_id,
-            selectedValue: selected === null || selected === void 0 ? void 0 : selected.task_execution_id,
-            title: ''
-          })
-        });
-      }
-    }, columnHelper.accessor('task_name', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "task name"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('task_execution_id', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "task execution id"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('execution_datetime', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Creation date"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('executed_by', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "executed by"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('task_description', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "task description"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    })];
-  }, [columnHelper, selected]);
-  var OpenModalUpdateVersion = Object(react["useCallback"])( /*#__PURE__*/function () {
-    var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee(row) {
-      var request, _data;
-      return regenerator_default.a.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            if (!source_environment_name) {
-              _context.next = 9;
-              break;
-            }
-            request = {
-              table_name: row.reference_table_name,
-              env_name: source_environment_name
-            };
-            _context.next = 4;
-            return apis_task.getTableVersions(row.reference_table_name, request.env_name);
-          case 4:
-            _data = _context.sent;
-            setData(_data);
-            setShowModal(true);
-            setCurrent(row);
-            setSelected({
-              task_execution_id: row.version_task_execution_id,
-              task_name: row.version_task_name
-            });
-          case 9:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }));
-    return function (_x) {
-      return _ref2.apply(this, arguments);
-    };
-  }(), [source_environment_name]);
-  var onClose = function onClose() {
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const [showModal, setShowModal] = Object(react["useState"])(false);
+  const columns = Object(react["useMemo"])(() => [{
+    id: 'select',
+    header: '',
+    cell: _ref => {
+      let {
+        row
+      } = _ref;
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "px-1",
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
+          onChange: () => selectRow(row.original),
+          name: "select",
+          value: row.original.task_execution_id,
+          selectedValue: selected === null || selected === void 0 ? void 0 : selected.task_execution_id,
+          title: ''
+        })
+      });
+    }
+  }, columnHelper.accessor('task_name', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "task name"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }), columnHelper.accessor('task_execution_id', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "task execution id"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }), columnHelper.accessor('execution_datetime', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Creation date"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }), columnHelper.accessor('executed_by', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "executed by"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }), columnHelper.accessor('task_description', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "task description"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  })], [columnHelper, selected]);
+  const OpenModalUpdateVersion = Object(react["useCallback"])(async row => {
+    //inputs table_name,env_name for api getTableVersions
+    if (source_environment_name) {
+      const request = {
+        table_name: row.reference_table_name,
+        env_name: source_environment_name
+      };
+      const data = await apis_task.getTableVersions(row.reference_table_name, request.env_name);
+      setData(data);
+      setShowModal(true);
+      setCurrent(row);
+      setSelected({
+        task_execution_id: row.version_task_execution_id,
+        task_name: row.version_task_name
+      });
+    }
+  }, [source_environment_name]);
+  const onClose = () => {
     setShowModal(false);
   };
-  var onClickSave = function onClickSave() {
-    var updatedData = (tableList || []).map(function (table) {
-      return table.reference_table_name === current.reference_table_name ? useCustomerTypeTable_objectSpread(useCustomerTypeTable_objectSpread({}, table), {}, {
-        version_task_execution_id: selected === null || selected === void 0 ? void 0 : selected.task_execution_id,
-        version_task_name: selected === null || selected === void 0 ? void 0 : selected.task_name
-      }) : table;
-    });
+  const onClickSave = () => {
+    const updatedData = (tableList || []).map(table => table.reference_table_name === current.reference_table_name ? {
+      ...table,
+      version_task_execution_id: selected === null || selected === void 0 ? void 0 : selected.task_execution_id,
+      version_task_name: selected === null || selected === void 0 ? void 0 : selected.task_name
+    } : table);
     saveForm({
       tableList: updatedData
     });
   };
   return {
-    columns: columns,
-    OpenModalUpdateVersion: OpenModalUpdateVersion,
-    showModal: showModal,
-    onClose: onClose,
-    data: data,
-    onClickSave: onClickSave,
-    current: current
+    columns,
+    OpenModalUpdateVersion,
+    showModal,
+    onClose,
+    data,
+    onClickSave,
+    current
   };
 };
-/* harmony default export */ var useCustomerTypeTable = (useCustomerTypeTable_useCustomerTable);
+/* harmony default export */ var useCustomerTypeTable = (useCustomerTable);
 // CONCATENATED MODULE: ./src/components/task/ReferenceTables/index.tsx
-
-
-
-
-function ReferenceTables_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function ReferenceTables_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ReferenceTables_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ReferenceTables_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
 
 
 
@@ -5660,261 +6320,248 @@ function ReferenceTables_objectSpread(target) { for (var i = 1; i < arguments.le
 
 
 function ReferenceTables(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    register = _useContext.register,
-    errors = _useContext.errors;
-  console.log('taskData', taskData);
-  var source_type = taskData.source_type,
-    be_name = taskData.be_name,
-    source_environment_name = taskData.source_environment_name,
-    fetchPolicy = taskData.fetchPolicy,
-    tableList = taskData.tableList,
-    sync_mode = taskData.sync_mode,
-    selected_logical_units_names = taskData.selected_logical_units_names;
-  var showVersion = Object(react["useMemo"])(function () {
-    return fetchPolicy === 'load_snapshot' || fetchPolicy === 'available_data';
-  }, [fetchPolicy]);
-  console.log('showVersion', showVersion);
-  var _useState = Object(react["useState"])(false),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    loading = _useState2[0],
-    setLoading = _useState2[1];
-  var _useState3 = Object(react["useState"])(''),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    filter = _useState4[0],
-    setFilter = _useState4[1];
-  Object(react["useEffect"])(function () {
-    function fetchData() {
-      return _fetchData.apply(this, arguments);
-    }
-    function _fetchData() {
-      _fetchData = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data, transformedEnvs, newTableList;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              if (source_environment_name) {
-                _context.next = 3;
-                break;
-              }
-              return _context.abrupt("return");
-            case 3:
-              _context.next = 5;
-              return apis_task.getTableByBeAndEnv(source_environment_name || '', be_name);
-            case 5:
-              data = _context.sent;
-              transformedEnvs = data.map(function (item, index) {
-                // Extract database name and tables
+  const {
+    taskData,
+    saveForm,
+    register,
+    errors
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    source_type,
+    //BE or tables
+    be_name,
+    source_environment_name,
+    fetchPolicy,
+    tableList,
+    sync_mode,
+    selected_logical_units_names
+  } = taskData;
+  const showVersion = Object(react["useMemo"])(() => fetchPolicy === 'load_snapshot' || fetchPolicy === 'available_data', [fetchPolicy]);
+  const [tablesData, setTablesData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(false);
+  const [filter, setFilter] = Object(react["useState"])('');
+  Object(react["useEffect"])(() => {
+    async function fetchData() {
+      try {
+        if (!source_environment_name) {
+          return;
+        }
+        let data = await apis_task.getTableByBeAndEnv(source_environment_name || '', be_name);
+        const transformedEnvs = data.map((item, index) => {
+          // Extract database name and tables
 
-                var dbName = Object.keys(item)[0]; // e.g., 'CRM_DB'
+          const dbName = Object.keys(item)[0]; // e.g., 'CRM_DB'
 
-                var schemas = {};
-                item[dbName].forEach(function (schema) {
-                  var schemaKey = Object.keys(schema)[0];
-                  schemas[schemaKey] = {
-                    tables: [],
-                    opened: false
-                  };
-                  var tables = schema[schemaKey].filter(function (it) {
-                    return (sync_mode === 'OFF' && it.taskExecutionId || sync_mode !== 'OFF') && ((selected_logical_units_names || []).indexOf(it.luName) >= 0 || !be_name);
-                  }).map(function (table) {
-                    var old = tableList !== null && tableList !== void 0 ? tableList : [];
-                    var isFound = old.find(function (el) {
-                      return el.reference_table_name === table.tableName;
-                    });
-                    var isMoved = !!isFound;
-                    return {
-                      name: table.tableName,
-                      version_task_execution_id: table.taskExecutionId,
-                      version_task_name: table.taskName,
-                      schema_name: schemaKey,
-                      lu_name: table.luName,
-                      selected: false,
-                      moved: isMoved
-                    };
-                  });
-                  schemas[schemaKey].tables = tables;
-                  schemas[schemaKey].opened = true;
-                });
+          const schemas = {};
+          item[dbName].forEach(schema => {
+            const schemaKey = Object.keys(schema)[0];
+            schemas[schemaKey] = {
+              tables: [],
+              opened: false,
+              selectAll: false
+            };
+            const tables = schema[schemaKey].filter(it => (sync_mode === 'OFF' && it.taskExecutionId || sync_mode !== 'OFF') && ((selected_logical_units_names || []).indexOf(it.luName) >= 0 || !be_name)).map(table => {
+              const old = tableList != null ? tableList : [];
+              const isFound = old.find(el => el.reference_table_name === table.tableName);
+              const isMoved = !!isFound;
+              return {
+                name: table.tableName,
+                version_task_execution_id: showVersion ? table.taskExecutionId : null,
+                version_task_name: showVersion ? table.taskName : null,
+                schema_name: schemaKey,
+                lu_name: table.luName,
+                selected: false,
+                moved: isMoved
+              };
+            });
+            schemas[schemaKey].tables = tables;
+            schemas[schemaKey].opened = false;
+            schemas[schemaKey].selectAll = false;
+          });
 
-                // Construct and return the Env object
-                return {
-                  env_name: dbName,
-                  opened: true,
-                  // Set default values
-                  openedTables: true,
-                  // Set default values
-                  schemas: schemas
-                };
-              });
-              newTableList = tableList === null || tableList === void 0 ? void 0 : tableList.filter(function (item_selected) {
-                var interfaceData = transformedEnvs.find(function (item) {
-                  return item.env_name === item_selected.interface_name;
-                });
-                if (interfaceData && interfaceData.schemas[item_selected.schema_name]) {
-                  var schemaData = interfaceData.schemas[item_selected.schema_name];
-                  if (schemaData && schemaData.tables.findIndex(function (it) {
-                    return it.name === item_selected.reference_table_name;
-                  }) >= 0) {
-                    return true;
-                  }
-                }
-                return false;
-              });
-              saveForm({
-                tableList: newTableList
-              });
-              setTablesData(transformedEnvs);
-              _context.next = 15;
-              break;
-            case 12:
-              _context.prev = 12;
-              _context.t0 = _context["catch"](0);
-              // use hook toast
-              console.log(_context.t0);
-            case 15:
-              _context.prev = 15;
-              setLoading(false);
-              return _context.finish(15);
-            case 18:
-            case "end":
-              return _context.stop();
+          // Construct and return the Env object
+          return {
+            env_name: dbName,
+            opened: false,
+            // Set default values
+            openedTables: true,
+            // Set default values
+            schemas: schemas
+          };
+        });
+        const newTableList = tableList === null || tableList === void 0 ? void 0 : tableList.filter(item_selected => {
+          const interfaceData = transformedEnvs.find(item => item.env_name === item_selected.interface_name);
+          if (interfaceData && interfaceData.schemas[item_selected.schema_name]) {
+            const schemaData = interfaceData.schemas[item_selected.schema_name];
+            if (schemaData && schemaData.tables.findIndex(it => it.name === item_selected.reference_table_name) >= 0) {
+              return true;
+            }
           }
-        }, _callee, null, [[0, 12, 15, 18]]);
-      }));
-      return _fetchData.apply(this, arguments);
+          return false;
+        });
+        saveForm({
+          tableList: newTableList
+        });
+        setTablesData(transformedEnvs);
+      } catch (err) {
+        // use hook toast
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
-  }, [be_name, source_environment_name, source_type, sync_mode, selected_logical_units_names]);
-  Object(react["useEffect"])(function () {
-    var old = tableList !== null && tableList !== void 0 ? tableList : [];
-    setTablesData(function (prevEnvsState) {
-      return prevEnvsState.map(function (env) {
-        var updatedSchemas = Object.keys(env.schemas).reduce(function (acc, schemaKey) {
+  }, [be_name, source_environment_name, source_type, sync_mode, selected_logical_units_names, showVersion]);
+  Object(react["useEffect"])(() => {
+    const old = tableList != null ? tableList : [];
+    setTablesData(prevEnvsState => {
+      return prevEnvsState.map(env => {
+        const updatedSchemas = Object.keys(env.schemas).reduce((acc, schemaKey) => {
           if (!acc[schemaKey]) {
             acc[schemaKey] = {
               tables: [],
-              opened: env.schemas[schemaKey].opened
+              opened: env.schemas[schemaKey].opened,
+              selectAll: env.schemas[schemaKey].selectAll
             };
           }
-          var updatedTables = env.schemas[schemaKey].tables.map(function (table) {
-            var isFound = old.find(function (el) {
-              return el.reference_table_name === table.name && el.schema_name === table.schema_name && el.interface_name === env.env_name;
-            });
-            var isMoved = !!isFound;
-            return ReferenceTables_objectSpread(ReferenceTables_objectSpread({}, table), {}, {
+          const updatedTables = env.schemas[schemaKey].tables.map(table => {
+            const isFound = old.find(el => el.reference_table_name === table.name && el.schema_name === table.schema_name && el.interface_name === env.env_name);
+            const isMoved = !!isFound;
+            return {
+              ...table,
               moved: isMoved,
               selected: false
-            });
+            };
           });
           acc[schemaKey].tables = updatedTables;
           return acc;
         }, {});
         console.log('updatedSchemas', updatedSchemas);
-        return ReferenceTables_objectSpread(ReferenceTables_objectSpread({}, env), {}, {
+        return {
+          ...env,
           schemas: updatedSchemas
-        });
+        };
       });
     });
   }, [source_environment_name, tableList]);
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    tablesData = _useState6[0],
-    setTablesData = _useState6[1];
-  var toggleBE = Object(react["useCallback"])(function (BE) {
-    setTablesData(function (prevData) {
-      var foundBE = prevData.find(function (it) {
-        return it.env_name === BE;
-      });
+  const toggleBE = Object(react["useCallback"])(BE => {
+    setTablesData(prevData => {
+      const foundBE = prevData.find(it => it.env_name === BE);
       if (foundBE) {
         foundBE.opened = !foundBE.opened;
       }
-      return toConsumableArray_default()(prevData);
+      return [...prevData];
     });
   }, [setTablesData]);
-  var toggleTables = Object(react["useCallback"])(function (BE, schemaKey) {
-    setTablesData(function (prevData) {
-      var foundBE = prevData.find(function (it) {
-        return it.env_name === BE;
-      });
+  const toggleTables = Object(react["useCallback"])((BE, schemaKey) => {
+    setTablesData(prevData => {
+      const foundBE = prevData.find(it => it.env_name === BE);
       if (foundBE) {
         foundBE.schemas[schemaKey].opened = !foundBE.schemas[schemaKey].opened;
       }
-      return toConsumableArray_default()(prevData);
+      return [...prevData];
     });
   }, [setTablesData]);
-  var toggleTable = Object(react["useCallback"])(function (BE, table_name, schemaKey) {
-    setTablesData(function (prevData) {
-      var foundBE = prevData.find(function (it) {
-        return it.env_name === BE;
-      });
+  const toggleTable = Object(react["useCallback"])((BE, table_name, schemaKey) => {
+    setTablesData(prevData => {
+      const foundBE = prevData.find(it => it.env_name === BE);
       if (foundBE) {
-        var table = foundBE.schemas[schemaKey].tables.find(function (it) {
-          return it.name === table_name;
-        });
+        const table = foundBE.schemas[schemaKey].tables.find(it => it.name === table_name);
         if (table) {
           table.selected = !table.selected;
         }
       }
-      return toConsumableArray_default()(prevData);
+      return [...prevData];
     });
   }, [setTablesData]);
-  var getTable = Object(react["useCallback"])(function (BE, tableData, schemaKey) {
+  const [lastSelectedMap, setLastSelectedMap] = Object(react["useState"])({});
+  const getTable = Object(react["useCallback"])((BE, tableData, schemaKey, _index) => {
+    const schemaKeyFull = `${BE}.${schemaKey}`;
+    const tableKey = `${BE}.${schemaKey}.${tableData.name}`;
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableItemContainer, {
       selected: tableData.selected,
-      onClick: function onClick() {
-        return toggleTable(BE, tableData.name, schemaKey);
+      onClick: e => {
+        setTablesData(prevData => {
+          const newData = [...prevData];
+          const foundBE = newData.find(it => it.env_name === BE);
+          if (!foundBE) return prevData;
+          const schema = foundBE.schemas[schemaKey];
+          if (!schema) return prevData;
+          const tables = schema.tables;
+          const clickedIndex = tables.findIndex(t => t.name === tableData.name);
+          if (clickedIndex === -1) return prevData;
+          const lastKey = lastSelectedMap[schemaKeyFull];
+          const lastIndex = lastKey != null ? tables.findIndex(t => `${BE}.${schemaKey}.${t.name}` === lastKey) : -1;
+          if (e.shiftKey && lastIndex !== -1) {
+            // Select range
+            const [start, end] = [lastIndex, clickedIndex].sort((a, b) => a - b);
+            for (let i = start; i <= end; i++) {
+              tables[i].selected = true;
+            }
+          } else {
+            // Toggle single
+            tables[clickedIndex].selected = !tables[clickedIndex].selected;
+            setLastSelectedMap(prev => ({
+              ...prev,
+              [schemaKeyFull]: tableKey
+            }));
+          }
+          return newData;
+        });
       },
-      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SelectAllContainer, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+          name: `table_${BE}_${schemaKey}_${tableData.name}`,
+          title: '',
+          onChange: () => {},
+          value: tableData.selected
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
         width: '17px',
         src: table_icon
       }), tableData.name]
     });
-  }, [toggleTable]);
-  var getEnvTables = Object(react["useCallback"])(function (env, schem, schemaKey) {
+  }, [lastSelectedMap]);
+  const getEnvTables = Object(react["useCallback"])((env, schem, schemaKey) => {
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
       children: env.opened ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
         children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TablesIconContainer, {
-          onClick: function onClick() {
-            return toggleTables(env.env_name, schemaKey);
-          },
-          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
-            width: '21px',
-            src: tables_folder_icon
-          }), schemaKey]
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SelectAllContainer, {
+            title: schem.selectAll ? 'Unselect all' : 'Select all',
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+              name: `table_${env.env_name}_${schemaKey}`,
+              title: '',
+              onChange: value => {
+                toggleTableInterfaces(env.env_name, schemaKey, value);
+              },
+              value: schem.selectAll
+            })
+          }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableTitle, {
+            onClick: () => toggleTables(env.env_name, schemaKey),
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
+              width: '21px',
+              src: tables_folder_icon
+            }), schemaKey]
+          })]
         }), schem.opened ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Tables, {
-          children: schem.tables.filter(function (it) {
-            return it.name.toLowerCase().indexOf((filter || '').toLowerCase()) >= 0 || !filter;
-          }).filter(function (it) {
-            return !it.moved;
-          }).map(function (it) {
-            return getTable(env.env_name, it, schemaKey);
-          })
+          children: schem.tables.filter(it => it.name.toLowerCase().indexOf((filter || '').toLowerCase()) >= 0 || !filter).filter(it => !it.moved).map((it, index) => getTable(env.env_name, it, schemaKey, index))
         }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
       }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})
     });
   }, [filter, getTable, toggleBE, toggleTables]);
-  var movedTables = Object(react["useMemo"])(function () {
-    return tableList !== null && tableList !== void 0 ? tableList : [];
-  }, [tableList]);
-  var moveTables = function moveTables() {
-    var old = tableList !== null && tableList !== void 0 ? tableList : [];
-    var updatedTables = [];
-    tablesData.forEach(function (env) {
+  const movedTables = Object(react["useMemo"])(() => tableList != null ? tableList : [], [tableList]);
+  const moveTables = () => {
+    const old = tableList != null ? tableList : [];
+    const updatedTables = [];
+    tablesData.forEach(env => {
       // Iterate over each schema within the environment
-      Object.entries(env.schemas).forEach(function (_ref) {
-        var _ref2 = slicedToArray_default()(_ref, 2),
-          schemaKey = _ref2[0],
-          schema = _ref2[1];
+      Object.entries(env.schemas).forEach(_ref => {
+        let [schemaKey, schema] = _ref;
         // Filter for selected tables within this schema
-        var movedTables = schema.tables.filter(function (table) {
-          return table.selected;
-        });
-        movedTables.forEach(function (table) {
+        const movedTables = schema.tables.filter(table => table.selected);
+        movedTables.forEach(table => {
           updatedTables.push({
+            id: `${env.env_name}_${table.schema_name}_${table.name}`,
             reference_table_name: table.name,
             interface_name: env.env_name,
             // Assuming this is meant to identify the environment/schema
@@ -5926,32 +6573,58 @@ function ReferenceTables(props) {
         });
       });
     });
+    setTablesData(prevData => {
+      prevData.forEach(env_interface => {
+        Object.keys(env_interface.schemas).forEach(schemaKey => {
+          env_interface.schemas[schemaKey].selectAll = false;
+        });
+      });
+      return [...prevData];
+    });
     saveForm({
-      tableList: [].concat(toConsumableArray_default()(old), updatedTables)
+      tableList: [...old, ...updatedTables]
     });
   };
-  var deleteRow = Object(react["useCallback"])(function (row) {
-    var updatedTables = tableList || [];
-    updatedTables = updatedTables.filter(function (table) {
+  const deleteRow = Object(react["useCallback"])(row => {
+    let updatedTables = tableList || [];
+    updatedTables = updatedTables.filter(table => {
       return !(table.reference_table_name === row.reference_table_name && table.schema_name === row.schema_name && table.interface_name === row.interface_name);
     });
     saveForm({
       tableList: updatedTables
     });
   }, [tableList, saveForm]);
-  var _useCustomerTable = useCustomerTypeTable(),
-    customerTableColumns = _useCustomerTable.columns,
-    customerTableData = _useCustomerTable.data,
-    OpenModalUpdateVersion = _useCustomerTable.OpenModalUpdateVersion,
-    showModal = _useCustomerTable.showModal,
-    onClose = _useCustomerTable.onClose,
-    onClickSave = _useCustomerTable.onClickSave,
-    current = _useCustomerTable.current;
-  var _useTable = ReferenceTables_useTable(deleteRow, OpenModalUpdateVersion, showVersion),
-    columns = _useTable.columns;
-  Object(react["useEffect"])(function () {
-    console.log('tablesData', tablesData);
-  }, [tablesData]);
+  const {
+    columns: customerTableColumns,
+    data: customerTableData,
+    OpenModalUpdateVersion,
+    showModal,
+    onClose,
+    onClickSave,
+    current
+  } = useCustomerTypeTable();
+  const {
+    columns
+  } = ReferenceTables_useTable(deleteRow, OpenModalUpdateVersion, showVersion);
+
+  /**
+   * Toggle the `selected` flag for *every* table in every schema of every env.
+   * Passing `true` checks all the check-boxes, passing `false` clears them.
+   */
+  const toggleTableInterfaces = Object(react["useCallback"])((BE, schemaKey, value) => {
+    setTablesData(prevData => {
+      const foundBE = prevData.find(it => it.env_name === BE);
+      if (foundBE && foundBE.schemas && foundBE.schemas[schemaKey] && foundBE.schemas[schemaKey].tables) {
+        foundBE.schemas[schemaKey].selectAll = value;
+        foundBE.schemas[schemaKey].tables.forEach(table => {
+          if (!table.moved) {
+            table.selected = value || false;
+          }
+        });
+      }
+      return [...prevData];
+    });
+  }, []);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ReferenceTables_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Title, {
       children: "Tables"
@@ -5965,26 +6638,20 @@ function ReferenceTables(props) {
           onChange: setFilter,
           type: InputTypes.text
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SourceTables, {
-          children: tablesData.map(function (env) {
-            return /*#__PURE__*/Object(jsx_runtime["jsxs"])(react_default.a.Fragment, {
-              children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(EnvIconContainer, {
-                onClick: function onClick() {
-                  return toggleBE(env.env_name);
-                },
-                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
-                  width: '19px',
-                  src: env_icon
-                }), env.env_name]
-              }), Object.entries(env.schemas).map(function (_ref3) {
-                var _ref4 = slicedToArray_default()(_ref3, 2),
-                  schemaKey = _ref4[0],
-                  schem = _ref4[1];
-                return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
-                  children: getEnvTables(env, schem, schemaKey)
-                }, schemaKey);
-              })]
-            }, env.env_name);
-          })
+          children: tablesData.map(env => /*#__PURE__*/Object(jsx_runtime["jsxs"])(react_default.a.Fragment, {
+            children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(EnvIconContainer, {
+              onClick: () => toggleBE(env.env_name),
+              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
+                width: '19px',
+                src: env_icon
+              }), env.env_name]
+            }), Object.entries(env.schemas).map(_ref2 => {
+              let [schemaKey, schem] = _ref2;
+              return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+                children: getEnvTables(env, schem, schemaKey)
+              }, schemaKey);
+            })]
+          }, env.env_name))
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(MoveTablesButton, {
         onClick: moveTables,
@@ -5994,7 +6661,16 @@ function ReferenceTables(props) {
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SelectedTables, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_RegularTable, {
           columns: columns,
-          data: movedTables
+          data: movedTables,
+          enableSelection: true,
+          onDeleteSelected: rowsToDelete => {
+            const updatedTables = tableList === null || tableList === void 0 ? void 0 : tableList.filter(table => {
+              return !rowsToDelete.some(row => row.reference_table_name === table.reference_table_name && row.schema_name === table.schema_name && row.interface_name === table.interface_name);
+            });
+            saveForm({
+              tableList: updatedTables
+            });
+          }
         })
       })]
     }), showModal && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_CustomerTypeTable, {
@@ -6011,13 +6687,6 @@ function ReferenceTables(props) {
 
 
 
-function DataSourceSettings_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function DataSourceSettings_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? DataSourceSettings_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : DataSourceSettings_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
-
-
 
 
 
@@ -6029,33 +6698,34 @@ function DataSourceSettings_objectSpread(target) { for (var i = 1; i < arguments
 
 
 function DataSourceSettingsForm(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    unregister = _useContext.unregister;
-  var be_name = taskData.be_name,
-    dataSourceType = taskData.dataSourceType,
-    source_environment_id = taskData.source_environment_id,
-    mask_sensitive_data = taskData.mask_sensitive_data,
-    sync_mode = taskData.sync_mode,
-    synthetic_type = taskData.synthetic_type,
-    source_environment_name = taskData.source_environment_name,
-    environment_sync_mode = taskData.environment_sync_mode,
-    version_ind = taskData.version_ind,
-    be_id = taskData.be_id,
-    source_type = taskData.source_type,
-    tables_selected = taskData.tables_selected,
-    sourceUserRole = taskData.sourceUserRole,
-    fetchPolicy = taskData.fetchPolicy,
-    generateChosenParams = taskData.generateChosenParams,
-    dataGenerationParams = taskData.dataGenerationParams,
-    enable_masking_only = taskData.enable_masking_only;
-  var _useState = Object(react["useState"])(mask_sensitive_data || false),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    maskSensitiveDataLocal = _useState2[0],
-    setMaskSensitiveDataLocal = _useState2[1];
-  Object(react["useEffect"])(function () {
-    var updateData = {};
+  const {
+    taskData,
+    saveForm,
+    unregister
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    be_name,
+    dataSourceType,
+    source_environment_id,
+    mask_sensitive_data,
+    sync_mode,
+    synthetic_type,
+    source_environment_name,
+    environment_sync_mode,
+    version_ind,
+    be_id,
+    source_type,
+    tables_selected,
+    sourceUserRole,
+    fetchPolicy,
+    generateChosenParams,
+    dataGenerationParams,
+    enable_masking_only,
+    target_env
+  } = taskData;
+  const [maskSensitiveDataLocal, setMaskSensitiveDataLocal] = Object(react["useState"])(mask_sensitive_data || false);
+  Object(react["useEffect"])(() => {
+    const updateData = {};
     if (!dataSourceType) {
       updateData.dataSourceType = 'data_source';
       updateData.source_type = 'BE';
@@ -6067,26 +6737,26 @@ function DataSourceSettingsForm(props) {
       saveForm(updateData);
     }
   }, []);
-  var fetchDataPolicyItems = Object(react["useMemo"])(function () {
-    var dataMapper = {
+  const fetchDataPolicyItems = Object(react["useMemo"])(() => {
+    const dataMapper = {
       new_data: {
         value: 'new_data',
-        label: "Available data from the Test data store, new data from ".concat(source_environment_name)
+        label: `Available data from the Test data store, new data from ${source_environment_name}`
       },
       all_data: {
         value: 'all_data',
-        label: "All data from ".concat(source_environment_name)
+        label: `All data from ${source_environment_name}`
       },
       load_snapshot: {
         value: 'load_snapshot',
-        label: "Selected snapshot (version)"
+        label: `Selected snapshot (version)`
       },
       available_data: {
         value: 'available_data',
-        label: "Available ".concat(source_environment_name, " data in the Test data store")
+        label: `Available ${source_environment_name} data in the Test data store`
       }
     };
-    var result = [];
+    let result = [];
     if (dataSourceType === 'data_source' && source_type === 'tables') {
       if (environment_sync_mode === 'OFF') {
         result = [dataMapper.load_snapshot];
@@ -6099,24 +6769,19 @@ function DataSourceSettingsForm(props) {
       result = [dataMapper.new_data, dataMapper.all_data, dataMapper.available_data, dataMapper.load_snapshot];
     }
     if (sourceUserRole && !sourceUserRole.allowed_request_of_fresh_data) {
-      result = result.filter(function (it) {
-        return it.value !== 'all_data';
-      });
+      result = result.filter(it => it.value !== 'all_data');
     }
     return result;
   }, [environment_sync_mode, source_environment_name, dataSourceType, source_type, sourceUserRole]);
-  var _useState3 = Object(react["useState"])(fetchDataPolicyItems[0]),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    fecthDataPolicyLocal = _useState4[0],
-    setFecthDataPolicyLocal = _useState4[1];
-  Object(react["useEffect"])(function () {
+  const [fecthDataPolicyLocal, setFecthDataPolicyLocal] = Object(react["useState"])(fetchDataPolicyItems[0]);
+  Object(react["useEffect"])(() => {
     setMaskSensitiveDataLocal(mask_sensitive_data || false);
   }, [mask_sensitive_data]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (dataSourceType === 'synthetic') {
-      saveForm({
-        selection_method: 'GENERATE'
-      });
+      // saveForm({
+      //     selection_method: 'GENERATE',
+      // });
     }
   }, [dataSourceType]);
 
@@ -6136,11 +6801,9 @@ function DataSourceSettingsForm(props) {
   //     // }
   // }, [dataSourceType, fecthDataPolicyLocal]);
 
-  Object(react["useEffect"])(function () {
-    var getDataByValue = function getDataByValue(value) {
-      return fetchDataPolicyItems.find(function (it) {
-        return it.value === value;
-      });
+  Object(react["useEffect"])(() => {
+    const getDataByValue = value => {
+      return fetchDataPolicyItems.find(it => it.value === value);
     };
     if (sync_mode === 'ON') {
       setFecthDataPolicyLocal(getDataByValue('new_data'));
@@ -6154,17 +6817,17 @@ function DataSourceSettingsForm(props) {
       }
     }
   }, [sync_mode, version_ind]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (dataSourceType === 'data_source' && source_type === 'tables') {
       saveForm({
         tables_selected: true
       });
     }
   }, [dataSourceType, source_type]);
-  var dataSourceTypeChange = Object(react["useCallback"])(function (dataSourceTypeNew) {
-    var source_type = '';
-    var dataSourceType = dataSourceTypeNew;
-    var updateBE = {
+  const dataSourceTypeChange = Object(react["useCallback"])(dataSourceTypeNew => {
+    let source_type = '';
+    let dataSourceType = dataSourceTypeNew;
+    const updateBE = {
       selection_method: 'L',
       tableList: [],
       tables_selected: false,
@@ -6185,18 +6848,22 @@ function DataSourceSettingsForm(props) {
       updateBE.tables_selected = false;
       unregister('be_name');
     }
-    saveForm(DataSourceSettings_objectSpread({
+    if (dataSourceTypeNew === 'ai_generated' && target_env === 'ai_training') {
+      updateBE.target_env = undefined;
+    }
+    saveForm({
       source_environment_id: undefined,
       source_environment_name: '',
       sync_mode: 'ON',
       version_ind: false,
-      dataSourceType: dataSourceType,
-      source_type: source_type
-    }, updateBE));
+      dataSourceType,
+      source_type,
+      ...updateBE
+    });
   }, [saveForm]);
-  var envChangeLocal = Object(react["useCallback"])(function (item) {
-    var sync_mode = item && item.environment_sync_mode || 'ON';
-    var syncModeData = {};
+  const envChangeLocal = Object(react["useCallback"])(item => {
+    const sync_mode = item && item.environment_sync_mode || 'ON';
+    const syncModeData = {};
     if (sync_mode === 'OFF') {
       syncModeData.sync_mode = 'OFF';
       syncModeData.version_ind = false;
@@ -6210,15 +6877,16 @@ function DataSourceSettingsForm(props) {
     } else if (dataSourceType === 'data_source' && source_type === 'tables') {
       syncModeData.version_ind = true;
     }
-    saveForm(DataSourceSettings_objectSpread({
+    saveForm({
       source_environment_id: item && item.environment_id || undefined,
       source_environment_name: item && item.environment_name || undefined,
       synthetic_indicator: item && item.synthetic_indicator || false,
       mask_sensitive_data: item && item.mask_sensitive_data || false,
-      environment_sync_mode: item && item.environment_sync_mode || 'ON'
-    }, syncModeData));
+      environment_sync_mode: item && item.environment_sync_mode || 'ON',
+      ...syncModeData
+    });
   }, [saveForm, dataSourceType, source_type]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (environment_sync_mode === 'OFF') {
       if (['new_data', 'all_data'].indexOf(fecthDataPolicyLocal === null || fecthDataPolicyLocal === void 0 ? void 0 : fecthDataPolicyLocal.value) >= 0) {
         saveForm({
@@ -6228,10 +6896,10 @@ function DataSourceSettingsForm(props) {
       }
     }
   }, [environment_sync_mode]);
-  var updateGenerationParamValues = Object(react["useCallback"])(function (values) {
+  const updateGenerationParamValues = Object(react["useCallback"])(values => {
     if (values && values.length > 0) {
-      var copyGenerationParams = JSON.parse(JSON.stringify(dataGenerationParams));
-      values.forEach(function (data) {
+      const copyGenerationParams = JSON.parse(JSON.stringify(dataGenerationParams));
+      values.forEach(data => {
         if (copyGenerationParams[data.name]) {
           copyGenerationParams[data.name].value = data.value;
           if (copyGenerationParams[data.name].editor) {
@@ -6244,38 +6912,41 @@ function DataSourceSettingsForm(props) {
       });
     }
   }, [saveForm, dataGenerationParams]);
-  var updateChosenParams = Object(react["useCallback"])(function (data) {
-    var updateData = {};
-    var copyDataGenerationParams = JSON.parse(JSON.stringify(dataGenerationParams));
-    var copyGenerateChosenParams = toConsumableArray_default()(generateChosenParams);
+  const updateChosenParams = Object(react["useCallback"])(data => {
+    const updateData = {};
+    const copyDataGenerationParams = JSON.parse(JSON.stringify(dataGenerationParams));
+    const copyGenerateChosenParams = [...generateChosenParams];
     if (data.action === 'add') {
       if (copyGenerateChosenParams.length === 0) {
         copyDataGenerationParams[data.key].order = 1;
       } else {
-        var key = copyGenerateChosenParams[copyGenerateChosenParams.length - 1];
+        const key = copyGenerateChosenParams[copyGenerateChosenParams.length - 1];
         copyDataGenerationParams[data.key].order = copyDataGenerationParams[key].order + 1;
       }
       updateData.dataGenerationParams = copyDataGenerationParams;
-      updateData.generateChosenParams = [].concat(toConsumableArray_default()(copyGenerateChosenParams), [data.key]);
+      updateData.generateChosenParams = [...copyGenerateChosenParams, data.key];
     } else {
       copyDataGenerationParams[data.key].editor.value = copyDataGenerationParams[data.key].default;
       copyDataGenerationParams[data.key].value = copyDataGenerationParams[data.key].default;
       copyDataGenerationParams[data.key].order = 99999999;
       updateData.dataGenerationParams = copyDataGenerationParams;
-      updateData.generateChosenParams = copyGenerateChosenParams.filter(function (key) {
-        return key !== data.key;
-      });
+      updateData.generateChosenParams = copyGenerateChosenParams.filter(key => key !== data.key);
     }
     saveForm(updateData);
   }, [dataGenerationParams, saveForm, generateChosenParams]);
-  var fetchDataPolicyChange = Object(react["useCallback"])(function (item) {
-    var updateData = {};
+  const fetchDataPolicyChange = Object(react["useCallback"])(item => {
+    const updateData = {};
     if ((item === null || item === void 0 ? void 0 : item.value) === 'new_data') {
       updateData.sync_mode = 'ON';
       updateData.version_ind = false;
     } else if ((item === null || item === void 0 ? void 0 : item.value) === 'all_data') {
       updateData.sync_mode = 'FORCE';
-      updateData.version_ind = false;
+      updateData.tableList = [];
+      if (dataSourceType === 'data_source' && source_type === 'tables') {
+        updateData.version_ind = true;
+      } else {
+        updateData.version_ind = false;
+      }
     } else if ((item === null || item === void 0 ? void 0 : item.value) === 'available_data') {
       updateData.sync_mode = 'OFF';
       updateData.version_ind = false;
@@ -6287,23 +6958,21 @@ function DataSourceSettingsForm(props) {
     if (Object.keys(updateData).length > 0) {
       saveForm(updateData);
     }
-  }, [saveForm]);
-  Object(react["useEffect"])(function () {
+  }, [saveForm, dataSourceType, source_type]);
+  Object(react["useEffect"])(() => {
     if ((fecthDataPolicyLocal === null || fecthDataPolicyLocal === void 0 ? void 0 : fecthDataPolicyLocal.value) !== fetchPolicy) {
       saveForm({
         fetchPolicy: fecthDataPolicyLocal === null || fecthDataPolicyLocal === void 0 ? void 0 : fecthDataPolicyLocal.value
       });
     }
   }, [fecthDataPolicyLocal]);
-  var syntheticTypeMapper = {
+  const syntheticTypeMapper = {
     data_source: 'None',
     synthetic: 'RuleBased',
     ai_generated: 'AI'
   };
-  var getDataPolicy = Object(react["useCallback"])(function () {
-    var value = fetchDataPolicyItems.find(function (it) {
-      return it.value === (fecthDataPolicyLocal === null || fecthDataPolicyLocal === void 0 ? void 0 : fecthDataPolicyLocal.value);
-    });
+  const getDataPolicy = Object(react["useCallback"])(() => {
+    let value = fetchDataPolicyItems.find(it => it.value === (fecthDataPolicyLocal === null || fecthDataPolicyLocal === void 0 ? void 0 : fecthDataPolicyLocal.value));
     if (!value) {
       value = fetchDataPolicyItems[0];
     }
@@ -6325,13 +6994,13 @@ function DataSourceSettingsForm(props) {
           onChange: dataSourceTypeChange,
           name: "data_source_type",
           value: "data_source_BE",
-          selectedValue: "".concat(dataSourceType, "_").concat(source_type),
+          selectedValue: `${dataSourceType}_${source_type}`,
           title: "Entities & referential data"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
           onChange: dataSourceTypeChange,
           name: "data_source_type",
           value: "data_source_tables",
-          selectedValue: "".concat(dataSourceType, "_").concat(source_type),
+          selectedValue: `${dataSourceType}_${source_type}`,
           title: "Tables"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
           onChange: dataSourceTypeChange,
@@ -6366,7 +7035,7 @@ function DataSourceSettingsForm(props) {
               onChange: envChangeLocal,
               isMandatory: false
             }), source_environment_id ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(MaskDataContainer, {
-              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Icon, {
+              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(DataSourceSettings_styles_Icon, {
                 src: pii_icon
               }), maskSensitiveDataLocal ? 'Sensitive data is masked' : 'Data is not masked']
             }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
@@ -6376,7 +7045,7 @@ function DataSourceSettingsForm(props) {
                 name: 'reference_tables',
                 disabled: !(sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_refresh_reference_data),
                 title: 'Referential tables',
-                onChange: function onChange(value) {
+                onChange: value => {
                   saveForm({
                     tables_selected: value
                   });
@@ -6398,52 +7067,140 @@ function DataSourceSettingsForm(props) {
 /* harmony default export */ var DataSourceSettings = (DataSourceSettingsForm);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSubset/styles.ts
 
-var DataSubset_styles_templateObject, DataSubset_styles_templateObject2, DataSubset_styles_templateObject3, DataSubset_styles_templateObject4, DataSubset_styles_templateObject5, DataSubset_styles_templateObject6, DataSubset_styles_templateObject7, DataSubset_styles_templateObject8, DataSubset_styles_templateObject9, DataSubset_styles_templateObject10, DataSubset_styles_templateObject11, DataSubset_styles_templateObject12;
-
-var DataSubset_styles_Wrapper = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject || (DataSubset_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    gap: 30px;\n"])));
-var DataSubset_styles_Container = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject2 || (DataSubset_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    max-width: 80vw;\n    position: relative;\n"])));
-var DataSubsetsTypes = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject3 || (DataSubset_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 20px;\n    padding-bottom: 30px;\n    border-bottom: solid 1px #ccc;\n    width: 872px;\n"])));
-var styles_EnvironmentsContainer = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject4 || (DataSubset_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: 290px;\n"])));
-var DataSubset_styles_Icon = styled_components_browser_esm["b" /* default */].img(DataSubset_styles_templateObject5 || (DataSubset_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var DatasetIconContainer = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject6 || (DataSubset_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    gap: 8px;\n"])));
-var SelectMethodSelectContainer = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject7 || (DataSubset_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    gap: 25px;\n    align-items: flex-start;\n"])));
+const DataSubset_styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+`;
+const DataSubset_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    max-width: 80vw;
+    position: relative;
+`;
+const DataSubsetsTypes = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 30px;
+    border-bottom: solid 1px #ccc;
+    width: 872px;
+`;
+const styles_EnvironmentsContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 290px;
+`;
+const DataSubset_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const DatasetIconContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+`;
+const SelectMethodSelectContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+`;
 // export const SelectMethodSelectContainer = styled.div`
 //     width: 350px;
 // `
 
-var DataVersioningContainer = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject8 || (DataSubset_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 20px;\n"])));
-var DataGenerationContainer = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject9 || (DataSubset_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 20px;\n"])));
-var GenerationTypeOptions = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject10 || (DataSubset_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    align-self: flex-start;\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n"])));
-var DataSubset_styles_Seprator = styled_components_browser_esm["b" /* default */].span(DataSubset_styles_templateObject11 || (DataSubset_styles_templateObject11 = taggedTemplateLiteral_default()(["\n    border-right: 1px solid #ccc;\n    width: 1px;\n    height: ", ";\n"])), function (props) {
-  return props.expand ? '105px' : '70px';
-});
-var NumberOfEntitiesContainer = styled_components_browser_esm["b" /* default */].div(DataSubset_styles_templateObject12 || (DataSubset_styles_templateObject12 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 20px;\n"])));
+const DataVersioningContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+`;
+const DataGenerationContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+`;
+const GenerationTypeOptions = styled_components_browser_esm["b" /* default */].div`
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+const DataSubset_styles_Seprator = styled_components_browser_esm["b" /* default */].span`
+    border-right: 1px solid #ccc;
+    width: 1px;
+    height: ${props => props.expand ? '105px' : '70px'};
+`;
+const NumberOfEntitiesContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+`;
 // CONCATENATED MODULE: ./src/components/TextArea/styles.ts
 
-var TextArea_styles_templateObject, TextArea_styles_templateObject2, TextArea_styles_templateObject3, TextArea_styles_templateObject4;
-
-var TextArea_styles_Container = styled_components_browser_esm["b" /* default */].div(TextArea_styles_templateObject || (TextArea_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n"])));
-var TextArea_styles_Title = styled_components_browser_esm["b" /* default */].div(TextArea_styles_templateObject2 || (TextArea_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    margin-bottom: 10px;\n"])));
-var TextArea_styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span(TextArea_styles_templateObject3 || (TextArea_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    color: red;\n"])));
-var TextArea = styled_components_browser_esm["b" /* default */].textarea(TextArea_styles_templateObject4 || (TextArea_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 15px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #666;\n    padding: 9px 10px;\n    border-radius: 3px;\n    border: solid 1px #ccc;\n    width: -webkit-fill-available;\n    width: -moz-available;\n    resize: none;\n    :placeholder{\n        font-size: 15px;\n        font-weight: normal;\n        font-stretch: normal;\n        font-style: normal;\n        line-height: 1.33;\n        letter-spacing: normal;\n        text-align: left;\n        color: #999;\n    }\n"])));
+const TextArea_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+`;
+const TextArea_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    margin-bottom: 10px;
+`;
+const TextArea_styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span`
+    color: red;
+`;
+const TextArea = styled_components_browser_esm["b" /* default */].textarea`
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666;
+    padding: 9px 10px;
+    border-radius: 3px;
+    border: solid 1px #ccc;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    resize: none;
+    :placeholder{
+        font-size: 15px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.33;
+        letter-spacing: normal;
+        text-align: left;
+        color: #999;
+    }
+`;
 // CONCATENATED MODULE: ./src/components/TextArea/index.tsx
 
 
 
 
-
-
 function TDMTextArea(props) {
-  var title = props.title,
-    value = props.value,
-    onChange = props.onChange,
-    name = props.name,
-    mandatory = props.mandatory,
-    placeholder = props.placeholder,
-    error = props.error;
-  var onChangeLocal = Object(react["useCallback"])(function (event) {
+  const {
+    title,
+    value,
+    onChange,
+    name,
+    mandatory,
+    placeholder,
+    error
+  } = props;
+  const onChangeLocal = Object(react["useCallback"])(event => {
     onChange(event.target.value);
   }, [onChange]);
+  console.log(value);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TextArea_styles_Container, {
     children: [title ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(TextArea_styles_Title, {
       children: [title, /*#__PURE__*/Object(jsx_runtime["jsx"])(TextArea_styles_MadatoryAsterisk, {
@@ -6453,7 +7210,7 @@ function TDMTextArea(props) {
       rows: 6,
       placeholder: placeholder,
       name: name,
-      value: value,
+      value: value || '',
       onChange: onChangeLocal
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
       error: error
@@ -6463,34 +7220,34 @@ function TDMTextArea(props) {
 /* harmony default export */ var components_TextArea = (TDMTextArea);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSubset/EntityList.tsx
 
-function EntityList_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function EntityList_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? EntityList_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : EntityList_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 
 
 
 
 function EntityList(props) {
   var _errors$selection_par;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    unregister = _useContext.unregister,
-    resetField = _useContext.resetField,
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var selection_param_value = taskData.selection_param_value,
-    maxToCopy = taskData.maxToCopy;
-  var localChange = Object(react["useCallback"])(function (value) {
+  const {
+    register,
+    clearErrors,
+    errors,
+    unregister,
+    resetField,
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    selection_param_value,
+    maxToCopy
+  } = taskData;
+  const localChange = Object(react["useCallback"])(value => {
     saveForm({
       selection_param_value: value,
       num_of_entities: (value || '').split(',').length
     });
   }, [saveForm]);
-  var validateEntites = function validateEntites(value) {
+  const validateEntites = Object(react["useCallback"])(value => {
     if (value && value.split(',').length > (maxToCopy || 0)) {
-      return "The number of entities cannot exceed ".concat(maxToCopy, " entities.");
+      return `The number of entities cannot exceed ${maxToCopy || 0} entities.`;
     }
     // const pattern = new RegExp(
     //     '^((\\s*\\w\\s*|-)+(?:,(\\s*\\w\\s*|-)+){0,' +
@@ -6501,20 +7258,23 @@ function EntityList(props) {
     //     return 'The entity ID must consist of letters, numbers or a dash only. Other characters are not supported.';
     // }
     return true;
-  };
-  Object(react["useEffect"])(function () {
-    return function () {
+  }, [maxToCopy]);
+  Object(react["useEffect"])(() => {
+    unregister('selection_param_value');
+    return () => {
       unregister('selection_param_value');
     };
   }, []);
+  console.log(selection_param_value);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(DataSubset_styles_Container, {
-    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TextArea, EntityList_objectSpread(EntityList_objectSpread({}, register('selection_param_value', {
-      value: selection_param_value,
-      required: 'Populate entities',
-      validate: {
-        validateEntites: validateEntites
-      }
-    })), {}, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TextArea, {
+      ...register('selection_param_value', {
+        value: selection_param_value,
+        required: 'Populate entities',
+        validate: {
+          validateEntites: validateEntites
+        }
+      }),
       name: "selection_param_value",
       title: "Enter entity IDs separated by commas",
       mandatory: true,
@@ -6522,29 +7282,44 @@ function EntityList(props) {
       value: selection_param_value,
       onChange: localChange,
       error: (_errors$selection_par = errors.selection_param_value) === null || _errors$selection_par === void 0 ? void 0 : _errors$selection_par.message
-    }))
+    })
   });
 }
 /* harmony default export */ var DataSubset_EntityList = (EntityList);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSubset/CustomLogic/styles.ts
 
-var CustomLogic_styles_templateObject, CustomLogic_styles_templateObject2, CustomLogic_styles_templateObject3, CustomLogic_styles_templateObject4, CustomLogic_styles_templateObject5;
-
-var CustomLogic_styles_Container = styled_components_browser_esm["b" /* default */].div(CustomLogic_styles_templateObject || (CustomLogic_styles_templateObject = taggedTemplateLiteral_default()(["\n    border-top: 1px solid #ccc;\n    padding-top: 30px;\n    width: 100%;\n    display: flex;\n    position: relative;\n"])));
-var styles_LeftSide = styled_components_browser_esm["b" /* default */].div(CustomLogic_styles_templateObject2 || (CustomLogic_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    position: relative;\n    display: flex;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 25px;\n    width: 326px;\n    border-right: 1px solid #ccc;\n"])));
-var CustomLogic_styles_Seprator = styled_components_browser_esm["b" /* default */].div(CustomLogic_styles_templateObject3 || (CustomLogic_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    border-right: 1px solid #ccc;\n    width: 1px;\n    position: absolute;\n    height: calc(100% + 80px);\n    top: 0px;\n    left: 400px;\n"])));
-var SelectContainer = styled_components_browser_esm["b" /* default */].div(CustomLogic_styles_templateObject4 || (CustomLogic_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: 287px;\n"])));
-var Params = styled_components_browser_esm["b" /* default */].div(CustomLogic_styles_templateObject5 || (CustomLogic_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    width: calc(100% - 400px);\n    margin-left: 60px;\n"])));
+const CustomLogic_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    border-top: 1px solid #ccc;
+    padding-top: 30px;
+    width: 100%;
+    display: flex;
+    position: relative;
+`;
+const styles_LeftSide = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 25px;
+    width: 326px;
+    border-right: 1px solid #ccc;
+`;
+const CustomLogic_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border-right: 1px solid #ccc;
+    width: 1px;
+    position: absolute;
+    height: calc(100% + 80px);
+    top: 0px;
+    left: 400px;
+`;
+const SelectContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 287px;
+`;
+const Params = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100% - 400px);
+    margin-left: 60px;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSubset/CustomLogic/index.tsx
-
-
-
-
-function CustomLogic_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function CustomLogic_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? CustomLogic_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : CustomLogic_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
 
 
 
@@ -6555,161 +7330,104 @@ function CustomLogic_objectSpread(target) { for (var i = 1; i < arguments.length
 
 
 function CustomLogic(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    register = _useContext.register;
-  var selection_param_value = taskData.selection_param_value,
-    parameters = taskData.parameters,
-    be_name = taskData.be_name,
-    source_environment_name = taskData.source_environment_name,
-    environment_name = taskData.environment_name,
-    customLogicParams = taskData.customLogicParams;
-  var _useState = Object(react["useState"])(true),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    loading = _useState2[0],
-    setLoading = _useState2[1];
-  var _useState3 = Object(react["useState"])([]),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    customLogicFlows = _useState4[0],
-    setCustomLogicFlows = _useState4[1];
-  var _useState5 = Object(react["useState"])(null),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    selectedCustomLogicFlow = _useState6[0],
-    setSelectedCustomLogicFlow = _useState6[1];
-  Object(react["useEffect"])(function () {
-    function fetchCutomLogicFlows() {
-      return _fetchCutomLogicFlows.apply(this, arguments);
-    }
-    function _fetchCutomLogicFlows() {
-      _fetchCutomLogicFlows = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data, found;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              if (!(!be_name || !(environment_name || source_environment_name))) {
-                _context.next = 4;
-                break;
-              }
-              setLoading(false);
-              return _context.abrupt("return");
-            case 4:
-              _context.next = 6;
-              return apis_task.getCustomLogicFlows(be_name, environment_name || source_environment_name || '');
-            case 6:
-              data = _context.sent;
-              data.forEach(function (flow) {
-                flow.value = "".concat(flow.luName, "#").concat(flow.flowName);
-                flow.label = flow.flowName;
-                flow.description = flow.Description;
-              });
-              if (selection_param_value) {
-                found = data.find(function (it) {
-                  return it.flowName === selection_param_value;
-                });
-                if (found) {
-                  setSelectedCustomLogicFlow(found);
-                }
-              }
-              setCustomLogicFlows(data);
-              setLoading(false);
-              _context.next = 16;
-              break;
-            case 13:
-              _context.prev = 13;
-              _context.t0 = _context["catch"](0);
-              // use hook toast
-              setLoading(false);
-            case 16:
-            case "end":
-              return _context.stop();
+  const {
+    taskData,
+    saveForm,
+    register
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    selection_param_value,
+    parameters,
+    be_name,
+    source_environment_name,
+    environment_name,
+    customLogicParams,
+    maxToCopy
+  } = taskData;
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [customLogicFlows, setCustomLogicFlows] = Object(react["useState"])([]);
+  const [selectedCustomLogicFlow, setSelectedCustomLogicFlow] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    async function fetchCutomLogicFlows() {
+      try {
+        if (!be_name || !(environment_name || source_environment_name)) {
+          setLoading(false);
+          return;
+        }
+        const data = await apis_task.getCustomLogicFlows(be_name, environment_name || source_environment_name || '');
+        data.forEach(flow => {
+          flow.value = `${flow.luName}#${flow.flowName}`;
+          flow.label = flow.flowName;
+          flow.description = flow.Description;
+        });
+        if (selection_param_value) {
+          const found = data.find(it => it.flowName === selection_param_value);
+          if (found) {
+            setSelectedCustomLogicFlow(found);
           }
-        }, _callee, null, [[0, 13]]);
-      }));
-      return _fetchCutomLogicFlows.apply(this, arguments);
+        }
+        setCustomLogicFlows(data);
+        setLoading(false);
+      } catch (err) {
+        // use hook toast
+        setLoading(false);
+      }
     }
     fetchCutomLogicFlows();
   }, []);
-  Object(react["useEffect"])(function () {
-    function fetchCutomLogicParams() {
-      return _fetchCutomLogicParams.apply(this, arguments);
-    }
-    function _fetchCutomLogicParams() {
-      _fetchCutomLogicParams = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
-        var data, params;
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _context2.prev = 0;
-              if (selectedCustomLogicFlow) {
-                _context2.next = 3;
-                break;
-              }
-              return _context2.abrupt("return");
-            case 3:
-              console.log(selectedCustomLogicFlow);
-              _context2.next = 6;
-              return apis_task.getCustomLogicParams(selectedCustomLogicFlow.luName, selectedCustomLogicFlow.flowName);
-            case 6:
-              data = _context2.sent;
-              data.forEach(function (param) {
-                if (param.editor) {
-                  param.name = param.editor.name;
-                  if (param.editor && Object.keys(param.editor).length === 0 && Object.getPrototypeOf(param.editor) === Object.prototype) {
-                    param.editor = undefined;
-                  } else {
-                    param.editor.value = param.default;
-                  }
-                }
-                if (param.name) {
-                  param.displayName = param.name.replace('_', ' ');
-                }
-                if (param.editor && param.editor.name) {
-                  param.displayName = param.editor.name.replace('_', ' ');
-                }
-              });
-              if (parameters) {
-                try {
-                  params = JSON.parse(parameters);
-                  if (params && params.inputs) {
-                    data.forEach(function (customParam) {
-                      if (customParam.type === 'bool' && !customParam.default) {
-                        customParam.default = false;
-                      }
-                      var param = params.inputs.find(function (it) {
-                        return it.name === customParam.name;
-                      });
-                      if (param) {
-                        customParam.value = param.value || customParam.default;
-                        if (customParam.editor) {
-                          customParam.editor.value = param.value || customParam.default;
-                        }
-                      }
-                    });
-                  }
-                } catch (err) {
-                  console.log(err);
-                }
-              }
-              saveForm({
-                customLogicParams: data
-              });
-              setLoading(false);
-              _context2.next = 16;
-              break;
-            case 13:
-              _context2.prev = 13;
-              _context2.t0 = _context2["catch"](0);
-              // use hook toast
-              setLoading(false);
-            case 16:
-            case "end":
-              return _context2.stop();
+  Object(react["useEffect"])(() => {
+    async function fetchCutomLogicParams() {
+      try {
+        if (!selectedCustomLogicFlow) {
+          return;
+        }
+        console.log(selectedCustomLogicFlow);
+        const data = await apis_task.getCustomLogicParams(selectedCustomLogicFlow.luName, selectedCustomLogicFlow.flowName);
+        data.forEach(param => {
+          if (param.editor) {
+            param.name = param.editor.name;
+            if (param.editor && Object.keys(param.editor).length === 0 && Object.getPrototypeOf(param.editor) === Object.prototype) {
+              param.editor = undefined;
+            } else {
+              param.editor.value = param.default;
+            }
           }
-        }, _callee2, null, [[0, 13]]);
-      }));
-      return _fetchCutomLogicParams.apply(this, arguments);
+          if (param.name) {
+            param.displayName = param.name.replace('_', ' ');
+          }
+          if (param.editor && param.editor.name) {
+            param.displayName = param.editor.name.replace('_', ' ');
+          }
+        });
+        if (parameters) {
+          try {
+            const params = JSON.parse(parameters);
+            if (params && params.inputs) {
+              data.forEach(customParam => {
+                if (customParam.type === 'bool' && !customParam.default) {
+                  customParam.default = false;
+                }
+                const param = params.inputs.find(it => it.name === customParam.name);
+                if (param) {
+                  customParam.value = param.value || customParam.default;
+                  if (customParam.editor) {
+                    customParam.editor.value = param.value || customParam.default;
+                  }
+                }
+              });
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        }
+        saveForm({
+          customLogicParams: data
+        });
+        setLoading(false);
+      } catch (err) {
+        // use hook toast
+        setLoading(false);
+      }
     }
     fetchCutomLogicParams();
   }, [selectedCustomLogicFlow]);
@@ -6722,29 +7440,27 @@ function CustomLogic(props) {
   //     }
   // },[selectedCustomLogicFlow])
 
-  var updateFabricEditorValues = function updateFabricEditorValues(values) {
-    values.forEach(function (data) {
+  const updateFabricEditorValues = values => {
+    values.forEach(data => {
       updateCustomParamLogicNative(data.name, data.value);
     });
   };
-  var updateCustomParamLogicNative = Object(react["useCallback"])(function (name, value) {
+  const updateCustomParamLogicNative = Object(react["useCallback"])((name, value) => {
     if (!customLogicParams) {
       return;
     }
-    var customParamsTemp = toConsumableArray_default()(customLogicParams);
-    var index = customParamsTemp.findIndex(function (param) {
-      return param.name === name;
-    });
+    const customParamsTemp = [...customLogicParams];
+    const index = customParamsTemp.findIndex(param => param.name === name);
     if (index >= 0) {
       customParamsTemp[index].value = value;
       if (customParamsTemp[index] && customParamsTemp[index].editor) {
-        var editorTemp = customParamsTemp[index].editor;
+        const editorTemp = customParamsTemp[index].editor;
         if (editorTemp) {
           editorTemp.value = value;
         }
       }
-      var _parameters = {
-        inputs: (customParamsTemp || []).map(function (it) {
+      const parameters = {
+        inputs: (customParamsTemp || []).map(it => {
           return {
             name: it.name,
             type: it.type,
@@ -6753,60 +7469,53 @@ function CustomLogic(props) {
         })
       };
       saveForm({
-        customLogicParams: customLogicParams,
-        parameters: JSON.stringify(_parameters)
+        customLogicParams,
+        parameters: JSON.stringify(parameters)
       });
     }
   }, [customLogicParams]);
-  var updateFabricRefInData = Object(react["useCallback"])(function (ref) {
+  const updateFabricRefInData = Object(react["useCallback"])(ref => {
     saveForm({
       widgetRefData: ref
     });
   }, [saveForm]);
-  var getFabricParams = Object(react["useCallback"])(function () {
+  const getFabricParams = Object(react["useCallback"])(() => {
     var _ref;
     if (!selectedCustomLogicFlow) {
       return;
     }
-    var fabricWidgetItems = customLogicParams === null || customLogicParams === void 0 ? void 0 : customLogicParams.filter(function (it) {
-      return it.editor;
-    });
+    const fabricWidgetItems = customLogicParams === null || customLogicParams === void 0 ? void 0 : customLogicParams.filter(it => it.editor);
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
       children: /*#__PURE__*/Object(jsx_runtime["jsx"])(fabricWidget, {
-        editor: (_ref = fabricWidgetItems || []) === null || _ref === void 0 ? void 0 : _ref.map(function (it) {
-          return it.editor;
-        }),
+        editor: (_ref = fabricWidgetItems || []) === null || _ref === void 0 ? void 0 : _ref.map(it => it.editor),
         updateValues: updateFabricEditorValues,
         saveRef: updateFabricRefInData
       })
     });
   }, [customLogicParams, updateFabricEditorValues, updateFabricRefInData, selectedCustomLogicFlow]);
-  var getParams = Object(react["useCallback"])(function () {
+  const getParams = Object(react["useCallback"])(() => {
     if (!selectedCustomLogicFlow) {
       return;
     }
-    var regularItems = customLogicParams === null || customLogicParams === void 0 ? void 0 : customLogicParams.filter(function (it) {
-      return !it.editor;
-    });
+    const regularItems = customLogicParams === null || customLogicParams === void 0 ? void 0 : customLogicParams.filter(it => !it.editor);
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
-      children: (regularItems || []).map(function (param, index) {
-        /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, CustomLogic_objectSpread(CustomLogic_objectSpread({}, register("".concat(param.name, "_").concat(index), {
-          value: param.value,
-          required: 'Please type entities'
-        })), {}, {
+      children: (regularItems || []).map((param, index) => {
+        /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          ...register(`${param.name}_${index}`, {
+            value: param.value,
+            required: 'Please type entities'
+          }),
           width: "287px",
           title: param.displayName || '',
           mandatory: param.mandatory,
           value: param.value,
-          onChange: function onChange(value) {
-            return updateCustomParamLogicNative(param.name, value);
-          },
+          onChange: value => updateCustomParamLogicNative(param.name, value),
           type: param.type === 'integer' || param.type === 'real' ? InputTypes.number : InputTypes.text
-        }));
+        });
       })
     });
   }, [customLogicParams, updateCustomParamLogicNative, selectedCustomLogicFlow]);
-  var updateCustomFlow = Object(react["useCallback"])(function (it) {
+  const updateCustomFlow = Object(react["useCallback"])(it => {
     setSelectedCustomLogicFlow(it);
     saveForm({
       selection_param_value: it.flowName,
@@ -6818,10 +7527,10 @@ function CustomLogic(props) {
     children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_LeftSide, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_NumberOfEntities, {
         width: '300px',
-        title: "Number of entities"
+        title: "Max number of entities"
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
         title: "Select custom logic",
-        mandatory: true,
+        mandatory: (maxToCopy || 0) < 9007199254740992,
         options: customLogicFlows,
         value: selectedCustomLogicFlow,
         onChange: updateCustomFlow,
@@ -6835,18 +7544,48 @@ function CustomLogic(props) {
 /* harmony default export */ var DataSubset_CustomLogic = (CustomLogic);
 // CONCATENATED MODULE: ./src/components/SelectDataVerioning/styles.ts
 
-var SelectDataVerioning_styles_templateObject, SelectDataVerioning_styles_templateObject2, SelectDataVerioning_styles_templateObject3, SelectDataVerioning_styles_templateObject4, SelectDataVerioning_styles_templateObject5, SelectDataVerioning_styles_templateObject6;
-
-var SelectDataVerioning_styles_Container = styled_components_browser_esm["b" /* default */].div(SelectDataVerioning_styles_templateObject || (SelectDataVerioning_styles_templateObject = taggedTemplateLiteral_default()(["\n"])));
-var SelectDataVerioning_styles_Title = styled_components_browser_esm["b" /* default */].div(SelectDataVerioning_styles_templateObject2 || (SelectDataVerioning_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n"])));
-var styles_DatesContainer = styled_components_browser_esm["b" /* default */].div(SelectDataVerioning_styles_templateObject3 || (SelectDataVerioning_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  margin-top: 20px;\n  margin-bottom: 38px;\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n  display: flex;\n  align-items: center;\n  gap: 30px;\n"])));
-var SelectDataVerioning_styles_DateItem = styled_components_browser_esm["b" /* default */].div(SelectDataVerioning_styles_templateObject4 || (SelectDataVerioning_styles_templateObject4 = taggedTemplateLiteral_default()(["\n  display: flex;\n  align-items: center;\n  gap: 10px;\n"])));
-var SelectDataVerioning_styles_Icon = styled_components_browser_esm["b" /* default */].img(SelectDataVerioning_styles_templateObject5 || (SelectDataVerioning_styles_templateObject5 = taggedTemplateLiteral_default()(["\n"])));
-var SelectDataVerioning_styles_TableContainer = styled_components_browser_esm["b" /* default */].div(SelectDataVerioning_styles_templateObject6 || (SelectDataVerioning_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    max-width: 80vw;\n    overflow: auto;\n"])));
+const SelectDataVerioning_styles_Container = styled_components_browser_esm["b" /* default */].div`
+`;
+const SelectDataVerioning_styles_Title = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+`;
+const styles_DatesContainer = styled_components_browser_esm["b" /* default */].div`
+  margin-top: 20px;
+  margin-bottom: 38px;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+`;
+const SelectDataVerioning_styles_DateItem = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const SelectDataVerioning_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+`;
+const SelectDataVerioning_styles_TableContainer = styled_components_browser_esm["b" /* default */].div`
+    max-width: 80vw;
+    overflow: auto;
+`;
 // CONCATENATED MODULE: ./src/components/SelectDataVerioning/useTable.tsx
 
-function useTable_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function useTable_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? useTable_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : useTable_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
@@ -6854,12 +7593,10 @@ function useTable_objectSpread(target) { for (var i = 1; i < arguments.length; i
 
 
 
-
-
-var SelectDataVerioning_useTable_useTable = function useTable(selected_version_task_exe_id, saveForm) {
-  var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
-  var setVersioningData = Object(react["useCallback"])(function (data) {
-    var version_datetime = new Date(data.version_datetime);
+const SelectDataVerioning_useTable_useTable = (selected_version_task_exe_id, saveForm) => {
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const setVersioningData = Object(react["useCallback"])(data => {
+    const version_datetime = new Date(data.version_datetime);
     saveForm({
       selected_version_task_name: data.version_name,
       selected_version_succeeded_entities: data.num_of_succeeded_entities,
@@ -6867,71 +7604,149 @@ var SelectDataVerioning_useTable_useTable = function useTable(selected_version_t
       selected_version_task_exe_id: data.task_execution_id
     });
   }, [saveForm]);
-  var columnsDef = Object(react["useMemo"])(function () {
-    return [{
-      column: 'version_name',
-      name: 'Version Name',
-      clickAble: true
-    }, {
-      column: 'task_id',
-      name: 'Task Id',
-      clickAble: false
-    }, {
-      column: 'task_execution_id',
-      name: 'Task Execution Id',
-      clickAble: false
-    }, {
-      column: 'version_no',
-      name: 'Version Number',
-      clickAble: false
-    }, {
-      column: 'execution_note',
-      name: 'Exection Note',
-      clickAble: false
-    }, {
-      column: 'task_last_updated_by',
-      name: 'Last Updated By',
-      clickAble: false
-    }, {
-      column: 'version_type',
-      name: 'Version Type',
-      clickAble: false
-    }, {
-      column: 'version_datetime',
-      name: 'Creation date',
-      type: 'date',
-      clickAble: false
-    }, {
-      column: 'lu_name',
-      name: 'Logical unit Name',
-      clickAble: false
-    }, {
-      column: 'number_of_extracted_entities',
-      name: 'Number of Processed Entities',
-      clickAble: false
-    }, {
-      column: 'num_of_succeeded_entities',
-      name: 'Number of Succeeded Entities',
-      clickAble: false
-    }, {
-      column: 'num_of_failed_entities',
-      name: 'Number of Failed Entities',
-      clickAble: false
+  const columnsDef = Object(react["useMemo"])(() => [{
+    column: 'version_name',
+    name: 'Version Name',
+    clickAble: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
     }
-    // {
-    //     column: 'rootIndicator',
-    //     name: 'Root LU',
-    //     clickAble: false
-    // },
-    ];
-  }, []);
-  var columns = Object(react["useMemo"])(function () {
-    var columnsResult = [];
+  }, {
+    column: 'task_id',
+    name: 'Task Id',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }, {
+    column: 'task_execution_id',
+    name: 'Task Execution Id',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }, {
+    column: 'version_no',
+    name: 'Version Number',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }, {
+    column: 'execution_note',
+    name: 'Execution Note',
+    clickAble: false,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'task_last_updated_by',
+    name: 'Last Updated By',
+    clickAble: false,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'version_type',
+    name: 'Version Type',
+    clickAble: false,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'version_datetime',
+    name: 'Creation date',
+    type: 'date',
+    clickAble: false,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'lu_name',
+    name: 'Logical unit Name',
+    clickAble: false,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'number_of_extracted_entities',
+    name: 'Number of Processed Entities',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }, {
+    column: 'num_of_succeeded_entities',
+    name: 'Number of Succeeded Entities',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }, {
+    column: 'num_of_failed_entities',
+    name: 'Number of Failed Entities',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }
+  // {
+  //     column: 'rootIndicator',
+  //     name: 'Root LU',
+  //     clickAble: false
+  // },
+  ], []);
+  const columns = Object(react["useMemo"])(() => {
+    const columnsResult = [];
     columnsResult.push({
       id: 'collapse',
       header: '',
-      cell: function cell(_ref) {
-        var row = _ref.row;
+      cell: _ref => {
+        let {
+          row
+        } = _ref;
         return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
           className: "px-1",
           children: row.depth === 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
@@ -6952,14 +7767,14 @@ var SelectDataVerioning_useTable_useTable = function useTable(selected_version_t
     columnsResult.push({
       id: 'select',
       header: '',
-      cell: function cell(_ref2) {
-        var row = _ref2.row;
+      cell: _ref2 => {
+        let {
+          row
+        } = _ref2;
         return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
           className: "px-1",
           children: row.depth === 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
-            onChange: function onChange() {
-              return setVersioningData(row.original);
-            },
+            onChange: () => setVersioningData(row.original),
             name: "select_version_for_load",
             value: '' + row.original.task_execution_id,
             selectedValue: '' + selected_version_task_exe_id,
@@ -6968,62 +7783,52 @@ var SelectDataVerioning_useTable_useTable = function useTable(selected_version_t
         });
       }
     });
-    columnsDef.forEach(function (col) {
-      columnsResult.push(useTable_objectSpread(useTable_objectSpread({}, columnHelper.accessor(col.column, {
-        header: function header() {
-          return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+    columnsDef.forEach(col => {
+      columnsResult.push({
+        ...columnHelper.accessor(col.column, {
+          header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
             children: col.name
-          });
-        },
-        cell: function cell(info) {
-          return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          }),
+          cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
             children: info.getValue()
-          });
-        }
-      })), {}, {
+          }),
+          meta: col.meta,
+          // ✅ pass the meta here
+          filterFn: col.filterFn // ✅ pass custom filter if any
+        }),
         width: 'auto'
-      }));
+      });
     });
     return columnsResult;
   }, [columnHelper, selected_version_task_exe_id, columnsDef]);
   return {
-    columns: columns
+    columns
   };
 };
 /* harmony default export */ var SelectDataVerioning_useTable = (SelectDataVerioning_useTable_useTable);
 // CONCATENATED MODULE: ./src/components/SelectDataVerioning/groupVersions.ts
-
-function groupVersions_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function groupVersions_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? groupVersions_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : groupVersions_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-var groupData = function groupData(data, selectedLus, allLus) {
-  var lusTemp = [];
-  (selectedLus || []).forEach(function (lu) {
-    var luTemp = allLus.find(function (it) {
-      return it.lu_name === lu;
-    });
+const groupData = (data, selectedLus, allLus) => {
+  const lusTemp = [];
+  (selectedLus || []).forEach(lu => {
+    const luTemp = allLus.find(it => it.lu_name === lu);
     if (luTemp) {
-      lusTemp.push(groupVersions_objectSpread(groupVersions_objectSpread({}, luTemp), {}, {
+      lusTemp.push({
+        ...luTemp,
         lu_parent_name: luTemp.lu_parent_name
-      }));
+      });
     }
   });
-  var rootLUs = lusTemp.filter(function (it) {
-    return !it.lu_parent_name;
-  });
-  var groupedData = data.reduce(function (acc, curr) {
+  const rootLUs = lusTemp.filter(it => !it.lu_parent_name);
+  const groupedData = data.reduce((acc, curr) => {
     if (!acc[curr.task_execution_id]) acc[curr.task_execution_id] = []; //If this type wasn't previously stored
     acc[curr.task_execution_id].push(curr);
     return acc;
   }, {});
-  var versionsForLoadRoot = [];
-  var versionsForLoadSubRoot = [];
-  Object.keys(groupedData).forEach(function (task_execution_id) {
-    groupedData[task_execution_id].forEach(function (versionForLoad) {
-      if (rootLUs.findIndex(function (it) {
-        return it.lu_name === versionForLoad.lu_name;
-      }) >= 0 && versionsForLoadRoot.findIndex(function (it) {
-        return it.task_execution_id === versionForLoad.task_execution_id;
-      }) < 0) {
+  const versionsForLoadRoot = [];
+  const versionsForLoadSubRoot = [];
+  Object.keys(groupedData).forEach(task_execution_id => {
+    groupedData[task_execution_id].forEach(versionForLoad => {
+      if (rootLUs.findIndex(it => it.lu_name === versionForLoad.lu_name) >= 0 && versionsForLoadRoot.findIndex(it => it.task_execution_id === versionForLoad.task_execution_id) < 0) {
         versionForLoad.rootIndicator = true;
         versionsForLoadRoot.push(versionForLoad);
       } else {
@@ -7032,11 +7837,9 @@ var groupData = function groupData(data, selectedLus, allLus) {
       }
     });
   });
-  var versionsForLoad = [].concat(versionsForLoadRoot);
-  versionsForLoadSubRoot.forEach(function (versionForLoad) {
-    var foundVersion = versionsForLoad.find(function (it) {
-      return it.task_execution_id === versionForLoad.task_execution_id;
-    });
+  const versionsForLoad = [...versionsForLoadRoot];
+  versionsForLoadSubRoot.forEach(versionForLoad => {
+    const foundVersion = versionsForLoad.find(it => it.task_execution_id === versionForLoad.task_execution_id);
     if (foundVersion) {
       if (!foundVersion.subRows) {
         foundVersion.subRows = [];
@@ -7056,91 +7859,67 @@ var groupData = function groupData(data, selectedLus, allLus) {
 
 
 
-
-
-
-
 function SelectDataVersioning(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    allLogicalUnits = _useContext.allLogicalUnits;
-  var be_id = taskData.be_id,
-    selected_logical_units_names = taskData.selected_logical_units_names,
-    source_environment_name = taskData.source_environment_name,
-    environment_name = taskData.environment_name,
-    selection_method = taskData.selection_method,
-    selection_param_value = taskData.selection_param_value,
-    versioningStartDate = taskData.versioningStartDate,
-    versioningEndDate = taskData.versioningEndDate,
-    selected_version_task_exe_id = taskData.selected_version_task_exe_id,
-    filterout_reserved = taskData.filterout_reserved,
-    clone_ind = taskData.clone_ind,
-    replace_sequences = taskData.replace_sequences,
-    load_entity = taskData.load_entity,
-    target_env = taskData.target_env,
-    environment_id = taskData.environment_id,
-    sync_mode = taskData.sync_mode,
-    version_ind = taskData.version_ind;
-  var _useState = Object(react["useState"])([]),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    data = _useState2[0],
-    setData = _useState2[1];
-  var _useState3 = Object(react["useState"])(true),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    loading = _useState4[0],
-    setLoading = _useState4[1];
-  var _useTable = SelectDataVerioning_useTable(selected_version_task_exe_id, saveForm),
-    columns = _useTable.columns;
+  const {
+    taskData,
+    saveForm,
+    allLogicalUnits
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    be_id,
+    selected_logical_units_names,
+    source_environment_name,
+    environment_name,
+    selection_method,
+    selection_param_value,
+    versioningStartDate,
+    versioningEndDate,
+    selected_version_task_exe_id,
+    filterout_reserved,
+    clone_ind,
+    replace_sequences,
+    load_entity,
+    target_env,
+    environment_id,
+    sync_mode,
+    version_ind
+  } = taskData;
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const {
+    columns
+  } = SelectDataVerioning_useTable(selected_version_task_exe_id, saveForm);
   console.log(taskData);
-  Object(react["useEffect"])(function () {
-    var fetchData = setTimeout( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-      var local_filterout_reserved, _data, newData, sortedData;
-      return regenerator_default.a.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            _context.prev = 0;
-            if (!(!versioningStartDate || !versioningStartDate || !selected_logical_units_names || !source_environment_name && !environment_name || !be_id)) {
-              _context.next = 3;
-              break;
-            }
-            return _context.abrupt("return");
-          case 3:
-            setLoading(true);
-            local_filterout_reserved = filterout_reserved || 'OTHERS';
-            if ((clone_ind || replace_sequences) && !load_entity || target_env === 'ai_training' || !environment_id || !(sync_mode === 'OFF' && version_ind) && selection_method === 'ALL') {
-              local_filterout_reserved = 'NA';
-            }
-            console.log(local_filterout_reserved);
-            _context.next = 9;
-            return apis_task.getVersionsForLoad(versioningStartDate, versioningEndDate, selection_method === 'ALL' ? '' : selection_param_value || '', selected_logical_units_names, source_environment_name, environment_name, be_id, local_filterout_reserved);
-          case 9:
-            _data = _context.sent;
-            newData = groupData(_data.ListOfVersions, selected_logical_units_names, allLogicalUnits);
-            sortedData = newData.sort(function (it1, it2) {
-              return new Date(it2.version_datetime).getTime() - new Date(it1.version_datetime).getTime();
-            });
-            setData(sortedData);
-            setLoading(false);
-            _context.next = 19;
-            break;
-          case 16:
-            _context.prev = 16;
-            _context.t0 = _context["catch"](0);
-            // use hook toast
-            setLoading(false);
-          case 19:
-          case "end":
-            return _context.stop();
+  Object(react["useEffect"])(() => {
+    const fetchData = setTimeout(async () => {
+      try {
+        if (!versioningStartDate || !versioningStartDate || !selected_logical_units_names || !source_environment_name && !environment_name || !be_id) {
+          return;
         }
-      }, _callee, null, [[0, 16]]);
-    })), 500);
-    return function () {
-      return clearTimeout(fetchData);
-    };
+        setLoading(true);
+        let local_filterout_reserved = filterout_reserved || 'OTHERS';
+        if ((clone_ind || replace_sequences) && !load_entity || target_env === 'ai_training' || !environment_id || !(sync_mode === 'OFF' && version_ind) && selection_method === 'ALL') {
+          local_filterout_reserved = 'NA';
+        }
+        const data = await apis_task.getVersionsForLoad(versioningStartDate, versioningEndDate, selection_method === 'ALL' ? '' : selection_param_value || '', selected_logical_units_names, source_environment_name, environment_name, be_id, local_filterout_reserved);
+        const newData = groupData(data.ListOfVersions, selected_logical_units_names, allLogicalUnits);
+        const sortedData = newData.sort((it1, it2) => new Date(it2.version_datetime).getTime() - new Date(it1.version_datetime).getTime());
+        if (!sortedData || sortedData.length < 0) {
+          saveForm({
+            selected_version_task_exe_id: undefined
+          });
+        }
+        setData(sortedData);
+        setLoading(false);
+      } catch (err) {
+        // use hook toast
+        setLoading(false);
+      }
+    }, 500);
+    return () => clearTimeout(fetchData);
   }, [selection_param_value, selection_method, versioningStartDate, versioningEndDate, source_environment_name, environment_name, allLogicalUnits, selected_logical_units_names, be_id, filterout_reserved]);
-  Object(react["useEffect"])(function () {
-    var updateData = {};
+  Object(react["useEffect"])(() => {
+    const updateData = {};
     if (!versioningStartDate) {
       updateData.versioningStartDate = new Date(Date.now() - 2592000000);
     }
@@ -7151,8 +7930,18 @@ function SelectDataVersioning(props) {
       saveForm(updateData);
     }
   }, [saveForm]);
-  var startDateUpdate = Object(react["useCallback"])(function (startDate) {
-    var updateData = {
+  Object(react["useEffect"])(() => {
+    if (selected_version_task_exe_id && data && data.length > 0) {
+      const index = data.findIndex(it => it.task_execution_id === selected_version_task_exe_id);
+      if (index < 0) {
+        saveForm({
+          selected_version_task_exe_id: undefined
+        });
+      }
+    }
+  }, [data]);
+  const startDateUpdate = Object(react["useCallback"])(startDate => {
+    const updateData = {
       versioningStartDate: startDate
     };
     if (startDate && versioningEndDate && startDate > versioningEndDate) {
@@ -7160,7 +7949,7 @@ function SelectDataVersioning(props) {
     }
     saveForm(updateData);
   }, [saveForm, versioningEndDate]);
-  var endDateUpdate = Object(react["useCallback"])(function (endDate) {
+  const endDateUpdate = Object(react["useCallback"])(endDate => {
     saveForm({
       versioningEndDate: endDate
     });
@@ -7184,18 +7973,48 @@ function SelectDataVersioning(props) {
 /* harmony default export */ var SelectDataVerioning = (SelectDataVersioning);
 // CONCATENATED MODULE: ./src/components/SelectGeneratedExecution/styles.ts
 
-var SelectGeneratedExecution_styles_templateObject, SelectGeneratedExecution_styles_templateObject2, SelectGeneratedExecution_styles_templateObject3, SelectGeneratedExecution_styles_templateObject4, SelectGeneratedExecution_styles_templateObject5, SelectGeneratedExecution_styles_templateObject6;
-
-var SelectGeneratedExecution_styles_Container = styled_components_browser_esm["b" /* default */].div(SelectGeneratedExecution_styles_templateObject || (SelectGeneratedExecution_styles_templateObject = taggedTemplateLiteral_default()(["\n"])));
-var SelectGeneratedExecution_styles_Title = styled_components_browser_esm["b" /* default */].div(SelectGeneratedExecution_styles_templateObject2 || (SelectGeneratedExecution_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n"])));
-var SelectGeneratedExecution_styles_DatesContainer = styled_components_browser_esm["b" /* default */].div(SelectGeneratedExecution_styles_templateObject3 || (SelectGeneratedExecution_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  margin-top: 20px;\n  margin-bottom: 38px;\n  font-family: Roboto;\n  font-size: 16px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1.25;\n  letter-spacing: normal;\n  text-align: left;\n  color: #2e2e2e;\n  display: flex;\n  align-items: center;\n  gap: 30px;\n"])));
-var SelectGeneratedExecution_styles_DateItem = styled_components_browser_esm["b" /* default */].div(SelectGeneratedExecution_styles_templateObject4 || (SelectGeneratedExecution_styles_templateObject4 = taggedTemplateLiteral_default()(["\n  display: flex;\n  align-items: center;\n  gap: 10px;\n"])));
-var SelectGeneratedExecution_styles_TableContainer = styled_components_browser_esm["b" /* default */].div(SelectGeneratedExecution_styles_templateObject5 || (SelectGeneratedExecution_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    max-width: 80vw;\n    overflow: auto;\n"])));
-var SelectGeneratedExecution_styles_Icon = styled_components_browser_esm["b" /* default */].img(SelectGeneratedExecution_styles_templateObject6 || (SelectGeneratedExecution_styles_templateObject6 = taggedTemplateLiteral_default()(["\n"])));
+const SelectGeneratedExecution_styles_Container = styled_components_browser_esm["b" /* default */].div`
+`;
+const SelectGeneratedExecution_styles_Title = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+`;
+const SelectGeneratedExecution_styles_DatesContainer = styled_components_browser_esm["b" /* default */].div`
+  margin-top: 20px;
+  margin-bottom: 38px;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+`;
+const SelectGeneratedExecution_styles_DateItem = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const SelectGeneratedExecution_styles_TableContainer = styled_components_browser_esm["b" /* default */].div`
+    max-width: 80vw;
+    overflow: auto;
+`;
+const SelectGeneratedExecution_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+`;
 // CONCATENATED MODULE: ./src/components/SelectGeneratedExecution/useTable.tsx
 
-function SelectGeneratedExecution_useTable_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function SelectGeneratedExecution_useTable_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? SelectGeneratedExecution_useTable_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : SelectGeneratedExecution_useTable_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
@@ -7203,52 +8022,94 @@ function SelectGeneratedExecution_useTable_objectSpread(target) { for (var i = 1
 
 
 
-
-
-var SelectGeneratedExecution_useTable_useTable = function useTable() {
-  var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var selected_subset_task_exe_id = taskData.selected_subset_task_exe_id;
-  var generationIdChange = Object(react["useCallback"])(function (selected_subset_task_exe_id, num_of_entities) {
+const SelectGeneratedExecution_useTable_useTable = () => {
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    selected_subset_task_exe_id
+  } = taskData;
+  const generationIdChange = Object(react["useCallback"])((selected_subset_task_exe_id, num_of_entities) => {
     saveForm({
-      selected_subset_task_exe_id: selected_subset_task_exe_id,
-      num_of_entities: num_of_entities
+      selected_subset_task_exe_id,
+      num_of_entities
     });
   }, [saveForm]);
-  var columnsDef = Object(react["useMemo"])(function () {
-    return [{
-      column: 'task_title',
-      name: 'Generation task name'
-    }, {
-      column: 'lu_name',
-      name: 'Logical unit Name'
-    }, {
-      column: 'task_execution_id',
-      name: 'Task execution id',
-      clickAble: false
-    }, {
-      column: 'execution_note',
-      name: 'Execution note',
-      clickAble: false
-    }, {
-      column: 'start_execution_time',
-      name: 'Execution Time',
-      clickAble: false
-    }, {
-      column: 'number_of_entities',
-      name: 'Number of generated entities',
-      clickAble: false
-    }];
-  }, []);
-  var columns = Object(react["useMemo"])(function () {
-    var columnsResult = [];
+  const columnsDef = Object(react["useMemo"])(() => [{
+    column: 'task_title',
+    name: 'Generation task name',
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'lu_name',
+    name: 'Logical unit Name',
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'task_execution_id',
+    name: 'Task execution id',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      console.log(filterValue);
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }, {
+    column: 'execution_note',
+    name: 'Execution note',
+    clickAble: false,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'start_execution_time',
+    name: 'Execution Time',
+    clickAble: false,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
+  }, {
+    column: 'number_of_entities',
+    name: 'Number of generated entities',
+    clickAble: false,
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
+  }], []);
+  const columns = Object(react["useMemo"])(() => {
+    const columnsResult = [];
     columnsResult.push({
       id: 'collapse',
       header: '',
-      cell: function cell(_ref) {
-        var row = _ref.row;
+      cell: _ref => {
+        let {
+          row
+        } = _ref;
         return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
           className: "px-1",
           children: row.depth === 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
@@ -7269,14 +8130,14 @@ var SelectGeneratedExecution_useTable_useTable = function useTable() {
     columnsResult.push({
       id: 'select',
       header: '',
-      cell: function cell(_ref2) {
-        var row = _ref2.row;
+      cell: _ref2 => {
+        let {
+          row
+        } = _ref2;
         return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
           className: "px-1",
           children: row.depth === 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
-            onChange: function onChange() {
-              return generationIdChange(row.original.task_execution_id, row.original.number_of_entities);
-            },
+            onChange: () => generationIdChange(row.original.task_execution_id, row.original.number_of_entities),
             name: "select_generation_execution",
             value: row.original.task_execution_id,
             selectedValue: selected_subset_task_exe_id,
@@ -7285,26 +8146,26 @@ var SelectGeneratedExecution_useTable_useTable = function useTable() {
         });
       }
     });
-    columnsDef.forEach(function (col) {
-      columnsResult.push(SelectGeneratedExecution_useTable_objectSpread(SelectGeneratedExecution_useTable_objectSpread({}, columnHelper.accessor(col.column, {
-        header: function header() {
-          return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+    columnsDef.forEach(col => {
+      columnsResult.push({
+        ...columnHelper.accessor(col.column, {
+          header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
             children: col.name
-          });
-        },
-        cell: function cell(info) {
-          return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          }),
+          cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
             children: info.getValue()
-          });
-        }
-      })), {}, {
+          }),
+          meta: col.meta,
+          // ✅ pass the meta here
+          filterFn: col.filterFn // ✅ pass custom filter if any
+        }),
         width: 'auto'
-      }));
+      });
     });
     return columnsResult;
   }, [columnHelper, columnsDef, selected_subset_task_exe_id, generationIdChange]);
   return {
-    columns: columns
+    columns
   };
 };
 /* harmony default export */ var SelectGeneratedExecution_useTable = (SelectGeneratedExecution_useTable_useTable);
@@ -7318,82 +8179,60 @@ var SelectGeneratedExecution_useTable_useTable = function useTable() {
 
 
 
-
-
-
-
 function SelectGeneratedExecution(props) {
-  var dataSourceType = props.dataSourceType;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    allLogicalUnits = _useContext.allLogicalUnits;
-  var generationStartDate = taskData.generationStartDate,
-    generationEndDate = taskData.generationEndDate,
-    source_environment_name = taskData.source_environment_name,
-    be_id = taskData.be_id,
-    selected_logical_units_names = taskData.selected_logical_units_names;
-  var _useState = Object(react["useState"])(new Date(Date.now() - 2592000000)),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    startDate = _useState2[0],
-    setStartDate = _useState2[1];
-  var _useState3 = Object(react["useState"])(new Date()),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    endDate = _useState4[0],
-    setEndDate = _useState4[1];
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    data = _useState6[0],
-    setData = _useState6[1];
-  var _useState7 = Object(react["useState"])(true),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    loading = _useState8[0],
-    setLoading = _useState8[1];
-  var _useTable = SelectGeneratedExecution_useTable(),
-    columns = _useTable.columns;
-  Object(react["useEffect"])(function () {
-    var fetchData = setTimeout( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-      var _data, newData, sortedData;
-      return regenerator_default.a.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            _context.prev = 0;
-            if (!(!startDate || !endDate || !source_environment_name || !be_id || (selected_logical_units_names === null || selected_logical_units_names === void 0 ? void 0 : selected_logical_units_names.length) === 0)) {
-              _context.next = 3;
-              break;
-            }
-            return _context.abrupt("return");
-          case 3:
-            setLoading(true);
-            _context.next = 6;
-            return apis_task.getGenerationExecutions(startDate, endDate, source_environment_name, be_id, selected_logical_units_names);
-          case 6:
-            _data = _context.sent;
-            newData = groupData(_data, selected_logical_units_names || [], allLogicalUnits);
-            sortedData = newData.sort(function (it1, it2) {
-              return new Date(it2.start_execution_time).getTime() - new Date(it1.start_execution_time).getTime();
-            });
-            setData(sortedData);
-            setLoading(false);
-            _context.next = 16;
-            break;
-          case 13:
-            _context.prev = 13;
-            _context.t0 = _context["catch"](0);
-            // use hook toast
-            setLoading(false);
-          case 16:
-          case "end":
-            return _context.stop();
+  const {
+    dataSourceType
+  } = props;
+  const {
+    taskData,
+    saveForm,
+    allLogicalUnits
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    generationStartDate,
+    generationEndDate,
+    source_environment_name,
+    be_id,
+    selected_logical_units_names,
+    onReset
+  } = taskData;
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const {
+    columns
+  } = SelectGeneratedExecution_useTable();
+  Object(react["useEffect"])(() => {
+    console.log(`onReset=${onReset}`);
+    if (onReset) {
+      const updateData = {};
+      updateData.generationStartDate = new Date(Date.now() - 2592000000);
+      updateData.generationEndDate = new Date();
+      if (Object.keys(updateData).length > 0) {
+        saveForm(updateData);
+      }
+    }
+  }, [onReset]);
+  Object(react["useEffect"])(() => {
+    const fetchData = setTimeout(async () => {
+      try {
+        if (!generationStartDate || !generationEndDate || !source_environment_name || !be_id || (selected_logical_units_names === null || selected_logical_units_names === void 0 ? void 0 : selected_logical_units_names.length) === 0) {
+          return;
         }
-      }, _callee, null, [[0, 13]]);
-    })), 500);
-    return function () {
-      return clearTimeout(fetchData);
-    };
-  }, [startDate, endDate, source_environment_name, be_id, selected_logical_units_names, allLogicalUnits]);
-  Object(react["useEffect"])(function () {
-    var updateData = {};
+        setLoading(true);
+        const data = await apis_task.getGenerationExecutions(generationStartDate, generationEndDate, source_environment_name, be_id, selected_logical_units_names);
+        const newData = groupData(data, selected_logical_units_names || [], allLogicalUnits);
+        const sortedData = newData.sort((it1, it2) => new Date(it2.start_execution_time).getTime() - new Date(it1.start_execution_time).getTime());
+        setData(sortedData);
+        setLoading(false);
+      } catch (err) {
+        // use hook toast
+        setLoading(false);
+      }
+    }, 500);
+    return () => clearTimeout(fetchData);
+  }, [generationStartDate, generationEndDate, source_environment_name, be_id, selected_logical_units_names, allLogicalUnits]);
+  Object(react["useEffect"])(() => {
+    const updateData = {};
     if (!generationStartDate) {
       updateData.generationStartDate = new Date(Date.now() - 2592000000);
     }
@@ -7404,12 +8243,12 @@ function SelectGeneratedExecution(props) {
       saveForm(updateData);
     }
   }, []);
-  var startDateUpdate = Object(react["useCallback"])(function (startDate) {
+  const startDateUpdate = Object(react["useCallback"])(startDate => {
     saveForm({
       generationStartDate: startDate
     });
   }, [saveForm]);
-  var endDateUpdate = Object(react["useCallback"])(function (endDate) {
+  const endDateUpdate = Object(react["useCallback"])(endDate => {
     saveForm({
       generationEndDate: endDate
     });
@@ -7433,40 +8272,141 @@ function SelectGeneratedExecution(props) {
 /* harmony default export */ var components_SelectGeneratedExecution = (SelectGeneratedExecution);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSubset/Parameters/styles.ts
 
-var Parameters_styles_templateObject, Parameters_styles_templateObject2, Parameters_styles_templateObject3, Parameters_styles_templateObject4, Parameters_styles_templateObject5, Parameters_styles_templateObject6, Parameters_styles_templateObject7, Parameters_styles_templateObject8, Parameters_styles_templateObject9, Parameters_styles_templateObject10, Parameters_styles_templateObject11, Parameters_styles_templateObject12;
-
-var rotateAnimation = Object(styled_components_browser_esm["c" /* keyframes */])(Parameters_styles_templateObject || (Parameters_styles_templateObject = taggedTemplateLiteral_default()(["\n100% { -webkit-transform: rotate(360deg); } \n"])));
-var Parameters_styles_Container = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject2 || (Parameters_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    min-width: 60vw;\n    position: relative;\n    display: block;\n    border-top: 1px solid #ccc;\n    padding-top: 15px;\n"])));
-var Parameters_styles_Icon = styled_components_browser_esm["b" /* default */].img(Parameters_styles_templateObject3 || (Parameters_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n    width: 27px;\n"])));
-var AnimationIcon = styled_components_browser_esm["b" /* default */].img(Parameters_styles_templateObject4 || (Parameters_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n    width: 27px;\n    animation: ", " 3s linear infinite\n"])), rotateAnimation);
-var DateFormatNote = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject5 || (Parameters_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    color: #666;\n"])));
-var FilterOutReservedContainer = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject6 || (Parameters_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    position: relative;\n    display: flex;\n    gap: 10px;\n    flex-direction: column;\n"])));
-var SQLQuery = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject7 || (Parameters_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 14px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    color: #666;\n    margin-top: 30px;\n"])));
-var MaxNumberOfEntitiesContainer = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject8 || (Parameters_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    margin-top: 88px;\n"])));
-var Parameters_styles_LeftSide = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject9 || (Parameters_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n    width: 400px;\n    border-right: 1px solid #ccc;\n"])));
-var RefreshParameters = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject10 || (Parameters_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    margin-bottom: 23px;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: bolder;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    color: #666;\n"])));
-var Parameters_styles_Seprator = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject11 || (Parameters_styles_templateObject11 = taggedTemplateLiteral_default()(["\n    border-right: 1px solid #ccc;\n    width: 1px;\n    position: absolute;\n    height: calc(100% + 80px);\n    top: 0px;\n    left: 400px;\n"])));
-var Parameters_styles_RightSide = styled_components_browser_esm["b" /* default */].div(Parameters_styles_templateObject12 || (Parameters_styles_templateObject12 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    margin-top: 15px;\n"])));
+const rotateAnimation = styled_components_browser_esm["c" /* keyframes */]`
+100% { -webkit-transform: rotate(360deg); } 
+`;
+const Parameters_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    min-width: 60vw;
+    position: relative;
+    display: block;
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
+`;
+const Parameters_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    width: 27px;
+`;
+const AnimationIcon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    width: 27px;
+    animation: ${rotateAnimation} 3s linear infinite
+`;
+const DateFormatNote = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #666;
+`;
+const FilterOutReservedContainer = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+`;
+const SQLQuery = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #666;
+    margin-top: 30px;
+`;
+const MaxNumberOfEntitiesContainer = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 88px;
+`;
+const Parameters_styles_LeftSide = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 400px;
+    border-right: 1px solid #ccc;
+`;
+const RefreshParameters = styled_components_browser_esm["b" /* default */].div`
+    margin-bottom: 23px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bolder;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #666;
+`;
+const Parameters_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border-right: 1px solid #ccc;
+    width: 1px;
+    position: absolute;
+    height: calc(100% + 80px);
+    top: 0px;
+    left: 400px;
+`;
+const Parameters_styles_RightSide = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 15px;
+`;
 // CONCATENATED MODULE: ./src/components/QueryBuilder/styles.ts
 
-var QueryBuilder_styles_templateObject, QueryBuilder_styles_templateObject2, QueryBuilder_styles_templateObject3, QueryBuilder_styles_templateObject4, QueryBuilder_styles_templateObject5, QueryBuilder_styles_templateObject6, QueryBuilder_styles_templateObject7;
-
-var QueryBuilder_styles_Container = styled_components_browser_esm["b" /* default */].div(QueryBuilder_styles_templateObject || (QueryBuilder_styles_templateObject = taggedTemplateLiteral_default()(["\n    padding: 30px;\n    border: 2px solid #cccccc;\n    max-width: 100%;\n    margin-top: 10px;\n    background-color: #f9f9f9;\n"])));
-var RulesContainer = styled_components_browser_esm["b" /* default */].div(QueryBuilder_styles_templateObject2 || (QueryBuilder_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n"])));
-var RuleContainer = styled_components_browser_esm["b" /* default */].div(QueryBuilder_styles_templateObject3 || (QueryBuilder_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    position: relative;\n"])));
-var ActionsContainer = styled_components_browser_esm["b" /* default */].div(QueryBuilder_styles_templateObject4 || (QueryBuilder_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 10px;\n    margin-bottom: 13px;\n"])));
-var RuleItemContainer = styled_components_browser_esm["b" /* default */].div(QueryBuilder_styles_templateObject5 || (QueryBuilder_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 10px;\n    align-items: center;\n    height: 45px;\n    margin-bottom: 9px;\n"])));
-var MinMaxNote = styled_components_browser_esm["b" /* default */].div(QueryBuilder_styles_templateObject6 || (QueryBuilder_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 14px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    color: #666;\n    align-self: center;\n    margin-top: 3px;\n"])));
-var RemoveRuleIcon = styled_components_browser_esm["b" /* default */].img(QueryBuilder_styles_templateObject7 || (QueryBuilder_styles_templateObject7 = taggedTemplateLiteral_default()(["\n margin-left: auto;\n"])));
+const QueryBuilder_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    padding: 30px;
+    border: 2px solid #cccccc;
+    max-width: 100%;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+`;
+const RulesContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+`;
+const RuleContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    position: relative;
+`;
+const ActionsContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 10px;
+    margin-bottom: 13px;
+`;
+const RuleItemContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    height: 45px;
+    margin-bottom: 9px;
+`;
+const MinMaxNote = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #666;
+    align-self: center;
+    margin-top: 3px;
+`;
+const RemoveRuleIcon = styled_components_browser_esm["b" /* default */].img`
+ margin-left: auto;
+`;
+const styles_IconContainer = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    left: -22px;
+    top: 15px;
+`;
+const QueryBuilder_styles_Icon = styled_components_browser_esm["b" /* default */].img``;
 // CONCATENATED MODULE: ./src/components/Button/styles.ts
 
-var Button_styles_templateObject, Button_styles_templateObject2, Button_styles_templateObject3;
-
-var Button_styles_Container = styled_components_browser_esm["b" /* default */].div(Button_styles_templateObject || (Button_styles_templateObject = taggedTemplateLiteral_default()(["\n    width:  ", ";\n    height: ", ";\n    object-fit: contain;\n    border-radius: 3px;\n    background-color: ", ";\n    display: flex;\n    gap: 9px;\n    justify-content: center;\n    align-items: center;\n    cursor: pointer;\n    border: ", ";\n"])), function (props) {
-  return props.width || '100%';
-}, function (props) {
-  return props.height || '35px';
-}, function (props) {
+const Button_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width:  ${props => props.width || '100%'};
+    height: ${props => props.height || '35px'};
+    object-fit: contain;
+    border-radius: 3px;
+    background-color: ${props => {
   if (props.backgroundColor) {
     return props.backgroundColor;
   }
@@ -7474,7 +8414,13 @@ var Button_styles_Container = styled_components_browser_esm["b" /* default */].d
     return '#fff';
   }
   return 'var(--primary-color)';
-}, function (props) {
+}};
+    display: flex;
+    gap: 9px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: ${props => {
   if (props.danger) {
     return 'solid 1px #ff6666';
   }
@@ -7482,8 +8428,20 @@ var Button_styles_Container = styled_components_browser_esm["b" /* default */].d
     return 'solid 1px #1483f3';
   }
   return '0';
-});
-var Button_styles_Title = styled_components_browser_esm["b" /* default */].div(Button_styles_templateObject2 || (Button_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    gap: 11px;\n    font-family: Roboto;\n    font-size: 15px;\n    font-weight: bolder;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: center;\n    color: ", "; \n"])), function (props) {
+}};
+`;
+const Button_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: bolder;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: ${props => {
   if (props.danger) {
     return '#ff6666';
   }
@@ -7491,24 +8449,26 @@ var Button_styles_Title = styled_components_browser_esm["b" /* default */].div(B
     return 'var(--primary-color)';
   }
   return '#fefefe';
-});
-var Button_styles_Icon = styled_components_browser_esm["b" /* default */].img(Button_styles_templateObject3 || (Button_styles_templateObject3 = taggedTemplateLiteral_default()(["\n"])));
+}}; 
+`;
+const Button_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+`;
 // CONCATENATED MODULE: ./src/components/Button/index.tsx
 
 
-
-
 function Button(props) {
-  var title = props.title,
-    onClick = props.onClick,
-    width = props.width,
-    height = props.height,
-    type = props.type,
-    disabled = props.disabled,
-    icon = props.icon,
-    danger = props.danger,
-    backgroundColor = props.backgroundColor,
-    children = props.children;
+  const {
+    title,
+    onClick,
+    width,
+    height,
+    type,
+    disabled,
+    icon,
+    danger,
+    backgroundColor,
+    children
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Button_styles_Container, {
     backgroundColor: backgroundColor,
     onClick: onClick,
@@ -7528,169 +8488,161 @@ function Button(props) {
 /* harmony default export */ var components_Button = (Button);
 // CONCATENATED MODULE: ./src/components/QueryBuilder/useConstants.tsx
 
-var useConstants_useConstants = function useConstants() {
-  var operators = Object(react["useMemo"])(function () {
-    return [{
-      label: 'AND',
-      name: 'AND',
-      value: 'AND'
-    }, {
-      label: 'OR',
-      name: 'OR',
-      value: 'OR'
-    }];
-  }, []);
-  var conditions = Object(react["useMemo"])(function () {
-    return [{
-      name: '=',
-      label: '=',
-      value: '=',
-      tableValue: '='
-    }, {
-      name: '<>',
-      label: '<>',
-      value: '<>',
-      tableValue: '<>'
-    }, {
-      name: '>',
-      label: '>',
-      value: '<',
-      tableValue: '>'
-    }, {
-      name: '>=',
-      label: '>=',
-      value: '<=',
-      tableValue: '>='
-    }, {
-      name: '<',
-      label: '<',
-      value: '>',
-      tableValue: '<'
-    }, {
-      name: '<=',
-      label: '<=',
-      value: '>=',
-      tableValue: '<='
-    }, {
-      name: 'IS NULL',
-      label: 'IS NULL',
-      value: 'IS NULL',
-      tableValue: 'IS NULL'
-    }, {
-      name: 'IS NOT NULL',
-      label: 'IS NOT NULL',
-      value: 'IS NOT NULL',
-      tableValue: 'IS NOT NULL'
-    }, {
-      name: 'IN',
-      label: 'IN',
-      value: 'IN',
-      multiple: true,
-      tableValue: 'IN'
-    }, {
-      name: 'NOT IN',
-      label: 'NOT IN',
-      value: 'NOT IN',
-      multiple: true,
-      tableValue: 'NOT IN'
-    }];
-  }, []);
-  var comboConditions = Object(react["useMemo"])(function () {
-    return [{
-      name: '=',
-      label: '=',
-      value: '=',
-      tableValue: '='
-    }, {
-      name: '<>',
-      label: '<>',
-      value: '<>',
-      tableValue: '<>'
-    }, {
-      name: '>',
-      label: '>',
-      value: '<',
-      tableValue: '>'
-    }, {
-      name: '>=',
-      label: '>=',
-      value: '<=',
-      tableValue: '>='
-    }, {
-      name: '<',
-      label: '<',
-      value: '>',
-      tableValue: '<'
-    }, {
-      name: '<=',
-      label: '<=',
-      value: '>=',
-      tableValue: '<='
-    }, {
-      name: 'IN',
-      label: 'IN',
-      value: 'IN',
-      multiple: true,
-      tableValue: 'IN'
-    }, {
-      name: 'NOT IN',
-      label: 'NOT IN',
-      value: 'NOT IN',
-      multiple: true,
-      tableValue: 'NOT IN'
-    }, {
-      name: 'IS NULL',
-      label: 'IS NULL',
-      value: 'IS NULL',
-      tableValue: 'IS NULL'
-    }, {
-      name: 'IS NOT NULL',
-      label: 'IS NOT NULL',
-      value: 'IS NOT NULL',
-      tableValue: 'IS NOT NULL'
-    }];
-  }, []);
-  var dateConditions = Object(react["useMemo"])(function () {
-    return [{
-      name: '=',
-      label: '=',
-      value: '=',
-      tableValue: '='
-    }, {
-      name: '<>',
-      label: '<>',
-      value: '<>',
-      tableValue: '<>'
-    }, {
-      name: '>',
-      label: '>',
-      value: '<',
-      tableValue: '>'
-    }, {
-      name: '>=',
-      label: '>=',
-      value: '<=',
-      tableValue: '>='
-    }, {
-      name: '<',
-      label: '<',
-      value: '>',
-      tableValue: '<'
-    }, {
-      name: '<=',
-      label: '<=',
-      value: '>=',
-      tableValue: '<='
-    }];
-  }, []);
+const useConstants = () => {
+  const operators = Object(react["useMemo"])(() => [{
+    label: 'AND',
+    name: 'AND',
+    value: 'AND'
+  }, {
+    label: 'OR',
+    name: 'OR',
+    value: 'OR'
+  }], []);
+  const conditions = Object(react["useMemo"])(() => [{
+    name: '=',
+    label: '=',
+    value: '=',
+    tableValue: '='
+  }, {
+    name: '<>',
+    label: '<>',
+    value: '<>',
+    tableValue: '<>'
+  }, {
+    name: '>',
+    label: '>',
+    value: '<',
+    tableValue: '>'
+  }, {
+    name: '>=',
+    label: '>=',
+    value: '<=',
+    tableValue: '>='
+  }, {
+    name: '<',
+    label: '<',
+    value: '>',
+    tableValue: '<'
+  }, {
+    name: '<=',
+    label: '<=',
+    value: '>=',
+    tableValue: '<='
+  }, {
+    name: 'IS NULL',
+    label: 'IS NULL',
+    value: 'IS NULL',
+    tableValue: 'IS NULL'
+  }, {
+    name: 'IS NOT NULL',
+    label: 'IS NOT NULL',
+    value: 'IS NOT NULL',
+    tableValue: 'IS NOT NULL'
+  }, {
+    name: 'IN',
+    label: 'IN',
+    value: 'IN',
+    multiple: true,
+    tableValue: 'IN'
+  }, {
+    name: 'NOT IN',
+    label: 'NOT IN',
+    value: 'NOT IN',
+    multiple: true,
+    tableValue: 'NOT IN'
+  }], []);
+  const comboConditions = Object(react["useMemo"])(() => [{
+    name: '=',
+    label: '=',
+    value: '=',
+    tableValue: '='
+  }, {
+    name: '<>',
+    label: '<>',
+    value: '<>',
+    tableValue: '<>'
+  }, {
+    name: '>',
+    label: '>',
+    value: '<',
+    tableValue: '>'
+  }, {
+    name: '>=',
+    label: '>=',
+    value: '<=',
+    tableValue: '>='
+  }, {
+    name: '<',
+    label: '<',
+    value: '>',
+    tableValue: '<'
+  }, {
+    name: '<=',
+    label: '<=',
+    value: '>=',
+    tableValue: '<='
+  }, {
+    name: 'IN',
+    label: 'IN',
+    value: 'IN',
+    multiple: true,
+    tableValue: 'IN'
+  }, {
+    name: 'NOT IN',
+    label: 'NOT IN',
+    value: 'NOT IN',
+    multiple: true,
+    tableValue: 'NOT IN'
+  }, {
+    name: 'IS NULL',
+    label: 'IS NULL',
+    value: 'IS NULL',
+    tableValue: 'IS NULL'
+  }, {
+    name: 'IS NOT NULL',
+    label: 'IS NOT NULL',
+    value: 'IS NOT NULL',
+    tableValue: 'IS NOT NULL'
+  }], []);
+  const dateConditions = Object(react["useMemo"])(() => [{
+    name: '=',
+    label: '=',
+    value: '=',
+    tableValue: '='
+  }, {
+    name: '<>',
+    label: '<>',
+    value: '<>',
+    tableValue: '<>'
+  }, {
+    name: '>',
+    label: '>',
+    value: '<',
+    tableValue: '>'
+  }, {
+    name: '>=',
+    label: '>=',
+    value: '<=',
+    tableValue: '>='
+  }, {
+    name: '<',
+    label: '<',
+    value: '>',
+    tableValue: '<'
+  }, {
+    name: '<=',
+    label: '<=',
+    value: '>=',
+    tableValue: '<='
+  }], []);
   return {
-    operators: operators,
-    conditions: conditions,
-    comboConditions: comboConditions,
-    dateConditions: dateConditions
+    operators,
+    conditions,
+    comboConditions,
+    dateConditions
   };
 };
-/* harmony default export */ var QueryBuilder_useConstants = (useConstants_useConstants);
+/* harmony default export */ var QueryBuilder_useConstants = (useConstants);
 // CONCATENATED MODULE: ./src/components/QueryBuilder/Rule.tsx
 
 
@@ -7701,56 +8653,43 @@ var useConstants_useConstants = function useConstants() {
 
 
 
-
-
-
 function Rule(props) {
-  var rule = props.rule,
-    parameters = props.parameters,
-    ruleIndex = props.ruleIndex,
-    groupIndex = props.groupIndex,
-    lastRule = props.lastRule,
-    onChange = props.onChange,
-    parentGroup = props.parentGroup,
-    type = props.type;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    config_params = _useContext.config_params;
-  var _useState = Object(react["useState"])(),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    chosenParam = _useState2[0],
-    setChosenParam = _useState2[1];
-  var _useState3 = Object(react["useState"])(),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    chosenCondition = _useState4[0],
-    setChosenCondition = _useState4[1];
-  var _useState5 = Object(react["useState"])(),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    chosenOperator = _useState6[0],
-    setChosenOperator = _useState6[1];
-  var _useState7 = Object(react["useState"])([]),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    currentConditions = _useState8[0],
-    setCurrentConditions = _useState8[1];
-  var _useConstants = QueryBuilder_useConstants(),
-    operators = _useConstants.operators,
-    conditions = _useConstants.conditions,
-    comboConditions = _useConstants.comboConditions,
-    dateConditions = _useConstants.dateConditions;
-  Object(react["useEffect"])(function () {
+  const {
+    rule,
+    parameters,
+    ruleIndex,
+    groupIndex,
+    lastRule,
+    onChange,
+    parentGroup,
+    type
+  } = props;
+  const {
+    register,
+    clearErrors,
+    errors,
+    config_params
+  } = Object(react["useContext"])(TaskContext);
+  const [chosenParam, setChosenParam] = Object(react["useState"])();
+  const [chosenCondition, setChosenCondition] = Object(react["useState"])();
+  const [chosenOperator, setChosenOperator] = Object(react["useState"])();
+  const [currentConditions, setCurrentConditions] = Object(react["useState"])([]);
+  const {
+    operators,
+    conditions,
+    comboConditions,
+    dateConditions
+  } = QueryBuilder_useConstants();
+  Object(react["useEffect"])(() => {
     if (!rule.field) {
       setChosenParam(undefined);
       setCurrentConditions([]);
       return;
     }
-    var currentParam = parameters === null || parameters === void 0 ? void 0 : parameters.find(function (it) {
-      return it.param_name === rule.field;
-    });
+    const currentParam = parameters === null || parameters === void 0 ? void 0 : parameters.find(it => it.param_name === rule.field);
     setChosenParam(currentParam);
     if (currentParam) {
-      var condToUse = [];
+      let condToUse = [];
       switch (currentParam.param_type) {
         case 'NUMBER':
         case 'INTEGER':
@@ -7771,8 +8710,8 @@ function Rule(props) {
           break;
       }
       if (type === 1) {
-        condToUse = condToUse.map(function (it) {
-          var newItem = Object.assign({}, it);
+        condToUse = condToUse.map(it => {
+          const newItem = Object.assign({}, it);
           newItem.value = newItem.tableValue;
           return newItem;
         });
@@ -7780,17 +8719,13 @@ function Rule(props) {
       setCurrentConditions(condToUse);
     }
   }, [comboConditions, conditions, dateConditions, parameters, rule.field, type]);
-  Object(react["useEffect"])(function () {
-    setChosenCondition(currentConditions.find(function (it) {
-      return it.value === (rule === null || rule === void 0 ? void 0 : rule.condition);
-    }));
+  Object(react["useEffect"])(() => {
+    setChosenCondition(currentConditions.find(it => it.value === (rule === null || rule === void 0 ? void 0 : rule.condition)));
   }, [rule.condition, currentConditions]);
-  Object(react["useEffect"])(function () {
-    setChosenOperator(operators.find(function (it) {
-      return it.value === (rule === null || rule === void 0 ? void 0 : rule.operator);
-    }));
+  Object(react["useEffect"])(() => {
+    setChosenOperator(operators.find(it => it.value === (rule === null || rule === void 0 ? void 0 : rule.operator)));
   }, [rule.operator]);
-  var onParamChange = Object(react["useCallback"])(function (item) {
+  const onParamChange = Object(react["useCallback"])(item => {
     // setChosenParam(item);
     rule.field = item === null || item === void 0 ? void 0 : item.param_name;
     rule.type = item === null || item === void 0 ? void 0 : item.param_type;
@@ -7801,47 +8736,41 @@ function Rule(props) {
     onChange();
     //TODO save up
   }, [onChange, rule]);
-  var onConditionChange = Object(react["useCallback"])(function (item) {
+  const onConditionChange = Object(react["useCallback"])(item => {
     // setChosenCondition(item);
     rule.condition = item.value;
     rule.data = null;
     onChange();
     //TODO save up
   }, [onChange, rule]);
-  var onOperatorChange = Object(react["useCallback"])(function (item) {
+  const onOperatorChange = Object(react["useCallback"])(item => {
     rule.operator = item.value;
     setChosenOperator(item);
     onChange();
     //TODO save up
   }, [rule, onChange]);
-  var onComboValueChange = Object(react["useCallback"])(function (value) {
+  const onComboValueChange = Object(react["useCallback"])(value => {
     if (Array.isArray(value)) {
-      rule.data = value.map(function (it) {
-        return it.value;
-      });
+      rule.data = value.map(it => it.value);
     } else {
       rule.data = value.value;
     }
     onChange();
   }, [rule, onChange]);
-  var onValueChange = Object(react["useCallback"])(function (value) {
+  const onValueChange = Object(react["useCallback"])(value => {
     rule.data = value;
     onChange();
   }, [rule, onChange]);
-  var getRuleByType = Object(react["useCallback"])(function () {
+  const getRuleByType = Object(react["useCallback"])(() => {
     if (!rule.field || !chosenCondition || rule.condition === 'IS NULL' || rule.condition === 'IS NOT NULL') {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
     }
     if (chosenParam !== null && chosenParam !== void 0 && chosenParam.COMBO_INDICATOR) {
-      var tempValue = undefined;
+      let tempValue = undefined;
       if (Array.isArray(rule.data)) {
-        tempValue = chosenParam.valid_values.filter(function (it) {
-          return rule.data.indexOf(it.value) >= 0;
-        });
+        tempValue = chosenParam.valid_values.filter(it => rule.data.indexOf(it.value) >= 0);
       } else {
-        tempValue = chosenParam.valid_values.find(function (it) {
-          return rule.data === it.value;
-        });
+        tempValue = chosenParam.valid_values.find(it => rule.data === it.value);
       }
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
         width: '300px',
@@ -7855,7 +8784,7 @@ function Rule(props) {
     } else if ((chosenParam === null || chosenParam === void 0 ? void 0 : chosenParam.param_type) === 'NUMBER' || (chosenParam === null || chosenParam === void 0 ? void 0 : chosenParam.param_type) === 'REAL' || (chosenParam === null || chosenParam === void 0 ? void 0 : chosenParam.param_type) === 'INTEGER') {
       return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
-          name: "rule_number_".concat(groupIndex, "_").concat(ruleIndex),
+          name: `rule_number_${groupIndex}_${ruleIndex}`,
           title: '',
           onChange: onValueChange,
           value: rule.data,
@@ -7870,7 +8799,7 @@ function Rule(props) {
       });
     } else {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
-        name: "rule_text_".concat(groupIndex, "_").concat(ruleIndex),
+        name: `rule_text_${groupIndex}_${ruleIndex}`,
         title: '',
         onChange: onValueChange,
         value: rule.data,
@@ -7880,15 +8809,15 @@ function Rule(props) {
       });
     }
   }, [chosenParam, rule.data, rule.field, rule.condition, chosenCondition, onValueChange, onComboValueChange]);
-  var removeGroup = Object(react["useCallback"])(function (index) {
+  const removeGroup = Object(react["useCallback"])(index => {
     if (!parentGroup || !parentGroup.rules || parentGroup.rules.length === 0) {
       return;
     }
-    var groupIndex = -1;
+    let groupIndex = -1;
     if (typeof index === 'number') {
       groupIndex = index;
     } else {
-      var splittedIndex = index.split('_');
+      const splittedIndex = index.split('_');
       groupIndex = splittedIndex[splittedIndex.length - 1];
     }
     if (parentGroup.rules[groupIndex]) {
@@ -7901,7 +8830,7 @@ function Rule(props) {
       removeGroup: removeGroup,
       parent: [],
       onChange: onChange,
-      index: "".concat(groupIndex, "_").concat(ruleIndex),
+      index: `${groupIndex}_${ruleIndex}`,
       group: rule.group,
       parameters: parameters
     }) : /*#__PURE__*/Object(jsx_runtime["jsxs"])(RuleItemContainer, {
@@ -7913,7 +8842,7 @@ function Rule(props) {
         mandatory: true,
         options: parameters,
         value: chosenParam,
-        isClearable: true,
+        isClearable: false,
         onChange: onParamChange
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
         width: '160px',
@@ -7923,9 +8852,7 @@ function Rule(props) {
         value: chosenCondition,
         onChange: onConditionChange
       }), getRuleByType(), /*#__PURE__*/Object(jsx_runtime["jsx"])(RemoveRuleIcon, {
-        onClick: function onClick() {
-          return removeGroup(ruleIndex);
-        },
+        onClick: () => removeGroup(ruleIndex),
         src: delete_icon_gray
       })]
     }), lastRule ? /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}) : /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
@@ -7950,22 +8877,23 @@ function Rule(props) {
 
 
 
-
-
 function QueryBuilder(props) {
   var _group$rules;
-  var parent = props.parent,
-    group = props.group,
-    parameters = props.parameters,
-    index = props.index,
-    onChange = props.onChange,
-    removeGroup = props.removeGroup,
-    type = props.type;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors;
-  var getRule = function getRule(parentGroup, rule, ruleIndex, lastRule) {
+  const {
+    parent,
+    group,
+    parameters,
+    index,
+    onChange,
+    removeGroup,
+    type
+  } = props;
+  const {
+    register,
+    clearErrors,
+    errors
+  } = Object(react["useContext"])(TaskContext);
+  const getRule = (parentGroup, rule, ruleIndex, lastRule) => {
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(QueryBuilder_Rule, {
       type: type,
       parentGroup: parentGroup,
@@ -7977,7 +8905,7 @@ function QueryBuilder(props) {
       parameters: parameters
     });
   };
-  var addCondition = Object(react["useCallback"])(function () {
+  const addCondition = Object(react["useCallback"])(() => {
     group === null || group === void 0 ? void 0 : group.rules.push({
       condition: '',
       field: '',
@@ -7987,7 +8915,7 @@ function QueryBuilder(props) {
     });
     onChange();
   }, [onChange]);
-  var addGroup = Object(react["useCallback"])(function () {
+  const addGroup = Object(react["useCallback"])(() => {
     group === null || group === void 0 ? void 0 : group.rules.push({
       group: {
         operator: 'AND',
@@ -7996,7 +8924,7 @@ function QueryBuilder(props) {
     });
     onChange();
   }, [onChange]);
-  var removeGroupLocal = Object(react["useCallback"])(function () {
+  const removeGroupLocal = Object(react["useCallback"])(() => {
     if (removeGroup) {
       removeGroup(index);
     }
@@ -8027,7 +8955,7 @@ function QueryBuilder(props) {
         icon: delete_icon_gray
       }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(RulesContainer, {
-      children: group === null || group === void 0 ? void 0 : (_group$rules = group.rules) === null || _group$rules === void 0 ? void 0 : _group$rules.map(function (rule, index) {
+      children: group === null || group === void 0 ? void 0 : (_group$rules = group.rules) === null || _group$rules === void 0 ? void 0 : _group$rules.map((rule, index) => {
         var _group$rules2;
         return getRule(group, rule, index, index === (group === null || group === void 0 ? void 0 : (_group$rules2 = group.rules) === null || _group$rules2 === void 0 ? void 0 : _group$rules2.length) - 1);
       })
@@ -8038,82 +8966,96 @@ function QueryBuilder(props) {
 // CONCATENATED MODULE: ./src/images/refresh.svg
 /* harmony default export */ var refresh = ("js/dist/3422139b10e662c2a4e764661a8a8ea4.svg");
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSubset/Parameters/utils.tsx
-var getSubWhereInNotIn = function getSubWhereInNotIn(param, condition, value, type) {
+const getSubWhereInNotIn = (param, condition, value, type) => {
   if (!value || value.length === 0) {
     return '';
   }
-  var operator = 'or';
-  var equality = '=';
+  if (!Array.isArray(value)) {
+    value = [value];
+  }
+  let operator = 'or';
+  let equality = '=';
   if (condition !== 'IN') {
     operator = 'and';
     equality = '!=';
   }
-  var result = '';
-  for (var i = 0; i < value.length; i++) {
+  let result = '';
+  for (let i = 0; i < value.length; i++) {
     if (type === 1) {
-      result = result + "".concat(param, " ").concat(equality, " ").concat(value[i]);
+      result = result + `${param} ${equality} ${value[i]}`;
     } else {
-      result = result + "'".concat(value[i], "' ").concat(equality, " ANY(").concat(param, ")");
+      result = result + `'${value[i]}' ${equality} ANY(${param})`;
     }
     if (i < value.length - 1) {
-      result = " ".concat(result, " ").concat(operator, " ");
+      result = ` ${result} ${operator} `;
     }
   }
   return result;
 };
-var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
+const getSubQuery = (rule, parameters, type, resultValues, filter_types, isCoupling) => {
   if (!rule) {
     return '';
   }
-  var field = '"' + rule.field + '"';
+  let field = '"' + rule.field + '"';
   if (type === 1) {
     field = rule.field || '';
   }
-  var condition = rule.condition;
-  var data = rule.data;
+  let condition = rule.condition;
+  let data = rule.data;
   if (type === 1) {
     if (rule.condition !== 'IS NULL' && rule.condition !== 'IS NOT NULL') {
       if (rule.original_type === 'TEXT') {
         data = data.replace(/\'/g, "''");
       }
       if (rule.condition === 'IN' || rule.condition === 'NOT IN') {
-        var values = data.split(',').map(function (it) {
-          return it.trim();
-        });
+        const values = data.split(',').map(it => it.trim());
         data = [];
-        values.forEach(function (value) {
+        values.forEach(value => {
           data.push('?');
           resultValues === null || resultValues === void 0 ? void 0 : resultValues.push(value);
+          filter_types === null || filter_types === void 0 ? void 0 : filter_types.push({
+            field_name: rule.field,
+            field_type: rule.original_type,
+            field_value: value
+          });
         });
       } else {
         resultValues === null || resultValues === void 0 ? void 0 : resultValues.push(data);
+        filter_types === null || filter_types === void 0 ? void 0 : filter_types.push({
+          field_name: rule.field,
+          field_type: rule.original_type,
+          field_value: data
+        });
         data = '?';
       }
     } else {
       data = '';
     }
   } else {
+    var _rule$type, _rule$type2;
     if (typeof data === 'string') {
       data = data.replace(/\'/g, "''");
     }
     data = "'" + data + "'";
-    if (rule.type === "number") {
-      field = field + "::numeric[] ";
+    if (((_rule$type = rule.type) === null || _rule$type === void 0 ? void 0 : _rule$type.toLowerCase()) === "number" || ((_rule$type2 = rule.type) === null || _rule$type2 === void 0 ? void 0 : _rule$type2.toLowerCase()) === "integer") {
+      if (!isCoupling) {
+        field = "SELECT unnest(" + field + ")::numeric  ";
+      } else {
+        field = field + "::numeric[] ";
+      }
       data = rule.data;
     }
   }
-  var table = rule.table;
+  let table = rule.table;
   if (!table && parameters && parameters.length > 0) {
-    var found = parameters.find(function (it) {
-      return it.name === rule.field;
-    });
+    const found = parameters.find(it => it.name === rule.field);
     if (found) {
       table = found.table;
     }
   }
-  var prefix = "SELECT ROOT_IID FROM ".concat(table, " WHERE ");
+  let prefix = `SELECT distinct ROOT_IID FROM ${table} WHERE `;
   if (type === 1) {
-    prefix = "";
+    prefix = ``;
   }
   if (rule.condition === 'IS NULL' || rule.condition === 'IS NOT NULL') {
     return '( ' + prefix + field + ' ' + condition + ' )';
@@ -8122,9 +9064,9 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
       data = rule.data;
     }
     if (Array.isArray(data)) {
-      var newData = [];
-      data.forEach(function (it) {
-        var value = it;
+      const newData = [];
+      data.forEach(it => {
+        let value = it;
         if (typeof value === 'string') {
           value = value.replace(/\'/g, "''");
         }
@@ -8132,11 +9074,9 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
       });
       data = newData;
     } else if (typeof data === 'string') {
-      data = data.split(',').map(function (it) {
-        return it.trim();
-      });
+      data = data.split(',').map(it => it.trim());
     }
-    return "( ".concat(prefix, " ").concat(getSubWhereInNotIn(field, condition, data, type), ")");
+    return `( ${prefix} ${getSubWhereInNotIn(field, condition, data, type)})`;
   } else {
     if (type === 1) {
       return '( ' + prefix + field + ' ' + condition + ' ' + data + ' )';
@@ -8145,75 +9085,63 @@ var getSubQuery = function getSubQuery(rule, parameters, type, resultValues) {
     }
   }
 };
-var computeQuery = function computeQuery(group, parametersList, type, resultValues) {
+const computeQuery = (group, parametersList, type, resultValues, filter_types, isCoupling) => {
   if (!group) return '';
-  var str = '(';
-  var _loop = function _loop(i) {
-      if (group.rules[i].group) {
-        if (i === group.rules.length - 1) {
-          str += computeQuery(group.rules[i].group, parametersList, type, resultValues);
-        } else {
-          str += computeQuery(group.rules[i].group, parametersList, type, resultValues) + ' ' + (group.rules[i].operator === 'AND' ? 'INTERSECT' : 'UNION') + ' ';
-        }
+  let str = '(';
+  for (let i = 0; i < group.rules.length; i++) {
+    if (group.rules[i].group) {
+      if (i === group.rules.length - 1) {
+        str += computeQuery(group.rules[i].group, parametersList, type, resultValues, filter_types, isCoupling);
       } else {
-        var data;
-        if (!group.rules[i].data && group.rules[i].data !== '' && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
-          return {
-            v: ''
-          };
-        }
-        if (group.rules[i].type === 'real') {
-          if (group.rules[i].data.toLocaleString().indexOf('.') <= 0) {
-            data = group.rules[i].data.toFixed(1);
-          } else {
-            data = group.rules[i].data;
-          }
-        } else if (group.rules[i].type === 'integer') {
-          data = Math.floor(group.rules[i].data);
-        } else if (group.rules[i].type === 'combo') {
-          var paramFound = parametersList === null || parametersList === void 0 ? void 0 : parametersList.find(function (it) {
-            return it.name === group.rules[i].field;
-          });
-          if (paramFound && paramFound.valid_values) {
-            var validValues = paramFound.valid_values.map(function (it) {
-              return it.label;
-            });
-            if (validValues && validValues.length > 0 && validValues.indexOf(group.rules[i].data) < 0 && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
-              return {
-                v: ''
-              };
-            }
-          }
-          data = group.rules[i].data;
+        str += computeQuery(group.rules[i].group, parametersList, type, resultValues, filter_types, isCoupling) + ' ' + (group.rules[i].operator === 'AND' ? 'INTERSECT' : 'UNION') + ' ';
+      }
+    } else {
+      let data;
+      if (!group.rules[i].data && group.rules[i].data !== '' && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
+        return '';
+      }
+      if (group.rules[i].type === 'real') {
+        if (group.rules[i].data.toLocaleString().indexOf('.') <= 0) {
+          data = group.rules[i].data.toFixed(1);
         } else {
           data = group.rules[i].data;
         }
-        if (!data) {
-          data = '';
-        }
-        if (i === group.rules.length - 1) {
-          str += getSubQuery(group.rules[i], parametersList, type, resultValues);
-        } else {
-          str += getSubQuery(group.rules[i], parametersList, type, resultValues);
-          if (type === 1) {
-            str += ' \n' + group.rules[i].operator + ' \n';
-          } else {
-            str += ' \n' + (group.rules[i].operator === 'AND' ? 'INTERSECT' : 'UNION') + ' \n';
+      } else if (group.rules[i].type === 'integer') {
+        data = Math.floor(group.rules[i].data);
+      } else if (group.rules[i].type === 'combo') {
+        const paramFound = parametersList === null || parametersList === void 0 ? void 0 : parametersList.find(it => it.name === group.rules[i].field);
+        if (paramFound && paramFound.valid_values) {
+          const validValues = paramFound.valid_values.map(it => it.label);
+          if (validValues && validValues.length > 0 && validValues.indexOf(group.rules[i].data) < 0 && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
+            return '';
           }
+        }
+        data = group.rules[i].data;
+      } else {
+        data = group.rules[i].data;
+      }
+      if (!data) {
+        data = '';
+      }
+      if (i === group.rules.length - 1) {
+        str += getSubQuery(group.rules[i], parametersList, type, resultValues, filter_types, isCoupling);
+      } else {
+        str += getSubQuery(group.rules[i], parametersList, type, resultValues, filter_types, isCoupling);
+        if (type === 1) {
+          str += ' \n' + group.rules[i].operator + ' \n';
+        } else {
+          str += ' \n' + (group.rules[i].operator === 'AND' ? 'INTERSECT' : 'UNION') + ' \n';
         }
       }
-    },
-    _ret;
-  for (var i = 0; i < group.rules.length; i++) {
-    _ret = _loop(i);
-    if (_ret) return _ret.v;
+    }
   }
   return str + ')';
 };
-var getSelectionParamValue = function getSelectionParamValue(filter, parametersList, type) {
-  var resultValues = [];
-  var validStatement = false;
-  var checkRule = function checkRule(rule, type) {
+const getSelectionParamValue = (filter, parametersList, isCoupling, type) => {
+  const resultValues = [];
+  const filter_types = [];
+  let validStatement = false;
+  const checkRule = (rule, type) => {
     if (rule.group) {
       return checkGroup(rule.group, type);
     } else {
@@ -8233,11 +9161,11 @@ var getSelectionParamValue = function getSelectionParamValue(filter, parametersL
       return true;
     }
   };
-  var checkGroup = function checkGroup(group, type, first) {
+  const checkGroup = (group, type, first) => {
     if (!group.operator) {
       return false;
     }
-    for (var i = 0; i < group.rules.length; i++) {
+    for (let i = 0; i < group.rules.length; i++) {
       if (checkRule(group.rules[i], type) === false) {
         return false;
       }
@@ -8248,11 +9176,12 @@ var getSelectionParamValue = function getSelectionParamValue(filter, parametersL
     return true;
   };
   if (filter && checkGroup(filter.group, type, true) === true) {
-    var result = computeQuery(filter.group, parametersList, type, resultValues);
+    const result = computeQuery(filter.group, parametersList, type, resultValues, filter_types, isCoupling);
     if (type === 1) {
       return {
         sqlQuery: result,
-        values: resultValues
+        values: resultValues,
+        filter_types: filter_types
       };
     }
     return result;
@@ -8261,92 +9190,218 @@ var getSelectionParamValue = function getSelectionParamValue(filter, parametersL
 };
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/styles.ts
 
-var TaskMainWidget_styles_templateObject, TaskMainWidget_styles_templateObject2, TaskMainWidget_styles_templateObject3, TaskMainWidget_styles_templateObject4, TaskMainWidget_styles_templateObject5, TaskMainWidget_styles_templateObject6, TaskMainWidget_styles_templateObject7, TaskMainWidget_styles_templateObject8;
-
-var duration = "2s forwards";
+const duration = "2s forwards";
 function ChangeBorderColor(property, color) {
-  var animation = "to {\n    ".concat(property, ": ").concat(color, ";\n  }");
-  return Object(styled_components_browser_esm["c" /* keyframes */])(TaskMainWidget_styles_templateObject || (TaskMainWidget_styles_templateObject = taggedTemplateLiteral_default()(["\n    ", "\n  "])), animation);
+  let animation = `to {
+    ${property}: ${color};
+  }`;
+  return styled_components_browser_esm["c" /* keyframes */]`
+    ${animation}
+  `;
 }
-var TaskMainWidget_styles_Container = styled_components_browser_esm["b" /* default */].div(TaskMainWidget_styles_templateObject2 || (TaskMainWidget_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  width: 876px;\n  height: 277px;\n  margin: auto;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  user-select: none;\n  position: absolute;\n  top: -37px;\n  scale: 0.7;\n"])));
-var ArrowTriangle = styled_components_browser_esm["b" /* default */].div(TaskMainWidget_styles_templateObject3 || (TaskMainWidget_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  border-top: 19px solid transparent;\n  border-bottom: 19px solid transparent;\n  border-left: 19px solid #ccc;\n    animation: ", " ", ";\n  position: absolute;\n  top: 50%;\n  left: ", ";\n  transform: translate(-50%, -50%);\n  z-index: 1;\n"])), function (_ref) {
-  var color = _ref.color;
+const TaskMainWidget_styles_Container = styled_components_browser_esm["b" /* default */].div`
+  width: 876px;
+  height: 277px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  position: absolute;
+  top: -37px;
+  scale: 0.7;
+    @media (max-width: 1400px) {
+    margin-left: calc(20% + (1400px - 100vw) / 2);
+  }
+`;
+const ArrowTriangle = styled_components_browser_esm["b" /* default */].div`
+  border-top: 19px solid transparent;
+  border-bottom: 19px solid transparent;
+  border-left: 19px solid #ccc;
+    animation: ${_ref => {
+  let {
+    color
+  } = _ref;
   return ChangeBorderColor('border-left-color', color || "#ccc");
-}, duration, function (props) {
-  return props.left;
-});
-var TaskMainWidget_styles_Title = styled_components_browser_esm["b" /* default */].div(TaskMainWidget_styles_templateObject4 || (TaskMainWidget_styles_templateObject4 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 19px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  letter-spacing: normal;\n  text-align: center;\n  color: var(--disabled);\n  ", "\n  ", "\n\n"])), function (_ref2) {
-  var color = _ref2.color;
-  return color && Object(styled_components_browser_esm["a" /* css */])(TaskMainWidget_styles_templateObject5 || (TaskMainWidget_styles_templateObject5 = taggedTemplateLiteral_default()(["\n      animation: ", " ", ";\n    "])), ChangeBorderColor('color', color), duration);
-}, function (_ref3) {
-  var showEllipsis = _ref3.showEllipsis;
-  return showEllipsis && "\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  width: 100%;\n    ";
-});
-var SubTitle = styled_components_browser_esm["b" /* default */].div(TaskMainWidget_styles_templateObject6 || (TaskMainWidget_styles_templateObject6 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 15px;\n  font-weight: normal;\n  font-stretch: normal;\n  font-style: normal;\n  letter-spacing: normal;\n  text-align: center;\n  color: ", ";\n"])), function (props) {
-  return props.color ? function (props) {
-    return props.color;
-  } : "#ccc";
-});
-var Empty = styled_components_browser_esm["b" /* default */].div(TaskMainWidget_styles_templateObject7 || (TaskMainWidget_styles_templateObject7 = taggedTemplateLiteral_default()(["\n  height: ", ";\n"])), function (_ref4) {
-  var height = _ref4.height;
+}} ${duration};
+  position: absolute;
+  top: 50%;
+  left: ${props => props.left};
+  transform: translate(-50%, -50%);
+  z-index: 1;
+`;
+const TaskMainWidget_styles_Title = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 19px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: var(--disabled);
+  ${_ref2 => {
+  let {
+    color
+  } = _ref2;
+  return color && styled_components_browser_esm["a" /* css */]`
+      animation: ${ChangeBorderColor('color', color)} ${duration};
+    `;
+}}
+  ${_ref3 => {
+  let {
+    showEllipsis
+  } = _ref3;
+  return showEllipsis && `
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
+    `;
+}}
+
+`;
+const SubTitle = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: ${props => props.color ? props => props.color : "#ccc"};
+`;
+const Empty = styled_components_browser_esm["b" /* default */].div`
+  height: ${_ref4 => {
+  let {
+    height
+  } = _ref4;
   return height || "14px";
-});
-var Img = styled_components_browser_esm["b" /* default */].img(TaskMainWidget_styles_templateObject8 || (TaskMainWidget_styles_templateObject8 = taggedTemplateLiteral_default()([""])));
+}};
+`;
+const Img = styled_components_browser_esm["b" /* default */].img``;
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/SourceAndEnv/styles.ts
 
-var SourceAndEnv_styles_templateObject, SourceAndEnv_styles_templateObject2, SourceAndEnv_styles_templateObject3, SourceAndEnv_styles_templateObject4, SourceAndEnv_styles_templateObject5, SourceAndEnv_styles_templateObject6, SourceAndEnv_styles_templateObject7, SourceAndEnv_styles_templateObject8, SourceAndEnv_styles_templateObject9;
 
-
-var styles_duration = "2s forwards";
-var infinite = "2s infinite";
+const styles_duration = "2s forwards";
+const infinite = "2s infinite";
 function styles_ChangeBorderColor(property, color) {
-  var animation = "to {\n    ".concat(property, ": ").concat(color, ";\n  }");
-  return Object(styled_components_browser_esm["c" /* keyframes */])(SourceAndEnv_styles_templateObject || (SourceAndEnv_styles_templateObject = taggedTemplateLiteral_default()(["\n    ", "\n  "])), animation);
+  let animation = `to {
+    ${property}: ${color};
+  }`;
+  return styled_components_browser_esm["c" /* keyframes */]`
+    ${animation}
+  `;
 }
 function blinking(highlightColor) {
-  var animation = "";
+  let animation = "";
   if (highlightColor === "blue") {
-    animation = "\n    0% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}\n    25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n    50% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}\n    75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n    100% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}\n    ";
+    animation = `
+    0% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}
+    25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+    50% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}
+    75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+    100% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}
+    `;
   }
   if (highlightColor === "purple") {
-    animation = "\n      0% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}\n      25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n      50% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}\n      75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n      100% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}\n      ";
+    animation = `
+      0% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}
+      25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+      50% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}
+      75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+      100% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}
+      `;
   }
-  return Object(styled_components_browser_esm["c" /* keyframes */])(SourceAndEnv_styles_templateObject2 || (SourceAndEnv_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    ", "\n  "])), animation);
+  return styled_components_browser_esm["c" /* keyframes */]`
+    ${animation}
+  `;
 }
-var RectangleWrapper = styled_components_browser_esm["d" /* styled */].div(SourceAndEnv_styles_templateObject3 || (SourceAndEnv_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  position: relative;\n  width: 165px;\n  height: 165px;\n"])));
-var ContentWrapper = styled_components_browser_esm["d" /* styled */].div(SourceAndEnv_styles_templateObject4 || (SourceAndEnv_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    height: 100%;\n    border-radius: inherit;\n    background-color: var(--white);\n    animation: ", " ", ";\n    display: flex;\n    flex-direction: column;\n    ", "\n    padding: ", ";\n    box-sizing: border-box;\n    align-items: center;\n    box-shadow:", ";\n    border: solid 4px\n      ", ";\n  "])), function (_ref) {
-  var backgrounColor = _ref.backgrounColor;
+const RectangleWrapper = styled_components_browser_esm["d" /* styled */].div`
+  position: relative;
+  width: 165px;
+  height: 165px;
+`;
+const ContentWrapper = styled_components_browser_esm["d" /* styled */].div`
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--white);
+    animation: ${_ref => {
+  let {
+    backgrounColor
+  } = _ref;
   return styles_ChangeBorderColor('background-color', backgrounColor);
-}, styles_duration, function (_ref2) {
-  var centerTitle = _ref2.centerTitle;
-  return centerTitle ? "\n    justify-content: space-between;\n    " : "\n\n    justify-content: center;\n    ";
-}, function (props) {
-  return props.padding;
-}, function (props) {
-  return props.boxShadow;
-}, function (props) {
-  return props.innerBorderColor;
-});
-var Rectangle = styled_components_browser_esm["d" /* styled */].div(SourceAndEnv_styles_templateObject5 || (SourceAndEnv_styles_templateObject5 = taggedTemplateLiteral_default()(["\n  width: 165px;\n  height: 165px;\n  padding: 12px;\n  border-radius: 20px;\n  border: solid 5px var(--disabled);\n  ", ";\n  position: absolute;\n  z-index: 100;\n  box-sizing: border-box;\n  user-select: none;\n  ", "\n"])), function (_ref3) {
-  var highlightColor = _ref3.highlightColor,
-    outerBorderColor = _ref3.outerBorderColor;
-  return highlightColor === "none" ? Object(styled_components_browser_esm["a" /* css */])(SourceAndEnv_styles_templateObject6 || (SourceAndEnv_styles_templateObject6 = taggedTemplateLiteral_default()([" animation: ", " ", ";"])), styles_ChangeBorderColor('border-color', outerBorderColor), styles_duration) : Object(styled_components_browser_esm["a" /* css */])(SourceAndEnv_styles_templateObject7 || (SourceAndEnv_styles_templateObject7 = taggedTemplateLiteral_default()([" animation: ", " ", ";\n            border-color: ", ";\n     "])), blinking(highlightColor), infinite, outerBorderColor);
-}, function (_ref4) {
-  var status = _ref4.status;
-  return status && status !== StatusEnum.disabled && "\n    cursor: pointer;\n  ";
-});
-var InfoIconWrapper = styled_components_browser_esm["d" /* styled */].div(SourceAndEnv_styles_templateObject8 || (SourceAndEnv_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    z-index: 100;\n    top: -26px;\n    right: -10px;\n    cursor: auto;\n"])));
-var SubTitleWrapper = styled_components_browser_esm["d" /* styled */].div(SourceAndEnv_styles_templateObject9 || (SourceAndEnv_styles_templateObject9 = taggedTemplateLiteral_default()(["\n  height: 28px;\n  display: flex;\n  align-items: end;\n"])));
+}} ${styles_duration};
+    display: flex;
+    flex-direction: column;
+    ${_ref2 => {
+  let {
+    centerTitle
+  } = _ref2;
+  return centerTitle ? `
+    justify-content: space-between;
+    ` : `
+
+    justify-content: center;
+    `;
+}}
+    padding: ${props => props.padding};
+    box-sizing: border-box;
+    align-items: center;
+    box-shadow:${props => props.boxShadow};
+    border: solid 4px
+      ${props => props.innerBorderColor};
+  `;
+const Rectangle = styled_components_browser_esm["d" /* styled */].div`
+  width: 165px;
+  height: 165px;
+  padding: 12px;
+  border-radius: 20px;
+  border: solid 5px var(--disabled);
+  ${_ref3 => {
+  let {
+    highlightColor,
+    outerBorderColor
+  } = _ref3;
+  return highlightColor === "none" ? styled_components_browser_esm["a" /* css */]` animation: ${styles_ChangeBorderColor('border-color', outerBorderColor)} ${styles_duration};` : styled_components_browser_esm["a" /* css */]` animation: ${blinking(highlightColor)} ${infinite};
+            border-color: ${outerBorderColor};
+     `;
+}};
+  position: absolute;
+  z-index: 100;
+  box-sizing: border-box;
+  user-select: none;
+  ${_ref4 => {
+  let {
+    status
+  } = _ref4;
+  return status && status !== StatusEnum.disabled && `
+    cursor: pointer;
+  `;
+}}
+`;
+const InfoIconWrapper = styled_components_browser_esm["d" /* styled */].div`
+    position: absolute;
+    z-index: 100;
+    top: -26px;
+    right: -10px;
+    cursor: auto;
+`;
+const SubTitleWrapper = styled_components_browser_esm["d" /* styled */].div`
+  height: 28px;
+  display: flex;
+  align-items: end;
+`;
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Indicator/services.ts
 
-var services_getIndicatorColors = function getIndicatorColors(status, name) {
-  var primaryColor = name === "target" ? "var(--sky-blue)" : name === "test_data_store" ? "#8146f0" : "var(--lovelyPurple)";
-  var secondaryColor = name === "target" ? "var(--sky-blue)" : name === "test_data_store" ? "#2c75f2" : "var(--lovelyPurple)";
-  var borderColor = "linear-gradient(to right,".concat(primaryColor, ",").concat(secondaryColor, ")");
-  var dotsColor = primaryColor;
-  var dotsBackground = "linear-gradient(to right, #FFFFFF, #FFFFFF)";
+const getIndicatorColors = (status, name) => {
+  let primaryColor = name === "target" ? "var(--sky-blue)" : name === "test_data_store" ? "#8146f0" : "var(--lovelyPurple)";
+  let secondaryColor = name === "target" ? "var(--sky-blue)" : name === "test_data_store" ? "#2c75f2" : "var(--lovelyPurple)";
+  let borderColor = `linear-gradient(to right,${primaryColor},${secondaryColor})`;
+  let dotsColor = primaryColor;
+  let dotsBackground = "linear-gradient(to right, #FFFFFF, #FFFFFF)";
   if (status === StatusEnum.completed) {
-    dotsBackground = "linear-gradient(to right,".concat(primaryColor, ",").concat(secondaryColor, ")");
+    dotsBackground = `linear-gradient(to right,${primaryColor},${secondaryColor})`;
   }
   return {
     borderColor: borderColor,
@@ -8358,7 +9413,9 @@ var services_getIndicatorColors = function getIndicatorColors(status, name) {
 
 
 function MenuIconSVG(props) {
-  var color = props.color;
+  const {
+    color
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsx"])("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "16",
@@ -8375,15 +9432,38 @@ function MenuIconSVG(props) {
 /* harmony default export */ var vIcon = ("js/dist/7b73c75b47d3e4e80d5d20e37bbd2331.svg");
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Indicator/styles.ts
 
-var Indicator_styles_templateObject, Indicator_styles_templateObject2, Indicator_styles_templateObject3;
-
-var CicleMenuIconWrapper = styled_components_browser_esm["d" /* styled */].div(Indicator_styles_templateObject || (Indicator_styles_templateObject = taggedTemplateLiteral_default()(["\n  width: 30px;\n  height: 30px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  box-sizing: border-box;\n  position: absolute;\n  margin-left: auto;\n  margin-right: auto;\n  right: 0;\n  left: 0;\n  bottom: -21px;\n"])));
-var MenuIconGradiant = styled_components_browser_esm["d" /* styled */].div(Indicator_styles_templateObject2 || (Indicator_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    background-image: ", ";\n    border-radius: 50%;\n    width: 30px;\n    height: 30px;\n"])), function (props) {
-  return props.borderBackgroundImage ? props.borderBackgroundImage : "none";
-});
-var IndicatorContent = styled_components_browser_esm["d" /* styled */].div(Indicator_styles_templateObject3 || (Indicator_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  position: absolute;\n  width: 24px;\n  height: 24px;\n  background-image: ", ";\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  border-radius: 50%;\n  top: 3px;\n  left: 3px;\n"])), function (props) {
-  return props.dotsBackground ? props.dotsBackground : "none";
-});
+const CicleMenuIconWrapper = styled_components_browser_esm["d" /* styled */].div`
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  right: 0;
+  left: 0;
+  bottom: -21px;
+`;
+const MenuIconGradiant = styled_components_browser_esm["d" /* styled */].div`
+    background-image: ${props => props.borderBackgroundImage ? props.borderBackgroundImage : "none"};
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+`;
+const IndicatorContent = styled_components_browser_esm["d" /* styled */].div`
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background-image: ${props => props.dotsBackground ? props.dotsBackground : "none"};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+`;
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Indicator/index.tsx
 
 
@@ -8393,21 +9473,14 @@ var IndicatorContent = styled_components_browser_esm["d" /* styled */].div(Indic
 
 
 
-
-
 function Indicator(props) {
-  var status = props.status,
-    name = props.name;
-  var _useState = Object(react["useState"])(function () {
-      return services_getIndicatorColors(status, name);
-    }),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    colors = _useState2[0],
-    setColors = _useState2[1];
-  Object(react["useEffect"])(function () {
-    setColors(function () {
-      return services_getIndicatorColors(status, name);
-    });
+  const {
+    status,
+    name
+  } = props;
+  const [colors, setColors] = Object(react["useState"])(() => getIndicatorColors(status, name));
+  Object(react["useEffect"])(() => {
+    setColors(() => getIndicatorColors(status, name));
   }, [status, name]);
   return status !== StatusEnum.disabled ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(CicleMenuIconWrapper, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(MenuIconGradiant, {
@@ -8426,40 +9499,136 @@ function Indicator(props) {
 /* harmony default export */ var TaskMainWidget_Indicator = (/*#__PURE__*/Object(react["memo"])(Indicator));
 // CONCATENATED MODULE: ./src/components/Tooltip/styles.ts
 
-var Tooltip_styles_templateObject, Tooltip_styles_templateObject2, Tooltip_styles_templateObject3;
+const styles_TooltipContainer = styled_components_browser_esm["b" /* default */].div`
+  position: relative;
+  display: inline-block;
 
-var styles_TooltipContainer = styled_components_browser_esm["b" /* default */].div(Tooltip_styles_templateObject || (Tooltip_styles_templateObject = taggedTemplateLiteral_default()(["\n  position: relative;\n  display: inline-block;\n\n  .tooltip-text {\n    display: none;\n    position: absolute;\n    ", "\n    padding: 10px;\n    font-family: Roboto;\n    font-size: 17px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    z-index: 101;\n    width: max-content;\n    max-width: 250px;\n    max-height: 400px;\n    top: -11px;\n    ", "\n\n    &:before {\n      content: '';\n      position: absolute;\n      ", "\n      border-style: solid;\n      border-width: 5px;\n      z-index: 102;\n\n      ", "\n    }\n\n    &:after {\n      content: '';\n      position: absolute;\n      ", "\n      border-style: solid;\n      border-width: 6px;\n      z-index: -1;\n\n      ", "\n    }\n  }\n  &:hover .tooltip-text {\n    display: block;\n  }\n"])), function (_ref) {
-  var hideTriangle = _ref.hideTriangle;
-  return !hideTriangle ? "border-radius:3px;\n      border: solid 1px #ccc;\n      background-color: #fff;\n      " : "\n       border-radius:3px;\n       border: solid 1px #ccc;\n       background: #fff;\n      ";
-}, function (_ref2) {
-  var position = _ref2.position;
-  return position === 'left' ? "\n      right: calc(100% + 10px);\n    " : "\n      left: calc(100% + 10px);\n    ";
-}, function (_ref3) {
-  var hideTriangle = _ref3.hideTriangle;
-  return !hideTriangle ? "display:block;" : "display:none;";
-}, function (_ref4) {
-  var position = _ref4.position;
-  return position === 'left' ? "\n        right: -10px;\n        top: 50%;\n        transform: translateY(-50%);\n        border-color: transparent transparent transparent #FFFFFF;\n      " : "\n        left: -10px;\n        top: 50%;\n        transform: translateY(-50%);\n        border-color: transparent  #FFFFFF transparent transparent;\n      ";
-}, function (_ref5) {
-  var hideTriangle = _ref5.hideTriangle;
-  return !hideTriangle ? "display:block;" : "display:none;";
-}, function (_ref6) {
-  var position = _ref6.position;
-  return position === 'left' ? "\n        right: -12px;\n        top: 50%;\n        transform: translateY(-50%);\n        border-color: transparent transparent transparent #ccc;;\n      " : "\n        left: -12px;\n        top: 50%;\n        transform: translateY(-50%);\n        border-color: transparent #ccc transparent transparent;\n      ";
-});
-var UL = styled_components_browser_esm["b" /* default */].ul(Tooltip_styles_templateObject2 || (Tooltip_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  margin: 0;\n  padding: 0 0 0 12px;\n"])));
-var LI = styled_components_browser_esm["b" /* default */].li(Tooltip_styles_templateObject3 || (Tooltip_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  padding:0 !important;\n  padding-bottom: 4px !important;\n  background-color: transparent !important;\n"])));
+  .tooltip-text {
+    display: none;
+    position: absolute;
+    ${_ref => {
+  let {
+    hideTriangle
+  } = _ref;
+  return !hideTriangle ? `border-radius:3px;
+      border: solid 1px #ccc;
+      background-color: #fff;
+      ` : `
+       border-radius:3px;
+       border: solid 1px #ccc;
+       background: #fff;
+      `;
+}}
+    padding: 10px;
+    font-family: Roboto;
+    font-size: 17px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    z-index: 101;
+    width: max-content;
+    max-width: 250px;
+    max-height: 400px;
+    top: -11px;
+    ${_ref2 => {
+  let {
+    position
+  } = _ref2;
+  return position === 'left' ? `
+      right: calc(100% + 10px);
+    ` : `
+      left: calc(100% + 10px);
+    `;
+}}
+
+    &:before {
+      content: '';
+      position: absolute;
+      ${_ref3 => {
+  let {
+    hideTriangle
+  } = _ref3;
+  return !hideTriangle ? `display:block;` : `display:none;`;
+}}
+      border-style: solid;
+      border-width: 5px;
+      z-index: 102;
+
+      ${_ref4 => {
+  let {
+    position
+  } = _ref4;
+  return position === 'left' ? `
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-color: transparent transparent transparent #FFFFFF;
+      ` : `
+        left: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-color: transparent  #FFFFFF transparent transparent;
+      `;
+}}
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      ${_ref5 => {
+  let {
+    hideTriangle
+  } = _ref5;
+  return !hideTriangle ? `display:block;` : `display:none;`;
+}}
+      border-style: solid;
+      border-width: 6px;
+      z-index: -1;
+
+      ${_ref6 => {
+  let {
+    position
+  } = _ref6;
+  return position === 'left' ? `
+        right: -12px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-color: transparent transparent transparent #ccc;;
+      ` : `
+        left: -12px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-color: transparent #ccc transparent transparent;
+      `;
+}}
+    }
+  }
+  &:hover .tooltip-text {
+    display: block;
+  }
+`;
+const UL = styled_components_browser_esm["b" /* default */].ul`
+  margin: 0;
+  padding: 0 0 0 12px;
+`;
+const LI = styled_components_browser_esm["b" /* default */].li`
+  padding:0 !important;
+  padding-bottom: 4px !important;
+  background-color: transparent !important;
+`;
 // CONCATENATED MODULE: ./src/components/Tooltip/index.tsx
 // Tooltip.tsx
 
 
 
-
-var Tooltip_Tooltip = function Tooltip(_ref) {
-  var children = _ref.children,
-    position = _ref.position,
-    textArray = _ref.textArray,
-    hideTriangle = _ref.hideTriangle;
+const Tooltip = _ref => {
+  let {
+    children,
+    position,
+    textArray,
+    hideTriangle
+  } = _ref;
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_TooltipContainer, {
     position: position,
     hideTriangle: hideTriangle,
@@ -8467,7 +9636,7 @@ var Tooltip_Tooltip = function Tooltip(_ref) {
       className: "tooltip-text",
       children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(UL, {
-          children: textArray.map(function (text) {
+          children: textArray.map(text => {
             return /*#__PURE__*/Object(jsx_runtime["jsx"])(LI, {
               children: text
             });
@@ -8477,19 +9646,19 @@ var Tooltip_Tooltip = function Tooltip(_ref) {
     })]
   });
 };
-/* harmony default export */ var components_Tooltip = (Tooltip_Tooltip);
+/* harmony default export */ var components_Tooltip = (Tooltip);
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/SourceAndEnv/services.tsx
 
-var services_getColors = function getColors(status, isTarget, isSelected, isConnectionColored) {
-  var primaryColor = isTarget ? 'var(--sky-blue)' : 'var(--lovelyPurple)';
-  var boxShadow = 'none';
-  var subTitleColor = 'var(--disabled)';
-  var titleColor = 'var(--disabled)';
-  var backgroundColor = 'var(--white)';
-  var innerBorderColor = 'transparent';
-  var outerBorderColor = 'var(--disabled)';
-  var arrowTriangleColor = 'var(--disabled)';
-  var highlightColor = 'none';
+const getColors = (status, isTarget, isSelected, isConnectionColored) => {
+  let primaryColor = isTarget ? 'var(--sky-blue)' : 'var(--lovelyPurple)';
+  let boxShadow = 'none';
+  let subTitleColor = 'var(--disabled)';
+  let titleColor = 'var(--disabled)';
+  let backgroundColor = 'var(--white)';
+  let innerBorderColor = 'transparent';
+  let outerBorderColor = 'var(--disabled)';
+  let arrowTriangleColor = 'var(--disabled)';
+  let highlightColor = 'none';
   if (status !== StatusEnum.disabled) {
     boxShadow = '0px 10px 21px 0 rgba(51, 51, 51, 0.27)';
   }
@@ -8516,14 +9685,14 @@ var services_getColors = function getColors(status, isTarget, isSelected, isConn
     arrowTriangleColor = primaryColor;
   }
   return {
-    innerBorderColor: innerBorderColor,
-    outerBorderColor: outerBorderColor,
-    backgroundColor: backgroundColor,
-    titleColor: titleColor,
-    subTitleColor: subTitleColor,
-    boxShadow: boxShadow,
-    arrowTriangleColor: arrowTriangleColor,
-    highlightColor: highlightColor
+    innerBorderColor,
+    outerBorderColor,
+    backgroundColor,
+    titleColor,
+    subTitleColor,
+    boxShadow,
+    arrowTriangleColor,
+    highlightColor
   };
 };
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/SourceAndEnv/index.tsx
@@ -8536,32 +9705,25 @@ var services_getColors = function getColors(status, isTarget, isSelected, isConn
 
 
 
-
-
 function SourceAndEnv(props) {
-  var title = props.title,
-    status = props.status,
-    onClick = props.onClick,
-    isSelected = props.isSelected,
-    info = props.info,
-    id = props.id,
-    isTarget = props.isTarget,
-    subTitle = props.subTitle,
-    placeHolder = props.placeHolder,
-    subTitlePlaceHolder = props.subTitlePlaceHolder,
-    isConnectionColored = props.isConnectionColored;
-  var _useState = Object(react["useState"])(function () {
-      return services_getColors(status, isTarget, isSelected, isConnectionColored);
-    }),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    colors = _useState2[0],
-    setColors = _useState2[1];
-  Object(react["useEffect"])(function () {
-    setColors(function () {
-      return services_getColors(status, isTarget, isSelected, isConnectionColored);
-    });
+  const {
+    title,
+    status,
+    onClick,
+    isSelected,
+    info,
+    id,
+    isTarget,
+    subTitle,
+    placeHolder,
+    subTitlePlaceHolder,
+    isConnectionColored
+  } = props;
+  const [colors, setColors] = Object(react["useState"])(() => getColors(status, isTarget, isSelected, isConnectionColored));
+  Object(react["useEffect"])(() => {
+    setColors(() => getColors(status, isTarget, isSelected, isConnectionColored));
   }, [status, isSelected, isTarget, isConnectionColored]);
-  var handleClick = Object(react["useCallback"])(function (event) {
+  const handleClick = Object(react["useCallback"])(event => {
     if (status === StatusEnum.disabled) return;
     onClick(event);
   }, [status, onClick]);
@@ -8606,21 +9768,21 @@ function SourceAndEnv(props) {
         name: id
       })]
     }), isConnectionColored !== undefined ? /*#__PURE__*/Object(jsx_runtime["jsx"])(ArrowTriangle, {
-      left: "".concat(isTarget ? '-84%;' : '103%'),
+      left: `${isTarget ? '-84%;' : '103%'}`,
       color: colors.arrowTriangleColor
     }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(react["Fragment"], {})]
   });
 }
-var MemoizedDataSource = /*#__PURE__*/Object(react["memo"])(SourceAndEnv);
+const MemoizedDataSource = /*#__PURE__*/Object(react["memo"])(SourceAndEnv);
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/TestDataStore/services.ts
 
-var services_getTestDataStoreColors = function getTestDataStoreColors(status, isSelected) {
-  var boxShadow = "none";
-  var subTitleColor = "var(--disabled)";
-  var titleColor = "var(--disabled)";
-  var backgroundColor = "var(--white)";
-  var outerBorderBackgroundImage = "linear-gradient(to right, var(--disabled), var(--disabled))";
-  var innerBorderBackgroundImage = "linear-gradient(to right,var(--white), var(--white))";
+const getTestDataStoreColors = (status, isSelected) => {
+  let boxShadow = "none";
+  let subTitleColor = "var(--disabled)";
+  let titleColor = "var(--disabled)";
+  let backgroundColor = "var(--white)";
+  let outerBorderBackgroundImage = "linear-gradient(to right, var(--disabled), var(--disabled))";
+  let innerBorderBackgroundImage = "linear-gradient(to right,var(--white), var(--white))";
   if (status === StatusEnum.enabled) {
     subTitleColor = "var(--dusty-grey)";
   }
@@ -8657,7 +9819,9 @@ var services_getTestDataStoreColors = function getTestDataStoreColors(status, is
 
 
 function TestDataStoreIconSVG(props) {
-  var color = props.color;
+  const {
+    color
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsx"])("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "101",
@@ -8674,7 +9838,9 @@ function TestDataStoreIconSVG(props) {
 
 
 function TestDataStoreTextSVG(props) {
-  var color = props.color;
+  const {
+    color
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsx"])("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "136",
@@ -8689,39 +9855,105 @@ function TestDataStoreTextSVG(props) {
 /* harmony default export */ var TestDataStore_TestDataStoreTextSVG = (/*#__PURE__*/Object(react["memo"])(TestDataStoreTextSVG));
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/TestDataStore/styles.ts
 
-var TestDataStore_styles_templateObject, TestDataStore_styles_templateObject2, TestDataStore_styles_templateObject3, TestDataStore_styles_templateObject4, TestDataStore_styles_templateObject5, TestDataStore_styles_templateObject6, TestDataStore_styles_templateObject7, TestDataStore_styles_templateObject8, TestDataStore_styles_templateObject9, TestDataStore_styles_templateObject10, TestDataStore_styles_templateObject11;
 
-
-var TestDataStore_styles_duration = "1s forwards";
+const TestDataStore_styles_duration = "1s forwards";
 function TestDataStore_styles_ChangeBorderColor(property, color) {
-  var animation = "to {\n    ".concat(property, ": ").concat(color, ";\n  }");
-  return Object(styled_components_browser_esm["c" /* keyframes */])(TestDataStore_styles_templateObject || (TestDataStore_styles_templateObject = taggedTemplateLiteral_default()(["\n    ", "\n  "])), animation);
+  let animation = `to {
+    ${property}: ${color};
+  }`;
+  return styled_components_browser_esm["c" /* keyframes */]`
+    ${animation}
+  `;
 }
-var CicleContentWrapper = styled_components_browser_esm["d" /* styled */].div(TestDataStore_styles_templateObject2 || (TestDataStore_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 216px;\n    height: 216px;\n    border-radius: inherit;\n    display: flex;\n    flex-direction: column;\n    justify-content: space-between;\n    background:var(--white);\n    ", "\n    padding: ", ";\n    box-sizing: border-box;\n    align-items: center;\n    position: absolute;\n      top: 16px;\n      left: 16px;\n  "])), function (_ref) {
-  var backgrounColor = _ref.backgrounColor;
-  return backgrounColor && Object(styled_components_browser_esm["a" /* css */])(TestDataStore_styles_templateObject3 || (TestDataStore_styles_templateObject3 = taggedTemplateLiteral_default()(["\n      animation: ", " ", ";\n    "])), TestDataStore_styles_ChangeBorderColor('background', backgrounColor), TestDataStore_styles_duration);
-}, function (props) {
-  return props.padding;
-});
-var CircleGradiantWrapper = styled_components_browser_esm["d" /* styled */].div(TestDataStore_styles_templateObject4 || (TestDataStore_styles_templateObject4 = taggedTemplateLiteral_default()(["\nposition: absolute;\nz-index: 2;\n"])));
-var CircleGradiant = styled_components_browser_esm["d" /* styled */].div(TestDataStore_styles_templateObject5 || (TestDataStore_styles_templateObject5 = taggedTemplateLiteral_default()(["\nbackground: var(--disabled);\n", "\nborder-radius: 50%;\nwidth: 258px;\nheight: 258px;\n"])), function (_ref2) {
-  var borderBackgroundImage = _ref2.borderBackgroundImage;
-  return borderBackgroundImage && Object(styled_components_browser_esm["a" /* css */])(TestDataStore_styles_templateObject6 || (TestDataStore_styles_templateObject6 = taggedTemplateLiteral_default()(["\n     animation: ", " ", ";\n  "])), TestDataStore_styles_ChangeBorderColor('background', borderBackgroundImage), TestDataStore_styles_duration);
-});
-var CircleContentGradiant = styled_components_browser_esm["d" /* styled */].div(TestDataStore_styles_templateObject7 || (TestDataStore_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    background:transparent;\n    ", "\n    box-shadow:", ";\n    border-radius: 50%;\n    width: 224px;\n    height: 224px;\n"])), function (_ref3) {
-  var borderBackgroundImage = _ref3.borderBackgroundImage;
-  return borderBackgroundImage && Object(styled_components_browser_esm["a" /* css */])(TestDataStore_styles_templateObject8 || (TestDataStore_styles_templateObject8 = taggedTemplateLiteral_default()(["\n      animation: ", " ", ";\n    "])), TestDataStore_styles_ChangeBorderColor('background', borderBackgroundImage), TestDataStore_styles_duration);
-}, function (props) {
-  return props.boxShadow;
-});
-var Circle = styled_components_browser_esm["d" /* styled */].div(TestDataStore_styles_templateObject9 || (TestDataStore_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    width: 248px;\n    height: 248px;\n  padding: 12px;\n  position: relative;\n  border-radius: 50%;\n  box-sizing: border-box;\n  background-color:#f2f2f2;\n  position: absolute;\n  top: 5px;\n    left: 5px;\n  ", "\n    box-shadow:", ";\n"])), function (_ref4) {
-  var status = _ref4.status;
-  return status && status !== StatusEnum.disabled && "\n    cursor: pointer;\n  ";
-}, function (props) {
-  return props.boxShadow;
-});
-var TestDataStoreWrapper = styled_components_browser_esm["d" /* styled */].div(TestDataStore_styles_templateObject10 || (TestDataStore_styles_templateObject10 = taggedTemplateLiteral_default()(["\n position:relative;\n width:258px;\n height:258px\n"])));
-var styles_InfoIconWrapper = styled_components_browser_esm["d" /* styled */].div(TestDataStore_styles_templateObject11 || (TestDataStore_styles_templateObject11 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    top: 10px;\n    right: 20px;\n    cursor: auto;\n    z-index: 102;\n"])));
+const CicleContentWrapper = styled_components_browser_esm["d" /* styled */].div`
+    width: 216px;
+    height: 216px;
+    border-radius: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:var(--white);
+    ${_ref => {
+  let {
+    backgrounColor
+  } = _ref;
+  return backgrounColor && styled_components_browser_esm["a" /* css */]`
+      animation: ${TestDataStore_styles_ChangeBorderColor('background', backgrounColor)} ${TestDataStore_styles_duration};
+    `;
+}}
+    padding: ${props => props.padding};
+    box-sizing: border-box;
+    align-items: center;
+    position: absolute;
+      top: 16px;
+      left: 16px;
+  `;
+const CircleGradiantWrapper = styled_components_browser_esm["d" /* styled */].div`
+position: absolute;
+z-index: 2;
+`;
+const CircleGradiant = styled_components_browser_esm["d" /* styled */].div`
+background: var(--disabled);
+${_ref2 => {
+  let {
+    borderBackgroundImage
+  } = _ref2;
+  return borderBackgroundImage && styled_components_browser_esm["a" /* css */]`
+     animation: ${TestDataStore_styles_ChangeBorderColor('background', borderBackgroundImage)} ${TestDataStore_styles_duration};
+  `;
+}}
+border-radius: 50%;
+width: 258px;
+height: 258px;
+`;
+const CircleContentGradiant = styled_components_browser_esm["d" /* styled */].div`
+    background:transparent;
+    ${_ref3 => {
+  let {
+    borderBackgroundImage
+  } = _ref3;
+  return borderBackgroundImage && styled_components_browser_esm["a" /* css */]`
+      animation: ${TestDataStore_styles_ChangeBorderColor('background', borderBackgroundImage)} ${TestDataStore_styles_duration};
+    `;
+}}
+    box-shadow:${props => props.boxShadow};
+    border-radius: 50%;
+    width: 224px;
+    height: 224px;
+`;
+const Circle = styled_components_browser_esm["d" /* styled */].div`
+    width: 248px;
+    height: 248px;
+  padding: 12px;
+  position: relative;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background-color:#f2f2f2;
+  position: absolute;
+  top: 5px;
+    left: 5px;
+  ${_ref4 => {
+  let {
+    status
+  } = _ref4;
+  return status && status !== StatusEnum.disabled && `
+    cursor: pointer;
+  `;
+}}
+    box-shadow:${props => props.boxShadow};
+`;
+const TestDataStoreWrapper = styled_components_browser_esm["d" /* styled */].div`
+ position:relative;
+ width:258px;
+ height:258px
+`;
+const styles_InfoIconWrapper = styled_components_browser_esm["d" /* styled */].div`
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: auto;
+    z-index: 102;
+`;
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/TestDataStore/index.tsx
 
 
@@ -8734,25 +9966,18 @@ var styles_InfoIconWrapper = styled_components_browser_esm["d" /* styled */].div
 
 
 
-
-
 function TestDataStore(props) {
-  var status = props.status,
-    onClick = props.onClick,
-    isSelected = props.isSelected,
-    info = props.info;
-  var _useState = Object(react["useState"])(function () {
-      return services_getTestDataStoreColors(status, isSelected);
-    }),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    colors = _useState2[0],
-    setColors = _useState2[1];
-  Object(react["useEffect"])(function () {
-    setColors(function () {
-      return services_getTestDataStoreColors(status, isSelected);
-    });
+  const {
+    status,
+    onClick,
+    isSelected,
+    info
+  } = props;
+  const [colors, setColors] = Object(react["useState"])(() => getTestDataStoreColors(status, isSelected));
+  Object(react["useEffect"])(() => {
+    setColors(() => getTestDataStoreColors(status, isSelected));
   }, [status, isSelected]);
-  var handleClick = Object(react["useCallback"])(function (event) {
+  const handleClick = Object(react["useCallback"])(event => {
     if (status === StatusEnum.disabled) return;
     onClick(event);
   }, [status, onClick]);
@@ -8797,33 +10022,81 @@ function TestDataStore(props) {
 /* harmony default export */ var TaskMainWidget_TestDataStore = (TestDataStore);
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Filter/styles.ts
 
-var Filter_styles_templateObject, Filter_styles_templateObject2, Filter_styles_templateObject3, Filter_styles_templateObject4, Filter_styles_templateObject5, Filter_styles_templateObject6, Filter_styles_templateObject7, Filter_styles_templateObject8, Filter_styles_templateObject9;
 
-
-var FilterWrapper = styled_components_browser_esm["d" /* styled */].div(Filter_styles_templateObject || (Filter_styles_templateObject = taggedTemplateLiteral_default()(["\ncursor: pointer;\n"])));
-var EntityIconWrapper = Object(styled_components_browser_esm["d" /* styled */])(SubTitle)(Filter_styles_templateObject2 || (Filter_styles_templateObject2 = taggedTemplateLiteral_default()(["\n   position: absolute;\n   left: 0;\n   right: 0;\n   bottom: 25px;\n"])));
-var FilterIconWrapper = styled_components_browser_esm["d" /* styled */].div(Filter_styles_templateObject3 || (Filter_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 31px;\n    height: 31px;\n    border: solid 2px ", ";\n    background-color:", ";\n    border-radius: 50%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-sizing: border-box;\n    position: absolute;\n    padding-top: 3px;\n    right: 0;\n    left: 0;\n    bottom: 0;\n    top: 0;\n    margin: auto;\n    animation: ", " 2s infinite;\n"])), function (props) {
-  return props.outerBorderColor;
-}, function (props) {
-  return props.backgroundColor;
-}, function (props) {
+const FilterWrapper = styled_components_browser_esm["d" /* styled */].div`
+cursor: pointer;
+`;
+const EntityIconWrapper = Object(styled_components_browser_esm["d" /* styled */])(SubTitle)`
+   position: absolute;
+   left: 0;
+   right: 0;
+   bottom: 25px;
+`;
+const FilterIconWrapper = styled_components_browser_esm["d" /* styled */].div`
+    width: 31px;
+    height: 31px;
+    border: solid 2px ${props => props.outerBorderColor};
+    background-color:${props => props.backgroundColor};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: absolute;
+    padding-top: 3px;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    margin: auto;
+    animation: ${props => {
   if (props.highlightColor === "blue") {
-    return Object(styled_components_browser_esm["c" /* keyframes */])(Filter_styles_templateObject4 || (Filter_styles_templateObject4 = taggedTemplateLiteral_default()(["\n      0% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}\n      25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n      50% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}\n      75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n      100% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}\n      "])));
+    return styled_components_browser_esm["c" /* keyframes */]`
+      0% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}
+      25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+      50% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}
+      75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+      100% {box-shadow:  0px 0px 0px 10px rgba(20, 131, 243, 0.2);}
+      `;
   }
   if (props.highlightColor === "purple") {
-    return Object(styled_components_browser_esm["c" /* keyframes */])(Filter_styles_templateObject5 || (Filter_styles_templateObject5 = taggedTemplateLiteral_default()(["\n        0% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}\n        25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n        50% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}\n        75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}\n        100% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}\n        "])));
+    return styled_components_browser_esm["c" /* keyframes */]`
+        0% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}
+        25% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+        50% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}
+        75% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0);}
+        100% {box-shadow:  0px 0px 0px 10px rgba(132,68,240, 0.2);}
+        `;
   }
   return "";
-});
-var SubsetTitle = Object(styled_components_browser_esm["d" /* styled */])(SubTitle)(Filter_styles_templateObject6 || (Filter_styles_templateObject6 = taggedTemplateLiteral_default()(["\n   position: absolute;\n   left: 0;\n   right: 0;\n   top: 28px;\n"])));
-var styles_Img = styled_components_browser_esm["d" /* styled */].img(Filter_styles_templateObject7 || (Filter_styles_templateObject7 = taggedTemplateLiteral_default()(["\n\n"])));
-var Filter_styles_InfoIconWrapper = styled_components_browser_esm["d" /* styled */].div(Filter_styles_templateObject8 || (Filter_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    position: relative;\n"])));
-var InfoIconContainer = styled_components_browser_esm["d" /* styled */].div(Filter_styles_templateObject9 || (Filter_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    top: -44px;\n    left: 48px;\n    cursor: auto;\n    z-index: 101;\n"])));
+}} 2s infinite;
+`;
+const SubsetTitle = Object(styled_components_browser_esm["d" /* styled */])(SubTitle)`
+   position: absolute;
+   left: 0;
+   right: 0;
+   top: 28px;
+`;
+const styles_Img = styled_components_browser_esm["d" /* styled */].img`
+
+`;
+const Filter_styles_InfoIconWrapper = styled_components_browser_esm["d" /* styled */].div`
+    position: relative;
+`;
+const InfoIconContainer = styled_components_browser_esm["d" /* styled */].div`
+    position: absolute;
+    top: -44px;
+    left: 48px;
+    cursor: auto;
+    z-index: 101;
+`;
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Filter/FilterIconSVG.tsx
 
 
 function FilterIcon(props) {
-  var color = props.color;
+  const {
+    color
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsx"])("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "17",
@@ -8838,15 +10111,15 @@ function FilterIcon(props) {
 /* harmony default export */ var FilterIconSVG = (/*#__PURE__*/Object(react["memo"])(FilterIcon));
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Filter/services.tsx
 
-var services_getSubsetColors = function getSubsetColors(subsetStatus, isDataSourceSubSet, isSelected) {
-  var primaryColor = isDataSourceSubSet ? 'var(--lovelyPurple)' : 'var(--sky-blue)';
-  var primaryHighlightColor = isDataSourceSubSet ? 'purple' : 'blue';
-  var color = 'var(--white)';
-  var fontColor = 'var(--black-title)';
-  var subsetBorderColor = primaryColor;
-  var highlightColor = 'none';
-  var backgroundColor = color;
-  var iconColor = primaryColor;
+const getSubsetColors = (subsetStatus, isDataSourceSubSet, isSelected) => {
+  let primaryColor = isDataSourceSubSet ? 'var(--lovelyPurple)' : 'var(--sky-blue)';
+  let primaryHighlightColor = isDataSourceSubSet ? 'purple' : 'blue';
+  let color = 'var(--white)';
+  let fontColor = 'var(--black-title)';
+  let subsetBorderColor = primaryColor;
+  let highlightColor = 'none';
+  let backgroundColor = color;
+  let iconColor = primaryColor;
   if ((subsetStatus === StatusEnum.enabled || subsetStatus === StatusEnum.partial) && !isSelected) {
     highlightColor = primaryHighlightColor;
   }
@@ -8857,11 +10130,11 @@ var services_getSubsetColors = function getSubsetColors(subsetStatus, isDataSour
     iconColor = color;
   }
   return {
-    subsetBorderColor: subsetBorderColor,
-    highlightColor: highlightColor,
-    backgroundColor: backgroundColor,
-    iconColor: iconColor,
-    fontColor: fontColor
+    subsetBorderColor,
+    highlightColor,
+    backgroundColor,
+    iconColor,
+    fontColor
   };
 };
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Filter/index.tsx
@@ -8874,25 +10147,17 @@ var services_getSubsetColors = function getSubsetColors(subsetStatus, isDataSour
 
 
 
-
-
-
 function Filter_Filter(props) {
-  var subsetStatus = props.subsetStatus,
-    isDataSourceSubSet = props.isDataSourceSubSet,
-    onClick = props.onClick,
-    info = props.info,
-    isSelected = props.isSelected;
-  var _useState = Object(react["useState"])(function () {
-      return services_getSubsetColors(subsetStatus, isDataSourceSubSet, isSelected);
-    }),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    colors = _useState2[0],
-    setColors = _useState2[1];
-  Object(react["useEffect"])(function () {
-    setColors(function () {
-      return services_getSubsetColors(subsetStatus, isDataSourceSubSet, isSelected);
-    });
+  const {
+    subsetStatus,
+    isDataSourceSubSet,
+    onClick,
+    info,
+    isSelected
+  } = props;
+  const [colors, setColors] = Object(react["useState"])(() => getSubsetColors(subsetStatus, isDataSourceSubSet, isSelected));
+  Object(react["useEffect"])(() => {
+    setColors(() => getSubsetColors(subsetStatus, isDataSourceSubSet, isSelected));
   }, [subsetStatus, isDataSourceSubSet, isSelected]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
     children: subsetStatus !== StatusEnum.disabled ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
@@ -8910,7 +10175,7 @@ function Filter_Filter(props) {
         })
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FilterWrapper, {
         onClick: onClick,
-        id: "".concat(isDataSourceSubSet ? 'source_data_subset' : 'target_data_subset'),
+        id: `${isDataSourceSubSet ? 'source_data_subset' : 'target_data_subset'}`,
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(FilterIconWrapper, {
           outerBorderColor: colors.subsetBorderColor,
           highlightColor: colors.highlightColor,
@@ -8929,35 +10194,55 @@ function Filter_Filter(props) {
 /* harmony default export */ var TaskMainWidget_Filter = (/*#__PURE__*/Object(react["memo"])(Filter_Filter));
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/DashedHr/styles.ts
 
-var DashedHr_styles_templateObject, DashedHr_styles_templateObject2, DashedHr_styles_templateObject3, DashedHr_styles_templateObject4;
-
-var dash = Object(styled_components_browser_esm["c" /* keyframes */])(DashedHr_styles_templateObject || (DashedHr_styles_templateObject = taggedTemplateLiteral_default()(["\n0% {\n  background-position: 0px 0px, 600px 116px, 0px 150px, 416px 0px;\n}\n100% {\n  background-position: 600px 0px, 0px 116px, 0px 0px, 416px 150px;\n}\n"])));
-var DashedHrWrapper = styled_components_browser_esm["d" /* styled */].div(DashedHr_styles_templateObject2 || (DashedHr_styles_templateObject2 = taggedTemplateLiteral_default()(["\n  display: flex;\n  flex-direction: row;\n  height: 5px;\n"])));
-var DashedHr = styled_components_browser_esm["d" /* styled */].div(DashedHr_styles_templateObject3 || (DashedHr_styles_templateObject3 = taggedTemplateLiteral_default()(["\n  background-image: linear-gradient(\n    90deg,\n    ", " 50%,\n    transparent 50%\n  );\n  background-size: 40px 10px, 40px 10px, 40px 10px, 40px 10px;\n  animation: ", ";\n  width: 100%;\n  height: 100%;\n  display:", "\n"])), function (props) {
-  return props.lineColor;
-}, function (props) {
-  return props.animation ? Object(styled_components_browser_esm["a" /* css */])(DashedHr_styles_templateObject4 || (DashedHr_styles_templateObject4 = taggedTemplateLiteral_default()(["\n          ", " 10s infinite linear\n        "])), dash) : "none";
-}, function (_ref) {
-  var display = _ref.display;
+const dash = styled_components_browser_esm["c" /* keyframes */]`
+0% {
+  background-position: 0px 0px, 600px 116px, 0px 150px, 416px 0px;
+}
+100% {
+  background-position: 600px 0px, 0px 116px, 0px 0px, 416px 150px;
+}
+`;
+const DashedHrWrapper = styled_components_browser_esm["d" /* styled */].div`
+  display: flex;
+  flex-direction: row;
+  height: 5px;
+`;
+const DashedHr = styled_components_browser_esm["d" /* styled */].div`
+  background-image: linear-gradient(
+    90deg,
+    ${props => props.lineColor} 50%,
+    transparent 50%
+  );
+  background-size: 40px 10px, 40px 10px, 40px 10px, 40px 10px;
+  animation: ${props => props.animation ? styled_components_browser_esm["a" /* css */]`
+          ${dash} 10s infinite linear
+        ` : "none"};
+  width: 100%;
+  height: 100%;
+  display:${_ref => {
+  let {
+    display
+  } = _ref;
   return display;
-});
+}}
+`;
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/DashedHr/services.tsx
-var getDashedHrColors = function getDashedHrColors(isDataSourceSubSet, isConnectionColored) {
-  var animation = false;
-  var primaryColor = 'var(--disabled)';
-  var secondaryColor = 'var(--disabled)';
-  var color = isDataSourceSubSet ? 'var(--lovelyPurple)' : 'var(--sky-blue)';
-  var display = isConnectionColored === undefined ? 'none' : 'block';
+const getDashedHrColors = (isDataSourceSubSet, isConnectionColored) => {
+  let animation = false;
+  let primaryColor = 'var(--disabled)';
+  let secondaryColor = 'var(--disabled)';
+  let color = isDataSourceSubSet ? 'var(--lovelyPurple)' : 'var(--sky-blue)';
+  let display = isConnectionColored === undefined ? 'none' : 'block';
   if (isConnectionColored) {
     primaryColor = color;
     secondaryColor = 'var(--lovelyPurple)';
     animation = true;
   }
   return {
-    primaryColor: primaryColor,
-    secondaryColor: secondaryColor,
-    animation: animation,
-    display: display
+    primaryColor,
+    secondaryColor,
+    animation,
+    display
   };
 };
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/DashedHr/index.tsx
@@ -8965,20 +10250,14 @@ var getDashedHrColors = function getDashedHrColors(isDataSourceSubSet, isConnect
 
 
 
-
 function Subset(props) {
-  var isDataSourceSubSet = props.isDataSourceSubSet,
-    isConnectionColored = props.isConnectionColored;
-  var _useState = Object(react["useState"])(function () {
-      return getDashedHrColors(isDataSourceSubSet, isConnectionColored);
-    }),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    colors = _useState2[0],
-    setColors = _useState2[1];
-  Object(react["useEffect"])(function () {
-    setColors(function () {
-      return getDashedHrColors(isDataSourceSubSet, isConnectionColored);
-    });
+  const {
+    isDataSourceSubSet,
+    isConnectionColored
+  } = props;
+  const [colors, setColors] = Object(react["useState"])(() => getDashedHrColors(isDataSourceSubSet, isConnectionColored));
+  Object(react["useEffect"])(() => {
+    setColors(() => getDashedHrColors(isDataSourceSubSet, isConnectionColored));
   }, [isDataSourceSubSet, isConnectionColored]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(DashedHrWrapper, {
     children: /*#__PURE__*/Object(jsx_runtime["jsx"])(DashedHr, {
@@ -8991,25 +10270,28 @@ function Subset(props) {
 /* harmony default export */ var TaskMainWidget_DashedHr = (/*#__PURE__*/Object(react["memo"])(Subset));
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Subset/styles.ts
 
-var Subset_styles_templateObject;
-
-var SubsetWrapper = styled_components_browser_esm["d" /* styled */].div(Subset_styles_templateObject || (Subset_styles_templateObject = taggedTemplateLiteral_default()(["\n    position: relative;\n    width: calc((100% - (165px + 165px + 264px + 28px))/2);\n    padding-left: 14px;\n"])));
+const SubsetWrapper = styled_components_browser_esm["d" /* styled */].div`
+    position: relative;
+    width: calc((100% - (165px + 165px + 264px + 28px))/2);
+    padding-left: 14px;
+`;
 // CONCATENATED MODULE: ./src/components/task/TaskMainWidget/Subset/index.tsx
 
 
 
 
 
-
 function Subset_Subset(props) {
-  var subsetStatus = props.subsetStatus,
-    dataStatus = props.dataStatus,
-    isDataSourceSubSet = props.isDataSourceSubSet,
-    onClick = props.onClick,
-    info = props.info,
-    isSelected = props.isSelected,
-    isConnectionColored = props.isConnectionColored,
-    subsetType = props.subsetType;
+  const {
+    subsetStatus,
+    dataStatus,
+    isDataSourceSubSet,
+    onClick,
+    info,
+    isSelected,
+    isConnectionColored,
+    subsetType
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(SubsetWrapper, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskMainWidget_Filter, {
       subsetStatus: subsetStatus,
@@ -9034,8 +10316,7 @@ function Subset_Subset(props) {
 
 
 
-
-var StatusEnum = /*#__PURE__*/function (StatusEnum) {
+let StatusEnum = /*#__PURE__*/function (StatusEnum) {
   StatusEnum["disabled"] = "disabled";
   StatusEnum["enabled"] = "enabled";
   StatusEnum["completed"] = "completed";
@@ -9044,27 +10325,29 @@ var StatusEnum = /*#__PURE__*/function (StatusEnum) {
   StatusEnum["blink"] = "blink";
   return StatusEnum;
 }({});
-var SubsetPossition = /*#__PURE__*/function (SubsetPossition) {
+let SubsetPossition = /*#__PURE__*/function (SubsetPossition) {
   SubsetPossition["source"] = "source";
   SubsetPossition["target"] = "target";
   SubsetPossition["undefined"] = "";
   return SubsetPossition;
 }({});
 function TaskMainWidget(props) {
-  var onClick = props.onClick,
-    data = props.data,
-    source_environment_name = props.source_environment_name,
-    environment_name = props.environment_name,
-    targetInfo = props.targetInfo,
-    sourceInfo = props.sourceInfo,
-    subsetInfo = props.subsetInfo,
-    datastoreInfo = props.datastoreInfo,
-    selectedStep = props.selectedStep,
-    subsetType = props.subsetType,
-    sourceSubTitle = props.sourceSubTitle,
-    targetSubTitle = props.targetSubTitle;
+  const {
+    onClick,
+    data,
+    source_environment_name,
+    environment_name,
+    targetInfo,
+    sourceInfo,
+    subsetInfo,
+    datastoreInfo,
+    selectedStep,
+    subsetType,
+    sourceSubTitle,
+    targetSubTitle
+  } = props;
   //  const { onClick, source_environment_name, environment_name, targetInfo,subsetType,sourceSubTitle,targetSubTitle} = props;
-  var handleClickOnStep = Object(react["useCallback"])(function (event) {
+  const handleClickOnStep = Object(react["useCallback"])(event => {
     onClick(event.currentTarget.id);
   }, [onClick]);
 
@@ -9080,26 +10363,27 @@ function TaskMainWidget(props) {
   //   };
   // const selectedStep:string = "source";
 
-  var _useMemo = Object(react["useMemo"])(function () {
-      if (data.subsetPosition === SubsetPossition.source) {
-        return {
-          sourceSubsetStatus: data.subsetStatus,
-          targetSubsetStatus: StatusEnum.disabled
-        };
-      }
-      if (data.subsetPosition === SubsetPossition.target) {
-        return {
-          targetSubsetStatus: data.subsetStatus,
-          sourceSubsetStatus: StatusEnum.disabled
-        };
-      }
+  const {
+    targetSubsetStatus,
+    sourceSubsetStatus
+  } = Object(react["useMemo"])(() => {
+    if (data.subsetPosition === SubsetPossition.source) {
       return {
-        sourceSubsetStatus: StatusEnum.disabled,
+        sourceSubsetStatus: data.subsetStatus,
         targetSubsetStatus: StatusEnum.disabled
       };
-    }, [data.subsetStatus, data.subsetPosition]),
-    targetSubsetStatus = _useMemo.targetSubsetStatus,
-    sourceSubsetStatus = _useMemo.sourceSubsetStatus;
+    }
+    if (data.subsetPosition === SubsetPossition.target) {
+      return {
+        targetSubsetStatus: data.subsetStatus,
+        sourceSubsetStatus: StatusEnum.disabled
+      };
+    }
+    return {
+      sourceSubsetStatus: StatusEnum.disabled,
+      targetSubsetStatus: StatusEnum.disabled
+    };
+  }, [data.subsetStatus, data.subsetPosition]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskMainWidget_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(MemoizedDataSource, {
       id: "source",
@@ -9156,13 +10440,6 @@ function TaskMainWidget(props) {
 
 
 
-function Parameters_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function Parameters_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? Parameters_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : Parameters_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
-
-
 
 
 
@@ -9170,57 +10447,46 @@ function Parameters_objectSpread(target) { for (var i = 1; i < arguments.length;
 
 
 function Parameters(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    unregister = _useContext.unregister,
-    resetField = _useContext.resetField,
-    taskData = _useContext.taskData,
-    statusesFuncMap = _useContext.statusesFuncMap,
-    saveForm = _useContext.saveForm;
-  var be_id = taskData.be_id,
-    environment_id = taskData.environment_id,
-    source_environment_name = taskData.source_environment_name,
-    environment_name = taskData.environment_name,
-    parameters = taskData.parameters,
-    selection_method = taskData.selection_method,
-    selection_param_value = taskData.selection_param_value,
-    filterout_reserved = taskData.filterout_reserved,
-    clone_ind = taskData.clone_ind,
-    replace_sequences = taskData.replace_sequences,
-    load_entity = taskData.load_entity,
-    target_env = taskData.target_env,
-    sync_mode = taskData.sync_mode,
-    version_ind = taskData.version_ind,
-    enable_param_lu_name = taskData.enable_param_lu_name;
-  var _useState = Object(react["useState"])(0),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    entitiesCount = _useState2[0],
-    setEntitiesCount = _useState2[1];
-  var _useState3 = Object(react["useState"])(false),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    loading = _useState4[0],
-    setLoading = _useState4[1];
-  var _useState5 = Object(react["useState"])(false),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    filterReserveError = _useState6[0],
-    setFilterReserveError = _useState6[1];
-  var _useState7 = Object(react["useState"])(null),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    parametersList = _useState8[0],
-    setParametersList = _useState8[1];
-  var _useState9 = Object(react["useState"])({
-      group: {
-        rules: [],
-        operator: 'AND'
-      }
-    }),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    filter = _useState10[0],
-    setFilter = _useState10[1];
-  Object(react["useEffect"])(function () {
-    var filter = undefined;
+  const {
+    register,
+    clearErrors,
+    errors,
+    unregister,
+    resetField,
+    taskData,
+    statusesFuncMap,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    be_id,
+    environment_id,
+    source_environment_name,
+    environment_name,
+    parameters,
+    selection_method,
+    selection_param_value,
+    filterout_reserved,
+    clone_ind,
+    replace_sequences,
+    load_entity,
+    target_env,
+    sync_mode,
+    version_ind,
+    enable_param_lu_name,
+    isCoupling
+  } = taskData;
+  const [entitiesCount, setEntitiesCount] = Object(react["useState"])(0);
+  const [loading, setLoading] = Object(react["useState"])(false);
+  const [filterReserveError, setFilterReserveError] = Object(react["useState"])(false);
+  const [parametersList, setParametersList] = Object(react["useState"])(null);
+  const [filter, setFilter] = Object(react["useState"])({
+    group: {
+      rules: [],
+      operator: 'AND'
+    }
+  });
+  Object(react["useEffect"])(() => {
+    let filter = undefined;
     try {
       filter = JSON.parse(parameters || '');
     } catch (err) {
@@ -9242,70 +10508,48 @@ function Parameters(props) {
       setFilter(filter);
     }
   }, [parameters]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     // Create a variable to hold the timeout
-    var timeoutId;
+    let timeoutId;
     // Set the timeout to delay the API call by 1.5 seconds
-    timeoutId = setTimeout(function () {
+    timeoutId = setTimeout(() => {
       getEntitesCount();
-    }, 1500);
+    }, 2500);
 
     // Cleanup function to clear the timeout if useEffect is called again before 1.5 seconds
-    return function () {
-      return clearTimeout(timeoutId);
-    };
+    return () => clearTimeout(timeoutId);
   }, [selection_param_value, filterout_reserved, filter]);
-  Object(react["useEffect"])(function () {
-    var getData = /*#__PURE__*/function () {
-      var _ref = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var sourceStatus, env_name, data, result;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              if (!(!be_id || !source_environment_name && !environment_name)) {
-                _context.next = 2;
-                break;
-              }
-              return _context.abrupt("return");
-            case 2:
-              sourceStatus = statusesFuncMap['dataSourceStatus'](taskData);
-              env_name = (sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name) || '';
-              _context.next = 6;
-              return apis_task.getParameters(be_id, env_name);
-            case 6:
-              data = _context.sent;
-              result = [];
-              Object.keys(data).forEach(function (key) {
-                var value = data[key];
-                result.push({
-                  label: enable_param_lu_name ? key : key.split('.')[1],
-                  value: key,
-                  param_name: key,
-                  name: value.PARAM_NAME,
-                  table: value.LU_PARAMS_TABLE_NAME,
-                  param_type: value.PARAM_TYPE,
-                  COMBO_INDICATOR: value.COMBO_INDICATOR === 'true',
-                  valid_values: Array.isArray(value['VALID_VALUES']) ? value['VALID_VALUES'].map(function (it) {
-                    return {
-                      label: it,
-                      value: it
-                    };
-                  }) : value['VALID_VALUES'],
-                  min_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' ? parseFloat(value['MIN_VALUE']) : 0,
-                  max_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' ? parseFloat(value['MAX_VALUE']) : 0
-                });
-              });
-              setParametersList(result);
-            case 10:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee);
-      }));
-      return function getData() {
-        return _ref.apply(this, arguments);
-      };
-    }();
+  Object(react["useEffect"])(() => {
+    const getData = async () => {
+      if (!be_id || !source_environment_name && !environment_name) {
+        return;
+      }
+      const sourceStatus = statusesFuncMap['dataSourceStatus'](taskData);
+      let env_name = (sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name) || '';
+      let data = await apis_task.getParameters(be_id, env_name);
+      const result = [];
+      Object.keys(data).forEach(key => {
+        const value = data[key];
+        result.push({
+          label: enable_param_lu_name ? key : key.split('.')[1],
+          value: key,
+          param_name: key,
+          name: value.PARAM_NAME,
+          table: value.LU_PARAMS_TABLE_NAME,
+          param_type: value.PARAM_TYPE,
+          COMBO_INDICATOR: value.COMBO_INDICATOR === 'true',
+          DESCRIPTION: value.DESCRIPTION,
+          description: value.DESCRIPTION,
+          valid_values: Array.isArray(value['VALID_VALUES']) ? value['VALID_VALUES'].map(it => ({
+            label: it,
+            value: it
+          })) : value['VALID_VALUES'],
+          min_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' || value.PARAM_TYPE === 'NUMBER' ? parseFloat(value['MIN_VALUE']) : 0,
+          max_value: value.PARAM_TYPE === 'REAL' || value.PARAM_TYPE === 'INTEGER' || value.PARAM_TYPE === 'NUMBER' ? parseFloat(value['MAX_VALUE']) : 0
+        });
+      });
+      setParametersList(result);
+    };
     getData();
     if (filterout_reserved && !environment_id) {
       saveForm({
@@ -9314,15 +10558,17 @@ function Parameters(props) {
       setFilterReserveError(true);
     }
   }, []);
-  var parametersDataChange = Object(react["useCallback"])(function () {
-    setFilter(Parameters_objectSpread({}, filter));
-    var selection_param_value = getSelectionParamValue(filter, parametersList);
+  const parametersDataChange = Object(react["useCallback"])(() => {
+    setFilter({
+      ...filter
+    });
+    const selection_param_value = getSelectionParamValue(filter, parametersList, isCoupling);
     saveForm({
       parameters: JSON.stringify(filter),
-      selection_param_value: selection_param_value
+      selection_param_value
     });
-  }, [filter, saveForm, parametersList]);
-  var parametersRandomChange = Object(react["useCallback"])(function (value) {
+  }, [filter, saveForm, parametersList, isCoupling]);
+  const parametersRandomChange = Object(react["useCallback"])(value => {
     saveForm({
       selection_method: value ? 'PR' : 'P'
     });
@@ -9341,63 +10587,41 @@ function Parameters(props) {
   //     [saveForm, environment_id]
   // );
 
-  var getEntitesCount = Object(react["useCallback"])(function () {
+  const getEntitesCount = Object(react["useCallback"])(() => {
     if (!selection_param_value || selection_param_value === '()') {
-      // setEntitiesCount(0);
+      var _filter$group, _filter$group$rules;
+      if ((filter === null || filter === void 0 ? void 0 : (_filter$group = filter.group) === null || _filter$group === void 0 ? void 0 : (_filter$group$rules = _filter$group.rules) === null || _filter$group$rules === void 0 ? void 0 : _filter$group$rules.length) === 0) {
+        setEntitiesCount(0);
+      }
       return;
     }
-    var getData = /*#__PURE__*/function () {
-      var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
-        var local_filterout_reserved, sourceStatus, body, data;
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              if (!(!be_id || !source_environment_name && !environment_name)) {
-                _context2.next = 2;
-                break;
-              }
-              return _context2.abrupt("return");
-            case 2:
-              setLoading(true);
-              local_filterout_reserved = filterout_reserved;
-              if ((clone_ind || replace_sequences) && load_entity || target_env === 'ai_training' || !environment_id || !(sync_mode === 'OFF' && version_ind) && selection_method === 'ALL') {
-                local_filterout_reserved = 'NA';
-              }
-              sourceStatus = statusesFuncMap['dataSourceStatus'](taskData);
-              body = {
-                where: selection_param_value,
-                tar_env_name: environment_name,
-                src_env_name: sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name,
-                queryJson: JSON.stringify(filter),
-                filterout_reserved: local_filterout_reserved || 'NA'
-              };
-              console.log(body);
-              _context2.prev = 8;
-              _context2.next = 11;
-              return apis_task.getEntitiesCount(be_id, (sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name) || '', body);
-            case 11:
-              data = _context2.sent;
-              setEntitiesCount(data);
-              _context2.next = 18;
-              break;
-            case 15:
-              _context2.prev = 15;
-              _context2.t0 = _context2["catch"](8);
-              setEntitiesCount(0);
-            case 18:
-              _context2.prev = 18;
-              setLoading(false);
-              return _context2.finish(18);
-            case 21:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2, null, [[8, 15, 18, 21]]);
-      }));
-      return function getData() {
-        return _ref2.apply(this, arguments);
+    const getData = async () => {
+      if (!be_id || !source_environment_name && !environment_name) {
+        return;
+      }
+      setLoading(true);
+      let local_filterout_reserved = filterout_reserved;
+      if ((clone_ind || replace_sequences) && load_entity || target_env === 'ai_training' || !environment_id || !(sync_mode === 'OFF' && version_ind) && selection_method === 'ALL') {
+        local_filterout_reserved = 'NA';
+      }
+      const sourceStatus = statusesFuncMap['dataSourceStatus'](taskData);
+      const body = {
+        where: selection_param_value,
+        tar_env_name: environment_name,
+        src_env_name: sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name,
+        queryJson: JSON.stringify(filter),
+        filterout_reserved: local_filterout_reserved || 'NA'
       };
-    }();
+      console.log(body);
+      try {
+        const data = await apis_task.getEntitiesCount(be_id, (sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name) || '', body);
+        setEntitiesCount(data);
+      } catch (err) {
+        setEntitiesCount(0);
+      } finally {
+        setLoading(false);
+      }
+    };
     getData();
   }, [be_id, selection_param_value, source_environment_name, environment_name, filterout_reserved, setLoading, filter, clone_ind, replace_sequences, load_entity, target_env, sync_mode, version_ind, statusesFuncMap]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Parameters_styles_Container, {
@@ -9425,21 +10649,101 @@ function Parameters(props) {
 /* harmony default export */ var DataSubset_Parameters = (Parameters);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/DataSubset/Tables/styles.ts
 
-var Tables_styles_templateObject, Tables_styles_templateObject2, Tables_styles_templateObject3, Tables_styles_templateObject4, Tables_styles_templateObject5, Tables_styles_templateObject6, Tables_styles_templateObject7, Tables_styles_templateObject8, Tables_styles_templateObject9, Tables_styles_templateObject10, Tables_styles_templateObject11, Tables_styles_templateObject12, Tables_styles_templateObject13;
+const Tables_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    min-width: 60vw;
+    position: relative;
+    display: flex;
+    gap: 10px;
+`;
+const styles_DateFormatNote = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #666;
+`;
+const Tables_styles_LeftSide = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    padding-right: 30px;
+    border-right: 1px solid #ccc;
+`;
+const Tables_styles_RightSide = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100% - 330px);
+`;
+const Tables_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    margin-bottom: 15px;
+`;
+const styles_TablesContainer = styled_components_browser_esm["b" /* default */].div`
+`;
+const TableHeader = styled_components_browser_esm["b" /* default */].div`
+    padding-bottom: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    border-bottom: solid 2px #ccc;
+`;
+const TableBody = styled_components_browser_esm["b" /* default */].div`
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    max-height: 270px;
+    overflow: auto;
+`;
+const Tables_styles_TableRow = styled_components_browser_esm["b" /* default */].div`
+    cursor: pointer;
+    padding: 10px 10px 10px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: solid 1px #ccc;
+`;
+const TableName = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666;
+`;
+const Tables_styles_Actions = styled_components_browser_esm["b" /* default */].div`
 
-var Tables_styles_Container = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject || (Tables_styles_templateObject = taggedTemplateLiteral_default()(["\n    min-width: 60vw;\n    position: relative;\n    display: flex;\n    gap: 10px;\n"])));
-var styles_DateFormatNote = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject2 || (Tables_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    color: #666;\n"])));
-var Tables_styles_LeftSide = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject3 || (Tables_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    width: 300px;\n    padding-right: 30px;\n    border-right: 1px solid #ccc;\n"])));
-var Tables_styles_RightSide = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject4 || (Tables_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: calc(100% - 330px);\n"])));
-var Tables_styles_Title = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject5 || (Tables_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    margin-bottom: 15px;\n"])));
-var styles_TablesContainer = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject6 || (Tables_styles_templateObject6 = taggedTemplateLiteral_default()(["\n"])));
-var TableHeader = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject7 || (Tables_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    padding-bottom: 12px;\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    border-bottom: solid 2px #ccc;\n"])));
-var TableBody = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject8 || (Tables_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    max-height: 270px;\n    overflow: auto;\n"])));
-var Tables_styles_TableRow = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject9 || (Tables_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n    padding: 10px 10px 10px 0px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    border-bottom: solid 1px #ccc;\n"])));
-var TableName = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject10 || (Tables_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #666;\n"])));
-var Tables_styles_Actions = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject11 || (Tables_styles_templateObject11 = taggedTemplateLiteral_default()(["\n\n"])));
-var Tables_styles_Icon = styled_components_browser_esm["b" /* default */].img(Tables_styles_templateObject12 || (Tables_styles_templateObject12 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var TableFooter = styled_components_browser_esm["b" /* default */].div(Tables_styles_templateObject13 || (Tables_styles_templateObject13 = taggedTemplateLiteral_default()(["\n    font-size: 14px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    background-color: #f2f2f2;\n    padding: 10px;\n"])));
+`;
+const Tables_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const TableFooter = styled_components_browser_esm["b" /* default */].div`
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    background-color: #f2f2f2;
+    padding: 10px;
+`;
 // CONCATENATED MODULE: ./src/images/filter.svg
 /* harmony default export */ var images_filter = ("js/dist/2a0f0e6b15e81eeaa08daf2e86b5b6dc.svg");
 // CONCATENATED MODULE: ./src/images/filter-after-change.svg
@@ -9454,31 +10758,26 @@ var TableFooter = styled_components_browser_esm["b" /* default */].div(Tables_st
 
 
 
-
-
-
-
-
-
 function TableSubset(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    unregister = _useContext.unregister,
-    resetField = _useContext.resetField,
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var source_environment_name = taskData.source_environment_name,
-    environment_name = taskData.environment_name,
-    parameters = taskData.parameters,
-    tableList = taskData.tableList,
-    subsetReset = taskData.subsetReset;
-  var _useState = Object(react["useState"])(''),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    selectedTable = _useState2[0],
-    setSelectedTable = _useState2[1];
-  Object(react["useEffect"])(function () {
+  const {
+    register,
+    clearErrors,
+    errors,
+    unregister,
+    resetField,
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    source_environment_name,
+    environment_name,
+    parameters,
+    tableList,
+    subsetReset,
+    isCoupling
+  } = taskData;
+  const [selectedTable, setSelectedTable] = Object(react["useState"])('');
+  Object(react["useEffect"])(() => {
     if (subsetReset) {
       setSelectedTable('');
       saveForm({
@@ -9486,19 +10785,13 @@ function TableSubset(props) {
       });
     }
   }, [subsetReset]);
-  var _useState3 = Object(react["useState"])(null),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    parametersList = _useState4[0],
-    setParametersList = _useState4[1];
-  var _useState5 = Object(react["useState"])({
-      group: {
-        rules: [],
-        operator: 'AND'
-      }
-    }),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    filter = _useState6[0],
-    setFilter = _useState6[1];
+  const [parametersList, setParametersList] = Object(react["useState"])(null);
+  const [filter, setFilter] = Object(react["useState"])({
+    group: {
+      rules: [],
+      operator: 'AND'
+    }
+  });
 
   // useEffect(() => {
   //     let filter: FilterParamsItem | undefined = undefined;
@@ -9527,106 +10820,77 @@ function TableSubset(props) {
   //     }
   // }, [parameters]);
 
-  Object(react["useEffect"])(function () {
-    var getData = /*#__PURE__*/function () {
-      var _ref = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var tableData, data, result;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              if (selectedTable) {
-                _context.next = 2;
-                break;
-              }
-              return _context.abrupt("return");
-            case 2:
-              tableData = (tableList || []).find(function (it) {
-                return it.reference_table_name === selectedTable;
-              });
-              if (tableData) {
-                _context.next = 5;
-                break;
-              }
-              return _context.abrupt("return");
-            case 5:
-              _context.next = 7;
-              return apis_task.getTableParameters(tableData.interface_name, tableData.schema_name, tableData.reference_table_name);
-            case 7:
-              data = _context.sent;
-              result = [];
-              data.forEach(function (item) {
-                result.push({
-                  label: item.column_name,
-                  value: item.column_name,
-                  param_name: item.column_name,
-                  name: item.column_name,
-                  table: tableData.reference_table_name,
-                  param_type: 'TEXT',
-                  original_type: item.column_type === 'TEXT' ? 'TEXT' : 'NUMBER',
-                  table_filter: true,
-                  COMBO_INDICATOR: false,
-                  valid_values: [],
-                  min_value: 0,
-                  max_value: 0
-                });
-              });
-              if (tableData.gui_filter) {
-                setFilter(JSON.parse(tableData.gui_filter));
-              } else {
-                setFilter({
-                  group: {
-                    rules: [],
-                    operator: 'AND'
-                  }
-                });
-              }
-              setParametersList(result);
-            case 12:
-            case "end":
-              return _context.stop();
+  Object(react["useEffect"])(() => {
+    const getData = async () => {
+      if (!selectedTable) {
+        return;
+      }
+      const tableData = (tableList || []).find(it => it.reference_table_name === selectedTable);
+      if (!tableData) {
+        return;
+      }
+      let data = await apis_task.getTableParameters(tableData.interface_name, tableData.schema_name, tableData.reference_table_name);
+      const result = [];
+      data.forEach(item => {
+        result.push({
+          label: item.column_name,
+          value: item.column_name,
+          param_name: item.column_name,
+          name: item.column_name,
+          table: tableData.reference_table_name,
+          param_type: 'TEXT',
+          original_type: item.column_sqlite_type,
+          table_filter: true,
+          COMBO_INDICATOR: false,
+          DESCRIPTION: '',
+          valid_values: [],
+          min_value: 0,
+          max_value: 0
+        });
+      });
+      if (tableData.gui_filter) {
+        setFilter(JSON.parse(tableData.gui_filter));
+      } else {
+        setFilter({
+          group: {
+            rules: [],
+            operator: 'AND'
           }
-        }, _callee);
-      }));
-      return function getData() {
-        return _ref.apply(this, arguments);
-      };
-    }();
+        });
+      }
+      setParametersList(result);
+    };
     getData();
   }, [selectedTable]);
-  var parametersDataChange = Object(react["useCallback"])(function () {
-    var tableData = (tableList || []).find(function (it) {
-      return it.reference_table_name === selectedTable;
-    });
+  const parametersDataChange = Object(react["useCallback"])(() => {
+    const tableData = (tableList || []).find(it => it.reference_table_name === selectedTable);
     if (!tableData) {
       return;
     }
     tableData.gui_filter = JSON.stringify(filter);
     tableData.filter_type = 'SQL';
-    var sqlQueryData = getSelectionParamValue(filter, parametersList, 1);
+    const sqlQueryData = getSelectionParamValue(filter, parametersList, isCoupling, 1);
     tableData.table_filter = sqlQueryData.sqlQuery === '()' ? null : sqlQueryData.sqlQuery;
     tableData.filter_parameters = sqlQueryData.values;
+    tableData.filter_fields = sqlQueryData.filter_types;
     saveForm({
-      tableList: toConsumableArray_default()(tableList || [])
+      tableList: [...(tableList || [])]
     });
   }, [saveForm, tableList, selectedTable, filter]);
-  var getTableRows = Object(react["useCallback"])(function () {
-    return (tableList || []).map(function (it) {
-      return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Tables_styles_TableRow, {
-        onClick: function onClick() {
-          return setSelectedTable(it.reference_table_name);
-        },
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TableName, {
-          title: "Interface: ".concat(it.interface_name, ", schema: ").concat(it.schema_name, "."),
-          children: it.reference_table_name
-        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Tables_styles_Actions, {
-          children: it.table_filter && it.table_filter !== '()' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Tables_styles_Icon, {
-            src: filter_after_change
-          }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(Tables_styles_Icon, {
-            src: images_filter
-          })
-        })]
-      });
-    });
+  const getTableRows = Object(react["useCallback"])(() => {
+    return (tableList || []).map(it => /*#__PURE__*/Object(jsx_runtime["jsxs"])(Tables_styles_TableRow, {
+      onClick: () => setSelectedTable(it.reference_table_name),
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TableName, {
+        title: `Interface: ${it.interface_name}, schema: ${it.schema_name}.`,
+        children: it.reference_table_name
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Tables_styles_Actions, {
+        children: it.table_filter && it.table_filter !== '()' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Tables_styles_Icon, {
+          src: filter_after_change
+        }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(Tables_styles_Icon, {
+          src: images_filter
+        })
+      })]
+    }));
   }, [tableList, setSelectedTable]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Tables_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Tables_styles_LeftSide, {
@@ -9660,37 +10924,56 @@ function TableSubset(props) {
 /* harmony default export */ var DataSubset_Tables = (TableSubset);
 // CONCATENATED MODULE: ./src/components/FilterOutReserved/styles.ts
 
-var FilterOutReserved_styles_templateObject, FilterOutReserved_styles_templateObject2, FilterOutReserved_styles_templateObject3;
-
-var FilterOutReserved_styles_Container = styled_components_browser_esm["b" /* default */].div(FilterOutReserved_styles_templateObject || (FilterOutReserved_styles_templateObject = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 15px;\n"])));
-var FilterOutReserved_styles_Title = styled_components_browser_esm["b" /* default */].div(FilterOutReserved_styles_templateObject2 || (FilterOutReserved_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    margin-bottom: 7px;\n"])));
-var FilterOutReserved_styles_Body = styled_components_browser_esm["b" /* default */].div(FilterOutReserved_styles_templateObject3 || (FilterOutReserved_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    justify-content: flex-start;\n    gap: 10px;\n"])));
+const FilterOutReserved_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 15px;
+`;
+const FilterOutReserved_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    margin-bottom: 7px;
+`;
+const FilterOutReserved_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+`;
 // CONCATENATED MODULE: ./src/components/FilterOutReserved/index.tsx
 
 
 
 
 
-
 function FilterOutReserved() {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    unregister = _useContext.unregister,
-    resetField = _useContext.resetField,
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var filterout_reserved = taskData.filterout_reserved,
-    replace_sequences = taskData.replace_sequences,
-    clone_ind = taskData.clone_ind,
-    target_env = taskData.target_env,
-    environment_id = taskData.environment_id,
-    load_entity = taskData.load_entity,
-    sync_mode = taskData.sync_mode,
-    version_ind = taskData.version_ind,
-    selection_method = taskData.selection_method;
-  var _onChange = Object(react["useCallback"])(function (value) {
+  const {
+    register,
+    clearErrors,
+    errors,
+    unregister,
+    resetField,
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    filterout_reserved,
+    replace_sequences,
+    clone_ind,
+    target_env,
+    environment_id,
+    load_entity,
+    sync_mode,
+    version_ind,
+    selection_method
+  } = taskData;
+  const onChange = Object(react["useCallback"])(value => {
     saveForm({
       filterout_reserved: value
     });
@@ -9701,18 +10984,14 @@ function FilterOutReserved() {
       children: "Filter out reserved entities"
     }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FilterOutReserved_styles_Body, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
-        onChange: function onChange() {
-          return _onChange('OTHERS');
-        },
+        onChange: () => onChange('OTHERS'),
         name: "select_filter_out_reserved",
         value: 'OTHERS',
         selectedValue: '' + filterout_reserved,
         title: 'Reserved by others',
         disabled: (clone_ind || replace_sequences) && load_entity || target_env === 'ai_training' || !(sync_mode === 'OFF' && version_ind) && selection_method === 'ALL'
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
-        onChange: function onChange() {
-          return _onChange('ALL');
-        },
+        onChange: () => onChange('ALL'),
         name: "select_filter_out_reserved",
         value: 'ALL',
         selectedValue: '' + filterout_reserved,
@@ -9740,15 +11019,12 @@ function FilterOutReserved() {
 
 
 
-
-
-
-var DataSubsetTypeEnum = /*#__PURE__*/function (DataSubsetTypeEnum) {
+let DataSubsetTypeEnum = /*#__PURE__*/function (DataSubsetTypeEnum) {
   DataSubsetTypeEnum["Entity"] = "Entity";
   DataSubsetTypeEnum["Tables"] = "Tables";
   return DataSubsetTypeEnum;
 }({});
-var SelectionMethodEnum = /*#__PURE__*/function (SelectionMethodEnum) {
+let SelectionMethodEnum = /*#__PURE__*/function (SelectionMethodEnum) {
   SelectionMethodEnum["L"] = "L";
   SelectionMethodEnum["ALL"] = "ALL";
   SelectionMethodEnum["C"] = "C";
@@ -9762,15 +11038,17 @@ var SelectionMethodEnum = /*#__PURE__*/function (SelectionMethodEnum) {
   return SelectionMethodEnum;
 }({});
 function SubSetTypeTitle(props) {
-  var icon = props.icon,
-    text = props.text;
+  const {
+    icon,
+    text
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(DatasetIconContainer, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(DataSubset_styles_Icon, {
       src: icon
     }), text]
   });
 }
-var entitySeletionMethods = [{
+const entitySeletionMethods = [{
   label: 'Entity list',
   value: 'L'
 }, {
@@ -9787,34 +11065,36 @@ var entitySeletionMethods = [{
   value: 'R'
 }];
 function DataSubsetForm(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    unregister = _useContext.unregister,
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var dataSubsetType = taskData.dataSubsetType,
-    selection_method = taskData.selection_method,
-    version_ind = taskData.version_ind,
-    sync_mode = taskData.sync_mode,
-    generation_type = taskData.generation_type,
-    dataSourceType = taskData.dataSourceType,
-    synthetic_type = taskData.synthetic_type,
-    source_type = taskData.source_type,
-    userRole = taskData.userRole,
-    sourceUserRole = taskData.sourceUserRole;
-  var _useState = Object(react["useState"])(null),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    localSelectionMethod = _useState2[0],
-    setLocalSelectionMethod = _useState2[1];
-  Object(react["useEffect"])(function () {
+  const {
+    register,
+    clearErrors,
+    errors,
+    unregister,
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const {
+    dataSubsetType,
+    selection_method,
+    version_ind,
+    sync_mode,
+    generation_type,
+    dataSourceType,
+    synthetic_type,
+    source_type,
+    userRole,
+    sourceUserRole,
+    isCoupling,
+    maxToCopy
+  } = taskData;
+  const [localSelectionMethod, setLocalSelectionMethod] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
     if (selection_method === 'TABLES') {
       return;
     }
-    var updateData = {};
+    const updateData = {};
     if (!generation_type) {
       updateData.generation_type = 'all';
     }
@@ -9827,59 +11107,48 @@ function DataSubsetForm(props) {
     }
     saveForm(updateData);
   }, []);
-  var entitySelectionMethodOptions = Object(react["useMemo"])(function () {
-    var result = entitySeletionMethods;
-    var changedLabel = false;
+  const entitySelectionMethodOptions = Object(react["useMemo"])(() => {
+    let result = entitySeletionMethods;
+    let changedLabel = false;
     if (sync_mode === 'OFF' && version_ind) {
-      result = entitySeletionMethods.filter(function (it) {
-        return it.value === 'L' || it.value === 'ALL';
-      });
-      var _found = result.find(function (it) {
-        return it.value === 'ALL';
-      });
-      if (_found) {
+      result = result.filter(it => it.value === 'L' || it.value === 'ALL');
+      const found = result.find(it => it.value === 'ALL');
+      if (found) {
         changedLabel = true;
-        _found.label = 'Select all entities of the selected version';
+        found.label = 'Select all entities of the selected version';
       }
     } else if (dataSourceType !== 'data_source' && synthetic_type === 'generated_data') {
-      result = entitySeletionMethods.filter(function (it) {
-        return it.value !== 'L' && it.value !== 'ALL';
-      });
-    }
-    if (!((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_random_entity_selection) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_random_entity_selection) && (userRole || sourceUserRole))) {
-      result = result.filter(function (it) {
-        return it.value !== 'R';
-      });
-    }
-    if (sync_mode !== 'OFF' || !version_ind) {
-      if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester') {
-        result = result.filter(function (it) {
-          return it.value !== 'ALL';
-        });
+      result = result.filter(it => it.value !== 'L' && it.value !== 'ALL');
+      if (!isCoupling && dataSourceType === 'ai_generated') {
+        result = result.filter(it => it.value !== 'P');
       }
     }
-    var found = result.find(function (it) {
-      return it.value === 'ALL';
-    });
+    if (!((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_random_entity_selection) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_random_entity_selection) && (userRole || sourceUserRole))) {
+      result = result.filter(it => it.value !== 'R');
+    }
+    if (sync_mode !== 'OFF' || !version_ind) {
+      if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'tester' && (maxToCopy || 0) < 9007199254740992) {
+        result = result.filter(it => it.value !== 'ALL');
+      }
+    }
+    const found = result.find(it => it.value === 'ALL');
     if (found && !changedLabel) {
       found.label = 'Predefined entity list';
     }
     return result;
   }, [sync_mode, version_ind, dataSourceType, synthetic_type, userRole, sourceUserRole, systemUserRole]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     // TODO Save Data
-    var temp = selection_method || 'L';
+    let temp = selection_method || 'L';
     if (selection_method === 'PR') {
       temp = 'P';
     }
-    var found = entitySelectionMethodOptions.find(function (it) {
-      return it.value === temp;
-    });
+    const found = entitySelectionMethodOptions.find(it => it.value === temp);
     if (found) {
       setLocalSelectionMethod(found);
     }
   }, [selection_method, entitySelectionMethodOptions]);
-  var getSelectionMethodBody = Object(react["useCallback"])(function () {
+  const getSelectionMethodBody = Object(react["useCallback"])(() => {
     if (!localSelectionMethod) {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
     }
@@ -9898,25 +11167,26 @@ function DataSubsetForm(props) {
         return /*#__PURE__*/Object(jsx_runtime["jsx"])(DataSubset_Parameters, {});
     }
   }, [localSelectionMethod]);
-  var selectionMethodChange = Object(react["useCallback"])(function (item) {
+  const selectionMethodChange = Object(react["useCallback"])(item => {
     setLocalSelectionMethod(item);
     unregister('selection_param_value');
     saveForm({
       selection_method: item.value,
-      selection_param_value: undefined
+      selection_param_value: undefined,
+      num_of_entities: undefined
     });
   }, [saveForm]);
-  var generationTypeChange = Object(react["useCallback"])(function (value) {
+  const generationTypeChange = Object(react["useCallback"])(value => {
     saveForm({
       generation_type: value
     });
   }, [saveForm]);
-  var parametersRandomChange = Object(react["useCallback"])(function (value) {
+  const parametersRandomChange = Object(react["useCallback"])(value => {
     saveForm({
       selection_method: value ? 'PR' : 'P'
     });
   }, [saveForm]);
-  var getSelectionMethodSelectRightSide = Object(react["useCallback"])(function () {
+  const getSelectionMethodSelectRightSide = Object(react["useCallback"])(() => {
     if (!localSelectionMethod) {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
     }
@@ -9935,7 +11205,7 @@ function DataSubsetForm(props) {
             expand: true
           }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(NumberOfEntitiesContainer, {
             children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_NumberOfEntities, {
-              title: 'Number of entities in subset',
+              title: 'Max number of entities',
               width: '300px'
             }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
               title: 'Use parameters with random selection',
@@ -9991,29 +11261,65 @@ function DataSubsetForm(props) {
 /* harmony default export */ var DataSubset = (DataSubsetForm);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/TestDataStore/styles.ts
 
-var Froms_TestDataStore_styles_templateObject, Froms_TestDataStore_styles_templateObject2, Froms_TestDataStore_styles_templateObject3, Froms_TestDataStore_styles_templateObject4, Froms_TestDataStore_styles_templateObject5, Froms_TestDataStore_styles_templateObject6;
-
-var TestDataStore_styles_Wrapper = styled_components_browser_esm["b" /* default */].div(Froms_TestDataStore_styles_templateObject || (Froms_TestDataStore_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    justify-content: center;\n"])));
-var TestDataStore_styles_Container = styled_components_browser_esm["b" /* default */].div(Froms_TestDataStore_styles_templateObject2 || (Froms_TestDataStore_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display:flex;\n    flex-direction: column;\n    align-items:flex-start;\n    gap: 33px;\n    justify-content: space-between;\n"])));
-var RefreshDataContainer = styled_components_browser_esm["b" /* default */].div(Froms_TestDataStore_styles_templateObject3 || (Froms_TestDataStore_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    margin-top: 24px;\n    display: flex;\n    flex-direction: column;\n    gap: 19px;\n"])));
-var RetentionPeriodContainer = styled_components_browser_esm["b" /* default */].div(Froms_TestDataStore_styles_templateObject4 || (Froms_TestDataStore_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 20px;\n"])));
-var styles_DataVersioningContainer = styled_components_browser_esm["b" /* default */].div(Froms_TestDataStore_styles_templateObject5 || (Froms_TestDataStore_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    margin-top: 33px;\n    display: flex;\n    align-items: center;\n    gap: 20px;\n"])));
-var TestDataStore_styles_Title = styled_components_browser_esm["b" /* default */].div(Froms_TestDataStore_styles_templateObject6 || (Froms_TestDataStore_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: normal;\n    letter-spacing: -0.32px;\n    color: #2e2e2e;\n"])));
+const TestDataStore_styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+`;
+const TestDataStore_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    align-items:flex-start;
+    gap: 33px;
+    justify-content: space-between;
+`;
+const RefreshDataContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+`;
+const RetentionPeriodContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+`;
+const styles_DataVersioningContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 33px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+`;
+const TestDataStore_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: -0.32px;
+    color: #2e2e2e;
+`;
 // CONCATENATED MODULE: ./src/components/Periods/styles.ts
 
-var Periods_styles_templateObject;
-
-var Periods_styles_Container = styled_components_browser_esm["b" /* default */].div(Periods_styles_templateObject || (Periods_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    align-items: center;\n    cursor: pointer;\n    gap: 20px;\n    align-items: flex-end;\n"])));
+const Periods_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 20px;
+    align-items: flex-end;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Main/usePeriods.ts
 
 
 
 
-
-
-
-
-var PeriodUnitType = /*#__PURE__*/function (PeriodUnitType) {
+let PeriodUnitType = /*#__PURE__*/function (PeriodUnitType) {
   PeriodUnitType["Minutes"] = "Minutes";
   PeriodUnitType["Hours"] = "Hours";
   PeriodUnitType["Days"] = "Days";
@@ -10023,29 +11329,32 @@ var PeriodUnitType = /*#__PURE__*/function (PeriodUnitType) {
   PeriodUnitType["Do_Not_Retain"] = "Do Not Retain";
   return PeriodUnitType;
 }({});
-var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourceType, source_type, retention_period_value, retention_period_type, reserve_retention_period_value) {
-  var AuthService = getService('AuthService');
-  var prevDataSourceType = Object(usehooks["c" /* usePrevious */])(dataSourceType);
-  var previousSource_type = Object(usehooks["c" /* usePrevious */])(source_type);
-  var _useState = Object(react["useState"])(null),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    periodsData = _useState2[0],
-    setPeriodsData = _useState2[1];
-  var updatePeriods = Object(react["useCallback"])(function (onLoad) {
+const usePeriods = (saveForm, version_ind, dataSourceType, source_type, retention_period_value, retention_period_type, reserve_retention_period_value, reserve_retention_period_type) => {
+  const AuthService = getService('AuthService');
+  const prevDataSourceType = Object(usehooks["c" /* usePrevious */])(dataSourceType);
+  const previousSource_type = Object(usehooks["c" /* usePrevious */])(source_type);
+  const [periodsData, setPeriodsData] = Object(react["useState"])(null);
+  const [autoVerionChange, setAutoVerionChange] = Object(react["useState"])(false);
+  const updatePeriods = Object(react["useCallback"])(function () {
+    let init = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     if (!periodsData) {
       return;
     }
-    var updateData = {};
-    var role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
-    var periodTypes = toConsumableArray_default()(periodsData === null || periodsData === void 0 ? void 0 : periodsData.retentionPeriodTypes) || [];
-    var reservationPeriodTypes = toConsumableArray_default()(periodsData === null || periodsData === void 0 ? void 0 : periodsData.reservationPeriodTypes) || [];
-    var maxRetentionPeriod = periodsData.maxRetentionPeriod;
-    var maxReservationPeriod = periodsData.maxReservationPeriod;
-    var retentionDefaultPeriod = periodsData.retentionDefaultPeriod;
-    var reservationDefaultPeriod = periodsData.reservationDefaultPeriod;
-    var versioningPeriod = function versioningPeriod() {
+    const updateData = {};
+    const role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
+    let periodTypes = [...(periodsData === null || periodsData === void 0 ? void 0 : periodsData.retentionPeriodTypes)] || false;
+    let reservationPeriodTypes = [...(periodsData === null || periodsData === void 0 ? void 0 : periodsData.reservationPeriodTypes)] || false;
+    let maxRetentionPeriod = periodsData.maxRetentionPeriod;
+    let maxReservationPeriod = periodsData.maxReservationPeriod;
+    let retentionDefaultPeriod = periodsData.retentionDefaultPeriod;
+    const reservationDefaultPeriod = periodsData.reservationDefaultPeriod;
+    const versioningPeriod = isTester => {
       var _retentionDefaultPeri;
-      retentionDefaultPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.versioningRetentionPeriod;
+      if (isTester) {
+        retentionDefaultPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.versioningRetentionPeriodForTesters;
+      } else {
+        retentionDefaultPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.versioningRetentionPeriod;
+      }
       periodTypes.unshift({
         name: PeriodUnitType.Do_Not_Retain,
         units: -1,
@@ -10071,7 +11380,7 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
       maxRetentionPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.maxRetentionPeriodForTesters;
       maxReservationPeriod = periodsData === null || periodsData === void 0 ? void 0 : periodsData.maxReservationPeriodForTesters;
       if (version_ind) {
-        versioningPeriod();
+        versioningPeriod(true);
       } else {
         periodTypes.unshift({
           name: PeriodUnitType.Do_Not_Retain,
@@ -10105,85 +11414,72 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
       }
     }
     if (maxRetentionPeriod && maxRetentionPeriod.value) {
-      periodTypes = periodTypes.filter(function (period) {
-        return period.units <= maxRetentionPeriod.value;
-      });
+      periodTypes = periodTypes.filter(period => period.units <= maxRetentionPeriod.value);
     }
     if (maxReservationPeriod && maxReservationPeriod.value) {
-      reservationPeriodTypes = reservationPeriodTypes.filter(function (period) {
-        return period.units <= maxReservationPeriod.value;
-      });
+      reservationPeriodTypes = reservationPeriodTypes.filter(period => period.units <= maxReservationPeriod.value);
     }
     updateData.periodTypes = periodTypes;
     updateData.reservationPeriodTypes = reservationPeriodTypes;
     updateData.maxReservationPeriod = maxReservationPeriod;
     updateData.maxRetentionPeriod = maxRetentionPeriod;
-    if (onLoad && !retention_period_value || !onLoad) {
+    if (init || periodTypes.findIndex(it => it.name === retention_period_type) < 0) {
       if (retentionDefaultPeriod) {
         updateData.retention_period_type = retentionDefaultPeriod.units;
         updateData.retention_period_value = retentionDefaultPeriod.value;
       }
     }
-    if (onLoad && !reserve_retention_period_value || !onLoad) {
+    if (init || reservationPeriodTypes.findIndex(it => it.name === reserve_retention_period_type) < 0) {
       if (reservationDefaultPeriod) {
         updateData.reserve_retention_period_type = reservationDefaultPeriod.units;
         updateData.reserve_retention_period_value = reservationDefaultPeriod.value;
       }
     }
     saveForm(updateData);
-  }, [saveForm, version_ind, periodsData, AuthService, reserve_retention_period_value, retention_period_value, dataSourceType, source_type]);
-  Object(react["useEffect"])(function () {
-    updatePeriods(true);
+  }, [saveForm, version_ind, periodsData, AuthService, reserve_retention_period_value, reserve_retention_period_type, retention_period_value, dataSourceType, source_type]);
+  Object(react["useEffect"])(() => {
+    updatePeriods();
   }, [periodsData]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (retention_period_type === 'reset') {
-      updatePeriods();
+      updatePeriods(true);
     }
   }, [retention_period_type]);
-  Object(react["useEffect"])(function () {
-    function fetchReservationPeriodsData() {
-      return _fetchReservationPeriodsData.apply(this, arguments);
-    }
-    function _fetchReservationPeriodsData() {
-      _fetchReservationPeriodsData = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.next = 2;
-              return apis_task.getRetentionPeriodsData();
-            case 2:
-              data = _context.sent;
-              data.reservationPeriodTypes.forEach(function (option) {
-                option.label = option.name;
-                option.value = option.units;
-              });
-              data.retentionPeriodTypes.forEach(function (option) {
-                option.label = option.name;
-                option.value = option.units;
-              });
-              setPeriodsData(data);
-            case 6:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee);
-      }));
-      return _fetchReservationPeriodsData.apply(this, arguments);
+  Object(react["useEffect"])(() => {
+    async function fetchReservationPeriodsData() {
+      const data = await apis_task.getRetentionPeriodsData();
+      data.reservationPeriodTypes.forEach(option => {
+        option.label = option.name;
+        option.value = option.units;
+      });
+      data.retentionPeriodTypes.forEach(option => {
+        option.label = option.name;
+        option.value = option.units;
+      });
+      setPeriodsData(data);
     }
     fetchReservationPeriodsData();
   }, []);
-  Object(react["useEffect"])(function () {
-    updatePeriods();
+  Object(react["useEffect"])(() => {
+    updatePeriods(autoVerionChange ? false : true);
+    if (autoVerionChange) {
+      setAutoVerionChange(false);
+    }
   }, [version_ind]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (retention_period_value === 0) {
+      setAutoVerionChange(true);
       saveForm({
         version_ind: false
       });
+    } else if (retention_period_value === -1 && dataSourceType === 'data_source' && source_type === 'tables') {
+      setAutoVerionChange(true);
+      saveForm({
+        version_ind: true
+      });
     }
   }, [retention_period_value]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (prevDataSourceType === dataSourceType && previousSource_type === source_type || !prevDataSourceType || !dataSourceType) {
       return;
     }
@@ -10200,23 +11496,17 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
 
   // need to add code for tester
 };
-/* harmony default export */ var Main_usePeriods = (usePeriods_usePeriods);
+/* harmony default export */ var Main_usePeriods = (usePeriods);
 // CONCATENATED MODULE: ./src/components/Periods/index.tsx
 
 
-function Periods_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function Periods_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? Periods_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : Periods_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
 
 
 
-
-
-
-
-var retentionMap = {
+const retentionMap = {
   periodTypes: 'retentionPeriodTypes',
   maxPeriod: 'maxRetentionPeriod',
   defaultPeriod: 'retentionDefaultPeriod',
@@ -10225,7 +11515,7 @@ var retentionMap = {
   period_type: 'retention_period_type',
   period_value: 'retention_period_value'
 };
-var reserveMap = {
+const reserveMap = {
   periodTypes: 'reservationPeriodTypes',
   maxPeriod: 'maxReservationPeriod',
   defaultPeriod: 'reservationDefaultPeriod',
@@ -10236,82 +11526,77 @@ var reserveMap = {
 };
 function Periods(props) {
   var _errors;
-  var title = props.title,
-    mandatory = props.mandatory,
-    period_type = props.period_type,
-    onChange = props.onChange,
-    period_value = props.period_value,
-    periodsData = props.periodsData,
-    maxPeriod = props.maxPeriod,
-    disabled = props.disabled,
-    reserve = props.reserve;
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    errors = _useContext.errors;
-  var _useState = Object(react["useState"])(periodsData || []),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    localOptions = _useState2[0],
-    setLocalOptions = _useState2[1];
-  var _useState3 = Object(react["useState"])(retentionMap),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    periodFields = _useState4[0],
-    setPeriodFields = _useState4[1];
-  var _useState5 = Object(react["useState"])(),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    selectedPeriodType = _useState6[0],
-    setSelectedPeriodType = _useState6[1];
-  Object(react["useEffect"])(function () {
+  const {
+    title,
+    mandatory,
+    period_type,
+    onChange,
+    period_value,
+    periodsData,
+    maxPeriod,
+    disabled,
+    reserve
+  } = props;
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const {
+    register,
+    errors
+  } = Object(react["useContext"])(TaskContext);
+  const [localOptions, setLocalOptions] = Object(react["useState"])(periodsData || []);
+  const [periodFields, setPeriodFields] = Object(react["useState"])(retentionMap);
+  const [selectedPeriodType, setSelectedPeriodType] = Object(react["useState"])();
+  Object(react["useEffect"])(() => {
     if (reserve) {
       setPeriodFields(reserveMap);
     } else {
       setPeriodFields(retentionMap);
     }
   }, [reserve]);
-  var _useState7 = Object(react["useState"])(Infinity),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    maxPeriodLocal = _useState8[0],
-    setMaxPeriodLocal = _useState8[1];
-  Object(react["useEffect"])(function () {
+  const [maxPeriodLocal, setMaxPeriodLocal] = Object(react["useState"])(Infinity);
+  Object(react["useEffect"])(() => {
     if (selectedPeriodType && maxPeriod) {
       setMaxPeriodLocal(maxPeriod.value / selectedPeriodType.units);
     }
   }, [selectedPeriodType, maxPeriod]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (period_type) {
-      var found = localOptions.find(function (it) {
-        return it.name === period_type;
-      });
+      const found = localOptions.find(it => it.name === period_type);
       if (found) {
         setSelectedPeriodType(found);
       }
     }
   }, [localOptions, period_type]);
   console.log(period_type);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (periodsData) {
       setLocalOptions(periodsData);
     }
   }, [periodsData]);
-  var periodTypeChange = Object(react["useCallback"])(function (option) {
+  const periodTypeChange = Object(react["useCallback"])(option => {
     if (option.name === PeriodUnitType.Do_Not_Delete || option.name === PeriodUnitType.Do_Not_Retain) {
-      var _onChange;
-      onChange((_onChange = {}, defineProperty_default()(_onChange, periodFields.period_type, option.name), defineProperty_default()(_onChange, periodFields.period_value, option.name === PeriodUnitType.Do_Not_Delete ? -1 : 0), _onChange));
+      onChange({
+        [periodFields.period_type]: option.name,
+        [periodFields.period_value]: option.name === PeriodUnitType.Do_Not_Delete ? -1 : 0
+      });
     } else {
-      var _onChange2;
-      onChange((_onChange2 = {}, defineProperty_default()(_onChange2, periodFields.period_type, option.name), defineProperty_default()(_onChange2, periodFields.period_value, 1), _onChange2));
+      onChange({
+        [periodFields.period_type]: option.name,
+        [periodFields.period_value]: 1
+      });
     }
   }, [onChange, periodFields]);
-  var periodValueChange = Object(react["useCallback"])(function (value) {
-    onChange(defineProperty_default()({}, periodFields.period_value, value));
+  const periodValueChange = Object(react["useCallback"])(value => {
+    onChange({
+      [periodFields.period_value]: value
+    });
   }, [onChange, periodFields]);
-  var checkPeriodsValue = function checkPeriodsValue(value, taskData) {
-    var field_value = taskData["".concat(reserve ? 'reserve_retention' : 'retention', "_period_value")];
-    var field_type = taskData["".concat(reserve ? 'reserve_retention' : 'retention', "_period_type")];
+  const checkPeriodsValue = (value, taskData) => {
+    const field_value = taskData[`${reserve ? 'reserve_retention' : 'retention'}_period_value`];
+    const field_type = taskData[`${reserve ? 'reserve_retention' : 'retention'}_period_type`];
     if (field_value !== undefined) {
       if (field_value > maxPeriodLocal) {
-        return "Selected retention period (".concat(((selectedPeriodType === null || selectedPeriodType === void 0 ? void 0 : selectedPeriodType.units) || 0) * (period_value || 0), ") cannot exceed ").concat(maxPeriod === null || maxPeriod === void 0 ? void 0 : maxPeriod.value, " days");
+        return `Selected retention period (${((selectedPeriodType === null || selectedPeriodType === void 0 ? void 0 : selectedPeriodType.units) || 0) * (period_value || 0)}) cannot exceed ${maxPeriod === null || maxPeriod === void 0 ? void 0 : maxPeriod.value} days`;
       } else if (!reserve && field_value < 1 && field_type !== 'Do Not Delete' && field_type !== 'Do Not Retain') {
         return 'The retention period must be bigger than zero';
       } else if (reserve && field_value < 1 && (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'admin') {
@@ -10335,22 +11620,25 @@ function Periods(props) {
       options: localOptions,
       value: selectedPeriodType,
       onChange: periodTypeChange,
-      error: (_errors = errors["".concat(reserve ? 'reserve_retenion' : 'retenion', "_period_value")]) === null || _errors === void 0 ? void 0 : _errors.message
-    }), period_type !== 'Do Not Delete' && period_type !== 'Do Not Retain' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Periods_objectSpread(Periods_objectSpread({}, register("".concat(reserve ? 'reserve_retenion' : 'retenion', "_period_value"), {
-      value: period_value,
-      validate: defineProperty_default()({}, "".concat(reserve ? 'reserve_' : '', "retention_value"), checkPeriodsValue)
-    })), {}, {
+      error: (_errors = errors[`${reserve ? 'reserve_retenion' : 'retenion'}_period_value`]) === null || _errors === void 0 ? void 0 : _errors.message
+    }), period_type !== 'Do Not Delete' && period_type !== 'Do Not Retain' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+      ...register(`${reserve ? 'reserve_retenion' : 'retenion'}_period_value`, {
+        value: period_value,
+        validate: {
+          [`${reserve ? 'reserve_' : ''}retention_value`]: checkPeriodsValue
+        }
+      }),
       disabled: disabled,
       width: "60px",
       title: "",
       mandatory: mandatory,
       type: InputTypes.number,
-      name: "".concat(reserve ? 'reserve_retenion' : 'retenion', "_period_value"),
+      name: `${reserve ? 'reserve_retenion' : 'retenion'}_period_value`,
       value: period_value,
       min: (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' && reserve ? 0 : 1,
       max: maxPeriodLocal,
       onChange: periodValueChange
-    })) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
   });
 }
 /* harmony default export */ var components_Periods = (Periods);
@@ -10362,25 +11650,27 @@ function Periods(props) {
 
 
 
-
 function TestDataStoreForm(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var version_ind = taskData.version_ind,
-    sync_mode = taskData.sync_mode,
-    retention_period_type = taskData.retention_period_type,
-    retention_period_value = taskData.retention_period_value,
-    dataSourceType = taskData.dataSourceType,
-    maxRetentionPeriod = taskData.maxRetentionPeriod,
-    periodTypes = taskData.periodTypes,
-    synthetic_type = taskData.synthetic_type,
-    source_type = taskData.source_type,
-    userRole = taskData.userRole,
-    sourceUserRole = taskData.sourceUserRole;
-  var onDataVersioningchange = Object(react["useCallback"])(function (value) {
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const {
+    version_ind,
+    sync_mode,
+    retention_period_type,
+    retention_period_value,
+    dataSourceType,
+    maxRetentionPeriod,
+    periodTypes,
+    synthetic_type,
+    source_type,
+    userRole,
+    sourceUserRole
+  } = taskData;
+  const onDataVersioningchange = Object(react["useCallback"])(value => {
     saveForm({
       version_ind: value || false
     });
@@ -10392,7 +11682,13 @@ function TestDataStoreForm(props) {
         title: "Create data snapshot (version)",
         value: version_ind && !(sync_mode === 'OFF' && dataSourceType === 'data_source'),
         onChange: onDataVersioningchange,
-        disabled: !((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_entity_versioning) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_entity_versioning) && (userRole || sourceUserRole)) || sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || dataSourceType === 'data_source' && source_type === 'tables' || retention_period_type === 'Do Not Retain'
+        disabled:
+        // !(systemUserRole?.type === 'admin' || 
+        // ((!userRole || userRole?.allowed_entity_versioning) && 
+        // (!sourceUserRole || sourceUserRole?.allowed_entity_versioning) && (
+        //     userRole || sourceUserRole
+        // ))) || 
+        sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || dataSourceType === 'data_source' && source_type === 'tables' || retention_period_type === 'Do Not Retain'
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(RetentionPeriodContainer, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Periods, {
           disabled: sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data',
@@ -10413,58 +11709,36 @@ function TestDataStoreForm(props) {
 
 
 
-function useWidgetStatus_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function useWidgetStatus_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? useWidgetStatus_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : useWidgetStatus_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
-
-
-
-var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger, isValid, handleSubmit, failedComp) {
-  var _useState = Object(react["useState"])(true),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    initTask = _useState2[0],
-    setInitTask = _useState2[1];
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var _useState3 = Object(react["useState"])('task_title'),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    currentStep = _useState4[0],
-    setCurrentStep = _useState4[1];
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    touchedForms = _useState6[0],
-    setTouchedForms = _useState6[1];
-  var _useState7 = Object(react["useState"])(true),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    submittedForm = _useState8[0],
-    setSubmittedForm = _useState8[1];
-  var _useState9 = Object(react["useState"])({
-      dataSourceStatus: StatusEnum.disabled,
-      subsetStatus: StatusEnum.disabled,
-      subsetPosition: SubsetPossition.undefined,
-      testDataStoreStatus: StatusEnum.disabled,
-      targetStatus: StatusEnum.disabled,
-      isTargetConnectionEnabled: false,
-      isSourceConnectionEnabled: false
-    }),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    statuses = _useState10[0],
-    setStatuses = _useState10[1];
+const useWidgetStatus = (taskData, trigger, isValid, handleSubmit, failedComp) => {
+  const [initTask, setInitTask] = Object(react["useState"])(true);
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const [currentStep, setCurrentStep] = Object(react["useState"])('task_title');
+  const [touchedForms, setTouchedForms] = Object(react["useState"])([]);
+  const [submittedForm, setSubmittedForm] = Object(react["useState"])(true);
+  const [statuses, setStatuses] = Object(react["useState"])({
+    dataSourceStatus: StatusEnum.disabled,
+    subsetStatus: StatusEnum.disabled,
+    subsetPosition: SubsetPossition.undefined,
+    testDataStoreStatus: StatusEnum.disabled,
+    targetStatus: StatusEnum.disabled,
+    isTargetConnectionEnabled: false,
+    isSourceConnectionEnabled: false
+  });
 
   // useEffect(() => {
   //     console.log(statuses);
   // }, [statuses]);
 
-  var statusesMap = Object(react["useMemo"])(function () {
-    return {
-      source: 'dataSourceStatus',
-      source_data_subset: 'sourceSubsetStatus',
-      target_data_subset: 'targetSubsetStatus',
-      test_data_store: 'testDataStoreStatus',
-      target: 'targetStatus'
-    };
-  }, []);
-  var getSourceStatus = function getSourceStatus(taskData) {
+  const statusesMap = Object(react["useMemo"])(() => ({
+    source: 'dataSourceStatus',
+    source_data_subset: 'sourceSubsetStatus',
+    target_data_subset: 'targetSubsetStatus',
+    test_data_store: 'testDataStoreStatus',
+    target: 'targetStatus'
+  }), []);
+  const getSourceStatus = taskData => {
     if (failedComp === 'source') {
       return StatusEnum.blink;
     }
@@ -10488,7 +11762,7 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     }
     return StatusEnum.enabled;
   };
-  var getTestDataStoreStatus = function getTestDataStoreStatus(taskData) {
+  const getTestDataStoreStatus = taskData => {
     if (taskData.sync_mode === 'OFF' && taskData.dataSourceType === 'data_source') {
       return StatusEnum.completed;
     }
@@ -10501,11 +11775,13 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     }
     return StatusEnum.enabled;
   };
-  var getTargetStatus = function getTargetStatus(taskData, statuses, currentStep) {
-    var sync_mode = taskData.sync_mode,
-      version_ind = taskData.version_ind,
-      dataSourceType = taskData.dataSourceType,
-      source_type = taskData.source_type;
+  const getTargetStatus = (taskData, statuses, currentStep) => {
+    const {
+      sync_mode,
+      version_ind,
+      dataSourceType,
+      source_type
+    } = taskData;
     if (sync_mode !== 'OFF' && version_ind && !(dataSourceType === 'data_source' && source_type === 'tables')) {
       return StatusEnum.disabled;
     }
@@ -10515,7 +11791,7 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     if (currentStep !== 'target' && (statuses === null || statuses === void 0 ? void 0 : statuses.targetStatus) !== StatusEnum.completed && (statuses === null || statuses === void 0 ? void 0 : statuses.subsetPosition) === SubsetPossition.target) {
       return StatusEnum.blink;
     }
-    if (taskData.environment_id && (taskData.load_entity && (taskData.clone_ind && taskData.num_of_entities || !taskData.clone_ind) || taskData.delete_before_load || taskData.reserve_ind)) {
+    if (taskData.environment_id && (taskData.load_entity && (taskData.clone_ind && taskData.num_of_clones || !taskData.clone_ind) || taskData.delete_before_load || taskData.reserve_ind)) {
       if (taskData.reserve_ind && (!taskData.reserve_retention_period_type || (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'admin' && (taskData.reserve_retention_period_value || 0) <= 0 || (systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' && taskData.reserve_retention_period_value === undefined)) {
         return StatusEnum.partial;
       }
@@ -10525,19 +11801,19 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
       return StatusEnum.completed;
     }
     if (!(taskData.target_env === 'target_env' && !taskData.environment_id && !taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind)) {
-      if (touchedForms.indexOf('target') >= 0) {
+      if (touchedForms.indexOf('target') >= 0 && !(taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables')) {
         return StatusEnum.partial;
       }
     }
     return StatusEnum.enabled;
   };
-  var subsetStatus = function subsetStatus(taskData) {
-    var sourceStatus = getSourceStatus(taskData);
-    var targetStatus = getTargetStatus(taskData, null, '');
+  const subsetStatus = taskData => {
+    const sourceStatus = getSourceStatus(taskData);
+    const targetStatus = getTargetStatus(taskData, null, '');
     if (failedComp.indexOf('subset') >= 0) {
       return StatusEnum.blink;
     }
-    var checkVersioningStatus = function checkVersioningStatus() {
+    const checkVersioningStatus = () => {
       if (taskData.version_ind && taskData.sync_mode === 'OFF') {
         if (!taskData.selected_version_task_exe_id) {
           return StatusEnum.enabled;
@@ -10552,9 +11828,9 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
         return checkVersioningStatus();
       } else if (taskData.selection_method === 'ALL') {
         return checkVersioningStatus();
-      } else if (taskData.selection_method === 'R' && taskData.num_of_entities) {
+      } else if (taskData.selection_method === 'R' && (taskData.num_of_entities || taskData.clone_ind)) {
         return StatusEnum.completed;
-      } else if ((taskData.selection_method === 'P' || taskData.selection_method === 'PR') && taskData.selection_param_value && taskData.num_of_entities) {
+      } else if ((taskData.selection_method === 'P' || taskData.selection_method === 'PR') && taskData.selection_param_value && (taskData.maxToCopy == 9007199254740992 || taskData.num_of_entities || taskData.clone_ind)) {
         return StatusEnum.completed;
       } else if (taskData.selection_method === 'C') {
         return StatusEnum.completed;
@@ -10565,7 +11841,7 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     }
     return StatusEnum.disabled;
   };
-  var subsetPosition = function subsetPosition(taskData) {
+  const subsetPosition = taskData => {
     if (taskData.dataSourceType !== 'data_source' && taskData.synthetic_type === 'new_data') {
       return SubsetPossition.undefined;
     }
@@ -10574,22 +11850,22 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     }
     return SubsetPossition.source;
   };
-  var getSourceSubsetStatus = function getSourceSubsetStatus(taskData) {
+  const getSourceSubsetStatus = taskData => {
     if (subsetPosition(taskData) === SubsetPossition.source) {
       return subsetStatus(taskData);
     }
     return StatusEnum.disabled;
   };
-  var getTargetSubsetStatus = function getTargetSubsetStatus(taskData) {
+  const getTargetSubsetStatus = taskData => {
     if (subsetPosition(taskData) === SubsetPossition.target) {
       return subsetStatus(taskData);
     }
     return StatusEnum.disabled;
   };
-  var isTargetConnectionEnabled = function isTargetConnectionEnabled(taskData) {
-    var targetStatus = getTargetStatus(taskData, null, '');
-    var subsetStatusValue = subsetStatus(taskData);
-    var subsetPositionValue = subsetPosition(taskData);
+  const isTargetConnectionEnabled = taskData => {
+    const targetStatus = getTargetStatus(taskData, null, '');
+    const subsetStatusValue = subsetStatus(taskData);
+    const subsetPositionValue = subsetPosition(taskData);
     if (targetStatus === StatusEnum.partial || targetStatus === StatusEnum.completed || currentStep === 'target') {
       return true;
     }
@@ -10603,10 +11879,10 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     }
     return false;
   };
-  var isSourceConnectionEnabled = function isSourceConnectionEnabled(taskData) {
-    var sourceStatus = getSourceStatus(taskData);
-    var subsetStatusValue = subsetStatus(taskData);
-    var subsetPositionValue = subsetPosition(taskData);
+  const isSourceConnectionEnabled = taskData => {
+    const sourceStatus = getSourceStatus(taskData);
+    const subsetStatusValue = subsetStatus(taskData);
+    const subsetPositionValue = subsetPosition(taskData);
     if (subsetPositionValue === SubsetPossition.target) {
       return false;
     }
@@ -10621,33 +11897,30 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     }
     return false;
   };
-  var statusesFuncMap = Object(react["useMemo"])(function () {
-    return {
-      dataSourceStatus: getSourceStatus,
-      sourceSubsetStatus: getSourceSubsetStatus,
-      targetSubsetStatus: getTargetSubsetStatus,
-      testDataStoreStatus: getTestDataStoreStatus,
-      targetStatus: getTargetStatus,
-      isTargetConnectionEnabled: isTargetConnectionEnabled,
-      isSourceConnectionEnabled: isSourceConnectionEnabled,
-      subsetStatus: subsetStatus,
-      subsetPosition: subsetPosition
+  const statusesFuncMap = Object(react["useMemo"])(() => ({
+    dataSourceStatus: getSourceStatus,
+    sourceSubsetStatus: getSourceSubsetStatus,
+    targetSubsetStatus: getTargetSubsetStatus,
+    testDataStoreStatus: getTestDataStoreStatus,
+    targetStatus: getTargetStatus,
+    isTargetConnectionEnabled: isTargetConnectionEnabled,
+    isSourceConnectionEnabled: isSourceConnectionEnabled,
+    subsetStatus: subsetStatus,
+    subsetPosition: subsetPosition
+  }), [currentStep, failedComp]);
+  const updateWidgetStatuses = Object(react["useCallback"])((taskData, currentStep) => {
+    const statusesTemp = {
+      ...statuses
     };
-  }, [currentStep, failedComp]);
-  var updateWidgetStatuses = Object(react["useCallback"])(function (taskData, currentStep) {
-    var statusesTemp = useWidgetStatus_objectSpread({}, statuses);
-    Object.keys(statusesFuncMap).forEach(function (statusName) {
+    Object.keys(statusesFuncMap).forEach(statusName => {
       statusesTemp[statusName] = statusesFuncMap[statusName](taskData, statusesTemp);
     });
     statusesTemp.targetStatus = statusesFuncMap.targetStatus(taskData, statusesTemp, currentStep);
     setStatuses(statusesTemp);
   }, [statuses, statusesFuncMap, touchedForms]);
-  var _useState11 = Object(react["useState"])(''),
-    _useState12 = slicedToArray_default()(_useState11, 2),
-    pendingStep = _useState12[0],
-    setPendingStep = _useState12[1];
-  var moveToStepAfterValidaity = Object(react["useCallback"])(function () {
-    var stepTemp = '';
+  const [pendingStep, setPendingStep] = Object(react["useState"])('');
+  const moveToStepAfterValidaity = Object(react["useCallback"])(() => {
+    let stepTemp = '';
     stepTemp = statusesMap[pendingStep];
     if (stepTemp) {
       if (statuses[stepTemp] !== StatusEnum.disabled) {
@@ -10661,8 +11934,8 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     setSubmittedForm(true);
     setPendingStep('');
   }, [statuses, statusesMap, pendingStep]);
-  var formOnError = Object(react["useCallback"])(function (data) {
-    Object.keys(data).forEach(function (key) {
+  const formOnError = Object(react["useCallback"])(data => {
+    Object.keys(data).forEach(key => {
       if (!data[key].ref.step) {
         data[key].ref.step = currentStep;
       }
@@ -10671,10 +11944,8 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     moveToStepAfterValidaity();
     return;
     if (stepsConfig[currentStep].mandatoryFields && stepsConfig[currentStep].mandatoryFields.length > 0) {
-      var fields = Object.keys(data);
-      var filteredArray = fields.filter(function (value) {
-        return stepsConfig[currentStep].mandatoryFields.includes(value);
-      });
+      const fields = Object.keys(data);
+      const filteredArray = fields.filter(value => stepsConfig[currentStep].mandatoryFields.includes(value));
       if (filteredArray.length === 0) {
         moveToStepAfterValidaity();
         return;
@@ -10683,10 +11954,10 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
     console.error(data);
     setPendingStep('');
   }, [pendingStep, currentStep]);
-  var checkFormMandatory = Object(react["useCallback"])(function () {
+  const checkFormMandatory = Object(react["useCallback"])(() => {
     return stepsConfig[currentStep] && stepsConfig[currentStep].mandatory;
   }, [currentStep]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (pendingStep) {
       if (checkFormMandatory()) {
         handleSubmit(moveToStepAfterValidaity, formOnError)();
@@ -10695,70 +11966,92 @@ var useWidgetStatus_useWidgetStatus = function useWidgetStatus(taskData, trigger
       }
     }
   }, [pendingStep, handleSubmit, moveToStepAfterValidaity, formOnError, checkFormMandatory]);
-  var onClickStep = Object(react["useCallback"])(function (step) {
+  const onClickStep = Object(react["useCallback"])(step => {
     setInitTask(false);
     if (!currentStep) {
       setCurrentStep(step);
       return;
     }
     if (currentStep && touchedForms.indexOf(currentStep) < 0) {
-      setTouchedForms([].concat(toConsumableArray_default()(touchedForms), [currentStep]));
+      setTouchedForms([...touchedForms, currentStep]);
     }
     if (step !== currentStep) {
       setPendingStep(step);
     }
   }, [currentStep, touchedForms, setInitTask]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     updateWidgetStatuses(taskData, currentStep);
   }, [taskData, currentStep]);
   return {
-    statuses: statuses,
-    onClickStep: onClickStep,
-    currentStep: currentStep,
-    touchedForms: touchedForms,
-    setTouchedForms: setTouchedForms,
-    submittedForm: submittedForm,
-    setSubmittedForm: setSubmittedForm,
-    statusesFuncMap: statusesFuncMap,
-    initTask: initTask
+    statuses,
+    onClickStep,
+    currentStep,
+    touchedForms,
+    setTouchedForms,
+    submittedForm,
+    setSubmittedForm,
+    statusesFuncMap,
+    initTask
   };
 };
-/* harmony default export */ var Main_useWidgetStatus = (useWidgetStatus_useWidgetStatus);
+/* harmony default export */ var Main_useWidgetStatus = (useWidgetStatus);
 // CONCATENATED MODULE: ./src/components/RadioGroup/styles.ts
 
-var RadioGroup_styles_templateObject, RadioGroup_styles_templateObject2, RadioGroup_styles_templateObject3, RadioGroup_styles_templateObject4, RadioGroup_styles_templateObject5;
+const RadioGroup_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 30px;
+    width: 100%;
+`;
+const RadiosContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: ${props => props.direction};
+    gap: 20px;
+`;
+const RadioGroup_styles_Title = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: -0.32px;
+    text-align: center;
+    color: #2e2e2e;
+`;
+const styles_RadioInput = styled_components_browser_esm["b" /* default */].input`
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+`;
+const RadioGroup_styles_Icon = styled_components_browser_esm["b" /* default */].img`
 
-var RadioGroup_styles_Container = styled_components_browser_esm["b" /* default */].div(RadioGroup_styles_templateObject || (RadioGroup_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    gap: 12px;\n    padding-bottom: 30px;\n    width: 100%;\n"])));
-var RadiosContainer = styled_components_browser_esm["b" /* default */].div(RadioGroup_styles_templateObject2 || (RadioGroup_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: ", ";\n    gap: 20px;\n"])), function (props) {
-  return props.direction;
-});
-var RadioGroup_styles_Title = styled_components_browser_esm["b" /* default */].span(RadioGroup_styles_templateObject3 || (RadioGroup_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: normal;\n    letter-spacing: -0.32px;\n    text-align: center;\n    color: #2e2e2e;\n"])));
-var styles_RadioInput = styled_components_browser_esm["b" /* default */].input(RadioGroup_styles_templateObject4 || (RadioGroup_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    margin-right: 10px;\n    width: 20px;\n    height: 20px;\n"])));
-var RadioGroup_styles_Icon = styled_components_browser_esm["b" /* default */].img(RadioGroup_styles_templateObject5 || (RadioGroup_styles_templateObject5 = taggedTemplateLiteral_default()(["\n\n"])));
+`;
 // CONCATENATED MODULE: ./src/components/RadioGroup/index.tsx
 
 
 
 
-
 function RadioGroup(props) {
-  var onChange = props.onChange,
-    data = props.data,
-    selectedValue = props.selectedValue,
-    name = props.name,
-    direction = props.direction,
-    title = props.title;
-  var getRadios = Object(react["useCallback"])(function () {
-    return data.map(function (radioData) {
-      return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
-        onChange: onChange,
-        name: name,
-        value: radioData.value,
-        selectedValue: selectedValue,
-        title: radioData.title,
-        disabled: radioData.disabled
-      });
-    });
+  const {
+    onChange,
+    data,
+    selectedValue,
+    name,
+    direction,
+    title
+  } = props;
+  const getRadios = Object(react["useCallback"])(() => {
+    return data.map(radioData => /*#__PURE__*/Object(jsx_runtime["jsx"])(components_radio, {
+      onChange: onChange,
+      name: name,
+      value: radioData.value,
+      selectedValue: selectedValue,
+      title: radioData.title,
+      disabled: radioData.disabled
+    }));
   }, [data, selectedValue, onChange, name]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(RadioGroup_styles_Container, {
     children: [title, /*#__PURE__*/Object(jsx_runtime["jsx"])(RadiosContainer, {
@@ -10770,40 +12063,114 @@ function RadioGroup(props) {
 /* harmony default export */ var components_RadioGroup = (RadioGroup);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Target/styles.ts
 
-var Target_styles_templateObject, Target_styles_templateObject2, Target_styles_templateObject3, Target_styles_templateObject4, Target_styles_templateObject5, Target_styles_templateObject6, Target_styles_templateObject7, Target_styles_templateObject8, Target_styles_templateObject9, Target_styles_templateObject10, Target_styles_templateObject11, Target_styles_templateObject12, Target_styles_templateObject13, Target_styles_templateObject14, Target_styles_templateObject15, styles_templateObject16, _templateObject17, _templateObject18, _templateObject19;
+const Target_styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+`;
+const Target_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+`;
+const EnvironmentContainer = styled_components_browser_esm["b" /* default */].div`
+    display: ${props => props.hide ? 'none' : 'block'};
+    margin-top: 12px;
+`;
+const TaskActionContainer = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 10px;
+`;
+const Target_styles_Actions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    margin-top: 15px;
+`;
+const Target_styles_DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 15px;
+`;
+const Target_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    padding-bottom: 15px;
+    border-bottom: ${props => props.widthBorder ? '1px solid #ccc' : ''};
+`;
+const Section = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
 
-var Target_styles_Wrapper = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject || (Target_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    justify-content: center;\n"])));
-var Target_styles_Container = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject2 || (Target_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n"])));
-var EnvironmentContainer = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject3 || (Target_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    display: ", ";\n    margin-top: 12px;\n"])), function (props) {
-  return props.hide ? 'none' : 'block';
-});
-var TaskActionContainer = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject4 || (Target_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    margin-top: 10px;\n"])));
-var Target_styles_Actions = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject5 || (Target_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 15px;\n    flex-direction: column;\n    margin-top: 15px;\n"])));
-var Target_styles_DataMovmentSettingsContainer = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject6 || (Target_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    margin-top: 15px;\n"])));
-var Target_styles_Title = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject7 || (Target_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.25;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    padding-bottom: 15px;\n    border-bottom: ", ";\n"])), function (props) {
-  return props.widthBorder ? '1px solid #ccc' : '';
-});
-var Section = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject8 || (Target_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    margin-top: 30px;\n    display: flex;\n    flex-direction: row;\n\n"])));
-var SectionItemConatiner = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject9 || (Target_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 30px;\n    flex-direction: column;\n    width: 100%;\n    padding: 0px 21px;\n"])));
-var ActionContainer = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject10 || (Target_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    display: flex;\n    gap: 30px;\n\n"])));
-var EntityCloneContainer = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject11 || (Target_styles_templateObject11 = taggedTemplateLiteral_default()(["\n    display: flex;\n    width: 100%;\n    gap: 15px;\n    height: 30px;\n    align-items: center;\n"])));
-var Target_styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span(Target_styles_templateObject12 || (Target_styles_templateObject12 = taggedTemplateLiteral_default()(["\n    color: red;\n"])));
-var CheckBoxContainer = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject13 || (Target_styles_templateObject13 = taggedTemplateLiteral_default()(["\n    width: 100px;\n"])));
-var SectionTitle = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject14 || (Target_styles_templateObject14 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #666;\n"])));
-var RadioGroupContainer = styled_components_browser_esm["b" /* default */].div(Target_styles_templateObject15 || (Target_styles_templateObject15 = taggedTemplateLiteral_default()(["\n    border-bottom: 1px solid #ccc;\n"])));
-var TestingEnvironmentContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject16 || (styles_templateObject16 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    margin-top: 13px;\n"])));
-var styles_Leftside = styled_components_browser_esm["b" /* default */].div(_templateObject17 || (_templateObject17 = taggedTemplateLiteral_default()(["\n    width: 320px;\n    display: flex;\n    flex-direction: column;\n    gap: 20px;\n\n"])));
-var Target_styles_RightSide = styled_components_browser_esm["b" /* default */].div(_templateObject18 || (_templateObject18 = taggedTemplateLiteral_default()(["\n    border-left: 2px solid #ccc;\n    padding-left: 35px;\n    flex-grow: 1;\n"])));
-var EntityCloneComment = styled_components_browser_esm["b" /* default */].span(_templateObject19 || (_templateObject19 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: bold;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #666;\n"])));
+`;
+const SectionItemConatiner = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 30px;
+    flex-direction: column;
+    width: 100%;
+    padding: 0px 21px;
+`;
+const ActionContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 30px;
+
+`;
+const EntityCloneContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    width: 100%;
+    gap: 15px;
+    height: 30px;
+    align-items: center;
+`;
+const Target_styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span`
+    color: red;
+`;
+const CheckBoxContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100px;
+`;
+const SectionTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666;
+`;
+const RadioGroupContainer = styled_components_browser_esm["b" /* default */].div`
+    border-bottom: 1px solid #ccc;
+`;
+const TestingEnvironmentContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    margin-top: 13px;
+`;
+const styles_Leftside = styled_components_browser_esm["b" /* default */].div`
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+`;
+const Target_styles_RightSide = styled_components_browser_esm["b" /* default */].div`
+    border-left: 2px solid #ccc;
+    padding-left: 35px;
+    flex-grow: 1;
+`;
+const EntityCloneComment = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #666;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Target/index.tsx
-
-
-
-function Target_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function Target_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? Target_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : Target_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
 
 
 
@@ -10819,79 +12186,57 @@ function Target_objectSpread(target) { for (var i = 1; i < arguments.length; i++
 
 function TargetForm(props) {
   var _errors$num_of_entiti;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    register = _useContext.register,
-    clearErrors = _useContext.clearErrors,
-    errors = _useContext.errors,
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    unregister = _useContext.unregister;
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var be_name = taskData.be_name,
-    environment_id = taskData.environment_id,
-    load_entity = taskData.load_entity,
-    delete_before_load = taskData.delete_before_load,
-    reserve_ind = taskData.reserve_ind,
-    replace_sequences = taskData.replace_sequences,
-    reserve_retention_period_type = taskData.reserve_retention_period_type,
-    reserve_retention_period_value = taskData.reserve_retention_period_value,
-    reserve_note = taskData.reserve_note,
-    clone_ind = taskData.clone_ind,
-    num_of_clones = taskData.num_of_clones,
-    target_env = taskData.target_env,
-    reservationPeriodTypes = taskData.reservationPeriodTypes,
-    maxReservationPeriod = taskData.maxReservationPeriod,
-    be_id = taskData.be_id,
-    dataSourceType = taskData.dataSourceType,
-    selection_method = taskData.selection_method,
-    version_ind = taskData.version_ind,
-    source_type = taskData.source_type,
-    synthetic_type = taskData.synthetic_type,
-    generation_type = taskData.generation_type,
-    maxToCopy = taskData.maxToCopy,
-    userRole = taskData.userRole,
-    deleteWarning = taskData.deleteWarning,
-    source_environment_id = taskData.source_environment_id;
-  var toast = hooks_useToast();
-  var _useState = Object(react["useState"])(false),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    disableAI = _useState2[0],
-    setDisableAI = _useState2[1];
-  Object(react["useEffect"])(function () {
-    function fetchData() {
-      return _fetchData.apply(this, arguments);
-    }
-    function _fetchData() {
-      _fetchData = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data, ai_env;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return apis_task.getEnvironments(undefined, true);
-            case 3:
-              data = _context.sent;
-              ai_env = data.find(function (it) {
-                return it.synthetic_indicator === 'AI';
-              });
-              if (!ai_env || ai_env.permission.indexOf('write') < 0) {
-                setDisableAI(true);
-              }
-              _context.next = 11;
-              break;
-            case 8:
-              _context.prev = 8;
-              _context.t0 = _context["catch"](0);
-              setDisableAI(true);
-            case 11:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 8]]);
-      }));
-      return _fetchData.apply(this, arguments);
+  const {
+    register,
+    clearErrors,
+    errors,
+    taskData,
+    saveForm,
+    unregister
+  } = Object(react["useContext"])(TaskContext);
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const {
+    be_name,
+    environment_id,
+    load_entity,
+    delete_before_load,
+    reserve_ind,
+    replace_sequences,
+    reserve_retention_period_type,
+    reserve_retention_period_value,
+    reserve_note,
+    clone_ind,
+    num_of_clones,
+    target_env,
+    reservationPeriodTypes,
+    maxReservationPeriod,
+    be_id,
+    dataSourceType,
+    selection_method,
+    version_ind,
+    source_type,
+    synthetic_type,
+    generation_type,
+    maxToCopy,
+    userRole,
+    deleteWarning,
+    source_environment_id,
+    reserve_only_task
+  } = taskData;
+  const toast = hooks_useToast();
+  const [disableAI, setDisableAI] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    async function fetchData() {
+      try {
+        const data = await apis_task.getEnvironments(undefined, true);
+        const ai_env = data.find(it => it.synthetic_indicator === 'AI');
+        if (!ai_env || ai_env.permission.indexOf('write') < 0) {
+          setDisableAI(true);
+        }
+      } catch (err) {
+        setDisableAI(true);
+      }
     }
     if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) !== 'admin') {
       fetchData();
@@ -10903,7 +12248,12 @@ function TargetForm(props) {
       });
     }
   }, []);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
+    if (dataSourceType === 'ai_generated') {
+      setDisableAI(true);
+    }
+  }, [dataSourceType]);
+  Object(react["useEffect"])(() => {
     if (deleteWarning === undefined) {
       saveForm({
         deleteWarning: false
@@ -10917,7 +12267,7 @@ function TargetForm(props) {
       toast.warning('The load activity may cause data duplication or a violation of unique constraints');
     }
   }, [delete_before_load]);
-  var targetEnvironmentsTypes = Object(react["useMemo"])(function () {
+  const targetEnvironmentsTypes = Object(react["useMemo"])(() => {
     if (dataSourceType === 'data_source' && source_type === 'tables') {
       saveForm({
         target_env: 'target_env'
@@ -10936,8 +12286,8 @@ function TargetForm(props) {
       disabled: disableAI
     }];
   }, [saveForm, dataSourceType, source_type, disableAI]);
-  Object(react["useEffect"])(function () {
-    var updateData = {};
+  Object(react["useEffect"])(() => {
+    const updateData = {};
     if (dataSourceType === 'data_source' && source_type === 'tables') {
       updateData.load_entity = true;
       if (delete_before_load === undefined) {
@@ -10950,8 +12300,8 @@ function TargetForm(props) {
     }
     saveForm(updateData);
   }, [dataSourceType, source_type, synthetic_type]);
-  var targetEnvChange = Object(react["useCallback"])(function (item) {
-    var updatedData = {
+  const targetEnvChange = Object(react["useCallback"])(item => {
+    const updatedData = {
       environment_id: item && item.environment_id || undefined,
       environment_name: item && item.environment_name || undefined
     };
@@ -10960,23 +12310,23 @@ function TargetForm(props) {
     }
     saveForm(updatedData);
   }, [saveForm]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (dataSourceType === 'ai_generated' || dataSourceType === 'synthetic') {
       saveForm({
         replace_sequences: true
       });
     }
   }, [dataSourceType]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (selection_method === 'ALL') {
       saveForm({
         clone_ind: false
       });
     }
   }, [selection_method]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (version_ind) {
-      var updateData = {
+      const updateData = {
         load_entity: true
       };
       if (deleteWarning === undefined) {
@@ -10985,56 +12335,38 @@ function TargetForm(props) {
       saveForm(updateData);
     }
   }, [version_ind]);
-  var actionChange = Object(react["useCallback"])(function (action, value) {
-    saveForm(defineProperty_default()({}, action, value));
+  const actionChange = Object(react["useCallback"])((action, value) => {
+    saveForm({
+      [action]: value
+    });
   }, [saveForm]);
-  var replaceSequenceChange = Object(react["useCallback"])(function (value) {
+  const replaceSequenceChange = Object(react["useCallback"])(value => {
     saveForm({
       replace_sequences: value || false
     });
   }, [saveForm]);
-  var entityCloneChange = Object(react["useCallback"])(function (value) {
+  const entityCloneChange = Object(react["useCallback"])(value => {
     saveForm({
       clone_ind: value || false,
       num_of_clones: undefined
     });
     clearErrors('num_of_clones');
   }, [saveForm, clearErrors]);
-  var reserveNoteChange = Object(react["useCallback"])(function (value) {
+  const reserveNoteChange = Object(react["useCallback"])(value => {
     saveForm({
       reserve_note: value
     });
   }, [saveForm]);
-  var numberOfCloneChange = Object(react["useCallback"])(function (value) {
+  const numberOfCloneChange = Object(react["useCallback"])(value => {
     saveForm({
       num_of_clones: value
     });
   }, [saveForm]);
-  var targetEnvTypeChange = Object(react["useCallback"])(function (value) {
-    function fetchCheckAIInstaltion() {
-      return _fetchCheckAIInstaltion.apply(this, arguments);
-    }
-    function _fetchCheckAIInstaltion() {
-      _fetchCheckAIInstaltion = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _context2.prev = 0;
-              _context2.next = 3;
-              return apis_task.checkAIInstallation('AITraining');
-            case 3:
-              _context2.next = 7;
-              break;
-            case 5:
-              _context2.prev = 5;
-              _context2.t0 = _context2["catch"](0);
-            case 7:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2, null, [[0, 5]]);
-      }));
-      return _fetchCheckAIInstaltion.apply(this, arguments);
+  const targetEnvTypeChange = Object(react["useCallback"])(value => {
+    async function fetchCheckAIInstaltion() {
+      try {
+        await apis_task.checkAIInstallation('AITraining');
+      } catch (err) {}
     }
     if (value === 'ai_training') {
       fetchCheckAIInstaltion();
@@ -11050,14 +12382,14 @@ function TargetForm(props) {
       entity_clone: false
     });
   }, [saveForm]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (!target_env) {
       saveForm({
         target_env: 'target_env'
       });
     }
   }, []);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (!clone_ind) {
       unregister('num_of_clones');
     }
@@ -11105,9 +12437,7 @@ function TargetForm(props) {
                 children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
                   title: "Delete",
                   disabled: !(userRole !== null && userRole !== void 0 && userRole.allowed_delete_before_load) || dataSourceType === 'synthetic' || dataSourceType === 'ai_generated' || reserve_ind && !load_entity || (clone_ind || replace_sequences) && load_entity || version_ind && !(dataSourceType === 'data_source' && source_type === 'tables'),
-                  onChange: function onChange(value) {
-                    return actionChange('delete_before_load', value || false);
-                  },
+                  onChange: value => actionChange('delete_before_load', value || false),
                   name: "delete_checkbox",
                   value: delete_before_load
                 }), dataSourceType === 'data_source' && source_type === 'tables' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
@@ -11116,11 +12446,9 @@ function TargetForm(props) {
               }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionContainer, {
                 children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(CheckBoxContainer, {
                   children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
-                    disabled: delete_before_load && reserve_ind || dataSourceType === 'data_source' && source_type === 'tables',
+                    disabled: reserve_only_task || delete_before_load && reserve_ind || dataSourceType === 'data_source' && source_type === 'tables' || version_ind && !(dataSourceType === 'data_source' && source_type === 'tables'),
                     title: "Load",
-                    onChange: function onChange(value) {
-                      return actionChange('load_entity', value || false);
-                    },
+                    onChange: value => actionChange('load_entity', value || false),
                     name: "load_checkbox",
                     value: load_entity
                   })
@@ -11139,17 +12467,18 @@ function TargetForm(props) {
                       name: "clone_ind",
                       value: !delete_before_load && load_entity ? clone_ind : false
                     }), clone_ind && !delete_before_load && load_entity ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, Target_objectSpread(Target_objectSpread({}, register('num_of_clones', {
-                        required: 'Populate number of clones',
-                        min: {
-                          value: 1,
-                          message: 'Minimum Entites to clone is 1'
-                        },
-                        max: {
-                          value: maxToCopy,
-                          message: "Maximum Entites to clone is ".concat(maxToCopy)
-                        }
-                      })), {}, {
+                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+                        ...register('num_of_clones', {
+                          required: 'Populate number of clones',
+                          min: {
+                            value: 1,
+                            message: 'Minimum Entites to clone is 1'
+                          },
+                          max: {
+                            value: maxToCopy,
+                            message: `Maximum Entites to clone is ${maxToCopy}`
+                          }
+                        }),
                         disabled: !load_entity || delete_before_load,
                         width: "160px",
                         name: "num_of_clones",
@@ -11162,7 +12491,7 @@ function TargetForm(props) {
                         onChange: numberOfCloneChange,
                         title: "",
                         error: (_errors$num_of_entiti = errors.num_of_entities) === null || _errors$num_of_entiti === void 0 ? void 0 : _errors$num_of_entiti.message
-                      })), /*#__PURE__*/Object(jsx_runtime["jsx"])(EntityCloneComment, {
+                      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(EntityCloneComment, {
                         children: "The subset is limited to one entity"
                       })]
                     }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
@@ -11173,9 +12502,7 @@ function TargetForm(props) {
                   children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
                     title: "Reserve",
                     disabled: delete_before_load && !load_entity || dataSourceType === 'data_source' && source_type === 'tables',
-                    onChange: function onChange(value) {
-                      return actionChange('reserve_ind', value || false);
-                    },
+                    onChange: value => actionChange('reserve_ind', value || false),
                     name: "reserve_checkbox",
                     value: reserve_ind
                   })
@@ -11212,85 +12539,156 @@ function TargetForm(props) {
 /* harmony default export */ var Target = (TargetForm);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Advanced/styles.ts
 
-var Advanced_styles_templateObject, Advanced_styles_templateObject2, Advanced_styles_templateObject3, Advanced_styles_templateObject4, Advanced_styles_templateObject5, Advanced_styles_templateObject6, Advanced_styles_templateObject7, Advanced_styles_templateObject8;
-
-var Advanced_styles_Wrapper = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject || (Advanced_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    justify-content: center;\n"])));
-var Advanced_styles_Container = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject2 || (Advanced_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    position: relative;\n"])));
-var styles_Section = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject3 || (Advanced_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    justify-content: space-between;\n    gap : 27px;\n    padding-bottom: 30px;\n    border-bottom: solid 1px #ccc;\n"])));
-var TableWrapper = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject4 || (Advanced_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    margin-top: 30px;\n"])));
-var ActionsColumn = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject5 || (Advanced_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    display:flex;\n    align-items: center;\n    gap: 7px;\n"])));
-var ButtonContainer = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject6 || (Advanced_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    padding-bottom: 9px;\n    width: 100%;\n    display: flex;\n    justify-content: flex-end;\n"])));
-var Advanced_styles_Icon = styled_components_browser_esm["b" /* default */].img(Advanced_styles_templateObject7 || (Advanced_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var styles_ResetButton = styled_components_browser_esm["b" /* default */].div(Advanced_styles_templateObject8 || (Advanced_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    z-index: 1;\n    position: absolute;\n    right: 0px;\n    top: -50px;\n    z-index: 1000;\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1683f2;\n    display: flex;\n    gap: 6px;\n    align-items: center;\n    cursor: pointer;\n"])));
+const Advanced_styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+`;
+const Advanced_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    position: relative;
+`;
+const styles_Section = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap : 27px;
+    padding-bottom: 30px;
+    border-bottom: solid 1px #ccc;
+`;
+const TableWrapper = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 30px;
+`;
+const ActionsColumn = styled_components_browser_esm["b" /* default */].div`
+    display:flex;
+    align-items: center;
+    gap: 7px;
+`;
+const ButtonContainer = styled_components_browser_esm["b" /* default */].div`
+    padding-bottom: 9px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+`;
+const Advanced_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const styles_ResetButton = styled_components_browser_esm["b" /* default */].div`
+    z-index: 1;
+    position: absolute;
+    right: 0px;
+    top: -50px;
+    z-index: 100;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1683f2;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    cursor: pointer;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Scheduler/styles.ts
 
-var Scheduler_styles_templateObject, Scheduler_styles_templateObject2, Scheduler_styles_templateObject3, Scheduler_styles_templateObject4, Scheduler_styles_templateObject5, Scheduler_styles_templateObject6, Scheduler_styles_templateObject7, Scheduler_styles_templateObject8;
-
-var Scheduler_styles_Wrapper = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject || (Scheduler_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    justify-content: center;\n"])));
-var Scheduler_styles_Container = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject2 || (Scheduler_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    gap: 15px;\n"])));
-var SchedulerTypes = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject3 || (Scheduler_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 20px;\n    padding-bottom: 30px;\n    border-bottom: solid 1px #ccc;\n"])));
-var EndByDate = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject4 || (Scheduler_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 20px;\n    padding-bottom: 30px;\n    border-bottom: solid 1px #ccc;  \n"])));
-var CronContainer = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject5 || (Scheduler_styles_templateObject5 = taggedTemplateLiteral_default()(["\n"])));
-var EndByContainer = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject6 || (Scheduler_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    padding-top: 30px;\n"])));
-var styles_DateContainer = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject7 || (Scheduler_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    padding-top: 30px;\n"])));
-var TimeNote = styled_components_browser_esm["b" /* default */].div(Scheduler_styles_templateObject8 || (Scheduler_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    justify-content: flex-end;\n    color: #ec4758;\n    font-size: 14px;\n"])));
+const Scheduler_styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+`;
+const Scheduler_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+`;
+const SchedulerTypes = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 30px;
+    border-bottom: solid 1px #ccc;
+`;
+const EndByDate = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 30px;
+    border-bottom: solid 1px #ccc;  
+`;
+const CronContainer = styled_components_browser_esm["b" /* default */].div`
+`;
+const EndByContainer = styled_components_browser_esm["b" /* default */].div`
+    padding-top: 30px;
+`;
+const styles_DateContainer = styled_components_browser_esm["b" /* default */].div`
+    padding-top: 30px;
+`;
+const TimeNote = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #ec4758;
+    font-size: 14px;
+`;
 // EXTERNAL MODULE: ./node_modules/angular/index.js
-var node_modules_angular = __webpack_require__(66);
+var node_modules_angular = __webpack_require__(63);
 var angular_default = /*#__PURE__*/__webpack_require__.n(node_modules_angular);
 
 // CONCATENATED MODULE: ./src/components/AngularJSWrapper/index.tsx
 
 
 
-
 function AngularJSWrapper(props) {
-  var comp = props.comp,
-    params = props.params,
-    save = props.save;
-  var containerRef = Object(react["useRef"])(null);
-  var _useState = Object(react["useState"])({}),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    scope = _useState2[0],
-    setScope = _useState2[1];
-  Object(react["useEffect"])(function () {
-    Object.keys(params).forEach(function (it) {
+  const {
+    comp,
+    params,
+    save
+  } = props;
+  const containerRef = Object(react["useRef"])(null);
+  const [scope, setScope] = Object(react["useState"])({});
+  Object(react["useEffect"])(() => {
+    Object.keys(params).forEach(it => {
       scope[params[it].name] = params[it].value;
     });
   }, [params, scope]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (containerRef.current) {
       // Manually bootstrap the AngularJS application
 
       // Compile and inject the AngularJS component
-      var $injector = angular_default.a.element(containerRef.current).injector();
-      var $compile = $injector.get('$compile');
-      var $rootScope = $injector.get('$rootScope');
-      var newScope = $rootScope.$new();
-      Object.keys(params).forEach(function (key) {
+      const $injector = angular_default.a.element(containerRef.current).injector();
+      const $compile = $injector.get('$compile');
+      const $rootScope = $injector.get('$rootScope');
+      const newScope = $rootScope.$new();
+      Object.keys(params).forEach(key => {
         newScope[params[key].name] = params[key].value;
       });
-      var element = angular_default.a.element("<".concat(comp, " ").concat(getParams(), "></").concat(comp, ">"));
-      var compiledElement = $compile(element)(newScope);
+      const element = angular_default.a.element(`<${comp} ${getParams()}></${comp}>`);
+      const compiledElement = $compile(element)(newScope);
       containerRef.current.appendChild(compiledElement[0]);
       newScope.$apply();
       setScope(newScope);
-      newScope.$watch(params['ng-model'].name, function (newValue, value) {
+      newScope.$watch(params['ng-model'].name, (newValue, value) => {
         save(params['ng-model'].name, newValue);
       }, true, true);
     }
     // Cleanup on component unmount
-    return function () {
+    return () => {
       // Remove the AngularJS component and clean up the scope
       if (containerRef.current) {
-        var _scope = angular_default.a.element(containerRef.current).scope();
-        _scope.$destroy();
+        const scope = angular_default.a.element(containerRef.current).scope();
+        scope.$destroy();
       }
     };
   }, []);
-  var getParams = Object(react["useCallback"])(function () {
-    var attributes = Object.keys(params).map(function (it) {
-      return " ".concat(it, "=\"").concat(params[it].name, "\" ");
-    }).join(' ');
+  const getParams = Object(react["useCallback"])(() => {
+    const attributes = Object.keys(params).map(it => ` ${it}="${params[it].name}" `).join(' ');
     console.log(attributes);
     return attributes;
   }, [params]);
@@ -11308,41 +12706,28 @@ function AngularJSWrapper(props) {
 
 
 
-
-
-
-
 var ScheduleTypesEnum = /*#__PURE__*/function (ScheduleTypesEnum) {
   ScheduleTypesEnum["EXECUTION_BY_REQUEST"] = "EXECUTION_BY_REQUEST";
   ScheduleTypesEnum["SCHEDULED_EXECUTION"] = "SCHEDULED_EXECUTION";
   return ScheduleTypesEnum;
 }(ScheduleTypesEnum || {});
 function SchedulerForm(props) {
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var scheduler = taskData.scheduler,
-    scheduling_end_date = taskData.scheduling_end_date;
-  var _useState = Object(react["useState"])(scheduler || ''),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    cronValue = _useState2[0],
-    setCronValue = _useState2[1];
-  var _useState3 = Object(react["useState"])(scheduling_end_date && new Date(scheduling_end_date) || null),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    cronEndDate = _useState4[0],
-    setCornEndDate = _useState4[1];
-  var _useState5 = Object(react["useState"])(false),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    schedulingParameters = _useState6[0],
-    setSchedulingParameters = _useState6[1];
-  var _useState7 = Object(react["useState"])(scheduling_end_date ? 'end_by' : 'none'),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    endBy = _useState8[0],
-    setEndBy = _useState8[1];
-  Object(react["useEffect"])(function () {
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    scheduler,
+    scheduling_end_date
+  } = taskData;
+  const [cronValue, setCronValue] = Object(react["useState"])(scheduler || '');
+  const [cronEndDate, setCornEndDate] = Object(react["useState"])(scheduling_end_date && new Date(scheduling_end_date) || null);
+  const [schedulingParameters, setSchedulingParameters] = Object(react["useState"])(false);
+  const [endBy, setEndBy] = Object(react["useState"])(scheduling_end_date ? 'end_by' : 'none');
+  Object(react["useEffect"])(() => {
     setSchedulingParameters(scheduler !== 'immediate');
   }, [scheduler]);
-  var schedulingParametersOnChange = Object(react["useCallback"])(function (value) {
+  const schedulingParametersOnChange = Object(react["useCallback"])(value => {
     if (value) {
       saveForm({
         scheduler: '0 0/1 * 1/1 * ? *'
@@ -11353,83 +12738,78 @@ function SchedulerForm(props) {
       });
     }
   }, [saveForm, setSchedulingParameters]);
-  var cronChange = Object(react["useCallback"])(function (value) {
-    setCronValue(value);
-    saveForm({
-      scheduler: value
-    });
-  }, [saveForm]);
-  var endByChange = Object(react["useCallback"])(function (value) {
+  const endByChange = Object(react["useCallback"])(value => {
     setEndBy(value);
     saveForm({
       scheduling_end_date: value === 'none' ? null : cronEndDate
     });
   }, [saveForm, cronEndDate]);
-  var cronEndDateChange = Object(react["useCallback"])(function (value) {
+  const cronEndDateChange = Object(react["useCallback"])(value => {
     setCornEndDate(value);
     saveForm({
       scheduling_end_date: value && value.toDateString() || null
     });
   }, [saveForm]);
-  var translateFn = function translateFn(key) {
+  const translateFn = key => {
     if (key === 'hour') {
       return 'hour(s)';
     }
     return key;
   };
-  var params = Object(react["useMemo"])(function () {
-    return {
-      'ng-model': {
-        name: 'scheduler',
-        value: scheduler
-      },
-      options: {
-        name: 'options',
-        value: {
-          formInputClass: 'form-control1 cron-gen-input',
-          // Form input class override
-          formSelectClass: 'form-control1 cron-gen-select',
-          // Select class override
-          formRadioClass: 'cron-gen-radio',
-          // Radio class override
-          formCheckboxClass: 'cron-gen-checkbox',
-          // Radio class override
-          hideMinutesTab: false,
-          // Whether to hide the minutes tab
-          hideHourlyTab: false,
-          // Whether to hide the hourly tab
-          hideDailyTab: false,
-          // Whether to hide the daily tab
-          hideWeeklyTab: false,
-          // Whether to hide the weekly tab
-          hideMonthlyTab: false,
-          // Whether to hide the monthly tab
-          hideYearlyTab: false,
-          // Whether to hide the yearly tab
-          hideAdvancedTab: false,
-          // Whether to hide the advanced tab
-          use24HourTime: true,
-          // Whether to show AM/PM on the time selectors
-          hideSeconds: false // Whether to show/hide the seconds time picker
-        }
-      },
-      'cron-format': {
-        name: 'format',
-        value: "quartz (Currently only compatible with 'quartz' and defaults to 'quartz')"
+  const params = Object(react["useMemo"])(() => ({
+    'ng-model': {
+      name: 'scheduler',
+      value: scheduler
+    },
+    options: {
+      name: 'options',
+      value: {
+        formInputClass: 'form-control1 cron-gen-input',
+        // Form input class override
+        formSelectClass: 'form-control1 cron-gen-select',
+        // Select class override
+        formRadioClass: 'cron-gen-radio',
+        // Radio class override
+        formCheckboxClass: 'cron-gen-checkbox',
+        // Radio class override
+        hideMinutesTab: false,
+        // Whether to hide the minutes tab
+        hideHourlyTab: false,
+        // Whether to hide the hourly tab
+        hideDailyTab: false,
+        // Whether to hide the daily tab
+        hideWeeklyTab: false,
+        // Whether to hide the weekly tab
+        hideMonthlyTab: false,
+        // Whether to hide the monthly tab
+        hideYearlyTab: false,
+        // Whether to hide the yearly tab
+        hideAdvancedTab: false,
+        // Whether to hide the advanced tab
+        use24HourTime: true,
+        // Whether to show AM/PM on the time selectors
+        hideSeconds: false // Whether to show/hide the seconds time picker
       }
-    };
-  }, [scheduler]);
-  var saveSchedulerValue = Object(react["useCallback"])(function (field, value) {
-    saveForm(defineProperty_default()({}, field, value));
+    },
+    'cron-format': {
+      name: 'format',
+      value: "quartz (Currently only compatible with 'quartz' and defaults to 'quartz')"
+    }
+  }), [scheduler]);
+  const saveSchedulerValue = Object(react["useCallback"])((field, value) => {
+    if (value == 'immediate') {
+      return;
+    }
+    saveForm({
+      [field]: value
+    });
   }, [saveForm]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Scheduler_styles_Wrapper, {
     children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Scheduler_styles_Container, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
         name: 'set_scheduling_parameters',
         title: 'Set scheduling parameters',
-        onChange: function onChange(value) {
-          return schedulingParametersOnChange(value);
-        },
+        onChange: value => schedulingParametersOnChange(value),
         value: schedulingParameters
       }), schedulingParameters ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(CronContainer, {
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_AngularJSWrapper, {
@@ -11466,10 +12846,6 @@ function SchedulerForm(props) {
   });
 }
 /* harmony default export */ var Scheduler = (SchedulerForm);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/objectDestructuringEmpty.js
-var objectDestructuringEmpty = __webpack_require__(225);
-var objectDestructuringEmpty_default = /*#__PURE__*/__webpack_require__.n(objectDestructuringEmpty);
-
 // CONCATENATED MODULE: ./src/images/delete-icon-blue.svg
 /* harmony default export */ var delete_icon_blue = ("js/dist/437f49031698b544e4b1c9c124aaf20a.svg");
 // CONCATENATED MODULE: ./src/images/edit.svg
@@ -11481,98 +12857,133 @@ var objectDestructuringEmpty_default = /*#__PURE__*/__webpack_require__.n(object
 
 
 
-
-var TaskVariables_useTable_useTable = function useTable(deleteGlobal, editGloabl) {
-  var columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
-  var columns = Object(react["useMemo"])(function () {
-    return [{
-      id: 'actions',
-      header: '',
-      cell: function cell(_ref) {
-        var row = _ref.row;
-        return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionsColumn, {
-          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_styles_Icon, {
-            onClick: function onClick() {
-              return editGloabl(row.original.global_name);
-            },
-            src: edit
-          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_styles_Icon, {
-            onClick: function onClick() {
-              return deleteGlobal(row.original.global_name);
-            },
-            src: delete_icon_blue
-          })]
-        });
-      }
-    }, columnHelper.accessor('global_name', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Variable name"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('global_value', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Variable value"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    }), columnHelper.accessor('lu_name', {
-      header: function header() {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: "Logical unit"
-        });
-      },
-      cell: function cell(info) {
-        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
-          children: info.getValue()
-        });
-      }
-    })];
-  }, [editGloabl, deleteGlobal, columnHelper]);
+const TaskVariables_useTable_useTable = (deleteGlobal, editGloabl) => {
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const columns = Object(react["useMemo"])(() => [{
+    id: 'actions',
+    header: '',
+    cell: _ref => {
+      let {
+        row
+      } = _ref;
+      return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionsColumn, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_styles_Icon, {
+          onClick: () => editGloabl(row.original.global_name),
+          src: edit
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_styles_Icon, {
+          onClick: () => deleteGlobal(row.original.global_name),
+          src: delete_icon_blue
+        })]
+      });
+    }
+  }, columnHelper.accessor('global_name', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Variable name"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  }), columnHelper.accessor('global_value', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Variable value"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  }), columnHelper.accessor('lu_name', {
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Logical unit"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    })
+  })], [editGloabl, deleteGlobal, columnHelper]);
   return {
-    columns: columns
+    columns
   };
 };
 /* harmony default export */ var TaskVariables_useTable = (TaskVariables_useTable_useTable);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Advanced/TaskVariables/styles.ts
 
-var TaskVariables_styles_templateObject;
-
-var styles_ButtonContainer = styled_components_browser_esm["b" /* default */].div(TaskVariables_styles_templateObject || (TaskVariables_styles_templateObject = taggedTemplateLiteral_default()(["\n    padding-bottom: 9px;\n    position: relative;\n    display: flex;\n    justify-content: flex-end;\n"])));
+const styles_ButtonContainer = styled_components_browser_esm["b" /* default */].div`
+    padding-bottom: 9px;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Advanced/TaskVariablesModal/styles.ts
 
-var TaskVariablesModal_styles_templateObject, TaskVariablesModal_styles_templateObject2, TaskVariablesModal_styles_templateObject3, TaskVariablesModal_styles_templateObject4, TaskVariablesModal_styles_templateObject5, TaskVariablesModal_styles_templateObject6, TaskVariablesModal_styles_templateObject7, TaskVariablesModal_styles_templateObject8, TaskVariablesModal_styles_templateObject9, TaskVariablesModal_styles_templateObject10;
+const TaskVariablesModal_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 324px;
+    position: relative;
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 19px 0px 30px 0px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+`;
+const TaskVariablesModal_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    position: relative;
+    margin: 0px 20px;
+    margin-bottom: 19px;
+`;
+const TaskVariablesModal_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    margin: 24px 25px 0px 30px;
+`;
+const ItemsContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
 
-var TaskVariablesModal_styles_Container = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject || (TaskVariablesModal_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 324px;\n    position: relative;\n    z-index: 100;\n    overflow-y: auto;\n    overflow-x: hidden;\n    padding: 19px 0px 30px 0px;\n    object-fit: contain;\n    border-radius: 6px;\n    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);\n    background-color: #fff;\n"])));
-var TaskVariablesModal_styles_Title = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject2 || (TaskVariablesModal_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 18px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.33;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    position: relative;\n    margin: 0px 20px;\n    margin-bottom: 19px;\n"])));
-var TaskVariablesModal_styles_Body = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject3 || (TaskVariablesModal_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    margin: 24px 25px 0px 30px;\n"])));
-var ItemsContainer = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject4 || (TaskVariablesModal_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 15px;\n\n"])));
-var TaskVariablesModal_styles_Seprator = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject5 || (TaskVariablesModal_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    border: solid 1px #ccc;\n"])));
-var styles_CloseIcon = styled_components_browser_esm["b" /* default */].img(TaskVariablesModal_styles_templateObject6 || (TaskVariablesModal_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    right: 0px;\n    top: 5px;\n    cursor: pointer;\n"])));
-var TaskVariablesModal_styles_Icon = styled_components_browser_esm["b" /* default */].img(TaskVariablesModal_styles_templateObject7 || (TaskVariablesModal_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var TaskVariablesModal_styles_Actions = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject8 || (TaskVariablesModal_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    display: flex;\n    margin-top:5px;\n    align-items: center;\n    justify-content: flex-end;\n    gap: 18px;\n    border-bottom: ", ";\n    padding-bottom: 13px;\n"])), function (props) {
-  return props.border ? '1px solid #ccc' : '';
-});
-var TaskVariablesModal_styles_ActionItem = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject9 || (TaskVariablesModal_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    cursor: pointer;\n"])));
-var styles_ErrorContainer = styled_components_browser_esm["b" /* default */].div(TaskVariablesModal_styles_templateObject10 || (TaskVariablesModal_styles_templateObject10 = taggedTemplateLiteral_default()(["\n"])));
+`;
+const TaskVariablesModal_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border: solid 1px #ccc;
+`;
+const styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    cursor: pointer;
+`;
+const TaskVariablesModal_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const TaskVariablesModal_styles_Actions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    margin-top:5px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    border-bottom: ${props => props.border ? '1px solid #ccc' : ''};
+    padding-bottom: 13px;
+`;
+const TaskVariablesModal_styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const styles_ErrorContainer = styled_components_browser_esm["b" /* default */].div`
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Advanced/TaskVariablesModal/index.tsx
-
-
-
-
-function TaskVariablesModal_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function TaskVariablesModal_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? TaskVariablesModal_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : TaskVariablesModal_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 
 
 
@@ -11582,159 +12993,106 @@ function TaskVariablesModal_objectSpread(target) { for (var i = 1; i < arguments
 
 
 function TaskVariablesModal(props) {
-  var setOpen = props.setOpen,
-    variableData = props.variableData,
-    selectedVariables = props.selectedVariables,
-    lus = props.lus,
-    addGlobal = props.addGlobal;
-  var _useState = Object(react["useState"])(),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    chosenVariable = _useState2[0],
-    setChosenVariable = _useState2[1];
-  var _useState3 = Object(react["useState"])(),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    localVariablesData = _useState4[0],
-    setLocalVariablesData = _useState4[1];
-  var _useState5 = Object(react["useState"])(null),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    chosenLu = _useState6[0],
-    setChosenLu = _useState6[1];
-  var _useState7 = Object(react["useState"])([]),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    variableLUList = _useState8[0],
-    setVariableLUList = _useState8[1];
-  var _useState9 = Object(react["useState"])(false),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    showError = _useState10[0],
-    setShowError = _useState10[1];
-  var _useState11 = Object(react["useState"])(),
-    _useState12 = slicedToArray_default()(_useState11, 2),
-    variableValue = _useState12[0],
-    setVariableValue = _useState12[1];
-  Object(react["useEffect"])(function () {
-    function fetchTaskVariables() {
-      return _fetchTaskVariables.apply(this, arguments);
-    }
-    function _fetchTaskVariables() {
-      _fetchTaskVariables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var _data, globals, found, foundLU;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return apis_task.getGlobalVariables(lus);
-            case 3:
-              _data = _context.sent;
-              globals = [];
-              _data.forEach(function (global) {
-                var luObjectMapping = {};
-                var selectedLuForGlobal = selectedVariables.filter(function (it) {
-                  return it.global_name === global.globalName;
-                });
-                if (selectedLuForGlobal.find(function (it) {
-                  return it.lu_name === 'ALL';
-                }) && (!variableData || variableData.global_name !== global.globalName)) {
-                  return;
-                }
-                global.luList.forEach(function (luData) {
-                  luObjectMapping[luData.luName] = luData.defaultValue;
-                });
-                if (luObjectMapping['ALL'] !== undefined && luObjectMapping['ALL'] !== null) {
-                  var newLuList = [];
-                  if (selectedLuForGlobal.length > 0) {}
-                  if (selectedLuForGlobal.length === 0) {
-                    newLuList.push({
-                      luName: 'ALL',
-                      defaultValue: luObjectMapping['ALL'],
-                      value: 'ALL',
-                      label: 'ALL'
-                    });
-                  }
-                  lus.forEach(function (lu) {
-                    newLuList.push({
-                      luName: lu,
-                      defaultValue: luObjectMapping[lu] || luObjectMapping['ALL'] || '',
-                      value: lu,
-                      label: lu
-                    });
-                  });
-                  global.luList = newLuList;
-                }
-                global.luList = global.luList.filter(function (lu) {
-                  return selectedLuForGlobal.findIndex(function (it) {
-                    return it.lu_name === lu.luName;
-                  }) < 0 || lu.luName === (variableData === null || variableData === void 0 ? void 0 : variableData.lu_name);
-                });
-                if (global.luList.length === 0 && (!variableData || variableData.global_name !== global.globalName)) {
-                  return;
-                }
-                if (variableData && !global.luList.find(function (it) {
-                  return it.luName === (variableData === null || variableData === void 0 ? void 0 : variableData.lu_name);
-                })) {
-                  global.luList.push({
-                    luName: variableData.lu_name,
-                    defaultValue: variableData.global_value,
-                    value: variableData.lu_name,
-                    label: variableData.lu_name
-                  });
-                }
-                globals.push(TaskVariablesModal_objectSpread(TaskVariablesModal_objectSpread({}, global), {}, {
-                  value: global.globalName,
-                  label: global.globalName
-                }));
-              });
-              if (variableData) {
-                found = globals.find(function (it) {
-                  return it.globalName === variableData.global_name;
-                });
-                if (found) {
-                  setChosenVariable(found);
-                  setVariableLUList(found.luList.map(function (it) {
-                    return TaskVariablesModal_objectSpread(TaskVariablesModal_objectSpread({}, it), {}, {
-                      value: it.luName,
-                      label: it.luName
-                    });
-                  }));
-                  foundLU = found.luList.find(function (it) {
-                    return it.luName === variableData.lu_name;
-                  });
-                  if (foundLU) {
-                    setChosenLu(foundLU);
-                    setVariableValue(variableData.global_value);
-                  }
-                }
-              }
-              setLocalVariablesData(globals);
-              _context.next = 12;
-              break;
-            case 10:
-              _context.prev = 10;
-              _context.t0 = _context["catch"](0);
-            case 12:
-            case "end":
-              return _context.stop();
+  const {
+    setOpen,
+    variableData,
+    selectedVariables,
+    lus,
+    addGlobal
+  } = props;
+  const [chosenVariable, setChosenVariable] = Object(react["useState"])();
+  const [localVariablesData, setLocalVariablesData] = Object(react["useState"])();
+  const [chosenLu, setChosenLu] = Object(react["useState"])(null);
+  const [variableLUList, setVariableLUList] = Object(react["useState"])([]);
+  const [showError, setShowError] = Object(react["useState"])(false);
+  const [variableValue, setVariableValue] = Object(react["useState"])();
+  Object(react["useEffect"])(() => {
+    async function fetchTaskVariables() {
+      try {
+        const data = await apis_task.getGlobalVariables(lus);
+        const globals = [];
+        data.forEach(global => {
+          const luObjectMapping = {};
+          const selectedLuForGlobal = selectedVariables.filter(it => it.global_name === global.globalName);
+          if (selectedLuForGlobal.find(it => it.lu_name === 'ALL') && (!variableData || variableData.global_name !== global.globalName)) {
+            return;
           }
-        }, _callee, null, [[0, 10]]);
-      }));
-      return _fetchTaskVariables.apply(this, arguments);
+          global.luList.forEach(luData => {
+            luObjectMapping[luData.luName] = luData.defaultValue;
+          });
+          if (luObjectMapping['ALL'] !== undefined && luObjectMapping['ALL'] !== null) {
+            const newLuList = [];
+            if (selectedLuForGlobal.length > 0) {}
+            if (selectedLuForGlobal.length === 0) {
+              newLuList.push({
+                luName: 'ALL',
+                defaultValue: luObjectMapping['ALL'],
+                value: 'ALL',
+                label: 'ALL'
+              });
+            }
+            lus.forEach(lu => {
+              newLuList.push({
+                luName: lu,
+                defaultValue: luObjectMapping[lu] || luObjectMapping['ALL'] || '',
+                value: lu,
+                label: lu
+              });
+            });
+            global.luList = newLuList;
+          }
+          global.luList = global.luList.filter(lu => selectedLuForGlobal.findIndex(it => it.lu_name === lu.luName) < 0 || lu.luName === (variableData === null || variableData === void 0 ? void 0 : variableData.lu_name));
+          if (global.luList.length === 0 && (!variableData || variableData.global_name !== global.globalName)) {
+            return;
+          }
+          if (variableData && !global.luList.find(it => it.luName === (variableData === null || variableData === void 0 ? void 0 : variableData.lu_name))) {
+            global.luList.push({
+              luName: variableData.lu_name,
+              defaultValue: variableData.global_value,
+              value: variableData.lu_name,
+              label: variableData.lu_name
+            });
+          }
+          globals.push({
+            ...global,
+            value: global.globalName,
+            label: global.globalName
+          });
+        });
+        if (variableData) {
+          const found = globals.find(it => it.globalName === variableData.global_name);
+          if (found) {
+            setChosenVariable(found);
+            setVariableLUList(found.luList.map(it => ({
+              ...it,
+              value: it.luName,
+              label: it.luName
+            })));
+            const foundLU = found.luList.find(it => it.luName === variableData.lu_name);
+            if (foundLU) {
+              setChosenLu(foundLU);
+              setVariableValue(variableData.global_value);
+            }
+          }
+        }
+        setLocalVariablesData(globals);
+      } catch (err) {}
     }
     fetchTaskVariables();
   }, []);
   console.log(localVariablesData);
-  var variableChange = Object(react["useCallback"])(function (value) {
+  const variableChange = Object(react["useCallback"])(value => {
     setShowError(false);
     setChosenVariable(value);
     setChosenLu(null);
     setVariableValue('');
-    setVariableLUList(value.luList.map(function (it) {
-      return TaskVariablesModal_objectSpread(TaskVariablesModal_objectSpread({}, it), {}, {
-        value: it.luName,
-        label: it.luName
-      });
-    }));
+    setVariableLUList(value.luList.map(it => ({
+      ...it,
+      value: it.luName,
+      label: it.luName
+    })));
   }, [setChosenVariable, setVariableLUList, setChosenLu, setVariableValue, setShowError]);
-  var luChange = Object(react["useCallback"])(function (value) {
+  const luChange = Object(react["useCallback"])(value => {
     setShowError(false);
     setChosenLu(value);
     if (value.defaultValue) {
@@ -11743,11 +13101,11 @@ function TaskVariablesModal(props) {
       setVariableValue('');
     }
   }, [setChosenLu, setVariableValue, setShowError]);
-  var varaiableValueChange = Object(react["useCallback"])(function (value) {
+  const varaiableValueChange = Object(react["useCallback"])(value => {
     setShowError(false);
     setVariableValue(value);
   }, [setVariableValue, setShowError]);
-  var saveGlobal = Object(react["useCallback"])(function () {
+  const saveGlobal = Object(react["useCallback"])(() => {
     if (!chosenVariable || !chosenLu || !variableValue) {
       setShowError(true);
       return;
@@ -11763,9 +13121,7 @@ function TaskVariablesModal(props) {
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskVariablesModal_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskVariablesModal_styles_Title, {
       children: ["Task variables", /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_CloseIcon, {
-        onClick: function onClick() {
-          return setOpen(false);
-        },
+        onClick: () => setOpen(false),
         src: xclose
       })]
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskVariablesModal_styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskVariablesModal_styles_Body, {
@@ -11805,9 +13161,7 @@ function TaskVariablesModal(props) {
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskVariablesModal_styles_Actions, {
         border: false,
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskVariablesModal_styles_ActionItem, {
-          onClick: function onClick() {
-            return setOpen(false);
-          },
+          onClick: () => setOpen(false),
           children: "Cancel"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskVariablesModal_styles_ActionItem, {
           onClick: saveGlobal,
@@ -11823,78 +13177,64 @@ function TaskVariablesModal(props) {
 
 
 
-function TaskVariables_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function TaskVariables_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? TaskVariables_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : TaskVariables_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
-
-
-
 
 
 
 
 
 function TaskVariables(props) {
-  objectDestructuringEmpty_default()(props);
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var _useState = Object(react["useState"])(undefined),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    editVariableData = _useState2[0],
-    setEditVariableData = _useState2[1];
-  var _useState3 = Object(react["useState"])(false),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    open = _useState4[0],
-    setOpen = _useState4[1];
-  var ref = Object(react["useRef"])();
-  var task_id = taskData.task_id,
-    selected_logical_units_names = taskData.selected_logical_units_names,
-    globals = taskData.globals;
-  var editGloabl = Object(react["useCallback"])(function (globalName) {
+  const {} = props;
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const [editVariableData, setEditVariableData] = Object(react["useState"])(undefined);
+  const [open, setOpen] = Object(react["useState"])(false);
+  const ref = Object(react["useRef"])();
+  const {
+    task_id,
+    selected_logical_units_names,
+    globals
+  } = taskData;
+  const editGloabl = Object(react["useCallback"])(globalName => {
     console.log(globals);
-    var found = globals.find(function (it) {
-      return it.global_name === globalName;
-    });
+    const found = globals.find(it => it.global_name === globalName);
     if (found) {
-      setEditVariableData(TaskVariables_objectSpread({}, found));
+      setEditVariableData({
+        ...found
+      });
       setOpen(true);
     }
   }, [globals, setEditVariableData]);
   console.log(globals);
-  var deleteGlobal = Object(react["useCallback"])(function (globalName) {
-    var newGlobals = globals.filter(function (it) {
-      return it.global_name !== globalName;
-    });
+  const deleteGlobal = Object(react["useCallback"])(globalName => {
+    const newGlobals = globals.filter(it => it.global_name !== globalName);
     saveForm({
       globals: newGlobals
     });
   }, [saveForm, globals]);
-  var _useTable = TaskVariables_useTable(deleteGlobal, editGloabl),
-    columns = _useTable.columns;
-  var addNewGloabl = Object(react["useCallback"])(function (data) {
+  const {
+    columns
+  } = TaskVariables_useTable(deleteGlobal, editGloabl);
+  const addNewGloabl = Object(react["useCallback"])(data => {
     if (data.edit) {
-      var foundGlobal = globals.find(function (it) {
-        return it.global_name === data.global_name;
-      });
+      const foundGlobal = globals.find(it => it.global_name === data.global_name);
       if (foundGlobal) {
         foundGlobal.lu_name = data.lu_name;
         foundGlobal.global_value = data.global_value;
       }
       saveForm({
-        globals: toConsumableArray_default()(globals)
+        globals: [...globals]
       });
       setEditVariableData(undefined);
       return;
     }
-    var newGlobals = [].concat(toConsumableArray_default()(globals), [data]);
+    const newGlobals = [...globals, data];
     saveForm({
-      globals: toConsumableArray_default()(newGlobals)
+      globals: [...newGlobals]
     });
   }, [globals, saveForm]);
-  var getTaskVariablesModal = Object(react["useCallback"])(function () {
+  const getTaskVariablesModal = Object(react["useCallback"])(() => {
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_TaskVariablesModal, {
       addGlobal: addNewGloabl,
       selectedVariables: globals,
@@ -11917,14 +13257,12 @@ function TaskVariables(props) {
         positions: ['left'],
         content: getTaskVariablesModal(),
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
-          onClick: function onClick() {
-            return setOpen(true);
-          },
+          onClick: () => setOpen(true),
           children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
             width: "152px",
             type: 'secondary',
             title: "Set task variables",
-            onClick: function onClick() {}
+            onClick: () => {}
           })
         })
       })
@@ -11939,64 +13277,271 @@ function TaskVariables(props) {
 /* harmony default export */ var clock_icon = ("js/dist/b8c44964b9549d7786e9a44faffd0d7e.svg");
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Advanced/ExecutionPorcesses/styles.ts
 
-var ExecutionPorcesses_styles_templateObject, ExecutionPorcesses_styles_templateObject2, ExecutionPorcesses_styles_templateObject3, ExecutionPorcesses_styles_templateObject4, ExecutionPorcesses_styles_templateObject5, ExecutionPorcesses_styles_templateObject6, ExecutionPorcesses_styles_templateObject7, ExecutionPorcesses_styles_templateObject8, ExecutionPorcesses_styles_templateObject9, ExecutionPorcesses_styles_templateObject10, ExecutionPorcesses_styles_templateObject11, ExecutionPorcesses_styles_templateObject12, ExecutionPorcesses_styles_templateObject13, ExecutionPorcesses_styles_templateObject14, ExecutionPorcesses_styles_templateObject15, ExecutionPorcesses_styles_templateObject16, styles_templateObject17, styles_templateObject18, styles_templateObject19, _templateObject20, _templateObject21, _templateObject22, _templateObject23, _templateObject24, _templateObject25, _templateObject26, _templateObject27, _templateObject28;
+const ExecutionPorcesses_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+`;
+const AddButtonContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+`;
+const ExecutionPorcesses_styles_TableContainer = styled_components_browser_esm["b" /* default */].table`
+    border-spacing: 0;
+    border-collapse: separate;
+    width: 100%;
+    height: 100%;
+`;
+const ExecutionPorcesses_styles_Thead = styled_components_browser_esm["b" /* default */].thead`
+    display: table;
+    width: calc(100% - 5px);
+    table-layout: fixed;
+`;
+const TheadRow = styled_components_browser_esm["b" /* default */].tr`
+    vertical-align: top;
+`;
+const TheadEmptyColumn = styled_components_browser_esm["b" /* default */].th`
+    text-align: start;
+    font-size: 14px;
+    padding: 4px 6px;
+    vertical-align: middle;
+    width: 45px;
+    background-color: white;
+    border: 0;
+    color: black;
+`;
+const TheadNameColumn = styled_components_browser_esm["b" /* default */].th`
+    overflow: visible;
+    white-space: nowrap;
+    text-align: start;
+    font-size: 14px;
+    padding: 4px 6px;
+    vertical-align: middle;
+    background-color: white;
+    border: 0;
+    color: black;
+`;
+const TheadOrderColumn = styled_components_browser_esm["b" /* default */].th`
+    width: 20%;
+    padding-left: 8px;
+    text-align: center;
+    text-align: start;
+    font-size: 14px;
+    padding: 4px 6px;
+    vertical-align: middle;
+    background-color: white;
+    border: 0;
+    color: black;
+`;
+const TheadDeleteColumn = styled_components_browser_esm["b" /* default */].th`
+    width: 40px;
+    text-align: center;
+    text-align: start;
+    font-size: 14px;
+    padding: 4px 6px;
+    vertical-align: middle;
+    background-color: white;
+    border: 0;
+`;
+const TBody = styled_components_browser_esm["b" /* default */].tbody`
+    display: block;
+    overflow-x: hidden;
+    border-spacing: 0;
+    overflow: auto;
+`;
+const TBodyRow = styled_components_browser_esm["b" /* default */].tr`
+    display: table;
+    width: calc(100% - 5px);
+    min-height: 42px;
+    table-layout: fixed;
+    vertical-align: top;
+    margin: 6px 0;
+    margin-bottom: ${props => props.expand ? '0px' : ''};
+    &:hover {
+        background-color: transparent;
+    }
+`;
+const TBodyEditColumn = styled_components_browser_esm["b" /* default */].td`
+    border: unset;
+    padding: unset;
+    white-space: unset;
+    max-width: unset;
+    overflow: unset;
 
-var ExecutionPorcesses_styles_Container = styled_components_browser_esm["b" /* default */].div(ExecutionPorcesses_styles_templateObject || (ExecutionPorcesses_styles_templateObject = taggedTemplateLiteral_default()(["\n    display: flex;\n    flex-direction: column;\n    gap: 15px;\n"])));
-var AddButtonContainer = styled_components_browser_esm["b" /* default */].div(ExecutionPorcesses_styles_templateObject2 || (ExecutionPorcesses_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    display: flex;\n    align-items: center;\n    justify-content: flex-end;\n"])));
-var ExecutionPorcesses_styles_TableContainer = styled_components_browser_esm["b" /* default */].table(ExecutionPorcesses_styles_templateObject3 || (ExecutionPorcesses_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    border-spacing: 0;\n    border-collapse: separate;\n    width: 100%;\n    height: 100%;\n"])));
-var ExecutionPorcesses_styles_Thead = styled_components_browser_esm["b" /* default */].thead(ExecutionPorcesses_styles_templateObject4 || (ExecutionPorcesses_styles_templateObject4 = taggedTemplateLiteral_default()(["\n    display: table;\n    width: calc(100% - 5px);\n    table-layout: fixed;\n"])));
-var TheadRow = styled_components_browser_esm["b" /* default */].tr(ExecutionPorcesses_styles_templateObject5 || (ExecutionPorcesses_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    vertical-align: top;\n"])));
-var TheadEmptyColumn = styled_components_browser_esm["b" /* default */].th(ExecutionPorcesses_styles_templateObject6 || (ExecutionPorcesses_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    text-align: start;\n    font-size: 14px;\n    padding: 4px 6px;\n    vertical-align: middle;\n    width: 45px;\n    background-color: white;\n    border: 0;\n    color: black;\n"])));
-var TheadNameColumn = styled_components_browser_esm["b" /* default */].th(ExecutionPorcesses_styles_templateObject7 || (ExecutionPorcesses_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    overflow: visible;\n    white-space: nowrap;\n    text-align: start;\n    font-size: 14px;\n    padding: 4px 6px;\n    vertical-align: middle;\n    background-color: white;\n    border: 0;\n    color: black;\n"])));
-var TheadOrderColumn = styled_components_browser_esm["b" /* default */].th(ExecutionPorcesses_styles_templateObject8 || (ExecutionPorcesses_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    width: 20%;\n    padding-left: 8px;\n    text-align: center;\n    text-align: start;\n    font-size: 14px;\n    padding: 4px 6px;\n    vertical-align: middle;\n    background-color: white;\n    border: 0;\n    color: black;\n"])));
-var TheadDeleteColumn = styled_components_browser_esm["b" /* default */].th(ExecutionPorcesses_styles_templateObject9 || (ExecutionPorcesses_styles_templateObject9 = taggedTemplateLiteral_default()(["\n    width: 40px;\n    text-align: center;\n    text-align: start;\n    font-size: 14px;\n    padding: 4px 6px;\n    vertical-align: middle;\n    background-color: white;\n    border: 0;\n"])));
-var TBody = styled_components_browser_esm["b" /* default */].tbody(ExecutionPorcesses_styles_templateObject10 || (ExecutionPorcesses_styles_templateObject10 = taggedTemplateLiteral_default()(["\n    display: block;\n    overflow-x: hidden;\n    border-spacing: 0;\n    overflow: auto;\n"])));
-var TBodyRow = styled_components_browser_esm["b" /* default */].tr(ExecutionPorcesses_styles_templateObject11 || (ExecutionPorcesses_styles_templateObject11 = taggedTemplateLiteral_default()(["\n    display: table;\n    width: calc(100% - 5px);\n    min-height: 42px;\n    table-layout: fixed;\n    vertical-align: top;\n    margin: 6px 0;\n    margin-bottom: ", ";\n    &:hover {\n        background-color: transparent;\n    }\n"])), function (props) {
-  return props.expand ? '0px' : '';
-});
-var TBodyEditColumn = styled_components_browser_esm["b" /* default */].td(ExecutionPorcesses_styles_templateObject12 || (ExecutionPorcesses_styles_templateObject12 = taggedTemplateLiteral_default()(["\n    border: unset;\n    padding: unset;\n    white-space: unset;\n    max-width: unset;\n    overflow: unset;\n\n    text-align: start;\n    padding: 4px 6px;\n    vertical-align: middle;\n    width: 45px;\n    border: 1px solid #cccccc;\n    border-left: none;\n    border: none;\n    border-top: 1px solid #ccc;\n    border-bottom: 1px solid #ccc;\n    border-top-left-radius: 8px;\n    border-bottom-left-radius: ", ";\n    border-left: 1px solid #cccccc;\n"])), function (props) {
-  return props.expand ? '0px' : '8px';
-});
-var TBodyNameColumn = styled_components_browser_esm["b" /* default */].td(ExecutionPorcesses_styles_templateObject13 || (ExecutionPorcesses_styles_templateObject13 = taggedTemplateLiteral_default()(["\n    text-align: start;\n    padding: 4px 6px;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    border-left: none;\n    border: none;\n    border-top: 1px solid #ccc;\n    border-bottom: 1px solid #ccc;\n    color: ", ";\n"])), function (props) {
-  return props.expand ? 'rgb(20, 131, 243);' : '';
-});
-var TBodyOrderColumn = styled_components_browser_esm["b" /* default */].td(ExecutionPorcesses_styles_templateObject14 || (ExecutionPorcesses_styles_templateObject14 = taggedTemplateLiteral_default()(["\n    text-align: start;\n    padding: 4px 6px;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    border-left: none;\n    border: none;\n    border-top: 1px solid #ccc;\n    border-bottom: 1px solid #ccc;\n    width: 20%;\n    max-width: 20%;\n    overflow: visible;\n    white-space: nowrap;\n"])));
-var TBodyDeleteColumn = styled_components_browser_esm["b" /* default */].td(ExecutionPorcesses_styles_templateObject15 || (ExecutionPorcesses_styles_templateObject15 = taggedTemplateLiteral_default()(["\n    text-align: start;\n    padding: 4px 6px;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    border-left: none;\n    border: none;\n    border-top: 1px solid #ccc;\n    border-bottom: 1px solid #ccc;\n    width: 40px;\n    text-align: center;\n    border-top-right-radius: 8px;\n    border-bottom-right-radius: ", ";\n    border-right: 1px solid #cccccc;\n"])), function (props) {
-  return props.expand ? '0px' : '8px';
-});
-var ExecutionPorcesses_styles_Icon = styled_components_browser_esm["b" /* default */].img(ExecutionPorcesses_styles_templateObject16 || (ExecutionPorcesses_styles_templateObject16 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n"])));
-var EditIconContainer = styled_components_browser_esm["b" /* default */].div(styles_templateObject17 || (styles_templateObject17 = taggedTemplateLiteral_default()(["\n    border: 1px solid  ", ";\n    background: ", ";\n    color: ", ";\n    border-radius: 50%;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    width: 22px;\n    height: 22px;\n    padding: 2px;\n    font-size: 16px;\n    cursor: pointer;\n    transition: all .5s ease;\n    margin: 5px;\n    user-select: none;\n"])), function (props) {
-  return props.expand ? '#0c84f3' : '#2e2e2e';
-}, function (props) {
-  return props.expand ? '#0c84f3' : '';
-}, function (props) {
-  return props.expand ? '#fff' : '#2e2e2e';
-});
-var EditIcon = styled_components_browser_esm["b" /* default */].div(styles_templateObject18 || (styles_templateObject18 = taggedTemplateLiteral_default()(["\n    padding: 0px 0px 0px 0px;\n    user-select: none;\n    color: ", ";\n"])), function (props) {
-  return props.mandatory ? 'red' : props.edited ? '#1683f2' : '';
-});
-var TBodyExpandRow = styled_components_browser_esm["b" /* default */].tr(styles_templateObject19 || (styles_templateObject19 = taggedTemplateLiteral_default()(["\n    padding-top: 0 !important;\n    border: 1px solid #cccccc !important;\n    border-top: none !important;\n    width: calc(100% - 5px) !important;\n    margin-bottom: 6px;\n    border-bottom-left-radius: 8px;\n    border-bottom-right-radius: 8px;\n    vertical-align: top;\n    margin: 0px 0px 6px 0px;\n    display: table;\n    table-layout: fixed;\n    background-color: white !important;\n"])));
-var TBodyExpandContainer = styled_components_browser_esm["b" /* default */].td(_templateObject20 || (_templateObject20 = taggedTemplateLiteral_default()(["\n    text-align: start;\n    display: flex;\n    border: 1px solid #cccccc;\n    padding-bottom: 10px !important;\n    border: none !important;\n    padding: 4px 6px;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    border-left: none;\n    border: none;\n    border-top: 1px solid #ccc;\n    border-bottom: 1px solid #ccc;\n    max-width: 100%;\n    width: 100%;\n"])));
-var TBodyExpandContent = styled_components_browser_esm["b" /* default */].div(_templateObject21 || (_templateObject21 = taggedTemplateLiteral_default()(["\n    user-select: none;\n    width: 50%;\n    margin: 0 35px;\n"])));
-var ModalAddContainer = styled_components_browser_esm["b" /* default */].div(_templateObject22 || (_templateObject22 = taggedTemplateLiteral_default()(["\n    width: 400px;\n    min-height: 300px;\n    position: relative;\n    z-index: 100;\n    overflow-y: auto;\n    overflow-x: hidden;\n    padding: 19px 0px 30px 0px;\n    object-fit: contain;\n    border-radius: 6px;\n    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);\n    background-color: #fff;\n"])));
-var ExecutionPorcesses_styles_Title = styled_components_browser_esm["b" /* default */].div(_templateObject23 || (_templateObject23 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 18px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.33;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    position: relative;\n    margin: 0px 20px;\n    margin-bottom: 19px;\n"])));
-var ExecutionPorcesses_styles_Body = styled_components_browser_esm["b" /* default */].div(_templateObject24 || (_templateObject24 = taggedTemplateLiteral_default()(["\n    margin: 24px 25px 0px 30px;\n"])));
-var ExecutionPorcesses_styles_Seprator = styled_components_browser_esm["b" /* default */].div(_templateObject25 || (_templateObject25 = taggedTemplateLiteral_default()(["\n    border: solid 1px #ccc;\n"])));
-var ExecutionPorcesses_styles_CloseIcon = styled_components_browser_esm["b" /* default */].img(_templateObject26 || (_templateObject26 = taggedTemplateLiteral_default()(["\n    position: absolute;\n    right: 0px;\n    top: 5px;\n    cursor: pointer;\n"])));
-var ExecutionPorcesses_styles_Actions = styled_components_browser_esm["b" /* default */].div(_templateObject27 || (_templateObject27 = taggedTemplateLiteral_default()(["\n    display: flex;\n    margin-top:5px;\n    align-items: center;\n    justify-content: flex-end;\n    gap: 18px;\n    border-bottom: ", ";\n    padding-bottom: 13px;\n"])), function (props) {
-  return props.border ? '1px solid #ccc' : '';
-});
-var ExecutionPorcesses_styles_ActionItem = styled_components_browser_esm["b" /* default */].div(_templateObject28 || (_templateObject28 = taggedTemplateLiteral_default()(["\n    font-family: Roboto;\n    font-size: 16px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    letter-spacing: normal;\n    text-align: left;\n    color: #1483f3;\n    cursor: pointer;\n"])));
+    text-align: start;
+    padding: 4px 6px;
+    vertical-align: middle;
+    width: 45px;
+    border: 1px solid #cccccc;
+    border-left: none;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: ${props => props.expand ? '0px' : '8px'};
+    border-left: 1px solid #cccccc;
+`;
+const TBodyNameColumn = styled_components_browser_esm["b" /* default */].td`
+    text-align: start;
+    padding: 4px 6px;
+    vertical-align: middle;
+    border: 1px solid #cccccc;
+    border-left: none;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    color: ${props => props.expand ? 'rgb(20, 131, 243);' : ''};
+`;
+const TBodyOrderColumn = styled_components_browser_esm["b" /* default */].td`
+    text-align: start;
+    padding: 4px 6px;
+    vertical-align: middle;
+    border: 1px solid #cccccc;
+    border-left: none;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    width: 20%;
+    max-width: 20%;
+    overflow: visible;
+    white-space: nowrap;
+`;
+const TBodyDeleteColumn = styled_components_browser_esm["b" /* default */].td`
+    text-align: start;
+    padding: 4px 6px;
+    vertical-align: middle;
+    border: 1px solid #cccccc;
+    border-left: none;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    width: 40px;
+    text-align: center;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: ${props => props.expand ? '0px' : '8px'};
+    border-right: 1px solid #cccccc;
+`;
+const ExecutionPorcesses_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const EditIconContainer = styled_components_browser_esm["b" /* default */].div`
+    border: 1px solid  ${props => props.expand ? '#0c84f3' : '#2e2e2e'};
+    background: ${props => props.expand ? '#0c84f3' : ''};
+    color: ${props => props.expand ? '#fff' : '#2e2e2e'};
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 2px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all .5s ease;
+    margin: 5px;
+    user-select: none;
+`;
+const EditIcon = styled_components_browser_esm["b" /* default */].div`
+    padding: 0px 0px 0px 0px;
+    user-select: none;
+    color: ${props => props.mandatory ? 'red' : props.edited ? '#1683f2' : ''};
+`;
+const TBodyExpandRow = styled_components_browser_esm["b" /* default */].tr`
+    padding-top: 0 !important;
+    border: 1px solid #cccccc !important;
+    border-top: none !important;
+    width: calc(100% - 5px) !important;
+    margin-bottom: 6px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    vertical-align: top;
+    margin: 0px 0px 6px 0px;
+    display: table;
+    table-layout: fixed;
+    background-color: white !important;
+`;
+const TBodyExpandContainer = styled_components_browser_esm["b" /* default */].td`
+    text-align: start;
+    display: flex;
+    border: 1px solid #cccccc;
+    padding-bottom: 10px !important;
+    border: none !important;
+    padding: 4px 6px;
+    vertical-align: middle;
+    border: 1px solid #cccccc;
+    border-left: none;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    max-width: 100%;
+    width: 100%;
+`;
+const TBodyExpandContent = styled_components_browser_esm["b" /* default */].div`
+    user-select: none;
+    width: 50%;
+    margin: 0 35px;
+`;
+const ModalAddContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 400px;
+    min-height: 300px;
+    position: relative;
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 19px 0px 30px 0px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+`;
+const ExecutionPorcesses_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    position: relative;
+    margin: 0px 20px;
+    margin-bottom: 19px;
+`;
+const ExecutionPorcesses_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    margin: 24px 25px 0px 30px;
+`;
+const ExecutionPorcesses_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border: solid 1px #ccc;
+`;
+const ExecutionPorcesses_styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    cursor: pointer;
+`;
+const ExecutionPorcesses_styles_Actions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    margin-top:5px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    border-bottom: ${props => props.border ? '1px solid #ccc' : ''};
+    padding-bottom: 13px;
+`;
+const ExecutionPorcesses_styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Advanced/ExecutionPorcesses/index.tsx
-
-
-
-
-function ExecutionPorcesses_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function ExecutionPorcesses_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ExecutionPorcesses_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ExecutionPorcesses_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
 
 
 
@@ -12010,192 +13555,141 @@ function ExecutionPorcesses_objectSpread(target) { for (var i = 1; i < arguments
 
 
 function ExecutionPorcesses(props) {
-  var rows = props.rows,
-    processType = props.processType,
-    save = props.save,
-    data = props.data;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var _useState = Object(react["useState"])([]),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    options = _useState2[0],
-    setOptions = _useState2[1];
-  var _useState3 = Object(react["useState"])(false),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    open = _useState4[0],
-    setOpen = _useState4[1];
-  var ref = Object(react["useRef"])();
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    processesData = _useState6[0],
-    setProcessesData = _useState6[1];
-  var _useState7 = Object(react["useState"])([]),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    chosenProcesses = _useState8[0],
-    setChosenProcesses = _useState8[1];
-  var _useState9 = Object(react["useState"])([]),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    expandedRows = _useState10[0],
-    setExpandedRows = _useState10[1];
-  Object(react["useEffect"])(function () {
-    function fetchExecutionProcessParam() {
-      return _fetchExecutionProcessParam.apply(this, arguments);
-    }
-    function _fetchExecutionProcessParam() {
-      _fetchExecutionProcessParam = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var params_data;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return apis_task.getExecutionProcessParams(processType, rows.map(function (it) {
-                return it.process_name;
-              }));
-            case 3:
-              params_data = _context.sent;
-              rows.map(function (it) {
-                var found_params = params_data.find(function (it2) {
-                  return it.process_name === it2.process_name;
-                });
-                it.editors = (found_params === null || found_params === void 0 ? void 0 : found_params.editors) || [];
-                it.editors = it.editors.map(function (it) {
-                  var _it$editor;
-                  it.name = (_it$editor = it.editor) === null || _it$editor === void 0 ? void 0 : _it$editor.name;
-                  if (it.default) {
-                    it.value = it.default;
-                    it.editor.value = it.value;
-                  }
-                  return it;
-                });
-              });
-              (data || []).forEach(function (processData) {
-                var foundRow = rows.find(function (it) {
-                  return it.process_name === processData.process_name;
-                });
-                if (foundRow) {
-                  var _processData$paramete;
-                  processData.editors = foundRow.editors;
-                  ((processData === null || processData === void 0 ? void 0 : (_processData$paramete = processData.parameters) === null || _processData$paramete === void 0 ? void 0 : _processData$paramete.inputs) || []).forEach(function (param) {
-                    var foundEditor = processData.editors.find(function (it) {
-                      return it.name === param.name;
-                    });
-                    if (foundEditor) {
-                      foundEditor.value = param.value || null;
-                      foundEditor.editor.value = param.value || null;
-                    }
-                  });
-                }
-              });
-              setProcessesData(toConsumableArray_default()(data));
-              setOptions(rows);
-              _context.next = 12;
-              break;
-            case 10:
-              _context.prev = 10;
-              _context.t0 = _context["catch"](0);
-            case 12:
-            case "end":
-              return _context.stop();
+  const {
+    rows,
+    processType,
+    save,
+    data
+  } = props;
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const [options, setOptions] = Object(react["useState"])([]);
+  const [open, setOpen] = Object(react["useState"])(false);
+  const ref = Object(react["useRef"])();
+  const [processesData, setProcessesData] = Object(react["useState"])([]);
+  const [chosenProcesses, setChosenProcesses] = Object(react["useState"])([]);
+  const [expandedRows, setExpandedRows] = Object(react["useState"])([]);
+  Object(react["useEffect"])(() => {
+    async function fetchExecutionProcessParam() {
+      try {
+        const params_data = await apis_task.getExecutionProcessParams(processType, rows.map(it => it.process_name));
+        rows.map(it => {
+          const found_params = params_data.find(it2 => it.process_name === it2.process_name);
+          it.editors = (found_params === null || found_params === void 0 ? void 0 : found_params.editors) || [];
+          it.editors = it.editors.map(it => {
+            var _it$editor;
+            it.name = (_it$editor = it.editor) === null || _it$editor === void 0 ? void 0 : _it$editor.name;
+            if (it.default) {
+              it.value = it.default;
+              it.editor.value = it.value;
+            }
+            return it;
+          });
+        });
+        (data || []).forEach(processData => {
+          const foundRow = rows.find(it => it.process_name === processData.process_name);
+          if (foundRow) {
+            var _processData$paramete;
+            processData.editors = foundRow.editors;
+            ((processData === null || processData === void 0 ? void 0 : (_processData$paramete = processData.parameters) === null || _processData$paramete === void 0 ? void 0 : _processData$paramete.inputs) || []).forEach(param => {
+              const foundEditor = processData.editors.find(it => it.name === param.name);
+              if (foundEditor) {
+                foundEditor.value = param.value || null;
+                foundEditor.editor.value = param.value || null;
+                foundEditor.editor.schema2 = param.schema || null;
+              }
+            });
           }
-        }, _callee, null, [[0, 10]]);
-      }));
-      return _fetchExecutionProcessParam.apply(this, arguments);
+        });
+        setProcessesData([...data]);
+        setOptions(rows);
+      } catch (err) {}
     }
     fetchExecutionProcessParam();
   }, [rows]);
-  var expandRow = Object(react["useCallback"])(function (process_id) {
-    setExpandedRows(function (oldArray) {
+  const expandRow = Object(react["useCallback"])(process_id => {
+    setExpandedRows(oldArray => {
       if (oldArray.indexOf(process_id) >= 0) {
-        return oldArray.filter(function (it) {
-          return it !== process_id;
-        });
+        return oldArray.filter(it => it !== process_id);
       } else {
-        return [].concat(toConsumableArray_default()(oldArray), [process_id]);
+        return [...oldArray, process_id];
       }
     });
   }, [setExpandedRows]);
-  var updateFabricEditorValues = function updateFabricEditorValues(processName, values) {
-    values.forEach(function (data) {
-      updateParamsValue(processName, data.name, data.value);
+  const updateFabricEditorValues = (processName, values) => {
+    values.forEach(data => {
+      updateParamsValue(processName, data.name, data.value, data.schema);
     });
   };
-  var updateParamsValue = Object(react["useCallback"])(function (processName, name, value) {
-    var processData = processesData.find(function (it) {
-      return it.process_name === processName;
-    });
+  const updateParamsValue = Object(react["useCallback"])((processName, name, value, schema) => {
+    const processData = processesData.find(it => it.process_name === processName);
     if (!processData) {
       return;
     }
-    var newParams = processData.editors;
-    var index = newParams.findIndex(function (param) {
-      return param.name === name;
-    });
+    const newParams = processData.editors;
+    const index = newParams.findIndex(param => param.name === name);
     if (index >= 0) {
       newParams[index].value = value;
+      newParams[index].schema = schema;
       newParams[index].editor.value = value;
-      var parameters = {
-        inputs: (newParams || []).map(function (it) {
+      const parameters = {
+        inputs: (newParams || []).map(it => {
           return {
             name: it.name,
             type: it.type,
-            value: it.value
+            value: it.value,
+            schema: it.schema
           };
         })
       };
       processData.parameters = parameters;
       processData.edited = true;
-      setProcessesData(toConsumableArray_default()(processesData));
+      setProcessesData([...processesData]);
     }
   }, [processesData, save, processType]);
-  var getProcessEditors = Object(react["useCallback"])(function (processName) {
-    var processData = processesData.find(function (it) {
-      return it.process_name === processName;
-    });
+  const getProcessEditors = Object(react["useCallback"])(processName => {
+    const processData = processesData.find(it => it.process_name === processName);
     if (!processData) {
       return [];
     }
-    return processData.editors.map(function (it) {
+    return processData.editors.map(it => {
       if (it.editor && it.editor.value === undefined) {
         it.editor.value = null;
       }
       return it.editor;
     });
   }, [processesData]);
-  var closeModal = Object(react["useCallback"])(function () {
+  const closeModal = Object(react["useCallback"])(() => {
     setOpen(false);
     setChosenProcesses([]);
   }, [setOpen]);
-  var addProcess = Object(react["useCallback"])(function () {
+  const addProcess = Object(react["useCallback"])(() => {
     if (chosenProcesses.length > 0) {
-      setProcessesData(function (oldArray) {
-        return [].concat(toConsumableArray_default()(oldArray), toConsumableArray_default()(chosenProcesses));
+      setProcessesData(oldArray => {
+        return [...oldArray, ...chosenProcesses];
       });
     }
     setOpen(false);
     setChosenProcesses([]);
   }, [setOpen, setProcessesData, setChosenProcesses, chosenProcesses]);
-  var deleteProcess = Object(react["useCallback"])(function (processName) {
-    setProcessesData(function (oldArray) {
-      return oldArray.filter(function (it) {
-        return it.process_name !== processName;
-      });
+  const deleteProcess = Object(react["useCallback"])(processName => {
+    setProcessesData(oldArray => {
+      return oldArray.filter(it => it.process_name !== processName);
     });
   }, [setProcessesData]);
-  var onProcessChange = Object(react["useCallback"])(function (value) {
+  const onProcessChange = Object(react["useCallback"])(value => {
     setChosenProcesses(value);
   }, [setOpen, setProcessesData, setChosenProcesses, chosenProcesses]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     save(processType, processesData);
   }, [processesData]);
-  var getAddProcessContainer = Object(react["useCallback"])(function () {
+  const getAddProcessContainer = Object(react["useCallback"])(() => {
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ModalAddContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(ExecutionPorcesses_styles_Title, {
-        children: ["".concat(processType === 'pre' ? 'Pre' : 'Post', " execution process"), /*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionPorcesses_styles_CloseIcon, {
-          onClick: function onClick() {
-            return closeModal();
-          },
+        children: [`${processType === 'pre' ? 'Pre' : 'Post'} execution process`, /*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionPorcesses_styles_CloseIcon, {
+          onClick: () => closeModal(),
           src: xclose
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionPorcesses_styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ExecutionPorcesses_styles_Body, {
@@ -12204,40 +13698,31 @@ function ExecutionPorcesses(props) {
           maxMenuHeight: 120,
           value: chosenProcesses,
           onChange: onProcessChange,
-          options: (options || []).filter(function (it) {
-            return processesData.findIndex(function (it2) {
-              return it.process_name === it2.process_name;
-            }) < 0;
-          }).map(function (it) {
-            return ExecutionPorcesses_objectSpread(ExecutionPorcesses_objectSpread({}, it), {}, {
-              label: it.process_name,
-              value: it.process_id
-            });
-          }),
+          options: (options || []).filter(it => {
+            return processesData.findIndex(it2 => it.process_name === it2.process_name) < 0;
+          }).map(it => ({
+            ...it,
+            label: it.process_name,
+            value: it.process_id
+          })),
           loading: false,
           isMulti: true,
           enableSelectAll: false
         }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ExecutionPorcesses_styles_Actions, {
           border: false,
           children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionPorcesses_styles_ActionItem, {
-            onClick: function onClick() {
-              return closeModal();
-            },
+            onClick: () => closeModal(),
             children: "Cancel"
           }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionPorcesses_styles_ActionItem, {
-            onClick: function onClick() {
-              return addProcess();
-            },
+            onClick: () => addProcess(),
             children: "Save"
           })]
         })]
       })]
     });
   }, [processType, options, setOpen, chosenProcesses, processesData]);
-  var getMandatoryEditors = function getMandatoryEditors(processData) {
-    return processData.editors.findIndex(function (it) {
-      return it.mandatory && (it.value === null || it.value === undefined);
-    }) >= 0;
+  const getMandatoryEditors = processData => {
+    return processData.editors.findIndex(it => it.mandatory && (it.value === null || it.value === undefined)) >= 0;
   };
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ExecutionPorcesses_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(AddButtonContainer, {
@@ -12253,14 +13738,12 @@ function ExecutionPorcesses(props) {
         positions: ['left'],
         content: getAddProcessContainer(),
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
-          onClick: function onClick() {
-            return setOpen(true);
-          },
+          onClick: () => setOpen(true),
           children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
             title: 'Add Process',
             type: 'secondary',
             width: '150px',
-            onClick: function onClick() {},
+            onClick: () => {},
             backgroundColor: "trasnparent",
             icon: plus
           })
@@ -12276,54 +13759,46 @@ function ExecutionPorcesses(props) {
           }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TheadDeleteColumn, {})]
         })
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TBody, {
-        children: processesData.sort(function (a, b) {
-          return a.execution_order - b.execution_order;
-        }).map(function (it) {
-          return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-            children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TBodyRow, {
+        children: processesData.sort((a, b) => a.execution_order - b.execution_order).map(it => /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TBodyRow, {
+            expand: expandedRows.indexOf(it.process_id) >= 0,
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyEditColumn, {
               expand: expandedRows.indexOf(it.process_id) >= 0,
-              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyEditColumn, {
+              children: getProcessEditors(it.process_name).length === 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}) : /*#__PURE__*/Object(jsx_runtime["jsx"])(EditIconContainer, {
                 expand: expandedRows.indexOf(it.process_id) >= 0,
-                children: getProcessEditors(it.process_name).length === 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}) : /*#__PURE__*/Object(jsx_runtime["jsx"])(EditIconContainer, {
-                  expand: expandedRows.indexOf(it.process_id) >= 0,
-                  onClick: function onClick() {
-                    return expandRow(it.process_id);
-                  },
-                  children: /*#__PURE__*/Object(jsx_runtime["jsx"])(EditIcon, {
-                    mandatory: getMandatoryEditors(it),
-                    edited: expandedRows.indexOf(it.process_id) >= 0 ? false : it.edited,
-                    children: "\u270E"
-                  })
-                })
-              }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyNameColumn, {
-                expand: expandedRows.indexOf(it.process_id) >= 0,
-                children: it.process_name
-              }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyOrderColumn, {
-                children: it.execution_order
-              }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyDeleteColumn, {
-                expand: expandedRows.indexOf(it.process_id) >= 0,
-                children: /*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionPorcesses_styles_Icon, {
-                  onClick: function onClick() {
-                    deleteProcess(it.process_name);
-                  },
-                  src: delete_icon_gray
-                })
-              })]
-            }), expandedRows.indexOf(it.process_id) >= 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyExpandRow, {
-              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyExpandContainer, {
-                children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyExpandContent, {
-                  children: /*#__PURE__*/Object(jsx_runtime["jsx"])(fabricWidget, {
-                    updateValues: function updateValues(values) {
-                      return updateFabricEditorValues(it.process_name, values);
-                    },
-                    editor: getProcessEditors(it.process_name),
-                    saveRef: function saveRef(data) {}
-                  }, "".concat(processType, "_execution_process"))
+                onClick: () => expandRow(it.process_id),
+                children: /*#__PURE__*/Object(jsx_runtime["jsx"])(EditIcon, {
+                  mandatory: getMandatoryEditors(it),
+                  edited: expandedRows.indexOf(it.process_id) >= 0 ? false : it.edited,
+                  children: "\u270E"
                 })
               })
-            }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
-          });
-        })
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyNameColumn, {
+              expand: expandedRows.indexOf(it.process_id) >= 0,
+              children: it.process_name
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyOrderColumn, {
+              children: it.execution_order
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyDeleteColumn, {
+              expand: expandedRows.indexOf(it.process_id) >= 0,
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionPorcesses_styles_Icon, {
+                onClick: () => {
+                  deleteProcess(it.process_name);
+                },
+                src: delete_icon_gray
+              })
+            })]
+          }), expandedRows.indexOf(it.process_id) >= 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyExpandRow, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyExpandContainer, {
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TBodyExpandContent, {
+                children: /*#__PURE__*/Object(jsx_runtime["jsx"])(fabricWidget, {
+                  updateValues: values => updateFabricEditorValues(it.process_name, values),
+                  editor: getProcessEditors(it.process_name),
+                  saveRef: data => {}
+                }, `${processType}_execution_process`)
+              })
+            })
+          }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
+        }))
       })]
     }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
   });
@@ -12342,125 +13817,66 @@ function ExecutionPorcesses(props) {
 
 
 
-
-
-
-
-
-
 function AdvancedForm(props) {
-  var be_id = props.be_id;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm;
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var postExecutionProcesses = taskData.postExecutionProcesses,
-    preExecutionProcesses = taskData.preExecutionProcesses,
-    scheduler = taskData.scheduler,
-    globals = taskData.globals,
-    sourceUserRole = taskData.sourceUserRole,
-    userRole = taskData.userRole,
-    enable_masking_only = taskData.enable_masking_only;
+  const {
+    be_id
+  } = props;
+  const {
+    taskData,
+    saveForm
+  } = Object(react["useContext"])(TaskContext);
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const {
+    postExecutionProcesses,
+    preExecutionProcesses,
+    scheduler,
+    globals,
+    sourceUserRole,
+    userRole,
+    enable_masking_only
+  } = taskData;
   console.log('taskData', taskData);
-  var _useState = Object(react["useState"])(true),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    preLoading = _useState2[0],
-    setPreLoading = _useState2[1];
-  var _useState3 = Object(react["useState"])(true),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    postLoading = _useState4[0],
-    setPostLoading = _useState4[1];
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    preExecutionProcessOptions = _useState6[0],
-    setPreExecutionProcessOptions = _useState6[1];
-  var _useState7 = Object(react["useState"])([]),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    postExecutionProcessOptions = _useState8[0],
-    setPostExecutionProcessOptions = _useState8[1];
-  Object(react["useEffect"])(function () {
-    function fetchPreExecutionProcess() {
-      return _fetchPreExecutionProcess.apply(this, arguments);
+  const [preLoading, setPreLoading] = Object(react["useState"])(true);
+  const [postLoading, setPostLoading] = Object(react["useState"])(true);
+  const [preExecutionProcessOptions, setPreExecutionProcessOptions] = Object(react["useState"])([]);
+  const [postExecutionProcessOptions, setPostExecutionProcessOptions] = Object(react["useState"])([]);
+  Object(react["useEffect"])(() => {
+    async function fetchPreExecutionProcess() {
+      try {
+        if (!be_id) {
+          return;
+        }
+        const data = await apis_task.getPreExecutionProcess(be_id);
+        setPreExecutionProcessOptions(data);
+        setPreLoading(false);
+      } catch (err) {
+        // use hook toast
+        setPreLoading(false);
+      }
     }
-    function _fetchPreExecutionProcess() {
-      _fetchPreExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              if (be_id) {
-                _context.next = 3;
-                break;
-              }
-              return _context.abrupt("return");
-            case 3:
-              _context.next = 5;
-              return apis_task.getPreExecutionProcess(be_id);
-            case 5:
-              data = _context.sent;
-              setPreExecutionProcessOptions(data);
-              setPreLoading(false);
-              _context.next = 13;
-              break;
-            case 10:
-              _context.prev = 10;
-              _context.t0 = _context["catch"](0);
-              // use hook toast
-              setPreLoading(false);
-            case 13:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 10]]);
-      }));
-      return _fetchPreExecutionProcess.apply(this, arguments);
-    }
-    function fetchPostExecutionProcess() {
-      return _fetchPostExecutionProcess.apply(this, arguments);
-    }
-    function _fetchPostExecutionProcess() {
-      _fetchPostExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
-        var data;
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _context2.prev = 0;
-              if (be_id) {
-                _context2.next = 3;
-                break;
-              }
-              return _context2.abrupt("return");
-            case 3:
-              _context2.next = 5;
-              return apis_task.getPostExecutionProcess(be_id);
-            case 5:
-              data = _context2.sent;
-              setPostExecutionProcessOptions(data);
-              setPostLoading(false);
-              _context2.next = 13;
-              break;
-            case 10:
-              _context2.prev = 10;
-              _context2.t0 = _context2["catch"](0);
-              // use hook toast
-              setPostLoading(false);
-            case 13:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2, null, [[0, 10]]);
-      }));
-      return _fetchPostExecutionProcess.apply(this, arguments);
+    async function fetchPostExecutionProcess() {
+      try {
+        if (!be_id) {
+          return;
+        }
+        const data = await apis_task.getPostExecutionProcess(be_id);
+        setPostExecutionProcessOptions(data);
+        setPostLoading(false);
+      } catch (err) {
+        // use hook toast
+        setPostLoading(false);
+      }
     }
     fetchPreExecutionProcess();
     fetchPostExecutionProcess();
   }, []);
-  var saveExecutionProcesses = Object(react["useCallback"])(function (processType, data) {
-    saveForm(defineProperty_default()({}, "".concat(processType, "ExecutionProcesses"), data));
+  const saveExecutionProcesses = Object(react["useCallback"])((processType, data) => {
+    saveForm({
+      [`${processType}ExecutionProcesses`]: data
+    });
   }, [saveForm]);
-  var getPreProcessBody = function getPreProcessBody() {
+  const getPreProcessBody = () => {
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_ExecutionPorcesses, {
       rows: preExecutionProcessOptions,
       processType: 'pre',
@@ -12468,7 +13884,7 @@ function AdvancedForm(props) {
       data: preExecutionProcesses
     }, 'pre_execution_container');
   };
-  var getPostProcessBody = Object(react["useCallback"])(function () {
+  const getPostProcessBody = Object(react["useCallback"])(() => {
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_ExecutionPorcesses, {
       rows: postExecutionProcessOptions,
       processType: 'post',
@@ -12476,8 +13892,8 @@ function AdvancedForm(props) {
       data: postExecutionProcesses
     }, 'post_execution_container');
   }, [postExecutionProcesses, postExecutionProcessOptions, saveExecutionProcesses]);
-  var tabs = Object(react["useMemo"])(function () {
-    var result = [{
+  const tabs = Object(react["useMemo"])(() => {
+    const result = [{
       name: 'Task variables'
     }];
     if (!enable_masking_only) {
@@ -12504,12 +13920,9 @@ function AdvancedForm(props) {
     // }
     return result;
   }, [sourceUserRole, userRole, enable_masking_only]);
-  var _useState9 = Object(react["useState"])('Pre execution process'),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    selectedTab = _useState10[0],
-    setSelectedTab = _useState10[1];
-  var changedTabs = Object(react["useMemo"])(function () {
-    var result = [];
+  const [selectedTab, setSelectedTab] = Object(react["useState"])('Pre execution process');
+  const changedTabs = Object(react["useMemo"])(() => {
+    const result = [];
     if (scheduler !== 'immediate') {
       result.push('Scheduler');
     }
@@ -12524,7 +13937,7 @@ function AdvancedForm(props) {
     }
     return result;
   }, [scheduler, globals, postExecutionProcesses, preExecutionProcesses]);
-  var getSelectedTab = Object(react["useCallback"])(function () {
+  const getSelectedTab = Object(react["useCallback"])(() => {
     if (selectedTab === 'Pre execution process') {
       return getPreProcessBody();
     } else if (selectedTab === 'Post execution process') {
@@ -12535,17 +13948,17 @@ function AdvancedForm(props) {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(Scheduler, {});
     }
   }, [selectedTab, getPreProcessBody, getPostProcessBody, preExecutionProcessOptions, postExecutionProcessOptions]);
-  var onReset = Object(react["useCallback"])(function () {
+  const onReset = Object(react["useCallback"])(() => {
     if (selectedTab === 'Pre execution process') {
       saveForm({
         preExecutionProcesses: []
       });
-      setPreExecutionProcessOptions(toConsumableArray_default()(preExecutionProcessOptions));
+      setPreExecutionProcessOptions([...preExecutionProcessOptions]);
     } else if (selectedTab === 'Post execution process') {
       saveForm({
         postExecutionProcesses: []
       });
-      setPostExecutionProcessOptions(toConsumableArray_default()(postExecutionProcessOptions));
+      setPostExecutionProcessOptions([...postExecutionProcessOptions]);
     } else if (selectedTab === 'Task variables') {
       saveForm({
         globals: []
@@ -12577,16 +13990,19 @@ function AdvancedForm(props) {
 /* harmony default export */ var Advanced = (AdvancedForm);
 // CONCATENATED MODULE: ./src/containers/Task/Froms/TaskTitle/styles.ts
 
-var TaskTitle_styles_templateObject, TaskTitle_styles_templateObject2;
+const TaskTitle_styles_Wrapper = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
 
-var TaskTitle_styles_Wrapper = styled_components_browser_esm["b" /* default */].div(TaskTitle_styles_templateObject || (TaskTitle_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 100%;\n    display: flex;\n    justify-content: center;\n\n"])));
-var TaskTitle_styles_Container = styled_components_browser_esm["b" /* default */].div(TaskTitle_styles_templateObject2 || (TaskTitle_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    width: 635px;\n    display: flex;\n    flex-direction: column;\n    gap: 32px;\n"])));
+`;
+const TaskTitle_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 635px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/TaskTitle/index.tsx
-
-
-function TaskTitle_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function TaskTitle_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? TaskTitle_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : TaskTitle_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 
 
 
@@ -12595,56 +14011,73 @@ function TaskTitle_objectSpread(target) { for (var i = 1; i < arguments.length; 
 
 function TaskTitleForm(props) {
   var _errors$task_title;
-  var tasks_titles_active = props.tasks_titles_active;
-  var _useContext = Object(react["useContext"])(TaskContext),
-    taskData = _useContext.taskData,
-    saveForm = _useContext.saveForm,
-    register = _useContext.register,
-    errors = _useContext.errors,
-    copy = _useContext.copy;
-  var task_title = taskData.task_title,
-    task_description = taskData.task_description,
-    task_id = taskData.task_id;
-  var _useState = Object(react["useState"])(task_title || ''),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    taskTitleLocal = _useState2[0],
-    setTaskTitleLocal = _useState2[1];
-  Object(react["useEffect"])(function () {
+  const {
+    tasks_titles_active
+  } = props;
+  const {
+    taskData,
+    saveForm,
+    register,
+    errors,
+    copy
+  } = Object(react["useContext"])(TaskContext);
+  const {
+    task_title,
+    task_description,
+    task_id,
+    taskGroupIds,
+    task_groups
+  } = taskData;
+  const [taskTitleLocal, setTaskTitleLocal] = Object(react["useState"])(task_title || '');
+  Object(react["useEffect"])(() => {
     setTaskTitleLocal(task_title || '');
   }, [task_title]);
-  var taskTitleChange = Object(react["useCallback"])(function (taskTitle) {
+  const taskTitleChange = Object(react["useCallback"])(taskTitle => {
     setTaskTitleLocal(taskTitle);
     saveForm({
       task_title: taskTitle,
       manual_title_change: true
     });
   }, [saveForm]);
-  var validateTaskTitle = function validateTaskTitle(value) {
+  const validateTaskTitle = value => {
     if (task_id) {
       return true;
     }
     if (tasks_titles_active && tasks_titles_active.indexOf(value || '') >= 0) {
-      return "Task # ".concat(value, " Already Exists");
+      return `Task # ${value} Already Exists`;
     }
     return true;
   };
-  var taskDescriptionChange = Object(react["useCallback"])(function (value) {
+  const taskDescriptionChange = Object(react["useCallback"])(value => {
     saveForm({
       task_description: value
     });
   }, [saveForm]);
+  const taskGroupChange = Object(react["useCallback"])(value => {
+    console.log(value);
+    saveForm({
+      taskGroupIds: (value === null || value === void 0 ? void 0 : value.map(it => it.value)) || []
+    });
+  }, [saveForm]);
+  const task_groups_value = Object(react["useMemo"])(() => {
+    if (!taskGroupIds || taskGroupIds.length == 0) {
+      return [];
+    }
+    return task_groups === null || task_groups === void 0 ? void 0 : task_groups.filter(it => (taskGroupIds === null || taskGroupIds === void 0 ? void 0 : taskGroupIds.indexOf(it.value)) >= 0);
+  }, [task_groups, taskGroupIds]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTitle_styles_Wrapper, {
     children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskTitle_styles_Container, {
-      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, TaskTitle_objectSpread(TaskTitle_objectSpread({}, register('task_title', {
-        required: 'Please input a task title',
-        pattern: {
-          value: /^((?!_).)*$/,
-          message: "Task title must not contain '_'"
-        },
-        validate: {
-          taskTitleExist: validateTaskTitle
-        }
-      })), {}, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+        ...register('task_title', {
+          required: 'Please input a task title',
+          pattern: {
+            value: /^((?!_).)*$/,
+            message: "Task title must not contain '_'"
+          },
+          validate: {
+            taskTitleExist: validateTaskTitle
+          }
+        }),
         disabled: task_id && !copy,
         name: "task_title",
         placeholder: "Enter task name",
@@ -12654,7 +14087,7 @@ function TaskTitleForm(props) {
         onChange: taskTitleChange,
         title: "Task name",
         error: (_errors$task_title = errors.task_title) === null || _errors$task_title === void 0 ? void 0 : _errors$task_title.message
-      })), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TextArea, {
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TextArea, {
         placeholder: "Type short description",
         name: "task_description",
         title: "Task description",
@@ -12666,18 +14099,16 @@ function TaskTitleForm(props) {
 }
 /* harmony default export */ var TaskTitle = (TaskTitleForm);
 // CONCATENATED MODULE: ./src/utils/utils.ts
-var groupByField = function groupByField(data, field) {
-  return data.reduce(function (acc, curr) {
+const groupByField = (data, field) => {
+  return data.reduce((acc, curr) => {
     if (!acc[curr[field]]) acc[curr[field]] = []; //If this type wasn't previously stored
     acc[curr[field]].push(curr);
     return acc;
   }, {});
 };
-var uniqueByField = function uniqueByField(data, field) {
-  return data.filter(function (item, index, array) {
-    return array.findIndex(function (it) {
-      return it[field] === item[field];
-    }) === index;
+const uniqueByField = (data, field) => {
+  return data.filter((item, index, array) => {
+    return array.findIndex(it => it[field] === item[field]) === index;
   });
 };
 // CONCATENATED MODULE: ./src/containers/Task/Main/useLogicalUnits.ts
@@ -12685,57 +14116,25 @@ var uniqueByField = function uniqueByField(data, field) {
 
 
 
-
-
-
-var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, saveForm, initTask, dataSourceType, source_type, selected_logical_units_names, be_type, be_id, source_environment_id, environment_id) {
-  var toast = hooks_useToast();
-  var _useState = Object(react["useState"])([]),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    sourceLogicalUnits = _useState2[0],
-    setSourceLogicalUnits = _useState2[1];
-  var _useState3 = Object(react["useState"])([]),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    targetLogicalUnits = _useState4[0],
-    setTargetLogicalUnits = _useState4[1];
-  var _useState5 = Object(react["useState"])([]),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    allLogicalUnits = _useState6[0],
-    setAllLogicalUnits = _useState6[1];
-  var getLogicalUnits = Object(react["useCallback"])( /*#__PURE__*/function () {
-    var _ref = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee(be_id, setter, environment_id) {
-      var data;
-      return regenerator_default.a.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            _context.prev = 0;
-            _context.next = 3;
-            return apis_task.getLogicalUnits(be_id, environment_id);
-          case 3:
-            data = _context.sent;
-            data.forEach(function (item) {
-              item.value = item.lu_id;
-              item.label = item.lu_name;
-            });
-            setter(data);
-            _context.next = 11;
-            break;
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](0);
-            // use hook toast
-            console.error(_context.t0);
-          case 11:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee, null, [[0, 8]]);
-    }));
-    return function (_x, _x2, _x3) {
-      return _ref.apply(this, arguments);
-    };
-  }(), []);
-  Object(react["useEffect"])(function () {
+const useLogicalUnits = (initFinished, saveForm, initTask, dataSourceType, source_type, selected_logical_units_names, be_type, be_id, source_environment_id, environment_id) => {
+  const toast = hooks_useToast();
+  const [sourceLogicalUnits, setSourceLogicalUnits] = Object(react["useState"])([]);
+  const [targetLogicalUnits, setTargetLogicalUnits] = Object(react["useState"])([]);
+  const [allLogicalUnits, setAllLogicalUnits] = Object(react["useState"])([]);
+  const getLogicalUnits = Object(react["useCallback"])(async (be_id, setter, environment_id) => {
+    try {
+      const data = await apis_task.getLogicalUnits(be_id, environment_id);
+      data.forEach(item => {
+        item.value = item.lu_id;
+        item.label = item.lu_name;
+      });
+      setter(data);
+    } catch (err) {
+      // use hook toast
+      console.error(err);
+    }
+  }, []);
+  Object(react["useEffect"])(() => {
     console.log('getLogicalUnits');
     if (!initFinished) {
       return;
@@ -12746,7 +14145,7 @@ var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, sav
       }
     }
   }, [source_environment_id, initFinished, dataSourceType, be_type]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (!initFinished) {
       return;
     }
@@ -12756,72 +14155,56 @@ var useLogicalUnits_useLogicalUnits = function useLogicalUnits(initFinished, sav
       }
     }
   }, [environment_id, initFinished, dataSourceType, be_type]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (!initFinished) {
       return;
     }
     if (be_id) {
+      setTargetLogicalUnits([]);
+      setSourceLogicalUnits([]);
       if (be_type === 'source') {
         getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id);
       } else if (be_type === 'target') {
         getLogicalUnits(be_id, setTargetLogicalUnits, environment_id);
       }
-      saveForm({
-        selected_logical_units: [],
-        selected_logical_units_names: []
-      });
     }
   }, [be_id]);
-  Object(react["useEffect"])(function () {
-    var temp = (sourceLogicalUnits || []).concat(targetLogicalUnits || []);
-    var allLus = uniqueByField(temp, 'lu_id').filter(function (it) {
-      var sourceResult = sourceLogicalUnits.findIndex(function (sourceItem) {
-        return sourceItem.lu_id === it.lu_id;
-      }) >= 0;
-      var targeResult = targetLogicalUnits.findIndex(function (targetItem) {
-        return targetItem.lu_id === it.lu_id;
-      }) >= 0;
+  Object(react["useEffect"])(() => {
+    const temp = (sourceLogicalUnits || []).concat(targetLogicalUnits || []);
+    let allLus = uniqueByField(temp, 'lu_id').filter(it => {
+      const sourceResult = sourceLogicalUnits.findIndex(sourceItem => sourceItem.lu_id === it.lu_id) >= 0;
+      const targeResult = targetLogicalUnits.findIndex(targetItem => targetItem.lu_id === it.lu_id) >= 0;
       return (sourceResult || sourceLogicalUnits.length === 0) && (targeResult || targetLogicalUnits.length === 0);
     });
     setAllLogicalUnits(allLus);
-    var removedLus = (selected_logical_units_names || []).filter(function (it) {
-      return allLus.findIndex(function (it2) {
-        return it2.lu_name === it;
-      }) < 0;
-    });
+    const removedLus = (selected_logical_units_names || []).filter(it => allLus.findIndex(it2 => it2.lu_name === it) < 0);
     if (removedLus.length > 0 && !initTask) {
       if (dataSourceType !== 'data_source' || source_type !== 'tables') {
         if (be_type === 'source' && source_environment_id || be_type === 'target' && environment_id) {
-          toast.warning("The selected env does not contain the ".concat(removedLus, " ").concat(removedLus.length === 1 ? 'system' : 'systems', "."), true);
+          toast.warning(`The selected env does not contain the ${removedLus} ${removedLus.length === 1 ? 'system' : 'systems'}.`, true);
         }
       }
     }
     if (selected_logical_units_names && selected_logical_units_names.length > 0) {
-      var tempLus = allLus.filter(function (it) {
-        return selected_logical_units_names.indexOf(it.lu_name) >= 0;
-      });
+      const tempLus = allLus.filter(it => selected_logical_units_names.indexOf(it.lu_name) >= 0);
       if (tempLus.length > 0) {
         allLus = tempLus;
       }
     }
     saveForm({
-      selected_logical_units: allLus.map(function (it) {
-        return it.lu_id;
-      }),
-      selected_logical_units_names: allLus.map(function (it) {
-        return it.lu_name;
-      })
+      selected_logical_units: allLus.map(it => it.lu_id),
+      selected_logical_units_names: allLus.map(it => it.lu_name)
     });
   }, [sourceLogicalUnits, targetLogicalUnits]);
   return allLogicalUnits;
 };
-/* harmony default export */ var Main_useLogicalUnits = (useLogicalUnits_useLogicalUnits);
+/* harmony default export */ var Main_useLogicalUnits = (useLogicalUnits);
 // CONCATENATED MODULE: ./src/containers/Task/Main/utils.ts
 
 
 
-var defaultValues = ['task_title', 'be_id', 'task_id', 'be_name', 'environment_id', 'environment_name', 'replace_sequences', 'scheduler', 'scheduling_end_date', 'source_environment_id', 'source_environment_name', 'selection_method', 'version_ind', 'sync_mode', 'selection_param_value', 'num_of_entities', 'reserve_note', 'parameters', 'filterout_reserved', 'retention_period_type', 'retention_period_value', 'selected_version_task_name', 'selected_version_task_exe_id', 'delete_before_load', 'reserve_ind', 'clone_ind', 'load_entity', 'task_description', 'reserve_retention_period_type', 'reserve_retention_period_value', 'globals', 'tableList', 'custom_logic_lu_name', 'selected_subset_task_exe_id', 'task_status', 'task_created_by', 'owners', 'task_execution_status', 'execution_mode'];
-var fieldsMapper = {
+const defaultValues = ['task_title', 'be_id', 'task_id', 'be_name', 'environment_id', 'environment_name', 'replace_sequences', 'scheduler', 'scheduling_end_date', 'source_environment_id', 'source_environment_name', 'selection_method', 'version_ind', 'sync_mode', 'selection_param_value', 'num_of_entities', 'reserve_note', 'parameters', 'filterout_reserved', 'retention_period_type', 'retention_period_value', 'selected_version_task_name', 'selected_version_task_exe_id', 'delete_before_load', 'reserve_ind', 'clone_ind', 'load_entity', 'task_description', 'reserve_retention_period_type', 'reserve_retention_period_value', 'globals', 'tableList', 'custom_logic_lu_name', 'selected_subset_task_exe_id', 'task_status', 'task_created_by', 'owners', 'task_execution_status', 'execution_mode', 'taskGroupIds', 'evaluation_ind'];
+const fieldsMapper = {
   'source_env_name': 'source_environment_name'
 };
 
@@ -12844,8 +14227,8 @@ var fieldsMapper = {
 // 'selected_generation_id'
 // 'customLogicParams'
 
-var utils_convertTaskData = function convertTaskData(apiData, copy) {
-  var taskData = {
+const convertTaskData = (apiData, copy) => {
+  let taskData = {
     reserve_ind: false,
     delete_before_load: undefined,
     num_of_entities: 1,
@@ -12878,7 +14261,8 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
     preExecutionProcesses: [],
     task_globals: false,
     dataGenerationParams: {},
-    generateChosenParams: []
+    generateChosenParams: [],
+    evaluation_ind: false
   };
   if (!apiData) {
     return taskData;
@@ -12889,7 +14273,7 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
     taskData.deleteWarning = true;
   }
   taskData.dataGenerationParams = apiData.generateParams;
-  defaultValues.forEach(function (field) {
+  defaultValues.forEach(field => {
     taskData[field] = apiData[field];
   });
   if (taskData.clone_ind) {
@@ -12898,7 +14282,7 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
   if (taskData.selection_method === 'CLONE') {
     taskData.selection_method = SelectionMethodEnum.L;
   }
-  Object.keys(fieldsMapper).forEach(function (field) {
+  Object.keys(fieldsMapper).forEach(field => {
     taskData[fieldsMapper[field]] = apiData[field];
   });
   taskData.be_type = 'source';
@@ -12969,6 +14353,9 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
   if (apiData.filterout_reserved === 'NA' || !apiData.filterout_reserved) {
     taskData.filterout_reserved = 'OTHERS';
   }
+  if (taskData.num_of_entities === -1) {
+    taskData.num_of_entities = undefined;
+  }
   return taskData;
 };
 
@@ -12995,7 +14382,7 @@ var utils_convertTaskData = function convertTaskData(apiData, copy) {
     postExectionProcess
 */
 
-var updateTaskType = function updateTaskType(taskData, data) {
+const updateTaskType = (taskData, data) => {
   if (taskData.target_env === 'ai_training') {
     data.task_type = 'TRAINING';
   } else if (taskData.dataSourceType === 'data_source' && (!taskData.environment_id || !taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind)) {
@@ -13052,10 +14439,10 @@ var updateTaskType = function updateTaskType(taskData, data) {
     data.task_type = 'LOAD';
   }
 };
-var prepareDataForSave = function prepareDataForSave(taskData, logicalUnits, copy) {
-  var data = {};
-  var fieldsToCopy = ['task_id', 'be_id', 'postExecutionProcesses', 'preExecutionProcesses', 'environment_id', 'environment_name', 'source_environment_id', 'scheduler', 'num_of_entities', 'selection_method', 'selection_param_value', 'task_title', 'parameters', 'scheduling_end_date', 'version_ind', 'retention_period_value', 'retention_period_type', 'reserve_retention_period_type', 'reserve_retention_period_value', 'reserve_ind', 'load_entity', 'clone_ind', 'delete_before_load', 'reserve_note', 'selected_version_task_name', 'selected_version_datetime', 'selected_version_task_exe_id', 'filterout_reserved', 'mask_sensitive_data', 'replace_sequences', 'task_description', 'sync_mode', 'globals', 'reference', 'selected_ref_version_task_name', 'selected_ref_version_task_exe_id', 'selected_ref_version_datetime', 'task_globals', 'selected_subset_task_exe_id', 'custom_logic_lu_name', 'execution_mode'];
-  fieldsToCopy.forEach(function (key) {
+const prepareDataForSave = (taskData, logicalUnits, copy) => {
+  const data = {};
+  const fieldsToCopy = ['task_id', 'be_id', 'postExecutionProcesses', 'preExecutionProcesses', 'environment_id', 'environment_name', 'source_environment_id', 'scheduler', 'num_of_entities', 'selection_method', 'selection_param_value', 'task_title', 'parameters', 'scheduling_end_date', 'version_ind', 'retention_period_value', 'retention_period_type', 'reserve_retention_period_type', 'reserve_retention_period_value', 'reserve_ind', 'load_entity', 'clone_ind', 'delete_before_load', 'reserve_note', 'selected_version_task_name', 'selected_version_datetime', 'selected_version_task_exe_id', 'filterout_reserved', 'mask_sensitive_data', 'replace_sequences', 'task_description', 'sync_mode', 'globals', 'reference', 'selected_ref_version_task_name', 'selected_ref_version_task_exe_id', 'selected_ref_version_datetime', 'task_globals', 'selected_subset_task_exe_id', 'custom_logic_lu_name', 'execution_mode', 'taskGroupIds', 'evaluation_ind'];
+  fieldsToCopy.forEach(key => {
     data[key] = taskData[key];
   });
   if (taskData.tables_selected) {
@@ -13075,21 +14462,20 @@ var prepareDataForSave = function prepareDataForSave(taskData, logicalUnits, cop
   if (data.task_type !== 'RESERVE' && data.task_type !== 'DELETE') {
     data.source_env_name = taskData.source_environment_name;
   }
-  var selectedLogicalUnits = logicalUnits.filter(function (it) {
-    return ((taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units) || []).indexOf(it.lu_id) >= 0;
-  });
-  data.logicalUnits = selectedLogicalUnits === null || selectedLogicalUnits === void 0 ? void 0 : selectedLogicalUnits.map(function (it) {
-    return {
-      lu_name: it.lu_name,
-      lu_id: it.lu_id
-    };
-  });
+  const selectedLogicalUnits = logicalUnits.filter(it => ((taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units) || []).indexOf(it.lu_id) >= 0);
+  data.logicalUnits = selectedLogicalUnits === null || selectedLogicalUnits === void 0 ? void 0 : selectedLogicalUnits.map(it => ({
+    lu_name: it.lu_name,
+    lu_id: it.lu_id
+  }));
   if ((taskData.clone_ind || taskData.replace_sequences) && !taskData.load_entity || taskData.target_env === 'ai_training' || !taskData.environment_id || !(taskData.sync_mode === 'OFF' && taskData.version_ind) && taskData.selection_method === 'ALL') {
     data.filterout_reserved = 'NA';
   }
+  if (taskData.maxToCopy === 9007199254740992 && !taskData.num_of_entities) {
+    data.num_of_entities = -1;
+  }
   return data;
 };
-var getIfTables = function getIfTables(taskData) {
+const getIfTables = taskData => {
   if (taskData.dataSourceType === 'data_source') {
     if (taskData.source_type === 'tables') {
       return 'tables';
@@ -13099,9 +14485,9 @@ var getIfTables = function getIfTables(taskData) {
   }
   return '';
 };
-var getSourceInfo = function getSourceInfo(taskData) {
-  var result = [];
-  var isTables = getIfTables(taskData);
+const getSourceInfo = taskData => {
+  const result = [];
+  const isTables = getIfTables(taskData);
   if (taskData.dataSourceType === 'data_source') {
     if (taskData.source_environment_id) {
       if (taskData.version_ind) {
@@ -13120,22 +14506,22 @@ var getSourceInfo = function getSourceInfo(taskData) {
     }
   } else if (taskData.dataSourceType === 'synthetic') {
     if (taskData.synthetic_type === 'new_data') {
-      result.push("Generate ".concat(taskData.num_of_entities || 0, " entities."));
+      result.push(`Generate ${taskData.num_of_entities || 0} entities.`);
     } else {
       result.push('Get generated entities from the TDM Data store');
     }
   } else if (taskData.dataSourceType === 'ai_generated') {
     if (taskData.synthetic_type === 'new_data') {
-      result.push("Generate ".concat(taskData.num_of_entities || 0, " entities."));
+      result.push(`Generate ${taskData.num_of_entities || 0} entities.`);
     } else {
       result.push('Get generated entities from the TDM Data store');
     }
   }
   return result;
 };
-var getTargetInfo = function getTargetInfo(taskData) {
-  var result = [];
-  var isTables = getIfTables(taskData);
+const getTargetInfo = taskData => {
+  const result = [];
+  const isTables = getIfTables(taskData);
   if (taskData.load_entity && !taskData.reserve_ind && !taskData.delete_before_load) {
     if (!taskData.clone_ind) {
       if (taskData.replace_sequences) {
@@ -13155,9 +14541,9 @@ var getTargetInfo = function getTargetInfo(taskData) {
       }
     } else if (taskData.clone_ind) {
       if (isTables) {
-        result.push("Create ".concat(taskData.num_of_entities || 0, " entity clones and load tables. "));
+        result.push(`Create ${taskData.num_of_entities || 0} entity clones and load tables. `);
       } else {
-        result.push("Create ".concat(taskData.num_of_entities || 0, " entity clones"));
+        result.push(`Create ${taskData.num_of_entities || 0} entity clones`);
       }
     } else if (taskData.version_ind && taskData.sync_mode === 'OFF') {
       result.push('Delete and reload the selected entity data snapshot');
@@ -13179,9 +14565,9 @@ var getTargetInfo = function getTargetInfo(taskData) {
       }
     } else if (taskData.clone_ind) {
       if (isTables) {
-        result.push("Create ".concat(taskData.num_of_entities, " entity clones and load the related tables. Reserve the newly created entity clones."));
+        result.push(`Create ${taskData.num_of_entities} entity clones and load the related tables. Reserve the newly created entity clones.`);
       } else {
-        result.push("Create ".concat(taskData.num_of_entities, " entity clones. Reserve the newly created entity clones"));
+        result.push(`Create ${taskData.num_of_entities} entity clones. Reserve the newly created entity clones`);
       }
     } else if (taskData.version_ind && taskData.sync_mode === 'OFF') {
       if (isTables) {
@@ -13204,7 +14590,7 @@ var getTargetInfo = function getTargetInfo(taskData) {
         }
       }
     } else if (taskData.clone_ind) {
-      result.push("Delete the entity from the target and create in the target ".concat(taskData.num_of_entities, " clones for the entity"));
+      result.push(`Delete the entity from the target and create in the target ${taskData.num_of_entities} clones for the entity`);
     }
   } else if (taskData.load_entity && taskData.reserve_ind && taskData.delete_before_load) {
     if (!taskData.clone_ind) {
@@ -13218,7 +14604,7 @@ var getTargetInfo = function getTargetInfo(taskData) {
         }
       }
     } else if (taskData.clone_ind) {
-      result.push("Delete the entity from the target and create in the target ".concat(taskData.num_of_entities, " clones for the entity. Reserve the newly created entity clones"));
+      result.push(`Delete the entity from the target and create in the target ${taskData.num_of_entities} clones for the entity. Reserve the newly created entity clones`);
     }
   } else if (!taskData.load_entity && !taskData.reserve_ind && taskData.delete_before_load) {
     result.push('Delete entities');
@@ -13227,17 +14613,15 @@ var getTargetInfo = function getTargetInfo(taskData) {
   }
   return result;
 };
-var utils_getSubsetInfo = function getSubsetInfo(taskData) {
-  var result = [];
-  var isTables = getIfTables(taskData);
+const getSubsetInfo = taskData => {
+  const result = [];
+  const isTables = getIfTables(taskData);
   if (isTables === 'tables') {
     var _ref;
-    result.push("Get ".concat((taskData.tableList || []).length, " tables. "));
-    var filteredTables = (_ref = taskData.tableList || []) === null || _ref === void 0 ? void 0 : _ref.filter(function (it) {
-      return it.table_filter && it.table_filter !== '()';
-    });
+    result.push(`Get ${(taskData.tableList || []).length} tables. `);
+    const filteredTables = (_ref = taskData.tableList || []) === null || _ref === void 0 ? void 0 : _ref.filter(it => it.table_filter && it.table_filter !== '()');
     if (filteredTables.length > 0) {
-      result.push("Number of tables with data filtering: ".concat(filteredTables.length, ". "));
+      result.push(`Number of tables with data filtering: ${filteredTables.length}. `);
     }
   } else if (taskData.selection_method === 'ALL') {
     result.push('Get a predefined entity list');
@@ -13250,24 +14634,22 @@ var utils_getSubsetInfo = function getSubsetInfo(taskData) {
       result.push('Select a data generation execution.');
     }
   } else {
-    var selection_method = taskData.selection_method !== SelectionMethodEnum.PR ? taskData.selection_method : SelectionMethodEnum.P;
-    var foundSelectionMethod = entitySeletionMethods.find(function (it) {
-      return it.value === selection_method;
-    });
+    const selection_method = taskData.selection_method !== SelectionMethodEnum.PR ? taskData.selection_method : SelectionMethodEnum.P;
+    const foundSelectionMethod = entitySeletionMethods.find(it => it.value === selection_method);
     if (foundSelectionMethod && taskData.num_of_entities && foundSelectionMethod.label) {
-      result.push("Get ".concat(taskData.num_of_entities || '(empty)', " entities based on a/an ").concat(foundSelectionMethod.label, " selection method."));
+      result.push(`Get ${taskData.num_of_entities || '(empty)'} entities based on a/an ${foundSelectionMethod.label} selection method.`);
     }
   }
   return result;
 };
-var utils_getTestDataStoreInfo = function getTestDataStoreInfo(taskData, testDataStoreStatus, subsetStatus, subsetPosition) {
+const getTestDataStoreInfo = (taskData, testDataStoreStatus, subsetStatus, subsetPosition) => {
   if (subsetPosition === SubsetPossition.target && subsetStatus !== StatusEnum.disabled) {
     return ['Get data from the TDM Data store.'];
   }
   if (testDataStoreStatus !== StatusEnum.completed) {
     return [];
   }
-  var result = [];
+  const result = [];
   if (taskData.version_ind) {
     if (taskData.retention_period_type === 'Do Not Delete') {
       result.push('Create a data snapshot (version). Save the data in the TDM Data store for an unlimited period.');
@@ -13285,24 +14667,26 @@ var utils_getTestDataStoreInfo = function getTestDataStoreInfo(taskData, testDat
   }
   return result;
 };
-var utils_getTaskTitle = function getTaskTitle(taskData) {
-  var be_name = taskData.be_name,
-    be_id = taskData.be_id,
-    tables_selected = taskData.tables_selected,
-    manual_title_change = taskData.manual_title_change,
-    task_title = taskData.task_title;
+const getTaskTitle = taskData => {
+  const {
+    be_name,
+    be_id,
+    tables_selected,
+    manual_title_change,
+    task_title
+  } = taskData;
   if (manual_title_change) {
     return task_title || '';
   }
-  var new_task_title = "";
+  let new_task_title = ``;
   console.log(be_name);
   if (be_id === -1) {
-    new_task_title = new_task_title + "tables ";
+    new_task_title = new_task_title + `tables `;
   } else if (be_id) {
     if (tables_selected) {
-      new_task_title = new_task_title + "".concat(be_name, " and tables ");
+      new_task_title = new_task_title + `${be_name} and tables `;
     } else {
-      new_task_title = new_task_title + "".concat(be_name, " ");
+      new_task_title = new_task_title + `${be_name} `;
     }
   } else {
     return '';
@@ -13312,18 +14696,85 @@ var utils_getTaskTitle = function getTaskTitle(taskData) {
 };
 // CONCATENATED MODULE: ./src/components/task/TaskActions/styles.ts
 
-var TaskActions_styles_templateObject, TaskActions_styles_templateObject2, TaskActions_styles_templateObject3, TaskActions_styles_templateObject4, TaskActions_styles_templateObject5, TaskActions_styles_templateObject6, TaskActions_styles_templateObject7, TaskActions_styles_templateObject8;
+const TaskActions_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 300px;
+    position: absolute;
+    top: 29px;
+    left: 50px;
+`;
+const ButtonsContainer = styled_components_browser_esm["b" /* default */].div`
+    height: 60px;
+    display: flex;
+    margin-top: 16px;
+    border-left: 2px solid #e5e5e5;
+`;
+const Action = styled_components_browser_esm["b" /* default */].div`
+    width: 99px;
+    display: ${props => props.hide ? 'none' : 'flex'};
+    flex-direction: column;
+    gap: 7px;
+    align-items: center;
+    padding: 0px 15px;
+    border-right: 2px solid #e5e5e5;
+    cursor: pointer;
+`;
+const ActionText = styled_components_browser_esm["b" /* default */].div`
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-align: center;
+  color: #2e2e2e;
 
-var TaskActions_styles_Container = styled_components_browser_esm["b" /* default */].div(TaskActions_styles_templateObject || (TaskActions_styles_templateObject = taggedTemplateLiteral_default()(["\n    width: 300px;\n    position: absolute;\n    top: 29px;\n    left: 50px;\n"])));
-var ButtonsContainer = styled_components_browser_esm["b" /* default */].div(TaskActions_styles_templateObject2 || (TaskActions_styles_templateObject2 = taggedTemplateLiteral_default()(["\n    height: 60px;\n    display: flex;\n    margin-top: 16px;\n    border-left: 2px solid #e5e5e5;\n"])));
-var Action = styled_components_browser_esm["b" /* default */].div(TaskActions_styles_templateObject3 || (TaskActions_styles_templateObject3 = taggedTemplateLiteral_default()(["\n    width: 99px;\n    display: ", ";\n    flex-direction: column;\n    gap: 7px;\n    align-items: center;\n    padding: 0px 15px;\n    border-right: 2px solid #e5e5e5;\n    cursor: pointer;\n"])), function (props) {
-  return props.hide ? 'none' : 'flex';
-});
-var ActionText = styled_components_browser_esm["b" /* default */].div(TaskActions_styles_templateObject4 || (TaskActions_styles_templateObject4 = taggedTemplateLiteral_default()(["\n  font-family: Roboto;\n  font-size: 12px;\n  font-weight: 500;\n  font-stretch: normal;\n  font-style: normal;\n  line-height: 1;\n  letter-spacing: normal;\n  text-align: center;\n  color: #2e2e2e;\n\n"])));
-var TaskTitleContainer = styled_components_browser_esm["b" /* default */].div(TaskActions_styles_templateObject5 || (TaskActions_styles_templateObject5 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n    font-family: Roboto;\n    font-size: 15px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.33;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    padding-bottom: 17px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    width: 100%;\n"])));
-var EntitiesAndTablesContainer = styled_components_browser_esm["b" /* default */].div(TaskActions_styles_templateObject6 || (TaskActions_styles_templateObject6 = taggedTemplateLiteral_default()(["\n    cursor: pointer;\n    min-height: 39px;\n    display: flex;\n    gap: 15px;\n    align-items: center;\n    font-family: Roboto;\n    font-size: 15px;\n    font-weight: normal;\n    font-stretch: normal;\n    font-style: normal;\n    line-height: 1.33;\n    letter-spacing: normal;\n    text-align: left;\n    color: #2e2e2e;\n    border-bottom: 2px solid #e5e5e5;\n    padding-bottom: 17px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    width: 100%;\n"])));
-var TaskTitleButton = styled_components_browser_esm["b" /* default */].span(TaskActions_styles_templateObject7 || (TaskActions_styles_templateObject7 = taggedTemplateLiteral_default()(["\n    color: #1683f2;\n"])));
-var TaskActions_styles_Icon = styled_components_browser_esm["b" /* default */].img(TaskActions_styles_templateObject8 || (TaskActions_styles_templateObject8 = taggedTemplateLiteral_default()(["\n    width: 25px;\n"])));
+`;
+const TaskTitleContainer = styled_components_browser_esm["b" /* default */].div`
+    cursor: pointer;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    padding-bottom: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+`;
+const EntitiesAndTablesContainer = styled_components_browser_esm["b" /* default */].div`
+    cursor: pointer;
+    min-height: 39px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    border-bottom: 2px solid #e5e5e5;
+    padding-bottom: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+`;
+const TaskTitleButton = styled_components_browser_esm["b" /* default */].span`
+    color: #1683f2;
+`;
+const TaskActions_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: 25px;
+`;
 // CONCATENATED MODULE: ./src/images/settings-icon.svg
 /* harmony default export */ var settings_icon = ("js/dist/c91068a2c13098ab1c04ec54f77536a9.svg");
 // CONCATENATED MODULE: ./src/images/save-icon.svg
@@ -13338,25 +14789,23 @@ var TaskActions_styles_Icon = styled_components_browser_esm["b" /* default */].i
 
 
 
-
-
 function TaskActions(props) {
-  var setCurrentStep = props.setCurrentStep,
-    task_title = props.task_title,
-    saveLocalData = props.saveLocalData,
-    closeTask = props.closeTask,
-    saveTask = props.saveTask,
-    saveAndExecute = props.saveAndExecute,
-    deleteTask = props.deleteTask,
-    tables_selected = props.tables_selected,
-    be_name = props.be_name,
-    disableChange = props.disableChange,
-    task_execution_status = props.task_execution_status;
+  const {
+    setCurrentStep,
+    task_title,
+    saveLocalData,
+    closeTask,
+    saveTask,
+    saveAndExecute,
+    deleteTask,
+    tables_selected,
+    be_name,
+    disableChange,
+    task_execution_status
+  } = props;
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskActions_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskTitleContainer, {
-      onClick: function onClick() {
-        return setCurrentStep('task_title');
-      },
+      onClick: () => setCurrentStep('task_title'),
       children: ["Task name: ", /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTitleButton, {
         children: task_title
       })]
@@ -13376,9 +14825,7 @@ function TaskActions(props) {
       }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
     }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ButtonsContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Action, {
-        onClick: function onClick() {
-          return saveTask();
-        },
+        onClick: () => saveTask(),
         hide: disableChange,
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskActions_styles_Icon, {
           src: save_icon
@@ -13386,9 +14833,7 @@ function TaskActions(props) {
           children: "Save"
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Action, {
-        onClick: function onClick() {
-          return saveAndExecute();
-        },
+        onClick: () => saveAndExecute(),
         hide: disableChange || task_execution_status == 'onHold',
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskActions_styles_Icon, {
           src: save_exe_icon
@@ -13396,9 +14841,7 @@ function TaskActions(props) {
           children: "Save & execute"
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Action, {
-        onClick: function onClick() {
-          return setCurrentStep('be_advanced');
-        },
+        onClick: () => setCurrentStep('be_advanced'),
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskActions_styles_Icon, {
           src: settings_icon
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ActionText, {
@@ -13414,192 +14857,127 @@ function TaskActions(props) {
 
 
 
-
-
-
-
-var useRoles_useRoles = function useRoles(saveForm, taskData) {
-  var authService = getService('AuthService');
-  var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
-  var userId = authService === null || authService === void 0 ? void 0 : authService.getUserId();
-  var _useState = Object(react["useState"])([]),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    userFabricRoles = _useState2[0],
-    setUserFabricRoles = _useState2[1];
-  Object(react["useEffect"])(function () {
-    function fetchFabricRoles() {
-      return _fetchFabricRoles.apply(this, arguments);
-    }
-    function _fetchFabricRoles() {
-      _fetchFabricRoles = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var data;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.next = 2;
-              return apis_task.getFabricRolesByUser(userId);
-            case 2:
-              data = _context.sent;
-              setUserFabricRoles(data || []);
-            case 4:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee);
-      }));
-      return _fetchFabricRoles.apply(this, arguments);
+const useRoles = (saveForm, taskData) => {
+  const authService = getService('AuthService');
+  const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  const userId = authService === null || authService === void 0 ? void 0 : authService.getUserId();
+  const [userFabricRoles, setUserFabricRoles] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    async function fetchFabricRoles() {
+      const data = await apis_task.getFabricRolesByUser(userId);
+      setUserFabricRoles(data || []);
     }
     fetchFabricRoles();
   }, []);
-  var source_environment_id = taskData.source_environment_id,
-    environment_id = taskData.environment_id,
-    reserve_ind = taskData.reserve_ind,
-    delete_before_load = taskData.delete_before_load,
-    load_entity = taskData.load_entity,
-    targetEnvOwner = taskData.targetEnvOwner,
-    sourceEnvOwner = taskData.sourceEnvOwner,
-    maxToCopy = taskData.maxToCopy,
-    userRole = taskData.userRole;
-  var getRoleForUserInEnv = Object(react["useCallback"])( /*#__PURE__*/function () {
-    var _ref = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2(env_id, isSource) {
-      var data, updateData, temp_data, task_type, minRead, minWrite;
-      return regenerator_default.a.wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            if (!(isSource && sourceEnvOwner || !isSource && targetEnvOwner)) {
-              _context2.next = 2;
-              break;
-            }
-            return _context2.abrupt("return");
-          case 2:
-            _context2.next = 4;
-            return apis_task.getEnvironmentUserRole(env_id);
-          case 4:
-            data = _context2.sent;
-            updateData = defineProperty_default()({}, isSource ? 'sourceUserRole' : 'userRole', data.userRole);
-            updateData[isSource ? 'sourceUserRole' : 'userRole'].userType = 'tester';
-            temp_data = {};
-            updateTaskType(taskData, temp_data);
-            task_type = temp_data.task_type;
-            minRead = parseInt(data.minRead || '0');
-            minWrite = parseInt(data.minWrite || '0');
-            if (task_type === 'RESERVE' && userRole) {
-              minWrite = userRole.allowed_number_of_reserved_entities;
-            }
-            if (minRead > -1 || minWrite > -1) {
-              if (isSource) {
-                if (maxToCopy && maxToCopy > minRead || !maxToCopy) {
-                  updateData.maxToCopy = minRead;
-                }
-              } else {
-                if (maxToCopy && maxToCopy > minWrite || !maxToCopy) {
-                  updateData.maxToCopy = minWrite;
-                }
-              }
-            }
-            if (reserve_ind && !load_entity && userRole) {
-              updateData.maxToCopy = userRole.allowed_number_of_reserved_entities;
-            }
-            saveForm(updateData);
-          case 16:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2);
-    }));
-    return function (_x, _x2) {
-      return _ref.apply(this, arguments);
+  const {
+    source_environment_id,
+    environment_id,
+    reserve_ind,
+    delete_before_load,
+    load_entity,
+    targetEnvOwner,
+    sourceEnvOwner,
+    maxToCopy,
+    maxToCopyType,
+    userRole,
+    sync_mode
+  } = taskData;
+  const getRoleForUserInEnv = Object(react["useCallback"])(async (env_id, isSource) => {
+    if (isSource && sourceEnvOwner || !isSource && targetEnvOwner) {
+      return;
+    }
+    const data = await apis_task.getEnvironmentUserRole(env_id);
+    const updateData = {
+      [isSource ? 'sourceUserRole' : 'userRole']: data.userRole
     };
-  }(), [sourceEnvOwner, targetEnvOwner, maxToCopy, userRole, saveForm, reserve_ind, load_entity]);
-  var getEnvironmentOwners = Object(react["useCallback"])( /*#__PURE__*/function () {
-    var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3(env_id, isSource) {
-      var data, ownerFound, _loop, i, _saveForm;
-      return regenerator_default.a.wrap(function _callee3$(_context4) {
-        while (1) switch (_context4.prev = _context4.next) {
-          case 0:
-            _context4.next = 2;
-            return apis_task.getEnvironmentOwners(env_id);
-          case 2:
-            data = _context4.sent;
-            ownerFound = data.find(function (it) {
-              return it.user_id === userId;
-            });
-            if (ownerFound) {
-              _context4.next = 14;
-              break;
-            }
-            _loop = /*#__PURE__*/regenerator_default.a.mark(function _loop(i) {
-              var result;
-              return regenerator_default.a.wrap(function _loop$(_context3) {
-                while (1) switch (_context3.prev = _context3.next) {
-                  case 0:
-                    result = data.find(function (it) {
-                      return it.user_type === 'GROUP' && it.user_id === userFabricRoles[i];
-                    });
-                    if (!result) {
-                      _context3.next = 4;
-                      break;
-                    }
-                    ownerFound = result;
-                    return _context3.abrupt("return", 1);
-                  case 4:
-                  case "end":
-                    return _context3.stop();
-                }
-              }, _loop);
-            });
-            i = 0;
-          case 7:
-            if (!(i < userFabricRoles.length)) {
-              _context4.next = 14;
-              break;
-            }
-            return _context4.delegateYield(_loop(i), "t0", 9);
-          case 9:
-            if (!_context4.t0) {
-              _context4.next = 11;
-              break;
-            }
-            return _context4.abrupt("break", 14);
-          case 11:
-            i++;
-            _context4.next = 7;
-            break;
-          case 14:
-            if (ownerFound) {
-              saveForm((_saveForm = {}, defineProperty_default()(_saveForm, isSource ? 'sourceUserRole' : 'userRole', {
-                allowed_random_entity_selection: true,
-                allowed_creation_of_synthetic_data: true,
-                allowed_refresh_reference_data: true,
-                allowed_request_of_fresh_data: true,
-                allowed_delete_before_load: true,
-                allowed_task_scheduling: true,
-                allowed_replace_sequences: true,
-                allow_read: true,
-                allow_write: true,
-                userType: 'owner'
-              }), defineProperty_default()(_saveForm, "maxToCopy", 9007199254740992), defineProperty_default()(_saveForm, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', true), _saveForm));
-            } else {
-              saveForm(defineProperty_default()({}, isSource ? 'sourceEnvOwner' : 'targetEnvOwner', false));
-            }
-          case 15:
-          case "end":
-            return _context4.stop();
+    updateData[isSource ? 'sourceUserRole' : 'userRole'].userType = 'tester';
+    const temp_data = {};
+    updateTaskType(taskData, temp_data);
+    const {
+      task_type
+    } = temp_data;
+    let minRead = parseInt(data.minRead || '0');
+    let minWrite = parseInt(data.minWrite || '0');
+    if (minRead === -1) {
+      minRead = 9007199254740992;
+    }
+    if (minWrite === -1) {
+      minWrite = 9007199254740992;
+    }
+    if (minRead > -1 || minWrite > -1) {
+      if (isSource) {
+        if (sync_mode !== 'OFF') {
+          if (maxToCopy && maxToCopy > minRead || !maxToCopy && minRead > -1) {
+            updateData.maxToCopy = minRead;
+            updateData.maxToCopyType = 'source';
+          }
+        } else if (maxToCopyType === 'source') {
+          updateData.maxToCopy = undefined;
         }
-      }, _callee3);
-    }));
-    return function (_x3, _x4) {
-      return _ref2.apply(this, arguments);
-    };
-  }(), [userFabricRoles, saveForm, userId]);
-  Object(react["useEffect"])(function () {
+      } else {
+        if (maxToCopy && maxToCopy > minWrite || !maxToCopy && minWrite > -1) {
+          updateData.maxToCopy = minWrite;
+          updateData.maxToCopyType = 'target';
+        }
+      }
+    }
+    if (reserve_ind && !load_entity && !isSource && data.userRole) {
+      updateData.maxToCopy = data.userRole.allowed_number_of_reserved_entities;
+    }
+    if (parseInt(data.minWrite || '0') === 0 && data.userRole.allowed_number_of_reserved_entities > 0) {
+      updateData.reserve_only_task = true;
+    }
+    saveForm(updateData);
+  }, [sourceEnvOwner, targetEnvOwner, maxToCopy, maxToCopyType, userRole, saveForm, reserve_ind, load_entity, sync_mode]);
+  const getEnvironmentOwners = Object(react["useCallback"])(async (env_id, isSource) => {
+    const data = await apis_task.getEnvironmentOwners(env_id);
+    let ownerFound = data.find(it => it.user_id === userId);
+    if (!ownerFound) {
+      for (let i = 0; i < userFabricRoles.length; i++) {
+        const result = data.find(it => it.user_type === 'GROUP' && it.user_id === userFabricRoles[i]);
+        if (result) {
+          ownerFound = result;
+          break;
+        }
+      }
+    }
+    if (ownerFound) {
+      saveForm({
+        [isSource ? 'sourceUserRole' : 'userRole']: {
+          allowed_random_entity_selection: true,
+          allowed_creation_of_synthetic_data: true,
+          allowed_refresh_reference_data: true,
+          allowed_request_of_fresh_data: true,
+          allowed_delete_before_load: true,
+          allowed_task_scheduling: true,
+          allowed_replace_sequences: true,
+          allow_read: true,
+          allow_write: true,
+          userType: 'owner'
+        },
+        maxToCopy: 9007199254740992,
+        [isSource ? 'sourceEnvOwner' : 'targetEnvOwner']: true
+      });
+      return isSource ? 'source_owner' : 'target_owner';
+    } else {
+      saveForm({
+        [isSource ? 'sourceEnvOwner' : 'targetEnvOwner']: false
+      });
+      return isSource ? 'not_source_owner' : 'not_target_owner';
+      ;
+    }
+  }, [userFabricRoles, saveForm, userId]);
+  Object(react["useEffect"])(() => {
     if (reserve_ind && !load_entity && userRole && userRole.userType === 'tester') {
       saveForm({
         maxToCopy: userRole.allowed_number_of_reserved_entities
       });
     }
   }, [reserve_ind]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
+    if (!userFabricRoles) {
+      return;
+    }
     if ((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || "production" === 'development') {
       saveForm({
         sourceUserRole: {
@@ -13629,12 +15007,12 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
         maxToCopy: 9007199254740992
       });
     } else {
-      var promises = [];
+      const promises = [];
       if (!source_environment_id) {
         saveForm({
           sourceUserRole: undefined
         });
-      } else if (source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity)) {
+      } else if (source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity) && environment_id != source_environment_id) {
         promises.push(getEnvironmentOwners(source_environment_id, true));
       }
       if (environment_id) {
@@ -13644,419 +15022,177 @@ var useRoles_useRoles = function useRoles(saveForm, taskData) {
           userRole: undefined
         });
       }
-      Promise.all(promises).then( /*#__PURE__*/function () {
-        var _ref3 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4(result) {
-          return regenerator_default.a.wrap(function _callee4$(_context5) {
-            while (1) switch (_context5.prev = _context5.next) {
-              case 0:
-                if (!(source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity))) {
-                  _context5.next = 3;
-                  break;
-                }
-                _context5.next = 3;
-                return getRoleForUserInEnv(source_environment_id, true);
-              case 3:
-                if (!environment_id) {
-                  _context5.next = 6;
-                  break;
-                }
-                _context5.next = 6;
-                return getRoleForUserInEnv(environment_id, false);
-              case 6:
-              case "end":
-                return _context5.stop();
-            }
-          }, _callee4);
-        }));
-        return function (_x5) {
-          return _ref3.apply(this, arguments);
-        };
-      }());
+      Promise.all(promises).then(async result => {
+        if (result.indexOf('not_source_owner') >= 0 && source_environment_id && !(reserve_ind && !load_entity || delete_before_load && !load_entity)) {
+          await getRoleForUserInEnv(source_environment_id, true);
+        }
+        if (result.indexOf('not_target_owner') >= 0 && environment_id) {
+          await getRoleForUserInEnv(environment_id, false);
+        }
+      });
     }
-  }, [source_environment_id, environment_id, load_entity, reserve_ind, delete_before_load]);
-
-  // useEffect(() => {
-  //     saveForm({
-  //         userRole: {
-  //             allowed_random_entity_selection: systemUserRole?.type !== 'tester',
-  //             allowed_creation_of_synthetic_data: systemUserRole?.type !== 'tester',
-  //             allowed_refresh_reference_data: systemUserRole?.type !== 'tester',
-  //             allowed_request_of_fresh_data: systemUserRole?.type !== 'tester',
-  //             allowed_delete_before_load: systemUserRole?.type !== 'tester',
-  //             allowed_task_scheduling: systemUserRole?.type !== 'tester',
-  //             allowed_replace_sequences: systemUserRole?.type !== 'tester',
-  //             default: true,
-  //         },
-  //         sourceUserRole: {
-  //             allowed_random_entity_selection: systemUserRole?.type !== 'tester',
-  //             allowed_creation_of_synthetic_data: systemUserRole?.type !== 'tester',
-  //             allowed_refresh_reference_data: systemUserRole?.type !== 'tester',
-  //             allowed_request_of_fresh_data: systemUserRole?.type !== 'tester',
-  //             allowed_delete_before_load: systemUserRole?.type !== 'tester',
-  //             allowed_task_scheduling: systemUserRole?.type !== 'tester',
-  //             allowed_replace_sequences: systemUserRole?.type !== 'tester',
-  //             default: true,
-  //         },
-  //         maxToCopy: 100000000,
-  //     });
-  // }, []);
-
+  }, [userFabricRoles, source_environment_id, environment_id, load_entity, reserve_ind, delete_before_load, sync_mode]);
   return {};
 };
-/* harmony default export */ var Main_useRoles = (useRoles_useRoles);
+/* harmony default export */ var Main_useRoles = (useRoles);
 // CONCATENATED MODULE: ./src/containers/Task/Main/useInit.ts
 
 
-
-function useInit_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function useInit_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? useInit_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : useInit_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
-
-var useInit_useInit = function useInit(saveForm, taskData) {
-  var authService = getService('AuthService');
-  var enable_masking_only = (authService === null || authService === void 0 ? void 0 : authService.getEnableMaskingOnly()) || false;
-  Object(react["useEffect"])(function () {
-    var updateData = {
-      enable_masking_only: enable_masking_only
-    };
-    if (enable_masking_only) {
-      updateData.dataSourceType = 'data_source';
-      updateData.source_type = 'tables';
-      updateData.selection_method = 'TABLES';
-      updateData.be_id = -1;
+const useInit = (saveForm, taskData) => {
+  Object(react["useEffect"])(() => {
+    async function fetchActiveBE() {
+      try {
+        const data = await apis_task.getActiveBEs();
+        const updateData = {
+          enable_masking_only: !data || data.length === 0 ? true : false
+        };
+        if (updateData.enable_masking_only) {
+          updateData.dataSourceType = 'data_source';
+          updateData.source_type = 'tables';
+          updateData.selection_method = 'TABLES';
+          updateData.be_id = -1;
+        }
+        saveForm(updateData);
+      } catch (err) {}
     }
-    saveForm(updateData);
+    fetchActiveBE();
   }, []);
-  Object(react["useEffect"])(function () {
-    function fetchEnableParamsLUName() {
-      return _fetchEnableParamsLUName.apply(this, arguments);
+  Object(react["useEffect"])(() => {
+    async function fetchEnableParamsLUName() {
+      try {
+        const result = await apis_task.getParamsLUName();
+        saveForm({
+          enable_param_lu_name: result === "true"
+        });
+      } catch (err) {}
     }
-    function _fetchEnableParamsLUName() {
-      _fetchEnableParamsLUName = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-        var result;
-        return regenerator_default.a.wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return apis_task.getParamsLUName();
-            case 3:
-              result = _context.sent;
-              saveForm({
-                enable_param_lu_name: result === "true"
-              });
-              _context.next = 9;
-              break;
-            case 7:
-              _context.prev = 7;
-              _context.t0 = _context["catch"](0);
-            case 9:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 7]]);
-      }));
-      return _fetchEnableParamsLUName.apply(this, arguments);
+    async function fetchEnableAdvancedSystemsForTesters() {
+      try {
+        const result = await apis_task.getTaskLuEditForTesters();
+        saveForm({
+          enable_advanced_for_testers: result === "true"
+        });
+      } catch (err) {}
     }
     fetchEnableParamsLUName();
+    fetchEnableAdvancedSystemsForTesters();
   }, []);
-  var _useState = Object(react["useState"])(7),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    fetchCounter = _useState2[0],
-    setFetchCounter = _useState2[1];
-  var _useState3 = Object(react["useState"])(false),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    finished = _useState4[0],
-    setFinished = _useState4[1];
-  Object(react["useEffect"])(function () {
-    function fetchEnableParamWidth() {
-      return _fetchEnableParamWidth.apply(this, arguments);
+  const [fetchCounter, setFetchCounter] = Object(react["useState"])(8);
+  const [finished, setFinished] = Object(react["useState"])(true);
+  Object(react["useEffect"])(() => {
+    async function fetchEnableParamWidth() {
+      try {
+        const result = await apis_task.getEnableParamWidth();
+        saveForm({
+          enable_param_auto_width: result === "true"
+        });
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
-    function _fetchEnableParamWidth() {
-      _fetchEnableParamWidth = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2() {
-        var result;
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
-          while (1) switch (_context2.prev = _context2.next) {
-            case 0:
-              _context2.prev = 0;
-              _context2.next = 3;
-              return apis_task.getEnableParamWidth();
-            case 3:
-              result = _context2.sent;
-              saveForm({
-                enable_param_auto_width: result === "true"
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context2.next = 10;
-              break;
-            case 8:
-              _context2.prev = 8;
-              _context2.t0 = _context2["catch"](0);
-            case 10:
-            case "end":
-              return _context2.stop();
-          }
-        }, _callee2, null, [[0, 8]]);
-      }));
-      return _fetchEnableParamWidth.apply(this, arguments);
+    async function fetchParamCoupling() {
+      try {
+        const coupling_result = await apis_task.getCheckIfParamsCoupling();
+        saveForm({
+          isCoupling: coupling_result === "true"
+        });
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
     if (!taskData.task_id) {
       fetchEnableParamWidth();
-      setFetchCounter(1);
+      fetchParamCoupling();
+      setFetchCounter(2);
       return;
     }
-    var task_id = taskData.task_id;
-    function fetchTaskPostExecutionProcess() {
-      return _fetchTaskPostExecutionProcess.apply(this, arguments);
+    const task_id = taskData.task_id;
+    async function fetchTaskPostExecutionProcess() {
+      try {
+        const data = await apis_task.getTaskPostExecutionProcess(task_id);
+        saveForm({
+          postExecutionProcesses: data.map(it => {
+            if (!it.parameters) {
+              it.parameters = {
+                inputs: []
+              };
+            } else {
+              it.parameters = JSON.parse(it.parameters);
+            }
+            it.editors = [];
+            return it;
+          })
+        });
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
-    function _fetchTaskPostExecutionProcess() {
-      _fetchTaskPostExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3() {
-        var data;
-        return regenerator_default.a.wrap(function _callee3$(_context3) {
-          while (1) switch (_context3.prev = _context3.next) {
-            case 0:
-              _context3.prev = 0;
-              _context3.next = 3;
-              return apis_task.getTaskPostExecutionProcess(task_id);
-            case 3:
-              data = _context3.sent;
-              saveForm({
-                postExecutionProcesses: data.map(function (it) {
-                  if (!it.parameters) {
-                    it.parameters = {
-                      inputs: []
-                    };
-                  } else {
-                    it.parameters = JSON.parse(it.parameters);
-                  }
-                  it.editors = [];
-                  return it;
-                })
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context3.next = 10;
-              break;
-            case 8:
-              _context3.prev = 8;
-              _context3.t0 = _context3["catch"](0);
-            case 10:
-            case "end":
-              return _context3.stop();
-          }
-        }, _callee3, null, [[0, 8]]);
-      }));
-      return _fetchTaskPostExecutionProcess.apply(this, arguments);
+    async function fetchTaskVariables() {
+      try {
+        const data = await apis_task.getTaskVariables(task_id);
+        saveForm({
+          globals: data
+        });
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
-    function fetchTaskVariables() {
-      return _fetchTaskVariables.apply(this, arguments);
+    async function fetchTaskPreExecutionProcess() {
+      try {
+        const data = await apis_task.getTaskPreExecutionProcess(task_id);
+        saveForm({
+          preExecutionProcesses: data.map(it => {
+            if (!it.parameters) {
+              it.parameters = {
+                inputs: []
+              };
+            } else {
+              it.parameters = JSON.parse(it.parameters);
+            }
+            it.editors = [];
+            return it;
+          })
+        });
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
-    function _fetchTaskVariables() {
-      _fetchTaskVariables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4() {
-        var data;
-        return regenerator_default.a.wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
-            case 0:
-              _context4.prev = 0;
-              _context4.next = 3;
-              return apis_task.getTaskVariables(task_id);
-            case 3:
-              data = _context4.sent;
-              saveForm({
-                globals: data
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context4.next = 10;
-              break;
-            case 8:
-              _context4.prev = 8;
-              _context4.t0 = _context4["catch"](0);
-            case 10:
-            case "end":
-              return _context4.stop();
-          }
-        }, _callee4, null, [[0, 8]]);
-      }));
-      return _fetchTaskVariables.apply(this, arguments);
+    async function fetchTaskTables() {
+      try {
+        if (taskData.refcount === 0) {
+          setFetchCounter(prevCount => prevCount - 1);
+          return;
+        }
+        const data = await apis_task.getTaskTables(task_id);
+        saveForm({
+          tableList: data.map(it => ({
+            ...it,
+            filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
+            reference_table_name: it.ref_table_name
+          }))
+        });
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
-    function fetchTaskPreExecutionProcess() {
-      return _fetchTaskPreExecutionProcess.apply(this, arguments);
+    async function fetchSourceEnvironment() {
+      try {
+        if (!taskData.source_environment_id) {
+          setFetchCounter(prevCount => prevCount - 1);
+          return;
+        }
+        const data = await apis_task.getEnvironmentByID(taskData.source_environment_id);
+        if (data && data[0]) {
+          saveForm({
+            mask_sensitive_data: data[0].mask_sensitive_data
+          });
+        }
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
-    function _fetchTaskPreExecutionProcess() {
-      _fetchTaskPreExecutionProcess = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee5() {
-        var data;
-        return regenerator_default.a.wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
-            case 0:
-              _context5.prev = 0;
-              _context5.next = 3;
-              return apis_task.getTaskPreExecutionProcess(task_id);
-            case 3:
-              data = _context5.sent;
-              saveForm({
-                preExecutionProcesses: data.map(function (it) {
-                  if (!it.parameters) {
-                    it.parameters = {
-                      inputs: []
-                    };
-                  } else {
-                    it.parameters = JSON.parse(it.parameters);
-                  }
-                  it.editors = [];
-                  return it;
-                })
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context5.next = 10;
-              break;
-            case 8:
-              _context5.prev = 8;
-              _context5.t0 = _context5["catch"](0);
-            case 10:
-            case "end":
-              return _context5.stop();
-          }
-        }, _callee5, null, [[0, 8]]);
-      }));
-      return _fetchTaskPreExecutionProcess.apply(this, arguments);
-    }
-    function fetchTaskTables() {
-      return _fetchTaskTables.apply(this, arguments);
-    }
-    function _fetchTaskTables() {
-      _fetchTaskTables = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee6() {
-        var data;
-        return regenerator_default.a.wrap(function _callee6$(_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
-            case 0:
-              _context6.prev = 0;
-              if (!(taskData.refcount === 0)) {
-                _context6.next = 4;
-                break;
-              }
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              return _context6.abrupt("return");
-            case 4:
-              _context6.next = 6;
-              return apis_task.getTaskTables(task_id);
-            case 6:
-              data = _context6.sent;
-              saveForm({
-                tableList: data.map(function (it) {
-                  return useInit_objectSpread(useInit_objectSpread({}, it), {}, {
-                    filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
-                    reference_table_name: it.ref_table_name
-                  });
-                })
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context6.next = 13;
-              break;
-            case 11:
-              _context6.prev = 11;
-              _context6.t0 = _context6["catch"](0);
-            case 13:
-            case "end":
-              return _context6.stop();
-          }
-        }, _callee6, null, [[0, 11]]);
-      }));
-      return _fetchTaskTables.apply(this, arguments);
-    }
-    function fetchSourceEnvironment() {
-      return _fetchSourceEnvironment.apply(this, arguments);
-    }
-    function _fetchSourceEnvironment() {
-      _fetchSourceEnvironment = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee7() {
-        var data;
-        return regenerator_default.a.wrap(function _callee7$(_context7) {
-          while (1) switch (_context7.prev = _context7.next) {
-            case 0:
-              _context7.prev = 0;
-              if (taskData.source_environment_id) {
-                _context7.next = 4;
-                break;
-              }
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              return _context7.abrupt("return");
-            case 4:
-              _context7.next = 6;
-              return apis_task.getEnvironmentByID(taskData.source_environment_id);
-            case 6:
-              data = _context7.sent;
-              if (data && data[0]) {
-                saveForm({
-                  mask_sensitive_data: data[0].mask_sensitive_data
-                });
-              }
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context7.next = 13;
-              break;
-            case 11:
-              _context7.prev = 11;
-              _context7.t0 = _context7["catch"](0);
-            case 13:
-            case "end":
-              return _context7.stop();
-          }
-        }, _callee7, null, [[0, 11]]);
-      }));
-      return _fetchSourceEnvironment.apply(this, arguments);
-    }
-    function fetchLogicalUntis() {
-      return _fetchLogicalUntis.apply(this, arguments);
-    }
-    function _fetchLogicalUntis() {
-      _fetchLogicalUntis = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee8() {
-        var selectedData;
-        return regenerator_default.a.wrap(function _callee8$(_context8) {
-          while (1) switch (_context8.prev = _context8.next) {
-            case 0:
-              _context8.prev = 0;
-              _context8.next = 3;
-              return apis_task.getTaskLogicalUnits(taskData.task_id || 0);
-            case 3:
-              selectedData = _context8.sent;
-              saveForm({
-                selected_logical_units: selectedData.map(function (it) {
-                  return it.lu_id;
-                }),
-                selected_logical_units_names: selectedData.map(function (it) {
-                  return it.lu_name;
-                })
-              });
-              setFetchCounter(function (prevCount) {
-                return prevCount - 1;
-              });
-              _context8.next = 10;
-              break;
-            case 8:
-              _context8.prev = 8;
-              _context8.t0 = _context8["catch"](0);
-            case 10:
-            case "end":
-              return _context8.stop();
-          }
-        }, _callee8, null, [[0, 8]]);
-      }));
-      return _fetchLogicalUntis.apply(this, arguments);
+    async function fetchLogicalUntis() {
+      try {
+        const selectedData = await apis_task.getTaskLogicalUnits(taskData.task_id || 0);
+        saveForm({
+          selected_logical_units: selectedData.map(it => it.lu_id),
+          selected_logical_units_names: selectedData.map(it => it.lu_name)
+        });
+        setFetchCounter(prevCount => prevCount - 1);
+      } catch (err) {}
     }
     fetchTaskPostExecutionProcess();
     fetchTaskPreExecutionProcess();
@@ -14065,8 +15201,9 @@ var useInit_useInit = function useInit(saveForm, taskData) {
     fetchSourceEnvironment();
     fetchLogicalUntis();
     fetchEnableParamWidth();
+    fetchParamCoupling();
   }, [taskData.task_id]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     if (fetchCounter === 0) {
       setFinished(true);
     }
@@ -14075,63 +15212,49 @@ var useInit_useInit = function useInit(saveForm, taskData) {
     initFinished: finished
   };
 };
-/* harmony default export */ var Main_useInit = (useInit_useInit);
+/* harmony default export */ var Main_useInit = (useInit);
 // CONCATENATED MODULE: ./src/containers/Task/Main/useGenerationParams.ts
 
 
-
-
-var useGenerationParams_useGenerationParams = function useGenerationParams(saveForm, task_id, selected_logical_units_names, generateParams) {
-  var getDataGenerationParams = Object(react["useCallback"])( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-    var data, updateData, selectedParams;
-    return regenerator_default.a.wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          _context.next = 2;
-          return apis_task.getDataGenerationParams(task_id, selected_logical_units_names || []);
-        case 2:
-          data = _context.sent;
-          updateData = {};
-          selectedParams = [];
-          Object.keys(data || {}).forEach(function (key) {
-            var newValueAdded = false;
-            if (generateParams && generateParams[key] && generateParams[key].value !== undefined) {
-              data[key].editor.value = generateParams[key].value;
-              data[key].value = generateParams[key].value;
-              newValueAdded = true;
-            } else {
-              if (data[key].value !== undefined) {
-                newValueAdded = true;
-                data[key].editor.value = data[key].value;
-                data[key].value = data[key].value;
-              } else {
-                data[key].editor.value = data[key].default;
-              }
-            }
-            if (generateParams && generateParams[key] && generateParams[key].order) {
-              data[key].order = generateParams[key].order;
-            }
-            if ((newValueAdded || data[key].mandatory) && data[key].order < 99999999) {
-              selectedParams.push({
-                key: key,
-                order: data[key].order
-              });
-            }
-          });
-          updateData.generateChosenParams = selectedParams.sort(function (a, b) {
-            return (a.order || 99999999) - (b.order || 99999999);
-          }).map(function (it) {
-            return it.key;
-          });
-          updateData.dataGenerationParams = data;
-          saveForm(updateData);
-        case 9:
-        case "end":
-          return _context.stop();
+const useGenerationParams = (saveForm, dataSourceType, task_id, selected_logical_units_names, generateParams) => {
+  const getDataGenerationParams = Object(react["useCallback"])(async () => {
+    if (dataSourceType !== 'synthetic') {
+      return;
+    }
+    console.log('getDataGenerationParams');
+    const data = await apis_task.getDataGenerationParams(task_id, selected_logical_units_names || []);
+    const updateData = {};
+    const selectedParams = [];
+    Object.keys(data || {}).forEach(key => {
+      let newValueAdded = false;
+      if (generateParams && generateParams[key] && generateParams[key].value !== undefined) {
+        data[key].editor.value = generateParams[key].value;
+        data[key].value = generateParams[key].value;
+        newValueAdded = true;
+      } else {
+        if (data[key].value !== undefined) {
+          newValueAdded = true;
+          data[key].editor.value = data[key].value;
+          data[key].value = data[key].value;
+        } else {
+          data[key].editor.value = data[key].default;
+        }
       }
-    }, _callee);
-  })), [saveForm, task_id, selected_logical_units_names, generateParams]);
-  Object(react["useEffect"])(function () {
+      if (generateParams && generateParams[key] && generateParams[key].order) {
+        data[key].order = generateParams[key].order;
+      }
+      if ((newValueAdded || data[key].mandatory) && data[key].order < 99999999) {
+        selectedParams.push({
+          key,
+          order: data[key].order
+        });
+      }
+    });
+    updateData.generateChosenParams = selectedParams.sort((a, b) => (a.order || 99999999) - (b.order || 99999999)).map(it => it.key);
+    updateData.dataGenerationParams = data;
+    saveForm(updateData);
+  }, [saveForm, task_id, selected_logical_units_names, generateParams, dataSourceType]);
+  Object(react["useEffect"])(() => {
     if (selected_logical_units_names && selected_logical_units_names.length > 0) {
       getDataGenerationParams();
     }
@@ -14139,24 +15262,26 @@ var useGenerationParams_useGenerationParams = function useGenerationParams(saveF
 
   // need to add code for tester
 };
-/* harmony default export */ var Main_useGenerationParams = (useGenerationParams_useGenerationParams);
+/* harmony default export */ var Main_useGenerationParams = (useGenerationParams);
 // EXTERNAL MODULE: ./node_modules/sweetalert2/dist/sweetalert2.all.js
-var sweetalert2_all = __webpack_require__(226);
+var sweetalert2_all = __webpack_require__(56);
 var sweetalert2_all_default = /*#__PURE__*/__webpack_require__.n(sweetalert2_all);
 
 // EXTERNAL MODULE: ./node_modules/sweetalert2-react-content/dist/sweetalert2-react-content.umd.js
-var sweetalert2_react_content_umd = __webpack_require__(227);
+var sweetalert2_react_content_umd = __webpack_require__(57);
 var sweetalert2_react_content_umd_default = /*#__PURE__*/__webpack_require__.n(sweetalert2_react_content_umd);
 
 // CONCATENATED MODULE: ./src/containers/Task/Main/useExecutionMode.ts
 
 
-var useExecutionMode_useExecutionMode = function useExecutionMode(initFinished, taskData) {
-  var toast = hooks_useToast();
-  var clone_ind = taskData.clone_ind,
-    execution_mode = taskData.execution_mode,
-    be_execution_mode = taskData.be_execution_mode;
-  Object(react["useEffect"])(function () {
+const useExecutionMode = (initFinished, taskData) => {
+  const toast = hooks_useToast();
+  const {
+    clone_ind,
+    execution_mode,
+    be_execution_mode
+  } = taskData;
+  Object(react["useEffect"])(() => {
     if (initFinished) {
       if (clone_ind && (execution_mode === 'VERTICAL' || execution_mode === 'INHERITED' && be_execution_mode === 'VERTICAL')) {
         toast.warning('The task execution will run in a horizontal mode since the entity clone does not support the vertical execution mode.');
@@ -14164,15 +15289,13 @@ var useExecutionMode_useExecutionMode = function useExecutionMode(initFinished, 
     }
   }, [clone_ind, execution_mode]);
 };
-/* harmony default export */ var Main_useExecutionMode = (useExecutionMode_useExecutionMode);
+/* harmony default export */ var Main_useExecutionMode = (useExecutionMode);
 // CONCATENATED MODULE: ./src/containers/Task/Main/index.tsx
 
 
 
 
 
-function Main_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function Main_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? Main_ownKeys(Object(source), !0).forEach(function (key) { defineProperty_default()(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : Main_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
@@ -14197,53 +15320,28 @@ function Main_objectSpread(target) { for (var i = 1; i < arguments.length; i++) 
 
 
 
-
-
-
-
-
-
-
-var MySwal = sweetalert2_react_content_umd_default()(sweetalert2_all_default.a);
+const MySwal = sweetalert2_react_content_umd_default()(sweetalert2_all_default.a);
 function TaskMain(props) {
-  var _props$content = props.content,
-    mode = _props$content.mode,
-    task = _props$content.task,
-    openTasks = _props$content.openTasks,
-    copy = _props$content.copy,
-    tasks = _props$content.tasks,
-    scope = _props$content.scope;
-  var toast = hooks_useToast();
-  var _useState = Object(react["useState"])(utils_convertTaskData(task, copy)),
-    _useState2 = slicedToArray_default()(_useState, 2),
-    taskData = _useState2[0],
-    setTaskData = _useState2[1];
-  var _useState3 = Object(react["useState"])(false),
-    _useState4 = slicedToArray_default()(_useState3, 2),
-    saveInProgress = _useState4[0],
-    setSaveInProgress = _useState4[1];
-  var _useState5 = Object(react["useState"])(''),
-    _useState6 = slicedToArray_default()(_useState5, 2),
-    failedComp = _useState6[0],
-    setFailedComp = _useState6[1];
-  var _useState7 = Object(react["useState"])(false),
-    _useState8 = slicedToArray_default()(_useState7, 2),
-    disableChange = _useState8[0],
-    setDisableChange = _useState8[1];
-  var _useState9 = Object(react["useState"])(tasks && tasks.filter(function (it) {
-      return it.task_status === 'Active';
-    }).map(function (it) {
-      return it.task_title || '';
-    }) || []),
-    _useState10 = slicedToArray_default()(_useState9, 2),
-    task_titles = _useState10[0],
-    setTaskTitles = _useState10[1];
-  Object(react["useEffect"])(function () {
-    var disableChangeLocal = false;
+  const {
+    mode,
+    task,
+    openTasks,
+    copy,
+    tasks,
+    scope
+  } = props.content;
+  const toast = hooks_useToast();
+  const [taskData, setTaskData] = Object(react["useState"])(convertTaskData(task, copy));
+  const [saveInProgress, setSaveInProgress] = Object(react["useState"])(false);
+  const [failedComp, setFailedComp] = Object(react["useState"])('');
+  const [disableChange, setDisableChange] = Object(react["useState"])(false);
+  const [task_titles, setTaskTitles] = Object(react["useState"])(tasks && tasks.filter(it => it.task_status === 'Active').map(it => it.task_title || '') || []);
+  Object(react["useEffect"])(() => {
+    let disableChangeLocal = false;
     if (taskData.task_id) {
-      var authService = getService('AuthService');
-      var username = (authService === null || authService === void 0 ? void 0 : authService.getUsername()) || '';
-      var userRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+      const authService = getService('AuthService');
+      const username = (authService === null || authService === void 0 ? void 0 : authService.getUsername()) || '';
+      const userRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
       if ((taskData === null || taskData === void 0 ? void 0 : taskData.task_status) === 'Inactive' || username !== (taskData === null || taskData === void 0 ? void 0 : taskData.task_created_by)) {
         disableChangeLocal = true;
       }
@@ -14256,77 +15354,80 @@ function TaskMain(props) {
       setDisableChange(disableChangeLocal);
     }
   }, [taskData, copy]);
-  Object(react["useEffect"])(function () {
-    setTaskTitles(tasks && tasks.map(function (it) {
-      return it.task_title || '';
-    }) || []);
+  Object(react["useEffect"])(() => {
+    setTaskTitles(tasks && tasks.map(it => it.task_title || '') || []);
   }, [tasks]);
-  Object(react["useEffect"])(function () {
+  Object(react["useEffect"])(() => {
     // if (!taskData.task_title) {
     if (!taskData.task_id) {
-      var task_title = utils_getTaskTitle(taskData);
+      const task_title = getTaskTitle(taskData);
       saveForm({
-        task_title: task_title
+        task_title
       });
     }
     // }
   }, [taskData.be_id, taskData.tables_selected, taskData.be_name]);
-  Object(react["useEffect"])(function () {
-    var BreadCrumbsService = getService('BreadCrumbsService');
+  Object(react["useEffect"])(() => {
+    const BreadCrumbsService = getService('BreadCrumbsService');
     if (BreadCrumbsService) {
       BreadCrumbsService.push({
         task_id: taskData.task_title
       }, 'TASK_BREADCRUMB', function () {});
     }
   }, []);
-  var _useForm = Object(index_esm["a" /* useForm */])({
-      defaultValues: taskData
-    }),
-    resetField = _useForm.resetField,
-    register = _useForm.register,
-    unregister = _useForm.unregister,
-    setValue = _useForm.setValue,
-    handleSubmit = _useForm.handleSubmit,
-    trigger = _useForm.trigger,
-    _useForm$formState = _useForm.formState,
-    errors = _useForm$formState.errors,
-    isValid = _useForm$formState.isValid,
-    clearErrors = _useForm.clearErrors;
-  var _useWidgetStatus = Main_useWidgetStatus(taskData, trigger, isValid, handleSubmit, failedComp),
-    statuses = _useWidgetStatus.statuses,
-    onClickStep = _useWidgetStatus.onClickStep,
-    currentStep = _useWidgetStatus.currentStep,
-    touchedForms = _useWidgetStatus.touchedForms,
-    setTouchedForms = _useWidgetStatus.setTouchedForms,
-    submittedForm = _useWidgetStatus.submittedForm,
-    setSubmittedForm = _useWidgetStatus.setSubmittedForm,
-    statusesFuncMap = _useWidgetStatus.statusesFuncMap,
-    initTask = _useWidgetStatus.initTask;
-  var saveForm = Object(react["useCallback"])(function (data) {
+  const {
+    resetField,
+    register,
+    unregister,
+    setValue,
+    handleSubmit,
+    trigger,
+    formState: {
+      errors,
+      isValid
+    },
+    clearErrors
+  } = Object(index_esm["b" /* useForm */])({
+    defaultValues: taskData
+  });
+  const {
+    statuses,
+    onClickStep,
+    currentStep,
+    touchedForms,
+    setTouchedForms,
+    submittedForm,
+    setSubmittedForm,
+    statusesFuncMap,
+    initTask
+  } = Main_useWidgetStatus(taskData, trigger, isValid, handleSubmit, failedComp);
+  const saveForm = Object(react["useCallback"])(data => {
     if (failedComp === currentStep) {
       setFailedComp('');
     }
-    setTaskData(function (previousTaskData) {
-      return Main_objectSpread(Main_objectSpread({}, previousTaskData), data);
-    });
-    Object.keys(data).forEach(function (key) {
+    setTaskData(previousTaskData => ({
+      ...previousTaskData,
+      ...data
+    }));
+    Object.keys(data).forEach(key => {
       setValue(key, data[key]);
       clearErrors(key);
     });
   }, [setValue, clearErrors, setFailedComp, failedComp, currentStep]);
-  var _useInit = Main_useInit(saveForm, taskData),
-    initFinished = _useInit.initFinished;
-  var allLogicalUnits = Main_useLogicalUnits(initFinished, saveForm, initTask, taskData === null || taskData === void 0 ? void 0 : taskData.dataSourceType, taskData === null || taskData === void 0 ? void 0 : taskData.source_type, taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units_names, taskData === null || taskData === void 0 ? void 0 : taskData.be_type, taskData === null || taskData === void 0 ? void 0 : taskData.be_id, taskData === null || taskData === void 0 ? void 0 : taskData.source_environment_id, taskData === null || taskData === void 0 ? void 0 : taskData.environment_id);
-  Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.retention_period_type, taskData.reserve_retention_period_value);
+  const {
+    initFinished
+  } = Main_useInit(saveForm, taskData);
+  const allLogicalUnits = Main_useLogicalUnits(initFinished, saveForm, initTask, taskData === null || taskData === void 0 ? void 0 : taskData.dataSourceType, taskData === null || taskData === void 0 ? void 0 : taskData.source_type, taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units_names, taskData === null || taskData === void 0 ? void 0 : taskData.be_type, taskData === null || taskData === void 0 ? void 0 : taskData.be_id, taskData === null || taskData === void 0 ? void 0 : taskData.source_environment_id, taskData === null || taskData === void 0 ? void 0 : taskData.environment_id);
+  Main_usePeriods(saveForm, taskData.version_ind, taskData.dataSourceType, taskData.source_type, taskData.retention_period_value, taskData.retention_period_type, taskData.reserve_retention_period_value, taskData.reserve_retention_period_type);
   Main_useExecutionMode(initFinished, taskData);
   Main_useRoles(saveForm, taskData);
-  Main_useGenerationParams(saveForm, taskData.task_id, taskData.selected_logical_units_names, taskData.dataGenerationParams);
-  var onReset = Object(react["useCallback"])(function () {
-    var authService = getService('AuthService');
-    var systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
+  Main_useGenerationParams(saveForm, taskData.dataSourceType, taskData.task_id, taskData.selected_logical_units_names, taskData.dataGenerationParams);
+  const onReset = Object(react["useCallback"])(() => {
+    const authService = getService('AuthService');
+    const systemUserRole = authService === null || authService === void 0 ? void 0 : authService.getRole();
     if (currentStep === 'source_data_subset' || currentStep === 'target_data_subset') {
       if (taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables') {
-        var tableList = (taskData.tableList || []).map(function (it) {
+        const tableList = (taskData.tableList || []).map(it => {
           it.gui_filter = undefined;
           it.filter_type = undefined;
           it.table_filter = undefined;
@@ -14334,7 +15435,17 @@ function TaskMain(props) {
         });
         saveForm({
           subsetReset: true,
-          tableList: toConsumableArray_default()(tableList)
+          tableList: [...tableList]
+        });
+      } else if (taskData.dataSourceType !== 'data_source' && taskData.synthetic_type === 'generated_data') {
+        saveForm({
+          onReset: true,
+          generation_type: 'all',
+          selection_method: 'L',
+          selection_param_value: undefined,
+          num_of_entities: undefined,
+          parameters: undefined,
+          selected_subset_task_exe_id: undefined
         });
       } else {
         saveForm({
@@ -14383,7 +15494,7 @@ function TaskMain(props) {
     }
     if (currentStep === 'test_data_store') {
       var _taskData$userRole, _taskData$sourceUserR;
-      var updateData = {
+      const updateData = {
         retention_period_type: 'reset'
       };
       if (!(!((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!taskData.userRole || (_taskData$userRole = taskData.userRole) !== null && _taskData$userRole !== void 0 && _taskData$userRole.allowed_entity_versioning) && (!taskData.sourceUserRole || (_taskData$sourceUserR = taskData.sourceUserRole) !== null && _taskData$sourceUserR !== void 0 && _taskData$sourceUserR.allowed_entity_versioning) && (taskData.userRole || taskData.sourceUserRole)) || taskData.sync_mode === 'OFF' && taskData.dataSourceType === 'data_source' || taskData.dataSourceType !== 'data_source' && taskData.synthetic_type === 'generated_data' || taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables' || taskData.retention_period_type === 'Do Not Retain')) {
@@ -14402,9 +15513,9 @@ function TaskMain(props) {
         environment_id: null,
         environment_name: '',
         target_env: 'target_env',
-        load_entity: taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables' ? true : false,
+        load_entity: taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables' || taskData.version_ind && !(taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables') ? true : false,
         reserve_ind: false,
-        delete_before_load: taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables' ? true : false,
+        delete_before_load: taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables' || taskData.version_ind && !(taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables') ? true : false,
         replace_sequences: false,
         reserve_note: '',
         clone_ind: false,
@@ -14419,12 +15530,13 @@ function TaskMain(props) {
     }
     clearErrors();
     if (currentStep && touchedForms.indexOf(currentStep) >= 0) {
-      setTouchedForms(function (oldArray) {
-        return oldArray.filter(function (it) {
-          return it !== currentStep;
-        });
-      });
+      setTouchedForms(oldArray => oldArray.filter(it => it !== currentStep));
     }
+    setTimeout(() => {
+      saveForm({
+        onReset: false
+      });
+    }, 500);
   }, [currentStep, saveForm, touchedForms, setTouchedForms, clearErrors, taskData]);
 
   // useEffect(() => {
@@ -14436,7 +15548,7 @@ function TaskMain(props) {
   // },[taskData, onClickStep, currentStep]);
 
   console.log(taskData);
-  var getCurrentForm = Object(react["useCallback"])(function () {
+  const getCurrentForm = Object(react["useCallback"])(() => {
     if (currentStep === 'task_title') {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTitle, {
         tasks_titles_active: task_titles
@@ -14463,7 +15575,7 @@ function TaskMain(props) {
       return /*#__PURE__*/Object(jsx_runtime["jsx"])(Scheduler, {});
     }
   }, [currentStep, taskData, task_titles]);
-  var getSourceName = Object(react["useCallback"])(function () {
+  const getSourceName = Object(react["useCallback"])(() => {
     if ((taskData.reserve_ind || taskData.delete_before_load) && !taskData.load_entity) {
       if (taskData.dataSourceType === 'data_source') {
         return ' ';
@@ -14480,7 +15592,7 @@ function TaskMain(props) {
       return 'AI Generation';
     }
   }, [taskData]);
-  var getSourceSubTitle = Object(react["useCallback"])(function () {
+  const getSourceSubTitle = Object(react["useCallback"])(() => {
     if (taskData.dataSourceType === 'ai_generated') {
       return taskData.selected_training_name || ' ';
     } else if (taskData.dataSourceType === 'synthetic') {
@@ -14488,23 +15600,23 @@ function TaskMain(props) {
     }
     return '';
   }, [taskData]);
-  var getTargetName = Object(react["useCallback"])(function () {
+  const getTargetName = Object(react["useCallback"])(() => {
     if (taskData.target_env === 'ai_training') {
       return 'AI Training';
     }
     return taskData.environment_name;
   }, [taskData]);
-  var moveToMadatoryForms = Object(react["useCallback"])(function () {
-    var source = statusesFuncMap['dataSourceStatus'](taskData);
-    var target = statusesFuncMap['targetStatus'](taskData);
-    var subsetPosition = statusesFuncMap['subsetPosition'](taskData);
-    var subsetStatus = statusesFuncMap['subsetStatus'](taskData);
-    var moveTo = function moveTo(step) {
+  const moveToMadatoryForms = Object(react["useCallback"])(() => {
+    const source = statusesFuncMap['dataSourceStatus'](taskData);
+    const target = statusesFuncMap['targetStatus'](taskData);
+    const subsetPosition = statusesFuncMap['subsetPosition'](taskData);
+    const subsetStatus = statusesFuncMap['subsetStatus'](taskData);
+    const moveTo = step => {
       // @ts-ignore
       setFailedComp(step);
       onClickStep(step);
     };
-    var testDataStoreStatus = statusesFuncMap['testDataStoreStatus'](taskData);
+    const testDataStoreStatus = statusesFuncMap['testDataStoreStatus'](taskData);
     if (source !== StatusEnum.completed && source !== StatusEnum.disabled) {
       moveTo('source');
     } else if (subsetPosition !== SubsetPossition.undefined && subsetStatus !== StatusEnum.completed) {
@@ -14517,13 +15629,13 @@ function TaskMain(props) {
       moveTo('task_title');
     }
   }, [taskData, statusesFuncMap, onClickStep, setFailedComp]);
-  var isValidTaskData = Object(react["useCallback"])(function () {
+  const isValidTaskData = Object(react["useCallback"])(() => {
     console.log(failedComp);
-    var source = statusesFuncMap['dataSourceStatus'](taskData);
-    var target = statusesFuncMap['targetStatus'](taskData, statuses);
-    var subsetPosition = statusesFuncMap['subsetPosition'](taskData);
-    var subsetStatus = statusesFuncMap['subsetStatus'](taskData);
-    var testDataStoreStatus = statusesFuncMap['testDataStoreStatus'](taskData);
+    const source = statusesFuncMap['dataSourceStatus'](taskData);
+    const target = statusesFuncMap['targetStatus'](taskData, statuses);
+    const subsetPosition = statusesFuncMap['subsetPosition'](taskData);
+    const subsetStatus = statusesFuncMap['subsetStatus'](taskData);
+    const testDataStoreStatus = statusesFuncMap['testDataStoreStatus'](taskData);
     if (source !== StatusEnum.completed && source !== StatusEnum.disabled || target === StatusEnum.blink || target === StatusEnum.partial || testDataStoreStatus !== StatusEnum.completed || subsetPosition !== SubsetPossition.undefined && subsetStatus !== StatusEnum.completed || !taskData.task_title) {
       return false;
     }
@@ -14543,277 +15655,166 @@ function TaskMain(props) {
     }
     return true;
   }, [taskData, statusesFuncMap, statuses, failedComp, onClickStep]);
-  var handleFormErrors = Object(react["useCallback"])( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee() {
-    var fieldErrors;
-    return regenerator_default.a.wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          fieldErrors = Object.keys(errors);
-          if (!(fieldErrors.length > 0)) {
-            _context.next = 7;
-            break;
-          }
-          // @ts-ignore
-          setFailedComp(errors[fieldErrors[0]].ref.step);
-          // @ts-ignore
-          onClickStep(errors[fieldErrors[0]].ref.step);
-          return _context.abrupt("return", true);
-        case 7:
-          _context.next = 9;
-          return setFailedComp('');
-        case 9:
-          return _context.abrupt("return", false);
-        case 10:
-        case "end":
-          return _context.stop();
+  const handleFormErrors = Object(react["useCallback"])(async () => {
+    const fieldErrors = Object.keys(errors);
+    if (fieldErrors.length > 0) {
+      // @ts-ignore
+      setFailedComp(errors[fieldErrors[0]].ref.step);
+      // @ts-ignore
+      onClickStep(errors[fieldErrors[0]].ref.step);
+      return true;
+    } else {
+      await setFailedComp('');
+    }
+    return false;
+  }, [onClickStep, errors, setFailedComp]);
+  const saveTask = Object(react["useCallback"])(async openTask => {
+    if (saveInProgress) {
+      return;
+    }
+    await setSubmittedForm(true);
+    const formResult = await handleFormErrors();
+    if (formResult) {
+      toast.error(`All mandatory information must be completed before saving the task`);
+      return false;
+    }
+    if (!isValidTaskData()) {
+      toast.error(`All mandatory information must be completed before saving the task`);
+      moveToMadatoryForms();
+      return false;
+    }
+    let result = null;
+    if (taskData.version_ind && taskData.selected_version_task_name) {
+      if ((taskData.selected_version_succeeded_entities || 0) > (taskData.maxToCopy || 0)) {
+        toast.error('The number of entities exceeds the number of entities in the read write permission');
+        onClickStep('target_data_subset');
+        return false;
       }
-    }, _callee);
-  })), [onClickStep, errors, setFailedComp]);
-  var saveTask = Object(react["useCallback"])( /*#__PURE__*/function () {
-    var _ref2 = asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee2(openTask) {
-      var formResult, result, checkProcesss, dataForSave, AuthService, role, _result, validateReserveEntitiesResult, _result2;
-      return regenerator_default.a.wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            if (!saveInProgress) {
-              _context2.next = 2;
-              break;
-            }
-            return _context2.abrupt("return");
-          case 2:
-            _context2.next = 4;
-            return setSubmittedForm(true);
-          case 4:
-            _context2.next = 6;
-            return handleFormErrors();
-          case 6:
-            formResult = _context2.sent;
-            if (!formResult) {
-              _context2.next = 10;
-              break;
-            }
-            toast.error("All mandatory information must be completed before saving the task");
-            return _context2.abrupt("return", false);
-          case 10:
-            if (isValidTaskData()) {
-              _context2.next = 14;
-              break;
-            }
-            toast.error("All mandatory information must be completed before saving the task");
-            moveToMadatoryForms();
-            return _context2.abrupt("return", false);
-          case 14:
-            result = null;
-            if (!(taskData.version_ind && taskData.selected_version_task_name)) {
-              _context2.next = 20;
-              break;
-            }
-            if (!((taskData.selected_version_succeeded_entities || 0) > (taskData.maxToCopy || 0))) {
-              _context2.next = 20;
-              break;
-            }
-            toast.error('The number of entities exceeds the number of entities in the read write permission');
-            onClickStep('target_data_subset');
-            return _context2.abrupt("return", false);
-          case 20:
-            checkProcesss = function checkProcesss(data) {
-              for (var i = 0; i < data.length; i++) {
-                var processData = data[0];
-                if (processData.editors.findIndex(function (it) {
-                  return it.mandatory && (it.value === undefined || it.value === null);
-                }) >= 0) {
-                  return true;
-                }
-              }
-              return false;
-            };
-            if (!(taskData.preExecutionProcesses && taskData.preExecutionProcesses.length > 0 && checkProcesss(taskData.preExecutionProcesses))) {
-              _context2.next = 25;
-              break;
-            }
-            toast.error('Mandatory info is missing for the pre-execution process');
-            onClickStep('be_advanced');
-            return _context2.abrupt("return", false);
-          case 25:
-            if (!(taskData.postExecutionProcesses && taskData.postExecutionProcesses.length > 0 && checkProcesss(taskData.postExecutionProcesses))) {
-              _context2.next = 29;
-              break;
-            }
-            toast.error('Mandatory info is missing for the post-execution process');
-            onClickStep('be_advanced');
-            return _context2.abrupt("return", false);
-          case 29:
-            dataForSave = prepareDataForSave(taskData, allLogicalUnits, copy);
-            if (true) {
-              _context2.next = 33;
-              break;
-            }
-            console.log(dataForSave);
-            return _context2.abrupt("return");
-          case 33:
-            setSaveInProgress(true);
-            _context2.prev = 34;
-            AuthService = getService('AuthService');
-            role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
-            if (!(role && role.type === 'tester' && dataForSave.version_ind && dataForSave.retention_period_type === 'Do Not Delete')) {
-              _context2.next = 44;
-              break;
-            }
-            _context2.next = 40;
-            return MySwal.fire({
-              title: /*#__PURE__*/Object(jsx_runtime["jsx"])("h2", {
-                style: {
-                  color: '#575757',
-                  fontSize: '30px',
-                  textAlign: 'center',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  position: 'relative',
-                  margin: '25px 0',
-                  padding: 0,
-                  lineHeight: '40px',
-                  display: 'block'
-                },
-                children: "The tester is not permitted to execute tasks with unlimited retention period (Do not delete). Are you sure you wish to save the task?"
-              }),
-              showCancelButton: true,
-              icon: "warning",
-              confirmButtonText: "Yes",
-              cancelButtonText: "No"
-            }).then(function (value) {
-              console.log(value);
-              return value.isConfirmed;
-            }).catch(function () {
-              return false;
-            });
-          case 40:
-            _result = _context2.sent;
-            if (_result) {
-              _context2.next = 44;
-              break;
-            }
-            setSaveInProgress(false);
-            return _context2.abrupt("return");
-          case 44:
-            if (!(dataForSave.task_type !== 'EXTRACT' && dataForSave.selection_method === 'L' && !dataForSave.replace_sequences && dataForSave.filterout_reserved !== 'NA')) {
-              _context2.next = 56;
-              break;
-            }
-            _context2.next = 47;
-            return apis_task.validateReservedEntitiesList(dataForSave.be_id, dataForSave.environment_id, dataForSave.selection_param_value.split(',').map(function (it) {
-              return {
-                target_entity_id: it
-              };
-            }), dataForSave.filterout_reserved);
-          case 47:
-            validateReserveEntitiesResult = _context2.sent;
-            if (!(validateReserveEntitiesResult.length > 0)) {
-              _context2.next = 56;
-              break;
-            }
-            _context2.next = 51;
-            return MySwal.fire({
-              title: /*#__PURE__*/Object(jsx_runtime["jsx"])("h2", {
-                style: {
-                  color: '#575757',
-                  fontSize: '30px',
-                  textAlign: 'center',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  position: 'relative',
-                  margin: '25px 0',
-                  padding: 0,
-                  lineHeight: '40px',
-                  display: 'block'
-                },
-                children: "The task contains reserved entities. Are you sure you want to save the task?"
-              }),
-              showCancelButton: true,
-              icon: "warning",
-              confirmButtonText: "Yes",
-              cancelButtonText: "No"
-            }).then(function (value) {
-              console.log(value);
-              return value.isConfirmed;
-            }).catch(function () {
-              return false;
-            });
-          case 51:
-            _result2 = _context2.sent;
-            console.log(_result2);
-            if (_result2) {
-              _context2.next = 56;
-              break;
-            }
-            setSaveInProgress(false);
-            return _context2.abrupt("return");
-          case 56:
-            _context2.next = 58;
-            return apis_task.saveTaskAPI(dataForSave);
-          case 58:
-            result = _context2.sent;
-            toast.success("Task # ".concat(taskData.task_title, " Is Updated Successfully"));
-            if (!openTask) {
-              openTasks(true);
-            }
-            _context2.next = 67;
-            break;
-          case 63:
-            _context2.prev = 63;
-            _context2.t0 = _context2["catch"](34);
-            console.log(_context2.t0);
-            toast.error("Task # ".concat(taskData.task_id || '', " Failed to Update : ").concat(_context2.t0.message));
-          case 67:
-            _context2.prev = 67;
-            setSaveInProgress(false);
-            return _context2.finish(67);
-          case 70:
-            return _context2.abrupt("return", result);
-          case 71:
-          case "end":
-            return _context2.stop();
+    }
+    const checkProcesss = data => {
+      for (let i = 0; i < data.length; i++) {
+        const processData = data[0];
+        if (processData.editors.findIndex(it => it.mandatory && (it.value === undefined || it.value === null)) >= 0) {
+          return true;
         }
-      }, _callee2, null, [[34, 63, 67, 70]]);
-    }));
-    return function (_x) {
-      return _ref2.apply(this, arguments);
-    };
-  }(), [taskData, saveInProgress, handleFormErrors, openTasks, copy, setSaveInProgress, allLogicalUnits, toast, moveToMadatoryForms, setSubmittedForm, isValidTaskData]);
-  var saveAndExecute = Object(react["useCallback"])( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee3() {
-    var result;
-    return regenerator_default.a.wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
-        case 0:
-          _context3.next = 2;
-          return saveTask(true);
-        case 2:
-          result = _context3.sent;
-          if (result) {
-            openTasks(true, result === null || result === void 0 ? void 0 : result.id);
-          }
-        case 4:
-        case "end":
-          return _context3.stop();
       }
-    }, _callee3);
-  })), [saveTask, openTasks]);
-  var _useState11 = Object(react["useState"])({
-      execute: false,
-      trigger: false
-    }),
-    _useState12 = slicedToArray_default()(_useState11, 2),
-    triggerSave = _useState12[0],
-    setTriggerSave = _useState12[1];
-  Object(react["useEffect"])(function () {
+      return false;
+    };
+    if (taskData.preExecutionProcesses && taskData.preExecutionProcesses.length > 0 && checkProcesss(taskData.preExecutionProcesses)) {
+      toast.error('Mandatory info is missing for the pre-execution process');
+      onClickStep('be_advanced');
+      return false;
+    }
+    if (taskData.postExecutionProcesses && taskData.postExecutionProcesses.length > 0 && checkProcesss(taskData.postExecutionProcesses)) {
+      toast.error('Mandatory info is missing for the post-execution process');
+      onClickStep('be_advanced');
+      return false;
+    }
+    const dataForSave = prepareDataForSave(taskData, allLogicalUnits, copy);
+    if (false) {}
+    setSaveInProgress(true);
+    try {
+      const AuthService = getService('AuthService');
+      const role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
+      if (role && role.type === 'tester' && dataForSave.version_ind && dataForSave.retention_period_type === 'Do Not Delete') {
+        const result = await MySwal.fire({
+          title: /*#__PURE__*/Object(jsx_runtime["jsx"])("h2", {
+            style: {
+              color: '#575757',
+              fontSize: '30px',
+              textAlign: 'center',
+              fontWeight: 600,
+              textTransform: 'none',
+              position: 'relative',
+              margin: '25px 0',
+              padding: 0,
+              lineHeight: '40px',
+              display: 'block'
+            },
+            children: "The tester is not permitted to execute tasks with unlimited retention period (Do not delete). Are you sure you wish to save the task?"
+          }),
+          showCancelButton: true,
+          icon: "warning",
+          confirmButtonText: "Yes",
+          cancelButtonText: "No"
+        }).then(value => {
+          console.log(value);
+          return value.isConfirmed;
+        }).catch(() => false);
+        if (!result) {
+          setSaveInProgress(false);
+          return;
+        }
+      }
+      if (dataForSave.task_type !== 'EXTRACT' && dataForSave.selection_method === 'L' && !dataForSave.replace_sequences && dataForSave.filterout_reserved !== 'NA') {
+        const validateReserveEntitiesResult = await apis_task.validateReservedEntitiesList(dataForSave.be_id, dataForSave.environment_id, dataForSave.selection_param_value.split(',').map(it => ({
+          target_entity_id: it
+        })), dataForSave.filterout_reserved);
+        if (validateReserveEntitiesResult.length > 0) {
+          const result = await MySwal.fire({
+            title: /*#__PURE__*/Object(jsx_runtime["jsx"])("h2", {
+              style: {
+                color: '#575757',
+                fontSize: '30px',
+                textAlign: 'center',
+                fontWeight: 600,
+                textTransform: 'none',
+                position: 'relative',
+                margin: '25px 0',
+                padding: 0,
+                lineHeight: '40px',
+                display: 'block'
+              },
+              children: "The task contains reserved entities. Are you sure you want to save the task?"
+            }),
+            showCancelButton: true,
+            icon: "warning",
+            confirmButtonText: "Yes",
+            cancelButtonText: "No"
+          }).then(value => {
+            console.log(value);
+            return value.isConfirmed;
+          }).catch(() => false);
+          console.log(result);
+          if (!result) {
+            setSaveInProgress(false);
+            return;
+          }
+        }
+      }
+      result = await apis_task.saveTaskAPI(dataForSave);
+      toast.success(`Task # ${taskData.task_title} Is Updated Successfully`);
+      if (!openTask) {
+        openTasks(true);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(`Task # ${taskData.task_id || ''} Failed to Update : ${err.message}`);
+    } finally {
+      setSaveInProgress(false);
+    }
+    return result;
+  }, [taskData, saveInProgress, handleFormErrors, openTasks, copy, setSaveInProgress, allLogicalUnits, toast, moveToMadatoryForms, setSubmittedForm, isValidTaskData]);
+  const saveAndExecute = Object(react["useCallback"])(async () => {
+    const result = await saveTask(true);
+    if (result) {
+      openTasks(true, result === null || result === void 0 ? void 0 : result.id);
+    }
+  }, [saveTask, openTasks]);
+  const [triggerSave, setTriggerSave] = Object(react["useState"])({
+    execute: false,
+    trigger: false
+  });
+  Object(react["useEffect"])(() => {
     if (triggerSave && triggerSave.trigger) {
-      handleSubmit(function () {
+      handleSubmit(() => {
         if (triggerSave.execute) {
           saveAndExecute();
         } else {
           saveTask();
         }
-      }, function (data) {
-        var fields = Object.keys(data);
+      }, data => {
+        const fields = Object.keys(data);
         if (fields && fields.length > 0) {
           if (fields[0] === 'task_title') {
             onClickStep('task_title');
@@ -14823,37 +15824,24 @@ function TaskMain(props) {
         }
         ;
         console.log(data);
-        toast.error("All mandatory information must be completed before saving the task");
+        toast.error(`All mandatory information must be completed before saving the task`);
       })();
     }
   }, [triggerSave]);
-  var preSaveTask = Object(react["useCallback"])(function (execute) {
+  const preSaveTask = Object(react["useCallback"])(execute => {
     setFailedComp('');
     setTriggerSave({
       execute: execute || false,
       trigger: true
     });
   }, [setTriggerSave, setFailedComp]);
-  var deleteTask = Object(react["useCallback"])( /*#__PURE__*/asyncToGenerator_default()( /*#__PURE__*/regenerator_default.a.mark(function _callee4() {
-    return regenerator_default.a.wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
-        case 0:
-          if (!(!taskData.task_id || !taskData.task_title)) {
-            _context4.next = 2;
-            break;
-          }
-          return _context4.abrupt("return");
-        case 2:
-          _context4.next = 4;
-          return apis_task.deleteTask(taskData.task_id, taskData.task_title);
-        case 4:
-          openTasks(true);
-        case 5:
-        case "end":
-          return _context4.stop();
-      }
-    }, _callee4);
-  })), [taskData, openTasks]);
+  const deleteTask = Object(react["useCallback"])(async () => {
+    if (!taskData.task_id || !taskData.task_title) {
+      return;
+    }
+    await apis_task.deleteTask(taskData.task_id, taskData.task_title);
+    openTasks(true);
+  }, [taskData, openTasks]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Container, {
     className: "react-comp",
     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(task_TaskActions, {
@@ -14863,13 +15851,9 @@ function TaskMain(props) {
       task_id: taskData.task_id,
       be_name: taskData.be_name,
       tables_selected: taskData.tables_selected,
-      saveTask: function saveTask() {
-        return preSaveTask();
-      },
+      saveTask: () => preSaveTask(),
       closeTask: openTasks,
-      saveAndExecute: function saveAndExecute() {
-        return preSaveTask(true);
-      },
+      saveAndExecute: () => preSaveTask(true),
       deleteTask: deleteTask,
       disableChange: disableChange,
       task_execution_status: taskData.task_execution_status
@@ -14881,8 +15865,8 @@ function TaskMain(props) {
           data: statuses,
           sourceInfo: getSourceInfo(taskData),
           targetInfo: getTargetInfo(taskData),
-          subsetInfo: utils_getSubsetInfo(taskData),
-          datastoreInfo: utils_getTestDataStoreInfo(taskData, statusesFuncMap['testDataStoreStatus'](taskData), statusesFuncMap['subsetStatus'](taskData), statusesFuncMap['subsetPosition'](taskData)),
+          subsetInfo: getSubsetInfo(taskData),
+          datastoreInfo: getTestDataStoreInfo(taskData, statusesFuncMap['testDataStoreStatus'](taskData), statusesFuncMap['subsetStatus'](taskData), statusesFuncMap['subsetPosition'](taskData)),
           environment_name: getTargetName(),
           source_environment_name: getSourceName(),
           sourceSubTitle: getSourceSubTitle(),
@@ -14891,46 +15875,2128 @@ function TaskMain(props) {
       })
     }), currentStep ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskContext.Provider, {
       value: {
-        resetField: resetField,
-        unregister: unregister,
-        register: register,
-        clearErrors: clearErrors,
-        errors: errors,
-        submittedForm: submittedForm,
-        saveForm: saveForm,
-        taskData: taskData,
-        allLogicalUnits: allLogicalUnits,
-        statusesFuncMap: statusesFuncMap,
-        scope: scope,
+        resetField,
+        unregister,
+        register,
+        clearErrors,
+        errors,
+        submittedForm,
+        saveForm,
+        taskData,
+        allLogicalUnits,
+        statusesFuncMap,
+        scope,
         copy: copy || false,
         config_params: {
           enable_param_auto_width: taskData.enable_param_auto_width
         }
       },
-      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(task_TaskForm, Main_objectSpread(Main_objectSpread({}, stepsConfig[currentStep]), {}, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(task_TaskForm, {
+        ...stepsConfig[currentStep],
         onReset: onReset,
         width: stepsConfig[currentStep].width || 1590,
         children: getCurrentForm()
-      }))
+      })
     }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
   });
 }
 /* harmony default export */ var Main = (TaskMain);
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/styles.ts
+
+const TaskTemplates_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100% - 60px);
+    min-height: calc(100vh - 42px);
+    background-color: white;
+    position: relative; 
+    padding: 30px 30px 0px 30px;
+`;
+const TaskTemplates_styles_LeftSide = styled_components_browser_esm["b" /* default */].div`
+    width: 30%;
+    margin-right: 40px; 
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    gap: 45px;
+`;
+const LeftSideHeader = styled_components_browser_esm["b" /* default */].div`
+    font-size: 20px;
+    font-family: Roboto;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    color: #2e2e2e;
+    padding-bottom: 10px;
+`;
+const LeftSideFilter = styled_components_browser_esm["b" /* default */].div`
+    margin-bottom: 10px;
+`;
+const LeftSideTemplate = styled_components_browser_esm["b" /* default */].div`
+    border-bottom: solid 1px #ccc;  
+    display: flex;
+    align-items: center;
+    padding-left: 13px;
+    padding-right: 13px;
+    height: 45px;
+    background-color: ${props => props.selected ? '#f2f2f2' : ''};
+    font-weight: ${props => props.selected ? '500' : ''};
+    &:hover > div:last-child {
+        opacity: 1;
+        visibility: visible;
+    }
+`;
+const LeftSideTemplateIconContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 34px;
+    cursor: pointer;
+`;
+const LeftSideTemplateName = styled_components_browser_esm["b" /* default */].div`
+    cursor: pointer;
+    font-size: 16px;
+    font-family: Roboto;
+    cursor: pointer;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    width: calc(100% - 60px);
+`;
+const LeftSideTemplateActions = styled_components_browser_esm["b" /* default */].div`
+    border-left: solid 1px #ccc;
+    padding-left: 14px;
+    display: flex;
+    gap: 14px;
+`;
+const TaskTemplates_styles_RightSide = styled_components_browser_esm["b" /* default */].div`
+    width: 70%;
+    border-left: 1px solid #ccc;
+    padding: 0px 38px;
+    background-color: #ececec;
+    height: calc(100vh - 217px);
+    overflow: auto;
+`;
+const RightSideHeader = styled_components_browser_esm["b" /* default */].div`
+    font-size: 20px;
+    font-family: Roboto;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    color: #2e2e2e;
+    margin-top: 35px;
+        
+`;
+const RightSideBody = styled_components_browser_esm["b" /* default */].div`
+    // padding-top: 35px;
+`;
+const RightSideBox = styled_components_browser_esm["b" /* default */].div`
+    cursor: pointer;
+    width: 13.4vw;
+    height: 9.3vw;
+    border: 1px solid #ccc;
+    padding: 0px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: solid 1px #fff;
+    background-color: #fff;
+    position: relative;
+    margin-bottom: 40px;
+    ${props => props.selected ? `
+        background: 
+            linear-gradient(#fff, #fff) padding-box, /* Inner background */
+            linear-gradient(to top, #2c75f2, #8047f0) border-box; /* Border gradient */
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background-origin: border-box;
+        background-clip: padding-box, border-box;` : ''}
+    &:hover {
+        background: 
+            linear-gradient(#fff, #fff) padding-box, /* Inner background */
+            linear-gradient(to top, #2c75f2, #8047f0) border-box; /* Border gradient */
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
+    }
+`;
+const RightSideBoxHeader = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    margin: 10px 10px 0px 10px;
+`;
+const RightSideBoxBody = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 14px;
+    margin-left: 20px;
+    margin-top: 15px;
+`;
+const RightSideBoxBodyTitle = styled_components_browser_esm["b" /* default */].div`
+    font-size: 22px;
+    font-family: Roboto;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    color: #2e2e2e;
+    width: 85%;
+`;
+const RightSideBoxHeaderActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 10px;
+    align-items: center;
+`;
+const styles_Header = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    height: 85px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+const TaskTemplates_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    height: calc(100% - 86px);
+    padding: 0px 0px 0px 0px;
+    display: flex;
+`;
+const TaskTemplates_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 30px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    color: #1483f3;
+`;
+const HeaderActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 15px;
+    align-items: center;
+`;
+const TaskTemplates_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    width: ${props => props.width ? props.width : ''};
+    height: ${props => props.height ? props.height : ''}; 
+`;
+const SearchBar = styled_components_browser_esm["b" /* default */].div`
+    width: 40%;
+`;
+const styles_TaskActionContainer = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    padding-left: 16px;
+    &:not(:first-child) {
+        border-left: 2px solid #ccc; /* Adjust color and width as needed */
+    }
+`;
+const TaskAction = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    color: #1483f3;
+    cursor: pointer;
+    &:hover {
+        color: #f0832b;
+    }
+`;
+const DotMenuIconWrapper = styled_components_browser_esm["b" /* default */].div`
+  opacity: 0;
+  display: flex;
+  align-items:center;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+  cursor: pointer;
+  height: 100%;
+`;
+const CategoriesContainer = styled_components_browser_esm["b" /* default */].div`
+
+`;
+const TaskTypeIconContainer = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    top: -24px;
+    left: 24px;
+`;
+const StartIconContainer = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+`;
+const BoxesContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 32px;
+`;
+// CONCATENATED MODULE: ./src/images/selected-favorit.svg
+/* harmony default export */ var selected_favorit = ("js/dist/01b5e973bce49f6dd5d13c320b1e0a57.svg");
+// CONCATENATED MODULE: ./src/images/favorite-icon-new.svg
+/* harmony default export */ var favorite_icon_new = ("js/dist/533c44529cca77055cf5d7e9630fbd92.svg");
+// CONCATENATED MODULE: ./src/images/dotmenu.svg
+/* harmony default export */ var dotmenu = ("js/dist/0ac2582f20a3f427aaa6bf0295e2360c.svg");
+// CONCATENATED MODULE: ./src/images/extract.svg
+/* harmony default export */ var extract = ("js/dist/e429f5c939b4f71c4541c746d8a6f044.svg");
+// CONCATENATED MODULE: ./src/images/load.svg
+/* harmony default export */ var load = ("js/dist/22cf4d6008735f32a68ae163af2f6456.svg");
+// CONCATENATED MODULE: ./src/images/extract-and-load.svg
+/* harmony default export */ var extract_and_load = ("js/dist/6fba05fba343334b2d9a9ae45ee724ba.svg");
+// CONCATENATED MODULE: ./src/images/reserve.svg
+/* harmony default export */ var images_reserve = ("js/dist/b63b8d5048493f3d631a1ec5d2e44f0c.svg");
+// CONCATENATED MODULE: ./src/images/delete.svg
+/* harmony default export */ var images_delete = ("js/dist/6ef0cbd3bdc028becf5657276c0b09ce.svg");
+// CONCATENATED MODULE: ./src/images/synthetic.svg
+/* harmony default export */ var synthetic = ("js/dist/6455c216f36ac6be7ae7ec940eb575ab.svg");
+// CONCATENATED MODULE: ./src/images/open_execution.svg
+/* harmony default export */ var open_execution = ("js/dist/4f485a6c2815258d37fe11bc17a2c8fa.svg");
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/TaskSelection/styles.ts
+
+const TaskSelection_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100% - 60px);
+    min-height: calc(100vh - 42px);
+    background-color: white;
+    position: relative; 
+    padding: 30px 30px 0px 30px;
+`;
+const TaskSelection_styles_Header = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+`;
+const TaskSelection_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+`;
+const SideContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 107px;
+    height: 45px;
+`;
+const MiddleContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 60vw;
+`;
+const TaskSelection_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 30px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #1483f3;
+    padding-bottom: 24px;
+`;
+const TaskSelection_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    width: ${props => props.width ? props.width : ''};
+    height: ${props => props.width ? props.width : ''}; 
+`;
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/TaskSelectionBox/styles.ts
+
+const TaskSelectionBox_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100% - 60px);
+    min-height: calc(100vh - 42px);
+    background-color: white;
+    position: relative; 
+    padding: 30px 30px 0px 30px;
+`;
+const TaskSelectionBox_styles_Header = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    padding-bottom: 12px;
+`;
+const TaskSelectionBox_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 20px;
+`;
+const TaskSelectionBox_styles_Actions = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+`;
+const TaskBox = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 11px;
+    border-radius: 6px;
+    box-shadow: 0 0 14px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 30px;
+`;
+const TaskBoxTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 26px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #2e2e2e;
+    margin-bottom: 24px;
+`;
+const styles_TaskActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 15px;
+`;
+const ExecutionNotes = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    align-items: flex-start;
+    margin-top: 28px;
+`;
+const ExecutionNotesTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #2e2e2e;
+`;
+const styles_SideContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 90px;
+`;
+const styles_MiddleContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 60vw;
+`;
+const TaskSelectionBox_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 26px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #2e2e2e;
+`;
+const TaskDescription = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 27px;
+`;
+const AdvancedSettings = styled_components_browser_esm["b" /* default */].div`
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #1483f3;
+`;
+const TaskDescriptionTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    color: #2e2e2e;
+`;
+const TaskDescriptionText = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: right;
+    color: #000;
+`;
+const TaskIcon = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    top: 17px;
+    left: -48px;
+`;
+const TaskSelectionBox_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border-left: 1px solid #ccc;
+    width: 1px;
+    height: 45px;
+`;
+const TaskSelectionBox_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    width: ${props => props.width ? props.width : ''};
+    height: ${props => props.width ? props.width : ''}; 
+`;
+// CONCATENATED MODULE: ./src/images/scedual-icon.svg
+/* harmony default export */ var scedual_icon = ("js/dist/ac7af81300637e97c12b7244e2b43484.svg");
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/TaskSelectionBox/index.tsx
+
+
+
+
+
+
+
+
+
+
+
+function TaskSelectionBox(props) {
+  const {
+    task_data
+  } = props;
+  const getTaskIcon = task_type => {
+    switch (task_type) {
+      case 'LOAD':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Icon, {
+          src: load,
+          width: '61px'
+        });
+      case 'RESERVE':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Icon, {
+          src: images_reserve,
+          width: '61px'
+        });
+      case 'EXTRACT':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Icon, {
+          src: extract,
+          width: '61px'
+        });
+      case 'LOAD_EXTRACT':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Icon, {
+          src: extract_and_load,
+          width: '61px'
+        });
+      case 'DELETE':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Icon, {
+          src: images_delete,
+          width: '61px'
+        });
+      case 'SYNTHETIC':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Icon, {
+          src: synthetic,
+          width: '61px'
+        });
+    }
+  };
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskSelectionBox_styles_Container, {
+    className: "react-comp",
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskSelectionBox_styles_Header, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskIcon, {
+        children: getTaskIcon(task_data.task_type)
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Title, {
+        children: task_data.task_title
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskSelectionBox_styles_Body, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskDescription, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskDescriptionTitle, {
+          children: "Task description"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskDescriptionText, {
+          children: task_data.task_description
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedSettings, {
+        children: "Advanced Settings"
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskBox, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskBoxTitle, {
+          children: ["Extract data by Customer from Production ", /*#__PURE__*/Object(jsx_runtime["jsx"])("br", {}), "Subset by Entity list using:"]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ExecutionNotes, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ExecutionNotesTitle, {
+            children: "Execution notes"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TextArea, {
+            title: '',
+            onChange: () => {}
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskSelectionBox_styles_Actions, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Previous Executions",
+          onClick: () => {},
+          type: 'secondary',
+          width: '191px',
+          height: '45px'
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_TaskActions, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Icon, {
+            src: scedual_icon,
+            width: '31px'
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelectionBox_styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Execute Task",
+            onClick: () => {},
+            width: '120px',
+            height: '45px'
+          })]
+        })]
+      })]
+    })]
+  });
+}
+/* harmony default export */ var TaskTemplates_TaskSelectionBox = (TaskSelectionBox);
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/TaskSelection/index.tsx
+
+
+
+
+
+
+function TaskSelection(props) {
+  const {
+    task_id,
+    onBack
+  } = props;
+  const [taskData, setTaskData] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    async function getTaskData() {
+      const result = await apis_task.getTaskById([task_id], 'both');
+      if (result && result.length > 0) {
+        setTaskData(result[0]);
+      }
+    }
+    getTaskData();
+  }, [task_id]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskSelection_styles_Container, {
+    className: "react-comp",
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelection_styles_Header, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskSelection_styles_Title, {
+        children: "Execute Task"
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskSelection_styles_Body, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SideContainer, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          height: '45px',
+          title: '< Back',
+          onClick: () => onBack(),
+          type: 'secondary'
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(MiddleContainer, {
+        children: taskData ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_TaskSelectionBox, {
+          task_data: taskData
+        }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SideContainer, {})]
+    })]
+  });
+}
+/* harmony default export */ var TaskTemplates_TaskSelection = (TaskSelection);
+// EXTERNAL MODULE: ./node_modules/lucide-react/dist/esm/icons/users.js
+var users = __webpack_require__(327);
+
+// EXTERNAL MODULE: ./node_modules/lucide-react/dist/esm/icons/user.js
+var user = __webpack_require__(328);
+
+// CONCATENATED MODULE: ./src/components/TaskGroupTabs/styles.ts
+
+const TabContainer = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  border-radius: 10px;
+`;
+const Tab = styled_components_browser_esm["b" /* default */].button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0px;
+  color: ${props => props.active ? "#1483f3" : "#555"} !important;
+  background-color: ${props => props.active ? "#fff" : "transparent"} !important;
+  border-bottom: ${props => props.active ? "2px solid #1483f3" : "0px"} !important;
+`;
+const TabIcon = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+const TabLabel = styled_components_browser_esm["b" /* default */].span`
+  white-space: nowrap;
+`;
+// CONCATENATED MODULE: ./src/components/TaskGroupTabs/index.tsx
+
+
+
+
+const TaskGroupTabs_tabs = [{
+  label: "All groups",
+  icon: users["a" /* default */],
+  value: 'allTaskGroups'
+}, {
+  label: "Created by me",
+  icon: user["a" /* default */],
+  value: 'myTaskGroups'
+}];
+function TaskGroupTabs(props) {
+  const {
+    onChange
+  } = props;
+  const [selectedTab, setSelectedTab] = Object(react["useState"])("allTaskGroups");
+  Object(react["useEffect"])(() => {
+    onChange(selectedTab);
+  }, [selectedTab]);
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(TabContainer, {
+    children: TaskGroupTabs_tabs.map(_ref => {
+      let {
+        label,
+        icon: Icon,
+        value
+      } = _ref;
+      return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Tab, {
+        active: selectedTab === value,
+        onClick: () => setSelectedTab(value),
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TabIcon, {
+          as: Icon
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TabLabel, {
+          children: label
+        })]
+      }, label);
+    })
+  });
+}
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/newTaskGroup/styles.ts
+
+const newTaskGroup_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 15px;
+    position: relative;
+`;
+const NewTaskGroupContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 400px;
+    position: relative;
+    z-index: 100;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 19px 0px 30px 0px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+`;
+const newTaskGroup_styles_Title = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const NewTaskGroupTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    position: relative;
+    margin: 0px 20px;
+    margin-bottom: 19px;
+`;
+const newTaskGroup_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    margin: 10px 25px 0px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+const newTaskGroup_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border: solid 1px #ccc;
+`;
+const newTaskGroup_styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    cursor: pointer;
+`;
+const newTaskGroup_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const newTaskGroup_styles_Actions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    margin-top:5px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    border-bottom: ${props => props.border ? '1px solid #ccc' : ''};
+    padding-bottom: 13px;
+`;
+const newTaskGroup_styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const styles_SystemHeader = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    padding: 10px 0px;
+    border-bottom: 1px solid #ccc;
+    justify-content: space-between;
+    padding-right: 11px;
+`;
+const styles_SystemsContainer = styled_components_browser_esm["b" /* default */].div`
+
+`;
+const styles_SystemBody = styled_components_browser_esm["b" /* default */].div`
+    padding: 13px 10px 15px 37px;
+    background-color: #f2f2f2;
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    border-bottom: solid 1px #ccc;
+`;
+const styles_LogicalUnitContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    
+`;
+const styles_ExecutionModeContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: 1px solid #ccc;
+    gap: 10px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+`;
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/newTaskGroup/index.tsx
+
+
+
+
+
+
+
+
+function NewTaskGroup(props) {
+  var _errors$name2;
+  const {
+    close,
+    data
+  } = props;
+  const {
+    handleSubmit,
+    control,
+    formState: {
+      errors
+    }
+  } = Object(index_esm["b" /* useForm */])({
+    defaultValues: {
+      name: (data === null || data === void 0 ? void 0 : data.task_group_name) || '',
+      desc: (data === null || data === void 0 ? void 0 : data.task_group_desc) || ''
+    }
+  });
+  const saveData = Object(react["useCallback"])(() => {
+    const handle = handleSubmit(formData => {
+      async function addTaskGroup() {
+        try {
+          if (data) {
+            await apis_task.updateTaskGroup(data.task_group_id, formData.name, formData.desc);
+          } else {
+            await apis_task.addTaskGroup(formData.name, formData.desc);
+          }
+          close(true);
+        } catch (err) {
+          console.log('unable to add/update task group');
+        }
+      }
+      addTaskGroup();
+    });
+    handle(); // trigger validation and run callback if valid
+  }, [handleSubmit, close, data]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(NewTaskGroupContainer, {
+    onClick: $event => $event.stopPropagation(),
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(NewTaskGroupTitle, {
+      children: ["Task Group ", data === null || data === void 0 ? void 0 : data.task_group_name, /*#__PURE__*/Object(jsx_runtime["jsx"])(newTaskGroup_styles_CloseIcon, {
+        onClick: () => close(false),
+        src: xclose
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(newTaskGroup_styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(newTaskGroup_styles_Body, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+        name: "name",
+        control: control,
+        rules: {
+          required: "Name is required"
+        },
+        render: _ref => {
+          var _errors$name;
+          let {
+            field
+          } = _ref;
+          return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            ...field,
+            name: "new_task_group_name",
+            title: "Name",
+            mandatory: true,
+            type: InputTypes.text,
+            error: (_errors$name = errors.name) === null || _errors$name === void 0 ? void 0 : _errors$name.message
+          });
+        }
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+        name: "desc",
+        control: control,
+        render: _ref2 => {
+          let {
+            field
+          } = _ref2;
+          return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            ...field,
+            name: "new_task_group_desc",
+            title: "Description",
+            mandatory: false,
+            type: InputTypes.text
+          });
+        }
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(newTaskGroup_styles_Actions, {
+        border: false,
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(newTaskGroup_styles_ActionItem, {
+          onClick: () => close(false),
+          children: "Cancel"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(newTaskGroup_styles_ActionItem, {
+          onClick: () => saveData(),
+          children: "Save"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
+        relativePosition: true,
+        submit: true,
+        error: (_errors$name2 = errors.name) === null || _errors$name2 === void 0 ? void 0 : _errors$name2.message
+      })]
+    })]
+  });
+}
+/* harmony default export */ var newTaskGroup = (NewTaskGroup);
+// CONCATENATED MODULE: ./src/components/DropdownMenu/styles.ts
+
+const MenuWrapper = styled_components_browser_esm["b" /* default */].div`
+  position: relative;
+  display: inline-block;
+`;
+const MenuButton = styled_components_browser_esm["b" /* default */].button`
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  color: #333;
+
+  &:hover {
+    color: #007aff;
+  }
+`;
+const MenuContainer = styled_components_browser_esm["b" /* default */].div`
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-width: 180px;
+  z-index: 10;
+`;
+const MenuItem = styled_components_browser_esm["b" /* default */].div`
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: ${_ref => {
+  let {
+    $danger
+  } = _ref;
+  return $danger ? "red" : "#333";
+}};
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+// CONCATENATED MODULE: ./src/components/DropdownMenu/index.tsx
+
+
+
+function DropdownMenu(_ref) {
+  let {
+    items
+  } = _ref;
+  const [open, setOpen] = Object(react["useState"])(false);
+  const menuRef = Object(react["useRef"])(null);
+  const handleClickOutside = e => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      setOpen(false);
+    }
+  };
+  Object(react["useEffect"])(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(MenuWrapper, {
+    ref: menuRef,
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(MenuContainer, {
+      children: items.map((item, idx) => /*#__PURE__*/Object(jsx_runtime["jsx"])(MenuItem, {
+        onClick: $event => {
+          item.onClick($event);
+          setOpen(false);
+        },
+        $danger: item.danger,
+        children: item.label
+      }, idx))
+    })
+  });
+}
+/* harmony default export */ var components_DropdownMenu = (DropdownMenu);
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/moveTaskGroup/styles.ts
+
+const moveTaskGroup_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    margin-top: 15px;
+    position: relative;
+`;
+const styles_NewTaskGroupContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 400px;
+    position: relative;
+    z-index: 100;
+    max-height: 350px;
+    padding: 19px 0px 30px 0px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+`;
+const moveTaskGroup_styles_Title = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const styles_NewTaskGroupTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    position: relative;
+    margin: 0px 20px;
+    margin-bottom: 19px;
+`;
+const moveTaskGroup_styles_Body = styled_components_browser_esm["b" /* default */].div`
+    margin: 10px 25px 0px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+const moveTaskGroup_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
+    border: solid 1px #ccc;
+`;
+const moveTaskGroup_styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    cursor: pointer;
+`;
+const moveTaskGroup_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const moveTaskGroup_styles_Actions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    margin-top:5px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    border-bottom: ${props => props.border ? '1px solid #ccc' : ''};
+    padding-bottom: 13px;
+`;
+const moveTaskGroup_styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const moveTaskGroup_styles_SystemHeader = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    padding: 10px 0px;
+    border-bottom: 1px solid #ccc;
+    justify-content: space-between;
+    padding-right: 11px;
+`;
+const moveTaskGroup_styles_SystemsContainer = styled_components_browser_esm["b" /* default */].div`
+
+`;
+const moveTaskGroup_styles_SystemBody = styled_components_browser_esm["b" /* default */].div`
+    padding: 13px 10px 15px 37px;
+    background-color: #f2f2f2;
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    border-bottom: solid 1px #ccc;
+`;
+const moveTaskGroup_styles_LogicalUnitContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 100%;
+    
+`;
+const moveTaskGroup_styles_ExecutionModeContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: 1px solid #ccc;
+    gap: 10px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+`;
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/moveTaskGroup/index.tsx
+
+
+
+
+
+
+
+
+
+function MoveTaskGroup(props) {
+  var _errors$task_group_id2;
+  const {
+    close,
+    groups,
+    task_id,
+    from_task_group_id
+  } = props;
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: {
+      errors
+    }
+  } = Object(index_esm["b" /* useForm */])();
+  const saveData = Object(react["useCallback"])(() => {
+    const handle = handleSubmit(data => {
+      async function assignToTaskGroup() {
+        await apis_task.moveTasksToTaskGroup([task_id], from_task_group_id, data.task_group_id.map(it => it.value), data.keepCurrentGroup);
+        close(true);
+      }
+      assignToTaskGroup();
+    });
+    handle(); // trigger validation and run callback if valid
+  }, [handleSubmit, close, task_id, from_task_group_id]);
+  const onChange = Object(react["useCallback"])(() => {}, []);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_NewTaskGroupContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_NewTaskGroupTitle, {
+      children: ["Task Group", /*#__PURE__*/Object(jsx_runtime["jsx"])(moveTaskGroup_styles_CloseIcon, {
+        onClick: () => close(false),
+        src: xclose
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(moveTaskGroup_styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(moveTaskGroup_styles_Body, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+        name: "task_group_id",
+        control: control,
+        rules: {
+          required: "Task group is required"
+        },
+        render: _ref => {
+          var _errors$task_group_id;
+          let {
+            field
+          } = _ref;
+          return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            ...field,
+            width: "290px",
+            title: 'Task group',
+            mandatory: true,
+            value: field.value,
+            options: groups,
+            isMulti: true,
+            onChange: field.onChange,
+            error: (_errors$task_group_id = errors.task_group_id) === null || _errors$task_group_id === void 0 ? void 0 : _errors$task_group_id.message
+          });
+        }
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+        name: "keepCurrentGroup",
+        control: control,
+        rules: {
+          required: "Task group is required"
+        },
+        render: _ref2 => {
+          let {
+            field
+          } = _ref2;
+          return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+            name: `keep_in_current_group`,
+            title: 'Keep task in current group',
+            onChange: field.onChange,
+            value: field.value
+          });
+        }
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(moveTaskGroup_styles_Actions, {
+        border: false,
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(moveTaskGroup_styles_ActionItem, {
+          onClick: () => close(false),
+          children: "Cancel"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(moveTaskGroup_styles_ActionItem, {
+          onClick: () => saveData(),
+          children: "Save"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
+        relativePosition: true,
+        submit: true,
+        error: (_errors$task_group_id2 = errors.task_group_id) === null || _errors$task_group_id2 === void 0 ? void 0 : _errors$task_group_id2.message
+      })]
+    })]
+  });
+}
+/* harmony default export */ var moveTaskGroup = (MoveTaskGroup);
+// CONCATENATED MODULE: ./src/components/Popup/styles.ts
+
+const Overlay = styled_components_browser_esm["b" /* default */].div`
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+`;
+const PopupContainer = styled_components_browser_esm["b" /* default */].div`
+  // background-color: white;
+  // border-radius: 8px;
+  // padding: 24px;
+  max-width: ${props => props.width || '600px'};
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+`;
+// CONCATENATED MODULE: ./src/components/Popup/index.tsx
+
+
+
+function Popup(_ref) {
+  let {
+    isOpen,
+    onClose,
+    children,
+    width
+  } = _ref;
+  if (!isOpen) return null;
+  console.log(width);
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Overlay, {
+    onClick: onClose,
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupContainer, {
+      width: width,
+      onClick: e => e.stopPropagation(),
+      children: children
+    })
+  });
+}
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/SearchBar/styles.ts
+
+const SearchContainer = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: solid 1px #999;
+  background-color: #999;
+  padding: 0 10px;
+  height: 36px;
+  width: 33%;
+  background: #fff;
+  position: absolute;
+  left: calc(50% - 16%);
+`;
+const SearchInput = styled_components_browser_esm["b" /* default */].input`
+  border: none;
+  flex: 1;
+  outline: none;
+  font-size: 14px; /* Optional: slightly smaller font to fit nicely */
+  color: #000;
+
+  &::placeholder {
+    color: #999;
+    opacity: 1;
+  }
+`;
+const IconsContainer = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+`;
+const Divider = styled_components_browser_esm["b" /* default */].div`
+  width: 1px;
+  height: 15px;
+  background-color: #ccc;
+  margin: 0 8px;
+`;
+const SearchBar_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+    width: ${props => props.width ? props.width : ''};
+    height: ${props => props.height ? props.height : ''}; 
+`;
+const ModalContainer = styled_components_browser_esm["b" /* default */].div`
+  width: 100%;
+  background: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  padding: 10px;
+  margin-left: -10px;
+  box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.3);
+`;
+const SearchBar_styles_Header = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  justify-content: flex-end;
+`;
+const styles_CloseButton = styled_components_browser_esm["b" /* default */].img`
+    cursor: pointer;
+`;
+const SearchBar_styles_Body = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-left: 30px;
+  padding-right: 51px;
+`;
+const FieldRow = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+const Label = styled_components_browser_esm["b" /* default */].label`
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-align: left;
+  color: #2e2e2e;
+`;
+const styles_Input = styled_components_browser_esm["b" /* default */].input`
+  height: 30px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 70%;
+`;
+const styles_Select = styled_components_browser_esm["b" /* default */].select`
+  height: 30px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 70%;
+`;
+const AdvancedDivider = styled_components_browser_esm["b" /* default */].div`
+  height: 1px;
+  background-color: #eee;
+  margin: 20px 0;
+    margin-left: 30px;
+`;
+const Footer = styled_components_browser_esm["b" /* default */].div`
+  display: flex;
+  justify-content: flex-end;
+`;
+const SearchButton = styled_components_browser_esm["b" /* default */].button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0069d9;
+  }
+`;
+// CONCATENATED MODULE: ./src/images/search-icon.svg
+/* harmony default export */ var search_icon = ("js/dist/fdadb79e6c2d7ebdf1c1506ac400cdc4.svg");
+// CONCATENATED MODULE: ./src/images/advanced-menu-icon.svg
+/* harmony default export */ var advanced_menu_icon = ("js/dist/6583b8a0f67994cbafec1d25d8f3ecb1.svg");
+// CONCATENATED MODULE: ./src/images/x.svg
+/* harmony default export */ var x = ("js/dist/210967d56aeda25d75ac1a18a9c8163a.svg");
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/SearchBar/AdvancedSearchBar.tsx
+
+
+
+
+
+
+
+
+
+const data_types = [{
+  label: 'Entities',
+  value: 'entities'
+}, {
+  label: 'Tables',
+  value: 'tables'
+}, {
+  label: 'Entites & Tables',
+  value: 'both'
+}];
+const scheduling_types = [{
+  label: 'True',
+  value: true
+}, {
+  label: 'False',
+  value: false
+}];
+const task_types = [{
+  value: 'EXTRACT',
+  label: 'Extract'
+}, {
+  value: 'LOAD',
+  label: 'Load'
+}, {
+  value: 'EXTRACT_AND_LOAD',
+  label: 'Extract and load'
+}, {
+  value: 'DELETE',
+  label: 'Delete'
+}, {
+  value: 'RESERVE',
+  label: 'Reserve'
+}, {
+  value: 'SYNTHETIC_GENERATION',
+  label: 'Synthetic generation'
+}];
+const AdvancedSearch = _ref => {
+  let {
+    onClose
+  } = _ref;
+  const {
+    handleSubmit,
+    control
+  } = Object(index_esm["b" /* useForm */])();
+  const [environments, setEnvironments] = Object(react["useState"])([]);
+  const onSubmit = async data => {
+    if (data.taskTypesStr && data.taskTypesStr.length > 0) {
+      data.taskTypesStr = data.taskTypesStr.map(it => it.value);
+    }
+    if (data.environmentId) {
+      data.environmentId = data.environmentId.value;
+    }
+    if (data.isScheduled) {
+      data.isScheduled = data.isScheduled.value;
+    }
+    if (data.dataType) {
+      data.dataType = data.dataType.value;
+    }
+    const result = await apis_task.searchTasks(data);
+  };
+  Object(react["useEffect"])(() => {
+    async function fetchEnvironments() {
+      const result = await apis_task.getEnvironmentsByUser();
+      console.log(result);
+      setEnvironments(result.map(it => ({
+        label: it.environment_name,
+        value: it.environment_id
+      })));
+    }
+    fetchEnvironments();
+  }, []);
+  console.log(environments);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ModalContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SearchBar_styles_Header, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_CloseButton, {
+        src: x,
+        onClick: onClose
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(SearchBar_styles_Body, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+          children: "Keywords"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+          name: "text",
+          control: control,
+          render: _ref2 => {
+            let {
+              field
+            } = _ref2;
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+              ...field,
+              width: "70%",
+              title: "",
+              mandatory: false,
+              type: InputTypes.text,
+              placeholder: "",
+              small: true
+            });
+          }
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+          children: "Task type"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+          name: "taskTypesStr",
+          control: control,
+          render: _ref3 => {
+            let {
+              field
+            } = _ref3;
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+              ...field,
+              width: "70%",
+              title: "",
+              mandatory: false,
+              isMulti: true,
+              options: task_types,
+              loading: false,
+              small: true
+            });
+          }
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+          children: "Environment"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+          name: "environmentId",
+          control: control,
+          render: _ref4 => {
+            let {
+              field
+            } = _ref4;
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+              ...field,
+              width: "70%",
+              title: "",
+              mandatory: false,
+              options: environments // Replace with dynamic env list if needed
+              ,
+              loading: false,
+              small: true
+            });
+          }
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+          children: "Creator"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+          name: "creator",
+          control: control,
+          render: _ref5 => {
+            let {
+              field
+            } = _ref5;
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+              ...field,
+              width: "70%",
+              title: "",
+              mandatory: false,
+              type: InputTypes.text,
+              placeholder: "",
+              small: true
+            });
+          }
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+          children: "Scheduling"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+          name: "isScheduled",
+          control: control,
+          render: _ref6 => {
+            let {
+              field
+            } = _ref6;
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+              ...field,
+              width: "70%",
+              title: "",
+              mandatory: false,
+              options: scheduling_types,
+              loading: false,
+              small: true
+            });
+          }
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+          children: "Processed data"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
+          name: "dataType",
+          control: control,
+          render: _ref7 => {
+            let {
+              field
+            } = _ref7;
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+              ...field,
+              width: "70%",
+              title: "",
+              mandatory: false,
+              options: data_types,
+              loading: false,
+              small: true
+            });
+          }
+        })]
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedDivider, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Footer, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+        title: "Search",
+        onClick: handleSubmit(onSubmit),
+        width: "127px",
+        height: "40px"
+      })
+    })]
+  });
+};
+/* harmony default export */ var AdvancedSearchBar = (AdvancedSearch);
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/SearchBar/index.tsx
+
+
+
+
+
+
+
+const SearchBar_SearchBar = () => {
+  const [open, setOpen] = Object(react["useState"])(false);
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
+    containerStyle: {
+      zIndex: '100',
+      width: '33%'
+    },
+    reposition: true,
+    padding: 10,
+    align: "center",
+    isOpen: open,
+    positions: ['bottom'],
+    content: /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedSearchBar, {
+      onClose: () => setOpen(false)
+    }),
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(SearchContainer, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SearchInput, {
+        placeholder: "Search..."
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(IconsContainer, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SearchBar_styles_Icon, {
+          src: search_icon
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Divider, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(SearchBar_styles_Icon, {
+          onClick: () => setOpen(true),
+          src: advanced_menu_icon
+        })]
+      })]
+    })
+  });
+};
+/* harmony default export */ var TaskTemplates_SearchBar = (SearchBar_SearchBar);
+// CONCATENATED MODULE: ./src/containers/TaskTemplates/index.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const TaskTemplates_MySwal = sweetalert2_react_content_umd_default()(sweetalert2_all_default.a);
+function TaskTemplates(props) {
+  const {
+    scope,
+    content
+  } = props;
+  const {
+    openTask,
+    openTasks,
+    openNewTask
+  } = content;
+  const [searchText, setSearchText] = Object(react["useState"])('');
+  const [chosenGroupCategory, setChosenGroupCategory] = Object(react["useState"])('All');
+  const [taskGroups, setTaskGroups] = Object(react["useState"])(null);
+  const [selectedTab, setSelectedTab] = Object(react["useState"])("allTaskGroups");
+  const [selectedTaskGroup, setSelectedTaskGroup] = Object(react["useState"])(null);
+  const [open, setOpen] = Object(react["useState"])("");
+  const [selectedTaskGroupData, setSelectedTaskGroupData] = Object(react["useState"])([]);
+  const [openTaskExecution, setOpenTaskExecution] = Object(react["useState"])(null);
+  const chooseCategory = Object(react["useCallback"])(taskGroup => {
+    setSelectedTaskGroup(taskGroup);
+  }, [setSelectedTaskGroup]);
+  const fetchTaskGroups = Object(react["useCallback"])(async () => {
+    try {
+      const result = await apis_task.getTaskGroups();
+      setTaskGroups(result);
+      if ((result === null || result === void 0 ? void 0 : result.allTaskGroups.length) > 0 && !selectedTaskGroup) {
+        chooseCategory(result.allTaskGroups[0]);
+      }
+    } catch (err) {}
+  }, [setTaskGroups, chooseCategory, selectedTaskGroup]);
+  Object(react["useEffect"])(() => {
+    fetchTaskGroups();
+  }, []);
+  const closeNewTaskGroup = Object(react["useCallback"])(status => {
+    if (status) {
+      fetchTaskGroups();
+    }
+    setOpen("");
+  }, [fetchTaskGroups, setOpen]);
+  Object(react["useEffect"])(() => {
+    async function fetchTaskGroupById() {
+      try {
+        const result = await apis_task.getTaskGroupById(selectedTaskGroup === null || selectedTaskGroup === void 0 ? void 0 : selectedTaskGroup.task_group_id);
+        setSelectedTaskGroupData(result);
+      } catch (err) {}
+    }
+    fetchTaskGroupById();
+  }, [selectedTaskGroup]);
+  const toggleTaskGroupFavorite = Object(react["useCallback"])(async (task_group_id, marked) => {
+    try {
+      await apis_task.toggleTaskGroupFavorite(task_group_id, marked);
+      fetchTaskGroups();
+    } catch (err) {
+      console.error('failed to remove task group;');
+    }
+  }, [fetchTaskGroups]);
+  const toggleTaskFavorite = Object(react["useCallback"])(async (task_id, marked) => {
+    try {
+      await apis_task.toggleTaskFavorite(task_id, marked);
+      fetchTaskGroups();
+    } catch (err) {
+      console.error('failed to remove task group;');
+    }
+  }, [fetchTaskGroups]);
+  const deleteGroup = Object(react["useCallback"])(async task_group_id => {
+    const result = await TaskTemplates_MySwal.fire({
+      title: /*#__PURE__*/Object(jsx_runtime["jsx"])("h2", {
+        style: {
+          color: '#575757',
+          fontSize: '30px',
+          textAlign: 'center',
+          fontWeight: 600,
+          textTransform: 'none',
+          position: 'relative',
+          margin: '25px 0',
+          padding: 0,
+          lineHeight: '40px',
+          display: 'block'
+        },
+        children: "It is recommended to move the related tasks to another task group before deleting this group. Any remaining tasks will be moved to the General group. Do you want to proceed?"
+      }),
+      showCancelButton: true,
+      icon: "warning",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No"
+    }).then(value => {
+      return value.isConfirmed;
+    }).catch(() => false);
+    if (result) {
+      try {
+        await apis_task.deleteTaskGroup(task_group_id);
+        fetchTaskGroups();
+      } catch (err) {
+        console.error('failed to remove task group;');
+      }
+    }
+  }, [fetchTaskGroups]);
+  const getLeftSideTemplates = Object(react["useCallback"])(() => {
+    if (!taskGroups) {
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
+    }
+    return taskGroups[selectedTab].map((taskGroup, index) => /*#__PURE__*/Object(jsx_runtime["jsxs"])(LeftSideTemplate, {
+      selected: (selectedTaskGroup === null || selectedTaskGroup === void 0 ? void 0 : selectedTaskGroup.task_group_id) == taskGroup.task_group_id,
+      onClick: () => chooseCategory(taskGroup),
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(LeftSideTemplateIconContainer, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          onClick: $event => {
+            $event.stopPropagation();
+            toggleTaskGroupFavorite(taskGroup.task_group_id, taskGroup.favorite);
+          },
+          src: taskGroup.favorite ? selected_favorit : favorite_icon_new
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(LeftSideTemplateName, {
+        children: taskGroup.task_group_name
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
+        containerStyle: {
+          zIndex: '100'
+        },
+        reposition: true,
+        padding: -30,
+        align: "center",
+        isOpen: (open === null || open === void 0 ? void 0 : open.indexOf(`group_list_${taskGroup.task_group_id}`)) >= 0,
+        positions: [open === `edit_group_list_${taskGroup.task_group_id}` ? 'right' : 'bottom'],
+        transformMode: "relative",
+        onClickOutside: () => {
+          closeNewTaskGroup(false);
+        },
+        content: open === `edit_group_list_${taskGroup.task_group_id}` ? /*#__PURE__*/Object(jsx_runtime["jsx"])(newTaskGroup, {
+          data: taskGroup,
+          close: closeNewTaskGroup
+        }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(components_DropdownMenu, {
+          items: [{
+            label: "Edit Group",
+            onClick: $event => {
+              setOpen(`edit_group_list_${taskGroup.task_group_id}`);
+              $event.stopPropagation();
+            }
+          }, {
+            label: "Delete Group",
+            onClick: $event => {
+              deleteGroup(taskGroup.task_group_id);
+              $event.stopPropagation();
+            }
+          }]
+        }),
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(DotMenuIconWrapper, {
+          onClick: $event => {
+            setOpen(`group_list_${taskGroup.task_group_id}`);
+            $event.stopPropagation();
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+            width: '13px',
+            height: '3px',
+            src: dotmenu
+          })
+        })
+      }, `menu_task_group_${index}`)]
+    }, `task_group_${index}`));
+  }, [taskGroups, selectedTaskGroup, chooseCategory, selectedTab, setOpen, deleteGroup, closeNewTaskGroup, open]);
+  const getRightSideBoxIcon = task_type => {
+    switch (task_type.toUpperCase()) {
+      case 'EXTRACT AND LOAD':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          src: load,
+          width: '47px'
+        });
+      case 'LOAD':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          src: load,
+          width: '47px'
+        });
+      case 'RESERVE':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          src: images_reserve,
+          width: '47px'
+        });
+      case 'EXTRACT':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          src: extract,
+          width: '47px'
+        });
+      case 'LOAD_EXTRACT':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          src: extract_and_load,
+          width: '47px'
+        });
+      case 'DELETE':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          src: images_delete,
+          width: '47px'
+        });
+      case 'SYNTHETIC':
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+          src: synthetic,
+          width: '47px'
+        });
+    }
+  };
+  const getAndOpenTask = Object(react["useCallback"])(async (task_id, copy) => {
+    const result = await apis_task.getTaskById([task_id], 'Active');
+    if ((result === null || result === void 0 ? void 0 : result.length) > 0) {
+      openTask(result[0], copy, []);
+    }
+  }, [openTask]);
+  const deleteTask = Object(react["useCallback"])(async (task_id, task_title) => {
+    const result = await TaskTemplates_MySwal.fire({
+      title: /*#__PURE__*/Object(jsx_runtime["jsx"])("h2", {
+        style: {
+          color: '#575757',
+          fontSize: '30px',
+          textAlign: 'center',
+          fontWeight: 600,
+          textTransform: 'none',
+          position: 'relative',
+          margin: '25px 0',
+          padding: 0,
+          lineHeight: '40px',
+          display: 'block'
+        },
+        children: "You are about to permanently delete this task. The task will no longer be available. Are you sure you want to proceed?"
+      }),
+      showCancelButton: true,
+      icon: "warning",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No"
+    }).then(value => {
+      return value.isConfirmed;
+    }).catch(() => false);
+    if (result) {
+      try {
+        await apis_task.deleteTask(task_id, task_title);
+        if (selectedTaskGroup) {
+          setSelectedTaskGroup({
+            ...selectedTaskGroup
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, [setSelectedTaskGroup, selectedTaskGroup]);
+  const deleteTaskFromGroup = Object(react["useCallback"])(async (task_id, task_group_id) => {
+    if (!task_id || !task_group_id) {
+      return;
+    }
+    const result = await TaskTemplates_MySwal.fire({
+      title: /*#__PURE__*/Object(jsx_runtime["jsx"])("h2", {
+        style: {
+          color: '#575757',
+          fontSize: '30px',
+          textAlign: 'center',
+          fontWeight: 600,
+          textTransform: 'none',
+          position: 'relative',
+          margin: '25px 0',
+          padding: 0,
+          lineHeight: '40px',
+          display: 'block'
+        },
+        children: "This task will be moved to the General group if it's not attached to another group. Are you sure you want to remove it from this group?"
+      }),
+      showCancelButton: true,
+      icon: "warning",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No"
+    }).then(value => {
+      return value.isConfirmed;
+    }).catch(() => false);
+    if (result) {
+      try {
+        await apis_task.deleteTaskFromGroup(task_id, task_group_id);
+        if (selectedTaskGroup) {
+          setSelectedTaskGroup({
+            ...selectedTaskGroup
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, [setSelectedTaskGroup, selectedTaskGroup]);
+  const getRightSideTemplates = Object(react["useCallback"])(() => {
+    return selectedTaskGroupData.map(taskTemplate => /*#__PURE__*/Object(jsx_runtime["jsxs"])(RightSideBox, {
+      onClick: () => setOpenTaskExecution(taskTemplate.task_id),
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(RightSideBoxHeader, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(RightSideBoxHeaderActions, {
+          onClick: $event => $event.stopPropagation(),
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+            onClick: $event => {
+              $event.stopPropagation();
+              toggleTaskFavorite(taskTemplate.task_id, taskTemplate.favorite);
+            },
+            src: taskTemplate.favorite ? selected_favorit : favorite_icon_new,
+            width: '17px'
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
+            containerStyle: {
+              zIndex: '100'
+            },
+            reposition: true,
+            padding: 0,
+            align: "center",
+            isOpen: open === `menu_task_${taskTemplate.task_id}`,
+            positions: ['bottom', 'left'],
+            onClickOutside: () => {
+              closeNewTaskGroup(false);
+            },
+            content: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_DropdownMenu, {
+              items: [{
+                label: "Edit task",
+                onClick: () => getAndOpenTask(taskTemplate.task_id, false)
+              }, {
+                label: "Save as",
+                onClick: () => getAndOpenTask(taskTemplate.task_id, true)
+              }, {
+                label: "Move to group",
+                onClick: () => setOpen(`movetocategory_${taskTemplate.task_id}_${selectedTaskGroup === null || selectedTaskGroup === void 0 ? void 0 : selectedTaskGroup.task_group_id}`)
+              }, {
+                label: "Delete from group",
+                onClick: () => deleteTaskFromGroup(taskTemplate.task_id, selectedTaskGroup === null || selectedTaskGroup === void 0 ? void 0 : selectedTaskGroup.task_group_id)
+              },
+              //   { label: "Disable execution", onClick: () => console.log("Hold Execution") },
+              {
+                label: "Delete task",
+                onClick: () => deleteTask(taskTemplate.task_id, taskTemplate.task_title)
+              }]
+            }),
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+              src: dotmenu,
+              width: "13px",
+              height: "3px",
+              onClick: $event => {
+                $event.stopPropagation();
+                setOpen(prev => prev === `menu_task_${taskTemplate.task_id}` ? '' : `menu_task_${taskTemplate.task_id}`);
+              }
+            })
+          })]
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(RightSideBoxBody, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTypeIconContainer, {
+          children: getRightSideBoxIcon(taskTemplate.display_task_type)
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(RightSideBoxBodyTitle, {
+          title: taskTemplate.task_title,
+          children: taskTemplate.task_title
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(StartIconContainer, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Icon, {
+            title: 'Execute task',
+            src: open_execution,
+            width: '15px'
+          })
+        })]
+      })]
+    }, `task_${taskTemplate.task_id}`));
+  }, [selectedTaskGroupData, setOpen, open, selectedTaskGroup, setOpenTaskExecution]);
+  const onBack = Object(react["useCallback"])(() => {
+    setOpenTaskExecution(null);
+    setOpen('');
+  }, [setOpenTaskExecution]);
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Container, {
+    className: "react-comp",
+    children: openTaskExecution ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_TaskSelection, {
+      task_id: openTaskExecution,
+      onBack: onBack
+    }) : /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '350px',
+        isOpen: (open === null || open === void 0 ? void 0 : open.indexOf('movetocategory_')) === 0,
+        onClose: () => closeNewTaskGroup(false),
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(moveTaskGroup, {
+          task_id: parseInt(open === null || open === void 0 ? void 0 : open.split('_')[1]),
+          from_task_group_id: parseInt(open === null || open === void 0 ? void 0 : open.split('_')[2]),
+          close: closeNewTaskGroup,
+          groups: ((taskGroups === null || taskGroups === void 0 ? void 0 : taskGroups.allTaskGroups) || []).map(task_group => ({
+            label: task_group.task_group_name,
+            value: task_group.task_group_id
+          }))
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_Header, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_Title, {
+            children: "Manage Your Tasks"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_SearchBar, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(HeaderActions, {
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TaskActionContainer, {
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskAction, {
+                onClick: () => openNewTask([], false),
+                children: "New task"
+              })
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TaskActionContainer, {
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
+                containerStyle: {
+                  zIndex: '100'
+                },
+                reposition: true,
+                padding: 35,
+                align: "center",
+                isOpen: open === 'new_task_group',
+                positions: ['bottom'],
+                transformMode: "relative",
+                onClickOutside: () => {
+                  closeNewTaskGroup(false);
+                },
+                content: /*#__PURE__*/Object(jsx_runtime["jsx"])(newTaskGroup, {
+                  close: closeNewTaskGroup
+                }),
+                children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskAction, {
+                  onClick: () => setOpen('new_task_group'),
+                  children: "New group"
+                })
+              })
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TaskActionContainer, {
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskAction, {
+                children: "All task executions"
+              })
+            })]
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskTemplates_styles_Body, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_LeftSide, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(CategoriesContainer, {
+              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(LeftSideHeader, {
+                children: "Task groups"
+              }), /*#__PURE__*/Object(jsx_runtime["jsx"])(LeftSideFilter, {
+                children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskGroupTabs, {
+                  onChange: setSelectedTab
+                })
+              }), getLeftSideTemplates()]
+            })
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskTemplates_styles_RightSide, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(RightSideBody, {
+              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(RightSideHeader, {
+                children: selectedTaskGroup === null || selectedTaskGroup === void 0 ? void 0 : selectedTaskGroup.task_group_name
+              }), /*#__PURE__*/Object(jsx_runtime["jsx"])(BoxesContainer, {
+                children: getRightSideTemplates()
+              })]
+            })
+          })]
+        })]
+      })]
+    })
+  });
+}
+/* harmony default export */ var containers_TaskTemplates = (TaskTemplates);
 // CONCATENATED MODULE: ./src/utils/ExportToNg.jsx
 
 
 
 
-var ExportToNg_TaskMainComp = function TaskMainComp(props) {
+
+const TaskMainComp = props => {
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
     children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Main, {
       content: props.content
     })
   });
 };
-react_to_angular(ExportToNg_TaskMainComp, "reactTaskMain",
+react_to_angular(TaskMainComp, "reactTaskMain",
 // eslint-disable-next-line no-undef
-angular.module("react-connector", []), {
+angular.module("react-connector"), {
+  content: '='
+});
+const TaskTemplatesComp = props => {
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(react_default.a.StrictMode, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(containers_TaskTemplates, {
+      content: props.content
+    }), ";"]
+  });
+};
+react_to_angular(TaskTemplatesComp, "reactTaskTemplates",
+// eslint-disable-next-line no-undef
+angular.module("react-connector"), {
   content: '='
 });
 

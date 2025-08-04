@@ -1,0 +1,180 @@
+tags: TDM
+stages:
+  Create Sequences:
+    actors:
+      createSeqFlowsOnlyFromTemplates1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createSeqFlowsOnlyFromTemplates
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+  Create Load Flow:
+    actors:
+      CreateLoadFlowForDocument1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateLoadFlowForDocument
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          sourceTable:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          targetDbInterface:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+          targetDbSchema:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          targetDbTable:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          sourceDBIneterface:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+          sourceDBSchema:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+  Add Orchestrator:
+    actors:
+      AddDocLuOrchestrator1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: AddDocLuOrchestrator
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+  Update Distribution Of Main Table:
+    actors:
+      UpdateMainTablePopulationForDoc1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateMainTablePopulationForDoc
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+  Create Delete Flow:
+    dependsOn: Update Distribution Of Main Table
+    actors:
+      Create Delete Flow?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: CREATE_DELETE_FLOW
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      CreateDeleteFlowForDocument1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateDeleteFlowForDocument
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          sourceTable:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          targetDbInterface:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+          targetDbSchema:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          targetDbTable:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          sourceDBIneterface:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+          sourceDBSchema:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 2:
+    else: true
+    dependsOn: Update Distribution Of Main Table
+  Create Generate Flows:
+    actors:
+      Create Generate Flows?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: CREATE_GENERATE_FLOWS
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      create Generate Data Table Flows:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createGenerateDataTableFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          DOCUMENT_IND:
+            const: true
+            schema: boolean
+            mandatory: false
+          ROOT_TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false

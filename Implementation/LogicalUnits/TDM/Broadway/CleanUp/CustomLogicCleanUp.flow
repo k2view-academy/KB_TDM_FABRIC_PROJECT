@@ -2,12 +2,15 @@ tags: CleanUp
 stages:
   Inputs:
     actors:
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
-      Const1:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      truncate date:
         parent: Const
         in:
           value:
@@ -40,11 +43,11 @@ stages:
                   AND t.selection_method = 'C'
                   AND t.task_last_updated_date < ${truncate_date};
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           truncate_date:
-            link: Const1/value/date_trunc
+            link: truncate date/value/date_trunc
             schema: '#ref'
             mandatory: false
         out:
@@ -116,7 +119,7 @@ stages:
           sql:
             const: DROP TABLE IF EXISTS ${@TDMDB_SCHEMA}.${@entity_table}
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           entity_table:
@@ -145,7 +148,7 @@ stages:
             schema: integer
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
     split: '--------------------'
@@ -163,7 +166,7 @@ stages:
             const: select  table_name from INFORMATION_SCHEMA.tables where table_schema
               = ${schema} and table_name like 'entity_list_%'
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:
@@ -171,7 +174,7 @@ stages:
             schema: '#ref'
   Get Task Execution ID:
     actors:
-      Substring1:
+      'Substring   ':
         parent: Substring
         in:
           begin:
@@ -193,11 +196,11 @@ stages:
             const: "SELECT count(1) as cnt from ${@schema}.task_execution_list \r\n\
               where task_execution_id = ${taskExecutionId}"
           schema:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           taskExecutionId:
-            link: Substring1/string
+            link: Substring   /string
             schema: string
             mandatory: false
         out:
@@ -215,7 +218,7 @@ stages:
             schema: integer
           a:
             link: Check If Task Execution Still Exists/result
-      Drop Table1:
+      'Drop Table   ':
         parent: DbCommand
         in:
           interface:
@@ -224,15 +227,16 @@ stages:
             const: DROP TABLE IF EXISTS ${@schema}.${@tableName}
           tableName:
             link:
-              path: Get Entity List Tables/result
+              path: Get Entity List Tables/result/table_name
               iterate: Iterate
             schema: string
             mandatory: false
           schema:
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
 schemas:
-  Const1.out.value:
+  truncate date.out.value:
     type: object
     properties:
       date_trunc:

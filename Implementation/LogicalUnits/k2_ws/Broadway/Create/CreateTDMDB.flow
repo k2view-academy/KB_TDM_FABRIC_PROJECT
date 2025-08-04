@@ -1,0 +1,243 @@
+tags: Create
+stages:
+  Get Inputs:
+    actors:
+      Create DB Flag:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: flag
+        out:
+          value:
+            schema: string
+      Get DB Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: database
+        out:
+          value:
+            schema: string
+      LuFunction:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBUserFromInterface
+          interfaceName:
+            const: TDM
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Check flag for create DB:
+    dependsOn: Get Inputs
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            const: true
+            schema: boolean
+          b:
+            link: Create DB Flag/value
+      DbFetchFirstRow:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: |-
+              SELECT rolname, rolcreatedb
+              FROM pg_roles
+              WHERE rolname = ${role_name};
+          role_name:
+            link: LuFunction/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Don't Create DB:
+    else: true
+    dependsOn: Get Inputs
+  Check If User Exists:
+    dependsOn: Check flag for create DB
+    actors:
+      JavaScript:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = false;
+              if (rolname && (rolcreatedb === true || rolcreatedb === 'true')) {
+                  result = true;
+              }
+              result;
+          rolname:
+            link: DbFetchFirstRow/result/rolname
+            schema: string
+            mandatory: false
+          rolcreatedb:
+            link: DbFetchFirstRow/result/rolcreatedb
+            schema: boolean
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Create DB With Owner:
+        parent: DbCommand
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: create database "${@databaseName}" with owner "${@rolename}";
+          databaseName:
+            link: Get DB Name/value
+            schema: string
+            mandatory: false
+          rolename:
+            link: LuFunction/result
+            schema: any
+            mandatory: false
+    split: '--------------------'
+  Create With Default User:
+    else: true
+    dependsOn: Check flag for create DB
+    actors:
+      Create DB:
+        parent: DbCommand
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: create database "${@databaseName}" ;
+          databaseName:
+            link: Get DB Name/value
+            schema: string
+            mandatory: false
+      Logger:
+        parent: Logger
+        in:
+          message:
+            const: The role does not exist or does not have permission to create a
+              database. As a result, TDMDB is created using the default user.
+          level:
+            const: warning
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Don't Create DB
+  Get Scripts:
+    actors:
+      Get  SQL Resource File To Clear TDMDB And Create Sequences:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm2.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+      getTDMDBSchemaName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Create Schema if Not exists:
+    actors:
+      Create Schema:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: create Schema if not exists ${@schemaName}
+          schemaName:
+            link: getTDMDBSchemaName1/schema
+            schema: string
+            mandatory: false
+  Create TDMDB Sequences:
+    actors:
+      Clear And Sequence Creation Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Clear TDMDB and Create Sequences:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Clear TDMDB And Create Sequences/result
+          schema:
+            link: getTDMDBSchemaName1/schema
+            schema: string
+            mandatory: false
+      Get  SQL Resource File To Create TDMDB Tables and Functions:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm3.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+  Create TDMDB Tables:
+    actors:
+      Create TDMDB Tables Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Create TDMDB Tables and Functions:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Create TDMDB Tables and Functions/result
+          schema:
+            link: getTDMDBSchemaName1/schema
+            schema: string
+            mandatory: false
+schemas:
+  DbFetchFirstRow.out.result:
+    type: object
+    properties:
+      rolname:
+        type: string
+      rolcreatedb:
+        type: boolean

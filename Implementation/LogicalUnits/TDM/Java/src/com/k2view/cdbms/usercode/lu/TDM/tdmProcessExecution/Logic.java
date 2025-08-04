@@ -35,43 +35,27 @@ import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.updatedFailedS
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnUpdateAIProcess;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends UserCode {
     public static final String TDM = "TDM";
 
     @type(UserJob)
-	public static void tdmProcessExecution(Long taskExecutionID, String processType, String sessionGlobals, String numOfEntities, String subsetID, String luID) throws Exception {
+	public static void tdmProcessExecution(Long taskExecutionID, String processType, String sessionGlobals, String numOfEntities, String subsetID, String luID, String taskTitle) throws Exception {
         //log.info("tdmProcessExecution Starting");
         String executionId = "";
 
         String executionsSql = "Select t.process_id , t.process_name, t.execution_order, t.process_type, t.parameters from " +
             TDMDB_SCHEMA + ".tasks_exe_process t, " + TDMDB_SCHEMA + ".task_execution_list l " +
             "where l.task_execution_id = ? and l.process_id = t.process_id and upper(l.execution_status) = 'PENDING' " +
-            "and l.task_id = t.task_id and t.process_type = ? " +
+            "and l.task_id = t.task_id and t.process_type = ? and t.status='Active' " +
             "order by t.execution_order";
-        
-        //log.info("tdmProcessExecution - sessionGlobals: " + sessionGlobals);
 
-        //Map<?,?> globalsInput = Json.get().fromJson(sessionGlobals, Map.class);
+        // log.info("tdmProcessExecution - sessionGlobals: " + sessionGlobals);
 
-        sessionGlobals = sessionGlobals.substring(1, sessionGlobals.length()-1); //remove curly brackets
-        String[] keyValuePairs= sessionGlobals.split(",(?![^\\{]*\\})"); //split the string to creat key-value pairs according to the last , after the = 
-        Map<String,String> globalsInput = new HashMap<>();               
-        //log.info("keyValuePairs: " + keyValuePairs.toString());
-        for(String pair : keyValuePairs)                        //iterate over the pairs
-        {
-           // log.info("pair: " + pair);
-            String[] entry = pair.split("=");                 //split the pairs to get key and value 
-            //log.info("entry key: " + entry[0]);
-            String value = "";
-            if (entry.length > 1) {
-                value = entry[1];
-            }
-            //log.info("entry value: " + value);
-            globalsInput.put(entry[0].trim(), value);          //add them to the hashmap and trim whitespaces
-        }
-    
+        Map<?, ?> globalsInput = Json.get().fromJson(sessionGlobals, Map.class);
+
         if (globalsInput != null && !(globalsInput.isEmpty())) {
             globalsInput.forEach((key, value) -> {
                 String query = "set " + key + "='" + value + "'";
@@ -138,20 +122,23 @@ public class Logic extends UserCode {
                     Long count = Long.valueOf(db(TDM).fetch(sql,taskExecutionID, 0, "failed","stopped").firstValue().toString());
                     // only if extarct worked then run training AI 
                     if (count == 0) {
-                        Map<String, String> executionInfo = executeTrainingJob(String.valueOf(taskExecutionID), processName, processID);
+                        Map<String, String> executionInfo = executeTrainingJob(String.valueOf(taskExecutionID), processName, processID,taskTitle);
                         AIprocessExecution(executionInfo, taskExecutionID, processID,luID);
                     }else {
                         sql = "SELECT execution_status FROM " + TDMDB_SCHEMA + ".task_execution_list WHERE task_execution_id= ? and process_id=? AND Lower(execution_status) in (?,?) ";
                         String status = db(TDM).fetch(sql,taskExecutionID, 0, "failed","stopped").firstValue().toString();
                         Util.rte(() -> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?,num_of_processed_entities = ?, " +
-                                                       "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", status , null, null, null, null, taskExecutionID, processID));
+                                                       "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, " +
+                                                       "start_execution_time = COALESCE(start_execution_time, (now() at time zone 'utc')) " +
+                                                       "WHERE task_execution_id=? and process_id=?", status , null, null, null, null, taskExecutionID, processID));
                     }
                 } else if ("Generating Data Subset".equalsIgnoreCase(processName) || "Importing Data Subset".equalsIgnoreCase(processName)) {
-                    Map<String, String> executionInfo = executeGenerationJob(String.valueOf(taskExecutionID), processName, processID,numOfEntities,subsetID);
+                    Map<String, String> executionInfo = executeGenerationJob(String.valueOf(taskExecutionID), processName, processID,numOfEntities,subsetID,taskTitle);
                     AIprocessExecution(executionInfo, taskExecutionID, processID,luID);
-                }
-                //log.info("************* set task execution list to running for process id " + processID + " *************");
-                else {
+                } else if ("Evaluating Data Subset".contentEquals(processName)){
+                    Map<String, String> executionInfo = executeEvaluationJob(String.valueOf(taskExecutionID), processName, processID, numOfEntities);
+                    AIprocessExecution(executionInfo, taskExecutionID, processID,luID);
+                }else {
                     log.info("************* set task execution list to running for process id " + processID + " *************");
                     List<Map<String, Object>> ProcessList = MtableLookup("PostAndPreExecutionProcess", ProcessInputs, MTable.Feature.caseInsensitive);
                     for (Map<String, Object> t : ProcessList) {
@@ -165,18 +152,22 @@ public class Logic extends UserCode {
                         luName = "TDM";
                     }
                     String broadwayCommand = "broadway " + luName + "." + processName + " iid=?," + fabricCommandParams;
-                    String batch = "BATCH " + luName + ".('" + taskExecutionID + "_" + processID + "')" + " fabric_command=? with async=true";
+                    String batch = "BATCH " + luName + ".('" + taskExecutionID + "_" + processID + "')" + " fabric_command=? with async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
                     //log.info("broadwayCommand - " + broadwayCommand);
                     //log.info("Starting batch command for post execution: " + batch);
                     executionId =  (String) fabric().fetch(batch, broadwayCommand).firstValue();
                     String finalExecutionId = executionId;
                     Util.rte(() -> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?,num_of_processed_entities = ?, " +
-                            "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "running", null, null, null, finalExecutionId, taskExecutionID, processID));
+                            "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, " +
+                            "start_execution_time = COALESCE(start_execution_time, (now() at time zone 'utc')) " +
+                            "WHERE task_execution_id=? and process_id=?", "running", null, null, null, finalExecutionId, taskExecutionID, processID));
                 }
             } catch (Exception e) {
                 String finalExecutionId1 = executionId;
                 Util.rte(() -> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?,num_of_processed_entities = ?, " +
-                        "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "failed", null, null, null, finalExecutionId1, taskExecutionID, processID));
+                        "num_of_copied_entities = ?, num_of_failed_entities = ? ,fabric_execution_id=?, " +
+                        "start_execution_time = COALESCE(start_execution_time, (now() at time zone 'utc')) " +
+                        "WHERE task_execution_id=? and process_id=?", "failed", null, null, null, finalExecutionId1, taskExecutionID, processID));
                 log.error("Process " + processName + "failed due to " + e.getMessage());
                 fabric().execute("stopjob USER_JOB name='TDM.tdmProcessExecution'");
                 throw new RuntimeException(e);
@@ -184,11 +175,12 @@ public class Logic extends UserCode {
         };
     }
 	
+
     private static void waitUntilPrevProcessDone(Long taskExecutionID, Integer executionOrder, String processType) throws Exception {
         long count = -1;
         //log.info("waitUntilPrevProcessDone Starting with - taskExecutionID: " + taskExecutionID +", executionOrder: " + executionOrder);
         String EXECUTIONS_COUNT =  "select count(*) from " + TDMDB_SCHEMA + ".tasks_exe_process tt inner join " + TDMDB_SCHEMA + ".task_execution_list ll on tt.task_id=ll.task_id " +
-            "where ll.task_execution_id =? and ll.process_id = tt.process_id and (? = -100 or tt.execution_order < ?) and tt.process_type = ? " +
+            "where ll.task_execution_id =? and ll.process_id = tt.process_id and (? = -100 or tt.execution_order < ?) and tt.process_type = ? and tt.status='Active' " +
             "and ll.execution_status NOT IN ('stopped','completed','failed','killed');";
         //log.info("waitUntilPrevProcessDone - EXECUTIONS_COUNT: " + EXECUTIONS_COUNT);
         while (count != 0) {
@@ -208,7 +200,7 @@ public class Logic extends UserCode {
                 log.error("AI Execution failed for task execution: " + taskExecutionID + ", LU ID: " +luID);
                 return;
             } else {
-                String query = "UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET fabric_execution_id=? ";
+                String query = "UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET fabric_execution_id=? ,num_of_copied_ref_tables=0 , num_of_failed_ref_tables=0 ,num_of_processed_ref_tables=0 ";
                 query += (total != null && !"null".equalsIgnoreCase(total)) ? ",num_of_processed_entities= ? " : "";
                 query += "WHERE task_execution_id=? and process_id = ?";
 
@@ -225,7 +217,7 @@ public class Logic extends UserCode {
         }
     }
 
-    private static Map<String, String> executeTrainingJob(String taskExecutionID,String processName, String processID) throws Exception {
+    private static Map<String, String> executeTrainingJob(String taskExecutionID,String processName, String processID, String taskTitle) throws Exception {
         Map<String, String> executionStatus = new LinkedHashMap<>();
         // Check if the status of the task with the specified process_id is not failed
         String sql = "SELECT COUNT(*) FROM " + TDMDB_SCHEMA + ".task_execution_list WHERE task_execution_id= ? and process_id=? AND Lower(execution_status) in (?,?) ";
@@ -256,49 +248,54 @@ public class Logic extends UserCode {
         }
 
         if ("Exporting Data Subset".equalsIgnoreCase(processName)) {
-            executionStatus = executeExportingSubset(taskExecutionID,luName,dcName,luID);
-        }else{
-            executionStatus = executeTrainingSubset(taskExecutionID,luName,dcName,luID);
+            executionStatus = executeExportingSubset(taskExecutionID, luName, dcName, luID, taskTitle);
+        } else {
+            executionStatus = executeTrainingSubset(taskExecutionID, luName, dcName, luID, taskTitle);
         }
-       return executionStatus;
+        return executionStatus;
     }
 
-    private static Map<String, String> executeExportingSubset(String taskExecutionID,String luName,String dcName,String luID) throws Exception {
+    private static Map<String, String> executeExportingSubset(String taskExecutionID, String luName, String dcName,
+            String luID, String taskTitle) throws Exception {
         Map<String, String> ExecutionInfo = new LinkedHashMap<>();
         String broadwayCommand = "broadway TDM.ExportDataSubset " + "luName = '" + luName + "'" +
                 ", dcName='" + dcName + "'" +
                 ", taskExecutionID='" + taskExecutionID + "'" +
-                ", LuID='" + luID +"'" ;
-        //log.info("TRAINING >>>> "+broadwayCommand);
+                ", LuID='" + luID + "'" + " , taskTitle = '" + taskTitle + "'";
+        // log.info("TRAINING >>>> "+broadwayCommand);
         Db.Rows rows = fabric().fetch(broadwayCommand);
         String batchID = null;
-        for(Db.Row row:rows){
-           batchID="" + row.get("batchID");
+        for (Db.Row row : rows) {
+            batchID = "" + row.get("batchID");
         }
-        Map<String,String> entities = fnUpdateAIProcess(taskExecutionID,"0");
+        Map<String, String> entities = fnUpdateAIProcess(taskExecutionID, "0");
         ExecutionInfo.put("total", "" + entities.get("total"));
         ExecutionInfo.put("fabric_execution_id", batchID);
         return ExecutionInfo;
 
     }
 
-    private static Map<String, String> executeTrainingSubset(String taskExecutionID,String luName,String dcName,String luID) throws Exception {
+    private static Map<String, String> executeTrainingSubset(String taskExecutionID, String luName, String dcName,
+            String luID, String taskTitle) throws Exception {
         Map<String, String> ExecutionInfo = new LinkedHashMap<>();
-        String batchCommand = "BATCH " +luName+ ".(" + luName + "_" + taskExecutionID + ") FABRIC_COMMAND=? WITH ASYNC='true'";
+
+        String batchCommand = "BATCH " + luName + ".(" + luName + "_" + taskExecutionID
+                + ") FABRIC_COMMAND=? WITH ASYNC='true'" + " BATCH_ID_PREFIX ='" + taskTitle + "'";
+
         String broadwayCommand = "broadway TDM.TrainingDataSubset " + "luName = '" + luName + "'" +
                 ", dcName='" + dcName + "'" +
                 ", taskExecutionID='" + taskExecutionID + "'" +
-                ", LuID='" + luID +"', iid=?" ;
-        //log.info("TRAINING >>>> "+broadwayCommand);
-        String batchID= (String) fabric().fetch(batchCommand, broadwayCommand).firstValue();
-        Map<String,String> entities = fnUpdateAIProcess(taskExecutionID,"-2");
+                ", LuID='" + luID + "', iid=?";
+        // log.info("TRAINING >>>> "+broadwayCommand);
+        String batchID = (String) fabric().fetch(batchCommand, broadwayCommand).firstValue();
+        Map<String, String> entities = fnUpdateAIProcess(taskExecutionID, "-2");
         ExecutionInfo.put("total", "" + entities.get("total"));
         ExecutionInfo.put("fabric_execution_id", batchID);
         return ExecutionInfo;
 
     }
 
-    private static Map<String, String> executeGenerationJob(String taskExecutionID,String processName, String processID,String numOfEntities, String subsetID) throws Exception {
+    private static Map<String, String> executeGenerationJob(String taskExecutionID,String processName, String processID,String numOfEntities, String subsetID, String taskTitle) throws Exception {
         Map<String, String> executionStatus = new LinkedHashMap<>();
         // Check if the status of the task with the specified process_id is not failed
         String sql = "SELECT COUNT(*) FROM " + TDMDB_SCHEMA + ".task_execution_list WHERE task_execution_id= ? and process_id=? AND Lower(execution_status) in (?,?) ";
@@ -328,55 +325,97 @@ public class Logic extends UserCode {
             luID = "" + row.get("lu_id");
         }
         if (!"Importing Data Subset".equalsIgnoreCase(processName)) {
-            executionStatus = executeGenerationSubset( taskExecutionID, luName, luID, numOfEntities, subsetID);
-        }else{
-            executionStatus = executeImportingSubset(taskExecutionID,luName,dcName,luID);
+            executionStatus = executeGenerationSubset(taskExecutionID, luName, luID, numOfEntities, subsetID,
+                    taskTitle);
+        } else {
+            executionStatus = executeImportingSubset(taskExecutionID, luName, dcName, luID, taskTitle);
         }
     return executionStatus;
     }
 
-    private static Map<String, String> executeImportingSubset(String taskExecutionID,String luName,String dcName,String luID) throws Exception {
+    private static Map<String, String> executeImportingSubset(String taskExecutionID, String luName, String dcName,
+            String luID, String taskTitle) throws Exception {
         Map<String, String> ExecutionInfo = new LinkedHashMap<>();
-        String sql = "SELECT be_id FROM " + TDMDB_SCHEMA + ".task_execution_list WHERE task_execution_id= ? AND lu_id= ? ";
-        String beID=db(TDM).fetch(sql, taskExecutionID,luID).firstValue().toString();
+        String sql = "SELECT be_id FROM " + TDMDB_SCHEMA
+                + ".task_execution_list WHERE task_execution_id= ? AND lu_id= ? ";
+        String beID = db(TDM).fetch(sql, taskExecutionID, luID).firstValue().toString();
         Boolean paramCoupling = isParamsCoupling();
         String broadwayCommand = "broadway TDM.ImportDataSubset " + "luName = '" + luName + "'" +
                 ", dcName='" + dcName + "'" +
                 ", taskExecutionID='" + taskExecutionID + "'" +
                 ", loadIndicator='" + true + "'" +
                 ", beID='" + beID + "'" +
-                ", LuID='" + luID +"' ,isParamCoupling = " + paramCoupling ;
+                ", LuID='" + luID + "' ,isParamCoupling = " + paramCoupling + " , taskTitle = '" + taskTitle + "'";
 
-        //Check if param table exists and create it, and if it exists, check if its structure is correct
-        //TDM 9.1 only check if its not paramsCoupling 
-        if(!paramCoupling){
+        // Check if param table exists and create it, and if it exists, check if its
+        // structure is correct
+        // TDM 9.1 only check if its not paramsCoupling
+        if (!paramCoupling) {
             fnCreateUpdateLUParams(luName);
-        }  
-        //log.info("TRAINING >>>> "+broadwayCommand);
+        }
+        // log.info("TRAINING >>>> "+broadwayCommand);
         Db.Rows rows = fabric().fetch(broadwayCommand);
         String batchID = null;
-        for(Db.Row row:rows){
-        batchID="" + row.get("batchID");
+        for (Db.Row row : rows) {
+            batchID = "" + row.get("batchID");
         }
-        Map<String,String> entities = fnUpdateAIProcess(taskExecutionID,"-1");
+        Map<String, String> entities = fnUpdateAIProcess(taskExecutionID, "-1");
         ExecutionInfo.put("total", "" + entities.get("total"));
         ExecutionInfo.put("fabric_execution_id", batchID);
         return ExecutionInfo;
     }
 
-    private static Map<String, String> executeGenerationSubset(String taskExecutionID,String luName,String luID,String numOfEntities,String trainingExecutionID) throws Exception {
+    private static Map<String, String> executeGenerationSubset(String taskExecutionID, String luName, String luID,
+            String numOfEntities, String trainingExecutionID, String taskTitle) throws Exception {
         Map<String, String> ExecutionInfo = new LinkedHashMap<>();
-        String batchCommand = "BATCH " +luName+ ".(" + luName + "_" + taskExecutionID + ") FABRIC_COMMAND=? WITH ASYNC='true'";
+
+        String batchCommand = "BATCH " + luName + ".(" + luName + "_" + taskExecutionID
+                + ") FABRIC_COMMAND=? WITH ASYNC='true'" + " BATCH_ID_PREFIX ='" + taskTitle + "'";
+
         String broadwayCommand = "broadway TDM.GenerationDataSubset " + "LuID = '" + luID + "'" +
                 ", numOfEntities='" + numOfEntities + "'" +
                 ", luName='" + luName + "'" +
                 ", taskExecutionID='" + taskExecutionID + "'" +
-                ", trainingTaskId='" + trainingExecutionID +"', iid=?" ;
-        //log.info("GENERATION >>>> "+broadwayCommand);
-        String batchID= (String) fabric().fetch(batchCommand, broadwayCommand).firstValue();
-        
+                ", trainingTaskId='" + trainingExecutionID + "', iid=?";
+        // log.info("GENERATION >>>> "+broadwayCommand);
+        String batchID = (String) fabric().fetch(batchCommand, broadwayCommand).firstValue();
+
         ExecutionInfo.put("fabric_execution_id", batchID);
         return ExecutionInfo;
     }
-    
+
+    private static Map<String, String> executeEvaluationJob(String taskExecutionID, String processName, String processID,String numOfEntities) throws Exception{ 
+            Map<String, String> executionStatus = new LinkedHashMap<>();
+            // Check if the status of the task with the specified process_id is not failed
+            String sql = "SELECT COUNT(*) FROM " + TDMDB_SCHEMA + ".task_execution_list WHERE task_execution_id= ? and process_id=? AND Lower(execution_status) in (?,?) ";
+            Long count = Long.valueOf(db(TDM).fetch(sql,taskExecutionID, 0, "failed","stopped").firstValue().toString());
+            if (count == 0) {
+                // If the status is not failed, execute the update query
+                sql = "UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=? WHERE task_execution_id=? AND process_id=?";
+                db(TDM).execute(sql, "running", taskExecutionID, processID);
+            }else{
+                sql = "SELECT execution_status FROM " + TDMDB_SCHEMA + ".task_execution_list WHERE task_execution_id= ? and process_id=? AND Lower(execution_status) in (?,?) ";
+                String status = db(TDM).fetch(sql,taskExecutionID, -2, "failed","stopped").firstValue().toString();
+                executionStatus.put("total", "0");
+                executionStatus.put("fabric_execution_id", null);
+                executionStatus.put("status", status);
+                return executionStatus;
+            }
+            String query = "Select u.lu_name,l.lu_id FROM " + TDMDB_SCHEMA + ".task_execution_list l Join " + TDMDB_SCHEMA + ".tasks_logical_units u on l.lu_id=u.lu_id and l.task_id=u.task_id And l.process_id=0 " +
+                    "WHERE task_execution_id= ?";
+            Db.Rows taskExecutionList = db(TDM).fetch(query, taskExecutionID);
+            String luName = "";
+            for (Db.Row row : taskExecutionList) {
+                luName = "" + row.get("lu_name");
+            }
+            
+            String broadwayCommand = "broadway " + luName + ".EvaluationDataSubset taskExecutionID =" + taskExecutionID + " , iid=?";
+            String batch = "BATCH " + luName + ".(" + luName + "_" + taskExecutionID + ")" + " fabric_command=? with async=true";
+            //log.info("EVALUATION >>>> "+ broadwayCommand);
+
+            String batchID =  (String) fabric().fetch(batch, broadwayCommand).firstValue();
+            executionStatus.put("total", numOfEntities);
+            executionStatus.put("fabric_execution_id", batchID);
+            return executionStatus;
+            }
 }

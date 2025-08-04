@@ -11,6 +11,90 @@ stages:
         out:
           inputs:
             schema: '#ref'
+      Get Source Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+      Get Table Name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      Check if Table Name is given:
+        parent: IfElse
+        in:
+          a:
+            external: tableName
+            schema: string
+          b:
+            const: ALL_TABLES
+            schema: string
+          test:
+            external: tableName
+        out:
+          result:
+            schema: string
+  Failure At Delete Table:
+    dependsOn: Prepare the Data
+    actors:
+      ALL_TABLES?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Source Entity ID/result
+            schema: string
+          b:
+            const: ALL_TABLES
+            schema: string
+      Table Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Check if Table Name is given/result
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Rest Of Cases:
+    else: true
+    dependsOn: Prepare the Data
+    actors:
+      Source Entity ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Source Entity ID/result
+            schema: string
+        out:
+          value:
+            schema: string
+      Target Entity ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Table Name/result
+            schema: string
+        out:
+          value:
+            schema: string
+      Source Table Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Check if Table Name is given/result
+            schema: string
+        out:
+          value:
+            schema: string
   Format the actor's parameters:
     actors:
       Build string from input parameters:
@@ -38,18 +122,6 @@ stages:
           key:
             const: USER_NAME
             default: false
-      Get Table Name:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TARGET_ENTITY_ID
-            default: false
-      Get Source Entity ID:
-        parent: FabricSetRead
-        in:
-          key:
-            const: SOURCE_ENTITY_ID
-            default: false
       Set Entity Status to Failure:
         parent: FabricSet
         in:
@@ -59,15 +131,27 @@ stages:
           value:
             const: failed
             default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Load Data to Detailed Error table:
     actors:
+      Error Handler for reporting to TDM Error Table:
+        parent: ErrorHandler
+        error: result
       Load Data To Error Table:
         parent: DbLoad
         in:
           interface:
             const: TDM
           schema:
-            const: '@TDMDB_SCHEMA@'
+            const: null
+            link: getTDMDBSchema/schema
           table:
             const: task_exe_error_detailed
           fields:
@@ -94,13 +178,19 @@ stages:
             const: TDM_TableLevel
             schema: string
           entity_id:
-            link: Get Source Entity ID/result
+            link:
+            - Table Name/value
+            - Source Entity ID/value
             schema: string
           iid:
-            link: Get Table Name/result
+            link:
+            - Table Name/value
+            - Source Table Name/value
             schema: string
           target_entity_id:
-            link: Get Table Name/result
+            link:
+            - Table Name/value
+            - Target Entity ID/value
             schema: string
           error_category:
             const: Rejected Table
@@ -128,29 +218,6 @@ stages:
             link: Build string from input parameters/csv
             schema: string
             default: true
-      Update TDMDB table for Reference Table:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: "UPDATE @TDMDB_SCHEMA@.TASK_REF_EXE_STATS \r\nSET execution_status\
-              \ = 'failed', \r\nerror_msg = ${errorMsg},\r\nend_time = CURRENT_TIMESTAMP\
-              \ AT TIME ZONE 'UTC', \r\nupdated_by = ${userName}\r\nWHERE task_execution_id\
-              \ = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
-          taskExecutionID:
-            link: Get Task Exec ID/result
-            schema: string
-          refTableName:
-            link: Get Table Name/result
-            schema: string
-          errorMsg:
-            link: Get the Error Fields/message
-            schema: string
-          userName:
-            link: Get Executor Name/result
-            schema: string
-            mandatory: false
       Set Entity Status to Failed:
         parent: FabricSet
         in:
@@ -160,17 +227,6 @@ stages:
           value:
             const: failed
             default: false
-      Populate Task Execution Entities:
-        parent: PopulateTaskExecutionEntities_Actor
-        in:
-          flowName:
-            const: PopulateTaskExecutionEntitiesForTables
-          idType:
-            const: REFERENCE
-          luName:
-            const: TDM_TableLevel
-            schema: string
-            mandatory: false
       Set Record Status to Failed:
         parent: FabricSet
         in:
@@ -186,19 +242,83 @@ stages:
           key:
             const: TABLES_LU_NAME
             default: false
-  Update Table Entity:
+  Update TASK_REF_EXE_STATS:
     dependsOn: Load Data to Detailed Error table
     actors:
-      Table Started?:
-        parent: NotEquals
+      We have Table Name:
+        parent: NotNull
         condition: result
         in:
-          a:
-            link: Get Source Entity ID/result
+          value:
+            external: tableName
             schema: string
-          b:
-            const: ALL_TABLES
+      Update TDMDB table for Reference Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.TASK_REF_EXE_STATS
+              SET execution_status = 'failed',
+              error_msg = ${errorMsg},
+              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+              updated_by = ${userName}
+              WHERE task_execution_id = ${taskExecutionID}
+              and trim(lower(ref_table_name))= lower(${refTableName})
+          taskExecutionID:
+            link: Get Task Exec ID/result
             schema: string
+          refTableName:
+            link:
+            - Table Name/value
+            - Source Table Name/value
+            schema: string
+          errorMsg:
+            link: Get the Error Fields/message
+            schema: string
+          userName:
+            link: Get Executor Name/result
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Update TASK_REF_EXE_STATS for All tables:
+    else: true
+    dependsOn: Load Data to Detailed Error table
+    actors:
+      Update TDMDB table for Reference Table1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.TASK_REF_EXE_STATS
+              SET execution_status = 'failed',
+              error_msg = ${errorMsg},
+              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+              updated_by = ${userName}
+              WHERE task_execution_id = ${taskExecutionID}
+          taskExecutionID:
+            link: Get Task Exec ID/result
+            schema: string
+          errorMsg:
+            link: Get the Error Fields/message
+            schema: string
+          userName:
+            link: Get Executor Name/result
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+  Update Table Entity:
+    actors:
       Populate Task Execution Entities For Tables:
         parent: InnerFlow
         in:
@@ -212,44 +332,12 @@ stages:
             link: Get Task Exec ID/result
             schema: string
             mandatory: false
-      Update Table Status to Failed:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset execution_status\
-              \ = 'failed',\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'\r\n\
-              where task_execution_id = ${taskExeId} \r\nand ref_table_name = ${tableName}"
-          taskExeId:
-            link: Get Task Exec ID/result
-            schema: string
-            mandatory: false
           tableName:
-            link: Get Table Name/result
+            link:
+            - Table Name/value
+            - Source Entity ID/value
             schema: string
             mandatory: false
-    split: '--------------------'
-  Update All Entities:
-    else: true
-    transactional: false
-    dependsOn: Load Data to Detailed Error table
-    actors:
-      Update ALL Tables Status to Failed:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset execution_status\
-              \ = 'failed',\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'\r\n\
-              where task_execution_id = ${taskExeId}"
-          taskExeId:
-            link: Get Task Exec ID/result
-            schema: string
-            mandatory: false
-  '1': {
-    }
 schemas:
   Get the Error Fields.out.inputs:
     type: object

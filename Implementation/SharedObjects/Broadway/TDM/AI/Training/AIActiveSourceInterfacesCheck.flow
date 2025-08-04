@@ -12,11 +12,6 @@ stages:
             schema: string
   Active:
     actors:
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDMDB_SCHEMA
       AI_DB_K2SYSTEM:
         parent: FabricSetRead
         in:
@@ -30,6 +25,14 @@ stages:
             const: Getk2SystemSchemaName
         out:
           result:
+            schema: string
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
             schema: string
   'True':
     dependsOn: Active
@@ -112,7 +115,7 @@ stages:
               \ = 'completed'\r\nAND l2.process_id IN (-2, -1, 0)) = 3\r\nAND l.process_id\
               \ = -1\r\nAND s.execution_status <> 'failed'\r\n"
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           task_exe_id:

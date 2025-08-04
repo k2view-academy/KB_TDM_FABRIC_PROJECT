@@ -1,0 +1,157 @@
+tags: TDM
+stages:
+  Get Template For Main Table Population:
+    actors:
+      Get Template For Main table Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: main_table_population_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  PWD:
+    actors:
+      No Template For Main Table?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Template For Main table Population/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Set Folder And Flow Names:
+    actors:
+      LU Folder For Checking File:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/LogicalUnits/${LU_NAME}/Tables
+          projDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+      File Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${TABLE_NAME}.population.flow
+          TABLE_NAME:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+      LU Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/LogicalUnits/${LU_NAME}/Tables/
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+  If Regular root table name:
+    dependsOn: Set Folder And Flow Names
+    actors:
+      Check If File Exists:
+        parent: InnerFlow
+        condition: FILE_FOUND
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: LU Folder For Checking File/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+            mandatory: false
+          pattern:
+            link: File Name/string
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      Simple Table Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0}${1}
+          params:
+            link:
+            - path: LU Folder/string
+              pos: 0
+            - path: File Name/string
+              pos: 1
+    split: '--------------------'
+  Root Table with Child Table with the same name:
+    else: true
+    dependsOn: Set Folder And Flow Names
+    actors:
+      Complex Table Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0}${TABLE_NAME}___@root.population.flow
+          TABLE_NAME:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+          params:
+            link:
+              path: LU Folder/string
+              pos: 0
+  Add Distribution of const 1:
+    actors:
+      LuFunction1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: replaceDistribution
+          fileName:
+            link:
+            - Simple Table Name/string
+            - Complex Table Name/string
+            schema: string
+            mandatory: false

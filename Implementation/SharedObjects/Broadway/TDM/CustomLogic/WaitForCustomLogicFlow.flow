@@ -1,123 +1,37 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Wait For Batch of Custom Logic to Finish",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get TDMDB Schema",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDMDB_SCHEMA",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Wait for the batch",
-                            "actorType": {
-                                "parentType": "BatchWait",
-                                "inputs": [
-                                    {
-                                        "name": "batchId",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Prepare Table Name",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Return the Entity List able Name",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${schema}.entity_list_${task_execution_id}"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Return the Entity List able Name",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "batchId"
-            },
-            "rightPort": {
-                "actor": "Wait for the batch",
-                "name": "batchId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Return the Entity List able Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "ENTITY_LIST_TABLE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "taskExecutionId"
-            },
-            "rightPort": {
-                "actor": "Return the Entity List able Name",
-                "name": "task_execution_id"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Wait For Batch of Custom Logic to Finish:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Wait for the batch:
+        parent: BatchWait
+        in:
+          batchId:
+            const: null
+            external: batchId
+            default: false
+  Prepare Table Name:
+    actors:
+      Return the Entity List able Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${schema}.entity_list_${task_execution_id}
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: ENTITY_LIST_TABLE

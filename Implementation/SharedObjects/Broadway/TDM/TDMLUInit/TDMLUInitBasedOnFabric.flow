@@ -1,6 +1,6 @@
 tags: TDM
 stages:
-  Stage 1:
+  Get Inputs:
     actors:
       Check LU and Envs Deploy:
         parent: InnerFlow
@@ -10,6 +10,9 @@ stages:
           LU_NAME:
             external: LU_NAME
             schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
             mandatory: false
         out:
           result:
@@ -22,6 +25,48 @@ stages:
         out:
           PROJECT_FOLDER:
             schema: string
+      Get LU's Main Table and Column:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetMainTableAndColumn
+          luName:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Get Interface Type:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetInterfaceType
+          interfaceName:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - MongoDB
+              - CosmosDb
+              - SAP
+              - Couchbase
+            mandatory: false
+          environmentName:
+            const: _dev
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Build Path:
+    actors:
       Set Main Table Of LU:
         parent: FabricSet
         in:
@@ -30,7 +75,7 @@ stages:
             default: false
           value:
             const: null
-            external: ROOT_TABLE_NAME
+            link: Get LU's Main Table and Column/result/main_table_name
             default: false
       Set Key OF Main Table:
         parent: FabricSet
@@ -40,10 +85,20 @@ stages:
             default: false
           value:
             const: null
-            external: ROOT_COLUMN_NAME
+            link: Get LU's Main Table and Column/result/main_column_name
             default: false
-  Stage 2:
-    actors:
+      Set Document Indicator:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SetDocumentInd
+          INTERFACE_TYPE:
+            link: Get Interface Type/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
       TDM_LIBRARY folder:
         parent: StringFormat
         in:
@@ -65,8 +120,11 @@ stages:
           LU_NAME:
             external: LU_NAME
             schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
             mandatory: false
-  Stage 8:
+  'Check if Ran Before? ':
     actors:
       TDMLUInit First Run:
         parent: InnerFlow
@@ -80,8 +138,8 @@ stages:
         out:
           result:
             schema: boolean
-  Stage 3:
-    dependsOn: Stage 8
+  'First Run?   ':
+    dependsOn: 'Check if Ran Before? '
     actors:
       First Run?:
         parent: Equals
@@ -110,11 +168,11 @@ stages:
           table_id:
             schema: string
     split: '--------------------'
-  Stage 9:
+  Already Ran Do Nothing:
     else: true
-    dependsOn: Stage 8
-  Stage 4:
-    dependsOn: Stage 3
+    dependsOn: 'Check if Ran Before? '
+  'Copy Tdm Tables  ':
+    dependsOn: 'First Run?   '
     actors:
       Get Tables Info:
         parent: InnerFlow
@@ -141,10 +199,10 @@ stages:
           tables:
             schema: string
     split: '--------------------'
-  Stage 10:
-    dependsOn: Stage 9
-  Stage 5:
-    dependsOn: Stage 4
+  Do Nothing:
+    dependsOn: Already Ran Do Nothing
+  Update Lu Schema With Tdm Tables:
+    dependsOn: 'Copy Tdm Tables  '
     actors:
       Update LU Schema:
         parent: InnerFlow
@@ -161,7 +219,7 @@ stages:
               - SFTP
               - filesystem
               interfaces:
-              - file://
+              - file:///
             mandatory: false
           tables_to_add:
             link: Get Tables Info/tables
@@ -170,6 +228,9 @@ stages:
           LU_NAME:
             external: LU_NAME
             schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
             mandatory: false
           SOURCE_INTERFACE:
             external: SOURCE_INTERFACE
@@ -178,35 +239,53 @@ stages:
               id: com.k2view.interface
               interfaceType:
               - database
+              - CassandraLoader
+              - MongoDB
+              - CosmosDb
+              - SAP
+              - Couchbase
             mandatory: false
           SOURCE_SCHEMA:
             external: SOURCE_SCHEMA
             schema: string
             mandatory: false
           SOURCE_TABLE:
-            external: ROOT_TABLE_NAME
+            link: Get LU's Main Table and Column/result/main_table_name
             schema: string
             mandatory: false
-          SOURCE_TABLE_KEY:
-            external: ROOT_COLUMN_NAME
+          TABLE_KEY:
+            link: Get LU's Main Table and Column/result/main_column_name
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            link: Get Interface Type/result
             schema: string
             mandatory: false
         out:
           rootInfo:
             schema: '#ref'
     split: '--------------------'
-  Stage 11:
-    dependsOn: Stage 10
-  Stage 6:
+  'Do Nothing  ':
+    dependsOn: Do Nothing
+  'Create Delete and Load Flows ':
     actors:
-      create All Flows FromTemplates:
+      Create From Templates:
         parent: InnerFlow
         in:
           flowName:
-            const: createAllFromTemplates
-          CREATE_DELETE_TABLES:
-            external: CREATE_DELETE_TABLES
-            schema: boolean
+            const: CreateFromTemplates
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - MongoDB
+              - CosmosDb
+              - SAP
+              - Couchbase
             mandatory: false
           LU_NAME:
             external: LU_NAME
@@ -215,9 +294,17 @@ stages:
               id: com.k2view.logicalUnit
               addEmptyEntry: true
             mandatory: false
-          TARGET_SCHEMA:
-            external: TARGET_SCHEMA
+          ROOT_TABLE_NAME:
+            link: Get LU's Main Table and Column/result/main_table_name
             schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            link: Get Interface Type/result
+            schema: string
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
             mandatory: false
           TARGET_INTERFACE:
             external: TARGET_INTERFACE
@@ -226,36 +313,45 @@ stages:
               id: com.k2view.interface
               interfaceType:
               - database
-            mandatory: false
-          OVERRIDE_EXISTING_FLOWS:
-            const: false
-            schema: boolean
+              - CassandraLoader
+              - MongoDB
+              - CosmosDb
+              - SAP
+              - Couchbase
             mandatory: false
           TARGET_ENVIRONMENT:
             external: TARGET_ENVIRONMENT
             schema: string
             mandatory: false
-          CREATE_GENERATE_FLOWS:
-            external: CREATE_GENERATE_FLOWS
-            schema: boolean
-            mandatory: false
-          SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
             schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
             mandatory: false
           SOURCE_SCHEMA:
             external: SOURCE_SCHEMA
             schema: string
             mandatory: false
+          CREATE_DELETE_TABLES:
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+            mandatory: false
+          CREATE_GENERATE_FLOWS:
+            external: CREATE_GENERATE_FLOWS
+            schema: boolean
+            mandatory: false
           useFabric:
             const: true
             schema: boolean
             mandatory: false
-  Stage 7:
+          DOCUMENT_IND:
+            link: Set Document Indicator/result
+            schema: boolean
+            mandatory: false
+          ROOT_FIELD_NAME:
+            link: Get LU's Main Table and Column/result/main_column_name
+            schema: string
+            mandatory: false
+  Finish:
     actors:
       End:
         parent: Const
@@ -268,6 +364,13 @@ stages:
             external: result
             schema: string
 schemas:
+  Get LU's Main Table and Column.out.result:
+    type: object
+    properties:
+      main_table_name:
+        type: string
+      main_column_name:
+        type: string
   Get Tables Info.in.TABLE_LIST:
     type: array
     items:

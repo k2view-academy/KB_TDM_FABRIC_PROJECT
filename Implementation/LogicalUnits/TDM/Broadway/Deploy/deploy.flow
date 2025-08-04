@@ -127,39 +127,6 @@ stages:
         in:
           flowName:
             const: AddWebRole
-  Create Postgres Databases:
-    actors:
-      create PGDBS:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createPGDBS
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
-  populate postgres Databses:
-    actors:
-      populatePGDBS:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: populatePGDBS
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
-  Populate TDMDB:
-    actors:
-      PopulateTDMDBForTesters1:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: PopulateTDMDBForTesters
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
   Create K2System If Relevant:
     actors:
       create K2system Schema:
@@ -167,6 +134,13 @@ stages:
         in:
           flowName:
             const: createK2systemSchema
+  Check If Upgrade TDM version Needed:
+    actors:
+      TDMDBUpgradeScripts1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDBUpgradeScripts
   Get Globals For k2masking:
     actors:
       SEQ_CACHE_INTERFACE:
@@ -174,18 +148,6 @@ stages:
         in:
           key:
             const: SEQ_CACHE_INTERFACE
-            default: false
-      SEQ_DROP_KEYSPACE:
-        parent: FabricSetRead
-        in:
-          key:
-            const: SEQ_DROP_KEYSPACE
-            default: false
-      SEQ_DO_TRUNCATE:
-        parent: FabricSetRead
-        in:
-          key:
-            const: SEQ_DO_TRUNCATE
             default: false
   Create k2masking if it does not exists:
     actors:
@@ -202,24 +164,9 @@ stages:
               interfaceType:
               - database
               - CassandraLoader
-              interfaces:
-              - fabric
+              interfaces: [
+                ]
             mandatory: false
-          dropKeySpace:
-            link: SEQ_DROP_KEYSPACE/result
-            schema: boolean
-            mandatory: false
-          doTruncate:
-            link: SEQ_DO_TRUNCATE/result
-            schema: boolean
-            mandatory: false
-  Check If Upgrade TDM version Needed:
-    actors:
-      TDMDBUpgradeScripts1:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: TDMDBUpgradeScripts
   End:
     actors:
       Finished Deploy Activities:

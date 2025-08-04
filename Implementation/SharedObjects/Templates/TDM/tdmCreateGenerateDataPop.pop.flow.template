@@ -13,15 +13,21 @@
                          {
                             "name": "Get TDMDB Schema",
                             "actorType": {
-                                "parentType": "FabricSetRead",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
-                                        "name": "key",
-                                        "const": "TDMDB_SCHEMA",
-                                        "isDefault": false
+                                        "name": "flowName",
+                                        "const": "getTDMDBSchema"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -97,26 +103,7 @@
                     "name": "Set Parent & Sequential Fields",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Set sequence_schema",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "sequence_schema",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },					
+                    "actors": [	
 						{{#if TABLE_PARENT_FIELDS}}
 						{{#each TABLE_PARENT_FIELDS~}}
 						{
@@ -172,7 +159,9 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "{{getSeqCacheInterface __LU_NAME}}"
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "TTL",
@@ -205,7 +194,6 @@
                                         "editor": {
                                             "id": "com.k2view.interface",
                                             "interfaceType": [
-                                                "REDIS",
                                                 "database"
                                             ],
                                             "interfaces": [
@@ -229,6 +217,12 @@
                                             "type": "number"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "sequenceSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -387,10 +381,21 @@
                                         "name": "schema",
                                         "const": "{{{SOURCE_SCHEMA}}}"
                                     },
+                                    {{#eq DOCUMENT_IND "true"}}{
+                                        "name": "dataset",
+                                        "const": "{{getMainTableName this}}"
+                                    },
                                     {
+                                        "name": "catalogClassName",
+                                         "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getTableClass this}}"
+                                    },
+                                    {{else}}{
                                         "name": "dataset",
                                         "const": "{{{SOURCE_TABLE}}}"
-                                    },
+                                    },{{/eq}}
                                     {
                                         "name": "mtable",
                                         "schema": {}
@@ -566,16 +571,6 @@
         }
     ],
     "connections": [
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set sequence_schema",
-                "name": "value"
-            }
-        },
 		{{#if TABLE_PARENT_FIELDS}}
 		{{#each TABLE_PARENT_FIELDS~}}
 		{
@@ -619,6 +614,26 @@
 		,
 		{{/if}}
         {{#each TABLE_SEQ_DATA~}}
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "{{getFabricFieldName this}}",
+                "name": "sequenceSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "{{getFabricFieldName this}}",
+                "name": "interface"
+            }
+        },
         {
             "leftPort": {
                 "actor": "{{getFabricFieldName this}}",

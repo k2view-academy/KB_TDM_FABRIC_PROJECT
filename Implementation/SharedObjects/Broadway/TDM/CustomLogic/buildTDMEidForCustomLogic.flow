@@ -40,12 +40,12 @@ stages:
             schema: boolean
           a:
             link: Get Version Indicator/result
-      TDM_TASK_EXE_ID:
+      TDM_VERSION_TASK_EXECUTION_ID:
         parent: FabricSetRead
         height: 234
         in:
           key:
-            const: TDM_TASK_EXE_ID
+            const: TDM_VERSION_TASK_EXECUTION_ID
             default: false
     split: '--------------------'
   Build Simple TDM_EID:
@@ -101,16 +101,16 @@ stages:
             link: get TDM Separators/IID_CLOSE_SEPARATOR
             schema: string
           taskExeID:
-            link: TDM_TASK_EXE_ID/result
+            link: TDM_VERSION_TASK_EXECUTION_ID/result
             schema: any
             mandatory: false
     split: '--------------------'
   Do Nothing:
     transactional: false
     dependsOn: Build Simple TDM_EID
-  Stage 1:
+  Result:
     actors:
-      MapCreate1:
+      MapCreate:
         parent: MapCreate
         in:
           iid:
@@ -124,7 +124,7 @@ stages:
             external: value
             schema: '#ref'
 schemas:
-  MapCreate1.out.map:
+  MapCreate.out.map:
     type: object
     properties:
       iid:

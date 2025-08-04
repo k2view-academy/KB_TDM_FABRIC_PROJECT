@@ -87,6 +87,10 @@ stages:
             const: null
           batch:
             const: true
+          __active_environment:
+            const: target
+            schema: string
+            mandatory: false
           params:
             link:
               path: Input Records/value

@@ -25,11 +25,28 @@ stages:
         in:
           key:
             const: TDM_TASK_EXE_ID
-      TDMDB_SCHEMA:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get source env:
         parent: FabricSetRead
         in:
           key:
-            const: TDMDB_SCHEMA
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      get lui:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetLUI
+        out:
+          result:
+            schema: any
   Source:
     actors:
       Get Sync Source Data Indicator:
@@ -113,13 +130,7 @@ stages:
             const: |
               SELECT *
               FROM ${@schema}.tdm_be_iids
-              WHERE iid = ${iid} AND be_id <> ${be_id}
-              AND EXISTS (
-                  SELECT 1
-                  FROM information_schema.tables
-                  WHERE table_schema = '${@schema}'
-                  AND table_name = 'tdm_be_iids'
-              );
+              WHERE __iid = ${lui} and iid = ${iid} and source_env = ${source_env}
           iid:
             link: FABRIC_TDM_ROOT/result/IID
             schema: string
@@ -130,6 +141,14 @@ stages:
             mandatory: false
           schema:
             link: postgres schema/string
+            schema: string
+            mandatory: false
+          lui:
+            link: get lui/result
+            schema: string
+            mandatory: false
+          source_env:
+            link: Get source env/result
             schema: string
             mandatory: false
         out:
@@ -226,8 +245,8 @@ stages:
             const: select be_name from ${@TDMDB_SCHEMA}.business_entities where be_id
               = ?
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
-            schema: any
+            link: getTDMDBSchema/schema
+            schema: string
             mandatory: false
           params:
             link: Get BE_ID/result
@@ -280,26 +299,26 @@ stages:
           root_iid:
             link: Get root_iid/result
             schema: string
-  Multi Parents:
+  Multi Roots:
     transactional: true
     actors:
-      DbCommand:
+      Get Other Roots of iid:
         parent: DbCommand
         in:
           interface:
             const: TDM
           sql:
             const: |-
-              select t.root_entity_id , t.root_lu_name ,t.source_env , r.lu_type2_eid
-              from ${@TDMDB_SCHEMA}.task_execution_entities t inner join  ${@TDMDB_SCHEMA}.tdm_lu_type_relation_eid r on r.lu_type_1=t.lu_name and r.lu_type1_eid = t.iid
-              and r.subset_task_execution_id=t.subset_task_execution_id and t.source_env=r.source_env
-              where t.task_execution_id =${task_execution_id} and r.lu_type_2=${lu_name} and t.execution_status='completed' and t.id_type='ENTITY' and t.root_entity_id<>${root_iid} and r.lu_type2_eid= ${iid}::TEXT;
+              select t.root_entity_id , t.root_lu_name ,t.source_env , t.iid
+              from ${@TDMDB_SCHEMA}.task_execution_entities t
+              where t.task_execution_id =${task_execution_id} and t.lu_name=${lu_name} and t.execution_status<>'failed' and t.id_type='ENTITY'
+              and t.root_entity_id<>${root_iid} and t.iid= ${iid}::TEXT
           lu_name:
             external: schema
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           root_iid:
@@ -320,22 +339,22 @@ stages:
   No Records:
     last: 1
     transactional: false
-    dependsOn: Multi Parents
+    dependsOn: Multi Roots
     actors:
       'IsNull  ':
         parent: IsNull
         condition: result
         in:
           value:
-            link: DbCommand/result
+            link: Get Other Roots of iid/result
     split: '--------------------'
   Else:
     last: 1
     else: true
-    transactional: true
-    dependsOn: Multi Parents
+    transactional: false
+    dependsOn: Multi Roots
     actors:
-      tdm_be_iids multi parents:
+      tdm_be_iids multi roots:
         parent: DbLoad
         in:
           interface:
@@ -365,12 +384,12 @@ stages:
             const: sqlite
           iid:
             link:
-              path: DbCommand/result/lu_type2_eid
+              path: Get Other Roots of iid/result/iid
               iterate: Iterate
             schema: string
           source_env:
             link:
-              path: DbCommand/result/source_env
+              path: Get Other Roots of iid/result/source_env
               iterate: Iterate
             schema: string
           be_id:
@@ -381,7 +400,7 @@ stages:
             schema: string
           root_iid:
             link:
-              path: DbCommand/result/root_entity_id
+              path: Get Other Roots of iid/result/root_entity_id
               iterate: Iterate
             schema: string
   Check For Other Load Cases:
@@ -418,7 +437,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:
@@ -530,7 +549,7 @@ schemas:
           type: string
         be_name:
           type: string
-  DbCommand.out.result:
+  Get Other Roots of iid.out.result:
     type: array
     items:
       type: object
@@ -541,7 +560,7 @@ schemas:
           type: string
         source_env:
           type: string
-        lu_type2_eid:
+        iid:
           type: string
   Be Name and ID where Lu is root.out.result:
     type: array

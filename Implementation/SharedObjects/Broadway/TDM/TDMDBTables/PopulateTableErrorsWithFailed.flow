@@ -7,17 +7,6 @@ stages:
         in:
           error_category:
             const: Entity Failed
-          fabricSessionName:
-            const: fabric
-            schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-              - CassandraLoader
-              interfaces:
-              - fabric
-            mandatory: false
           error:
             external: error
       Set Entity Status to Failure:
@@ -29,8 +18,10 @@ stages:
           value:
             const: failed
             default: false
-      Populate Task Execution Entities:
-        parent: PopulateTaskExecutionEntities_Actor
+      Populate Task Execution Entities For Failed:
+        parent: InnerFlow
         in:
-          idType:
-            const: ENTITY
+          flowName:
+            const: PopulateTaskExecutionEntitiesForFailed
+      Populate TDM Sequence Mapping:
+        parent: PopulateTdmSeqMapping_Actor

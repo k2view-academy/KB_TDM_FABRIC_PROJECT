@@ -1,0 +1,57 @@
+tags: TDM
+stages:
+  Get TDMDB Schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  'Add Execution Note For Entity ':
+    actors:
+      DbCommand:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.task_execution_entities SET execution_note = ${execution_note}
+              WHERE task_execution_id=${task_execution_id} AND lu_name=${lu_name} AND
+              entity_id=${entity_id} AND clone_no=${clone_no} AND root_entity_id=${root_entity_id} AND
+              root_target_entity_id=${root_target_entity_id}
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          execution_note:
+            external: execution_note
+            schema: string
+            mandatory: false
+          task_execution_id:
+            external: task_execution_id
+            schema: integer
+            mandatory: false
+          lu_name:
+            external: lu_name
+            schema: string
+            mandatory: false
+          entity_id:
+            external: entity_id
+            schema: string
+            mandatory: false
+          root_entity_id:
+            external: root_entity_id
+            schema: string
+            mandatory: false
+          root_target_entity_id:
+            external: root_target_entity_id
+            schema: string
+            mandatory: false
+          clone_no:
+            external: clone_no
+            schema: string
+            mandatory: false

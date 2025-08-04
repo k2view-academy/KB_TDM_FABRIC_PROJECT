@@ -190,6 +190,10 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Get Source Data By Query:
         parent: InnerFlow
         in:
@@ -204,33 +208,18 @@ stages:
           sourceInterface:
             external: sourceInterface
             schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-              - CassandraLoader
-              interfaces:
-              - fabric
             mandatory: false
           countStatement:
             link:
             - No Where clause For Count/value
             - Add  Wherer Clause to Count/selectStatement
             schema: string
-            editor:
-              id: com.k2view.code
-              language: sql
-              template: true
             mandatory: false
           selectStatement:
             link:
             - No Where clause/value
             - 'Add  Wherer Clause to Query: InnerFlow/selectStatement'
             schema: string
-            editor:
-              id: com.k2view.code
-              language: sql
-              template: true
             mandatory: false
           queryParameters:
             link: 'Add  Wherer Clause to Query: InnerFlow/paramters'
@@ -247,6 +236,10 @@ stages:
           paramtersStr:
             external: filterParameters
             schema: string
+            mandatory: false
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: any
             mandatory: false
         out:
           result:
@@ -271,6 +264,10 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
       Run Extract Flow:
         parent: InnerFlow
         in:
@@ -314,6 +311,14 @@ stages:
           queryParameters:
             link: 'Add  Wherer Clause to Query: InnerFlow/paramters'
             schema: '#ref'
+            mandatory: false
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: any
+            mandatory: false
+          filterGUI:
+            external: filterGUI
+            schema: any
             mandatory: false
         out:
           result:
@@ -362,7 +367,7 @@ stages:
             external: tableId
             schema: integer
             mandatory: false
-          totalCount:
+          recCount:
             link:
             - Get Source Data By Query/tableCount
             - Run Extract Flow/tableCount
@@ -388,7 +393,7 @@ stages:
             external: sourceInterface
           schema:
             const: null
-            external: sourceSchema
+            external: catalogSchema
           dataset:
             const: null
             external: tableName

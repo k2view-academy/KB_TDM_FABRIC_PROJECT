@@ -2,79 +2,99 @@ tags: TDM
 stages:
   'Get Inputs ':
     actors:
-      TDM Interface:
-        parent: Const
+      Lowercase luName:
+        parent: Lowercase
         in:
-          value:
-            const: TDM
-            schema: string
-        out:
-          value:
-            schema: string
-      ParamsExcludeTables1:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: ParamsExcludeTables
-          luName:
-            external: luName
-            schema: string
-            mandatory: false
-        out:
-          tables:
-            schema: string
-      ParamsIncludedTables1:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: ParamsIncludedTables
-          lu_name:
-            external: luName
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
-        out:
           string:
-            schema: string
-  'MDB EXPORT Schema ':
+            external: luName
+  Check If Schema Exists:
     actors:
-      ErrorHandler:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: false
-                flowName: ''
-                number_of_retries: ''
-                retry_interval: ''
-      MDB_EXPORT LuName:
-        parent: DbCommand
+      DbFetchField:
+        parent: DbFetchField
         in:
           interface:
-            const: fabric
+            const: TDM
           sql:
-            const: MDB_EXPORT ${luName} WITH INTERFACE_NAME=${interfaceName} INCLUDED_TABLES=${includedTables}
-              EXCLUDED_TABLES=${excludedTables} FK='true'
+            const: |-
+              SELECT schema_name
+              FROM information_schema.schemata
+              WHERE schema_name = '${@schemaName}'
+          schemaName:
+            link: Lowercase luName/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Exists:
+    else: false
+    dependsOn: Check If Schema Exists
+    actors:
+      'EqualsIgnoreCase ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            link: Lowercase luName/string
+          a:
+            link: DbFetchField/result
+    split: '--------------------'
+  Doesn't Exists:
+    else: true
+    dependsOn: Check If Schema Exists
+    actors:
+      MDBExportSchemaParams1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: MDBExportSchemaParams
           luName:
             external: luName
             schema: string
             mandatory: false
-          interfaceName:
-            link: TDM Interface/value
+  Check Global:
+    dependsOn: Exists
+    actors:
+      CheckGlobalToUpdateMDBExport1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckGlobalToUpdateMDBExport
+          taskID:
+            external: taskID
             schema: string
             mandatory: false
-          excludedTables:
-            link: ParamsExcludeTables1/tables
+          luName:
+            external: luName
             schema: string
             mandatory: false
-          includedTables:
-            link: ParamsIncludedTables1/string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Doesn't Exists
+  Update Schema:
+    dependsOn: Check Global
+    actors:
+      'EqualsIgnoreCase  ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: CheckGlobalToUpdateMDBExport1/value
+      MDBExportSchemaParams2:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: MDBExportSchemaParams
+          luName:
+            external: luName
             schema: string
             mandatory: false
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: Do Nothing

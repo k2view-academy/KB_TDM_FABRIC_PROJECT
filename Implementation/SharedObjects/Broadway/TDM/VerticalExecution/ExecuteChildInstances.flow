@@ -54,13 +54,17 @@ stages:
       Error Handler:
         parent: ErrorHandler
         error: result
-      Run Orchestrator:
-        parent: InnerFlowAsync
+      Run Orchestrator In Different Session:
+        parent: InnerFlowSession
         in:
           flowName:
-            const: ExecuteFlow
-          threadCount:
-            const: 1
+            const: null
+            link: Get Orchestrator FlowStringFormat1/result/orchestrator_flow
+          luType:
+            const: null
+            external: luName
+          affinity:
+            const: random
           taskAction:
             external: taskAction
             schema: string
@@ -73,20 +77,24 @@ stages:
             external: syncMode
             schema: string
             mandatory: false
-          reserveInd:
-            const: 'false'
-            schema: string
-            mandatory: false
           iid:
             link: Build Vertical Iids/TDM_EID
             schema: string
             mandatory: false
-          execFlowName:
-            link: Get Orchestrator FlowStringFormat1/result/orchestrator_flow
-            schema: string
-            mandatory: false
           isParamCoupling:
             external: isParamCoupling
+            schema: string
+            mandatory: false
+          verticalChildInd:
+            const: 'true'
+            schema: string
+            mandatory: false
+          reserveInd:
+            const: 'false'
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
             schema: string
             mandatory: false
         out:
@@ -98,9 +106,9 @@ stages:
         parent: InnerFlowJoin
         in:
           remaining:
-            link: Run Orchestrator/remaining
+            link: Run Orchestrator In Different Session/remaining
           failures:
-            link: Run Orchestrator/failures
+            link: Run Orchestrator In Different Session/failures
 schemas:
   Get Orchestrator FlowStringFormat1.out.result:
     type: object
@@ -109,7 +117,7 @@ schemas:
         type: string
       orchestrator_flow:
         type: string
-  Run Orchestrator.out.results:
+  Run Orchestrator In Different Session.out.results:
     type: array
     items: {
       }

@@ -2,6 +2,22 @@ tags: TDM
 stages:
   Get List of Tables:
     actors:
+      Set Target Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: ENVIRONMENT
+            default: false
+          value:
+            const: null
+            external: TARGET_ENVIRONMENT
+            default: false
+      Get Delete Table Prefix:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_TABLES_PREFIX
+            default: false
       geLuTables:
         parent: LuFunction
         in:
@@ -17,12 +33,6 @@ stages:
         out:
           res:
             schema: '#ref'
-      Get Delete Table Prefix:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDM_DELETE_TABLES_PREFIX
-            default: false
   Create the Name Of Delete Table:
     actors:
       Build Delete Table Name:
@@ -85,7 +95,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: geLuTables/res
@@ -103,6 +112,10 @@ stages:
           useFabric:
             external: useFabric
             schema: boolean
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
             mandatory: false
   Create New:
     last: 1
@@ -128,7 +141,6 @@ stages:
             schema: string
             editor:
               id: com.k2view.logicalUnit
-              addEmptyEntry: true
           table:
             link:
               path: geLuTables/res
@@ -146,6 +158,10 @@ stages:
           useFabric:
             external: useFabric
             schema: boolean
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
             mandatory: false
     split: '--------------------'
   Table Already Exists:
@@ -190,6 +206,10 @@ stages:
           interfaceName:
             external: TARGET_INTERFACE
             schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
             mandatory: false
 schemas:
   geLuTables.out.res:

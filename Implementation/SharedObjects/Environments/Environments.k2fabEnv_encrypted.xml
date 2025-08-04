@@ -20,7 +20,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:898Q+V4zoI09GeK3eB3vOQYanL8g+uyWSmxXd3HdqS8kymdxvcUpcg==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABmB4bVy0=:M8LwmQoxl12J2vOFowGHDWCtHAC588fGTlfUwqzjxx+NKc6uRYYDcg==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -43,7 +43,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:OMxaCbryVdmqhw5Ccy7HrBWRNyp6okzKFYGJGHdxA+eAPb8=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABmB4bVy0=:vKNUcTzqYzuWzd+7scXYrKgn8UpFBZxIa/8TerhyKjV/J54=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -55,28 +55,7 @@
                             
                 </DbInterface>
                         
-                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
-                              
-                    <dbHost>postgres-service</dbHost>
-                              
-                    <dbPort>5432</dbPort>
-                              
-                    <dbScheme>CRM_DB</dbScheme>
-                              
-                    <dbUser>CRM_USER</dbUser>
-                              
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:5raiwXragAe1xcoIpyi7Mvr5XVJmbBhdEB/Ku8kPx4qZs6lBRTY9uw==</dbPasswordEncrypted>
-                              
-                    <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
-                              
-                    <minConnectionsNumber>0</minConnectionsNumber>
-                              
-                    <maxConnectionsNumber>60</maxConnectionsNumber>
-                              
-                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
-                            
-                </DbInterface>
-                      
+      
             </DbInterfacesList>
                   
             <GlobalsList>
@@ -483,7 +462,7 @@
                         
                 <Global luName="" name="TDM_TAR_ENV_NAME">
                               
-                    <Value>UAT</Value>
+                    <Value>Development</Value>
                               
                     <Comment/>
                             
@@ -568,11 +547,145 @@
                     <Comment/>
                             
                 </Global>
+                        
+                <Global luName="TDM" name="CREATE_TDMDB">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
                       
             </GlobalsList>
                   
             <GenericInterfacesList>
-      </GenericInterfacesList>
+                        
+        
+                <GenericInterface enabled="false" type="HTTP" version="">
+                              
+                    <Name>AI_Execution</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="ProtocolType">
+                                          
+                            <Value>HTTPS</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="HOST">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="PORT">
+                                          
+                            <Value>443</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Path">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AuthenticationType">
+                                          
+                            <Value>Bearer</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Token">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenUrl">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenBodyParams">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientId">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientSecret">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Scope">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TokenTimeout">
+                                          
+                            <Value>0</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="TestConnectionValidStatus">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Certificate">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="BF_Metadata">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="BF_FilesList">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="BF_DataSnapshot">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
                 
         </Environment>
             
@@ -592,7 +705,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:IuHbXe0EpxqSmndqC8fPfq7ZvwcqLPEQEUnkMSIPimKx1Po58mS1SA==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABmB4bVy0=:n8X3V2FBa10MsZafZBQy5/9OoIBGOjulLvIRBpj6nKp6ZS6Qc4pG7Q==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -604,28 +717,7 @@
                             
                 </DbInterface>
                         
-                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TAR_CRM_DB" xsi:type="DBSourceGenericDb">
-                              
-                    <dbHost>postgres-service</dbHost>
-                              
-                    <dbPort>5432</dbPort>
-                              
-                    <dbScheme>TAR_CRM_DB</dbScheme>
-                              
-                    <dbUser>TAR_CRM_USER</dbUser>
-                              
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:ljKO2zRp3SbizSUUuyVxESc4NXKhSb5RbW3GjSGEZTn2iz2sNMdbJbvMnRQ=</dbPasswordEncrypted>
-                              
-                    <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
-                              
-                    <minConnectionsNumber>0</minConnectionsNumber>
-                              
-                    <maxConnectionsNumber>60</maxConnectionsNumber>
-                              
-                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
-                            
-                </DbInterface>
-                        
+        
                 <DbInterface active="true" dbType="genericdb" k2StudioObjectName="TDM" xsi:type="DBSourceGenericDb">
                               
                     <dbHost>postgres-service</dbHost>
@@ -636,7 +728,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:KmTz5oHbo3kB+Wy8PbbZ5f92LZciQcNlJ3trdrzbRedN50U=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABmB4bVy0=:z+X2r1s66HytFEsCvAoHN3WyvNbh6NB4tsJiRpov1LxUVgk=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -648,28 +740,7 @@
                             
                 </DbInterface>
                         
-                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="CRM_DB" xsi:type="DBSourceGenericDb">
-                              
-                    <dbHost>postgres-service</dbHost>
-                              
-                    <dbPort>5432</dbPort>
-                              
-                    <dbScheme>CRM_DB</dbScheme>
-                              
-                    <dbUser>CRM_USER</dbUser>
-                              
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:BuJzzySByMDLOxkihr5S3K3ta3OGvvGZd3gZWbDjBusOymvuExAsuQ==</dbPasswordEncrypted>
-                              
-                    <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype=unspecified</connString>
-                              
-                    <minConnectionsNumber>0</minConnectionsNumber>
-                              
-                    <maxConnectionsNumber>60</maxConnectionsNumber>
-                              
-                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
-                            
-                </DbInterface>
-                      
+      
             </DbInterfacesList>
                   
             <GlobalsList>
@@ -1076,7 +1147,7 @@
                         
                 <Global luName="" name="TDM_TAR_ENV_NAME">
                               
-                    <Value>UAT</Value>
+                    <Value>Development</Value>
                               
                     <Comment/>
                             
@@ -1161,11 +1232,145 @@
                     <Comment/>
                             
                 </Global>
+                        
+                <Global luName="TDM" name="CREATE_TDMDB">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
                       
             </GlobalsList>
                   
             <GenericInterfacesList>
-      </GenericInterfacesList>
+                        
+        
+                <GenericInterface enabled="false" type="HTTP" version="">
+                              
+                    <Name>AI_Execution</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="ProtocolType">
+                                          
+                            <Value>HTTPS</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="HOST">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="PORT">
+                                          
+                            <Value>443</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Path">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AuthenticationType">
+                                          
+                            <Value>Bearer</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Token">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenUrl">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenBodyParams">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientId">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientSecret">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Scope">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TokenTimeout">
+                                          
+                            <Value>0</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="TestConnectionValidStatus">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Certificate">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="BF_Metadata">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="BF_FilesList">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="BF_DataSnapshot">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
                 
         </Environment>
             
@@ -1186,7 +1391,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:2J8l0Ag3WLCwy7BVS8KOaXrPdlwasPsx61/p9bGiAtfSCMKutpwqmg==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABmB4bVy0=:OdvSoDtGsngtvubeTNKdV+AhUODrWx96e+vmYmsGkX4Y76MAQ035vQ==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -1208,7 +1413,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:HGtv27qHikabrKrXWVdXrPxMnVM4ue2LSJAYMVnFSI2L+5rPE8fbD0Nfe6I=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABmB4bVy0=:+GTAqgA+HKTXBBJ76/tlwBs6z30Adfvo7yrFdP6sbsQik1FlsOQkIuGr91Y=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -1230,7 +1435,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABlNBllOc=:EbcaLZnrMqfloW6MkPOuFaIjAc8p9aK278cZP0o+GJS4AbU=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABmB4bVy0=:3Z7ds0pmMSCNciEpF7/Ic/Dw9SeHNOYwCWbLIH6lXbdF6AM=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -1239,6 +1444,30 @@
                     <maxConnectionsNumber>60</maxConnectionsNumber>
                               
                     <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                            
+                </DbInterface>
+                        
+                <DbInterface active="true" dbType="genericdb" k2StudioObjectName="AI_DB" xsi:type="DBSourceGenericDb">
+                              
+                    <dbHost/>
+                              
+                    <dbPort>5432</dbPort>
+                              
+                    <dbScheme/>
+                              
+                    <dbUser/>
+                              
+                    <dbPasswordEncrypted/>
+                              
+                    <connString>jdbc:postgresql://local:5432/?stringtype=unspecified</connString>
+                              
+                    <minConnectionsNumber>0</minConnectionsNumber>
+                              
+                    <maxConnectionsNumber>60</maxConnectionsNumber>
+                              
+                    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+                              
+                    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
                             
                 </DbInterface>
                       
@@ -1648,7 +1877,7 @@
                         
                 <Global luName="" name="TDM_TAR_ENV_NAME">
                               
-                    <Value>UAT</Value>
+                    <Value>Development</Value>
                               
                     <Comment/>
                             
@@ -1733,11 +1962,172 @@
                     <Comment/>
                             
                 </Global>
+                        
+                <Global luName="TDM" name="CREATE_TDMDB">
+                              
+                    <Value>false</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
                       
             </GlobalsList>
                   
             <GenericInterfacesList>
-      </GenericInterfacesList>
+                        
+                <GenericInterface enabled="true" type="CUSTOM" version="">
+                              
+                    <Name>AI_DB_External</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="Host">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Port">
+                                          
+                            <Value>5432</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Data">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ioprovider">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TechType">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                        
+                <GenericInterface enabled="true" type="HTTP" version="">
+                              
+                    <Name>AI_Execution</Name>
+                              
+                    <Properties>
+                                    
+                        <Property name="ProtocolType">
+                                          
+                            <Value>HTTPS</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="HOST">
+                                          
+                            <Value>local</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="PORT">
+                                          
+                            <Value>443</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="Path">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AuthenticationType">
+                                          
+                            <Value>Bearer</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="User">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Password">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Token">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenUrl">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="AccessTokenBodyParams">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientId">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="ClientSecret">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="Scope">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                    
+                        <Property name="TokenTimeout">
+                                          
+                            <Value>0</Value>
+                                        
+                        </Property>
+                                    
+                        <Property name="TestConnectionValidStatus">
+                                          
+                            <Value/>
+                                        
+                        </Property>
+                                  
+                    </Properties>
+                            
+                </GenericInterface>
+                      
+            </GenericInterfacesList>
                 
         </Environment>
           

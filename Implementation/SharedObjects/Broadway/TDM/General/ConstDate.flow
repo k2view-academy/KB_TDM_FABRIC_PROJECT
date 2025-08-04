@@ -1,0 +1,27 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Random Date:
+        parent: RandomDistribution
+        in:
+          distribution:
+            const:
+              distribution: uniform
+              round: false
+              type: date
+              minimum: '2014-12-31 22:00:00.000'
+              maximum: '2035-12-31 21:59:59.000'
+            schema: '#ref'
+        out:
+          value:
+            external: value
+            schema: date
+schemas:
+  Random Date.in.distribution:
+    type: object
+    properties:
+      distribution: string
+      round: boolean
+      minimum: date
+      maximum: date

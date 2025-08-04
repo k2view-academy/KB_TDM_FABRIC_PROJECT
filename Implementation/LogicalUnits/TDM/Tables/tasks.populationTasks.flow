@@ -22,6 +22,14 @@ stages:
             external: table
           deleteMode:
             const: All
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Source:
     actors:
       Query:
@@ -76,11 +84,15 @@ stages:
                 Case When t.clone_ind = False Then 'false' Else 'true' End As clone_ind,
                 t.execution_mode,
                 t.be_id
-              From @TDMDB_SCHEMA@.tasks t FULL OUTER JOIN @TDMDB_SCHEMA@.business_entities b ON (t.be_id = -1 or b.be_id = t.be_id),
-                @TDMDB_SCHEMA@.task_execution_list te,
-                @TDMDB_SCHEMA@.environments e
+              From ${@TDMDB_SCHEMA}.tasks t FULL OUTER JOIN ${@TDMDB_SCHEMA}.business_entities b ON (t.be_id = -1 or b.be_id = t.be_id),
+                ${@TDMDB_SCHEMA}.task_execution_list te,
+                ${@TDMDB_SCHEMA}.environments e
               Where t.task_id = te.task_id And e.environment_id = t.environment_id
               Order By te.task_execution_id ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
           parent_rows:
             link: PopulationArgs/parent_rows
         out:
@@ -263,7 +275,7 @@ stages:
             schema: any
           execution_mode:
             link: Set Execution Mode/result
-            schema: any
+            schema: string
             mandatory: false
           params:
             link:

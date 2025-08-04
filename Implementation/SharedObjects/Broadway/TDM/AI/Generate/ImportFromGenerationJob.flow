@@ -27,11 +27,14 @@ stages:
         in:
           key:
             const: BE_ID
-      TDMDB_SCHEMA:
-        parent: FabricSetRead
+      getTDMDBSchema:
+        parent: InnerFlow
         in:
-          key:
-            const: TDMDB_SCHEMA
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   'Build IIDS ':
     actors:
       trainingExcludedTables:
@@ -64,7 +67,7 @@ stages:
             const: select be_name from ${@TDMDB_SCHEMA}.business_entities where be_id
               = ?
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           params:
@@ -79,7 +82,7 @@ stages:
             const: trainingIncludedTables
           luName:
             external: luName
-            schema: any
+            schema: string
             mandatory: false
         out:
           tables:
@@ -94,15 +97,6 @@ stages:
         out:
           object:
             schema: '#ref'
-  'initaite Task Execution Entities   ':
-    actors:
-      Regex:
-        parent: Regex
-        in:
-          pattern:
-            const: \s*"(\d+)"
-          input:
-            link: JsonParser/object/iid
   Get The Fabric TDM root IID:
     actors:
       id:
@@ -110,9 +104,7 @@ stages:
         in:
           value:
             const: null
-            link:
-              path: Regex/strings
-              iterate: First
+            link: JsonParser/object/iid
         out:
           value:
             schema: string
@@ -125,15 +117,15 @@ stages:
             const: buildTDMEidForAI
           Env:
             link: AI_ENVIRONMENT/result
-            schema: any
+            schema: string
             mandatory: false
           IID:
             link: id/value
-            schema: any
+            schema: string
             mandatory: false
           ExecutionID:
             link: TDM_TASK_EXE_ID/result
-            schema: any
+            schema: string
             mandatory: false
         out:
           string:
@@ -257,7 +249,7 @@ stages:
             const: fabric
           sql:
             const: MDB_IMPORT ${luName}.${IID} WITH INTERFACE_NAME=${INTERFACE} INCLUDED_TABLES=${includedTables}
-              EXCLUDED_TABLES=${excludedTables} REMOTE_IID=${REMOTE}
+              EXCLUDED_TABLES=${excludedTables} REMOTE_IID=${@REMOTE}
           IID:
             link: buildTDMEidForAI/string
             schema: string
@@ -285,24 +277,24 @@ stages:
   Mapping:
     transactional: true
     actors:
-      PopulateTDMAIGenIIDMapping_Actor2:
-        parent: PopulateTDMAIGenIIDMapping_Actor
+      PopulateTDMAIGenIIDMapping1:
+        parent: PopulateTDMAIGenIIDMapping
         in:
-          ' env_name':
+          env_name:
             link: AI_ENVIRONMENT/result
-          ' task_execution_id':
+          task_execution_id:
             link: TDM_TASK_EXE_ID/result
-          ' root_imported_lui':
+          imported_lui:
             link: buildTDMEidForAI/string
-          ' imported_lui':
+          root_imported_lui:
             link: buildTDMEidForAI/string
-          ' root_lu_name ':
+          root_lu_name:
             external: luName
-          ' lu_name':
-            external: luName
-          ' root_generated_iid ':
+          generated_iid:
             external: IID
-          ' generated_iid':
+          lu_name:
+            external: luName
+          root_generated_iid:
             external: IID
   Get Sync Off:
     transactional: true
@@ -422,113 +414,17 @@ stages:
             mandatory: false
           BE_NAME:
             link: BE_NAME/result
-            schema: any
+            schema: string
             mandatory: false
           ROOT_IID:
             link: id/value
-            schema: any
+            schema: string
             mandatory: false
-  To Lower Case:
+  Check Params Mode:
     transactional: false
-    actors:
-      'schema name ':
-        parent: Lowercase
-        in:
-          string:
-            external: luName
-  Get Root Table:
-    transactional: false
-    actors:
-      Get Root Table Name:
-        parent: DbCommand
-        in:
-          interface:
-            const: null
-            link: AI_DB_ENTITIES/result
-          sql:
-            const: |-
-              SELECT DISTINCT
-                  relname AS root_table
-              FROM
-                  pg_class
-              WHERE
-                  oid NOT IN (
-                      SELECT
-                          conrelid
-                      FROM
-                          pg_constraint
-                      WHERE
-                          contype = 'f'
-                      AND
-                          connamespace = (SELECT oid FROM pg_namespace WHERE nspname = '${@schemaName}')  -- Replace 'your_schema_name' with your schema name
-                  )
-              AND
-                  relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '${@schemaName}')  -- Replace 'your_schema_name' with your schema name
-              AND
-                  oid NOT IN (
-                      SELECT DISTINCT
-                          conrelid
-                      FROM
-                          pg_constraint
-                      WHERE
-                          contype = 'f'
-                      AND
-                          connamespace = (SELECT oid FROM pg_namespace WHERE nspname = '${@schemaName}')  -- Replace 'your_schema_name' with your schema name
-                  )
-              AND
-                  relkind = 'r'
-                  AND relname NOT LIKE '_k2\_%'   -- Excluding specific k2 tables
-              ORDER BY
-                  relname;
-          schemaName:
-            link: schema name /string
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
-  Delete Cascade from Entities DB:
-    last: 1
-    transactional: false
-    actors:
-      Initation Error Handle111:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: false
-                flowName: PopulateTableErrorsWithFailed
-      Delete Imported From DB:
-        parent: DbCommand
-        in:
-          interface:
-            const: null
-            link: AI_DB_ENTITIES/result
-          sql:
-            const: 'delete from ${@schemaName}.${@tableName} where __iid=${imported_iid} '
-          schemaName:
-            external: luName
-            schema: string
-            mandatory: false
-          tableName:
-            link:
-              path: Get Root Table Name/result/root_table
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          imported_iid:
-            external: IID
-            schema: string
-            mandatory: false
   'Is Params Coupling   ':
     transactional: false
-    dependsOn: Delete Cascade from Entities DB
+    dependsOn: Check Params Mode
     actors:
       'True':
         parent: EqualsIgnoreCase
@@ -556,7 +452,7 @@ stages:
   'Else     ':
     else: true
     transactional: false
-    dependsOn: Delete Cascade from Entities DB
+    dependsOn: Check Params Mode
   'check if load ':
     transactional: false
     actors:
@@ -602,11 +498,23 @@ stages:
                 suppress: false
                 log: false
                 flowName: PopulateTableErrorsWithFailed
-      PopulateTaskExecutionEntities_Actor1:
-        parent: PopulateTaskExecutionEntities_Actor
+      HandleTaskExecutionEntities1:
+        parent: InnerFlow
         in:
-          idType:
-            const: ENTITY
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: ''
+            schema: boolean
+            mandatory: false
     split: '--------------------'
   'Do Nothing   ':
     dependsOn: 'Else   '
@@ -617,16 +525,6 @@ schemas:
       env:
         type: string
       iid:
-        type: object
-        properties:
-          customer_id:
-            type: string
+        type: string
       exec_id:
         type: integer
-  Get Root Table Name.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        root_table:
-          type: string

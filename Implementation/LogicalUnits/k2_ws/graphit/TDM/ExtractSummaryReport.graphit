@@ -6,16 +6,16 @@
       "value": "true"
     }
   ],
+  "collapsed": true,
   "children": [
     {
       "name": "result",
       "sessionProvider": "fabric",
-      "collapsed": true,
       "children": [
         {
           "name": "General Info",
           "type": "sql",
-          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  Case When SELECTION_METHOD = 'TABLES' Then '' Else T.BE_NAME END AS be_name,\n  T.TASK_TYPE AS task_type,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_TASK_EXECUTION_ID AS version_task_execution_id,\n  L.SUBSET_TASK_EXECUTION_ID AS subset_task_execution_id,\n  T.RETENTION_PERIOD_TYPE AS retention_period_type,\n  T.RETENTION_PERIOD_VALUE AS retention_period_value,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value,\n  T.EXECUTION_MODE\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
+          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  When (Exists(Select 1 From task_execution_link_entities\n    Where root_entity_status = 'completed' Limit 1)) Then 'completed'\n  Else 'failed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  Case When SELECTION_METHOD = 'TABLES' Then '' Else T.BE_NAME END AS be_name,\n  T.TASK_TYPE AS task_type,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_TASK_EXECUTION_ID AS version_task_execution_id,\n  L.SUBSET_TASK_EXECUTION_ID AS subset_task_execution_id,\n  T.RETENTION_PERIOD_TYPE AS retention_period_type,\n  T.RETENTION_PERIOD_VALUE AS retention_period_value,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value,\n  T.EXECUTION_MODE\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
         },
         {
           "name": "Source Environment",
@@ -45,7 +45,6 @@
               "name": "Selection Method",
               "type": "function",
               "code": "var sm = selection_method; \nsm;",
-              "collapsed": true,
               "children": [
                 {
                   "name": "Generate Selection Method",
@@ -77,7 +76,6 @@
                   "name": "Custom Logic Selection Method",
                   "type": "condition",
                   "code": "sm == 'C' ",
-                  "collapsed": true,
                   "children": [
                     {
                       "name": "custom logic",
@@ -85,7 +83,6 @@
                       "code": "Select parameters as params from TDM.tasks;",
                       "sessionProvider": "fabric",
                       "one": true,
-                      "collapsed": true,
                       "children": [
                         {
                           "name": "param_name",
@@ -235,22 +232,22 @@
             {
               "name": "Number of Copied Entities",
               "type": "sql",
-              "code": "select count(*) as number_of_copied_root_entities from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status = 'completed' \nEXCEPT Select be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status <> 'completed')"
+              "code": "Select count(Distinct ENTITY_ID) as number_of_copied_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME and root_entity_status = 'completed'\nAND ID_TYPE = 'ENTITY'"
             },
             {
               "name": "List of Copied Entities",
               "type": "sql",
-              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status = 'completed'\nEXCEPT Select ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id \nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'\nlimit ${i_numOfRecsLimit}"
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME And root_entity_status = 'completed'\nAND ID_TYPE = 'ENTITY'\nlimit ${i_numOfRecsLimit}"
             },
             {
               "name": "Number of Failed Entities",
               "type": "sql",
-              "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' and root_entity_status <> 'completed'"
+              "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME and root_entity_status <> 'completed'\nAND ID_TYPE = 'ENTITY'"
             },
             {
               "name": "List of Failed Entities",
               "type": "sql",
-              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'\nlimit ${i_numOfRecsLimit}"
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere LU_NAME = ROOT_LU_NAME And root_entity_status <> 'completed'\nAND ID_TYPE = 'ENTITY'\nlimit ${i_numOfRecsLimit}"
             }
           ]
         },
@@ -283,7 +280,12 @@
         {
           "name": "Error Summary",
           "type": "sql",
-          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
+          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, substr(error_message, 1, 10000) AS error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
+        },
+        {
+          "name": "Statistics Report",
+          "type": "sql",
+          "code": "select lu_name, table_name, target_count, source_count, suppressed_error_count, diff, results \nfrom task_exe_stats_summary"
         }
       ]
     },

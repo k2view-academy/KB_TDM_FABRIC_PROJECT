@@ -45,6 +45,14 @@ stages:
             schema: boolean
             default: true
             mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
     split: '--------------------'
   Do Not Create Delete Tables:
     else: true
@@ -132,7 +140,6 @@ stages:
               id: com.k2view.interface
               interfaceType:
               - database
-              - CassandraLoader
             mandatory: false
           SOURCE_SCHEMA:
             external: SOURCE_SCHEMA
@@ -143,4 +150,14 @@ stages:
             external: useFabric
             schema: boolean
             default: true
+            mandatory: false
+          DOCUMENT_IND:
+            external: DOCUMENT_IND
+            schema: boolean
+            mandatory: false
+          ROOT_TABLE_NAME:
+            external: ROOT_TABLE_NAME
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
             mandatory: false

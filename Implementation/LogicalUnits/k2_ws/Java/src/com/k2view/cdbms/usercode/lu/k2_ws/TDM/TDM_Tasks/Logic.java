@@ -20,13 +20,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.MAX_NUMBER_OF_ENTITIES_IN_LIST;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateOverrideSyncMode;
+import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateProductForTask;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateSourceEnvForTask;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateTargetEnvForTask;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
+
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -319,14 +322,16 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-    public static Object wsGetTasks(@param(description="list of task IDs separated by a comma") String task_ids) throws Exception {
+    public static Object wsGetTasks(@param(description="list of task IDs separated by a comma") String task_ids,
+                                    @param(description = "Specifies the task status to retrieve. Options: 'Active' to get only active tasks, 'Inactive' for only inactive tasks, or 'Both' to retrieve all tasks regardless of status.")
+                                    String mode) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         String message = null;
         String errorCode = "";
         final String TASK_CREATED_BY_SEPARATOR = "##";
         final String ROLE_SEPARATOR = TDM_PARAMETERS_SEPARATOR;
 
-        Db.Rows result = fnGetTasks(task_ids);
+        Db.Rows result = fnGetTasks(task_ids,mode);
         
         String q = "SELECT * FROM " + TDMDB_SCHEMA + ".ENVIRONMENT_ROLES";
         Db.Rows rolesResult = db(TDM).fetch(q);
@@ -358,11 +363,11 @@ public class Logic extends WebServiceUserCode {
             
             ResultSet resultSet = row.resultSet();
             String userRoles = "";
+            Long targetEnvId = resultSet.getLong("environment_id");
+            Long sourceEnvId = resultSet.getLong("source_environment_id");
             if (resultSet.getString("task_created_by") != null) {
                 List<String> creatorFabricRoles = new ArrayList<>();
                 String taskCreatedBy = resultSet.getString("task_created_by");
-                Long targetEnvId = resultSet.getLong("environment_id");
-                Long sourceEnvId = resultSet.getLong("source_environment_id");
                 String taskKey = taskCreatedBy + TASK_CREATED_BY_SEPARATOR + sourceEnvId + 
                     TASK_CREATED_BY_SEPARATOR + targetEnvId;
                 
@@ -477,8 +482,10 @@ public class Logic extends WebServiceUserCode {
             newRow.put("tester", resultSet.getString("tester"));
             newRow.put("tester_type", resultSet.getString("tester_type"));
             newRow.put("role_id_orig", resultSet.getInt("role_id_orig"));
-            newRow.put("executioncount", resultSet.getInt("executioncount"));
-            newRow.put("refcount", resultSet.getInt("refcount"));
+            int executionCount = resultSet.getObject("executioncount") == null ? 0 : 1;
+            newRow.put("executioncount", executionCount);
+            int refcount = resultSet.getObject("refcount") == null ? 0 : 1;
+            newRow.put("refcount", refcount);
             newRow.put("processnames", resultSet.getString("processnames"));
             newRow.put("reserve_ind", resultSet.getBoolean("reserve_ind"));
             newRow.put("reserve_retention_period_type", resultSet.getString("reserve_retention_period_type"));
@@ -488,7 +495,8 @@ public class Logic extends WebServiceUserCode {
             newRow.put("mask_sensitive_data", resultSet.getBoolean("mask_sensitive_data"));
             newRow.put("clone_ind", resultSet.getBoolean("clone_ind"));
             newRow.put("execution_mode", resultSet.getString("execution_mode"));
-    
+            newRow.put("enable_execution", resultSet.getBoolean("enable_execution"));
+
             Map<String, Object> task = null;
 
             if("CLONE".equalsIgnoreCase(resultSet.getString("selection_method"))){
@@ -513,7 +521,21 @@ public class Logic extends WebServiceUserCode {
                     roleArr.add(roleMap);
                 }
             }
-    
+            //check for evalaution indicator
+            Long task_id = resultSet.getLong("task_id");
+            if(task_id != 0L && sourceEnvId == -2){
+                String sql = "Select Count(1) as count from " + TDMDB_SCHEMA + ".tasks_exe_process where task_id = " +
+                                            task_id + " AND process_id = -3"  +
+                                            " AND process_name = 'Evaluating Data Subset'";
+                Object cnt = db(TDM).fetch(sql).firstValue();
+                Long evaluation_ind = Long.valueOf("" + cnt).longValue();
+                if(evaluation_ind == 1){
+                    newRow.put("evaluation_ind", true);
+                }else{
+                    newRow.put("evaluation_ind", false);
+                }
+            }
+                
             if (task != null) {
                 List<Map<String, Object>> owners = (List<Map<String, Object>>) task.get("owners");
                 Map<String, Object> owner = null;
@@ -590,7 +612,27 @@ public class Logic extends WebServiceUserCode {
                 newRow.put("roles", roles);
                 newResult.add(newRow);
             }
-    
+            if(!resultSet.getBoolean("enable_execution")){
+                String target_env_name = resultSet.getString("environment_name");
+                String source_env_id = resultSet.getString("source_environment_id");
+                String source_env_name = resultSet.getString("source_env_name");
+                String target_env_id = resultSet.getString("environment_id");
+                String sync_mode = resultSet.getString("sync_mode");
+                String task_type = resultSet.getString("task_type");
+                // check for any disabled systems of source environment
+                String inactive_source_products = fnValidateProductForTask(source_env_id,source_env_name,task_type,sync_mode,"SOURCE",task_id);
+                if(!"".equalsIgnoreCase(inactive_source_products)){
+                    newRow.put("inactive_source_products", inactive_source_products);
+                }
+                // check for any disabled systems of target environment
+                if (Long.valueOf(source_env_id) != Long.valueOf(target_env_id)) {
+                    String inactive_target_products = fnValidateProductForTask(target_env_id,target_env_name,task_type,sync_mode,"TARGET",task_id);
+                    if(!"".equalsIgnoreCase(inactive_target_products)){
+                        newRow.put("inactive_target_products", inactive_target_products);
+                    }
+                }   
+                    
+            }            
         }
         if (result != null) {
             result.close();
@@ -640,7 +682,7 @@ public class Logic extends WebServiceUserCode {
         String message = null;
         String errorCode = "";
         try {
-            String sql = "select DISTINCT task_id from " + TDMDB_SCHEMA + ".task_execution_list " + "where  (lower(execution_status) <> 'failed' AND lower(execution_status) <> 'completed' " + "AND lower(execution_status) <> 'stopped' AND lower(execution_status) <> 'killed')";
+            String sql = "select DISTINCT task_id from " + TDMDB_SCHEMA + ".task_execution_summary " + "where  (lower(execution_status) <> 'failed' AND lower(execution_status) <> 'completed' " + "AND lower(execution_status) <> 'stopped' AND lower(execution_status) <> 'killed')";
             Db.Rows rows = db(TDM).fetch(sql);
             List<String> result = new ArrayList<>();
             for (Db.Row row : rows) {
@@ -671,7 +713,10 @@ public class Logic extends WebServiceUserCode {
         String message = null;
         String errorCode = "";
         try {
-            String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " + "INNER JOIN " + TDMDB_SCHEMA + ".products p " + "ON (lu.product_id = p.product_id) " + "INNER JOIN " + TDMDB_SCHEMA + ".environment_products ep " + "ON (lu.product_id = ep.product_id " + "AND ep.status = \'Active\') " + "WHERE be_id = " + beId + " AND environment_id = " + envId;
+            String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " + "INNER JOIN " + TDMDB_SCHEMA + ".products p " +
+            "ON (lu.product_id = p.product_id) " + "INNER JOIN " + TDMDB_SCHEMA + ".environment_products ep " +
+            "ON (lu.product_id = ep.product_id " + "AND ep.status = \'Active\') " + "WHERE be_id = " + beId + 
+            " AND environment_id = " + envId + " AND ep.enable_product=true";
             Db.Rows rows = db(TDM).fetch(sql);
             List<HashMap<String, Object>> result = new ArrayList<>();
 
@@ -718,7 +763,7 @@ public class Logic extends WebServiceUserCode {
             String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, 
             String filterout_reserved, HashMap<String, Object> generateParams, Boolean mask_sensitive_data, 
             String task_description, String custom_logic_lu_name,Long selected_subset_task_exe_id,Boolean clone_ind,
-            String execution_mode) throws Exception {
+            String execution_mode, boolean evaluation_ind) throws Exception {
         Long taskId;
         String msg =fnValidateOverrideSyncMode(source_environment_id,source_env_name,sync_mode);
         if (!"".equalsIgnoreCase(msg)){
@@ -745,14 +790,20 @@ public class Logic extends WebServiceUserCode {
             if("TABLES".equalsIgnoreCase(selection_method)){
                 return wrapWebServiceResults("FAILED", "AI-based training is not supported for Table-Level tasks", null);
             }
-		postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses, "Training Data Subset", "training_ai", -1, "Exporting Data Subset", "export_entities", -2);
+		    postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses, "Training Data Subset", "training_ai", -1, "Exporting Data Subset", "export_entities", -2);
 	   }
        if ("Load".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "Importing Data Subset", "export_entities", -1);
-       }
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
+        }
        if ("AI_GENERATED".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "", "", 0);
-       }
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
+        }
 
         db(TDM).beginTransaction();
         //try {
@@ -770,7 +821,6 @@ public class Logic extends WebServiceUserCode {
             } else {
                 taskId = (Long) ((Map<String, Object>) result.get("result")).get("id");
             }
-
 			result = (Map<String, Object>) wsCreatePreExecutionProcessesFortask(taskId, task_title, preExecutionProcesses);
 			result = (Map<String, Object>) wsCreatePostExecutionProcessesFortask(taskId, task_title, postExecutionProcesses);
 			if (!checkWsResponse(result)) {
@@ -784,9 +834,24 @@ public class Logic extends WebServiceUserCode {
             }else {
                 return wrapWebServiceResults("FAILED", "Logical Unit validation failed. Ensure that all selected Logical Units have their respective parents selected.", null);
             }
+            // check for any disabled systems of source environment
+            String inactive_source_products = fnValidateProductForTask(String.valueOf(source_environment_id),source_env_name,task_type,sync_mode,"SOURCE",taskId);
+            if(!"".equalsIgnoreCase(inactive_source_products)){
+                db(TDM).rollback();
+                return wrapWebServiceResults("FAILED", "The task cannot be created. The following systems are currently disabled in " + source_env_name + ": " + inactive_source_products,null);
+
+            }
+            // check for any disabled systems of target environment
+            String target_env_name = "" + db(TDM).fetch("SELECT environment_name from " + TDMDB_SCHEMA + ".environments where environment_id = ?", environment_id).firstValue();
+            String inactive_target_products = fnValidateProductForTask(String.valueOf(environment_id),target_env_name,task_type,sync_mode,"TARGET",taskId);
+            if(!"".equalsIgnoreCase(inactive_target_products)){
+                db(TDM).rollback();
+                return wrapWebServiceResults("FAILED", "The task cannot be created. The following systems are currently disabled in " + target_env_name + ": " + inactive_target_products,null);
+
+            }
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
-                return wrapWebServiceResults("FAILED", "Can't create logical units for the task: " + result.get("message"), null);
+                return wrapWebServiceResults("FAILED", result.get("message"), null);
             }
         //} catch (Exception e) {
         //    db(TDM).rollback();
@@ -946,7 +1011,7 @@ public class Logic extends WebServiceUserCode {
             Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value,
             String reserve_note, String filterout_reserved, HashMap<String, Object> generateParams,
             Boolean mask_sensitive_data, String task_description, String custom_logic_lu_name,
-            Long selected_subset_task_exe_id, Boolean clone_ind, String execution_mode) throws Exception {
+            Long selected_subset_task_exe_id, Boolean clone_ind, String execution_mode,boolean evaluation_ind) throws Exception {
         Long newTaskId = null;
 
         String msg =fnValidateOverrideSyncMode(source_environment_id,source_env_name,sync_mode);
@@ -975,9 +1040,15 @@ public class Logic extends WebServiceUserCode {
 		}
         if ("Load".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "Importing Data Subset", "export_entities", -1);
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
         }
         if ("AI_GENERATED".equalsIgnoreCase(task_type) && "AI_GENERATED".equalsIgnoreCase(selection_method)) {
             preExecutionProcesses = fnAddAIExecutionProcess(preExecutionProcesses, "Generating Data Subset", "generation_ai", -2, "", "", 0);
+            if(evaluation_ind){
+                postExecutionProcesses = fnAddAIExecutionProcess(postExecutionProcesses,"Evaluating Data Subset" ,"evalaution_ai",-3, "", "", 0);
+            }
         }
         
         db(TDM).beginTransaction();
@@ -997,7 +1068,6 @@ public class Logic extends WebServiceUserCode {
             } else {
                 newTaskId = (Long) ((Map<String, Object>) result.get("result")).get("id");
             }
-
 			result = (Map<String, Object>) wsCreatePreExecutionProcessesFortask(newTaskId, task_title, preExecutionProcesses);
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
@@ -1014,6 +1084,19 @@ public class Logic extends WebServiceUserCode {
                 result = (Map<String, Object>) wsCreateLogicalUnitsFortask(newTaskId, task_title, environment_id, logicalUnits);
             }else {
                 return wrapWebServiceResults("FAILED", "Logical Unit validation failed. Ensure that all selected Logical Units have their respective parents selected.", null);
+            }
+            // TDM 9.3 check for any disabled systems of the tasks logical units in the source environment
+            String inactive_source_products = fnValidateProductForTask(String.valueOf(source_environment_id),source_env_name,task_type,sync_mode,"SOURCE",newTaskId);
+            if(!"".equalsIgnoreCase(inactive_source_products)){
+                db(TDM).rollback();
+                return wrapWebServiceResults("FAILED", "The task cannot be updated. The following systems are currently disabled in " + source_env_name + ": " + inactive_source_products,null);
+            }
+            // TDM 9.3 check for any disabled systems of the tasks logical units in the target environment
+            String target_env_name = "" + db(TDM).fetch("SELECT environment_name from " + TDMDB_SCHEMA + ".environments where environment_id = ?", environment_id).firstValue();
+            String inactive_target_products = fnValidateProductForTask(String.valueOf(environment_id),target_env_name,task_type,sync_mode,"TARGET",newTaskId);
+            if(!"".equalsIgnoreCase(inactive_target_products)){
+                db(TDM).rollback();
+                return wrapWebServiceResults("FAILED", "The task cannot be updated. The following systems are currently disabled in " + target_env_name + ": " + inactive_target_products,null);
             }
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
@@ -1051,7 +1134,6 @@ public class Logic extends WebServiceUserCode {
         Map<String, Object> result = new HashMap<>();
         String message = null;
         String errorCode = "";
-
         //try {
             db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".tasks SET " + "task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? "Active" : "Inactive");
 
@@ -1408,7 +1490,16 @@ public class Logic extends WebServiceUserCode {
                             refInfo.put("logical_unit_name", luName);
                             Set fields = map.keySet();
                             for (Object f : fields) {
-                                refInfo.put((String) f, map.get(f));
+                                if ("schema_name".equalsIgnoreCase(f.toString())) {
+                                     String schemaName = "" + map.get("schema_name");
+                                     if (schemaName.startsWith("@")) {
+                                        String globalName = schemaName.replaceAll("@", "");
+                                        schemaName = getGlobal(globalName, luName);
+                                    }
+                                    refInfo.put("schema_name", schemaName);
+                                } else {
+                                    refInfo.put((String) f, map.get(f));
+                                }
                             }
                             refTablesList.add(refInfo);
                         }
@@ -1751,92 +1842,89 @@ public class Logic extends WebServiceUserCode {
             }
         }
 
-        try {
-            if (lu_name == null) {
-                List<Map<String, Object>> tree = fnGetRootLUs(taskExecutionId.toString());
-                if (tree == null || tree.size() == 0) {
-                    response.put("errorCode", "SUCCESS");
-                    response.put("message", null);
-                    response.put("result", new ArrayList<>());
-                    return response;
-                }
-
-                tree.get(0).put("selected", true);
-                Map<String, Object> taskStatsAns = new HashMap<>();
-
-                for (Map<String, Object> root_lu : tree) {
-                    Map<String, Map> statsData = (Map<String, Map>) ((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(), root_lu.get("lu_name").toString(), null, "ENTITY", null, maxEntitiesSize, "true")).get("result");
-                    Map<String, Object> dataObj = new HashMap<>();
-                    dataObj.put("data", statsData);
-                    taskStatsAns.put(root_lu.get("lu_name").toString(), dataObj);
-                }
-                //iterate through root lus
-                for (String key : taskStatsAns.keySet()) {
-                    Map<String, Object> statsObj = (Map<String, Object>) taskStatsAns.get(key);
-                    if (statsObj == null) {
-                        continue;
-                    }
-                    //tree.get(0).put("test1",true);
-                    //statsObj{data:Map<String,Map>}
-                    Map<String, Map> stats_Data = (Map<String, Map>) statsObj.get("data");
-                    Map<String, Object> statsDataFailedEntities = null;
-                    if (stats_Data != null)
-                        statsDataFailedEntities = (Map<String, Object>) stats_Data.get("Failed entities per execution");
-                    if (stats_Data != null && statsDataFailedEntities != null && Long.parseLong(statsDataFailedEntities.get("NoOfEntities").toString()) > 0) {
-                        tree = fnUpdateFailedLUsInTree(tree, statsDataFailedEntities);
-                    } else {
-                        for (Map<String, Object> node : tree) {
-                            if (node.get("count") != null && Long.parseLong(node.get("count").toString()) > 0) {
-                                node.put("hasChildren", true);
-                                node.put("collapsed", true);
-                            }
-                            node.put("isRoot", true);
-                        }
-                    }
-
-                    for (Map<String, Object> node : tree) {
-                        Map<String, Map> statsData = (Map<String, Map>) statsObj.get("data");
-                        Map<String, String> statsDateRootsStatus = (Map<String, String>) statsData.get("Roots Status");
-                        node.put("status", statsDateRootsStatus != null ? statsDateRootsStatus.get(node.get("lu_name")) : null);
-                        //node.put("test",true);
-                    }
-                }
-
-                Map<String, Object> responseObject = new HashMap<>();
-
-                Map<String, Object> lu = (Map<String, Object>) taskStatsAns.get(tree.get(0).get("lu_name"));
-                responseObject.put("data", lu.get("data"));
-                responseObject.put("luTree", tree);
-
-                responseObject.put("tableLevelInd", tableLevelInd);
-                response.put("result", responseObject);
+        if (lu_name == null) {
+            List<Map<String, Object>> tree = fnGetRootLUs(taskExecutionId.toString());
+            if (tree == null || tree.size() == 0) {
                 response.put("errorCode", "SUCCESS");
                 response.put("message", null);
+                response.put("result", new ArrayList<>());
                 return response;
-            } else {
-                Map<String, Map> data = (Map<String, Map>) ((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(), lu_name, entityId != null ? entityId : null, "ENTITY", null, maxEntitiesSize, "true")).get("result");
+            }
+
+            tree.get(0).put("selected", true);
+            Map<String, Object> taskStatsAns = new HashMap<>();
+
+            for (Map<String, Object> root_lu : tree) {
+                Map<String, Map> statsData = (Map<String, Map>) ((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(), root_lu.get("lu_name").toString(), null, "ENTITY", null, maxEntitiesSize, "true")).get("result");
                 Map<String, Object> dataObj = new HashMap<>();
-                dataObj.put("data", data);
-                if (type != null) {
-                    HashMap<String, Object> returnedData = new HashMap<>();
-                    returnedData.put(type, dataObj.get("data") != null ? ((Map<String, Map>) dataObj.get("data")).get(type) : null);
-                    dataObj.put("data", returnedData);
-                    dataObj.put("tableLevelInd", tableLevelInd);
-                    response.put("result", dataObj);
-                    response.put("errorCode", "SUCCESS");
-                    response.put("message", null);
-                    return response;
+                dataObj.put("data", statsData);
+                taskStatsAns.put(root_lu.get("lu_name").toString(), dataObj);
+            }
+            //iterate through root lus
+            for (String key : taskStatsAns.keySet()) {
+                Map<String, Object> statsObj = (Map<String, Object>) taskStatsAns.get(key);
+                if (statsObj == null) {
+                    continue;
                 }
+                //tree.get(0).put("test1",true);
+                //statsObj{data:Map<String,Map>}
+                Map<String, Map> stats_Data = (Map<String, Map>) statsObj.get("data");
+                Map<String, Object> statsDataFailedEntities = null;
+                if (stats_Data != null)
+                    statsDataFailedEntities = (Map<String, Object>) stats_Data.get("Failed entities per execution");
+                if (stats_Data != null && statsDataFailedEntities != null && Long.parseLong(statsDataFailedEntities.get("NoOfEntities").toString()) > 0) {
+                    tree = fnUpdateFailedLUsInTree(tree, statsDataFailedEntities);
+                } else {
+                    for (Map<String, Object> node : tree) {
+                        if (node.get("count") != null && Long.parseLong(node.get("count").toString()) > 0) {
+                            node.put("hasChildren", true);
+                            node.put("collapsed", true);
+                        }
+                        node.put("isRoot", true);
+                    }
+                }
+
+                for (Map<String, Object> node : tree) {
+                    Map<String, Map> statsData = (Map<String, Map>) statsObj.get("data");
+                    Map<String, String> statsDateRootsStatus = (Map<String, String>) statsData.get("Roots Status");
+                    node.put("status", statsDateRootsStatus != null ? statsDateRootsStatus.get(node.get("lu_name")) : null);
+                    //node.put("test",true);
+                }
+            }
+
+            Map<String, Object> responseObject = new HashMap<>();
+
+            Map<String, Object> lu = (Map<String, Object>) taskStatsAns.get(tree.get(0).get("lu_name"));
+            responseObject.put("data", lu.get("data"));
+            responseObject.put("luTree", tree);
+
+            responseObject.put("tableLevelInd", tableLevelInd);
+            response.put("result", responseObject);
+            response.put("errorCode", "SUCCESS");
+            response.put("message", null);
+            return response;
+        } else {
+            String luIdType = "ENTITY";
+            if (TABLE_LEVEL_LU.equals(lu_name)) {
+                luIdType = "REFERENCE";
+            }
+            Map<String, Map> data = (Map<String, Map>) ((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(), lu_name, entityId != null ? entityId : null, luIdType, null, maxEntitiesSize, "true")).get("result");
+            Map<String, Object> dataObj = new HashMap<>();
+            dataObj.put("data", data);
+            if (type != null) {
+                HashMap<String, Object> returnedData = new HashMap<>();
+                returnedData.put(type, dataObj.get("data") != null ? ((Map<String, Map>) dataObj.get("data")).get(type) : null);
+                dataObj.put("data", returnedData);
                 dataObj.put("tableLevelInd", tableLevelInd);
                 response.put("result", dataObj);
                 response.put("errorCode", "SUCCESS");
                 response.put("message", null);
                 return response;
             }
-
-        } catch (Exception e) {
-            response.put("errorCode", "FAILED");
-            response.put("message", e.getMessage());
+            dataObj.put("tableLevelInd", tableLevelInd);
+            response.put("result", dataObj);
+            response.put("errorCode", "SUCCESS");
+            response.put("message", null);
             return response;
         }
     }
@@ -2105,70 +2193,13 @@ public class Logic extends WebServiceUserCode {
     @webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"PATIENT_LU\": {\n      \"luName\": \"PATIENT_LU\",\n      \"targetId\": \"1\",\n      \"sourceId\": \"1\",\n      \"entityStatus\": \"completed\",\n      \"parentLuName\": \"\",\n      \"parentTargetId\": \"\",\n      \"children\": [\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24900\",\n          \"sourceId\": \"24900\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24901\",\n          \"sourceId\": \"24901\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24902\",\n          \"sourceId\": \"24902\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24903\",\n          \"sourceId\": \"24903\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"400\",\n          \"sourceId\": \"400\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        }\n      ],\n      \"luStatus\": \"completed\"\n    }\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
     public static Object wsGetTaskExeStatsForEntity(String taskExecutionId, String luName, String targetId) throws Exception {
-        String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " + "execution_status luStatus from TDM.task_Execution_link_entities  " + "where lu_name <> ? and target_entity_id = ? and entity_id = ?";
-
-        String sqlGetParent = "select parent_lu_name, target_parent_id from TDM.task_Execution_link_entities " + "where lu_name= ? and target_entity_id = ? and parent_lu_name <> ''";
-
+         boolean isFullHierarchyEnabled = "true".equalsIgnoreCase(fabric().fetch("Set POP_FULL_LU_HIERARCHY_IN_TDM_LU").firstValue().toString());
         Map<String, Object> mainOutput = new HashMap<>();
-        Map<String, Object> childHierarchyDetails = new HashMap<>();
-        Map<String, Object> parentHierarchyDetails = new HashMap<>();
-
-        Db.Row entityDetails = null;
-        Boolean countChildren = false;
-
-        fabric().execute("get TDM." + taskExecutionId);
-
-        //Get the Hierarchy starting from the given entity and below
-        childHierarchyDetails = fnGetChildHierarchy(luName, targetId);
-
-        String parentLuName = "";
-        String parentTargetId = "";
-
-        // Get the parent of the given LU, to see if there is a reason to get the ancestors or not
-        Db.Row parentRec = fabric().fetch(sqlGetParent, luName, targetId).firstRow();
-
-        if (!parentRec.isEmpty()) {
-            //log.info("There is a parent: " + parentRec.get("parent_lu_name"));
-            parentLuName = "" + parentRec.get("parent_lu_name");
-            parentTargetId = "" + parentRec.get("target_parent_id");
-        }
-        //If the the input entity has parents get the hierarchy above it
-        if (parentLuName != null && !"".equals(parentLuName)) {
-            //log.info("wsGetTaskExeStatsForEntity - parent Rec: Lu Name: " + parentLuName + ", Parent target ID: " + parentTargetId);
-            //Starting for the parent as the details of the input entity is already included in the children part
-            //Sending the chilren hierarchy in order to add it to the ancestors as child hierarchy
-            parentHierarchyDetails = fnGetParentHierarchy(parentLuName, parentTargetId, childHierarchyDetails);
-        } else {// Given inputs are of a root entity
-            //log.info("The given LU is a root");
-            parentHierarchyDetails = childHierarchyDetails;
-        }
-
-        String rootLUName = "" + parentHierarchyDetails.get("luName");
-        String rootTargetID = "" + parentHierarchyDetails.get("targetId");
-        String rootSourceID = "" + parentHierarchyDetails.get("sourceId");
-        //log.info ("wsGetTaskExeStatsForEntity - rootLUName: " + rootLUName + ", rootTargetID: " + rootTargetID + ", rootSourceID: " + rootSourceID);
-
-        mainOutput.put(rootLUName, parentHierarchyDetails);
-        //If there are other root entities with the same root entity ID get them,
-        //they will be added to output as standalone (even if they have their own hierarchy)
-        Db.Rows otherRootRecs = fabric().fetch(sqlGetEntityData, rootLUName, rootTargetID, rootSourceID);
-        for (Db.Row rootRec : otherRootRecs) {
-            Map<String, Object> rootDetails = new HashMap<>();
-            String currRootLuName = "" + rootRec.get("luName");
-            rootDetails.put("luName", currRootLuName);
-            rootDetails.put("targetId", "" + rootRec.get("targetId"));
-
-            //Get instance ID from entity id
-            Object[] splitId = fnSplitUID("" + rootRec.get("sourceId"));
-            String instanceId = "" + splitId[0];
-            rootDetails.put("sourceId", "" + instanceId);
-
-            rootDetails.put("entityStatus", "" + rootRec.get("luStatus"));
-
-            mainOutput.put(currRootLuName, rootDetails);
-        }
-        if (otherRootRecs != null) {
-            otherRootRecs.close();
+        if(isFullHierarchyEnabled){
+            fabric().execute("GET TDM.?",taskExecutionId);
+            mainOutput = fnGetTaskExeStatsForEntityFromTDMLU(taskExecutionId, luName, targetId);
+        }else{
+            mainOutput = fnGetTaskExeStatsForEntityFromTDMDB(taskExecutionId, luName, targetId);
         }
         return wrapWebServiceResults("SUCCESS", null, mainOutput);
     }
@@ -2379,10 +2410,16 @@ public class Logic extends WebServiceUserCode {
         Map<String, Object> mapInnerFailedRefBuf = new HashMap<>();
         Map<String, String> mapRootsStatus = new HashMap<>();
 
-        String sqlSelect = "select ENTITY_ID as sourceId, TARGET_ENTITY_ID as targetId, BE_ROOT_ENTITY_ID as rootSourceId, " + "TARGET_ROOT_ENTITY_ID as rootTargetId, Case when PARENT_LU_NAME = '' then LU_NAME else PARENT_LU_NAME end as parentLuName, " + "Case when PARENT_ENTITY_ID = '' then BE_ROOT_ENTITY_ID else PARENT_ENTITY_ID end as parentSourceId, " + "Case when TARGET_PARENT_ID = '' then TARGET_ROOT_ENTITY_ID else TARGET_PARENT_ID end as parentTargetId, " + "Case when EXECUTION_STATUS ='completed' then 'Copied' else 'Failed' end as copyEntityStatus, " + "Case when ROOT_ENTITY_STATUS <> 'completed' then 'Failed' else 'Copied' end as copyHierarchyStatus, " + "LU_NAME as luName " + "from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where ";
+        String sqlSelect = "select ENTITY_ID as sourceId, TARGET_ENTITY_ID as targetId, BE_ROOT_ENTITY_ID as rootSourceId, " +
+            "TARGET_ROOT_ENTITY_ID as rootTargetId, Case when PARENT_LU_NAME = '' then LU_NAME else PARENT_LU_NAME end as parentLuName, " +
+            "Case when PARENT_ENTITY_ID = '' then BE_ROOT_ENTITY_ID else PARENT_ENTITY_ID end as parentSourceId, " +
+            "Case when TARGET_PARENT_ID = '' then TARGET_ROOT_ENTITY_ID else TARGET_PARENT_ID end as parentTargetId, " +
+            "Case when EXECUTION_STATUS ='completed' then 'Successful' else 'Failed' end as copyEntityStatus, " +
+            "Case when ROOT_ENTITY_STATUS <> 'completed' then 'Failed' else 'Successful' end as copyHierarchyStatus, " +
+            "LU_NAME as luName, EXECUTION_NOTE as entityExecutionNote " + "from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where id_type = '" + luIdType + "' and ";
 
         String sqlSelectOrder = " order by TARGET_ENTITY_ID";
-        String sqlSelectCnt = "select count(1) from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where ";
+        String sqlSelectCnt = "select count(1) from TDM.TASK_EXECUTION_LINK_ENTITIES t1 where id_type = '" + luIdType + "' and ";
 
         fabric().execute("get TDM.?", taskExecutionId);
         String entity_id_alone = "";
@@ -2412,7 +2449,7 @@ public class Logic extends WebServiceUserCode {
         // TDM 6.0 - Check if the parent LU name is given or not
         // Get Completed entities
 
-        if ("ENTITY".equals(luIdType)) {//If looking only for reference fo directly to reference section
+        if ("ENTITY".equals(luIdType)) {//If looking only for reference go directly to reference section
             if (isRootLu) { //If root LU
 
                 //log.info("wsGetTDMTaskExecutionStats - Handling Root Entity");
@@ -2541,6 +2578,9 @@ public class Logic extends WebServiceUserCode {
                 mapInnerCopiedEnt.put("parentTargetId", copiedEnt.get("parentTargetId"));
                 mapInnerCopiedEnt.put("copyEntityStatus", copiedEnt.get("copyEntityStatus"));
                 mapInnerCopiedEnt.put("copyHierarchyStatus", copiedEnt.get("copyHierarchyStatus"));
+                mapInnerCopiedEnt.put("entityExecutionNote", copiedEnt.get("entityExecutionNote"));
+
+                
 
                 if (!prevTargetID.equals(targetID)) {
                     prevTargetID = targetID;
@@ -2577,6 +2617,8 @@ public class Logic extends WebServiceUserCode {
                 mapInnerFailedEnt.put("parentTargetId", failedEnt.get("parentTargetId"));
                 mapInnerFailedEnt.put("copyEntityStatus", copyEntityStatus);
                 mapInnerFailedEnt.put("copyHierarchyStatus", failedEnt.get("copyHierarchyStatus"));
+                mapInnerFailedEnt.put("entityExecutionNote", failedEnt.get("entityExecutionNote"));
+
                 //log.info ("Failed - luName: " + failedEnt.get("luName") + ", rootSourceId: " + failedEnt.get("rootSourceId"));
                 // TDM 6.1.1 - 20-may-20, add the error msg that casued the failure
                 String errorMsgSql = "select error_message from task_exe_error_detailed where " + "task_execution_id = ? and lu_name = ? and target_entity_id = ?  ORDER BY ERROR_CATEGORY LIMIT 5";
@@ -2968,7 +3010,8 @@ public class Logic extends WebServiceUserCode {
             "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS_LOGICAL_UNITS U, " + TDMDB_SCHEMA + ".TASKS T " + 
             "WHERE t.task_id = l.task_id AND u.task_id = l.task_id AND u.lu_id = l.lu_id AND T.task_id = " + taskID + 
             " AND l.task_execution_id = " + executionIdWhere + " and process_id = 0 " + 
-            "UNION SELECT task_execution_id, execution_status, fabric_execution_id, process_type, process_name as name, task_title, 'Process' as type " + 
+            "UNION SELECT task_execution_id, execution_status, fabric_execution_id, process_name as name, task_title, " + 
+            "CASE WHEN lower(process_type) = 'pre' THEN 'Pre Process' ELSE 'Post Process' END as type " + 
             "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS_EXE_PROCESS P, " + TDMDB_SCHEMA + ".TASKS T " +
             "WHERE t.task_id = l.task_id AND p.task_id = l.task_id AND p.process_id = l.process_id AND T.task_id = " + taskID + 
             " AND l.task_execution_id = " + executionIdWhere + " AND lu_id = 0";
@@ -3157,7 +3200,7 @@ public class Logic extends WebServiceUserCode {
                         env_name = "" + sourceEnvMap.get("environment_name");
 
                         //check if source env satisfies all relevant cases
-                        if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap).isEmpty()) {
+                        if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap,null,0L).isEmpty()) {
                             Map<String, Object> envData = new HashMap<>();
                             envData.put("environment_id", env_id);
                             envData.put("environment_name", env_name);
@@ -3171,13 +3214,12 @@ public class Logic extends WebServiceUserCode {
                 // loop over user target envs only if it is a load task, otherwsie target envs are not relevant
                 if (("load".equalsIgnoreCase(task_type) || "reserve".equalsIgnoreCase(task_type)) && allTargetEnvs != null) {
                     for (Map<String, Object> targetEnvMap : allTargetEnvs) {
-
                         env_id = "" + targetEnvMap.get("environment_id");
                         role_id = "" + targetEnvMap.get("role_id");
                         env_name = "" + targetEnvMap.get("environment_name");
                         int noOfEntities = -1;
                         //check if target env satisfies all relevant cases
-                        if (fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, reserve_ind, noOfEntities, targetEnvMap, clone_ind).isEmpty()) {
+                        if (fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, reserve_ind, noOfEntities, targetEnvMap, clone_ind,sync_mode,null,0L).isEmpty()) {
                             Map<String, Object> envData = new HashMap<>();
                             envData.put("environment_id", env_id);
                             envData.put("environment_name", env_name);
@@ -3618,6 +3660,7 @@ public class Logic extends WebServiceUserCode {
 						TDMDB_SCHEMA +".tasks_logical_units u ON u.task_id = t.task_id " +
 						"WHERE  " +
 						"    t.task_type = 'TRAINING' " +
+                        "    AND t.task_status = 'Active' " +
 						"    AND u.lu_name = '" + lu_name + "'" +
                         "    AND l.task_execution_id = '" + task_exe_id + "'" +
 						"    AND l.execution_status <> 'failed' " +

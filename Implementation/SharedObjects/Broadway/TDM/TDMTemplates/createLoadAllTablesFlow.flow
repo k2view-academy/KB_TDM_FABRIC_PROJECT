@@ -10,18 +10,27 @@ stages:
         out:
           PROJECT_FOLDER:
             schema: string
+      Get Template:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: load_all_tables_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   Stage 2:
     actors:
-      FileRead1:
-        parent: FileRead
-        height: 165
-        in:
-          interface:
-            const: null
-            link: Get Project Directory/PROJECT_FOLDER
-          path:
-            const: SharedObjects/Templates/TDM/tdmLoadAllTables.flow.template
-      LuFunction1:
+      Build Template Inputs:
         parent: LuFunction
         in:
           functionName:
@@ -36,6 +45,15 @@ stages:
         out:
           res:
             schema: '#ref'
+      Read Template File:
+        parent: FileRead
+        height: 165
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            link: Get Template/result
   Stage 3:
     actors:
       flow folder:
@@ -56,28 +74,28 @@ stages:
           functionName:
             const: transform
           templateContent:
-            link: FileRead1/stream
+            link: Read Template File/stream
             schema: '#ref'
           data:
-            link: LuFunction1/res
+            link: Build Template Inputs/res
             schema: '#ref'
         out:
           result:
             schema: string
   Stage 4:
     actors:
-      FileWrite1:
+      Write File:
         parent: FileWrite
         in:
           interface:
             const: null
             link: flow folder/string
           path:
-            const: LoadAllTables.flow
+            const: LoadToTarget.flow
           stream:
             link: ApplyTemplate/result
 schemas:
-  LuFunction1.out.res:
+  Build Template Inputs.out.res:
     type: array
     items:
       type: array

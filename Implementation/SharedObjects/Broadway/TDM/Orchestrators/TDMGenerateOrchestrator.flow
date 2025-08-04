@@ -2,6 +2,18 @@ tags: TDM
 stages:
   Start:
     actors:
+      Split IID:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            external: iid
+        out:
+          cloneNo:
+            schema: string
+          UID:
+            schema: string
+          versionExeID:
+            schema: string
       Print Inputs to Log:
         parent: Logger
         in:
@@ -25,8 +37,6 @@ stages:
             external: syncMode
             schema: string
             mandatory: false
-      Get Start Time:
-        parent: Now
       Set LU_TYPE:
         parent: FabricSet
         in:
@@ -40,18 +50,6 @@ stages:
               id: com.k2view.logicalUnit
               addEmptyEntry: true
             default: false
-      Split IID:
-        parent: SplitIIDAndCloneNumber_Actor
-        in:
-          iid:
-            external: iid
-        out:
-          cloneNo:
-            schema: string
-          UID:
-            schema: string
-          versionExeID:
-            schema: string
       Set INPUT_IID:
         parent: FabricSet
         in:
@@ -62,6 +60,8 @@ stages:
             const: null
             external: iid
             default: false
+      Get Start Time:
+        parent: Now
   Set Session Variables:
     actors:
       Set TARGET_ENTITY_ID:
@@ -125,8 +125,30 @@ stages:
             default: false
           value:
             link: Split IID/versionExeID
-  Get Synthetic Entities:
+      Set enable_sequences  To True:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'true'
+            default: false
+  'Get Instance ':
     actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
       Set Start Processing Time:
         parent: FabricSet
         in:
@@ -135,17 +157,6 @@ stages:
             default: false
           value:
             link: Format Start Time/string
-      Get Instance:
-        parent: FabricGet
-        in:
-          luType:
-            const: null
-            external: luName
-          syncMode:
-            const: null
-            external: syncMode
-          iid:
-            external: iid
       isParamCoupling:
         parent: Const
         in:
@@ -161,8 +172,19 @@ stages:
         out:
           value:
             schema: string
+      Get Instance:
+        parent: FabricGet
+        in:
+          luType:
+            const: null
+            external: luName
+          syncMode:
+            const: null
+            external: syncMode
+          iid:
+            external: iid
   'Is Params Coupling ':
-    dependsOn: Get Synthetic Entities
+    dependsOn: 'Get Instance '
     actors:
       'True':
         parent: EqualsIgnoreCase
@@ -193,10 +215,11 @@ stages:
     split: '--------------------'
   'False':
     else: true
-    dependsOn: Get Synthetic Entities
-  Populate Tables:
+    dependsOn: 'Get Instance '
+  Task Execution Entities:
+    transactional: true
     actors:
-      ErrorHandler1:
+      Error Handler For Entities:
         parent: ErrorHandler
         error: result
         in:
@@ -209,18 +232,44 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsWithFailed
-      Populate Task Execution Entities:
-        parent: PopulateTaskExecutionEntities_Actor
+      Handle Task Execution Entities:
+        parent: InnerFlow
         in:
-          idType:
-            const: ENTITY
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: true
+            schema: boolean
+            mandatory: false
+  TDM Sequence Mapping:
+    actors:
+      Error Handler For Sequences:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
       Populate TDM Sequence Mapping:
         parent: PopulateTdmSeqMapping_Actor
   End:
     actors:
       Print Finish Note:
         parent: Logger
-        disabled: true
         in:
           message:
             const: Finished Extracting Entity ${luType}.${iid}.
@@ -237,11 +286,3 @@ stages:
             external: iid
             schema: string
             mandatory: false
-  Stage 1: {
-    }
-  Stage 2: {
-    }
-  Stage 3: {
-    }
-  Stage 4: {
-    }

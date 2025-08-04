@@ -1,571 +1,198 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Input",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "task_execution_id": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "SyncDeleteMode",
-                            "actorType": {
-                                "parentType": "SyncDeleteMode",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check Retention Period",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "TDM_LU_RETENTION_PERIOD_VALUE",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_LU_RETENTION_PERIOD_VALUE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "TDM_LU_RETENTION_PERIOD_TYPE",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_LU_RETENTION_PERIOD_TYPE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Cast",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "ToNumber ",
-                            "actorType": {
-                                "parentType": "ToNumber",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Not Null Or Zero",
-                    "dependsOnList": [
-                        "Cast"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "GreaterThanZero",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "GreaterThan",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "getRetention",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "getRetention"
-                                    },
-                                    {
-                                        "name": "retentionPeriodType",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "retentionPeriodValue",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do nothing",
-                    "dependsOnList": [
-                        "Cast"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set not Zero",
-                    "dependsOnList": [
-                        "Not Null Or Zero"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Set INSTANCE_TTL ",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do nothing 2",
-                    "dependsOnList": [
-                        "Do nothing"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "SELECT count(*)",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Get Count Of unfinished LUs",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "SELECT count(*) FROM @TDMDB_SCHEMA@.task_execution_list as out1 \r\nwhere task_execution_id = ${@task_execution_id} and exists (select 1 from @TDMDB_SCHEMA@.task_execution_list tbl \r\nwhere tbl.task_execution_id=out1.task_execution_id\r\nand tbl.execution_status not in ('stopped','completed','failed','killed'))"
-                                    },
-                                    {
-                                        "name": "task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Reject Message",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "Task Execution ID ${TASK_EXECUTION_ID} is not completed yet"
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Count Check",
-                    "dependsOnList": [
-                        "SELECT count(*)"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Count Greater Than 0",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "GreaterThan",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Reject Instance",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "fnRejectInstance"
-                                    },
-                                    {
-                                        "name": "msg",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Count is zero",
-                    "dependsOnList": [
-                        "SELECT count(*)"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "TASK_EXECUTION",
-                            "actorType": {
-                                "parentType": "DbLoad",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            "TASK_EXECUTION_ID"
-                                        ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "sqlite"
-                                    },
-                                    {
-                                        "name": "TASK_EXECUTION_ID",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "task_execution_id",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "task_execution_id",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Reject Message",
-                "name": "TASK_EXECUTION_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Get Count Of unfinished LUs",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "TASK_EXECUTION",
-                "name": "TASK_EXECUTION_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_LU_RETENTION_PERIOD_VALUE",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "ToNumber ",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_LU_RETENTION_PERIOD_TYPE",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "getRetention",
-                "name": "retentionPeriodType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ToNumber ",
-                "name": "number"
-            },
-            "rightPort": {
-                "actor": "getRetention",
-                "name": "retentionPeriodValue"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ToNumber ",
-                "name": "number"
-            },
-            "rightPort": {
-                "actor": "GreaterThanZero",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "getRetention",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set INSTANCE_TTL ",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Count Of unfinished LUs",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Count Greater Than 0",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Reject Message",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Reject Instance",
-                "name": "msg"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "task_execution_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "SyncDeleteMode",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "TASK_EXECUTION",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "TASK_EXECUTION",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "task_execution_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "task_execution_id"
-            }
-        }
-    ]
-}
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Check Retention Period:
+    actors:
+      TDM_LU_RETENTION_PERIOD_VALUE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_LU_RETENTION_PERIOD_VALUE
+            default: false
+      TDM_LU_RETENTION_PERIOD_TYPE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_LU_RETENTION_PERIOD_TYPE
+            default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Cast:
+    actors:
+      'ToNumber ':
+        parent: ToNumber
+        in:
+          value:
+            link: TDM_LU_RETENTION_PERIOD_VALUE/result
+  Not Null Or Zero:
+    dependsOn: Cast
+    actors:
+      GreaterThanZero:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: ToNumber /number
+      getRetention:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getRetention
+          retentionPeriodType:
+            link: TDM_LU_RETENTION_PERIOD_TYPE/result
+            schema: string
+            mandatory: false
+          retentionPeriodValue:
+            link: ToNumber /number
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: integer
+    split: '--------------------'
+  Do nothing:
+    else: true
+    transactional: false
+    dependsOn: Cast
+  Set not Zero:
+    transactional: false
+    dependsOn: Not Null Or Zero
+    actors:
+      'Set INSTANCE_TTL ':
+        parent: FabricSet
+        in:
+          key:
+            default: false
+          value:
+            const: null
+            link: getRetention/result
+            default: false
+    split: '--------------------'
+  Do nothing 2:
+    transactional: false
+    dependsOn: Do nothing
+  SELECT count(*):
+    transactional: false
+    actors:
+      Get Count Of unfinished LUs:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT count(*) FROM ${@TDMDB_SCHEMA}.task_execution_list as out1
+              where task_execution_id = ${@task_execution_id} and exists (select 1 from ${@TDMDB_SCHEMA}.task_execution_list tbl
+              where tbl.task_execution_id=out1.task_execution_id
+              and tbl.execution_status not in ('stopped','completed','failed','killed'))
+          task_execution_id:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: number
+      Reject Message:
+        parent: StringFormat
+        in:
+          format:
+            const: Task Execution ID ${TASK_EXECUTION_ID} is not completed yet
+          TASK_EXECUTION_ID:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+  Count Check:
+    transactional: false
+    dependsOn: SELECT count(*)
+    actors:
+      Count Greater Than 0:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Get Count Of unfinished LUs/result
+      Reject Instance:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnRejectInstance
+          msg:
+            link: Reject Message/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Count is zero:
+    else: true
+    transactional: false
+    dependsOn: SELECT count(*)
+    actors:
+      TASK_EXECUTION:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            link: PopulationArgs/iid
+            schema: any
+      task_execution_id:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: PopulationArgs/iid
+        out:
+          value:
+            external: task_execution_id
+            schema: string
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string

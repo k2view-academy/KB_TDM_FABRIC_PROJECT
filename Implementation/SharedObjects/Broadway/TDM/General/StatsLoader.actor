@@ -39,6 +39,13 @@
             "doc": [
                 "Statistics map"
             ]
+        },
+        {
+            "name": "table",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
         }
     ],
     "outputs": [],

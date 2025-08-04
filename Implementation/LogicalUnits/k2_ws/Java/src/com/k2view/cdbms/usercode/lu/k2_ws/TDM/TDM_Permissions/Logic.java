@@ -9,13 +9,13 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 import java.util.*;
 import com.k2view.cdbms.shared.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
-public class Logic extends WebServiceUserCode {
-	
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+
+
+@SuppressWarnings({"DefaultAnnotationParam", "unchecked", "rawtypes"})
+public class Logic extends WebServiceUserCode{
 	public static final String TDM = "TDM";
-	private static final String SELECT_PERMISSION_GROUP = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
 	private static final String SELECT_FABRIC_ROLES = "select fabric_role from " + TDMDB_SCHEMA + ".permission_groups_mapping where permission_group=?";
 	private static final String SELECT_PERMISSION_GROUP_MAPPINGS = "select * from " + TDMDB_SCHEMA + ".permission_groups_mapping";
 	private static final String SELECT_PERMISSION_GROUP_BY_ROLE = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=?";
