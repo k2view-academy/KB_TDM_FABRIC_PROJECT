@@ -5,6 +5,18 @@
     <Environment enabled="true" name="Production">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme></dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -31,20 +43,20 @@
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
-          <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~Cfg0bRMK1Vn1sWeKvqqLHlrcrt95u2waQmaFs+oU+KbnYk0&#x3D;</dbPasswordEncrypted>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~nWkVVAkYNq7VTRglnNtYJlZlaVykEM0lbAagYyFvK7OyNpDrkZ/10w&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/?stringtype&#x3D;unspecified</connString>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser>CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~9K76u74DrngTstS5s1Ochy2X1qOhhs5G6eMgh9wQXJURZnc+JgjZ4w&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -52,26 +64,6 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEBUG_MODE" luName="TDM">
-          <Value>true</Value>
-          <Comment>This flag is used to enble running sync in Studio</Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
@@ -288,15 +280,7 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
-        <Global name="TARGET_TDM_VERSION" luName="TDM">
-          <Value>9.2</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="CREATE_TDMDB" luName="TDM">
           <Value>false</Value>
           <Comment></Comment>
         </Global>
@@ -404,6 +388,18 @@
     <Environment enabled="true" name="Development">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme></dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -430,20 +426,20 @@
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
-          <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~t1408UjFDmFarGdJbeilRj2nhcSiUbSl3qquqvxImKzTFto&#x3D;</dbPasswordEncrypted>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~hS3p0srpRTcteLJDIO9F/vkr3FoTYsfCKfMeR24Audn8Phl2ICnpTw&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TDMDB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/?stringtype&#x3D;unspecified</connString>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~na2hFnr3zQNMWIc8AWJ6S8libRqkSiiikq2hFq5tfXrVL+hiiK6MhsbAcSA&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -451,26 +447,6 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEBUG_MODE" luName="TDM">
-          <Value>true</Value>
-          <Comment>This flag is used to enble running sync in Studio</Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
@@ -687,15 +663,7 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
-        <Global name="TARGET_TDM_VERSION" luName="TDM">
-          <Value>9.2</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="CREATE_TDMDB" luName="TDM">
           <Value>false</Value>
           <Comment></Comment>
         </Global>
@@ -803,6 +771,18 @@
     <Environment enabled="false" name="Synthetic">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme></dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://local:5432/?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -836,13 +816,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
           <dbHost></dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
+          <dbScheme>CRM_DB</dbScheme>
           <dbUser></dbUser>
           <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/?stringtype&#x3D;unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -850,26 +830,6 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEBUG_MODE" luName="TDM">
-          <Value>true</Value>
-          <Comment>This flag is used to enble running sync in Studio</Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
@@ -1086,15 +1046,7 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
-        <Global name="TARGET_TDM_VERSION" luName="TDM">
-          <Value>9.2</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="CREATE_TDMDB" luName="TDM">
           <Value>false</Value>
           <Comment></Comment>
         </Global>
@@ -1181,6 +1133,18 @@
     <Environment enabled="false" name="AI">
       <Comments></Comments>
       <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme></dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://local:5432/?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -1214,13 +1178,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
           <dbHost></dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
+          <dbScheme>CRM_DB</dbScheme>
           <dbUser></dbUser>
           <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/?stringtype&#x3D;unspecified</connString>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -1228,26 +1192,6 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEBUG_MODE" luName="TDM">
-          <Value>true</Value>
-          <Comment>This flag is used to enble running sync in Studio</Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
           <Value></Value>
           <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
@@ -1464,15 +1408,7 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
-        <Global name="TARGET_TDM_VERSION" luName="TDM">
-          <Value>9.2</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="CREATE_TDMDB" luName="TDM">
           <Value>false</Value>
           <Comment></Comment>
         </Global>
