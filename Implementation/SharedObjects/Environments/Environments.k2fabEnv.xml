@@ -17,6 +17,18 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
           <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser>CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~9K76u74DrngTstS5s1Ochy2X1qOhhs5G6eMgh9wQXJURZnc+JgjZ4w&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -49,18 +61,6 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~9K76u74DrngTstS5s1Ochy2X1qOhhs5G6eMgh9wQXJURZnc+JgjZ4w&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -284,6 +284,34 @@
           <Value>false</Value>
           <Comment></Comment>
         </Global>
+        <Global name="CREATE_TDMDB" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.4.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEBUG_MODE" luName="TDM">
+          <Value>true</Value>
+          <Comment>This flag is used to enble running sync in Studio</Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="CUSTOM" enabled="false" version="">
@@ -346,7 +374,7 @@
               <Value></Value>
             </Property>
             <Property name="Token">
-              <Value></Value>
+              <Value>~encs2~Qf1TGO3qd5BKZi3TGLt/9PvqL7ETt/z6KIkniFDD7wZZL/I&#x3D;</Value>
             </Property>
             <Property name="AccessTokenUrl">
               <Value></Value>
@@ -400,6 +428,18 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
           <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~na2hFnr3zQNMWIc8AWJ6S8libRqkSiiikq2hFq5tfXrVL+hiiK6MhsbAcSA&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -432,18 +472,6 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>TAR_CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~na2hFnr3zQNMWIc8AWJ6S8libRqkSiiikq2hFq5tfXrVL+hiiK6MhsbAcSA&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -665,6 +693,34 @@
         </Global>
         <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
           <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="CREATE_TDMDB" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.4.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEBUG_MODE" luName="TDM">
+          <Value>true</Value>
+          <Comment>This flag is used to enble running sync in Studio</Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
       </GlobalsList>
@@ -729,7 +785,7 @@
               <Value></Value>
             </Property>
             <Property name="Token">
-              <Value></Value>
+              <Value>~encs2~hNqD6rhOcwwKj8S/AXMmAMInk44nAnZOVdAqeqRHSIq5lCU&#x3D;</Value>
             </Property>
             <Property name="AccessTokenUrl">
               <Value></Value>
@@ -783,6 +839,18 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
           <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -815,18 +883,6 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -1048,6 +1104,34 @@
         </Global>
         <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
           <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="CREATE_TDMDB" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.4.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEBUG_MODE" luName="TDM">
+          <Value>true</Value>
+          <Comment>This flag is used to enble running sync in Studio</Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
       </GlobalsList>
@@ -1145,6 +1229,18 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
           <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -1177,18 +1273,6 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -1410,6 +1494,34 @@
         </Global>
         <Global name="TDM_SUPPRESS_TEST_CONNECTION" luName="">
           <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="CREATE_TDMDB" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TARGET_TDM_VERSION" luName="TDM">
+          <Value>9.4.0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEBUG_MODE" luName="TDM">
+          <Value>true</Value>
+          <Comment>This flag is used to enble running sync in Studio</Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
       </GlobalsList>
