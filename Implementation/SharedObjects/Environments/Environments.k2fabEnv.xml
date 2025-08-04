@@ -5,30 +5,6 @@
     <Environment enabled="true" name="Production">
       <Comments></Comments>
       <DbInterfacesList>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~9K76u74DrngTstS5s1Ochy2X1qOhhs5G6eMgh9wQXJURZnc+JgjZ4w&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -62,6 +38,18 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser>CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~PCgygatJfO2nIh/x/maXAln4qOKbh0Yfv+wjr3qtH9PU32kRJUJzWA&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -314,132 +302,11 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-            <Property name="BF_Metadata">
-              <Value></Value>
-            </Property>
-            <Property name="BF_FilesList">
-              <Value></Value>
-            </Property>
-            <Property name="BF_DataSnapshot">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Bearer</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value>~encs2~Qf1TGO3qd5BKZi3TGLt/9PvqL7ETt/z6KIkniFDD7wZZL/I&#x3D;</Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-            <Property name="Certificate">
-              <Value></Value>
-            </Property>
-            <Property name="BF_Metadata">
-              <Value></Value>
-            </Property>
-            <Property name="BF_FilesList">
-              <Value></Value>
-            </Property>
-            <Property name="BF_DataSnapshot">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="true" name="Development">
       <Comments></Comments>
       <DbInterfacesList>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>postgres-service</dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>TAR_CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~na2hFnr3zQNMWIc8AWJ6S8libRqkSiiikq2hFq5tfXrVL+hiiK6MhsbAcSA&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -473,6 +340,18 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>postgres-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs2~oztisS4Z67MK1wDTTe1yqscBVLRXAsJr3/XavN0DFWzFBvbFNBjmo2gftg0&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -725,132 +604,11 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CUSTOM" enabled="false" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-            <Property name="BF_Metadata">
-              <Value></Value>
-            </Property>
-            <Property name="BF_FilesList">
-              <Value></Value>
-            </Property>
-            <Property name="BF_DataSnapshot">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Bearer</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value>~encs2~hNqD6rhOcwwKj8S/AXMmAMInk44nAnZOVdAqeqRHSIq5lCU&#x3D;</Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-            <Property name="Certificate">
-              <Value></Value>
-            </Property>
-            <Property name="BF_Metadata">
-              <Value></Value>
-            </Property>
-            <Property name="BF_FilesList">
-              <Value></Value>
-            </Property>
-            <Property name="BF_DataSnapshot">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="false" name="Synthetic">
       <Comments></Comments>
       <DbInterfacesList>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -884,6 +642,18 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -1136,111 +906,11 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CUSTOM" enabled="true" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="true" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Bearer</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="false" name="AI">
       <Comments></Comments>
       <DbInterfacesList>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme></dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://local:5432/?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost></dbHost>
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
           <dbHost>postgres-service</dbHost>
           <dbPort>5432</dbPort>
@@ -1274,6 +944,18 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost></dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+          <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -1526,82 +1208,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CUSTOM" enabled="true" version="">
-          <Name>AI_DB_External</Name>
-          <Properties>
-            <Property name="Host">
-              <Value>local</Value>
-            </Property>
-            <Property name="Port">
-              <Value>5432</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Data">
-              <Value></Value>
-            </Property>
-            <Property name="ioprovider">
-              <Value></Value>
-            </Property>
-            <Property name="TechType">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="true" version="">
-          <Name>AI_Execution</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTPS</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>local</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>443</Value>
-            </Property>
-            <Property name="Path">
-              <Value></Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Bearer</Value>
-            </Property>
-            <Property name="User">
-              <Value></Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenBodyParams">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
   </EnvironmentsList>
