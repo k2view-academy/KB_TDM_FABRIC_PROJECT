@@ -161,15 +161,19 @@ stages:
             const: TDM_TableLevel
             schema: string
           entity_id:
+            const: ''
             link:
             - Table Name/value
             - Source Entity ID/value
             schema: string
+            default: true
           iid:
+            const: ''
             link:
             - Table Name/value
             - Source Table Name/value
             schema: string
+            default: true
           target_entity_id:
             link:
             - Table Name/value
@@ -333,7 +337,7 @@ schemas:
         type: boolean
       stop_on_error:
         type: boolean
-      syncMode:
-        type: string
       iid:
+        type: string
+      syncMode:
         type: string

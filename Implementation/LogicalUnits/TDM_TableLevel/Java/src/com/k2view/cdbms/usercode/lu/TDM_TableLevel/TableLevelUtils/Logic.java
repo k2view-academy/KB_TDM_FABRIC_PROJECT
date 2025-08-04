@@ -222,6 +222,7 @@ public class Logic extends UserCode {
 
         return result;
     }
+    
     @out(name = "result", type = List.class, desc = "")
     public static List<Map<String, Object>> fnGetTablesOfTask(String taskExecutionId) throws Exception {
 
