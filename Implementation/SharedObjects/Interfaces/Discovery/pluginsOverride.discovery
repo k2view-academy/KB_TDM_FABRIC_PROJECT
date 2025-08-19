@@ -1,0 +1,21 @@
+{
+  "Rules" : [ {
+    "name" : "Baseline",
+    "connectToSource" : true,
+    "sampleSize" : {
+      "percentage" : 10,
+      "min" : 100,
+      "max" : 500,
+      "rowCount" : true
+    },
+    "globalSchemaExclude" : [ "SYS.*", ".*SYS$", "USER.*", ".*USER$" ],
+    "override" : true,
+    "pluginsOverride" : {
+      "Classification PII Marker" : {
+        "inputParameters" : {
+          "fieldNameExcludeList" : [ "(?i)ADD.*ID" ]
+        }
+      }
+    }
+  } ]
+}
