@@ -97,6 +97,10 @@ public class TdmExecuteTask {
 
     public static void fnTdmExecuteTask() throws Exception {
         log.info("----------------- Starting tdmExecuteTask -------------------");
+
+      //Initiate the separators cache
+        fnGetSeparators();
+
         String query = new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_tasks.sql"));
         Db tdmDB = db(TDM);
         tdmDB.fetch(query).forEach(row -> {

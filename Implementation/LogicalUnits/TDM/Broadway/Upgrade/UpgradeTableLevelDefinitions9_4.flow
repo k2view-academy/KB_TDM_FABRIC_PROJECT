@@ -38,7 +38,7 @@ stages:
             link:
               path: MTable Name and Location/string
               pos: 0
-  Stage 8:
+  'Stage 4  ':
     actors:
       Read Mtable:
         parent: FileRead
@@ -56,7 +56,7 @@ stages:
             link: MTable Name and Location/string
           to:
             link: BackUp File Name/string
-  Stage 4:
+  'Stage 5 ':
     actors:
       Parse MTable:
         parent: CsvParser
@@ -66,7 +66,7 @@ stages:
         out:
           object:
             schema: '#ref'
-  Stage 5:
+  'Stage 6 ':
     actors:
       Build Mtable WithNew Field:
         parent: CsvBuilder
@@ -82,10 +82,8 @@ stages:
             - delete_flow
             - load_flow
           maps:
-            link:
-              path: Parse MTable/object
-              iterate: Iterate
-  Stage 6:
+            link: Parse MTable/object
+  Stage 7:
     actors:
       Write Update Mtable:
         parent: FileWrite

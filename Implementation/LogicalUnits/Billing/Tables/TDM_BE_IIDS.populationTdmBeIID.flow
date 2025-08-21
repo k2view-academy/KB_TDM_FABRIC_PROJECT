@@ -25,11 +25,28 @@ stages:
         in:
           key:
             const: TDM_TASK_EXE_ID
-      TDMDB_SCHEMA:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get source env:
         parent: FabricSetRead
         in:
           key:
-            const: TDMDB_SCHEMA
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      get lui:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetLUI
+        out:
+          result:
+            schema: any
   Source:
     actors:
       Get Sync Source Data Indicator:
@@ -113,7 +130,7 @@ stages:
             const: |
               SELECT *
               FROM ${@schema}.tdm_be_iids
-              WHERE iid = ${iid} AND be_id <> ${be_id}
+              WHERE __iid = ${lui} and iid = ${iid} and source_env = ${source_env}
           iid:
             link: FABRIC_TDM_ROOT/result/IID
             schema: string
@@ -124,6 +141,14 @@ stages:
             mandatory: false
           schema:
             link: postgres schema/string
+            schema: string
+            mandatory: false
+          lui:
+            link: get lui/result
+            schema: string
+            mandatory: false
+          source_env:
+            link: Get source env/result
             schema: string
             mandatory: false
         out:
@@ -220,7 +245,7 @@ stages:
             const: select be_name from ${@TDMDB_SCHEMA}.business_entities where be_id
               = ?
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           params:
@@ -286,14 +311,14 @@ stages:
             const: |-
               select t.root_entity_id , t.root_lu_name ,t.source_env , t.iid
               from ${@TDMDB_SCHEMA}.task_execution_entities t
-              where t.task_execution_id =${task_execution_id} and t.lu_name=${lu_name} and t.execution_status='completed' and t.id_type='ENTITY'
+              where t.task_execution_id =${task_execution_id} and t.lu_name=${lu_name} and t.execution_status<>'failed' and t.id_type='ENTITY'
               and t.root_entity_id<>${root_iid} and t.iid= ${iid}::TEXT
           lu_name:
             external: schema
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           root_iid:
@@ -412,7 +437,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: TDMDB_SCHEMA/result
+            link: getTDMDBSchema/schema
             schema: string
             mandatory: false
         out:

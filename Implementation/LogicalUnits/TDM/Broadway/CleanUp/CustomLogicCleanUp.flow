@@ -227,7 +227,7 @@ stages:
             const: DROP TABLE IF EXISTS ${@schema}.${@tableName}
           tableName:
             link:
-              path: Get Entity List Tables/result
+              path: Get Entity List Tables/result/table_name
               iterate: Iterate
             schema: string
             mandatory: false

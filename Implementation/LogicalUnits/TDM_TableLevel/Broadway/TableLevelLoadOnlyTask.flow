@@ -38,6 +38,10 @@ stages:
                 flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
       Get List of Tables of Task:
         parent: LuFunction
         in:
@@ -87,8 +91,14 @@ stages:
                 message: ''
               actions:
                 suppress: false
-                log: true
+                log: false
                 flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
       Init Source Entity ID for Error Handler1:
         parent: FabricSet
         in:

@@ -29,6 +29,6 @@ public class Globals extends SharedGlobals {
     public static final String TARGET_TDM_VERSION = "9.4.0";
 
 	@category("TDM_UPGRADE")
-    public static String CREATE_TDMDB = "true";
+    public static String CREATE_TDMDB = "false";
 
 }

@@ -1852,7 +1852,7 @@ public class SharedLogic {
 		return result;
 	}
 
-   	private static List<HashMap<String, String>> getTableFieldsByCatalog(List<Map<String, Object>> interfaceTables) throws SQLException {
+   	private static List<HashMap<String, String>> getTableFieldsByCatalog(List<Map<String, Object>> interfaceTables) throws Exception {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
 		for (Map<String, Object> fieldRec : interfaceTables) {
@@ -1863,9 +1863,14 @@ public class SharedLogic {
 			Boolean addField = true;
 			Object sourceEntityType = fieldRec.get("sourceEntityType");
 			if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
-				int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
-				String sourceDataType = fieldRec.get("sourceDataType").toString();
-				columnType = toSqliteType(fieldDataType, sourceDataType);
+				Object sqlDataType = fieldRec.get("sqlDataType");
+				if (sqlDataType != null) {
+					int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
+					String sourceDataType = fieldRec.get("sourceDataType").toString();
+					columnType = toSqliteType(fieldDataType, sourceDataType);
+				} else {
+					columnType = getFieldTypeBydefinedBy(fieldRec);
+				}
 
 			} else {
 				addField = false;
@@ -1884,6 +1889,34 @@ public class SharedLogic {
 		}
 
 		return result;
+	}
+
+	private static String getFieldTypeBydefinedBy(Map<String, Object> fieldRec) throws Exception{
+		
+		String definedBy = fieldRec.get("definedBy").toString();
+		String fieldType = "";
+		switch (definedBy) {
+			case "STRING":
+				fieldType = "TEXT";
+				break;
+			case "BYTES":
+				fieldType = "BLOB";
+				break;
+			case "BOOLEAN":
+			fieldType = "INTEGER";
+				break;
+			case "COLLECTION":
+				fieldType = "TEXT";
+					break;
+			case "UNKNOWN":
+				fieldType = "TEXT";
+				break;
+			default:
+				fieldType = definedBy;
+				break;
+		}
+
+		return fieldType;
 	}
 
     private record LuTable(String luName, String luTable) {

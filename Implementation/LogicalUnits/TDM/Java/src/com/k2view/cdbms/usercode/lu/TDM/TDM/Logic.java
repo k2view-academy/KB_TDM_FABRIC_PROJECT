@@ -649,7 +649,7 @@ public class Logic extends UserCode {
 		//		" where t2.task_execution_id = t1.task_execution_id and t2.id_type = 'ENTITY' and t2.root_entity_id = t1.root_entity_id and t2.execution_status <> 'completed')) entList";
 
 		String getTotFailedRootIdsSQL = "select count(distinct root_entity_id) from " + TDMDB_SCHEMA + ".task_execution_entities where task_Execution_id = ? " +
-				"and execution_status <> 'completed'";
+				"and execution_status <> 'completed' and id_type = 'ENTITY'";
 
         String getTableStaticsSQL = "select sum(num_of_processed_ref_tables) as num_of_processed_ref_tables, " +
                 "sum(num_of_copied_ref_tables) as num_of_copied_ref_tables, sum(num_of_failed_ref_tables) as num_of_failed_ref_tables " +

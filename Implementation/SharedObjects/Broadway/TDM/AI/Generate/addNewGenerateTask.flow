@@ -64,7 +64,7 @@ stages:
         in:
           date:
             link: Now/date
-      'StringFormat ':
+      Execution Params:
         parent: StringFormat
         in:
           format:
@@ -125,7 +125,7 @@ stages:
             schema: string
             mandatory: false
           execution_params:
-            link: StringFormat /string
+            link: Execution Params/string
             schema: string
             mandatory: false
           k2systemName:
@@ -140,7 +140,7 @@ schemas:
       properties:
         schema:
           type: string
-  StringFormat .in.schema:
+  Execution Params.in.schema:
     type: array
     items:
       type: string

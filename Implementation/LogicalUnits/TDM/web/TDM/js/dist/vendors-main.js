@@ -8513,7 +8513,6 @@ function _typeof(o) {
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 
 
-
 var isCheckBoxInput = (element) => element.type === 'checkbox';
 
 var isDateObject = (value) => value instanceof Date;
@@ -8554,7 +8553,7 @@ function cloneObject(data) {
     }
     else if (!(isWeb && (data instanceof Blob || isFileListInstance)) &&
         (isArray || isObject(data))) {
-        copy = isArray ? [] : {};
+        copy = isArray ? [] : Object.create(Object.getPrototypeOf(data));
         if (!isArray && !isPlainObject(data)) {
             copy = data;
         }
@@ -8728,7 +8727,7 @@ var getProxyFormState = (formState, control, localProxyFormState, isRoot = true)
     return result;
 };
 
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? react__WEBPACK_IMPORTED_MODULE_0__["useLayoutEffect"] : react__WEBPACK_IMPORTED_MODULE_0__["useEffect"];
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? react__WEBPACK_IMPORTED_MODULE_0___default.a.useLayoutEffect : react__WEBPACK_IMPORTED_MODULE_0___default.a.useEffect;
 
 /**
  * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
@@ -8807,6 +8806,44 @@ var generateWatchOutput = (names, _names, formValues, isGlobal, defaultValue) =>
     return formValues;
 };
 
+var isPrimitive = (value) => isNullOrUndefined(value) || !isObjectType(value);
+
+function deepEqual(object1, object2, _internal_visited = new WeakSet()) {
+    if (isPrimitive(object1) || isPrimitive(object2)) {
+        return object1 === object2;
+    }
+    if (isDateObject(object1) && isDateObject(object2)) {
+        return object1.getTime() === object2.getTime();
+    }
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+    if (keys1.length !== keys2.length) {
+        return false;
+    }
+    if (_internal_visited.has(object1) || _internal_visited.has(object2)) {
+        return true;
+    }
+    _internal_visited.add(object1);
+    _internal_visited.add(object2);
+    for (const key of keys1) {
+        const val1 = object1[key];
+        if (!keys2.includes(key)) {
+            return false;
+        }
+        if (key !== 'ref') {
+            const val2 = object2[key];
+            if ((isDateObject(val1) && isDateObject(val2)) ||
+                (isObject(val1) && isObject(val2)) ||
+                (Array.isArray(val1) && Array.isArray(val2))
+                ? !deepEqual(val1, val2, _internal_visited)
+                : val1 !== val2) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 /**
  * Custom hook to subscribe to field change and isolate re-rendering at the component level.
  *
@@ -8825,18 +8862,35 @@ var generateWatchOutput = (names, _names, formValues, isGlobal, defaultValue) =>
  */
 function useWatch(props) {
     const methods = useFormContext();
-    const { control = methods.control, name, defaultValue, disabled, exact, } = props || {};
+    const { control = methods.control, name, defaultValue, disabled, exact, compute, } = props || {};
     const _defaultValue = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(defaultValue);
-    const [value, updateValue] = react__WEBPACK_IMPORTED_MODULE_0___default.a.useState(control._getWatch(name, _defaultValue.current));
+    const _compute = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(compute);
+    const _computeFormValues = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(undefined);
+    _compute.current = compute;
+    const defaultValueMemo = react__WEBPACK_IMPORTED_MODULE_0___default.a.useMemo(() => control._getWatch(name, _defaultValue.current), [control, name]);
+    const [value, updateValue] = react__WEBPACK_IMPORTED_MODULE_0___default.a.useState(_compute.current ? _compute.current(defaultValueMemo) : defaultValueMemo);
     useIsomorphicLayoutEffect(() => control._subscribe({
         name,
         formState: {
             values: true,
         },
         exact,
-        callback: (formState) => !disabled &&
-            updateValue(generateWatchOutput(name, control._names, formState.values || control._formValues, false, _defaultValue.current)),
-    }), [name, control, disabled, exact]);
+        callback: (formState) => {
+            if (!disabled) {
+                const formValues = generateWatchOutput(name, control._names, formState.values || control._formValues, false, _defaultValue.current);
+                if (_compute.current) {
+                    const computedFormValues = _compute.current(formValues);
+                    if (!deepEqual(computedFormValues, _computeFormValues.current)) {
+                        updateValue(computedFormValues);
+                        _computeFormValues.current = computedFormValues;
+                    }
+                }
+                else {
+                    updateValue(formValues);
+                }
+            }
+        },
+    }), [control, disabled, name, exact]);
     react__WEBPACK_IMPORTED_MODULE_0___default.a.useEffect(() => control._removeUnmounted());
     return value;
 }
@@ -8867,12 +8921,13 @@ function useWatch(props) {
  */
 function useController(props) {
     const methods = useFormContext();
-    const { name, disabled, control = methods.control, shouldUnregister } = props;
+    const { name, disabled, control = methods.control, shouldUnregister, defaultValue, } = props;
     const isArrayField = isNameInFieldArray(control._names.array, name);
+    const defaultValueMemo = react__WEBPACK_IMPORTED_MODULE_0___default.a.useMemo(() => get(control._formValues, name, get(control._defaultValues, name, defaultValue)), [control, name, defaultValue]);
     const value = useWatch({
         control,
         name,
-        defaultValue: get(control._formValues, name, get(control._defaultValues, name, props.defaultValue)),
+        defaultValue: defaultValueMemo,
         exact: true,
     });
     const formState = useFormState({
@@ -8886,6 +8941,7 @@ function useController(props) {
         value,
         ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     }));
+    _props.current = props;
     const fieldState = react__WEBPACK_IMPORTED_MODULE_0___default.a.useMemo(() => Object.defineProperties({}, {
         invalid: {
             enumerable: true,
@@ -9107,7 +9163,9 @@ function Form(props) {
                         method,
                         headers: {
                             ...headers,
-                            ...(encType ? { 'Content-Type': encType } : {}),
+                            ...(encType && encType !== 'multipart/form-data'
+                                ? { 'Content-Type': encType }
+                                : {}),
                         },
                         body: shouldStringifySubmissionData ? formDataJson : formData,
                     });
@@ -9185,44 +9243,6 @@ var createSubject = () => {
         unsubscribe,
     };
 };
-
-var isPrimitive = (value) => isNullOrUndefined(value) || !isObjectType(value);
-
-function deepEqual(object1, object2, _internal_visited = new WeakSet()) {
-    if (isPrimitive(object1) || isPrimitive(object2)) {
-        return object1 === object2;
-    }
-    if (isDateObject(object1) && isDateObject(object2)) {
-        return object1.getTime() === object2.getTime();
-    }
-    const keys1 = Object.keys(object1);
-    const keys2 = Object.keys(object2);
-    if (keys1.length !== keys2.length) {
-        return false;
-    }
-    if (_internal_visited.has(object1) || _internal_visited.has(object2)) {
-        return true;
-    }
-    _internal_visited.add(object1);
-    _internal_visited.add(object2);
-    for (const key of keys1) {
-        const val1 = object1[key];
-        if (!keys2.includes(key)) {
-            return false;
-        }
-        if (key !== 'ref') {
-            const val2 = object2[key];
-            if ((isDateObject(val1) && isDateObject(val2)) ||
-                (isObject(val1) && isObject(val2)) ||
-                (Array.isArray(val1) && Array.isArray(val2))
-                ? !deepEqual(val1, val2, _internal_visited)
-                : val1 !== val2) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
 
 var isEmptyObject = (value) => isObject(value) && !Object.keys(value).length;
 
@@ -10175,7 +10195,7 @@ function createFormControl(props = {}) {
                 ? setValues(name, cloneValue, options)
                 : setFieldValue(name, cloneValue, options);
         }
-        isWatched(name, _names) && _subjects.state.next({ ..._formState });
+        isWatched(name, _names) && _subjects.state.next({ ..._formState, name });
         _subjects.state.next({
             name: _state.mount ? name : undefined,
             values: cloneObject(_formValues),
@@ -10210,8 +10230,10 @@ function createFormControl(props = {}) {
             const watched = isWatched(name, _names, isBlurEvent);
             set(_formValues, name, fieldValue);
             if (isBlurEvent) {
-                field._f.onBlur && field._f.onBlur(event);
-                delayErrorCallback && delayErrorCallback(0);
+                if (!target || !target.readOnly) {
+                    field._f.onBlur && field._f.onBlur(event);
+                    delayErrorCallback && delayErrorCallback(0);
+                }
             }
             else if (field._f.onChange) {
                 field._f.onChange(event);
@@ -10357,7 +10379,8 @@ function createFormControl(props = {}) {
     };
     const watch = (name, defaultValue) => isFunction(name)
         ? _subjects.state.subscribe({
-            next: (payload) => name(_getWatch(undefined, defaultValue), payload),
+            next: (payload) => 'values' in payload &&
+                name(_getWatch(undefined, defaultValue), payload),
         })
         : _getWatch(name, defaultValue, true);
     const _subscribe = (props) => _subjects.state.subscribe({
@@ -10368,6 +10391,7 @@ function createFormControl(props = {}) {
                     values: { ..._formValues },
                     ..._formState,
                     ...formState,
+                    defaultValues: _defaultValues,
                 });
             }
         },
@@ -10704,6 +10728,7 @@ function createFormControl(props = {}) {
                 ? _formState.isSubmitSuccessful
                 : false,
             isSubmitting: false,
+            defaultValues: _defaultValues,
         });
     };
     const reset = (formValues, keepStateOptions) => _reset(isFunction(formValues)
@@ -10927,24 +10952,22 @@ function useFieldArray(props) {
     const [fields, setFields] = react__WEBPACK_IMPORTED_MODULE_0___default.a.useState(control._getFieldArray(name));
     const ids = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(control._getFieldArray(name).map(generateId));
     const _fieldIds = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(fields);
-    const _name = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(name);
     const _actioned = react__WEBPACK_IMPORTED_MODULE_0___default.a.useRef(false);
-    _name.current = name;
     _fieldIds.current = fields;
     control._names.array.add(name);
-    rules &&
-        control.register(name, rules);
+    react__WEBPACK_IMPORTED_MODULE_0___default.a.useMemo(() => rules &&
+        control.register(name, rules), [control, rules, name]);
     useIsomorphicLayoutEffect(() => control._subjects.array.subscribe({
         next: ({ values, name: fieldArrayName, }) => {
-            if (fieldArrayName === _name.current || !fieldArrayName) {
-                const fieldValues = get(values, _name.current);
+            if (fieldArrayName === name || !fieldArrayName) {
+                const fieldValues = get(values, name);
                 if (Array.isArray(fieldValues)) {
                     setFields(fieldValues);
                     ids.current = fieldValues.map(generateId);
                 }
             }
         },
-    }).unsubscribe, [control]);
+    }).unsubscribe, [control, name]);
     const updateValues = react__WEBPACK_IMPORTED_MODULE_0___default.a.useCallback((updatedFieldArrayValues) => {
         _actioned.current = true;
         control._setFieldArray(name, updatedFieldArrayValues);
@@ -25370,7 +25393,7 @@ const flip = function (options) {
           if (!ignoreCrossAxisOverflow ||
           // We leave the current main axis only if every placement on that axis
           // overflows the main axis.
-          overflowsData.every(d => d.overflows[0] > 0 && getSideAxis(d.placement) === initialSideAxis)) {
+          overflowsData.every(d => getSideAxis(d.placement) === initialSideAxis ? d.overflows[0] > 0 : true)) {
             // Try next placement and re-run the lifecycle.
             return {
               data: {

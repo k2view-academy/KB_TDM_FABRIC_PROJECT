@@ -1,6 +1,21 @@
 stages:
   Look For Given Schema:
     actors:
+      If No Catalog:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: MTable "catalog_field_info" not found
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Check if Schema is used in Catalog:
         parent: MTableLookup
         in:
@@ -8,19 +23,19 @@ stages:
             const: catalog_field_info
           dataPlatform:
             external: interface
-            schema: any
+            schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
           schema:
             external: schema
-            schema: any
+            schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
           dataset:
             external: table
-            schema: any
+            schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false

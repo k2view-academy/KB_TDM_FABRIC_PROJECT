@@ -478,15 +478,17 @@ public class Logic extends WebServiceUserCode {
             "AND rt.schema_name = ? AND rt.interface_name = ? AND rt.task_id = t.task_id " +
             "AND t.source_env_name = ? AND s.task_execution_id = (select MAX(s2.task_execution_id) " + 
             "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s2, " + TDMDB_SCHEMA + ".task_execution_list l, " +
-            TDMDB_SCHEMA + ".tasks t2 " +
-            "WHERE s2.ref_table_name = ? " +
-            "AND s2.task_ref_table_id = s.task_ref_table_id " +
+                TDMDB_SCHEMA + ".tasks t2, " + TDMDB_SCHEMA + ".task_ref_tables rt2 " +
+            "WHERE rt2.ref_table_name = ? " +
+            "AND rt2.schema_name = ? AND rt2.interface_name = ? " +
+            "AND rt2.task_ref_table_id = s2.task_ref_table_id " +
             "AND s2.execution_status = 'completed' " + 
             "AND s2.task_execution_id = l.task_execution_id " +
-            "AND t2.task_id = l.task_id AND t2.sync_mode != 'OFF' and t2.retention_period_value != 0 " +
+            "AND t2.task_id = l.task_id AND t2.source_env_name = ? " +
+            "AND t2.sync_mode != 'OFF' and t2.retention_period_value != 0 " +
             "AND (l.expiration_date is null OR l.expiration_date ='1970-01-01 00:00:00.0' OR l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC'))";
         
-        Db.Row tableData = db(TDM).fetch(sql, tableName, schemaName, interfaceName, envName, tableName).firstRow();
+        Db.Row tableData = db(TDM).fetch(sql, tableName, schemaName, interfaceName, envName, tableName, schemaName, interfaceName, envName).firstRow();
         if (tableData != null && !tableData.isEmpty()) {
             tableVersion.put("taskExecutionId", tableData.get("taskExecutionId"));
             tableVersion.put("taskName", tableData.get("taskName"));

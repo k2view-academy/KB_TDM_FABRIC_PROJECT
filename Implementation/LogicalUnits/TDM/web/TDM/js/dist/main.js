@@ -1596,6 +1596,14 @@ const OptionContainer = styled_components_browser_esm["b" /* default */].div`
     align-items: center;
     justify-content: space-between;
     min-height: 25px;
+    width: 100%;
+    position: relative;
+`;
+const OptionText = styled_components_browser_esm["b" /* default */].div`
+    width: calc(100% - 20px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 const Select_styles_MadatoryAsterisk = styled_components_browser_esm["b" /* default */].span`
     color: red;
@@ -1606,6 +1614,13 @@ const DescriptionContainer = styled_components_browser_esm["b" /* default */].di
     position: absolute;
     right: 42px;
     bottom: 7px;
+    z-index: 100000;
+`;
+const DescriptionContainer2 = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    right: 0px;
+    bottom: 1px;
+    z-index: 10000;
 `;
 const styles_PopoverTemplate = styled_components_browser_esm["b" /* default */].div`
     padding: 10px;
@@ -1745,11 +1760,14 @@ function TDMSelect(props) {
     onChange(item);
   }, [onChange, isMulti, options]);
   const ValueOption = props => {
-    var _props$data;
+    var _props$data, _props$data2;
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(Option, {
       ...props,
       children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(OptionContainer, {
-        children: [props.data.label, props !== null && props !== void 0 && (_props$data = props.data) !== null && _props$data !== void 0 && _props$data.description ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(OptionText, {
+          children: props.data.label
+        }), props !== null && props !== void 0 && (_props$data = props.data) !== null && _props$data !== void 0 && _props$data.description ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
+          title: props === null || props === void 0 ? void 0 : (_props$data2 = props.data) === null || _props$data2 === void 0 ? void 0 : _props$data2.description,
           src: info_icon
         }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
       })
@@ -6180,35 +6198,69 @@ const useCustomerTable = () => {
     }),
     cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: info.getValue()
-    })
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
   }), columnHelper.accessor('task_execution_id', {
     header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: "task execution id"
     }),
     cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: info.getValue()
-    })
+    }),
+    meta: {
+      type: 'number'
+    },
+    filterFn: (row, id, filterValue) => {
+      return String(row.getValue(id)).includes(String(filterValue));
+    }
   }), columnHelper.accessor('execution_datetime', {
     header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: "Creation date"
     }),
     cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: info.getValue()
-    })
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
   }), columnHelper.accessor('executed_by', {
     header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: "executed by"
     }),
     cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: info.getValue()
-    })
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
   }), columnHelper.accessor('task_description', {
     header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: "task description"
     }),
     cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
       children: info.getValue()
-    })
+    }),
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, id, filterValue) => {
+      // cast both sides to strings and do a "contains" check
+      return String(row.getValue(id)).toLowerCase().includes(String(filterValue).toLowerCase());
+    }
   })], [columnHelper, selected]);
   const OpenModalUpdateVersion = Object(react["useCallback"])(async row => {
     //inputs table_name,env_name for api getTableVersions
@@ -8601,7 +8653,6 @@ const useConstants = () => {
 
 
 
-
 function Rule(props) {
   const {
     rule,
@@ -8783,12 +8834,7 @@ function Rule(props) {
       group: rule.group,
       parameters: parameters
     }) : /*#__PURE__*/Object(jsx_runtime["jsxs"])(RuleItemContainer, {
-      children: [chosenParam !== null && chosenParam !== void 0 && chosenParam.DESCRIPTION ? /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_IconContainer, {
-        title: (chosenParam === null || chosenParam === void 0 ? void 0 : chosenParam.DESCRIPTION) || '',
-        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(QueryBuilder_styles_Icon, {
-          src: info_icon
-        })
-      }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
         width: config_params !== null && config_params !== void 0 && config_params.enable_param_auto_width ? 'auto' : '290px',
         minWidth: config_params !== null && config_params !== void 0 && config_params.enable_param_auto_width ? '290px' : '',
         maxWidth: config_params !== null && config_params !== void 0 && config_params.enable_param_auto_width ? '500px' : '',
@@ -8796,7 +8842,7 @@ function Rule(props) {
         mandatory: true,
         options: parameters,
         value: chosenParam,
-        isClearable: true,
+        isClearable: false,
         onChange: onParamChange
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
         width: '160px',
@@ -8993,7 +9039,7 @@ const getSubQuery = (rule, parameters, type, resultValues, filter_types, isCoupl
     data = "'" + data + "'";
     if (((_rule$type = rule.type) === null || _rule$type === void 0 ? void 0 : _rule$type.toLowerCase()) === "number" || ((_rule$type2 = rule.type) === null || _rule$type2 === void 0 ? void 0 : _rule$type2.toLowerCase()) === "integer") {
       if (!isCoupling) {
-        field = "ARRAY(SELECT unnest(" + field + ")::numeric[] ) ";
+        field = "SELECT unnest(" + field + ")::numeric  ";
       } else {
         field = field + "::numeric[] ";
       }
@@ -10468,7 +10514,7 @@ function Parameters(props) {
     // Set the timeout to delay the API call by 1.5 seconds
     timeoutId = setTimeout(() => {
       getEntitesCount();
-    }, 3500);
+    }, 2500);
 
     // Cleanup function to clear the timeout if useEffect is called again before 1.5 seconds
     return () => clearTimeout(timeoutId);
@@ -10493,6 +10539,7 @@ function Parameters(props) {
           param_type: value.PARAM_TYPE,
           COMBO_INDICATOR: value.COMBO_INDICATOR === 'true',
           DESCRIPTION: value.DESCRIPTION,
+          description: value.DESCRIPTION,
           valid_values: Array.isArray(value['VALID_VALUES']) ? value['VALID_VALUES'].map(it => ({
             label: it,
             value: it
@@ -11287,6 +11334,7 @@ const usePeriods = (saveForm, version_ind, dataSourceType, source_type, retentio
   const prevDataSourceType = Object(usehooks["c" /* usePrevious */])(dataSourceType);
   const previousSource_type = Object(usehooks["c" /* usePrevious */])(source_type);
   const [periodsData, setPeriodsData] = Object(react["useState"])(null);
+  const [autoVerionChange, setAutoVerionChange] = Object(react["useState"])(false);
   const updatePeriods = Object(react["useCallback"])(function () {
     let init = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     if (!periodsData) {
@@ -11413,14 +11461,19 @@ const usePeriods = (saveForm, version_ind, dataSourceType, source_type, retentio
     fetchReservationPeriodsData();
   }, []);
   Object(react["useEffect"])(() => {
-    updatePeriods(false);
+    updatePeriods(autoVerionChange ? false : true);
+    if (autoVerionChange) {
+      setAutoVerionChange(false);
+    }
   }, [version_ind]);
   Object(react["useEffect"])(() => {
     if (retention_period_value === 0) {
+      setAutoVerionChange(true);
       saveForm({
         version_ind: false
       });
     } else if (retention_period_value === -1 && dataSourceType === 'data_source' && source_type === 'tables') {
+      setAutoVerionChange(true);
       saveForm({
         version_ind: true
       });
@@ -11629,7 +11682,13 @@ function TestDataStoreForm(props) {
         title: "Create data snapshot (version)",
         value: version_ind && !(sync_mode === 'OFF' && dataSourceType === 'data_source'),
         onChange: onDataVersioningchange,
-        disabled: !((systemUserRole === null || systemUserRole === void 0 ? void 0 : systemUserRole.type) === 'admin' || (!userRole || userRole !== null && userRole !== void 0 && userRole.allowed_entity_versioning) && (!sourceUserRole || sourceUserRole !== null && sourceUserRole !== void 0 && sourceUserRole.allowed_entity_versioning) && (userRole || sourceUserRole)) || sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || dataSourceType === 'data_source' && source_type === 'tables' || retention_period_type === 'Do Not Retain'
+        disabled:
+        // !(systemUserRole?.type === 'admin' || 
+        // ((!userRole || userRole?.allowed_entity_versioning) && 
+        // (!sourceUserRole || sourceUserRole?.allowed_entity_versioning) && (
+        //     userRole || sourceUserRole
+        // ))) || 
+        sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || dataSourceType === 'data_source' && source_type === 'tables' || retention_period_type === 'Do Not Retain'
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(RetentionPeriodContainer, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Periods, {
           disabled: sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data',
@@ -12679,12 +12738,6 @@ function SchedulerForm(props) {
       });
     }
   }, [saveForm, setSchedulingParameters]);
-  const cronChange = Object(react["useCallback"])(value => {
-    setCronValue(value);
-    saveForm({
-      scheduler: value
-    });
-  }, [saveForm]);
   const endByChange = Object(react["useCallback"])(value => {
     setEndBy(value);
     saveForm({
@@ -12744,6 +12797,9 @@ function SchedulerForm(props) {
     }
   }), [scheduler]);
   const saveSchedulerValue = Object(react["useCallback"])((field, value) => {
+    if (value == 'immediate') {
+      return;
+    }
     saveForm({
       [field]: value
     });

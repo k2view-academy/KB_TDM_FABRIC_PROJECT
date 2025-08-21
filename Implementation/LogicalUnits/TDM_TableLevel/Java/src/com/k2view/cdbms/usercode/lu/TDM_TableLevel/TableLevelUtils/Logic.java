@@ -222,7 +222,6 @@ public class Logic extends UserCode {
 
         return result;
     }
-    
     @out(name = "result", type = List.class, desc = "")
     public static List<Map<String, Object>> fnGetTablesOfTask(String taskExecutionId) throws Exception {
 
@@ -370,7 +369,7 @@ public class Logic extends UserCode {
                 return tablesList;
             }
 
-            DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
+            DatabaseMetaData md = null;
             Map <String, Set<String>> tableParents = new HashMap<>();
 
             for (String tableName : tableList) {
@@ -387,6 +386,10 @@ public class Logic extends UserCode {
                         tablesList.put(tableName, order);
                         continue;
                     }
+                }
+
+                if (md == null) {
+                    md = getConnection(dbInterfaceName).getMetaData();
                 }
                 
                 ResultSet importedKeys = md.getImportedKeys(null, dbSchemaName, tableName);
@@ -450,25 +453,10 @@ public class Logic extends UserCode {
             
             return tablesList;
         } catch(Exception e) {
-            if (e.getMessage().contains("is not a db interface")) {
+            if (e.getMessage() != null && e.getMessage().contains("is not a db interface")) {
                 for (String tableName : tableList) {
-                    //Check if the table has a predefined order
-
-                    Object tableOrder = fnGetTableDefinitions(dbInterfaceName, dbSchemaName, tableName, "table_order");
-
-                    if (tableOrder != null && !"".equals(tableOrder.toString())) {
-                        Integer order = Util.rte(() -> Integer.parseInt(tableOrder.toString()));
-
-                        if (order != null) {
-                            tablesList.put(tableName, order);
-                        } else {
-                            tablesList.put(tableName, 0);
-                        }
-                    } else {
-                        tablesList.put(tableName, 0);
-                    }
-                }
-                
+                    tablesList.put(tableName, 0);
+                } 
                 return tablesList;
             } else {
                 e.printStackTrace();
