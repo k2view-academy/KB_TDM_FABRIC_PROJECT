@@ -64,7 +64,6 @@ name,pii
 "SIP_ADDRESS",true
 "SOCIAL_MEDIA",true
 "SOCIAL_SECURITY_NUMBER",true
-"STATE",false
 "STATEMENT",true
 "STATE_ID",true
 "STREET",true
