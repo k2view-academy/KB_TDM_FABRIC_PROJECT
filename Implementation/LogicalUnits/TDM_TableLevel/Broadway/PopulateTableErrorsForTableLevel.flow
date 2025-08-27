@@ -23,6 +23,20 @@ stages:
           key:
             const: TARGET_ENTITY_ID
             default: false
+      Check if Table Name is given:
+        parent: IfElse
+        in:
+          a:
+            external: tableName
+            schema: string
+          b:
+            const: ALL_TABLES
+            schema: string
+          test:
+            external: tableName
+        out:
+          result:
+            schema: string
   Failure At Delete Table:
     dependsOn: Prepare the Data
     actors:
@@ -41,7 +55,7 @@ stages:
         in:
           value:
             const: null
-            external: tableName
+            link: Check if Table Name is given/result
             schema: string
         out:
           value:
@@ -76,7 +90,7 @@ stages:
         in:
           value:
             const: null
-            external: tableName
+            link: Check if Table Name is given/result
             schema: string
         out:
           value:
@@ -127,6 +141,9 @@ stages:
             schema: string
   Load Data to Detailed Error table:
     actors:
+      Error Handler for reporting to TDM Error Table:
+        parent: ErrorHandler
+        error: result
       Load Data To Error Table:
         parent: DbLoad
         in:
@@ -298,7 +315,7 @@ stages:
             mandatory: false
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
   Update Table Entity:
     actors:

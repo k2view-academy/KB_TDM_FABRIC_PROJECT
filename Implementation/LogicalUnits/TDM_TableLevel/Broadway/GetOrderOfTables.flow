@@ -51,6 +51,10 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
       Get Order of Tables:
         parent: LuFunction
         in:
@@ -89,6 +93,10 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
       Call Order Flow:
         parent: InnerFlow
         in:
@@ -125,6 +133,10 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
       Get Sets Of Tables Per Order:
         parent: LuFunction
         in:

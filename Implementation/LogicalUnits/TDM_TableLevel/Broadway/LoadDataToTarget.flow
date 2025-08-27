@@ -32,6 +32,17 @@ stages:
         in:
           flowName:
             const: setTargetEnv
+  Remove Escaping Chars:
+    actors:
+      Remove escaping chars:
+        parent: Replace
+        in:
+          search:
+            const: '"'
+          string:
+            link:
+              path: Get List of Table's Fields/result/column_name
+              iterate: Iterate
   List of Fields:
     last: 1
     actors:
@@ -40,8 +51,7 @@ stages:
         in:
           input:
             link:
-              path: Get List of Table's Fields/result/column_name
-              iterate: Iterate
+              path: Remove escaping chars/string
               pos: 0
         out:
           array:

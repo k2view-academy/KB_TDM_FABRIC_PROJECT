@@ -99,12 +99,23 @@ stages:
             schema: '#ref'
   Get The Fabric TDM root IID:
     actors:
+      Replace:
+        parent: Replace
+        in:
+          search:
+            const: _\d+
+          regex:
+            const: true
+          string:
+            link: JsonParser/object/iid
+  Strip the IID:
+    actors:
       id:
         parent: Const
         in:
           value:
             const: null
-            link: JsonParser/object/iid
+            link: Replace/string
         out:
           value:
             schema: string

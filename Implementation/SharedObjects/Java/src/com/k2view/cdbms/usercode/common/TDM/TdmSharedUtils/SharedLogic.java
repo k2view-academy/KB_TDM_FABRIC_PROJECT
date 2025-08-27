@@ -1833,12 +1833,7 @@ public class SharedLogic {
 			String typeName = columns.getString("TYPE_NAME");
 			String columnType = toSqliteType(dataType, typeName);
 
-			String columnName = columns.getString("COLUMN_NAME");
-			boolean startsWithNumber = columnName.matches("^[0-9].*");
-			if (startsWithNumber) {
-				columnName = "\"" + columnName + "\"";
-			}
-			map.put("column_name", columnName);
+			map.put("column_name", "\"" + columns.getString("COLUMN_NAME") + "\"");
 			map.put("column_type", columnType);
 			map.put("column_sqlite_type", columnType);
 			result.add(map);
@@ -1852,7 +1847,7 @@ public class SharedLogic {
 		return result;
 	}
 
-   	private static List<HashMap<String, String>> getTableFieldsByCatalog(List<Map<String, Object>> interfaceTables) throws SQLException {
+   	private static List<HashMap<String, String>> getTableFieldsByCatalog(List<Map<String, Object>> interfaceTables) throws Exception {
 		List<HashMap<String, String>> result = new ArrayList<>();
 
 		for (Map<String, Object> fieldRec : interfaceTables) {
@@ -1863,18 +1858,21 @@ public class SharedLogic {
 			Boolean addField = true;
 			Object sourceEntityType = fieldRec.get("sourceEntityType");
 			if (sourceEntityType != null && "column".equalsIgnoreCase(sourceEntityType.toString())) {
-				int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
-				String sourceDataType = fieldRec.get("sourceDataType").toString();
-				columnType = toSqliteType(fieldDataType, sourceDataType);
+				Object sqlDataType = fieldRec.get("sqlDataType");
+				if (sqlDataType != null) {
+					int fieldDataType = Integer.parseInt(fieldRec.get("sqlDataType").toString());
+					String sourceDataType = fieldRec.get("sourceDataType").toString();
+					columnType = toSqliteType(fieldDataType, sourceDataType);
+				} else {
+					columnType = getFieldTypeBydefinedBy(fieldRec);
+				}
 
 			} else {
 				addField = false;
 			}
 			if (addField) {
-				boolean startsWithNumber = fieldName.matches("^[0-9].*");
-				if (startsWithNumber) {
-					fieldName = "\"" + fieldName + "\"";
-				}
+				fieldName = "\"" + fieldName + "\"";
+
 				map.put("column_name", fieldName);
 				map.put("column_type", columnType);
 				map.put("column_sqlite_type", columnType);
@@ -1884,6 +1882,34 @@ public class SharedLogic {
 		}
 
 		return result;
+	}
+
+	private static String getFieldTypeBydefinedBy(Map<String, Object> fieldRec) throws Exception{
+		
+		String definedBy = fieldRec.get("definedBy").toString();
+		String fieldType = "";
+		switch (definedBy) {
+			case "STRING":
+				fieldType = "TEXT";
+				break;
+			case "BYTES":
+				fieldType = "BLOB";
+				break;
+			case "BOOLEAN":
+			fieldType = "INTEGER";
+				break;
+			case "COLLECTION":
+				fieldType = "TEXT";
+					break;
+			case "UNKNOWN":
+				fieldType = "TEXT";
+				break;
+			default:
+				fieldType = definedBy;
+				break;
+		}
+
+		return fieldType;
 	}
 
     private record LuTable(String luName, String luTable) {

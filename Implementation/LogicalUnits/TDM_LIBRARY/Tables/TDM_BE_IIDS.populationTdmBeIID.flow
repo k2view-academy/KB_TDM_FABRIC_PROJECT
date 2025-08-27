@@ -130,7 +130,7 @@ stages:
             const: |
               SELECT *
               FROM ${@schema}.tdm_be_iids
-              WHERE __iid = ${lui} and iid = ${iid} and source_env = ${source_env} AND be_id <> ${be_id}
+              WHERE __iid = ${lui} and iid = ${iid} and source_env = ${source_env}
           iid:
             link: FABRIC_TDM_ROOT/result/IID
             schema: string
@@ -311,7 +311,7 @@ stages:
             const: |-
               select t.root_entity_id , t.root_lu_name ,t.source_env , t.iid
               from ${@TDMDB_SCHEMA}.task_execution_entities t
-              where t.task_execution_id =${task_execution_id} and t.lu_name=${lu_name} and t.execution_status='completed' and t.id_type='ENTITY'
+              where t.task_execution_id =${task_execution_id} and t.lu_name=${lu_name} and t.execution_status<>'failed' and t.id_type='ENTITY'
               and t.root_entity_id<>${root_iid} and t.iid= ${iid}::TEXT
           lu_name:
             external: schema

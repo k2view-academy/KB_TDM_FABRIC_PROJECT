@@ -38,6 +38,10 @@ stages:
                 flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
       Get List of Tables of Task:
         parent: LuFunction
         in:
@@ -87,8 +91,14 @@ stages:
                 message: ''
               actions:
                 suppress: false
-                log: true
+                log: false
                 flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
       Init Source Entity ID for Error Handler1:
         parent: FabricSet
         in:
@@ -400,6 +410,7 @@ stages:
   Create Instance List:
     last: 1
     transactional: false
+    dependsOn: Check If Table Already Failed
     actors:
       Table Did not Fail?:
         parent: Equals
@@ -427,6 +438,15 @@ stages:
             link:
               path: Build IIDs/iid
               pos: 0
+    split: '--------------------'
+  Table Failed:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Check If Table Already Failed
+    actors:
+      'Null':
+        parent: NullValue
   Create Batch Command:
     transactional: false
     actors:
@@ -462,7 +482,9 @@ stages:
         condition: result
         in:
           value:
-            link: Build Instance List/string
+            link:
+            - Build Instance List/string
+            - Null/value
       Batch Error Handler:
         parent: ErrorHandler
         error: result
@@ -494,7 +516,7 @@ stages:
             mandatory: false
           taskTitle:
             external: taskTitle
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:

@@ -15,6 +15,15 @@ stages:
             schema: '#ref'
   Set fields for Create Table:
     actors:
+      Remove escaping chars:
+        parent: Replace
+        in:
+          search:
+            const: '"'
+          string:
+            link:
+              path: List of Fields/value/column_name
+              iterate: Iterate
       Field Name And Type:
         parent: StringFormat
         in:
@@ -59,9 +68,9 @@ stages:
         out:
           value:
             schema: string
-  Stage 1:
+  Build binding variables:
     actors:
-      StringBuild1:
+      Binding Variable:
         parent: StringBuild
         in:
           delimiter:
@@ -72,8 +81,7 @@ stages:
               pos: 0
             - path: Open/value
               pos: 1
-            - path: List of Fields/value/column_name
-              iterate: Iterate
+            - path: Remove escaping chars/string
               pos: 2
             - path: Close/value
               pos: 3
@@ -100,20 +108,14 @@ stages:
         in:
           input:
             link:
-              path: StringBuild1/string
+              path: Binding Variable/string
               pos: 0
-      Build Fields List:
-        parent: ArrayBuilder
-        disabled: true
-        out:
-          array:
-            schema: '#ref'
       ResetActors1:
         parent: ResetActors
         in:
           actorId:
             const:
-            - StringBuild1
+            - Binding Variable
   Build Create/Insert Statements:
     actors:
       Build Create Statement:
@@ -160,17 +162,6 @@ stages:
         out:
           string:
             external: SqliteInsertStatement
-      Set Fields List:
-        parent: FabricSet
-        disabled: true
-        in:
-          key:
-            const: TABLE_FIELDS
-            default: false
-          value:
-            const: null
-            link: Build Fields List/array
-            default: false
   Create Table:
     transactional: false
     actors:
@@ -209,7 +200,3 @@ schemas:
           type: string
         column_type:
           type: string
-  Build Fields List.out.array:
-    type: array
-    items:
-      type: string
