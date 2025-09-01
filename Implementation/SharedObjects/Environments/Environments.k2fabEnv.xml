@@ -43,7 +43,7 @@
           <dbPort>5432</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~PCgygatJfO2nIh/x/maXAln4qOKbh0Yfv+wjr3qtH9PU32kRJUJzWA&#x3D;&#x3D;</dbPasswordEncrypted>
+          <dbPasswordEncrypted>~encs2~/IpypjlmurbgqlCKE9tzx7yPNFzsp4iwVgjv3Qot3AiuUNK/TCuFXg&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
@@ -345,7 +345,7 @@
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
           <dbUser>TAR_CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~oztisS4Z67MK1wDTTe1yqscBVLRXAsJr3/XavN0DFWzFBvbFNBjmo2gftg0&#x3D;</dbPasswordEncrypted>
+          <dbPasswordEncrypted>~encs2~o14Xfmr1xUYEDlbSKPzkWJrK3asXAJSx9MtkRBzSRWqeY+40bujhHnCYox4&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://postgres-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
