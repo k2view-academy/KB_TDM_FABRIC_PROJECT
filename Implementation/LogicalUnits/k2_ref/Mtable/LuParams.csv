@@ -25,4 +25,4 @@ Customer,OPEN_CASE_DATE,"Select CASE_DATE
 From Customer.CASES where upper(status) <> 'CLOSED'",
 Customer,NO_OF_SUBSCRIBERS,"Select count(*) AS NO_OF_CONTRACT
 From Customer.CONTRACT",
-Customer,STATE,Select address.state From Customer.address,
+Customer,STATE,Select address.state From Customer.address,Filter entities by state
