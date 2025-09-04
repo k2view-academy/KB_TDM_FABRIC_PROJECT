@@ -93,7 +93,9 @@
                                     },
                                     {
                                         "name": "TDMDB_SCHEMA",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     }
                                 ],
@@ -150,6 +152,72 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "DbCommand1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT ${@TDMDB_SCHEMA}.task_execution_entities.task_execution_id,\n       ${@TDMDB_SCHEMA}.task_execution_entities.lu_name,\n       ${@TDMDB_SCHEMA}.task_execution_entities.entity_id,\n       ${@TDMDB_SCHEMA}.task_execution_entities.target_entity_id,\n       ${@TDMDB_SCHEMA}.task_execution_entities.clone_no,\n       ${@TDMDB_SCHEMA}.task_execution_entities.root_entity_id,\n       ${@TDMDB_SCHEMA}.task_execution_entities.root_target_entity_id\nFROM ${@TDMDB_SCHEMA}.task_execution_entities\nWHERE task_execution_id = ${task_execution_id}"
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_execution_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "entity_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_entity_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "clone_no": {
+                                                        "type": "string"
+                                                    },
+                                                    "root_entity_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "root_target_entity_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -160,7 +228,86 @@
                 {
                     "name": "Stage 1",
                     "dependsOnList": [],
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "StringFormat1",
+                            "minHeight": 353,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "The entity identified in Fabric as ${entity_id} was loaded into the ${lu_name} Logical Unit (LU) in the target environment, where it is stored with Target Entity ID ${target_entity_id}, as part of ${task_execution_id} Task Execution."
+                                    },
+                                    {
+                                        "name": "entity_id",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "createdBy": "format",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "target_entity_id",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "createdBy": "format",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "createdBy": "format",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "createdBy": "format",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "EntityExecutionNote1",
+                            "minHeight": 397,
+                            "actorType": {
+                                "parentType": "EntityExecutionNote",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -189,11 +336,31 @@
         },
         {
             "leftPort": {
+                "actor": "Get Task Exe ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "getTDMDBSchema1",
                 "name": "schema"
             },
             "rightPort": {
                 "actor": "DbFetchFirstRow1",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "getTDMDBSchema1",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
                 "name": "TDMDB_SCHEMA"
             }
         },
@@ -266,6 +433,167 @@
                 "num_of_failed_entities"
             ],
             "arrayPosition": 5
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "task_execution_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "task_execution_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "lu_name"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "target_entity_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "target_entity_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "entity_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "entity_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EntityExecutionNote1",
+                "name": "lu_name"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EntityExecutionNote1",
+                "name": "entity_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "entity_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EntityExecutionNote1",
+                "name": "task_execution_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "task_execution_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EntityExecutionNote1",
+                "name": "root_entity_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "root_entity_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EntityExecutionNote1",
+                "name": "root_target_entity_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "root_target_entity_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EntityExecutionNote1",
+                "name": "clone_no"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "clone_no"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "EntityExecutionNote1",
+                "name": "execution_note"
+            }
         }
     ]
 }
