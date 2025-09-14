@@ -88,8 +88,19 @@ stages:
   Stage 4:
     transactional: false
     dependsOn: Stage 3
-  Remove Interface:
+  Stage 5:
     dependsOn: Add Birthday
+    actors:
+      addReporterNamesToCRM1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: addReporterNamesToCRM
+    split: '--------------------'
+  Stage 7:
+    dependsOn: Stage 4
+  Remove Interface:
+    dependsOn: Stage 5
     actors:
       deleteInterfaces:
         parent: InnerFlow
@@ -98,4 +109,4 @@ stages:
             const: deleteInterfaces
     split: '--------------------'
   Stage 6:
-    dependsOn: Stage 4
+    dependsOn: Stage 7

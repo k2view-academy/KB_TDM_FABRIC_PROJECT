@@ -1,0 +1,74 @@
+tags: Create
+stages:
+  Set Env Source:
+    actors:
+      Production:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+          value:
+            const: Production
+  Update Table Source:
+    actors:
+      Update Customer Data Source:
+        parent: DbCommand
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: |-
+              alter table cases add column if not exists first_name_reporter varchar(50);
+
+              alter table cases add column if not exists last_name_reporter varchar(50);
+
+
+
+              update cases cs set first_name_reporter = (select first_name from customer cr, activity a
+                                                          where cr.customer_id =  a.customer_id
+                                                          and a.activity_id = cs.activity_id)
+               , last_name_reporter =(select last_name from customer cr, activity a
+                                                          where cr.customer_id =  a.customer_id
+                                                          and a.activity_id = cs.activity_id)
+                where case_type ='Network Issue' and case_id%2 =0 ;
+
+              update cases cs set first_name_reporter = (select first_name from customer cr, activity a
+                                                          where cr.customer_id =  a.customer_id
+                                                          and a.activity_id = cs.activity_id)
+               , last_name_reporter =(select last_name from customer cr, activity a
+                                                          where cr.customer_id =  a.customer_id
+                                                          and a.activity_id = cs.activity_id)
+                where case_type ='Device Issue' and case_id%2 !=0 ;
+
+              update cases cs set first_name_reporter = (select first_name from customer cr, activity a
+                                                          where cr.customer_id =  a.customer_id
+                                                          and a.activity_id = cs.activity_id)
+               , last_name_reporter =(select last_name from customer cr, activity a
+                                                          where cr.customer_id =  a.customer_id
+                                                          and a.activity_id = cs.activity_id)
+                where case_type ='Device Issue' and case_id%2 !=0 ;
+  Set Env Target:
+    actors:
+      Production1:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+          value:
+            const: Development
+  Update Table Target:
+    actors:
+      Update Customer Data Target:
+        parent: DbCommand
+        in:
+          interface:
+            const: CRM_DB
+          sql:
+            const: |-
+              alter table cases add column if not exists first_name_reporter varchar(50);
+
+              alter table cases add column if not exists last_name_reporter varchar(50);
+          __active_environment:
+            const: target
+            schema: string
+            mandatory: false
