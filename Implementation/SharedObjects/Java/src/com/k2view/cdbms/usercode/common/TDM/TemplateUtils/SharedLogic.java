@@ -340,6 +340,9 @@ public class SharedLogic {
 			return pkList;
 		
         String pkString = luType.ludbObjects.get(table).getPrimaryKeyString();
+		if (pkString == null || pkString.trim().isEmpty()) {
+			return Collections.emptySet();
+		}
         pkList = Arrays.stream(pkString.split(",")).collect(Collectors.toSet());
         		
 		return pkList;
