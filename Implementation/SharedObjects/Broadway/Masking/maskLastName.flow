@@ -1,67 +1,25 @@
-{
-    "tags": [
-        "Masking"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Last Names List",
-                            "actorType": {
-                                "parentType": "LastNames",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Select A Random Last Name",
-                            "actorType": {
-                                "parentType": "RandomFromCollection",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Last Names List",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "Select A Random Last Name",
-                "name": "collection"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Select A Random Last Name",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "result"
-            }
-        }
-    ]
-}
+tags: Masking
+stages:
+  Stage 1:
+    actors:
+      Last Names List:
+        parent: LastNames
+  Stage 2:
+    actors:
+      Select A Random Last Name:
+        parent: RandomFromCollection
+        in:
+          collection:
+            link: Last Names List/strings
+            schema: '#ref'
+          seed:
+            const: null
+            external: seed
+        out:
+          value:
+            external: result
+schemas:
+  Select A Random Last Name.in.collection:
+    type: array
+    items: {
+      }
