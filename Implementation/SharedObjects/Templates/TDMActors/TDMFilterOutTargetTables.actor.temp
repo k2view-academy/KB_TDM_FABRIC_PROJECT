@@ -57,6 +57,12 @@
                     "active": true,
                     "lu_name": "ALL_LUS",
                     "generator_filterout": true
+                },
+                {
+                    "table_regex": "TDM_BE_IIDS,
+                    "active": true,
+                    "lu_name": "ALL_LUS",
+                    "generator_filterout": true
                 }
             ]
         }
