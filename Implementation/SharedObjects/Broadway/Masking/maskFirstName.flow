@@ -18,8 +18,6 @@ stages:
         out:
           value:
             external: result
-  Stage 3: {
-    }
 schemas:
   Select A Random First Name.in.collection:
     type: array
