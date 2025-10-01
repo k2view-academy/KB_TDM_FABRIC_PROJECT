@@ -199,6 +199,11 @@
             "doc": [
                 "The original value to be masked by the actor."
             ]
+        },
+        {
+            "name": "input1",
+            "schema": {},
+            "mandatory": false
         }
     ],
     "outputs": [
