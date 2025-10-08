@@ -82,8 +82,8 @@ public class Logic extends UserCode {
             }
         }
 
-		//lookupInputs.put("table_name", null);
-        lookupInputs.remove("table_name");
+		lookupInputs.put("table_name", null);
+        //lookupInputs.remove("table_name");
         List<Map<String, Object>> schemaDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
         //List<Map<String, Object>> schemaDefinitions = fnGetInterfaceInfo(lookupInputs, interfaceName);
         //lookupInputs.put("schema_name", null);
