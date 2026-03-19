@@ -150,5 +150,6 @@
     ],
     "logViewer.showStatusBarItemOnChange": false,
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx8G -Xms500m",
-    "debug.javascript.debugByLinkOptions": "on"
+	"debug.javascript.debugByLinkOptions": "on",
+	"fabric.deployAll.deployAllUpdatedLogicalUnitsOnStudioStart": true
 }
