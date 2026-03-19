@@ -4191,6 +4191,12 @@
                 "path": "/lib/json-20231013.jar",
                 "sha256": "0f18192df289114e17aa1a0d0a7f8372cc9f5c7e4f7e39adcf8906fe714fa7d3"
             }
-        ]
+        ],
+        "uninstalled": true
+    },
+    {
+        "id": "k2view.tdm",
+        "version": "9.5.1",
+        "artifacts": []
     }
 ]
