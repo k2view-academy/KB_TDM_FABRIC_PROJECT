@@ -1,0 +1,19 @@
+{
+    "type": "TDMDbFlushBatch",
+    "badge": "TFB",
+    "inputs": [
+        {
+            "const": "target",
+            "name": "__active_environment",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "TDM"
+    ],
+    "parentType": "DbFlushBatch"
+}
