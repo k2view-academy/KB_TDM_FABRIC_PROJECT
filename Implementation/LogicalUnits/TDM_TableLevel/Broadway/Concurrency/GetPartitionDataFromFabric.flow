@@ -1,0 +1,226 @@
+tags: Concurrency
+stages:
+  'Build Statements   ':
+    transactional: false
+    actors:
+      Build Select Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: /*sqlite*/ select * from TDM_TableLevel.__t_${tableName}
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      Build Select Statement1:
+        parent: StringFormat
+        in:
+          format:
+            const: /*sqlite*/ select count(*) from TDM_TableLevel.__t_${tableName}
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      filterIndicator:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: filterIndicator
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+      tableFilter:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableFilter
+  'Check Filter  ':
+    transactional: false
+    dependsOn: 'Build Statements   '
+    actors:
+      And1:
+        parent: And
+        condition: result
+        in:
+          a:
+            link: filterIndicator/value
+          b:
+            link: tableFilter/value
+      Add  Wherer Clause to Select Statement:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Build Select Statement/string
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      Add  Wherer Clause to Select Statement1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Build Select Statement1/string
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+    split: '--------------------'
+  'Add Filter ':
+    else: true
+    transactional: false
+    dependsOn: 'Build Statements   '
+    actors:
+      Select Statement:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Build Select Statement/string
+            schema: string
+        out:
+          value:
+            schema: string
+      Count Statement:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Build Select Statement1/string
+            schema: string
+        out:
+          value:
+            schema: string
+  Get Fabric Table Data:
+    transactional: false
+    actors:
+      Get Data From Fabric:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link:
+            - Add  Wherer Clause to Select Statement/selectStatement
+            - Select Statement/value
+          params:
+            link: Add  Wherer Clause to Select Statement/paramters
+        out:
+          result:
+            external: result
+            schema: '#ref'
+  Update Count:
+    transactional: false
+    actors:
+      Count Is Disabled:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            external: countIndicator
+      Get Data From Fabric1:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link:
+            - Add  Wherer Clause to Select Statement1/selectStatement
+            - Count Statement/value
+          params:
+            link: Add  Wherer Clause to Select Statement1/paramters
+        out:
+          result:
+            schema: '#ref'
+  Update records count:
+    transactional: false
+    actors:
+      UpdateTablePartitionTotalNumberOfRecords1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTablePartitionTotalNumberOfRecords
+          taskExeId:
+            external: taskExecutionId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          tableId:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          recCount:
+            link:
+              path: Get Data From Fabric1/result/count(*)
+              iterate: First
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+schemas:
+  Add  Wherer Clause to Select Statement.out.paramters:
+    type: array
+    items:
+      type: string
+  Add  Wherer Clause to Select Statement1.out.paramters:
+    type: array
+    items:
+      type: string
+  Get Data From Fabric.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: string
+        note_text:
+          type: string
+  Get Data From Fabric1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        count(*):
+          type: integer

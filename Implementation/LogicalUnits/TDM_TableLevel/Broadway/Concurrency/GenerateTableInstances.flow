@@ -1,0 +1,333 @@
+tags: Concurrency
+stages:
+  Get Inputs:
+    actors:
+      Sync Mode:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: syncMode
+        out:
+          value:
+            schema: string
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get Ref Table ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Get Version Task Execution ID1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: version_task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  Get Partition Number From Flow:
+    else: true
+    dependsOn: Get Inputs
+    actors:
+      GetPartitionNumberFlow1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetPartitionsNumber
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Snapshot:
+    dependsOn: Get Inputs
+    actors:
+      'OFF':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'OFF'
+            schema: string
+          a:
+            link: Sync Mode/value
+      Get Partition Number From Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: select number_of_partitions from ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              where task_execution_id=${version_task_execution_id} and ref_table_name
+              = ${ref_table_name} and execution_status='completed'
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          version_task_execution_id:
+            link: Get Version Task Execution ID1/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          ref_table_name:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+  Get Source Env:
+    actors:
+      Get Source:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: sourceEnvName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  'Partitions ':
+    else: true
+    dependsOn: Get Source Env
+    actors:
+      Number Of Partitions:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - GetPartitionNumberFlow1/value
+            - path: Get Partition Number From Table/result/number_of_partitions
+              iterate: First
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  Get Default:
+    dependsOn: Get Source Env
+    actors:
+      Empty:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link:
+            - GetPartitionNumberFlow1/value
+            - path: Get Partition Number From Table/result/number_of_partitions
+              iterate: First
+      Default:
+        parent: Const
+        in:
+          value:
+            const: 1
+            schema: integer
+        out:
+          value:
+            schema: integer
+  Return List Of IIDS:
+    actors:
+      BuildListOfPartitionIIDS1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildListOfPartitionIIDS
+          partition:
+            link:
+            - Number Of Partitions/value
+            - Default/value
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          sourceEnv:
+            link: Get Source/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          instances:
+            external: instances
+            schema: string
+      'Update task_ref_partition ':
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+               set number_of_partitions=${number_of_partitions}
+               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            link: Get Ref Table ID/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+          number_of_partitions:
+            link:
+            - Number Of Partitions/value
+            - Default/value
+            schema: integer
+            mandatory: false
+            createdBy: sql
+schemas:
+  Get Partition Number From Table.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        number_of_partitions:
+          type: integer

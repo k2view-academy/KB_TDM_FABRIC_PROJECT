@@ -15,25 +15,23 @@ stages:
             external: INTERFACE_TYPE
             schema: string
             mandatory: false
-  Update Distribution Of Main Table:
+  Update Distribution Of Document Tables:
     actors:
-      Update Main Table Population:
+      Update Distribution For Documents:
         parent: InnerFlow
         in:
           flowName:
-            const: UpdateMainTablePopulation
-          INTERFACE_TYPE:
-            external: INTERFACE_TYPE
-            schema: string
-            mandatory: false
+            const: updateDistributionForDocuments
           LU_NAME:
             external: LU_NAME
             schema: string
             mandatory: false
-          TABLE_NAME:
+            createdBy: flowName
+          ROOT_TABLE_NAME:
             external: ROOT_TABLE_NAME
             schema: string
             mandatory: false
+            createdBy: flowName
   Create Sequences:
     actors:
       create Sequence Flows:
@@ -47,63 +45,36 @@ stages:
             mandatory: false
   Create Load Flow:
     actors:
-      Create Load Flows From Template:
+      Create Load Flows:
         parent: InnerFlow
         in:
           flowName:
-            const: CreateLoadFlowsFromTemplate
-          INTERFACE_TYPE:
-            external: INTERFACE_TYPE
-            schema: string
-            mandatory: false
-          LU_NAME:
-            external: LU_NAME
-            schema: string
-            editor:
-              id: com.k2view.logicalUnit
-              addEmptyEntry: true
-            mandatory: false
-          useFabric:
-            const: true
-            schema: boolean
-            mandatory: false
-          TARGET_INTERFACE:
-            external: TARGET_INTERFACE
-            schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-              - CassandraLoader
-            mandatory: false
-          OVERRIDE_EXISTING_FLOWS:
-            external: OVERRIDE_EXISTING_FLOWS
-            schema: boolean
-            mandatory: false
+            const: createLoadFlowsForTables
           TARGET_ENVIRONMENT:
             external: TARGET_ENVIRONMENT
             schema: string
             mandatory: false
-          TARGET_SCHEMA:
-            external: TARGET_SCHEMA
+            createdBy: flowName
+          LU_NAME:
+            external: LU_NAME
             schema: string
             mandatory: false
-          ROOT_TABLE_NAME:
-            external: ROOT_TABLE_NAME
+            createdBy: flowName
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
             schema: string
             mandatory: false
-          SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
-            schema: string
-            mandatory: false
-          SOURCE_SCHEMA:
-            external: SOURCE_SCHEMA
-            schema: string
-            mandatory: false
+            createdBy: flowName
           ROOT_FIELD_NAME:
             external: ROOT_FIELD_NAME
             schema: string
             mandatory: false
+            createdBy: flowName
   Handle Delete Tables And Flows:
     dependsOn: Create Load Flow
     actors:
@@ -117,50 +88,41 @@ stages:
           b:
             const: true
             schema: boolean
-      Create Delete Flows From Template:
+      Create Delete Flows:
         parent: InnerFlow
         in:
           flowName:
-            const: CreateDeleteFlowsFromTemplate
-          INTERFACE_TYPE:
-            external: INTERFACE_TYPE
-            schema: string
-            mandatory: false
-          LU_NAME:
-            external: LU_NAME
-            schema: string
-            editor:
-              id: com.k2view.logicalUnit
-              addEmptyEntry: true
-            mandatory: false
+            const: createDeleteFlowsForTables
           TARGET_ENVIRONMENT:
             external: TARGET_ENVIRONMENT
             schema: string
             mandatory: false
+            createdBy: flowName
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: flowName
           OVERRIDE_EXISTING_FLOWS:
             external: OVERRIDE_EXISTING_FLOWS
             schema: boolean
             mandatory: false
-          TARGET_SCHEMA:
-            external: TARGET_SCHEMA
+            createdBy: flowName
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
             schema: string
             mandatory: false
-          TARGET_INTERFACE:
-            external: TARGET_INTERFACE
+            createdBy: flowName
+          rootFieldName:
+            external: ROOT_FIELD_NAME
             schema: string
             mandatory: false
-          ROOT_TABLE_NAME:
-            external: ROOT_TABLE_NAME
-            schema: string
-            mandatory: false
-          SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
-            schema: string
-            mandatory: false
-          SOURCE_SCHEMA:
-            external: SOURCE_SCHEMA
-            schema: string
-            mandatory: false
+            createdBy: flowName
     split: '--------------------'
   Do Not Create Delete Tables:
     else: true
@@ -194,33 +156,11 @@ stages:
             external: OVERRIDE_EXISTING_FLOWS
             schema: boolean
             mandatory: false
-          SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
-            schema: string
-            editor:
-              id: com.k2view.interface
-              interfaceType:
-              - database
-            mandatory: false
-          SOURCE_SCHEMA:
-            external: SOURCE_SCHEMA
-            schema: string
-            mandatory: false
           useFabric:
             const: ''
             external: useFabric
             schema: boolean
             default: true
-            mandatory: false
-          DOCUMENT_IND:
-            external: DOCUMENT_IND
-            schema: boolean
-            mandatory: false
-          ROOT_TABLE_NAME:
-            external: ROOT_TABLE_NAME
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
             mandatory: false
           INTERFACE_TYPE:
             external: INTERFACE_TYPE

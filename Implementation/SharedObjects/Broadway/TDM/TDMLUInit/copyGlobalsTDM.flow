@@ -52,6 +52,16 @@ stages:
             link: LU_ROOT_TABLE/value/column_name
             schema: '#ref'
             mandatory: false
+      Format ROOT_COLUMN_TYPE:
+        parent: StringFormat
+        in:
+          format:
+            const: public static String ROOT_COLUMN_TYPE = "${LU_ROOT_COLUMN_TYPE}";
+          LU_ROOT_COLUMN_TYPE:
+            external: LU_ROOT_COLUMN_TYPE
+            schema: string
+            mandatory: false
+            createdBy: format
   File Content:
     actors:
       Create A String of File Content:
@@ -92,8 +102,9 @@ stages:
                   rootTableName + "\n" +
                   "@category(\"TDM\")\n" +
                   rootColumnName + "\n" +
+                  "@category(\"TDM\")\n" +
+                  rootColumnType + "\n" +
                   "\n}\n";
-
 
               newGlobalsFile;
           globalsFile:
@@ -106,6 +117,10 @@ stages:
             mandatory: false
           rootColumnName:
             link: Format ROOT_COLUMN_NAME/string
+            schema: string
+            mandatory: false
+          rootColumnType:
+            link: Format ROOT_COLUMN_TYPE/string
             schema: string
             mandatory: false
         out:

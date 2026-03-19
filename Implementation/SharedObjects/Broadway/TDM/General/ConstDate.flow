@@ -4,6 +4,7 @@ stages:
     actors:
       Random Date:
         parent: RandomDistribution
+        remark: This flow generates a random date
         in:
           distribution:
             const:

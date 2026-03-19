@@ -1,0 +1,127 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      JsonStringify1:
+        parent: JsonStringify
+        in:
+          object:
+            external: inputMap
+  Stage 2:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                function normalizeMapKeys(fieldNames, jsonString) {
+                    // Parse JSON string to object
+                    var map = JSON.parse(jsonString);
+
+                    // Create a lowercase lookup map for case-insensitive matching
+                    var fieldLookup = {};
+                    for (var i = 0; i < fieldNames.length; i++) {
+                        fieldLookup[fieldNames[i].toLowerCase()] = fieldNames[i];
+                    }
+
+                    // Create new map with corrected keys
+                    var normalizedMap = {};
+                    for (var key in map) {
+                        if (map.hasOwnProperty(key)) {
+                            var correctKey = fieldLookup[key.toLowerCase()];
+                            if (correctKey) {
+                                normalizedMap[correctKey] = map[key];
+                            } else {
+                                normalizedMap[key] = map[key];
+                            }
+                        }
+                    }
+
+                    return normalizedMap;
+                }
+
+                const result = normalizeMapKeys(fieldNames, inputMap);
+                result;
+              script: |-
+                function normalizeMapKeys(fieldNames, jsonString) {
+                  // Parse JSON string to object
+                  var map = JSON.parse(jsonString); // Create a lowercase lookup map for case-insensitive matching
+
+                  var fieldLookup = {};
+
+                  for (var i = 0; i < fieldNames.length; i++) {
+                    fieldLookup[fieldNames[i].toLowerCase()] = fieldNames[i];
+                  } // Create new map with corrected keys
+
+
+                  var normalizedMap = {};
+
+                  for (var key in map) {
+                    if (map.hasOwnProperty(key)) {
+                      var correctKey = fieldLookup[key.toLowerCase()];
+
+                      if (correctKey) {
+                        normalizedMap[correctKey] = map[key];
+                      } else {
+                        normalizedMap[key] = map[key];
+                      }
+                    }
+                  }
+
+                  return normalizedMap;
+                }
+
+                var result = normalizeMapKeys(fieldNames, inputMap);
+                result;
+          fieldNames:
+            external: fieldNames
+            schema: '#ref'
+            mandatory: false
+          inputMap:
+            link: JsonStringify1/string
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: '#ref'
+schemas:
+  JavaScript1.in.fieldNames:
+    type: array
+    items:
+      type: string
+  JavaScript1.in.inputMap:
+    type: object
+    properties:
+      ID:
+        type: string
+      TYPE:
+        type: string
+      NAME: {
+        }
+      FAVORITE_GAME:
+        type: string
+      CITY:
+        type: string
+      BUDGET:
+        type: string
+      PROFESSION:
+        type: string
+  JavaScript1.out.result:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      name: {
+        }
+      favorite_game:
+        type: string
+      city:
+        type: string
+      budget:
+        type: string
+      profession:
+        type: string

@@ -8,16 +8,22 @@ import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.mtable.MTable;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
+import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.fnGetInterfaceType;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class SharedLogic {
@@ -74,7 +80,7 @@ public class SharedLogic {
         
                 //log.info("fnTdmReference - execution_status: " + execStatus);
         
-                Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, l.data_center_name as dc_name, e.environment_name as target_env_name,e.environment_id as environment_id, t.version_ind, " +
+                Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, e.environment_name as target_env_name, e.environment_id as environment_id, t.version_ind, " +
                                 "t.retention_period_type, t.retention_period_value, t.selection_method " +
                                 "from " + TASKS + " t, " + TASK_EXECUTION_LIST + " l, " + ENVIRONMENTS + " e " +
                                 "where task_execution_id = ? and l.task_id = ? and t.task_id = l.task_id and l.environment_id = e.environment_id ",
@@ -96,13 +102,6 @@ public class SharedLogic {
                         luName, taskID).firstRow();
         
                 String luID = "" + luData.get("lu_id");
-
-                String affinity = "";
-                String luDCName = "" + taskParams.get("dc_name");
-                if (luDCName != null && !"".equals(luDCName) && !"null".equals(luDCName)) {
-                    affinity = " AFFINITY='" + luDCName + "'";
-                }
-        
                 String uid = "";
                 if (row.get("job_uid") != null) {
                     uid = "" + row.get("job_uid");
@@ -279,10 +278,109 @@ public class SharedLogic {
 			throw new RuntimeException(e);
 		}
 	}
-
+    
 	@out(name = "result", type = Boolean.class, desc = "")
 	public static Boolean fnCheckIfDate(String columnType) throws Exception {
 		String cType = columnType.toLowerCase();
 		return cType.contains("timestamp") || cType.contains("date");
 	}
+    
+    public static List<Map<String, Object>> fnGetInterfaceInfo(String mtableName, Map<String, Object> lookupInputs, String interfaceName) throws Exception {
+        // 1. Look in the CURRENT MTable (Definitions, PartitionFlow, or Masking)
+        List<Map<String, Object>> result = MtableLookup(mtableName, lookupInputs, MTable.Feature.caseInsensitive);
+        
+        // 2. ONLY fallback to Interface Type if we are dealing with TableLevelDefinitions
+        // and the specific Interface search returned nothing.
+        if ("TableLevelDefinitions".equals(mtableName) && (result == null || result.isEmpty())) {
+            String environmentName = getGlobal("TDM_SOURCE_ENVIRONMENT_NAME", "TDM");
+            String interfaceType = fnGetInterfaceType(interfaceName, environmentName);
+            
+            if (interfaceType != null && !interfaceType.isEmpty()) {
+                Map<String, Object> typeInputs = new HashMap<>();
+                typeInputs.put("interface_type", interfaceType);
+                typeInputs.put("schema_name", null);
+                typeInputs.put("table_name", null);
+                result = MtableLookup(mtableName, typeInputs, MTable.Feature.caseInsensitive);
+            }
+        }
+        return result;
+    }
+
+    public static Object fnGetTableCountIndicator(String interfaceName, String schemaName, String tableName,
+            String attrName, String mtableName, String luName) throws Exception {
+        Map<String, Object> lookupInputs = new HashMap<>();
+        lookupInputs.put("interface_name", interfaceName);
+        if (!"".equals(schemaName)) {
+            lookupInputs.put("schema_name", schemaName);
+        }
+        String tableColName = "table_name";
+        if (mtableName.equalsIgnoreCase("RefList")) {
+            tableColName = "reference_table_name";
+            lookupInputs.put("lu_name", luName);
+        }
+        lookupInputs.put(tableColName, tableName);
+
+        List<Map<String, Object>> tableDefinitions = MtableLookup(mtableName, lookupInputs,
+                MTable.Feature.caseInsensitive);
+
+        if (tableDefinitions != null && !tableDefinitions.isEmpty()) {
+            Object v = tableDefinitions.get(0).get("count_indicator");
+            if (v != null && !v.toString().trim().isEmpty()) {
+                return v;
+            } else
+                return "true";
+        }
+
+        // TDM 9.3.1 - dynamic schema check
+        if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.isEmpty())) {
+            lookupInputs.remove("schema_name");
+            List<Map<String, Object>> tableDefinitions2 = MtableLookup(mtableName, lookupInputs,
+                    MTable.Feature.caseInsensitive);
+
+            if (tableDefinitions2 != null && !tableDefinitions2.isEmpty()) {
+                String dynamicSchema = tableDefinitions2.get(0).get("schema_name") != null
+                        ? tableDefinitions2.get(0).get("schema_name").toString()
+                        : "";
+                if (dynamicSchema.startsWith("@")) {
+                    dynamicSchema = dynamicSchema.replaceAll("@", "");
+                    if (dynamicSchema.equals(schemaName)) {
+                        tableDefinitions = tableDefinitions2;
+                    }
+                }
+            }
+            if (!"".equals(schemaName)) {
+                lookupInputs.put("schema_name", schemaName);
+            }
+        }
+        // schema-level
+        lookupInputs.put(tableColName, null);
+        List<Map<String, Object>> schemaDefinitions = MtableLookup(mtableName, lookupInputs,
+                MTable.Feature.caseInsensitive);
+
+        if (schemaDefinitions != null && !schemaDefinitions.isEmpty()) {
+            Object v = schemaDefinitions.get(0).get("count_indicator");
+            if (v != null && !v.toString().trim().isEmpty()) {
+                return v;
+            } else {
+                return "true";
+            }
+        }
+
+        // interface-level
+        lookupInputs.remove("schema_name");
+        List<Map<String, Object>> interfaceDefinitions = fnGetInterfaceInfo(mtableName, lookupInputs, interfaceName);
+        if (interfaceDefinitions != null && !interfaceDefinitions.isEmpty()) {
+            Object v = interfaceDefinitions.get(0).get("count_indicator");
+            if (v != null && !v.toString().trim().isEmpty()) {
+                return v;
+            } else {
+                return "true";
+            }
+        }
+
+        return null;
+    }
+    
 }
+
+

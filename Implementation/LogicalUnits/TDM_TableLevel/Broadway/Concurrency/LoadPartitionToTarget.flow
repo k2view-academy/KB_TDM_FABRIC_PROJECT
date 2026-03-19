@@ -1,0 +1,1332 @@
+{
+    "tags": [
+        "Partition",
+        "Concurrency"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Set Target Env",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "Set Target Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "inputRecords",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTDMDBSchema"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load To Target",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "Error Handler - Loading To Target",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "",
+                                                    "number_of_retries": "",
+                                                    "retry_interval": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Custom Load Flow",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Update task_ref_partition - Loading To Target",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update ${@TDMDB_SCHEMA}.task_ref_partition\n set execution_status=${execution_status}\nwhere task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}\n AND partition_no=${partition_no}"
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_ref_table_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "partition_no",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "loading to target",
+                                        "name": "execution_status",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Table's Fields",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "GetTableColumns"
+                                    },
+                                    {
+                                        "name": "sourceInterfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceSchemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "catalogSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "dataSample",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "age": {
+                                                    "type": "integer"
+                                                },
+                                                "driver_type": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Set Target Environment",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "setTargetEnv"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Default Flow",
+                    "dependsOnList": [
+                        "Load To Target"
+                    ],
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "No Custom Load Flow?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Error Handler - load Table By Query",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "",
+                                                    "number_of_retries": "",
+                                                    "retry_interval": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "load Table By Query",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "LoadTableByQuery"
+                                    },
+                                    {
+                                        "name": "targetInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "targetSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "targetTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "inputRecords",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "fieldsArray",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_ref_table_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "partition_no",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "commitSize",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "flowName",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "okay",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    {
+                                        "name": "total",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    {
+                                        "name": "errors",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Custom Load Flow ",
+                    "dependsOnList": [
+                        "Load To Target"
+                    ],
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Error Handler - Custom Load Flow",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "",
+                                                    "number_of_retries": "",
+                                                    "retry_interval": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Run Custom Load Flow",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "targetInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "targetSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "targetTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "inputRecords",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "fieldsArray",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "commitSize",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "okay",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "total",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "errors",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Records Count",
+                    "dependsOnList": [],
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Count",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Got Errors Count?",
+                            "minHeight": 326,
+                            "actorType": {
+                                "parentType": "IfElse",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update Processed Count ",
+                    "dependsOnList": [
+                        "Records Count"
+                    ],
+                    "actors": [
+                        {
+                            "name": "Update Count?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": -1
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Error Handler - Status And Counts",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "",
+                                                    "number_of_retries": "",
+                                                    "retry_interval": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update task_ref_partition - Status And Counts",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update ${@TDMDB_SCHEMA}.task_ref_partition\n set number_of_processed_records=${number_of_processed_records},\n    number_of_failed_records = ${number_of_failed_records}, end_time=NOW(),\n    execution_status= CASE\n        WHEN ${number_of_processed_records} > 0 AND ${number_of_processed_records} - ${number_of_failed_records} > 0 THEN 'completed'\n        ELSE 'failed' END\nwhere task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}\n AND partition_no=${partition_no}"
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_ref_table_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "partition_no",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "number_of_processed_records",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "number_of_failed_records",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "No Count Done",
+                    "dependsOnList": [
+                        "Records Count"
+                    ],
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Error Handler - Status Only",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "",
+                                                    "number_of_retries": "",
+                                                    "retry_interval": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update task_ref_partition - Status Only",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update ${@TDMDB_SCHEMA}.task_ref_partition\n set execution_status=${execution_status}, end_time=NOW()\nwhere task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}\n AND partition_no=${partition_no}"
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_ref_table_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "partition_no",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "completed",
+                                        "name": "execution_status",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "inputRecords",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "inputRecords"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "inputRecords",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "inputRecords"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Loading To Target",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status And Counts",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status Only",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Custom Load Flow",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "No Custom Load Flow?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Custom Load Flow",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "flowName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table's Fields",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "fieldsArray"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table's Fields",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "fieldsArray"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "load Table By Query",
+                "name": "total"
+            },
+            "rightPort": {
+                "actor": "Count",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "load Table By Query",
+                "name": "errors"
+            },
+            "rightPort": {
+                "actor": "Got Errors Count?",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "load Table By Query",
+                "name": "errors"
+            },
+            "rightPort": {
+                "actor": "Got Errors Count?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "total"
+            },
+            "rightPort": {
+                "actor": "Count",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "errors"
+            },
+            "rightPort": {
+                "actor": "Got Errors Count?",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "errors"
+            },
+            "rightPort": {
+                "actor": "Got Errors Count?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update Count?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status And Counts",
+                "name": "number_of_processed_records"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Got Errors Count?",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status And Counts",
+                "name": "number_of_failed_records"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetTable"
+            },
+            "rightPort": {
+                "actor": "Set Target Entity ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "inputRecords"
+            },
+            "rightPort": {
+                "actor": "inputRecords",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customLoadFlow"
+            },
+            "rightPort": {
+                "actor": "Custom Load Flow",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExeId"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Loading To Target",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableID"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Loading To Target",
+                "name": "task_ref_table_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "partitionNumber"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Loading To Target",
+                "name": "partition_no"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceInterfaceName"
+            },
+            "rightPort": {
+                "actor": "Get Table's Fields",
+                "name": "sourceInterfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceTableName"
+            },
+            "rightPort": {
+                "actor": "Get Table's Fields",
+                "name": "sourceTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceSchemaName"
+            },
+            "rightPort": {
+                "actor": "Get Table's Fields",
+                "name": "sourceSchemaName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "catalogSchema"
+            },
+            "rightPort": {
+                "actor": "Get Table's Fields",
+                "name": "catalogSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetInterface"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "targetInterface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetSchema"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "targetSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetTable"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "targetTable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExeId"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableID"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "task_ref_table_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "partitionNumber"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "partition_no"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "commitSize"
+            },
+            "rightPort": {
+                "actor": "load Table By Query",
+                "name": "commitSize"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetInterface"
+            },
+            "rightPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "targetInterface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetSchema"
+            },
+            "rightPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "targetSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetTable"
+            },
+            "rightPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "targetTable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "commitSize"
+            },
+            "rightPort": {
+                "actor": "Run Custom Load Flow",
+                "name": "commitSize"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExeId"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status And Counts",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableID"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status And Counts",
+                "name": "task_ref_table_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "partitionNumber"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status And Counts",
+                "name": "partition_no"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExeId"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status Only",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableID"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status Only",
+                "name": "task_ref_table_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "partitionNumber"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status Only",
+                "name": "partition_no"
+            }
+        }
+    ]
+}

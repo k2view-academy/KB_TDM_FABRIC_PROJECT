@@ -1,0 +1,54 @@
+{
+  "name": "USER_LOGIN_REPORT_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "UserActivityList",
+      "type": "sqlNonPrepared",
+      "code": "  \nSELECT a.username, a.no_of_activities, a.activity_desc \n  from\n  (select username,\n    CASE\n       WHEN  action = 'update' and entity in ('Environment', 'Environments') THEN 'Update Envs' \n       WHEN action = 'update' AND entity = 'Tasks' and starts_with( lower(description), 'execution') = true THEN 'Execute Tasks' \n       WHEN entity = 'Product' THEN initcap(action) || ' Systems' \n       WHEN action = 'delete' and entity = 'Reserved Entities' THEN 'Release Reserved BEs' \n       WHEN entity = 'Environments' THEN initcap(action) || ' Envs' \n       WHEN entity = 'Business entities' THEN initcap(action) || ' BEs' \n\t  ELSE  initcap(action) || ' ' || entity\n    END AS activity_desc,\n    count(*) as no_of_activities \n    from \"${TDMDB_SCHEMA}\".activities  \n    where date >=  DATE '${FROM_DATE}' and date <= DATE '${END_DATE}' + 1  \n   -- and NOT (action = 'Update' and entity = 'Tasks' and starts_with( lower(description), 'execution') = true) \n    group by username, activity_desc \n-- UNION ALL \n--   select task_executed_by as username , 'Execute Tasks' as activity_desc, count(*) as no_of_activities   \n--   from \"${TDMDB_SCHEMA}\".task_execution_summary \n--   where start_execution_time >= DATE '${FROM_DATE}' and start_execution_time <= DATE '${END_DATE}' + 1  \n--   group by task_executed_by \n   ) a\n ORDER by a.username, a.no_of_activities desc;\n",
+      "sessionProvider": "TDM"
+    },
+    {
+      "name": "TaskCreators",
+      "type": "sqlNonPrepared",
+      "code": "\t\nSELECT split_part(task_created_by, '##', 1) AS username, count(*) as no_of_task_creations \nFROM \"${TDMDB_SCHEMA}\".tasks\nWHERE task_creation_date >= DATE '${FROM_DATE}'\nAND task_creation_date <= DATE '${END_DATE}' + 1  \ngroup by username;",
+      "sessionProvider": "TDM"
+    },
+    {
+      "name": "ExecutingUsers",
+      "type": "sqlNonPrepared",
+      "code": "WITH user_latest_perm AS (\n    SELECT DISTINCT ON (task_executed_by)\n        task_executed_by AS username,\n        permission_group\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary\n    WHERE permission_group IS NOT NULL\n    ORDER BY task_executed_by, task_execution_id DESC\n),\n\nfilled AS (\n    SELECT\n        t.task_executed_by AS username,\n        COALESCE(t.permission_group, ulp.permission_group) AS permission_group,\n        COUNT(*) OVER (PARTITION BY t.task_executed_by, COALESCE(t.permission_group, ulp.permission_group)) AS no_of_task_executions\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary t\n    LEFT JOIN user_latest_perm ulp ON ulp.username = t.task_executed_by\n    WHERE t.start_execution_time >= DATE '${FROM_DATE}'\n      AND t.start_execution_time <= DATE '${END_DATE}' + 1\n)\n\nSELECT\n    username,\n    permission_group,\n    COUNT(*) AS no_of_task_executions\nFROM filled\nGROUP BY username, permission_group\nORDER BY username;\n--SELECT task_executed_by AS username, fabric_roles as user_groups, permission_group, count(*) as no_of_task_executions\n--FROM \"${TDMDB_SCHEMA}\".task_execution_summary\n--WHERE start_execution_time >= DATE '${FROM_DATE}'\n--AND start_execution_time <= DATE '${END_DATE}' + 1  \n--group by task_executed_by, fabric_roles, permission_group;",
+      "sessionProvider": "TDM"
+    }
+  ],
+  "params": [
+    {
+      "name": "FROM_DATE",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    },
+    {
+      "name": "TDMDB_SCHEMA",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    },
+    {
+      "name": "END_DATE",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "description": "",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

@@ -3,7 +3,6 @@ SELECT DISTINCT
   , tt.be_id
   , tt.task_type
   , tt.creation_date
-  , tt.data_center_name
   , tt.environment_id
   , 0 AS parent_lu_id
   , tt.lu_id
@@ -18,6 +17,10 @@ SELECT DISTINCT
   , tt.subset_task_execution_id
   , e.environment_name  as source_environment_name
   , e2.environment_name as target_environment_name
+  , tt.source_max_no_of_workers as source_max_workers_per_node
+  , tt.target_max_no_of_workers as target_max_workers_per_node
+  , tt.source_affinity as source_affinity
+  , tt.target_affinity as target_affinity
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
   , CASE
         WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
@@ -50,7 +53,6 @@ SELECT DISTINCT
   , tt.be_id
   , tt.task_type
   , tt.creation_date
-  , tt.data_center_name
   , tt.environment_id
   , 0 AS parent_lu_id
   , tt.lu_id
@@ -65,6 +67,10 @@ SELECT DISTINCT
   , tt.subset_task_execution_id
   , e.environment_name  as source_environment_name
   , e2.environment_name as target_environment_name
+  , tt.source_max_no_of_workers as source_max_workers_per_node
+  , tt.target_max_no_of_workers as target_max_workers_per_node
+  , tt.source_affinity as source_affinity
+  , tt.target_affinity as target_affinity
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
   , CASE
         WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
@@ -107,7 +113,6 @@ SELECT DISTINCT
   , tt.be_id
   , tt.task_type
   , tt.creation_date
-  , tt.data_center_name
   , tt.environment_id
   , tt.parent_lu_id
   , tt.lu_id
@@ -122,6 +127,10 @@ SELECT DISTINCT
   , tt.subset_task_execution_id
   , e.environment_name as source_environment_name
   , e2.environment_name as target_environment_name
+  , tt.source_max_no_of_workers as source_max_workers_per_node
+  , tt.target_max_no_of_workers as target_max_workers_per_node
+  , tt.source_affinity as source_affinity
+  , tt.target_affinity as target_affinity
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
   , CASE
         WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
@@ -154,7 +163,6 @@ SELECT DISTINCT
   , tt.be_id
   , tt.task_type
   , tt.creation_date
-  , tt.data_center_name
   , tt.environment_id
   , 0 as parent_lu_id
   , tt.lu_id
@@ -169,6 +177,10 @@ SELECT DISTINCT
   , tt.subset_task_execution_id
   , tt.source_env_name as source_environment_name
   , e.environment_name as target_environment_name
+  , tt.source_max_no_of_workers as source_max_workers_per_node
+  , tt.target_max_no_of_workers as target_max_workers_per_node
+  , tt.source_affinity as source_affinity
+  , tt.target_affinity as target_affinity
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
   , CASE
         WHEN SPLIT_PART(tt.task_executed_by, '##', 1) = 'TDM.tdmTaskScheduler' THEN
@@ -187,7 +199,7 @@ WHERE
     AND tt.process_id !=0
     AND ts.task_id               = tt.task_id
     AND ts.task_id = ep.task_id AND tt.process_id = ep.process_id
-    AND (ep.process_type = 'pre' OR (ep.process_type = 'post' AND
+     AND (ep.process_type = 'pre' OR (ep.process_type = 'post' AND
         NOT EXISTS  (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST tt2 inner join ${@TDMDB_SCHEMA}.tasks_exe_process ep2 ON ep2.process_id = tt2.process_id 
         AND ep2.task_id = tt2.task_id  WHERE tt2.task_execution_id = tt.task_execution_id
         AND tt2.process_id != ep.process_id and ep2.process_type='pre' and upper(execution_status) in ('PENDING', 'RUNNING') )))

@@ -1,0 +1,642 @@
+{
+    "tags": [
+        "Concurrency"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Set Records Count",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "getTDMDBSchema",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTDMDBSchema"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Init record count",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.count = 0;"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "NoTx",
+                            "actorType": {
+                                "parentType": "NoTx",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Source Data",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "inputRecords",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert To Sqlite  ",
+                    "dependsOnList": [],
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Insert Record to Sqlite Table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update Counter",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.count = flowArgs.count + 1;\n"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Modulus",
+                    "dependsOnList": [],
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Get Mod of Current Count",
+                            "actorType": {
+                                "parentType": "MathDivMod",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check Condition",
+                    "dependsOnList": [],
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Report Count?",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "EqualsIgnoreCase1",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "EXTRACT"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update Status And Records Count",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "And",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "And",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update task_ref_partition1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update ${@TDMDB_SCHEMA}.task_ref_partition\n set execution_status=${execution_status} , number_of_processed_records=${number_of_processed_records}\nwhere task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}\n AND partition_no=${partition_no}"
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_ref_table_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "partition_no",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "loading to fabric",
+                                        "name": "execution_status",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "number_of_processed_records",
+                                        "schema": {},
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Final Counter",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "Get Counter",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.count;\n"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update Number of Processed Records",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "If Extract Only  ",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "EXTRACT"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update task_ref_partition",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update ${@TDMDB_SCHEMA}.task_ref_partition\n set number_of_processed_records=${number_of_processed_records}, end_time=NOW(), execution_status=${execution_status}\nwhere task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}\n AND partition_no=${partition_no}"
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_ref_table_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "partition_no",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "number_of_processed_records",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "completed",
+                                        "name": "execution_status",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "getTDMDBSchema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition1",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "getTDMDBSchema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "inputRecords",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Insert Record to Sqlite Table",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Update Counter",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Mod of Current Count",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Update Counter",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition1",
+                "name": "number_of_processed_records"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Mod of Current Count",
+                "name": "mod"
+            },
+            "rightPort": {
+                "actor": "Report Count?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Report Count?",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "And",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "EqualsIgnoreCase1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "And",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Counter",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition",
+                "name": "number_of_processed_records"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "inputRecords"
+            },
+            "rightPort": {
+                "actor": "inputRecords",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sql"
+            },
+            "rightPort": {
+                "actor": "Insert Record to Sqlite Table",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "commitSize"
+            },
+            "rightPort": {
+                "actor": "Get Mod of Current Count",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskType"
+            },
+            "rightPort": {
+                "actor": "EqualsIgnoreCase1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition1",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_ref_table_id"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition1",
+                "name": "task_ref_table_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "partitionNumber"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition1",
+                "name": "partition_no"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskType"
+            },
+            "rightPort": {
+                "actor": "If Extract Only  ",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_ref_table_id"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition",
+                "name": "task_ref_table_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "partitionNumber"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition",
+                "name": "partition_no"
+            }
+        }
+    ]
+}

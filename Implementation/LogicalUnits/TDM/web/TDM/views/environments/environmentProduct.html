@@ -35,10 +35,17 @@
                         <!-- </input> -->
                     </div>
                     <div class="form-group col-lg-12">
-                        <label>{{"DATA_CENTER_NAME" | translate}}</label>
-                        <select id="environment_product_data_center_name" class="form-control1" width="'100%'" ng-model="environmentCtrl.productData.data_center_name" ng-change="environmentCtrl.dataCenterChanged()" ng-options="option.dc as option.dc for option in environmentCtrl.dataCenters | orderBy:'dc'" ng-disabled="environmentCtrl.disableChangeProduct">
+                        <label>Affinity</label>
+                        <select id="environment_product_data_center_name" chosen allow-single-deselect="true" class="form-control1" width="'100%'" ng-model="environmentCtrl.productData.data_center_name" ng-change="environmentCtrl.dataCenterChanged()" ng-disabled="environmentCtrl.disableChangeProduct">
                             <option value=""></option>
+                            <optgroup ng-repeat="group in environmentCtrl.affinityOptions" ng-if="group.options.length > 0" label="{{group.label}}">
+                                <option ng-repeat="option in group.options" value="{{option.value}}">{{option.label}}</option>
+                            </optgroup>
                         </select>
+                    </div>
+                    <div class="form-group col-lg-12" title="Maximum number of workersto allocate per node when executing tasks on this system.">
+                        <label>Maximum number of workers</label>
+                        <input id="environment_product_max_num_of_workers" style="width: 100%" max="{{environmentCtrl.max_number_of_workers}}" ng-init="environmentCtrl.productData.max_number_of_workers = (environmentCtrl.productData.max_number_of_workers || environmentCtrl.max_number_of_workers)" min="1" type="number" ng-required="true" ng-model="environmentCtrl.productData.max_number_of_workers"/>
                     </div>
                     <div class="form-group col-lg-12">
                         <label>{{"PRODUCT_VERSION" | translate}}</label>
@@ -97,7 +104,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-lg-12 form-buttons">
-                            <a ng-if="environmentCtrl.addProductWarning &&  !environmentCtrl.disableChangeProduct"
+                            <a ng-if="environmentCtrl.productData.lus == 0 &&  !environmentCtrl.disableChangeProduct"
                                     id="environment_product_save"
                                     uib-tooltip="Edit System Editor"
                                     tooltip-placement="left"
@@ -106,7 +113,7 @@
                                     role="1"
                                     ng-if="!environmentCtrl.disableChangeProduct"
                                     class="pull-left"
-                                    mwl-confirm message="DC {{environmentCtrl.addProductWarning.dc_name}} is not equal to the DC name of logical unit {{environmentCtrl.addProductWarning.lu_name}}: {{environmentCtrl.addProductWarning.lu_dc_name}}. Are you sure? "
+                                    mwl-confirm message="The selected system does not contain any Logical Units (LUs). Are you sure you want to continue ?"
                                     confirm-text="Yes <i class='glyphicon glyphicon-ok'></i>"
                                     on-confirm="environmentCtrl.saveProductChanges()"
                                     cancel-text="No <i class='glyphicon glyphicon-remove'></i>"
@@ -118,7 +125,7 @@
 
                                     </a>
 
-                            <button id="environment_product_save" class="btn k2-primary-btn pull-left" ng-if="!environmentCtrl.addProductWarning && !environmentCtrl.disableChangeProduct" type="submit" role-handler role="1">{{"SAVE_CHANGES" | translate}}</button>
+                            <button id="environment_product_save" class="btn k2-primary-btn pull-left" ng-if="!environmentCtrl.addProductWarning && environmentCtrl.productData.lus != 0" type="submit" role-handler role="1">{{"SAVE_CHANGES" | translate}}</button>
                             <a 	uib-tooltip="Close System Editor"
                                 id="environment_product_close"
                                   tooltip-placement="left"

@@ -12,7 +12,6 @@ stages:
             schema: string
             mandatory: false
           sourceInterface:
-            external: SOURCE_INTERFACE
             schema: string
             editor:
               id: com.k2view.interface
@@ -20,7 +19,6 @@ stages:
               - database
             mandatory: false
           sourceSchema:
-            external: SOURCE_SCHEMA
             schema: string
             mandatory: false
           useFabric:
@@ -72,6 +70,36 @@ stages:
         out:
           generatorFlowNames:
             schema: '#ref'
+      Get Interface of Main Tablle:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableSourceInterface
+          table:
+            link:
+              path: Get List Of Tables/res/luTable
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Schema of Main Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableSourceSchema
+          table:
+            link:
+              path: Get List Of Tables/res/sourceTable
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
   Check If Flow Already Exists:
     dependsOn: Create the Name Of the Flow
     actors:
@@ -136,13 +164,13 @@ stages:
             schema: string
             mandatory: false
           sourceInterface:
-            external: SOURCE_INTERFACE
+            link: Get Interface of Main Tablle/result
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
           sourceSchema:
-            external: SOURCE_SCHEMA
+            link: Get Schema of Main Table/result
             schema: string
             editor:
               id: com.k2view.mTableKey
@@ -159,16 +187,6 @@ stages:
             schema: '#ref'
             editor:
               id: com.k2view.strings
-            mandatory: false
-          DOCUMENT_IND:
-            external: DOCUMENT_IND
-            schema: boolean
-            mandatory: false
-          mainTableName:
-            external: ROOT_TABLE_NAME
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
             mandatory: false
           INTERFACE_TYPE:
             external: INTERFACE_TYPE
@@ -211,13 +229,13 @@ stages:
             schema: string
             mandatory: false
           sourceInterface:
-            external: SOURCE_INTERFACE
+            link: Get Interface of Main Tablle/result
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
           sourceSchema:
-            external: SOURCE_SCHEMA
+            link: Get Schema of Main Table/result
             schema: string
             editor:
               id: com.k2view.mTableKey
@@ -234,16 +252,6 @@ stages:
             schema: '#ref'
             editor:
               id: com.k2view.strings
-            mandatory: false
-          DOCUMENT_IND:
-            external: DOCUMENT_IND
-            schema: boolean
-            mandatory: false
-          mainTableName:
-            external: ROOT_TABLE_NAME
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
             mandatory: false
           INTERFACE_TYPE:
             external: INTERFACE_TYPE

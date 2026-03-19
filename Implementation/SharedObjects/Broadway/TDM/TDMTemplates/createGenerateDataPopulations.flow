@@ -35,16 +35,6 @@ stages:
             editor:
               id: com.k2view.mTableKey
             mandatory: false
-          DOCUMENT_IND:
-            external: DOCUMENT_IND
-            schema: boolean
-            mandatory: false
-          mainTableName:
-            external: mainTableName
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
           schema:
             external: sourceSchema
             schema: string

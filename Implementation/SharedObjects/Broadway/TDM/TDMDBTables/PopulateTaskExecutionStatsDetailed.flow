@@ -77,7 +77,7 @@ stages:
           interface:
             const: fabric
           sql:
-            const: select count(*) from ${@luName}.${@tableName}
+            const: select count(*) from ${@luName}."${@tableName}"
           luName:
             external: luName
             schema: string
