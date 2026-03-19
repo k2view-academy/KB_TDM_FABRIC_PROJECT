@@ -1,9 +1,0 @@
-tags: Upgrade
-stages:
-  Stage 1:
-    actors:
-      UpgradeTaskExecutedBy1:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: UpgradeTaskExecutedBy
