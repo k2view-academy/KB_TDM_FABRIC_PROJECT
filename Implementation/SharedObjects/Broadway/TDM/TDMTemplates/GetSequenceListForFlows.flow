@@ -1,0 +1,278 @@
+tags: TDM
+stages:
+  Get TDM_USING_CATALOG_SEQUENCES Flag:
+    actors:
+      Get TDM_USING_CATALOG_SEQUENCES:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          variableName:
+            const: TDM_USING_CATALOG_SEQUENCES
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
+  Get Sequence Data:
+    dependsOn: Get TDM_USING_CATALOG_SEQUENCES Flag
+    actors:
+      Do Not Use Catalog For Sequences?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get TDM_USING_CATALOG_SEQUENCES/variableValue
+            schema: string
+          b:
+            const: 'false'
+            schema: string
+      Get Table Sequences From Actor:
+        parent: getTableSequenceMapping
+        in:
+          LU_NAME:
+            external: luName
+          FABRIC_TABLE_NAME:
+            external: fabricTable
+        out:
+          tableSeqList:
+            schema: '#ref'
+    split: '--------------------'
+  Get Sequence Data From Catalog:
+    else: true
+    dependsOn: Get TDM_USING_CATALOG_SEQUENCES Flag
+    actors:
+      Get Table Sequences From Catalog:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: catalog_field_info
+          dataPlatform:
+            external: interfaceName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema:
+            external: schemaName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          dataset:
+            external: tableName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          field:
+            schema: string
+          sequenceName:
+            schema: string
+  Do Nothing:
+    dependsOn: Get Sequence Data
+    split: '--------------------'
+  Add Sequence Fields Only:
+    dependsOn: Get Sequence Data From Catalog
+    actors:
+      Sequence Field?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Get Table Sequences From Catalog/result/sequenceName
+              iterate: Iterate
+      Catalog Sequence Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Get Table Sequences From Catalog/result/sequenceName
+              iterate: Iterate
+            schema: string
+        out:
+          value:
+            schema: string
+      Catalog Field Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Get Table Sequences From Catalog/result/field
+              iterate: Iterate
+            schema: string
+        out:
+          value:
+            schema: string
+  Create Maps For Data:
+    actors:
+      Map For Sequence Name:
+        parent: MapBuild
+        in:
+          key:
+            const: SEQUENCE_NAME
+            schema: string
+          value:
+            link:
+            - path: Get Table Sequences From Actor/tableSeqList/SEQUENCE_NAME
+              iterate: Iterate
+            - Catalog Sequence Name/value
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Map For Field Name:
+        parent: MapBuild
+        in:
+          key:
+            const: FABRIC_FIELD_NAME
+            schema: string
+          value:
+            link:
+            - path: Get Table Sequences From Actor/tableSeqList/FABRIC_FIELD_NAME
+              iterate: Iterate
+            - Catalog Field Name/value
+        out:
+          map:
+            schema: '#ref'
+      Map For Target Field Name:
+        parent: MapBuild
+        in:
+          key:
+            const: TARGET_FIELD_NAME
+            schema: string
+          value:
+            link:
+            - path: Get Table Sequences From Actor/tableSeqList/TARGET_FIELD_NAME
+              iterate: Iterate
+            - Catalog Field Name/value
+        out:
+          map:
+            schema: '#ref'
+  Merge To One Map:
+    actors:
+      Merge Maps:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Map For Sequence Name/map
+              pos: 0
+            - path: Map For Field Name/map
+              pos: 1
+            - path: Map For Target Field Name/map
+              pos: 2
+        out:
+          map:
+            schema: '#ref'
+  Build Output Array:
+    actors:
+      Build Array:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Merge Maps/map
+              pos: 0
+        out:
+          array:
+            external: result
+            schema: '#ref'
+schemas:
+  Get Table Sequences From Actor.out.tableSeqList:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+        TARGET_TABLE_NAME:
+          type: string
+        TARGET_FIELD_NAME:
+          type: string
+        FABRIC_TABLE_NAME:
+          type: string
+        FABRIC_FIELD_NAME:
+          type: string
+        SEQUENCE_NAME:
+          type: string
+  Get Table Sequences From Catalog.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        dataPlatform:
+          type: string
+        schema:
+          type: string
+        dataset:
+          type: string
+        class:
+          type: string
+        field:
+          type: string
+        sqlDataType:
+          type: string
+        sourceDataType:
+          type: string
+        sourceEntityType:
+          type: string
+        sourceNullable:
+          type: string
+        columnSize:
+          type: string
+        definedBy:
+          type: string
+        ordinalPosition:
+          type: string
+        pk: {
+          }
+        pii: {
+          }
+        classification: {
+          }
+        sequenceName: {
+          }
+        V6: {
+          }
+  Map For Sequence Name.out.map:
+    type: object
+    properties:
+      SEQUENCE_NAME:
+        type: string
+  Map For Field Name.out.map:
+    type: object
+    properties:
+      FABRIC_FIELD_NAME:
+        type: string
+  Map For Target Field Name.out.map:
+    type: object
+    properties:
+      FABRIC_FIELD_NAME:
+        type: string
+  Merge Maps.out.map:
+    type: object
+    properties:
+      SEQUENCE_NAME:
+        type: string
+      FABRIC_FIELD_NAME:
+        type: string
+  Build Array.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        SEQUENCE_NAME:
+          type: string
+        FABRIC_FIELD_NAME:
+          type: string

@@ -1,0 +1,178 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Get Template:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: delete_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 2:
+    actors:
+      Read Flow Template:
+        parent: FileRead
+        height: 164
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            link: Get Template/result
+      build Template Data:
+        parent: LuFunction
+        in:
+          functionName:
+            const: buildTemplateData
+          luTable:
+            external: LU_TABLE
+            schema: string
+          targetDbInterface:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+          targetDbSchema:
+            external: TARGET_SCHEMA
+            schema: string
+          targetDbTable:
+            external: TARGET_TABLE
+            schema: string
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          tableIidFieldName:
+            const: ''
+            schema: string
+            mandatory: false
+          sequenceName:
+            const: ''
+            schema: string
+            mandatory: false
+          flowType:
+            const: DELETE
+            schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      flow folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/DeleteFlows
+          LU_NAME:
+            external: luType
+            schema: string
+          PROJECT_DIRECTORY:
+            link: Get Project Directory/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      ApplyTemplate:
+        parent: LuFunction
+        in:
+          functionName:
+            const: transform
+          templateContent:
+            link: Read Flow Template/stream
+            schema: string
+          data:
+            link: build Template Data/res
+            schema: string
+        out:
+          result:
+            schema: string
+  Stage 4:
+    actors:
+      Write Delete Flow:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: flow folder/string
+          stream:
+            link: ApplyTemplate/result
+          path:
+            external: FLOW_NAME
+schemas:
+  build Template Data.out.res:
+    type: object
+    properties:
+      DELETE_TABLE:
+        type: string
+      LU_NAME:
+        type: string
+      LU_TABLE:
+        type: string
+      LU_TABLE_COLUMNS:
+        type: array
+        items:
+          type: string
+      MAIN_TABLE_IND:
+        type: string
+      MAIN_TABLE_SEQ_ID:
+        type: string
+      MAIN_TABLE_SEQ_NAME:
+        type: string
+      TABLE_SEQ_DATA:
+        type: array
+        items:
+          type: object
+          properties:
+            LU_NAME:
+              type: string
+            TARGET_TABLE_NAME:
+              type: string
+            TARGET_FIELD_NAME:
+              type: string
+            FABRIC_TABLE_NAME:
+              type: string
+            FABRIC_FIELD_NAME:
+              type: string
+            SEQUENCE_NAME:
+              type: string
+      TARGET_INTERFACE:
+        type: string
+      TARGET_SCHEMA:
+        type: string
+      TARGET_TABLE:
+        type: string
+      TARGET_TABLE_COLUMNS:
+        type: array
+        items:
+          type: string
+      TARGET_TABLE_PKS:
+        type: array
+        items:
+          type: string

@@ -1,0 +1,133 @@
+tags: Concurrency
+stages:
+  Get Inputs:
+    actors:
+      Get Ref Table ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Get Task ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: taskId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Select Status:
+    actors:
+      Get Status:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select execution_status from ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              where task_execution_id=${task_execution_id} and task_id=${task_id}
+              and task_ref_table_id=${task_ref_table_id}
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_id:
+            link: Get Task ID/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            link: Get Ref Table ID/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+  'Return Condition ':
+    actors:
+      Not Failed ?:
+        parent: NotEquals
+        in:
+          b:
+            const: failed
+            schema: string
+          a:
+            link: Get Status/result
+        out:
+          result:
+            external: result

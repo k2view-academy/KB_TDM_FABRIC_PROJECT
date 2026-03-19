@@ -1,0 +1,1 @@
+function dataCentersCtrl($scope,BreadCrumbsService){this.pageDisplay="dataCentersTable",BreadCrumbsService.breadCrumbChange(0),BreadCrumbsService.push({},"DATA_CENTERS",(function(){}))}angular.module("TDM-FE").controller("dataCentersCtrl",dataCentersCtrl);

@@ -1,0 +1,114 @@
+stages:
+  Stage 1:
+    actors:
+      ConstTable1:
+        parent: ConstTable
+        in:
+          table:
+            const:
+            - table_name: customer
+              table_order: 0
+            - table_name: address
+              table_order: 1
+            - table_name: activity
+              table_order: 1
+            - table_name: contract
+              table_order: 1
+            - table_name: cases
+              table_order: 2
+            - table_name: case_note
+              table_order: 3
+            schema: '#ref'
+        out:
+          table:
+            schema: '#ref'
+      ConstStrings1:
+        parent: ConstStrings
+        in:
+          strings:
+            const:
+            - customer
+            - address
+            - activity
+            - contract
+            - cases
+            - case_note
+            external: tableList
+            default: true
+  Stage 2:
+    actors:
+      Lookup1:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - table_name
+          lookupData:
+            const: null
+            link: ConstTable1/table
+            schema: '#ref'
+          table_name:
+            link:
+              path: ConstStrings1/strings
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Stage 4:
+    actors:
+      MapBuild1:
+        parent: MapBuild
+        in:
+          key:
+            link: Lookup1/result/table_name
+          value:
+            link: Lookup1/result/table_order
+        out:
+          map:
+            external: result
+            schema: '#ref'
+schemas:
+  ConstTable1.in.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        table_order:
+          type: integer
+  ConstTable1.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        table_order:
+          type: integer
+  Lookup1.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Lookup1.out.result:
+    type: object
+    properties:
+      table_name:
+        type: string
+      table_order:
+        type: integer
+  MapBuild1.out.map:
+    type: object
+    properties:
+      '0':
+        type: string
+      '1':
+        type: string
+      '2':
+        type: string
+      '3':
+        type: string

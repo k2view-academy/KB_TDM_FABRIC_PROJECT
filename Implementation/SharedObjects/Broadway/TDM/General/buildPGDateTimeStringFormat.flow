@@ -1,0 +1,338 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Year",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 4
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Month",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 4
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 6
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Day",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 6
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 8
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Hours",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 8
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 10
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Minutes",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 10
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 12
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Seconds",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 12
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 14
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Date without time",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "-"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Time",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ":"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Date Time",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": " "
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Year",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Date without time",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Month",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Date without time",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Day",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Date without time",
+                "name": "elements"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "Hours",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Time",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Minutes",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Time",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Seconds",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Time",
+                "name": "elements"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "Date without time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Date Time",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Date Time",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DatetTimeString"
+            },
+            "rightPort": {
+                "actor": "Year",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DatetTimeString"
+            },
+            "rightPort": {
+                "actor": "Month",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DatetTimeString"
+            },
+            "rightPort": {
+                "actor": "Day",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DatetTimeString"
+            },
+            "rightPort": {
+                "actor": "Hours",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DatetTimeString"
+            },
+            "rightPort": {
+                "actor": "Minutes",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DatetTimeString"
+            },
+            "rightPort": {
+                "actor": "Seconds",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Date Time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "pgDateTimeStr"
+            }
+        }
+    ]
+}

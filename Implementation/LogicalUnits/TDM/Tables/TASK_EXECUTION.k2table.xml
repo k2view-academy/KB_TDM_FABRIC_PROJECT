@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>TASK_EXECUTION</Name>
+  <ID>tbl_TASK_EXECUTION</ID>
+  <EntityId>tblCol_e38506569e27408688f8e7f46f3c3eaf</EntityId>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
+  <Columns>
+    <Column name="TASK_EXECUTION_ID" id="tblCol_e38506569e27408688f8e7f46f3c3eaf" index="0" datatype="text" />
+  </Columns>
+  <IndexesList>
+  </IndexesList>
+  <EnrichmentList>
+    <Enrichment>
+      <Name>fnUpdateTaskSyncStatus</Name>
+      <Type>Function</Type>
+    </Enrichment>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+</TableObject>

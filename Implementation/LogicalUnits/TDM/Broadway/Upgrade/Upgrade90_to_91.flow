@@ -1,0 +1,36 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      UpgradeTableLevelDefinitions9_11:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTableLevelDefinitions9_1
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+  Stage 2:
+    actors:
+      UpdateFilterOutTargetTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateFilterOutTargetTables
+  Stage 3:
+    actors:
+      TDM_VERSION:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@schema}.tdm_general_parameters set param_value = '9.1'
+              where param_name = 'TDM_VERSION' ;
+          schema:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false

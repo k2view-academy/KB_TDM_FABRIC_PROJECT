@@ -1,0 +1,290 @@
+tags: UpgradeTDMProject
+stages:
+  Stage 4:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Stage 1:
+    actors:
+      Get List of LUs:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: list lut
+        out:
+          result:
+            schema: '#ref'
+      TDM_LIBRARY folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/TDM_LIBRARY/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+  Stage 2:
+    actors:
+      Project LU?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |
+              var upgradeLU = true;
+              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
+                  upgradeLU = false;
+              }
+              upgradeLU;
+          luName:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Stage 3:
+    actors:
+      LU folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/${LU_NAME}/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            link:
+              path: Get List of LUs/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Stage 5:
+    actors:
+      Pattern for List of Populations for Deletion:
+        parent: ConstStrings
+        in:
+          strings:
+            const:
+            - LU_PARAMS.*.flow
+            - LU_PARAMS.*.k2tablePop.xml
+  Stage 6:
+    actors:
+      Look for Populations:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          path:
+            const: Tables
+          pattern:
+            const: null
+            link:
+              path: Pattern for List of Populations for Deletion/strings
+              iterate: Iterate
+        out:
+          result:
+            schema: '#ref'
+  Stage 7:
+    dependsOn: Stage 6
+    actors:
+      Population Exists?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Look for Populations/result/name
+              iterate: First
+      Population File:
+        parent: StringFormat
+        in:
+          format:
+            const: Tables/${fileName}
+          fileName:
+            link:
+              path: Look for Populations/result/name
+              iterate: First
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  No Population:
+    else: true
+    dependsOn: Stage 6
+  Stage 8:
+    last: 1
+    dependsOn: Stage 7
+    actors:
+      Remove File:
+        parent: rm
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          path:
+            link: Population File/string
+    split: '--------------------'
+  Stage 11:
+    last: 1
+    dependsOn: No Population
+  Stage 10:
+    actors:
+      Replace TDM Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: copyTDMTables
+          TDM_LIBRARY_PATH:
+            link: TDM_LIBRARY folder/string
+            schema: string
+            mandatory: false
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            mandatory: false
+        out:
+          table_id:
+            schema: string
+      Check for Backup file:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          path:
+            const: Java/resources
+          pattern:
+            const: vdb_upgrade9_bkp.xml
+        out:
+          result:
+            schema: '#ref'
+  Stage 12:
+    dependsOn: Stage 10
+    actors:
+      Backup Files Exists?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Check for Backup file/result/name
+      Read vdb from BKP:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          path:
+            const: Java/resources/vdb_upgrade9_bkp.xml
+    split: '--------------------'
+  Stage 13:
+    else: true
+    dependsOn: Stage 10
+    actors:
+      Read vdb File:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          path:
+            const: vdb.k2vdb.xml
+      cp1:
+        parent: cp
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          from:
+            const: vdb.k2vdb.xml
+          to:
+            const: Java/resources/vdb_upgrade9_bkp.xml
+  Stage 14:
+    actors:
+      Remove LU_PARAM Enrichment:
+        parent: Replace
+        in:
+          search:
+            const: <Item order="1" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams"
+              type="Table" />
+          string:
+            link:
+            - Read vdb from BKP/stream
+            - Read vdb File/stream
+  Stage 15:
+    actors:
+      Remove Relation Enrichment:
+        parent: Replace
+        in:
+          search:
+            const: <Item order="2" active="true" name="FABRIC_TDM_ROOT" columnName="fnEnrichmentChildLink"
+              type="Table" />
+          string:
+            link: Remove LU_PARAM Enrichment/string
+  Stage 16:
+    actors:
+      Save vdb File:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          path:
+            const: vdb.k2vdb.xml
+          stream:
+            link: Remove Relation Enrichment/string
+schemas:
+  Get List of LUs.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+        Project Version:
+          type: string
+  Look for Populations.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+  Check for Backup file.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

@@ -1,0 +1,175 @@
+stages:
+  Dummy Stage to allow Split: {
+    }
+  Delete:
+    else: true
+    dependsOn: Dummy Stage to allow Split
+    actors:
+      Get Delete Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableDefinitions
+          interfaceName:
+            external: interface
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schema
+            schema: string
+            mandatory: false
+          tableName:
+            external: table
+            schema: string
+            mandatory: false
+          attrName:
+            const: delete_flow
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  Truncate:
+    else: false
+    transactional: false
+    dependsOn: Dummy Stage to allow Split
+    actors:
+      truncate?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            external: deleteOrTruncate
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Truncate Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Truncate Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            external: interface
+          sql:
+            const: TRUNCATE TABLE ${@schema}.${@table}
+          schema:
+            external: schema
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+  Delete Using DB Command:
+    dependsOn: Delete
+    actors:
+      No Delete Flow?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Delete Flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Delete  Command Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: sourceTable
+            schema: string
+            mandatory: false
+      Delete Table By DBCommand:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DeleteTableByDBCommand
+          schema:
+            external: schema
+            schema: string
+            mandatory: false
+          interface:
+            external: interface
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Custom Delete Flow:
+    else: true
+    dependsOn: Delete
+    actors:
+      Error Handler For Delete Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: sourceTable
+            schema: string
+            mandatory: false
+      Run Delete Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: Get Delete Flow/result
+          interface:
+            external: interface
+            schema: string
+            mandatory: false
+          schema:
+            external: schema
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Truncate

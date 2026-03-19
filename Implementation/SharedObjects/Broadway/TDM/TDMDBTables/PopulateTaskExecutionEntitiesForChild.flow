@@ -1,0 +1,269 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      Get Values of Map:
+        parent: JavaScript
+        in:
+          script:
+            const: map.values();
+          map:
+            external: input
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Check Env:
+    actors:
+      Synthetic:
+        parent: EqualsIgnoreCase
+        in:
+          a:
+            external: sourceEnv
+            schema: string
+          b:
+            const: Synthetic
+            schema: string
+      AI:
+        parent: EqualsIgnoreCase
+        in:
+          a:
+            external: sourceEnv
+            schema: string
+          b:
+            const: AI
+            schema: string
+      buildTDMEid:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: buildTDMEid
+          SOURCE_IID:
+            link:
+              path: Get Values of Map/result
+              iterate: First
+            schema: string
+            mandatory: false
+        out:
+          TDM_EID:
+            schema: string
+  Check if Generate Rule based:
+    dependsOn: Check Env
+    actors:
+      Or:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: Synthetic/result
+          b:
+            link: AI/result
+    split: '--------------------'
+  Else Check For Snapshot:
+    else: true
+    dependsOn: Check Env
+    actors:
+      Verison execution id is empty:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            external: versionExeID
+            schema: string
+          b:
+            const: '0'
+            schema: string
+      Default value for version exe id:
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  Else:
+    else: true
+    dependsOn: Check Env
+    actors:
+      Get value of versionExeID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: versionExeID
+            schema: string
+        out:
+          value:
+            schema: string
+  Check For Subset ID:
+    dependsOn: Check if Generate Rule based
+    actors:
+      EqualsIgnoreCase:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: '0'
+            schema: string
+          a:
+            external: subsetExeID
+      Default value for subset exe id:
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  Get Subset Exe ID:
+    else: true
+    dependsOn: Check if Generate Rule based
+    actors:
+      subsetExeID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: subsetExeID
+    split: '--------------------'
+  Get Version Exe ID:
+    dependsOn:
+    - Else
+    - Else Check For Snapshot
+    actors:
+      'versionExeID  ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - Default value for version exe id/value
+            - Get value of versionExeID/value
+        out:
+          value:
+            schema: string
+  Stage 7:
+    actors:
+      Add Entity to Entities Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE,
+
+              IID, SOURCE_ENV, CREATION_DATE,
+
+              ROOT_ENTITY_ID, ROOT_LU_NAME, ROOT_TARGET_ENTITY_ID, PARENT_LU_NAME, PARENT_ENTITY_ID, PARENT_TARGET_ENTITY_ID, CLONE_NO,VERSION_TASK_EXECUTION_ID,SUBSET_TASK_EXECUTION_ID)
+
+              VALUES (${taskExecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, ${targetEnvId}, ${executionStatus}, ${idType}, ${iid},
+
+              ${sourceEnv}, now(),${rootEntityId}, ${rootLuName}, ${rootTargetEntityId},
+
+              ${parentLuName}, ${parentEntityId}, ${parentTargetEntityId}, ${cloneNo},${versionTaskExeID},${subsetTaskExeID})
+
+              ON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do nothing
+          luName:
+            external: luName
+            schema: string
+          sourceEntityId:
+            link: buildTDMEid/TDM_EID
+            schema: string
+          targetEntityId:
+            link:
+              path: Get Values of Map/result
+              iterate: First
+            schema: string
+          executionStatus:
+            const: pending
+            schema: string
+          iid:
+            link:
+              path: Get Values of Map/result
+              iterate: First
+            schema: string
+          idType:
+            const: ENTITY
+            schema: string
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          rootEntityId:
+            external: rootEntityId
+            schema: string
+            mandatory: false
+          parentEntityId:
+            external: parentEntityId
+            schema: string
+            mandatory: false
+          parentLuName:
+            external: parentLuName
+            schema: string
+            mandatory: false
+          parentTargetEntityId:
+            external: parentTargetEntityId
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          rootTargetEntityId:
+            external: rootTargetEntityId
+            schema: string
+            mandatory: false
+          rootLuName:
+            external: rootLuName
+            schema: string
+            mandatory: false
+          cloneNo:
+            external: cloneNo
+            schema: string
+            mandatory: false
+          targetEnvId:
+            external: targetEnvId
+            schema: string
+            mandatory: false
+          sourceEnv:
+            external: sourceEnv
+            schema: string
+            mandatory: false
+          versionTaskExeID:
+            const: '0'
+            link: versionExeID  /value
+            schema: string
+            default: true
+            mandatory: false
+          subsetTaskExeID:
+            const: '0'
+            link:
+            - Default value for subset exe id/value
+            - subsetExeID/value
+            schema: string
+            default: true
+            mandatory: false
+schemas:
+  Get Values of Map.in.map:
+    type: object
+    properties:
+      CONTRACT_ID:
+        type: string
+  Get Values of Map.out.result:
+    type: array
+    items:
+      type: string

@@ -1,0 +1,130 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Create Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: luName
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: LoadFlows
+            schema: string
+            mandatory: false
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Prepare Parameters:
+        parent: LuFunction
+        in:
+          functionName:
+            const: buildDocTemplateData
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          luTable:
+            external: sourceTable
+            schema: string
+            mandatory: false
+          targetDbInterface:
+            external: targetDbInterface
+            schema: string
+            mandatory: false
+          targetDbSchema:
+            external: targetDbSchema
+            schema: string
+            mandatory: false
+          targetDbTable:
+            external: targetDbTable
+            schema: string
+            mandatory: false
+          sourceDBIneterface:
+            external: sourceDBIneterface
+            schema: string
+            mandatory: false
+          sourceDBSchema:
+            external: sourceDBSchema
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      Flow Template:
+        parent: FileRead
+        height: 164
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            const: SharedObjects/Templates/TDM/LoadDocumentTable.yaml.flow.template
+  Stage 3:
+    actors:
+      flow folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/LoadFlows
+          LU_NAME:
+            external: luName
+            schema: string
+          PROJECT_DIRECTORY:
+            link: Get Project Directory/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      Apply Template:
+        parent: LuFunction
+        in:
+          functionName:
+            const: transform
+          templateContent:
+            link: Flow Template/stream
+            schema: string
+          data:
+            link: Prepare Parameters/res
+            schema: string
+        out:
+          result:
+            schema: string
+  Stage 4:
+    actors:
+      File Write:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: flow folder/string
+          path:
+            const: loadDocumentToTarget.flow
+          stream:
+            link: Apply Template/result
+schemas:
+  Prepare Parameters.out.res:
+    type: object
+    properties:
+      LU_NAME:
+        type: string
+      SOURCE_INTERFACE:
+        type: string
+      SOURCE_SCHEMA:
+        type: string
+      SOURCE_TABLE:
+        type: string
+      TARGET_INTERFACE:
+        type: string
+      TARGET_SCHEMA:
+        type: string
+      TARGET_TABLE:
+        type: string

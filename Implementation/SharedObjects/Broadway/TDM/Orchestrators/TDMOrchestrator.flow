@@ -1,0 +1,317 @@
+tags: TDM
+stages:
+  Dummy Stage to Allow Condition:
+    transactional: false
+  Set Child Flag in Case of Vertical Execution of child instance:
+    transactional: false
+    dependsOn: Dummy Stage to Allow Condition
+    actors:
+      Vertiical Child Instance?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: verticalChildInd
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      set CHILD_LU_IND:
+        parent: FabricSet
+        in:
+          key:
+            const: CHILD_LU_IND
+            default: false
+          value:
+            const: 'true'
+            default: false
+      Initiate SCOPE_INITIATED:
+        parent: FabricSet
+        in:
+          key:
+            const: SCOPE_INITIATED
+            default: false
+          value:
+            default: false
+    split: '--------------------'
+  No New Session:
+    else: true
+    transactional: false
+    dependsOn: Dummy Stage to Allow Condition
+  Pre Load Entity:
+    transactional: false
+    actors:
+      Initation Error Handle:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Initiate TDM Load:
+        parent: InitiateTDMLoad_Actor
+        in:
+          syncMode:
+            external: syncMode
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ''
+              - 'ON'
+              - 'OFF'
+              - FORCE
+          isParamCoupling:
+            external: isParamCoupling
+            schema: string
+            mandatory: false
+          parentLuName:
+            external: parentLuName
+            schema: any
+            mandatory: false
+          iid:
+            external: iid
+          luName:
+            external: luName
+  Set No Trx For Fabric & TDM:
+    transactional: true
+    actors:
+      No Trx - Fabric:
+        parent: NoTx
+        in:
+          interface:
+            const: fabric
+      No Trx - TDM:
+        parent: NoTx
+        in:
+          interface:
+            const: TDM
+  Reserve Entity If Required:
+    transactional: true
+    actors:
+      'Reserve Error Handler ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Handle Entity Reservation At Start:
+        parent: HandleEntityReservationAtStart
+        in:
+          reserveInd:
+            external: reserveInd
+            schema: boolean
+  Get Delete Entity Indicator:
+    transactional: true
+    actors:
+      Get Delete Before Load:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_BEFORE_LOAD
+            default: false
+  Delete Before Load If Required:
+    remark: Delete Flow to delete all the Entity data from Target
+    transactional: true
+    dependsOn: Get Delete Entity Indicator
+    actors:
+      Equals2:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Delete Before Load/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Delete Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Delete Target Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DeleteFromTarget
+    split: '--------------------'
+  No Data Deletion:
+    else: true
+    transactional: true
+    dependsOn: Get Delete Entity Indicator
+  Get Insert To Target Indicator:
+    transactional: true
+    actors:
+      Get Insert to Target Indicator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_INSERT_TO_TARGET
+            default: false
+  Load Tables If Required:
+    remark: |-
+      Load tables into target.
+      This flow will first check if data should be loaded to target tables or not
+    transactional: true
+    dependsOn: Get Insert To Target Indicator
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: Get Insert to Target Indicator/result
+      Load Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+                number_of_retries: ''
+                retry_interval: ''
+      Load To Target:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadToTarget
+    split: '--------------------'
+  No Data Loading:
+    else: true
+    transactional: true
+    dependsOn: Get Insert To Target Indicator
+  Reserve Entity In Case Of Replace Sequences and Required:
+    transactional: false
+    actors:
+      Reserve With Replace Sequences Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Handle Entity Reservation At End:
+        parent: HandleEntityReservationAtEnd
+        in:
+          reserveInd:
+            external: reserveInd
+  Post Load Entity:
+    transactional: true
+    actors:
+      Handle Task Execution Entities:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: true
+            schema: boolean
+            mandatory: false
+  Get Execution Mode:
+    transactional: false
+    actors:
+      get EXECUTION_MODE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: EXECUTION_MODE
+            default: false
+  Run Children For Vertical:
+    transactional: false
+    dependsOn: Get Execution Mode
+    actors:
+      Vertical?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: get EXECUTION_MODE/result
+            schema: string
+          b:
+            const: VERTICAL
+            schema: string
+      Run Children LUs:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnRunVerticalChildren
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Not Vertical:
+    else: true
+    transactional: false
+    dependsOn: Get Execution Mode
+  End:
+    transactional: false
+    actors:
+      Print Finish Note:
+        parent: Logger
+        in:
+          message:
+            const: Finished loading Entity ${luType}.${iid}.
+          level:
+            const: info
+          luType:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+          iid:
+            external: iid
+            schema: string

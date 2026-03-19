@@ -1,0 +1,148 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Add Field Name:
+        parent: MapBuild
+        in:
+          key:
+            const: name
+            schema: string
+          value:
+            external: value
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Set Field Type:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var newDataType = \"\";\r\nswitch(datatype) {\r\n  case 'TEXT':\r\
+                \n    newDataType = 'Text';\r\n    break;\r\n  case 'INTEGER':\r\n\
+                \    newDataType = 'Integer';\r\n    break;\r\n  case 'REAL':\r\n\
+                \    newDataType = 'Real';\r\n    break;\r\n  case 'DATETIME':\r\n\
+                \    newDataType = 'Datetime';\r\n    break;\r\n  case 'DATE':\r\n\
+                \    newDataType = 'Date';\r\n    break;\r\n  case 'TIME':\r\n   \
+                \ newDataType = 'Time';\r\n    break;\r\n  default:\r\n    newDataType\
+                \ = datatype;\r\n    break;\r\n}\r\nnewDataType;"
+              script: |-
+                var newDataType = "";
+
+                switch (datatype) {
+                  case 'TEXT':
+                    newDataType = 'Text';
+                    break;
+
+                  case 'INTEGER':
+                    newDataType = 'Integer';
+                    break;
+
+                  case 'REAL':
+                    newDataType = 'Real';
+                    break;
+
+                  case 'DATETIME':
+                    newDataType = 'Datetime';
+                    break;
+
+                  case 'DATE':
+                    newDataType = 'Date';
+                    break;
+
+                  case 'TIME':
+                    newDataType = 'Time';
+                    break;
+
+                  default:
+                    newDataType = datatype;
+                    break;
+                }
+
+                newDataType;
+          datatype:
+            external: datatype
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Field Name - Uppercase:
+        parent: Uppercase
+        in:
+          string:
+            external: value
+  Stage 2:
+    actors:
+      Add Field Type:
+        parent: MapBuild
+        in:
+          key:
+            const: datatype
+            schema: string
+          value:
+            link: Set Field Type/result
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Add Field Name Upper Case:
+        parent: MapBuild
+        in:
+          key:
+            const: upperName
+            schema: string
+          value:
+            link: Field Name - Uppercase/string
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      Marge Name with Type:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Add Field Type/map
+              pos: 0
+            - path: Add Field Name/map
+              pos: 1
+            - path: Add Field Name Upper Case/map
+              pos: 2
+        out:
+          map:
+            external: deleteFieldData
+            schema: '#ref'
+schemas:
+  Add Field Name.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Set Field Type.out.result:
+    type: object
+    properties:
+      columnType:
+        type: string
+      columnName:
+        type: string
+  Add Field Type.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Add Field Name Upper Case.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Marge Name with Type.out.map:
+    type: object
+    properties:
+      datatype:
+        type: string
+      name:
+        type: string

@@ -1,0 +1,1 @@
+function businessEntitiesCtrl($scope,BreadCrumbsService){this.pageDisplay="businessEntitiesTable"}angular.module("TDM-FE").controller("businessEntitiesCtrl",businessEntitiesCtrl);

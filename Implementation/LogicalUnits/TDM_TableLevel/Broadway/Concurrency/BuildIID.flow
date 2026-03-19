@@ -1,0 +1,167 @@
+tags: Concurrency
+stages:
+  Start:
+    actors:
+      Partition Number:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: partitionNum
+        out:
+          value:
+            schema: string
+      SOURCE Env:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: sourceEnv
+            schema: string
+        out:
+          value:
+            schema: string
+      Interface Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interfaceName
+            schema: string
+        out:
+          value:
+            schema: string
+      Schema Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schemaName
+            schema: string
+        out:
+          value:
+            schema: string
+      Table Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+            schema: string
+        out:
+          value:
+            schema: string
+      Execution ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskExecutionId
+      Get IID Separator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TABLE_LEVEL_SEPARATOR
+            default: false
+      OLD_FORMAT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: OLD_FORMAT
+            default: false
+  Get IID Components:
+    actors:
+      No Partition?:
+        parent: IsNull
+        in:
+          value:
+            link: Partition Number/value
+      Old Format?:
+        parent: Equals
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: OLD_FORMAT/result
+  Create IID:
+    else: true
+    dependsOn: Get IID Components
+    actors:
+      Concat into IID:
+        parent: Concat
+        in:
+          delimiter:
+            const: null
+            link: Get IID Separator/result
+          elements:
+            link:
+            - path: SOURCE Env/value
+              pos: 0
+            - path: Interface Name/value
+              pos: 1
+            - path: Schema Name/value
+              pos: 2
+            - path: Table Name/value
+              pos: 3
+            - path: Execution ID/value
+              pos: 4
+            - path: Partition Number/value
+              pos: 5
+    split: '--------------------'
+  No Partition Delete Only:
+    dependsOn: Get IID Components
+    actors:
+      Or:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: No Partition?/result
+          b:
+            link: Old Format?/result
+      Concat into IID1:
+        parent: Concat
+        in:
+          delimiter:
+            const: null
+            link: Get IID Separator/result
+          elements:
+            link:
+            - path: SOURCE Env/value
+              pos: 0
+            - path: Interface Name/value
+              pos: 1
+            - path: Schema Name/value
+              pos: 2
+            - path: Table Name/value
+              pos: 3
+            - path: Execution ID/value
+              pos: 4
+  Set IID:
+    actors:
+      Set Source Entity ID:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link:
+            - Concat into IID/string
+            - Concat into IID1/string
+            default: false
+      iid:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - Concat into IID/string
+            - Concat into IID1/string
+            schema: string
+        out:
+          value:
+            external: iid
+            schema: string

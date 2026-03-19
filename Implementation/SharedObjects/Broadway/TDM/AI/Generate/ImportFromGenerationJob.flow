@@ -1,0 +1,522 @@
+tags: TDM,TDMGenerateData
+stages:
+  Get Globals:
+    actors:
+      AI_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_ENVIRONMENT
+      AI_DB_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+      Get BE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: BE_ID
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Getk2SystemSchemaName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  'Build IIDS ':
+    actors:
+      trainingExcludedTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingExcludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      BE_NAME:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: select be_name from ${@TDMDB_SCHEMA}.business_entities where be_id
+              = ?
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          params:
+            link: Get BE_ID/result
+        out:
+          result:
+            schema: string
+      trainingIncludedTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingIncludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+  Get The Fabric TDM root IID:
+    actors:
+      DbFetchField:
+        parent: DbFetchField
+        in:
+          interface:
+            const: null
+            link: AI_DB_INTERFACE/result
+          sql:
+            const: SELECT nextval('${@schema}.ai_instance_id_seq');
+          schema:
+            link: Getk2SystemSchemaName1/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: integer
+  Strip the IID:
+    actors:
+      id:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: DbFetchField/result
+        out:
+          value:
+            schema: string
+  Build Tdm Eid:
+    actors:
+      buildTDMEidForAI:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: buildTDMEidForAI
+          Env:
+            link: AI_ENVIRONMENT/result
+            schema: string
+            mandatory: false
+          IID:
+            link: id/value
+            schema: string
+            mandatory: false
+          ExecutionID:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+        out:
+          string:
+            schema: string
+  Adjust Inputs For Task Execution Entites:
+    actors:
+      'initaiteTaskExecutionEntities ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: initaiteTaskExecutionEntities
+          IID:
+            link: id/value
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          Status:
+            const: completed
+            schema: string
+            default: true
+            mandatory: false
+          SourceIID:
+            const: ''
+            link: buildTDMEidForAI/string
+            schema: string
+            default: true
+            mandatory: false
+          TargetIID:
+            const: ''
+            link: id/value
+            schema: string
+            default: true
+            mandatory: false
+      isParamCoupling:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isParamCoupling
+        out:
+          value:
+            schema: string
+  Import to Fabric:
+    transactional: false
+    dependsOn: Adjust Inputs For Task Execution Entites
+    actors:
+      Included List:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+      Initation Error Handle1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      'Import ':
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: MDB_IMPORT ${luName}.${IID} WITH INTERFACE_NAME=${INTERFACE} EXCLUDED_TABLES=${excludedTables}
+              REMOTE_IID=${REMOTE}
+          IID:
+            link: buildTDMEidForAI/string
+            schema: string
+            mandatory: false
+          REMOTE:
+            external: IID
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+          INTERFACE:
+            link: AI_DB_INTERFACE/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Included:
+    else: true
+    transactional: false
+    dependsOn: Adjust Inputs For Task Execution Entites
+    actors:
+      Initation Error Handle12:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Import With Included:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: MDB_IMPORT ${luName}.${IID} WITH INTERFACE_NAME=${INTERFACE} INCLUDED_TABLES=${includedTables}
+              EXCLUDED_TABLES=${excludedTables} REMOTE_IID=${@REMOTE}
+          IID:
+            link: buildTDMEidForAI/string
+            schema: string
+            mandatory: false
+          REMOTE:
+            external: IID
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+          INTERFACE:
+            link: AI_DB_INTERFACE/result
+            schema: string
+            mandatory: false
+          includedTables:
+            link: trainingIncludedTables1/tables
+            schema: any
+            mandatory: false
+  Mapping:
+    transactional: true
+    actors:
+      PopulateTDMAIGenIIDMapping1:
+        parent: PopulateTDMAIGenIIDMapping
+        in:
+          env_name:
+            link: AI_ENVIRONMENT/result
+          task_execution_id:
+            link: TDM_TASK_EXE_ID/result
+          imported_lui:
+            link: buildTDMEidForAI/string
+          root_imported_lui:
+            link: buildTDMEidForAI/string
+          root_lu_name:
+            external: luName
+          generated_iid:
+            external: IID
+          lu_name:
+            external: luName
+          root_generated_iid:
+            external: IID
+  Get Sync Off:
+    transactional: true
+    actors:
+      'FabricGet ':
+        parent: FabricGet
+        in:
+          luType:
+            const: null
+            external: luName
+          iid:
+            const: null
+            link:
+              path: buildTDMEidForAI/string
+              pos: 0
+            default: false
+          syncMode:
+            const: 'OFF'
+  Update Lu Params:
+    transactional: true
+    actors:
+      Initation Error Handle11:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      'Enrichemnt Lu Params ':
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGenerationLuParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          iid:
+            link: buildTDMEidForAI/string
+            schema: string
+            mandatory: false
+  TDM Tables:
+    transactional: true
+    actors:
+      FABRIC_TDM_ROOT:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: insert into ${@luName}.fabric_tdm_root (K2_TDM_EID,SOURCE_ENV,IID,TASK_EXECUTION_ID)
+              values (${tdm_eid}, ${env}, ${iid},${task_exe_id})
+          tdm_eid:
+            link: buildTDMEidForAI/string
+            schema: string
+            mandatory: false
+          iid:
+            link: id/value
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          task_exe_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          env:
+            link: AI_ENVIRONMENT/result
+            schema: string
+            mandatory: false
+      'tdm_be_iids         ':
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          command:
+            const: upsert
+          schema:
+            const: null
+            external: luName
+          table:
+            const: TDM_BE_IIDS
+          fields:
+            const:
+            - IID
+            - SOURCE_ENV
+            - BE_ID
+            - BE_NAME
+            - ROOT_IID
+          keys:
+            const:
+            - IID
+            - SOURCE_ENV
+            - BE_ID
+            - ROOT_IID
+          dialect:
+            const: sqlite
+          IID:
+            link: id/value
+            schema: string
+            mandatory: false
+          SOURCE_ENV:
+            link: AI_ENVIRONMENT/result
+            schema: string
+            mandatory: false
+          BE_ID:
+            link: Get BE_ID/result
+            schema: string
+            mandatory: false
+          BE_NAME:
+            link: BE_NAME/result
+            schema: string
+            mandatory: false
+          ROOT_IID:
+            link: id/value
+            schema: string
+            mandatory: false
+  Check Params Mode:
+    transactional: false
+  'Is Params Coupling   ':
+    transactional: false
+    dependsOn: Check Params Mode
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: isParamCoupling/value
+      ExportIidForParams:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ExportIidForParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          IID:
+            link: buildTDMEidForAI/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'Else     ':
+    else: true
+    transactional: false
+    dependsOn: Check Params Mode
+  'check if load ':
+    transactional: false
+    actors:
+      loadIndicator:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: loadIndicator
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+  No Load:
+    dependsOn: 'check if load '
+    actors:
+      'EqualsIgnoreCase false ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'false'
+            schema: string
+          a:
+            link: loadIndicator/value
+    split: '--------------------'
+  'Else   ':
+    else: true
+    dependsOn: 'check if load '
+  Populate Task Execution Entites:
+    dependsOn: No Load
+    actors:
+      Initation Error Handle:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      HandleTaskExecutionEntities1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: ''
+            schema: boolean
+            mandatory: false
+    split: '--------------------'
+  'Do Nothing   ':
+    dependsOn: 'Else   '

@@ -1,0 +1,244 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Find Template Name:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TDMInitTemplates
+          template_type:
+            external: TEMPLATE_TYPE
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          template_name:
+            schema: string
+  Stage 5:
+    actors:
+      The Templates' Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/SharedObjects/Templates/
+          projDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+  Stage 4:
+    actors:
+      Check if Interface Type has Templates:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: The Templates' Folder/string
+          path:
+            const: .
+          pattern:
+            const: null
+            external: INTERFACE_TYPE
+          directories:
+            const: true
+        out:
+          result:
+            schema: '#ref'
+  Stage 2:
+    dependsOn: Stage 4
+    actors:
+      Templates Folder Found:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Check if Interface Type has Templates/result/name
+              iterate: First
+      Interface Type Templates' Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${templatesFolder}/${inerfaceType}
+          inerfaceType:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          templatesFolder:
+            link: The Templates' Folder/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 6:
+    else: true
+    dependsOn: Stage 4
+    actors:
+      Interface Type Templates' Folder1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${templatesFolder}/TDM
+          templatesFolder:
+            link: The Templates' Folder/string
+            schema: string
+            mandatory: false
+  Stage 3:
+    dependsOn: Stage 2
+    actors:
+      Template File Exists?:
+        parent: InnerFlow
+        condition: FILE_FOUND
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: Interface Type Templates' Folder/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+            mandatory: false
+          pattern:
+            link: Find Template Name/template_name
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      Default Templates' Folder12:
+        parent: StringFormat
+        in:
+          format:
+            const: SharedObjects/Templates/${inerfaceType}/${templateName}
+          inerfaceType:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+          templateName:
+            link: Find Template Name/template_name
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 9:
+    else: true
+    dependsOn: Stage 2
+    actors:
+      Const2:
+        parent: Const
+        in:
+          value:
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Stage 8:
+    dependsOn: Stage 6
+    actors:
+      Default Template File Exists?:
+        parent: InnerFlow
+        condition: FILE_FOUND
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: Interface Type Templates' Folder1/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+            mandatory: false
+          pattern:
+            link: Find Template Name/template_name
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      Default Templates' Folder1:
+        parent: StringFormat
+        in:
+          format:
+            const: SharedObjects/Templates/TDM/${templateName}
+          templateName:
+            link: Find Template Name/template_name
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 10:
+    else: true
+    dependsOn: Stage 6
+    actors:
+      Const1:
+        parent: Const
+        in:
+          value:
+            schema: string
+        out:
+          value:
+            schema: string
+  Stage 7:
+    actors:
+      Output:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - Default Templates' Folder12/string
+            - Const2/value
+            - Default Templates' Folder1/string
+            - Const1/value
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+schemas:
+  Find Template Name.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        template_type:
+          type: string
+        template_name:
+          type: string
+  Check if Interface Type has Templates.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

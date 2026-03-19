@@ -1,0 +1,210 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      Get TDM_USING_CATALOG_SEQUENCES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_USING_CATALOG_SEQUENCES
+            default: false
+      Get TDM_SEQ_REPORT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SEQ_REPORT
+            default: false
+      Get TARGET_ENTITY_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      Get ROOT_TABLE_NAME:
+        parent: FabricSetRead
+        in:
+          key:
+            const: ROOT_TABLE_NAME
+            default: false
+      Get ROOT_COLUMN_NAME:
+        parent: FabricSetRead
+        in:
+          key:
+            const: ROOT_COLUMN_NAME
+            default: false
+  Enable Sequencing:
+    dependsOn: Get Inputs
+    actors:
+      Enable Sequences At Extract?:
+        parent: And
+        condition: result
+        in:
+          a:
+            external: replaceSeqAtSync
+          b:
+            external: replaceSeq
+      Set enable_sequences  To True:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'true'
+            default: false
+    split: '--------------------'
+  Disable Sequences:
+    else: true
+    dependsOn: Get Inputs
+    actors:
+      Set enable_sequences  To False:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'false'
+            default: false
+  Stage 1:
+    dependsOn: Enable Sequencing
+    actors:
+      Enable Sequences At Load?1:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |
+              var result = false;
+              if (usingCatalog === "true" && seqReport === "true") {
+                  result = true;
+              }
+              result;
+          usingCatalog:
+            link:
+            - Get TDM_USING_CATALOG_SEQUENCES/result
+            - Get TDM_SEQ_REPORT/result
+            schema: string
+            mandatory: false
+          seqReport:
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Set Globals For Sequence Report:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SetMaskingGlobals
+          TDM_USING_CATALOG_SEQUENCES:
+            link: Get TDM_USING_CATALOG_SEQUENCES/result
+            schema: string
+            mandatory: false
+          TDM_SEQ_REPORT:
+            link: Get TDM_SEQ_REPORT/result
+            schema: string
+            mandatory: false
+          enable_sequences:
+            const: 'true'
+            schema: string
+            mandatory: false
+          TDM_TASK_EXE_ID:
+            external: TDM_TASK_EXE_ID
+            schema: string
+            mandatory: false
+          TDM_SOURCE_ENVIRONMENT_NAME:
+            external: TDM_SOURCE_ENVIRONMENT_NAME
+            schema: string
+            mandatory: false
+          TARGET_ENTITY_ID:
+            link: Get TARGET_ENTITY_ID/result
+            schema: string
+            mandatory: false
+          LU_TYPE:
+            external: LU_TYPE
+            schema: string
+            mandatory: false
+          ROOT_TABLE_NAME:
+            link: Get ROOT_TABLE_NAME/result
+            schema: string
+            mandatory: false
+          ROOT_COLUMN_NAME:
+            link: Get ROOT_COLUMN_NAME/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 3:
+    else: true
+    dependsOn: Enable Sequencing
+    actors:
+      'Disable Sequence Report ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SetMaskingGlobals
+          TDM_USING_CATALOG_SEQUENCES:
+            const: 'false'
+            schema: string
+            mandatory: false
+          TDM_SEQ_REPORT:
+            schema: string
+            mandatory: false
+          enable_sequences:
+            schema: string
+            mandatory: false
+          TDM_TASK_EXE_ID:
+            schema: string
+            mandatory: false
+          TDM_SOURCE_ENVIRONMENT_NAME:
+            schema: string
+            mandatory: false
+          TARGET_ENTITY_ID:
+            schema: string
+            mandatory: false
+          LU_TYPE:
+            schema: string
+            mandatory: false
+          ROOT_TABLE_NAME:
+            schema: string
+            mandatory: false
+          ROOT_COLUMN_NAME:
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 2:
+    dependsOn: Disable Sequences
+    actors:
+      Disable Sequence Report:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SetMaskingGlobals
+          TDM_USING_CATALOG_SEQUENCES:
+            const: 'false'
+            schema: string
+            mandatory: false
+          TDM_SEQ_REPORT:
+            schema: string
+            mandatory: false
+          enable_sequences:
+            schema: string
+            mandatory: false
+          TDM_TASK_EXE_ID:
+            schema: string
+            mandatory: false
+          TDM_SOURCE_ENVIRONMENT_NAME:
+            schema: string
+            mandatory: false
+          TARGET_ENTITY_ID:
+            schema: string
+            mandatory: false
+          LU_TYPE:
+            schema: string
+            mandatory: false
+          ROOT_TABLE_NAME:
+            schema: string
+            mandatory: false
+          ROOT_COLUMN_NAME:
+            schema: string
+            mandatory: false

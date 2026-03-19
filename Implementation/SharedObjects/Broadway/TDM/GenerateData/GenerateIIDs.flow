@@ -1,0 +1,189 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Init",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "This flow will create a new IID for the synthetic instance.\n1.Get Data from GenerateIIDGenerator Actor based on Input LU name.\n2.Loop from 1 to Number of IIDs\n  a. If the Generator actor is populated, then call it\n  b.Else,\n    i.Call UUID function to create a unique ID\n    ii.Add entry for each number to Cassandra table \n       <LU_NAME>_entity_list where:\n    iii.task_execution_id, lu_name and source_env_name fields \n    are set to the input values\n    iv.source_iid is set to the generated unique ID\n    v.tdm_eid is set to <Synthetic Environment \n    Name>_<Sequence value>\n  c.Return of entity list table.\n\n",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build TDM_EID Template",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "buildTDMEidTemplate1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "buildTDMEidTemplate"
+                                    },
+                                    {
+                                        "name": "source_env_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "TDM_EID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Insert Command",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "StringFormat1",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "SELECT ${instanceID} as tdm_eid from  GENERATE_SERIES(1,${numOfEntities})"
+                                    },
+                                    {
+                                        "name": "instanceID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "numOfEntities",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data To Entity_List Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbCommand2",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "?column?": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "buildTDMEidTemplate1",
+                "name": "TDM_EID"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "instanceID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "source_env_name"
+            },
+            "rightPort": {
+                "actor": "buildTDMEidTemplate1",
+                "name": "source_env_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "num_of_entities"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "numOfEntities"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand2",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

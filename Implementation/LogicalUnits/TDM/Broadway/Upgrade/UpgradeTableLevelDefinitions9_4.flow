@@ -1,0 +1,116 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Stage 2:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      MTable Name and Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0}/Implementation/LogicalUnits/k2_ref/Mtable/TableLevelDefinitions.csv
+          params:
+            link:
+              path: PROJECT_DIR/value
+              pos: 0
+  Stage 3:
+    actors:
+      BackUp File Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0}.bck
+          params:
+            link:
+              path: MTable Name and Location/string
+              pos: 0
+  'Stage 4  ':
+    actors:
+      Read Mtable:
+        parent: FileRead
+        in:
+          interface:
+            const: file://
+          path:
+            link: MTable Name and Location/string
+      Create Backup:
+        parent: cp
+        in:
+          interface:
+            const: file://
+          from:
+            link: MTable Name and Location/string
+          to:
+            link: BackUp File Name/string
+  'Stage 5 ':
+    actors:
+      Parse MTable:
+        parent: CsvParser
+        in:
+          stream:
+            link: Read Mtable/stream
+        out:
+          object:
+            schema: '#ref'
+  'Stage 6 ':
+    actors:
+      Build Mtable WithNew Field:
+        parent: CsvBuilder
+        in:
+          columns:
+            const:
+            - interface_name
+            - interface_type
+            - schema_name
+            - table_name
+            - extract_flow
+            - table_order
+            - delete_flow
+            - load_flow
+          maps:
+            link: Parse MTable/object
+  Stage 7:
+    actors:
+      Write Update Mtable:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            link: MTable Name and Location/string
+          stream:
+            link: Build Mtable WithNew Field/csv
+schemas:
+  Parse MTable.out.object:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        table_name:
+          type: string
+        extract_flow:
+          type: string
+        table_order:
+          type: string
+        delete_flow:
+          type: string
+        load_flow:
+          type: string

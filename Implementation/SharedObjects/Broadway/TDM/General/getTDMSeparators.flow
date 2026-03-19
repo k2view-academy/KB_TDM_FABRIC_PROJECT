@@ -1,0 +1,57 @@
+tags: TDM,TDM_General
+stages:
+  Get Separators:
+    actors:
+      Get TDM Separators:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetSeparators
+        out:
+          result:
+            schema: '#ref'
+  Separators:
+    actors:
+      IID_OPEN_SEPARATOR:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get TDM Separators/result/IID_OPEN_SEPARATOR
+            schema: string
+        out:
+          value:
+            external: IID_OPEN_SEPARATOR
+            schema: string
+      IID_CLOSE_SEPARATOR:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get TDM Separators/result/IID_CLOSE_SEPARATOR
+            schema: string
+        out:
+          value:
+            external: IID_CLOSE_SEPARATOR
+            schema: string
+      IID_SEPARATOR:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get TDM Separators/result/IID_SEPARATOR
+            schema: string
+        out:
+          value:
+            external: IID_SEPARATOR
+            schema: string
+schemas:
+  Get TDM Separators.out.result:
+    type: object
+    properties:
+      IID_OPEN_SEPARATOR: {
+        }
+      IID_CLOSE_SEPARATOR: {
+        }
+      IID_SEPARATOR:
+        type: string

@@ -1,0 +1,777 @@
+{
+    "tags": [
+        "Generate Data"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record & Eable Masking",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                         {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTDMDBSchema"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+									{{#if TABLE_PARENT_FIELDS}}
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties":
+												{
+												{{#each TABLE_PARENT_FIELDS~}}
+                                                "{{getParentFieldName this}}": {
+                                                    "type": "any"
+                                                {{#if @last}} } {{else}} }, {{/if}}
+												{{/each}}
+												{{/if}}
+                                            }
+										}
+									}
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Set Parent & Sequential Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [	
+						{{#if TABLE_PARENT_FIELDS}}
+						{{#each TABLE_PARENT_FIELDS~}}
+						{
+                            "name": "{{getChildFieldName this}}",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+						{{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+						{{#if TABLE_SEQ_DATA}},{{/if}}
+						{{/if}}
+						
+                        {{#if TABLE_SEQ_DATA}}
+ 						{{#each TABLE_SEQ_DATA~}}
+                        {
+                            "name": "{{getFabricFieldName this}}",
+                            "actorType": {
+                                "parentType": "Masking",
+                                "inputs": [
+                                     {
+                                        "name": "maskingId",
+                                        "const": "{{getFabricFieldName this}}"
+                                    },
+                                    {
+                                        "name": "flowName",
+                                        "const": "Sequence.actor"
+                                    },
+                                    {
+                                        "name": "category",
+                                        "const": "enable_sequences"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "useExecutionId",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "const": null
+                                        }
+                                    },
+                                    {
+                                        "name": "sequenceId",
+                                        "const": "{{getSequenceName this}}",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sequenceInterface",
+                                        "const": "TDM",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database"
+                                            ],
+                                            "interfaces": [
+                                                "IN-MEMORY"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "initialValue",
+                                        "const": "1",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "increment",
+                                        "const": 1,
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sequenceSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+							}
+                        {{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+
+						{{/if}}
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Build Parent & Sequential Fields Maps",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+						{{#if TABLE_PARENT_FIELDS}}
+						{{#each TABLE_PARENT_FIELDS~}}
+                        {
+                            "name": "Build {{getChildFieldName this}} Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getChildFieldName this}}"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "{{getChildFieldName this}}": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+						{{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+						{{#if TABLE_SEQ_DATA}},{{/if}}
+						{{/if}}
+						
+						{{#if TABLE_SEQ_DATA}}
+ 						{{#each TABLE_SEQ_DATA~}}
+                        {
+                            "name": "Build {{getFabricFieldName this}} Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getFieldName this}}"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "{{getFieldName this}}": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        {{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+
+						{{/if}}
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Merge Maps & Call Catalog Generator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+							{{#or TABLE_PARENT_FIELDS TABLE_SEQ_DATA}}
+                            "name": "Merge Parent & Sequential Felds Maps",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+												{{#if TABLE_PARENT_FIELDS}}
+												{{#each TABLE_PARENT_FIELDS~}}
+                                                "{{getChildFieldName this}}": {
+                                                    "type": "string"
+                                                {{#if @last}} } {{else}} }, {{/if}}
+												{{/each}}
+												{{#if TABLE_SEQ_DATA}},{{/if}}
+												{{/if}}
+						
+												{{#if TABLE_SEQ_DATA}}
+												{{#each TABLE_SEQ_DATA~}}
+												
+                                                "{{getFieldName this}}": {
+                                                    "type": "string"
+                                                {{#if @last}} } {{else}} }, {{/if}}
+												{{/each}}
+
+												{{/if}}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                            {{/or}}
+                        },
+                        {
+                            "name": "Catalog Generator Record",
+                            "actorType": {
+                                "parentType": "CatalogGeneratorRecord",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "{{SOURCE_INTERFACE}}"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "{{{SOURCE_SCHEMA}}}"
+                                    },
+                                    {{#eq DOCUMENT_IND "true"}}{
+                                        "name": "dataset",
+                                        "const": "{{getMainTableName this}}"
+                                    },
+                                    {
+                                        "name": "catalogClassName",
+                                         "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getTableClass this}}"
+                                    },
+                                    {{else}}{
+                                        "name": "dataset",
+                                        "const": "{{{SOURCE_TABLE}}}"
+                                    },{{/eq}}
+                                    {
+                                        "name": "mtable",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "donNotNormalizeGeneratedValue",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "If Catalog Returns Nothing",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Empty Data From Catalog",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Generate Default Values",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "{{{SOURCE_TABLE}}}.typeDefaultsGenerator"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {}
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Catalog Returned Data",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Catalog Generated Data",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Generated Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Generated Value For Rest Of Fields",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge All Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Merge Maps of all Fields",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [
+                                {
+                                        "name": "mapType",
+                                        "const": "TreeMapIgnoreCase"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+		{{#if TABLE_PARENT_FIELDS}}
+		{{#each TABLE_PARENT_FIELDS~}}
+		{
+			"leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "{{getChildFieldName this}}",
+                "name": "value"
+            },
+            "path": [
+                "{{getParentFieldName this}}"
+            ]
+		},
+		{
+            "leftPort": {
+                "actor": "{{getChildFieldName this}}",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build {{getChildFieldName this}} Map",
+                "name": "value"
+            }
+		},
+		{
+            "leftPort": {
+                "actor": "Build {{getChildFieldName this}} Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": {{@index}}
+        {{#if @last}} } {{else}} }, {{/if}}
+		{{/each}}
+        {{/if}}
+        {{#if TABLE_SEQ_DATA}}
+		{{#if TABLE_PARENT_FIELDS}}
+		,
+		{{/if}}
+        {{#each TABLE_SEQ_DATA~}}
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "{{getFabricFieldName this}}",
+                "name": "sequenceSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "{{getFabricFieldName this}}",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "{{getFabricFieldName this}}",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build {{getFabricFieldName this}} Map",
+                "name": "value"
+            }
+		},
+		{
+            "leftPort": {
+                "actor": "Build {{getFabricFieldName this}} Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": {{indexPlusLength @index TABLE_PARENT_FIELDS.length}}
+        {{#if @last}} } {{else}} }, {{/if}}
+		{{/each}}
+        {{/if}}
+
+        {{#if TABLE_FIELDS}}
+		{{#if TABLE_SEQ_DATA}}
+         ,
+         {{else}} 
+         {{#if TABLE_PARENT_FIELDS}}
+		 ,
+		 {{/if}}
+		 {{/if}}
+		{{#each TABLE_FIELDS~}}
+        {
+            "leftPort": {
+                "actor": "{{getLUFieldName this}}",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "{{getLUFieldName this}}"
+            }
+        {{#if @last}} } {{else}} }, {{/if}}
+		{{/each}}
+        {{/if}}
+		 ,
+		{
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Generator Record",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Empty Data From Catalog",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generate Default Values",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+
+    ]
+}

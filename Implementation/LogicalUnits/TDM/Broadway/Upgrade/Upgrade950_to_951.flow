@@ -1,0 +1,82 @@
+tags: Upgrade
+stages:
+  Add new columns to Mtable:
+    actors:
+      UpgradeTableLevelDefinitions9_51:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTableLevelDefinitions9_5_1
+  Project path:
+    actors:
+      Get Project Folder1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Prepare path:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder1/PROJECT_FOLDER
+      Mtable folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/k2_ref/Mtable
+          projectDir:
+            link: Get Project Folder1/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      file name:
+        parent: Const
+        in:
+          value:
+            const: TableLevelPartitionFlow.csv
+            schema: string
+        out:
+          value:
+            schema: string
+  Delete if exist:
+    actors:
+      CheckIfFileExists2:
+        parent: InnerFlow
+        condition: FILE_FOUND
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: Mtable folder/string
+            schema: string
+            editor:
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+              id: com.k2view.interface
+            mandatory: false
+            createdBy: flowName
+          pattern:
+            link: file name/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          FILE_FOUND:
+            schema: boolean
+      rm file:
+        parent: rm
+        in:
+          interface:
+            const: null
+            link: Mtable folder/string
+          path:
+            link: file name/value

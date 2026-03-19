@@ -1,0 +1,43 @@
+tags: TDM
+stages:
+  Get Path:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Studio:
+    dependsOn: Get Path
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      Implementation Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: file://${ProjDir}/Implementation
+          ProjDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: PROJECT_FOLDER
+    split: '--------------------'
+  Non Dev:
+    else: true
+    dependsOn: Get Path
+    actors:
+      Return Null:
+        parent: NullValue
+        out:
+          value:
+            external: PROJECT_FOLDER

@@ -1,0 +1,331 @@
+tags: TDM,TDMGeneral
+stages:
+  List All Lus:
+    actors:
+      LIST LUT:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: LIST LUT
+        out:
+          result:
+            schema: '#ref'
+  MtableLookup:
+    actors:
+      ChildLink:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: ChildLink
+          mtableCaseSensitive:
+            const: false
+          child_lu:
+            link:
+              path: LIST LUT/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Num Of Records:
+    actors:
+      Num Of Records Per Child:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "let count=0;\r\nfor(var i in input){\r\n    count++\r\n}\r\
+                \ncount;"
+              script: |-
+                var count = 0;
+
+                for (var i in input) {
+                  count++;
+                }
+
+                count;
+          input:
+            link: ChildLink/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Parent Is Found:
+    dependsOn: Num Of Records
+    actors:
+      Greater Than Zero:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Num Of Records Per Child/result
+    split: '--------------------'
+  Orphan:
+    else: true
+    transactional: false
+    dependsOn: Num Of Records
+    actors:
+      Not A Library LU:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "let name = input ;\r\nvar output ;\r\nswitch (name) {\r\n\
+                \    case \"TDM\" :\r\n        output = \"true\"\r\n        break;\r\
+                \n    case \"TDM_LIBRARY\" :\r\n        output = \"true\"\r\n    \
+                \    break;\r\n    case \"TDM_Reference\" :\r\n        output = \"\
+                true\"\r\n        break;\r\n    case \"TDM_TableLevel\" :\r\n    \
+                \    output = \"true\"\r\n        break;\r\n    default :\r\n    \
+                \    output=\"false\";\r\n        break;\r\n}\r\noutput;"
+              script: |-
+                var name = input;
+                var output;
+
+                switch (name) {
+                  case "TDM":
+                    output = "true";
+                    break;
+
+                  case "TDM_LIBRARY":
+                    output = "true";
+                    break;
+
+                  case "TDM_Reference":
+                    output = "true";
+                    break;
+
+                  case "TDM_TableLevel":
+                    output = "true";
+                    break;
+
+                  default:
+                    output = "false";
+                    break;
+                }
+
+                output;
+          input:
+            link: LIST LUT/result/LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  More Than One Parent:
+    dependsOn: Parent Is Found
+    actors:
+      Greater Than One:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 1
+          a:
+            link: Num Of Records Per Child/result
+      Get All Parents:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "const parentLUNames = [];\r\nfor (let i = 0; i < input.length;\
+                \ i++) {\r\n  parentLUNames.push(input[i].parent_lu);\r\n}\r\nparentLUNames;"
+              script: |-
+                var parentLUNames = [];
+
+                for (var i = 0; i < input.length; i++) {
+                  parentLUNames.push(input[i].parent_lu);
+                }
+
+                parentLUNames;
+          input:
+            link: ChildLink/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Exactly One Parent:
+    else: true
+    transactional: false
+    dependsOn: Parent Is Found
+    actors:
+      Child And Parent:
+        parent: MapBuild
+        in:
+          key:
+            link:
+              path: ChildLink/result/child_lu
+              iterate: First
+          value:
+            link: ChildLink/result/parent_lu
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  No Parents:
+    transactional: false
+    dependsOn: Orphan
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'false'
+            schema: string
+          a:
+            link: Not A Library LU/result
+      Empty:
+        parent: ArrayBuilder
+        out:
+          array:
+            schema: '#ref'
+  Build Map For Child And Parents:
+    last: 1
+    dependsOn: More Than One Parent
+    actors:
+      Chilld And Parents:
+        parent: MapBuild
+        in:
+          key:
+            link:
+              path: ChildLink/result/child_lu
+              iterate: First
+          value:
+            link: Get All Parents/result
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing ':
+    last: 1
+    transactional: false
+    dependsOn: Exactly One Parent
+    split: '--------------------'
+  Build Map For Orphan:
+    last: 1
+    transactional: false
+    dependsOn: No Parents
+    actors:
+      'Child With No Parents: MapBuild':
+        parent: MapBuild
+        in:
+          key:
+            link: LIST LUT/result/LU_NAME
+          value:
+            link: Empty/array
+        out:
+          map:
+            schema: '#ref'
+  Merge All Data:
+    transactional: false
+    actors:
+      'Merge ':
+        parent: MapMerge
+        in:
+          mapType:
+            const: HashMap
+          maps:
+            link:
+            - path: Chilld And Parents/map
+              pos: 0
+            - path: Child And Parent/map
+              pos: 1
+            - path: 'Child With No Parents: MapBuild/map'
+              pos: 2
+        out:
+          map:
+            external: map
+            schema: '#ref'
+schemas:
+  LIST LUT.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+  ChildLink.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        parent_lu:
+          type: string
+        child_lu:
+          type: string
+        custom_sql:
+          type: string
+        custom_target_sql:
+          type: string
+  Num Of Records Per Child.in.input:
+    type: array
+    items:
+      type: object
+      properties:
+        parent_lu:
+          type: string
+        child_lu:
+          type: string
+        custom_sql:
+          type: string
+        custom_target_sql:
+          type: string
+  Get All Parents.in.input:
+    type: array
+    items:
+      type: object
+      properties:
+        parent_lu:
+          type: string
+        child_lu:
+          type: string
+        custom_sql:
+          type: string
+        custom_target_sql:
+          type: string
+  Get All Parents.out.result:
+    type: array
+    items:
+      type: string
+  Child And Parent.out.map:
+    type: object
+    properties:
+      Billing:
+        type: array
+        items:
+          type: string
+      Collection:
+        type: array
+        items:
+          type: string
+  Empty.out.array:
+    type: array
+    items:
+      type: string
+  Chilld And Parents.out.map:
+    type: object
+    properties:
+      Orders:
+        type: string
+  'Child With No Parents: MapBuild.out.map':
+    type: object
+    properties:
+      Customer:
+        type: string
+  Merge .out.map:
+    type: object
+    properties:
+      LuName:
+        type: string
+      Parents:
+        type: string

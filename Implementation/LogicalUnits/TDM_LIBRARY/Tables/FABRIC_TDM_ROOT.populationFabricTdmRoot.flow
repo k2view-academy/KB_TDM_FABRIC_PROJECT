@@ -1,0 +1,178 @@
+tags: population
+stages:
+  Input:
+    actors:
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          TDM_INSTANCE_ID:
+            external: TDM_INSTANCE_ID
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+  '"#params#"':
+    actors:
+      Split IID And Clone Number:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            link: PopulationArgs/iid
+        out:
+          cloneNo:
+            schema: string
+          UID:
+            schema: string
+          versionExeID:
+            schema: string
+      get LU_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: LU_ID
+            default: false
+      get TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+  LU Table:
+    actors:
+      FABRIC_TDM_ROOT:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - k2_tdm_eid
+            - source_env
+            - IID
+            - task_execution_id
+          k2_tdm_eid:
+            link: Split IID And Clone Number/UID
+            schema: string
+          source_env:
+            link: Split IID And Clone Number/envName
+            schema: string
+          IID:
+            link: Split IID And Clone Number/instanceID
+            schema: string
+            mandatory: false
+          task_execution_id:
+            link: get TDM_TASK_EXE_ID/result
+            schema: string
+      get root_lu_name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: root_lu_name
+            default: false
+      get clone_id:
+        parent: FabricSetRead
+        in:
+          key:
+            const: clone_id
+            default: false
+  Get Root Info:
+    dependsOn: LU Table
+    actors:
+      Root Info Not Set?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: get root_lu_name/result
+      Get Root Entity Id:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetRootEntityId
+          luName:
+            external: schema
+            schema: string
+            mandatory: false
+          iid:
+            link: Split IID And Clone Number/instanceID
+            schema: string
+            mandatory: false
+          taskExecId:
+            link: get TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          entityId:
+            link: PopulationArgs/parent_rows/TDM_INSTANCE_ID
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Root Info Alresdy Set:
+    else: true
+    dependsOn: LU Table
+  Set Root Lu Name and IID:
+    dependsOn: Get Root Info
+    actors:
+      Set root_lu_name:
+        parent: FabricSet
+        in:
+          key:
+            const: root_lu_name
+            default: false
+          value:
+            const: null
+            link: Get Root Entity Id/result/rootLuName
+            default: false
+      Set root_iid:
+        parent: FabricSet
+        in:
+          key:
+            const: root_iid
+            default: false
+          value:
+            const: null
+            link: Get Root Entity Id/result/rootEntityId
+            default: false
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Root Info Alresdy Set
+  Get Generate Data Params From TDMDB and Set them as Session Variables:
+    actors:
+      Load GD Params From Table Into Session:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadGDParamsFromTableIntoSession
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        TDM_INSTANCE_ID:
+          type: string
+  Get Root Entity Id.out.result:
+    type: object
+    properties:
+      rootLuName:
+        type: string
+      rootEntityId:
+        type: string

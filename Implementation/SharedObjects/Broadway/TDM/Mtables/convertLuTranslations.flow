@@ -1,0 +1,401 @@
+tags: convert,TDM
+stages:
+  Get All Lu Names:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+      LIST LUT:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: LIST LUT
+        out:
+          result:
+            schema: '#ref'
+  Inputs:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      Filter LUS:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "function customFilter(inputArray) {\r\nconst arr = [];\r\n\
+                for (let i = 0; i < inputArray.length; i++) {\r\n  const name = inputArray[i];\r\
+                \n  \r\n  if (name !== \"TDM_LIBRARY\" && name !== \"TDM_Reference\"\
+                ) {\r\n        arr.push(name);\r\n    }\r\n  }\r\n  arr.push(\"k2_ref\"\
+                )\r\n  return arr;\r\n}\r\nconst filteredArray = customFilter(input);\r\
+                \nfilteredArray;"
+              script: |-
+                function customFilter(inputArray) {
+                  var arr = [];
+
+                  for (var i = 0; i < inputArray.length; i++) {
+                    var name = inputArray[i];
+
+                    if (name !== "TDM_LIBRARY" && name !== "TDM_Reference") {
+                      arr.push(name);
+                    }
+                  }
+
+                  arr.push("k2_ref");
+                  return arr;
+                }
+
+                var filteredArray = customFilter(input);
+                filteredArray;
+          input:
+            link: LIST LUT/result/LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Lu Name:
+    actors:
+      'Lu Name  ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Filter LUS/result
+              iterate: Iterate
+            schema: string
+        out:
+          value:
+            schema: string
+  Get Translation Folder:
+    actors:
+      TranslationsFolder:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "let path;\r\nif(sourceLU != \"k2_ref\"){\r\n    path = PROJECT_DIR.value\
+                \ + \"\\\\Implementation\\\\LogicalUnits\\\\\" + sourceLU + \"\\\\\
+                Translations\";\r\n} else {\r\n    path = PROJECT_DIR.value + \"\\\
+                \\Implementation\\\\SharedObjects\\\\Translations\";\r\n}\r\npath;"
+              script: |-
+                var path;
+
+                if (sourceLU != "k2_ref") {
+                  path = PROJECT_DIR.value + "\\Implementation\\LogicalUnits\\" + sourceLU + "\\Translations";
+                } else {
+                  path = PROJECT_DIR.value + "\\Implementation\\SharedObjects\\Translations";
+                }
+
+                path;
+          sourceLU:
+            link: Lu Name  /value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Get All Translations:
+    actors:
+      ErrorHandler1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      getTranslations:
+        parent: ls
+        in:
+          interface:
+            const: file://
+          pattern:
+            const: '*.k2trans.xml'
+          path:
+            link: TranslationsFolder/result
+        out:
+          result:
+            schema: '#ref'
+  Remove Suffix:
+    actors:
+      k2transxml:
+        parent: Replace
+        in:
+          search:
+            const: .k2trans.xml
+          string:
+            link: getTranslations/result/name
+  Translation Name:
+    actors:
+      Switch Case:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "let name = input ;\r\nvar output ;\r\nswitch (name) {\r\n\
+                \    case \"trnTDMCleanUp\" :\r\n        output = \"TDMCleanUp\"\r\
+                \n        break;\r\n    case \"trnMigrateList\" :\r\n        output\
+                \ = \"MigrateList\"\r\n        break;\r\n    case \"trnMigrateListQueryFormats\"\
+                \ :\r\n        output = \"MigrateListQueryFormats\"\r\n        break;\r\
+                \n    case \"trnRefList\" :\r\n        output = \"RefList\"\r\n  \
+                \      break;\r\n    case \"trnLuParams\" :\r\n        output = \"\
+                LuParams\"\r\n        break;\r\n    case \"trnChildLink\" :\r\n  \
+                \      output = \"ChildLink\"\r\n        break;\r\n    case \"trnPostProcessList\"\
+                :\r\n        output=\"PostProcessList\";\r\n        break;\r\n   \
+                \ default :\r\n        output=\"none\";\r\n        break;\r\n}\r\n\
+                output;"
+              script: |-
+                var name = input;
+                var output;
+
+                switch (name) {
+                  case "trnTDMCleanUp":
+                    output = "TDMCleanUp";
+                    break;
+
+                  case "trnMigrateList":
+                    output = "MigrateList";
+                    break;
+
+                  case "trnMigrateListQueryFormats":
+                    output = "MigrateListQueryFormats";
+                    break;
+
+                  case "trnRefList":
+                    output = "RefList";
+                    break;
+
+                  case "trnLuParams":
+                    output = "LuParams";
+                    break;
+
+                  case "trnChildLink":
+                    output = "ChildLink";
+                    break;
+
+                  case "trnPostProcessList":
+                    output = "PostProcessList";
+                    break;
+
+                  default:
+                    output = "none";
+                    break;
+                }
+
+                output;
+          input:
+            link: k2transxml/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  TDM LIB translations:
+    else: true
+    dependsOn: Translation Name
+    split: '--------------------'
+  non TDM LIB:
+    transactional: false
+    dependsOn: Translation Name
+    actors:
+      None:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: none
+            schema: string
+          a:
+            link: Switch Case/result
+  Special Mtables:
+    dependsOn: TDM LIB translations
+    actors:
+      'Lu Params  ':
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: LuParams
+            schema: string
+          a:
+            link: Switch Case/result
+      Child Link:
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: ChildLink
+            schema: string
+          a:
+            link: Switch Case/result
+    split: '--------------------'
+  Stage 1:
+    transactional: false
+    dependsOn: non TDM LIB
+  LUs:
+    dependsOn: Special Mtables
+    actors:
+      Or1:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: Lu Params  /result
+          b:
+            link: Child Link/result
+    split: '--------------------'
+  Shared:
+    else: true
+    transactional: false
+    dependsOn: Special Mtables
+    actors:
+      mTableName:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Switch Case/result
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Stage 2:
+    transactional: false
+    dependsOn: Stage 1
+  Mtable for Lus:
+    dependsOn: LUs
+    actors:
+      Prefix:
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: Lu Name  /value
+              pos: 0
+            - path: Switch Case/result
+              pos: 1
+    split: '--------------------'
+  Mtable for Shared:
+    transactional: false
+    dependsOn: Shared
+    split: '--------------------'
+  Stage 3:
+    transactional: false
+    dependsOn: Stage 2
+  build translation path:
+    transactional: false
+    dependsOn:
+    - Mtable for Shared
+    - Mtable for Lus
+    actors:
+      TranslationPath:
+        parent: Concat
+        in:
+          delimiter:
+            const: \
+          elements:
+            link:
+            - path: TranslationsFolder/result
+              pos: 0
+            - path: getTranslations/result/name
+              iterate: Iterate
+              pos: 1
+    split: '--------------------'
+  Stage 4:
+    transactional: false
+    dependsOn: Stage 3
+  convert inner flow:
+    last: 1
+    transactional: false
+    dependsOn: build translation path
+    actors:
+      convertTranslationToMTable:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: convertTranslationToMTable
+          translationPath:
+            link: TranslationPath/string
+            schema: string
+            mandatory: false
+          translationFileName:
+            link: getTranslations/result/name
+            schema: string
+            mandatory: false
+          mTableName:
+            link:
+            - mTableName/value
+            - Prefix/string
+            schema: string
+            mandatory: false
+          LuName:
+            link: Lu Name  /value
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 5:
+    last: 1
+    transactional: false
+    dependsOn: Stage 4
+  Next Lu:
+    last: 1
+  ChildLink:
+    actors:
+      convertChildLink:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: convertChildLink
+  Lu Params:
+    actors:
+      convertLuParams:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: convertLuParams
+schemas:
+  LIST LUT.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+        Project Version:
+          type: string
+  getTranslations.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

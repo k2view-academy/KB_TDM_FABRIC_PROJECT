@@ -1,0 +1,16 @@
+{
+    "type": "PopulateTdmSeqMapping_Actor",
+    "actorClass": null,
+    "parentType": "NullValue",
+    "inputs": [],
+    "outputs": [
+        {
+            "name": "value",
+            "hidden": true
+        }
+    ],
+    "tags": [
+        "tdm"
+    ],
+    "doc": "Empty actor as the sequences are loaded into TDMDB inside the sequence actors"
+}

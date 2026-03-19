@@ -1,0 +1,804 @@
+tags: TDM
+stages:
+  Get Table Column, List of Seqeuences and Population Arguments:
+    actors:
+      get Lu Table Columns And Types:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTableColumnsAndTypes
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Default Actor Per Field Type:
+        parent: GenerateDataDefaultFieldTypeActors
+        out:
+          table:
+            schema: '#ref'
+      get Population Argument List:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getPopArgumentList
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          tableName:
+            external: table
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Input Argument?:
+    actors:
+      Check If Field is an Input Argument:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - FIELD_NAME
+          lookupData:
+            const: null
+            link: get Population Argument List/result
+            schema: '#ref'
+          FIELD_NAME:
+            link:
+              path: get Lu Table Columns And Types/result/columnName
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Sequential Field?:
+    dependsOn: Input Argument?
+    actors:
+      Not Input Argument:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Check If Field is an Input Argument/result
+      check If Field Is Sequential Field:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: checkIfFieldSequential
+          MAIN_FIELD_NAME:
+            link:
+              path: get Lu Table Columns And Types/result/columnName
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          MAIN_TABLE_NAME:
+            external: table
+            schema: string
+            mandatory: false
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          interface:
+            external: sourceInterface
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          table:
+            external: table
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema:
+            external: schema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          SEQ_FIELD_NAME:
+            schema: string
+          SEQUENCE_NAME:
+            schema: string
+    split: '--------------------'
+  Stage 13:
+    else: true
+    transactional: false
+    dependsOn: Input Argument?
+  Actor By Type:
+    dependsOn: Sequential Field?
+    actors:
+      Not A Sequenctial Field:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: check If Field Is Sequential Field/SEQ_FIELD_NAME
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Get Actor By Field Type:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - TYPE
+          lookupData:
+            const: null
+            link: Default Actor Per Field Type/table
+            schema: '#ref'
+          TYPE:
+            link:
+              path: get Lu Table Columns And Types/result/columnType
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Add Field Name:
+        parent: MapBuild
+        in:
+          key:
+            const: FIELD_NAME
+            schema: string
+          value:
+            link:
+              path: get Lu Table Columns And Types/result/columnName
+              iterate: Iterate
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 10:
+    else: true
+    transactional: false
+    dependsOn: Sequential Field?
+    split: '--------------------'
+  Stage 14:
+    transactional: false
+    dependsOn: Stage 13
+  Build Fields with Default Actors:
+    dependsOn: Actor By Type
+    actors:
+      Marge Name with Actor:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Get Actor By Field Type/result
+              pos: 0
+            - path: Add Field Name/map
+              pos: 1
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 11:
+    transactional: false
+    dependsOn: Stage 10
+    split: '--------------------'
+  Stage 15:
+    transactional: false
+    dependsOn: Stage 14
+  Fields with Default Actors:
+    last: 1
+    dependsOn: Build Fields with Default Actors
+    actors:
+      Create Array of Fields with Default Actors:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Marge Name with Actor/map
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 12:
+    last: 1
+    transactional: false
+    dependsOn: Stage 11
+    split: '--------------------'
+  Stage 16:
+    last: 1
+    transactional: false
+    dependsOn: Stage 15
+  Get Sequences:
+    actors:
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            external: sourceTable
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Sequence List For Generate Flows:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSequenceListForFlows
+          fabricTable:
+            external: table
+            schema: string
+            mandatory: false
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          interfaceName:
+            external: sourceInterface
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schemaName:
+            external: sourceSchema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          tableName:
+            external: sourceTable
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  In Case of Document:
+    dependsOn: Get Sequences
+    actors:
+      Document?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
+      'false':
+        parent: Const
+        in:
+          value:
+            const: 'false'
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Not  Main Document Table:
+    else: true
+    dependsOn: Get Sequences
+    actors:
+      Get Document's Main Table And Class:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableClass
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceTable:
+            external: sourceTable
+            schema: string
+            mandatory: false
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+      'true':
+        parent: Const
+        in:
+          value:
+            const: 'true'
+            schema: string
+        out:
+          value:
+            schema: string
+  Template's Input 1:
+    actors:
+      LU Name:
+        parent: MapBuild
+        in:
+          key:
+            const: LU_NAME
+            schema: string
+          value:
+            external: luType
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Table Name:
+        parent: MapBuild
+        in:
+          key:
+            const: TABLE_NAME
+            schema: string
+          value:
+            external: table
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Source Interface:
+        parent: MapBuild
+        in:
+          key:
+            const: SOURCE_INTERFACE
+            schema: string
+          value:
+            external: sourceInterface
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Source Schema:
+        parent: MapBuild
+        in:
+          key:
+            const: SOURCE_SCHEMA
+            schema: string
+          value:
+            external: sourceSchema
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Source Table Name:
+        parent: MapBuild
+        in:
+          key:
+            const: SOURCE_TABLE
+            schema: string
+          value:
+            external: sourceTable
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      Table Fields' List:
+        parent: MapBuild
+        in:
+          key:
+            const: TABLE_FIELDS
+            schema: string
+          value:
+            link: Create Array of Fields with Default Actors/array
+        out:
+          map:
+            schema: '#ref'
+      Filter Out Argument Fields from Sequences List:
+        parent: LuFunction
+        in:
+          functionName:
+            const: filerOutSequences
+          Sequences:
+            link: Get Sequence List For Generate Flows/result
+            schema: '#ref'
+            mandatory: false
+          parentRec:
+            link: get Population Argument List/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Template's Input 2:
+    actors:
+      Sequences List:
+        parent: MapBuild
+        height: 431
+        in:
+          key:
+            const: TABLE_SEQ_DATA
+            schema: string
+          value:
+            link: Filter Out Argument Fields from Sequences List/result
+        out:
+          map:
+            schema: '#ref'
+      Population Arguments List:
+        parent: MapBuild
+        in:
+          key:
+            const: TABLE_PARENT_FIELDS
+            schema: string
+          value:
+            link: get Population Argument List/result
+        out:
+          map:
+            schema: '#ref'
+      Document Indicator:
+        parent: MapBuild
+        in:
+          key:
+            const: DOCUMENT_IND
+            schema: string
+          value:
+            link:
+            - false/value
+            - true/value
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Marge All Inputs to One Map:
+    actors:
+      Merge Inputs:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Table Name/map
+              pos: 1
+            - path: Source Interface/map
+              pos: 2
+            - path: LU Name/map
+              pos: 3
+            - path: Source Schema/map
+              pos: 3
+            - path: Source Table Name/map
+              pos: 4
+            - path: Table Fields' List/map
+              pos: 5
+            - path: Sequences List/map
+              pos: 6
+            - path: Population Arguments List/map
+              pos: 7
+            - path: Document Indicator/map
+              pos: 8
+            - path: Get Document's Main Table And Class/result
+              pos: 9
+        out:
+          map:
+            external: tableDefaultMapping
+            schema: '#ref'
+schemas:
+  get Lu Table Columns And Types.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        columnType:
+          type: string
+        upperColumnName:
+          type: string
+        columnName:
+          type: string
+  Default Actor Per Field Type.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        TYPE:
+          type: string
+        ACTOR:
+          type: string
+  get Population Argument List.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        MAIN_DOCUMENT:
+          type: string
+        PARENT_TABLE:
+          type: string
+        PARENT_FIELD_NAME:
+          type: string
+        FIELD_NAME:
+          type: string
+  Check If Field is an Input Argument.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Get Actor By Field Type.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Get Actor By Field Type.out.result:
+    type: object
+    properties:
+      TYPE:
+        type: string
+      ACTOR:
+        type: string
+  Add Field Name.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Marge Name with Actor.out.map:
+    type: object
+    properties:
+      TYPE:
+        type: string
+      ACTOR:
+        type: string
+      PARAMETERS:
+        type: string
+      NAME:
+        type: string
+  Create Array of Fields with Default Actors.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TYPE:
+          type: string
+        ACTOR:
+          type: string
+        PARAMETERS:
+          type: string
+        TABLE:
+          type: string
+  Get Sequence List For Generate Flows.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        SEQUENCE_NAME:
+          type: string
+        FABRIC_FIELD_NAME:
+          type: string
+        TARGET_FIELD_NAME:
+          type: string
+  Get Document's Main Table And Class.out.result:
+    type: object
+    properties:
+      CATALOG_CLASS_NAME:
+        type: string
+      MAIN_TABLE_NAME:
+        type: string
+  LU Name.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Table Name.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+  Source Interface.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Source Schema.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Source Table Name.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Table Fields' List.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Filter Out Argument Fields from Sequences List.in.Sequences:
+    type: array
+    items:
+      type: object
+      properties:
+        SEQUENCE_NAME:
+          type: string
+        TARGET_TABLE_NAME:
+          type: string
+        LU_NAME:
+          type: string
+        FABRIC_FIELD_NAME:
+          type: string
+        TARGET_FIELD_NAME:
+          type: string
+        FABRIC_TABLE_NAME:
+          type: string
+  Filter Out Argument Fields from Sequences List.in.parentRec:
+    type: array
+    items:
+      type: object
+      properties:
+        PARENT_TABLE:
+          type: string
+        PARENT_FIELD_NAME:
+          type: string
+        FIELD_NAME:
+          type: string
+  Filter Out Argument Fields from Sequences List.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+        TARGET_TABLE_NAME:
+          type: string
+        TARGET_FIELD_NAME:
+          type: string
+        FABRIC_TABLE_NAME:
+          type: string
+        FABRIC_FIELD_NAME:
+          type: string
+        SEQUENCE_NAME:
+          type: string
+  Sequences List.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Population Arguments List.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Document Indicator.out.map:
+    type: object
+    properties:
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+  Merge Inputs.out.map:
+    type: object
+    properties:
+      NAME:
+        type: string
+      TABLE_FIELDS:
+        type: array
+        items:
+          type: object
+          properties:
+            TYPE:
+              type: string
+            ACTOR:
+              type: string
+            PARAMETERS:
+              type: string
+            TABLE:
+              type: string
+      TABLE_SEQ_DATA:
+        type: array
+        items:
+          type: object
+          properties:
+            LU_NAME:
+              type: string
+            TARGET_TABLE_NAME:
+              type: string
+            TARGET_FIELD_NAME:
+              type: string
+            FABRIC_TABLE_NAME:
+              type: string
+            FABRIC_FIELD_NAME:
+              type: string
+            SEQUENCE_NAME:
+              type: string

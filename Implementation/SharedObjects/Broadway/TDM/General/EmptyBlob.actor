@@ -1,0 +1,23 @@
+{
+    "type": "EmptyBlob",
+    "badge": "Em",
+    "inputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "object"
+            },
+            "const": {}
+        }
+    ],
+    "outputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "object"
+            }
+        }
+    ],
+    "parentType": "Const",
+    "doc": "This actor generate an empty object"
+}

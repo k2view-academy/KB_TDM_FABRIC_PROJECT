@@ -1,0 +1,162 @@
+tags: TDM
+stages:
+  Get Path:
+    actors:
+      LU Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${LU_PATH}Java/src/com/k2view/cdbms/usercode/lu/${LU_NAME}/
+          LU_PATH:
+            external: LU_PATH
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+      LU_ROOT_TABLE:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: LU_ROOT_TABLE
+        out:
+          value:
+            schema: '#ref'
+  Read Global File:
+    actors:
+      Read Globals file:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: LU Folder/string
+          path:
+            const: Globals.java
+      Format ROOT_TABLE_NAME:
+        parent: StringFormat
+        in:
+          format:
+            const: public static String ROOT_TABLE_NAME = "${LU_ROOT_TABLE}";
+          LU_ROOT_TABLE:
+            link: LU_ROOT_TABLE/value/table_name
+            schema: '#ref'
+            mandatory: false
+      Format ROOT_COLUMN_NAME:
+        parent: StringFormat
+        in:
+          format:
+            const: public static String ROOT_COLUMN_NAME = "${LU_ROOT_TABLE}";
+          LU_ROOT_TABLE:
+            link: LU_ROOT_TABLE/value/column_name
+            schema: '#ref'
+            mandatory: false
+      Format ROOT_COLUMN_TYPE:
+        parent: StringFormat
+        in:
+          format:
+            const: public static String ROOT_COLUMN_TYPE = "${LU_ROOT_COLUMN_TYPE}";
+          LU_ROOT_COLUMN_TYPE:
+            external: LU_ROOT_COLUMN_TYPE
+            schema: string
+            mandatory: false
+            createdBy: format
+  File Content:
+    actors:
+      Create A String of File Content:
+        parent: StringBuild
+        in:
+          delimiter:
+            const: ''
+          input:
+            link: Read Globals file/stream
+  Add Root Table Gloabls:
+    actors:
+      File Already Includes the ROOT_TABLE_NAME?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var globalMissing = true;
+              if (globalsFile.contains("ROOT_TABLE_NAME")) {
+                  globalMissing = false;
+              }
+              globalMissing;
+          globalsFile:
+            link: Create A String of File Content/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Add The Root Table and Column Globals:
+        parent: JavaScript
+        in:
+          script:
+            const: |
+              var endOfFile = globalsFile.lastIndexOf("}");
+              var newGlobalsFile = globalsFile.substring(0, endOfFile) +
+                  "@category(\"TDM\")\n" +
+                  rootTableName + "\n" +
+                  "@category(\"TDM\")\n" +
+                  rootColumnName + "\n" +
+                  "@category(\"TDM\")\n" +
+                  rootColumnType + "\n" +
+                  "\n}\n";
+
+              newGlobalsFile;
+          globalsFile:
+            link: Create A String of File Content/string
+            schema: string
+            mandatory: false
+          rootTableName:
+            link: Format ROOT_TABLE_NAME/string
+            schema: string
+            mandatory: false
+          rootColumnName:
+            link: Format ROOT_COLUMN_NAME/string
+            schema: string
+            mandatory: false
+          rootColumnType:
+            link: Format ROOT_COLUMN_TYPE/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Write to Gloabls.java:
+    actors:
+      Write Global File:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: LU Folder/string
+          path:
+            const: Globals.java
+          stream:
+            link: Add The Root Table and Column Globals/result
+schemas:
+  LU_ROOT_TABLE.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        population:
+          type: string
+        id:
+          type: string
+  Format ROOT_TABLE_NAME.in.LU_ROOT_TABLE:
+    type: array
+    items:
+      type: string
+  Format ROOT_COLUMN_NAME.in.LU_ROOT_TABLE:
+    type: array
+    items:
+      type: string

@@ -1,0 +1,98 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+  Stage 2:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Set Name of Entity List Table:
+        parent: StringFormat
+        in:
+          format:
+            const: entity_list_${TASK_EXECUTION_ID}
+          TASK_EXECUTION_ID:
+            link: Get Task Execution ID/result
+            schema: string
+            mandatory: false
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Generate IIDs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GenerateIIDs
+          num_of_entities:
+            external: num_of_entities
+            schema: string
+            mandatory: false
+          source_env_name:
+            external: source_env_name
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      Insert Data to Entity List Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: null
+            link: Set Name of Entity List Table/string
+          fields:
+            const:
+            - lu_name
+            - source_env_name
+            - task_execution_id
+            - source_iid
+            - tdm_eid
+          dialect:
+            const: postgres
+          lu_name:
+            external: lu_name
+            schema: string
+          source_env_name:
+            link: Get Source Environment/result
+            schema: string
+          task_execution_id:
+            link: Get Task Execution ID/result
+            schema: string
+          source_iid:
+            external: SOURCE_IID
+            schema: string
+          tdm_eid:
+            link:
+              path: Generate IIDs/result/tdm_eid
+              iterate: Iterate
+            schema: string
+schemas:
+  Generate IIDs.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        tdm_eid:
+          type: string

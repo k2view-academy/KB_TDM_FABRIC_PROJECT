@@ -1,0 +1,260 @@
+tags: TDM
+stages:
+  Project Folder:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Prepare:
+    actors:
+      LU folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/${LU_NAME}/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: format
+      Table's XML File:
+        parent: StringFormat
+        in:
+          format:
+            const: Tables/${TABLE_NAME}.k2table.xml
+          TABLE_NAME:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+  Read:
+    actors:
+      Read Table's File:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: LU folder/string
+          path:
+            link: Table's XML File/string
+  Parse:
+    actors:
+      Parse File:
+        parent: XmlParser
+        in:
+          stream:
+            link: Read Table's File/stream
+        out:
+          object:
+            schema: '#ref'
+          info:
+            schema: '#ref'
+  Get Interface and Schema:
+    dependsOn: Parse
+    actors:
+      NotNull1:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Parse File/object/TableObject/_value/BasedOn/_value/Source/_attributes/interface
+      Source Interface:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Parse File/object/TableObject/_value/BasedOn/_value/Source/_attributes/interface
+            schema: string
+        out:
+          value:
+            external: sourceInterface
+            schema: string
+      Source Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Parse File/object/TableObject/_value/BasedOn/_value/Source/_attributes/schema
+            schema: string
+        out:
+          value:
+            external: sourceSchema
+            schema: string
+    split: '--------------------'
+  Stage 1:
+    else: true
+    dependsOn: Parse
+    actors:
+      Default Source Interface:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: DEFAULT_INTERFACE
+            schema: string
+        out:
+          value:
+            external: sourceInterface
+            schema: string
+      Default Source Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: DEFAULT_SCHEMA
+            schema: string
+        out:
+          value:
+            external: sourceSchema
+            schema: string
+schemas:
+  Parse File.out.object:
+    type: object
+    properties:
+      TableObject:
+        type: object
+        properties:
+          _value:
+            type: object
+            properties:
+              Name:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              ID:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              EntityId:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              ColumnsCollation:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              FullTextSearch:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              Columns:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Column:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _attributes:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                id:
+                                  type: string
+                                index:
+                                  type: string
+                                datatype:
+                                  type: string
+                                mandatory:
+                                  type: string
+              IndexesList:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Index:
+                        type: object
+                        properties:
+                          _attributes:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              pk:
+                                type: string
+                              unique:
+                                type: string
+                              instanceOnly:
+                                type: string
+                              columnsIdsList:
+                                type: string
+              EnrichmentList:
+                type: object
+                properties: {
+                  }
+              LazyDataUpdate:
+                type: object
+                properties:
+                  _attributes:
+                    type: object
+                    properties:
+                      syncMethod:
+                        type: string
+                      performEvery:
+                        type: string
+                  _value:
+                    type: object
+                    properties:
+                      DecisionFunction:
+                        type: object
+                        properties: {
+                          }
+              TriggersList:
+                type: object
+                properties: {
+                  }
+              BasedOn:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Source:
+                        type: object
+                        properties:
+                          _attributes:
+                            type: object
+                            properties:
+                              interface:
+                                type: string
+                              schema:
+                                type: string
+                              table:
+                                type: string
+                              timestamp:
+                                type: string
+                          _value:
+                            type: object
+                            properties:
+                              ColumnsList:
+                                type: object
+                                properties:
+                                  _value:
+                                    type: string
+  Parse File.out.info:
+    type: object
+    properties:
+      version:
+        type: string
+      standalone:
+        type: boolean
+      header:
+        type: string

@@ -1,0 +1,258 @@
+stages:
+  Get Table Data From Mtable:
+    actors:
+      Get Target Table Details For Table Level:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: RefList
+          mtableCaseSensitive:
+            const: false
+          lu_name:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          reference_table_name:
+            external: tableName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          interface_name:
+            external: interfaceName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema_name:
+            external: schemaName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  If a record is found in the RefList:
+    dependsOn: Get Table Data From Mtable
+    actors:
+      Record with Static Schema found?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Get Target Table Details For Table Level/result/schema_name
+              iterate: First
+    split: '--------------------'
+  No Record Found:
+    else: true
+    dependsOn: Get Table Data From Mtable
+    actors:
+      getRefListRecordForDynamicSchema1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetRecordForDynamicSchema
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          table_name:
+            external: tableName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          interface_name:
+            external: interfaceName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema_name:
+            external: schemaName
+            schema: string
+            mandatory: false
+        out:
+          interfaceName:
+            schema: string
+          tableName:
+            schema: string
+          targetTableName:
+            schema: string
+          targetInterface:
+            schema: string
+          truncate_indicator:
+            schema: string
+          schemaName:
+            schema: string
+          targetSchemaName:
+            schema: string
+          count_indicator:
+            schema: string
+          count_flow:
+            schema: string
+  Get Data:
+    actors:
+      Set Target Table Name:
+        parent: IfElse
+        height: 429
+        in:
+          a:
+            link:
+            - path: Get Target Table Details For Table Level/result/target_ref_table_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/targetTableName
+            schema: string
+          b:
+            external: tableName
+            schema: string
+          test:
+            link:
+            - path: Get Target Table Details For Table Level/result/target_ref_table_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/targetTableName
+        out:
+          result:
+            external: targetTableName
+            schema: string
+      Set Target Interface:
+        parent: IfElse
+        in:
+          a:
+            link:
+            - path: Get Target Table Details For Table Level/result/target_interface_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/targetInterface
+            schema: string
+          b:
+            external: interfaceName
+            schema: string
+          test:
+            link:
+            - path: Get Target Table Details For Table Level/result/target_interface_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/targetInterface
+        out:
+          result:
+            external: targetInterface
+            schema: string
+      Set Target Schema:
+        parent: IfElse
+        in:
+          a:
+            link:
+            - path: Get Target Table Details For Table Level/result/target_schema_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/targetSchemaName
+            schema: string
+          b:
+            external: schemaName
+            schema: string
+          test:
+            link:
+            - path: Get Target Table Details For Table Level/result/target_schema_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/targetSchemaName
+        out:
+          result:
+            external: targetSchema
+            schema: string
+      Trunctate Indicator:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - path: Get Target Table Details For Table Level/result/truncate_indicator
+              iterate: First
+            - getRefListRecordForDynamicSchema1/truncate_indicator
+            schema: string
+        out:
+          value:
+            external: truncate_indicator
+            schema: string
+      Count Indicator:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - path: Get Target Table Details For Table Level/result/count_indicator
+              iterate: First
+            - getRefListRecordForDynamicSchema1/count_indicator
+            schema: string
+        out:
+          value:
+            external: count_indicator
+            schema: string
+      Count Flow:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - path: Get Target Table Details For Table Level/result/count_flow
+              iterate: First
+            - getRefListRecordForDynamicSchema1/count_flow
+            schema: string
+        out:
+          value:
+            external: count_flow
+            schema: string
+      Set Source Schema Name:
+        parent: IfElse
+        in:
+          a:
+            link:
+            - path: Get Target Table Details For Table Level/result/schema_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/schemaName
+            schema: string
+          b:
+            external: schemaName
+            schema: string
+          test:
+            link:
+            - path: Get Target Table Details For Table Level/result/schema_name
+              iterate: First
+            - getRefListRecordForDynamicSchema1/schemaName
+        out:
+          result:
+            external: sourceSchemaName
+            schema: string
+schemas:
+  Get Target Table Details For Table Level.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        id:
+          type: string
+        reference_table_name:
+          type: string
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        target_ref_table_name:
+          type: string
+        target_interface_name:
+          type: string
+        target_schema_name:
+          type: string
+        table_pk_list: {
+          }
+        truncate_indicator:
+          type: string
+        count_indicator:
+          type: string
+        count_flow: {
+          }

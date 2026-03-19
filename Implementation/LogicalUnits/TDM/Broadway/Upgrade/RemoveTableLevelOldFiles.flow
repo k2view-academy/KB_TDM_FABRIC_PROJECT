@@ -1,0 +1,78 @@
+tags: Upgrade
+stages:
+  Get Path:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Check If Studio:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      ls:
+        parent: ls
+        in:
+          interface:
+            const: file:///
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/TDM_TableLevel/Broadway
+        out:
+          result:
+            schema: '#ref'
+  Get Files:
+    actors:
+      ${path}/${file}:
+        parent: StringFormat
+        in:
+          format:
+            const: ${path}/${file}
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/TDM_TableLevel/Broadway
+            schema: string
+            mandatory: false
+            createdBy: format
+          file:
+            link:
+              path: ls/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: format
+  Remove Files:
+    actors:
+      rm:
+        parent: rm
+        in:
+          interface:
+            const: file:///
+          path:
+            link: ${path}%2F${file}/string
+schemas:
+  ls.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+        fullPath:
+          type: string

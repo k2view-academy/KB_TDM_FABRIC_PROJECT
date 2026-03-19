@@ -1,0 +1,174 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Now1:
+        parent: Now
+  Source:
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              Select lu_name,
+                table_name,
+                Sum(CAST (target_count AS INTEGER)) as target_count,
+                Sum(CAST (source_count AS INTEGER)) as source_count,
+                Sum(CAST (diff AS INTEGER)) as diff,
+                Sum(CAST (suppressed_error_count AS INTEGER)) as suppressed_error_count
+               From ${@schema}.task_exe_stats_detailed
+               Where task_execution_id = ${iid}
+               group by lu_name, table_name
+          iid:
+            link: PopulationArgs/iid
+            schema: string
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+      Date Format:
+        parent: DateFormat
+        height: 147
+        in:
+          date:
+            link: Now1/date
+  Set Result:
+    actors:
+      Set the match result:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var result = "OK";
+              if (diff > 0 && suppressedErrorCount == 0) {
+                  result = "Mismatch";
+              } else if (suppressedErrorCount > 0) {
+                   result = "FAIL";
+              }
+              result;
+          diff:
+            link: Query/result/diff
+            schema: integer
+            mandatory: false
+          suppressedErrorCount:
+            link: Query/result/suppressed_error_count
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: string
+  LU Table:
+    last: 1
+    actors:
+      task_exe_stats_summary:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - creation_date
+            - table_name
+            - source_count
+            - target_count
+            - diff
+            - suppressed_error_count
+            - results
+          keys:
+            const:
+            - task_execution_id
+            - lu_name
+            - table_name
+          dialect:
+            const: sqlite
+          task_execution_id:
+            link: PopulationArgs/iid
+            schema: string
+          lu_name:
+            schema: any
+          creation_date:
+            link: Date Format/string
+            schema: string
+          table_name:
+            schema: any
+          source_count:
+            schema: any
+          target_count:
+            schema: any
+          diff:
+            schema: any
+          results:
+            link: Set the match result/result
+            schema: string
+          params:
+            link:
+              path: Query/result
+              iterate: Iterate
+  Post Load: {
+    }
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string
+  Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        table_name:
+          type: string
+        target_count:
+          type: integer
+        source_count:
+          type: integer
+        diff:
+          type: integer
+        suppressed_error_count:
+          type: integer

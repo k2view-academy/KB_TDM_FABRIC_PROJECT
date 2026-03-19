@@ -1,0 +1,363 @@
+tags: Concurrency
+stages:
+  Prepare the Data:
+    actors:
+      Get Current Time:
+        parent: Now
+      Get source env:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Get Task Exec ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      Get the Error Fields:
+        parent: ErrorFields
+        in:
+          error:
+            external: error
+        out:
+          inputs:
+            schema: '#ref'
+  Create IID:
+    dependsOn: Prepare the Data
+    actors:
+      Table Name Given?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            external: tableName
+            schema: string
+          b:
+            const: ALL_TABLES
+            schema: string
+      Build IID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildIID
+          partitionNum:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          sourceEnv:
+            link: Get source env/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          iid:
+            schema: string
+      TABLE_NAME:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  No Table Name:
+    else: true
+    dependsOn: Prepare the Data
+    actors:
+      ALL_TABLES:
+        parent: Const
+        in:
+          value:
+            const: ALL_TABLES
+            schema: string
+        out:
+          value:
+            schema: string
+  Format the actor's parameters:
+    actors:
+      Build string from input parameters:
+        parent: CsvBuilder
+        height: 79
+        in:
+          header:
+            const: false
+          maps:
+            link: Get the Error Fields/inputs
+      Format the current date:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Current Time/date
+      Get Executor Name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: USER_NAME
+            default: false
+      Set Entity Status to Failure:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Load Data to Detailed Error table:
+    actors:
+      Error Handler for reporting to TDM Error Table:
+        parent: ErrorHandler
+        error: result
+      Load Data To Error Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: Get TDMDB Schema/schema
+          table:
+            const: task_exe_error_detailed
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - entity_id
+            - iid
+            - target_entity_id
+            - error_category
+            - error_code
+            - error_message
+            - creation_date
+            - flow_name
+            - stage_name
+            - actor_name
+            - actor_parameters
+          dialect:
+            const: postgres
+          task_execution_id:
+            link: Get Task Exec ID/result
+            schema: string
+          lu_name:
+            const: TDM_TableLevel
+            schema: string
+          entity_id:
+            link: Build IID/iid
+            schema: string
+          iid:
+            link:
+            - TABLE_NAME/value
+            - ALL_TABLES/value
+            schema: string
+          target_entity_id:
+            const: ''
+            link:
+            - TABLE_NAME/value
+            - ALL_TABLES/value
+            schema: string
+            default: true
+          error_category:
+            const: Rejected Table
+            schema: string
+          error_code:
+            link: Get the Error Fields/errorCode
+            schema: string
+          error_message:
+            link: Get the Error Fields/message
+            schema: string
+          creation_date:
+            link: Format the current date/string
+            schema: string
+          flow_name:
+            link: Get the Error Fields/flow
+            schema: string
+          stage_name:
+            link: Get the Error Fields/stage
+            schema: string
+          actor_name:
+            link: Get the Error Fields/actor
+            schema: string
+          actor_parameters:
+            const: ''
+            link: Build string from input parameters/csv
+            schema: string
+            default: true
+      Set Entity Status to Failed:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Set Record Status to Failed:
+        parent: FabricSet
+        in:
+          key:
+            const: RECORD_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Get LU Name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TABLES_LU_NAME
+            default: false
+  Update TASK_REF_EXE_STATS:
+    dependsOn: Load Data to Detailed Error table
+    actors:
+      '!All_TABLES?':
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            external: tableName
+            schema: string
+          b:
+            const: ALL_TABLES
+            schema: string
+      Update TDMDB table for Reference Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.TASK_REF_EXE_STATS
+              SET execution_status = 'failed',
+              error_msg = ${errorMsg},
+              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+              updated_by = ${userName}
+              WHERE task_execution_id = ${taskExecutionID}
+              and (${tableName} = 'ALL_TABLES' OR task_ref_table_id = ${refTableID})
+          taskExecutionID:
+            link: Get Task Exec ID/result
+            schema: string
+          errorMsg:
+            link: Get the Error Fields/message
+            schema: string
+          userName:
+            link: Get Executor Name/result
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: sql
+    split: '--------------------'
+  Update TASK_REF_EXE_STATS for All tables:
+    else: true
+    dependsOn: Load Data to Detailed Error table
+    actors:
+      Update TDMDB table for Reference Table1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.TASK_REF_EXE_STATS
+              SET execution_status = 'failed',
+              error_msg = ${errorMsg},
+              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+              updated_by = ${userName}
+              WHERE task_execution_id = ${taskExecutionID}
+          taskExecutionID:
+            link: Get Task Exec ID/result
+            schema: string
+          errorMsg:
+            link: Get the Error Fields/message
+            schema: string
+          userName:
+            link: Get Executor Name/result
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+  Update Table Entity:
+    actors:
+      Populate Task Execution Entities For Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForTables
+          luName:
+            const: ''
+            link: Get LU Name/result
+            schema: string
+            default: true
+            mandatory: false
+          taskExecutionId:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+          tableName:
+            link:
+            - TABLE_NAME/value
+            - ALL_TABLES/value
+            schema: string
+            mandatory: false
+schemas:
+  Get the Error Fields.out.inputs:
+    type: object
+    properties:
+      interface:
+        type: string
+      luType:
+        type: string
+      parallel:
+        type: boolean
+      stop_on_error:
+        type: boolean
+      syncMode:
+        type: string
+      iid:
+        type: string

@@ -1,0 +1,276 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Set Target Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: ENVIRONMENT
+            default: false
+          value:
+            const: null
+            external: TARGET_ENVIRONMENT
+            default: false
+      Create Folder For Load:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: LoadFlows
+            schema: string
+            mandatory: false
+      Create Folder For Sequences:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: SequencesFlows
+            schema: string
+            mandatory: false
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTables
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Stage 10:
+    actors:
+      Set Target Table Name:
+        parent: SetTargetTableName
+        in:
+          TABLE_NAME:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+          LU_NAME:
+            external: LU_NAME
+  Stage 7:
+    actors:
+      check Main Table And Sequential IID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: checkMainTableAndSequentialIID
+          luName:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          INPUT_TABLE_NAME:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          interface:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema:
+            external: SOURCE_SCHEMA
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          table:
+            link: Set Target Table Name/TARGET_TABLE_NAME
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          SEQ_FIELD_NAME:
+            schema: string
+          SEQUENCE_NAME:
+            schema: string
+      flowName:
+        parent: StringFormat
+        height: 239
+        in:
+          format:
+            const: load_${0}.flow
+          params:
+            link:
+              path: Set Target Table Name/TARGET_TABLE_NAME
+              pos: 0
+  Stage 2:
+    dependsOn: Stage 7
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      CheckIfFlowExists:
+        parent: CheckIfFlowExists
+        in:
+          FOLDER_NAME:
+            const: LoadFlows
+          FLOW_FILE_NAME:
+            link: flowName/string
+          LU_NAME:
+            external: LU_NAME
+        out:
+          SKIP_TABLE:
+            schema: boolean
+    split: '--------------------'
+  Stage 5:
+    else: true
+    transactional: false
+    dependsOn: Stage 7
+    actors:
+      create Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createLoadTableToTargetFlow
+          LU_TABLE:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+          TARGET_TABLE:
+            link: Set Target Table Name/TARGET_TABLE_NAME
+            schema: string
+          luType:
+            external: LU_NAME
+            schema: string
+          FLOW_NAME:
+            link: flowName/string
+            schema: string
+          IID_FIELD_NAME:
+            link: check Main Table And Sequential IID/SEQ_FIELD_NAME
+            schema: string
+          SEQUENCE_NAME:
+            link: check Main Table And Sequential IID/SEQUENCE_NAME
+            schema: string
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+  Stage 3:
+    last: 1
+    dependsOn: Stage 2
+    actors:
+      Equals2:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: CheckIfFlowExists/SKIP_TABLE
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      create Flow for New Table:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createLoadTableToTargetFlow
+          LU_TABLE:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+          TARGET_TABLE:
+            link: Set Target Table Name/TARGET_TABLE_NAME
+            schema: string
+          luType:
+            external: LU_NAME
+            schema: string
+          FLOW_NAME:
+            link: flowName/string
+            schema: string
+          IID_FIELD_NAME:
+            link: check Main Table And Sequential IID/SEQ_FIELD_NAME
+            schema: string
+          SEQUENCE_NAME:
+            link: check Main Table And Sequential IID/SEQUENCE_NAME
+            schema: string
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 9:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Stage 2
+    actors:
+      Logger1:
+        parent: Logger
+        in:
+          message:
+            const: 'The LOAD Flow for table: <${TABLE_NAME}> Exists and it will not
+              recreated. If you want to recreate it please delete its related flow'
+          level:
+            const: info
+          TABLE_NAME:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+    split: '--------------------'
+  Stage 6:
+    last: 1
+    else: false
+    transactional: false
+    dependsOn: Stage 5
+  Stage 4: {
+    }
+schemas:
+  geLuTables.out.res:
+    type: array
+    items:
+      type: string

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>TDM_REF_ROOT</Name>
+  <ID>tbl_TDM_REF_ROOT</ID>
+  <EntityId>ref_instance_id</EntityId>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
+  <Columns>
+    <Column name="ref_instance_id" id="ref_instance_id" index="0" datatype="Text" mandatory="true" />
+    <Column name="ref_table_id" id="ref_table_id" index="1" datatype="integer" />
+    <Column name="ref_table_name" id="ref_table_name" index="2" datatype="Text" />
+    <Column name="source_env" id="source_env" index="3" datatype="Text" />
+    <Column name="task_execution_id" id="task_execution_id" index="4" datatype="Text" />
+    <Column name="task_id" id="task_id" index="5" datatype="Text" />
+    <Column name="retention" id="retention" index="6" datatype="integer" />
+    <Column name="task_type" id="task_type" index="7" datatype="Text" />
+    <Column name="interface_name" id="interface_name" index="8" datatype="Text" />
+    <Column name="schema_name" id="schema_name" index="9" datatype="Text" />
+    <Column name="filter_type" id="filter_type" index="10" datatype="Text" />
+    <Column name="table_filter" id="table_filter" index="11" datatype="Text" />
+    <Column name="filter_parameters" id="filter_parameters" index="12" datatype="Text" />
+    <Column name="target_interface" id="target_interface" index="13" datatype="Text" />
+    <Column name="target_schema" id="target_schema" index="14" datatype="Text" />
+    <Column name="target_table_name" id="target_table_name" index="15" datatype="Text" />
+    <Column name="gui_filter" id="gui_filter" index="16" datatype="Text" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="ref_instance_id" />
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+</TableObject>

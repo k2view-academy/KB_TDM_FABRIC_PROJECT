@@ -1,0 +1,454 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LuName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Mtable Lookup",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LuParams",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "LuParams"
+                                    },
+                                    {
+                                        "name": "mtableCaseSensitive",
+                                        "const": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "column_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "sql": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Map",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "COLUMN_NAME",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "COLUMN_NAME"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "COLUMN_NAME": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "SQL",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "SQL"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "SQL": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Count",
+                            "actorType": {
+                                "parentType": "Count",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge Map",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapMerge",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "COLUMN_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "SQL": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Data",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "1": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "2": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "3": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "5": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "6": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "7": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "8": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "9": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "COLUMN_NAME": {
+                                                            "type": "string"
+                                                        },
+                                                        "SQL": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "previous",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "COLUMN_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "SQL": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "LuName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "LuParams",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuParams",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "COLUMN_NAME",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "column_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LuParams",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "SQL",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "sql"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "COLUMN_NAME",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "SQL",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Data",
+                "name": "key"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapMerge",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "LuName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Data",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "data"
+            }
+        }
+    ]
+}

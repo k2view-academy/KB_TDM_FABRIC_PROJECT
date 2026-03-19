@@ -1,0 +1,175 @@
+tags: TDM
+stages:
+  Get Seq Indicator:
+    actors:
+      Get enable_sequences:
+        parent: FabricSetRead
+        in:
+          key:
+            const: enable_sequences
+            default: false
+      Get TDM_SEQ_REPORT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SEQ_REPORT
+            default: false
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Check If Sequences Enabled And Report is required:
+    actors:
+      If sequences enabled and report requested:
+        parent: And
+        condition: result
+        in:
+          a:
+            link: Get enable_sequences/result
+          b:
+            link: Get TDM_SEQ_REPORT/result
+      Check If Root Table And Field:
+        parent: CheckIfRootTableAndField
+        in:
+          fieldName:
+            external: column_name
+          luName:
+            external: lu_type
+          tableName:
+            external: table_name
+  Check if Instance ID:
+    dependsOn: Check If Sequences Enabled And Report is required
+    actors:
+      Instance ID?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check If Root Table And Field/root_indicator
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Instance Indicator is No:
+        parent: Const
+        in:
+          value:
+            const: Y
+            schema: string
+        out:
+          value:
+            schema: string
+      target_id:
+        parent: Const
+        height: 224
+        in:
+          value:
+            const: null
+            external: target_value
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Stage 3:
+    else: true
+    transactional: false
+    dependsOn: Check If Sequences Enabled And Report is required
+    actors:
+      Instance Indicator is Yes__1:
+        parent: Const
+        in:
+          value:
+            const: N
+            schema: string
+        out:
+          value:
+            schema: string
+      Get Target Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+  Load Data to TDM_SEQ_MAPPING:
+    actors:
+      Insert into TDM_SEQ_MAPPING table:
+        parent: DbLoad
+        height: 339
+        in:
+          interface:
+            const: TDM
+          command:
+            const: upsert
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: tdm_seq_mapping
+          fields:
+            const:
+            - task_execution_id
+            - lu_type
+            - source_env
+            - entity_target_id
+            - seq_name
+            - table_name
+            - column_name
+            - source_id
+            - target_id
+            - is_instance_id
+          keys:
+            const:
+            - task_execution_id
+            - lu_type
+            - source_env
+            - entity_target_id
+            - seq_name
+            - table_name
+            - source_id
+          dialect:
+            const: postgres
+          task_execution_id:
+            external: task_execution_id
+            schema: string
+          lu_type:
+            external: lu_type
+            schema: string
+          source_env:
+            link: Get Source Environment/result
+            schema: string
+          entity_target_id:
+            link:
+            - target_id/value
+            - Get Target Entity ID/result
+            schema: string
+          seq_name:
+            external: seq_name
+            schema: string
+          table_name:
+            external: table_name
+            schema: string
+          column_name:
+            external: column_name
+            schema: string
+          source_id:
+            external: source_value
+            schema: string
+          target_id:
+            external: target_value
+            schema: string
+          is_instance_id:
+            link:
+            - Instance Indicator is No/value
+            - Instance Indicator is Yes__1/value
+            schema: string

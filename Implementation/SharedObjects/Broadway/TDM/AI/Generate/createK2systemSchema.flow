@@ -1,0 +1,93 @@
+tags: TDM,TDMAI ML
+stages:
+  Get Indicator:
+    actors:
+      Get CREATE_AI_K2SYSTEM_DB:
+        parent: FabricSetRead
+        in:
+          key:
+            const: CREATE_AI_K2SYSTEM_DB
+            default: false
+  Get Cluster:
+    actors:
+      Create AI k2system?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get CREATE_AI_K2SYSTEM_DB/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Getk2SystemSchemaName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  Set Inteface and SQL Statements:
+    actors:
+      Get  AI_DB_K2SYSTEM:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+            default: false
+      Set SQL Statements:
+        parent: StringFormat
+        in:
+          format:
+            const: "CREATE SCHEMA IF NOT EXISTS ${k2systemName};\r\n\r\nCREATE TABLE\
+              \ IF NOT EXISTS ${k2systemName}.task_executions (\r\n    id BIGINT,\r\
+              \n    task_type varchar(20),\r\n    status varchar(10) NOT NULL,\r\n\
+              \    execution_params json NOT NULL,\r\n    result json NOT NULL,\r\n\
+              \    evaluation_report BYTEA,\r\n    evaluation_json BYTEA,\r\n    creation_time\
+              \ timestamp without time zone NOT NULL,\r\n    last_update_time timestamp\
+              \ without time zone,\r\n    PRIMARY KEY (id, task_type)\r\n);\r\n\r\n\
+              CREATE TABLE IF NOT EXISTS ${k2systemName}.entity_list (\r\n    id SERIAL\
+              \ PRIMARY KEY,\r\n    task_execution_id BIGINT NOT NULL,\r\n    task_type\
+              \ varchar(20) NOT NULL,\r\n    schema varchar (50) NOT NULL,\r\n   \
+              \ iid text NOT NULL,\r\n    creation_time timestamp without time zone\
+              \ NOT NULL,\r\n    FOREIGN KEY (task_execution_id, task_type) REFERENCES\
+              \ ${k2systemName}.task_executions (id, task_type)\r\n);\r\n\r\nCREATE\
+              \ TABLE IF NOT EXISTS ${k2systemName}.task_execution_stats (\r\n   \
+              \ id SERIAL PRIMARY KEY,\r\n    task_execution_id BIGINT NOT NULL,\r\
+              \n    task_type varchar(20) NOT NULL,\r\n    result json NOT NULL,\r\
+              \n    evaluation_report BYTEA,\r\n    evaluation_json BYTEA,\r\n   \
+              \ creation_time timestamp without time zone NOT NULL,\r\n    last_update_time\
+              \ timestamp without time zone,\r\n    FOREIGN KEY (task_execution_id,\
+              \ task_type) REFERENCES ${k2systemName}.task_executions (id, task_type)\r\
+              \n);\r\n\r\nCREATE SEQUENCE IF NOT EXISTS ${k2systemName}.ai_instance_id_seq\r\
+              \n    INCREMENT 1\r\n    START 1\r\n    MINVALUE 1\r\n    MAXVALUE 9223372036854775807\r\
+              \n    CACHE 1;\r\n"
+          k2systemName:
+            link: Getk2SystemSchemaName1/result
+            schema: string
+            mandatory: false
+  Create k2System:
+    actors:
+      Create K2system Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Create K2system Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: Get  AI_DB_K2SYSTEM/result
+          sql:
+            const: null
+            link: Set SQL Statements/string

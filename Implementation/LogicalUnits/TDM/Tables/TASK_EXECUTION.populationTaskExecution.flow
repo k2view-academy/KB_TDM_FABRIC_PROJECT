@@ -1,0 +1,198 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Check Retention Period:
+    actors:
+      TDM_LU_RETENTION_PERIOD_VALUE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_LU_RETENTION_PERIOD_VALUE
+            default: false
+      TDM_LU_RETENTION_PERIOD_TYPE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_LU_RETENTION_PERIOD_TYPE
+            default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Cast:
+    actors:
+      'ToNumber ':
+        parent: ToNumber
+        in:
+          value:
+            link: TDM_LU_RETENTION_PERIOD_VALUE/result
+  Not Null Or Zero:
+    dependsOn: Cast
+    actors:
+      GreaterThanZero:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: ToNumber /number
+      getRetention:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getRetention
+          retentionPeriodType:
+            link: TDM_LU_RETENTION_PERIOD_TYPE/result
+            schema: string
+            mandatory: false
+          retentionPeriodValue:
+            link: ToNumber /number
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: integer
+    split: '--------------------'
+  Do nothing:
+    else: true
+    transactional: false
+    dependsOn: Cast
+  Set not Zero:
+    transactional: false
+    dependsOn: Not Null Or Zero
+    actors:
+      'Set INSTANCE_TTL ':
+        parent: FabricSet
+        in:
+          key:
+            default: false
+          value:
+            const: null
+            link: getRetention/result
+            default: false
+    split: '--------------------'
+  Do nothing 2:
+    transactional: false
+    dependsOn: Do nothing
+  SELECT count(*):
+    transactional: false
+    actors:
+      Get Count Of unfinished LUs:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT count(*) FROM ${@TDMDB_SCHEMA}.task_execution_list as out1
+              where task_execution_id = ${@task_execution_id} and exists (select 1 from ${@TDMDB_SCHEMA}.task_execution_list tbl
+              where tbl.task_execution_id=out1.task_execution_id
+              and tbl.execution_status not in ('stopped','completed','failed','killed'))
+          task_execution_id:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: number
+      Reject Message:
+        parent: StringFormat
+        in:
+          format:
+            const: Task Execution ID ${TASK_EXECUTION_ID} is not completed yet
+          TASK_EXECUTION_ID:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+  Count Check:
+    transactional: false
+    dependsOn: SELECT count(*)
+    actors:
+      Count Greater Than 0:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Get Count Of unfinished LUs/result
+      Reject Instance:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnRejectInstance
+          msg:
+            link: Reject Message/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Count is zero:
+    else: true
+    transactional: false
+    dependsOn: SELECT count(*)
+    actors:
+      TASK_EXECUTION:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            link: PopulationArgs/iid
+            schema: any
+      task_execution_id:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: PopulationArgs/iid
+        out:
+          value:
+            external: task_execution_id
+            schema: string
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string

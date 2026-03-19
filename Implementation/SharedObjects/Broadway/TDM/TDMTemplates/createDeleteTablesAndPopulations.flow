@@ -1,0 +1,162 @@
+tags: TDM
+stages:
+  Get List of Tables: {
+    }
+  Create the Name Of Delete Table:
+    actors:
+      Build Delete Table Name:
+        parent: StringFormat
+        height: 235
+        in:
+          format:
+            const: ${prefix}${table}.k2table.xml
+          prefix:
+            external: TABLE_PREFIX
+            schema: string
+            mandatory: false
+          table:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+  Check If Table Already Exists:
+    dependsOn: Create the Name Of Delete Table
+    actors:
+      Override Existing Table?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      Check If Table Exists:
+        parent: CheckIfFlowExists
+        in:
+          flowName:
+            const: CheckIfTableExists
+          LU_NAME:
+            external: LU_NAME
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+          FOLDER_NAME:
+            const: DeleteFlows
+          FLOW_FILE_NAME:
+            link: Build Delete Table Name/string
+        out:
+          SKIP_TABLE:
+            schema: boolean
+    split: '--------------------'
+  Create Table Always:
+    else: true
+    transactional: false
+    dependsOn: Create the Name Of Delete Table
+    actors:
+      Create Table:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createDeleteTablesFiles
+          luType:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+          table:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+  Create New:
+    dependsOn: Check If Table Already Exists
+    actors:
+      If table Does Not Exists:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check If Table Exists/SKIP_TABLE
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      Create New Table:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createDeleteTablesFiles
+          luType:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+          table:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Table Already Exists:
+    else: true
+    transactional: false
+    dependsOn: Check If Table Already Exists
+    actors:
+      Report to Log:
+        parent: Logger
+        in:
+          message:
+            const: 'The table: <${TABLE_NAME}> already Exists'
+          level:
+            const: info
+          TABLE_NAME:
+            external: TABLE_NAME
+            schema: string
+    split: '--------------------'
+  Stage 6:
+    else: false
+    transactional: false
+    dependsOn: Create Table Always

@@ -1,0 +1,37 @@
+tags: TDM
+stages:
+  Get TDMDB_SCHEMA:
+    actors:
+      Get TDMDB_SCHEMA variable:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+  Get Cluster:
+    actors:
+      Get Cluster ID:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: clusterid
+        out:
+          result:
+            schema: string
+  Result:
+    actors:
+      Set Schema Name:
+        parent: Replace
+        in:
+          search:
+            const: ${ClusterID}
+          replace:
+            const: null
+            link: Get Cluster ID/result
+          string:
+            link: Get TDMDB_SCHEMA variable/result
+        out:
+          string:
+            external: schema

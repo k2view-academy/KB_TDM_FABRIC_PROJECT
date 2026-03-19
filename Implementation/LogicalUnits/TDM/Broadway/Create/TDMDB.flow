@@ -1,0 +1,202 @@
+tags: Create
+stages:
+  Check Global For Creation:
+    actors:
+      Create TDMDB Flag:
+        parent: FabricSetRead
+        condition: result
+        in:
+          key:
+            const: CREATE_TDMDB
+            default: false
+  Check If Active:
+    actors:
+      Error Handler For Test Connection:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Check TDM Interface Connection:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: test_connection interface=${TDMDB}
+          TDMDB:
+            const: TDM
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Active:
+    actors:
+      Check If TDM Interface is Active1:
+        parent: assertTrue
+        in:
+          message:
+            const: The TDM interface is not active, cannot build the TDM DB
+          condition:
+            link:
+              path: Check TDM Interface Connection/result/active
+              iterate: First
+  Get Database Name:
+    actors:
+      LuFunction:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBNameFromInterface
+          interfaceName:
+            const: TDM
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Check If DB Exists:
+    actors:
+      DbFetchField:
+        parent: DbFetchField
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: |
+              SELECT 1 FROM pg_database WHERE datname = ${tdm_db};
+          tdm_db:
+            link: LuFunction/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  DB Exists:
+    dependsOn: Check If DB Exists
+    actors:
+      EqualsIgnoreCase:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 1
+            schema: integer
+          a:
+            link: DbFetchField/result
+      getTDMDBSchemaName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+    split: '--------------------'
+  'Create TDMB ':
+    else: true
+    dependsOn: Check If DB Exists
+    actors:
+      'CreateTDMDB  ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateTDMDB
+          database:
+            link: LuFunction/result
+            schema: string
+            mandatory: false
+          flag:
+            const: true
+            schema: boolean
+            mandatory: false
+  Check if Schema Exists:
+    dependsOn: DB Exists
+    actors:
+      'DbFetchField   ':
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT COALESCE(
+                  (SELECT schema_name
+                   FROM information_schema.schemata
+                   WHERE schema_name IN (${schemaName})
+                   AND EXISTS (
+                       SELECT 1
+                       FROM information_schema.tables
+                       WHERE table_schema = schema_name
+                       AND table_name = 'tdm_general_parameters'
+                   )
+              ),NULL
+              ) AS schema_name;
+          schemaName:
+            link: getTDMDBSchemaName1/schema
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  Do Nothing:
+    else: false
+    dependsOn: 'Create TDMB '
+  Create Schema:
+    dependsOn: Check if Schema Exists
+    actors:
+      IsNull:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: DbFetchField   /result
+      'CreateTDMDB     ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateTDMDB
+          database:
+            link: LuFunction/result
+            schema: string
+            mandatory: false
+          flag:
+            const: false
+            schema: boolean
+            mandatory: false
+    split: '--------------------'
+  'Do Nothing   ':
+    else: true
+    dependsOn: Check if Schema Exists
+    split: '--------------------'
+  'Do Nothing ':
+    dependsOn: Do Nothing
+schemas:
+  Check TDM Interface Connection.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface:
+          type: string
+        type:
+          type: string
+        environment:
+          type: string
+        active:
+          type: boolean
+        passed:
+          type: boolean
+        error_message:
+          type: string

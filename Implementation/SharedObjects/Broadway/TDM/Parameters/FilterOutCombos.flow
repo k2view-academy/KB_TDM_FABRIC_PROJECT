@@ -1,0 +1,228 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      COMBO_MAX_COUNT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: COMBO_MAX_COUNT
+            default: false
+      sourceEnv:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: sourceEnv
+        out:
+          value:
+            schema: string
+      Uppercase luName:
+        parent: Uppercase
+        in:
+          string:
+            external: luName
+  Select from distinctValues:
+    actors:
+      Filter From distinctParams:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select REPLACE(field_name, '"','') from ${@TDMDB_SCHEMA}.tdm_params_distinct_values where lu_name = ${upperLU} and number_of_values > ${maxCombo} and is_numeric = false
+                 and source_environment=${sourceEnv}
+          upperLU:
+            link: Uppercase luName/string
+            schema: string
+            mandatory: false
+          maxCombo:
+            link: COMBO_MAX_COUNT/result
+            schema: string
+            mandatory: false
+          sourceEnv:
+            link: sourceEnv/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Array of selected values:
+    last: 1
+    actors:
+      ArrayBuilder Selected Values:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Filter From distinctParams/result/replace
+              iterate: Iterate
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  LuParamsMapping Lookup:
+    actors:
+      LuParamsMapping:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: LuParamsMapping
+          lu_name:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  ParamName:
+    actors:
+      Trim:
+        parent: Trim
+        in:
+          string:
+            link:
+              path: LuParamsMapping/result/param_name
+              iterate: Iterate
+  Build Format:
+    actors:
+      ${Lu}${field}:
+        parent: StringFormat
+        in:
+          format:
+            const: ${Lu}.${field}
+          field:
+            link:
+              path: Trim/string
+              pos: 0
+            schema: '#ref'
+            mandatory: false
+          Lu:
+            link: Uppercase luName/string
+            schema: string
+            mandatory: false
+  Array Of Mtable Values:
+    last: 1
+    actors:
+      ArrayBuilder Mtable Values:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: ${Lu}${field}/string
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Return Difference:
+    actors:
+      Mtable X Disrinct:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                function findNonCommonElements(arr1, arr2) {
+                    // Create a Set from the params array without quotes
+                    const paramsSet = new Set(arr1);
+
+                    // Filter the replace array to include only elements not in the paramsSet
+                    const nonCommonElements = arr2.filter(item => !paramsSet.has(item));
+
+                    return nonCommonElements;
+                }
+
+
+                // Example usage:
+                const arr1 = [...array1];
+                const arr2 = [...array2];
+                const nonCommonElements = findNonCommonElements(arr1, arr2);
+                nonCommonElements;
+              script: |-
+                function findNonCommonElements(arr1, arr2) {
+                  // Create a Set from the params array without quotes
+                  var paramsSet = new Set(arr1); // Filter the replace array to include only elements not in the paramsSet
+
+                  var nonCommonElements = arr2.filter(function (item) {
+                    return !paramsSet.has(item);
+                  });
+                  return nonCommonElements;
+                } // Example usage:
+
+
+                var arr1 = [].concat(array1);
+                var arr2 = [].concat(array2);
+                var nonCommonElements = findNonCommonElements(arr1, arr2);
+                nonCommonElements;
+          array1:
+            link: ArrayBuilder Selected Values/array
+            schema: '#ref'
+            mandatory: false
+          array2:
+            link: ArrayBuilder Mtable Values/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: '#ref'
+schemas:
+  Filter From distinctParams.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        replace:
+          type: string
+  ArrayBuilder Selected Values.out.array:
+    type: array
+    items:
+      type: string
+  LuParamsMapping.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        param_name:
+          type: string
+        lu_table:
+          type: string
+        lu_table_field:
+          type: string
+  ${Lu}${field}.in.field:
+    type: array
+    items:
+      type: string
+  ArrayBuilder Mtable Values.out.array:
+    type: array
+    items:
+      type: string
+  Mtable X Disrinct.in.array1:
+    type: array
+    items:
+      type: string
+  Mtable X Disrinct.in.array2:
+    type: array
+    items:
+      type: string
+  Mtable X Disrinct.out.result:
+    type: array
+    items:
+      type: string

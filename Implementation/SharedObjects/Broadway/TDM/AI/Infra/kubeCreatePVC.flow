@@ -1,0 +1,135 @@
+tags: TDM
+stages:
+  Get Config Param:
+    actors:
+      AIConfigParams:
+        parent: AIConfigParams
+        out:
+          table:
+            schema: '#ref'
+  PVC Params:
+    actors:
+      PVC_storage_size:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: PVC_storage_size
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      PVC_storage_class:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: PVC_storage_class
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Add to Yaml:
+    actors:
+      Yaml:
+        parent: StringFormat
+        in:
+          format:
+            const: "apiVersion: v1\r\nkind: PersistentVolumeClaim\r\nmetadata:\r\n\
+              \  name: shared-artifacts-pvc\r\nspec:\r\n  accessModes:\r\n    - ReadWriteOnce\r\
+              \n  resources:\r\n    requests:\r\n      storage: ${storage_size}Gi\r\
+              \n  storageClassName: ${storage_class}"
+          storage_size:
+            link: PVC_storage_size/result/param_value
+            schema: any
+            mandatory: false
+          storage_class:
+            link: PVC_storage_class/result/param_value
+            schema: any
+            mandatory: false
+  Apply:
+    actors:
+      kubeApply:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeApply
+          method:
+            const: POST
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ''
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+            mandatory: false
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false
+          kind:
+            const: persistentvolumeclaims
+            schema: string
+            mandatory: false
+          api:
+            const: api/v1
+            schema: string
+            mandatory: false
+          payload:
+            link: Yaml/string
+            schema: string
+            mandatory: false
+schemas:
+  AIConfigParams.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        param_name:
+          type: string
+        param_value:
+          type: string
+  PVC_storage_size.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  PVC_storage_size.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string
+  PVC_storage_class.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  PVC_storage_class.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string

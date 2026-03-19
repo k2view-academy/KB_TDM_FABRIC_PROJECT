@@ -1,0 +1,1 @@
+function environmentsCtrl($scope,BreadCrumbsService){this.pageDisplay="environmentsTable"}angular.module("TDM-FE").controller("environmentsCtrl",environmentsCtrl);

@@ -1,0 +1,32 @@
+<div class="modal-header">
+    <h3 class="modal-title">Tables Process</h3>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="project-list">
+                <div class="row">
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-8"></div>
+                    <!-- <div class="col-lg-2">Estimated Duration (minutes)</div> -->
+                </div>
+                <div class="row" ng-repeat="refData in taskHistoryRefCtrl.refDetailedData" style="margin-top: 20px">
+                    <div class="col-lg-3">
+                        <div style="margin-top: 10px;white-space: nowrap; display: flex; align-items: center;gap: 5px;">
+                            <span ng-click="taskHistoryRefCtrl.openBatchMonitor(refData.batch_id)">
+                                    <i style="font-size: 17px; cursor: pointer;
+                                    color: #1483f3;" title="Open batch monitor" class="fa fa-info-circle"></i>
+                             </span> {{refData.ref_table_name}}
+                        </div></div>
+                    <div class="col-lg-7">
+                            <uib-progressbar ng-if="refData.execution_status == 'completed' || refData.execution_status == 'failed'" class="progress-striped active" value="100" type="success">100%</uib-progressbar>
+                            <uib-progressbar ng-if="refData.execution_status !== 'completed' && refData.execution_status !== 'failed'" class="progress-striped active" value="refData.percentageOfCompleted || 0" type="success">{{refData.percentageOfCompleted.toFixed(2)}}%    </uib-progressbar>
+                            <div ng-if="refData.number_of_records_to_process_orig > 0" class="pull-right">{{refData.number_of_processed_records}}/{{refData.number_of_records_to_process}}</div>
+                            <div ng-if="refData.number_of_records_to_process_orig <= 0" class="pull-right">{{refData.number_of_processed_records}}</div>
+                    </div>
+                    <!-- <div class="col-lg-2">{{refData.estimated_remaining_duration}}</div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

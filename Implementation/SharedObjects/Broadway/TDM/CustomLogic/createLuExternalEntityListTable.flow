@@ -1,0 +1,73 @@
+tags: TDM
+stages:
+  Build Table Name:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Format the Table Name:
+        parent: StringFormat
+        in:
+          format:
+            const: entity_list_${task_execution_id}
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+  Create Table If Does Not Exists:
+    actors:
+      Create Entity List Table:
+        parent: DbCreateTable
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: null
+            link: Format the Table Name/string
+          fields:
+            const:
+            - name: task_execution_id
+              type: bigint
+              pk: false
+              mandatory: true
+            - name: lu_name
+              type: text
+              pk: false
+              mandatory: true
+            - name: tdm_eid
+              type: text
+              pk: false
+              mandatory: true
+            - name: source_env_name
+              type: text
+              pk: false
+              mandatory: false
+            - name: source_iid
+              type: text
+              pk: false
+              mandatory: false
+          dialect:
+            const: postgres
+      Set The Output Table Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${schema}.${tableName}
+          tableName:
+            link: Format the Table Name/string
+            schema: string
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: ENTITY_LIST_TABLE

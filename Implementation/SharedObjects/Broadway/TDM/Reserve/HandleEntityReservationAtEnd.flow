@@ -1,0 +1,56 @@
+tags: TDM
+stages:
+  Check if Reservation to be handled:
+    actors:
+      Check if Reservation is required:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: reserveInd
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Get Task Reserve Indicator:
+        parent: FabricSetRead
+        in:
+          interface:
+            default: false
+          key:
+            const: TDM_RESERVE_IND
+            default: false
+  Get Replace Sequence:
+    actors:
+      Check if A Reservation Task:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Task Reserve Indicator/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Get Replace Sequence Indicator:
+        parent: FabricSetRead
+        in:
+          interface:
+            default: false
+          key:
+            const: enable_sequences
+            default: false
+  Reserve Entity:
+    actors:
+      Already Reserved at Start?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Replace Sequence Indicator/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      ReserveEntity1:
+        parent: ReserveEntity

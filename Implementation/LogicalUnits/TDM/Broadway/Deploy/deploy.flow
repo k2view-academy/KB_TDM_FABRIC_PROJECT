@@ -1,0 +1,178 @@
+tags: Deploy
+stages:
+  Check Flag For Deploy Envs:
+    actors:
+      TDM_DEPLOY_ENVIRONMENTS:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DEPLOY_ENVIRONMENTS
+            default: false
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  If True:
+    dependsOn: Check Flag For Deploy Envs
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = true;
+              if (deployFlag != "true" || projectDir == null || projectDir == "") {
+                  result = false;
+              }
+              result;
+          deployFlag:
+            link: TDM_DEPLOY_ENVIRONMENTS/result
+            schema: string
+            mandatory: false
+          projectDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+    split: '--------------------'
+  If Flase:
+    else: true
+    transactional: false
+    dependsOn: Check Flag For Deploy Envs
+  Build Statement:
+    dependsOn: If True
+    actors:
+      Starting Deploy Activities:
+        parent: Logger
+        in:
+          message:
+            const: Starting Deploy Activities
+          level:
+            const: info
+      Command:
+        parent: Const
+        in:
+          value:
+            const: DEPLOY ENVIRONMENTS FROM FILE '
+            schema: string
+        out:
+          value:
+            schema: string
+      Path:
+        parent: Const
+        in:
+          value:
+            const: /Implementation/SharedObjects/Environments/Environments.k2fabEnv.xml'
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Stage 5:
+    transactional: false
+    dependsOn: If Flase
+  Create Deploy Environment Command:
+    dependsOn: Build Statement
+    actors:
+      Concat:
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: Command/value
+              pos: 0
+            - path: PROJECT_DIR/value
+              pos: 1
+            - path: Path/value
+              pos: 2
+    split: '--------------------'
+  Stage 6:
+    transactional: false
+    dependsOn: Stage 5
+  Run Deploy Environments:
+    dependsOn: Create Deploy Environment Command
+    actors:
+      Deploy Environments:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link: Concat/string
+    split: '--------------------'
+  Stage 7:
+    transactional: false
+    dependsOn: Stage 6
+  Create TDMDB Tables:
+    actors:
+      Create TDMDB:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDB
+  Craete Web Role:
+    actors:
+      Add Web Role:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: AddWebRole
+  Create K2System If Relevant:
+    actors:
+      create K2system Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createK2systemSchema
+  Check If Upgrade TDM version Needed:
+    actors:
+      TDMDBUpgradeScripts1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDBUpgradeScripts
+  Get Globals For k2masking:
+    actors:
+      SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+  Create k2masking if it does not exists:
+    actors:
+      maskingCreateCacheTable:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: masking-create-cache-table
+          interface:
+            link: SEQ_CACHE_INTERFACE/result
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces: [
+                ]
+            mandatory: false
+  End:
+    actors:
+      Finished Deploy Activities:
+        parent: Logger
+        in:
+          message:
+            const: Finished Deploy Activities
+          level:
+            const: info

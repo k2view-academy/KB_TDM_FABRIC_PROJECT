@@ -1,0 +1,53 @@
+{
+    "type": "StatsLoader",
+    "badge": "∑=",
+    "tags": [
+        "stats"
+    ],
+    "doc": [
+        "Populate task_exe_stats_detailed table with the statistics given by StatsReader actor"
+    ],
+    "inputs": [
+        {
+            "const": "TDM",
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "database",
+                    "CassandraLoader"
+                ],
+                "interfaces": [
+                    "fabric"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The interface to use.",
+                "This can be a jdbc URL or a reference to an interface defined in the container.",
+                "Make sure there is the table task_exe_stats_detailed was created."
+            ]
+        },
+        {
+            "name": "stats",
+            "schema": {
+                "type": "object"
+            },
+            "doc": [
+                "Statistics map"
+            ]
+        },
+        {
+            "name": "table",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        }
+    ],
+    "outputs": [],
+    "actorClass": "com.k2view.cdbms.usercode.common.TDM.StatsLoader"
+}

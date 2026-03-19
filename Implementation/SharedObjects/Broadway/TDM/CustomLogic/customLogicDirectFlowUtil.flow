@@ -1,0 +1,59 @@
+tags: TDM,TDMCustomLogic
+stages:
+  Filter Reserved And Create TDM EIDs:
+    actors:
+      Filter Reserved Entities:
+        parent: Filter
+        in:
+          flowName:
+            const: CheckIfReserved
+          values:
+            external: values
+        out:
+          values:
+            schema: '#ref'
+  Limit To Requested Number:
+    actors:
+      Limit:
+        parent: Limit
+        in:
+          limit:
+            external: NUM_OF_ENTITIES
+            default: true
+          values:
+            link: Filter Reserved Entities/values
+        out:
+          values:
+            schema: '#ref'
+  Format IIDs to TDM IIDs:
+    actors:
+      Format IID:
+        parent: Mapper
+        in:
+          flowName:
+            const: buildTDMEidForCustomLogic
+          values:
+            link: Limit/values
+        out:
+          values:
+            external: values
+            schema: '#ref'
+schemas:
+  Filter Reserved Entities.out.values:
+    type: array
+    items:
+      type: object
+      properties:
+        source_iid:
+          type: integer
+  Limit.out.values:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+  Format IID.out.values:
+    type: array
+    items:
+      type: string

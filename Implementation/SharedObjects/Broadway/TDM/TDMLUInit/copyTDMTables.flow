@@ -1,0 +1,382 @@
+tags: TDM
+stages:
+  Get Paths:
+    actors:
+      TDM_LIBRARY folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${TDM_LIBRARY_PATH}Tables/
+          TDM_LIBRARY_PATH:
+            external: TDM_LIBRARY_PATH
+            schema: string
+            mandatory: false
+      LU Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${LU_PATH}Tables/
+          LU_PATH:
+            external: LU_PATH
+            schema: string
+            mandatory: false
+  Check Files Under TDM_LIBRARY:
+    actors:
+      ls TDM_LIBRARY tables:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: TDM_LIBRARY folder/string
+          path:
+            const: .
+        out:
+          result:
+            schema: '#ref'
+  'Check for Table extension ':
+    actors:
+      JavaScript:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = true;
+              if (fileName.startsWith('TDM_LU_TYPE_REL')) {
+                  result = false;
+              }
+              result;
+          fileName:
+            link:
+              path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Replace Table extension:
+        parent: Replace
+        height: 282
+        in:
+          search:
+            const: .k2table.xml
+          string:
+            link:
+              path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+  Check For TDM Tables:
+    actors:
+      'Concat  ':
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: TDM_LIBRARY folder/string
+              pos: 0
+            - path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+              pos: 1
+      'Concat   ':
+        parent: Concat
+        in:
+          delimiter:
+            const: ''
+          elements:
+            link:
+            - path: LU Folder/string
+              pos: 0
+            - path: ls TDM_LIBRARY tables/result/name
+              iterate: Iterate
+              pos: 1
+      'Lookup  ':
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - table_name
+          lookupData:
+            const:
+            - table_name: FABRIC_TDM_ROOT
+              column_name: IID
+              active: true
+            - table_name: LU_PARAMS
+              column_name: ENTITY_ID
+              active: true
+            - table_name: TDM_LU_TYPE_REL_TAR_EID
+              column_name: lu_type1_eid
+              active: true
+            - table_name: TDM_LU_TYPE_RELATION_EID
+              column_name: lu_type1_eid
+              active: true
+            - table_name: TDM_BE_IIDS
+              column_name: iid,source_env,be_id,root_iid
+              active: true
+            schema: '#ref'
+          table_name:
+            link: Replace Table extension/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Table Population file:
+        parent: StringFormat
+        in:
+          format:
+            const: ${tableName}.*.flow
+          tableName:
+            link: Replace Table extension/string
+            schema: string
+            mandatory: false
+  Replace files:
+    actors:
+      Replace file:// TDM LIBRARY:
+        parent: Replace
+        in:
+          search:
+            const: file://
+          string:
+            link: Concat  /string
+      Replace file:// LU_PATH:
+        parent: Replace
+        in:
+          search:
+            const: file://
+          string:
+            link: Concat   /string
+  Copy from TDM Library To Lu:
+    actors:
+      Copy file:
+        parent: cp
+        in:
+          interface:
+            const: file://
+          from:
+            link: Replace file:%2F%2F TDM LIBRARY/string
+          to:
+            link: Replace file:%2F%2F LU_PATH/string
+  Get Populations:
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: Lookup  /result/active
+      List populations:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: TDM_LIBRARY folder/string
+          path:
+            const: .
+          pattern:
+            const: null
+            link: Table Population file/string
+        out:
+          result:
+            schema: '#ref'
+  Population Doesn't Exists:
+    last: 1
+    dependsOn: Get Populations
+    actors:
+      'JavaScript  ':
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const:
+              userCode: "var result = true;\r\nif(population == null || population\
+                \ == []) {\r\n    result = false;\r\n}\r\nresult;"
+              script: |-
+                var result = true;
+
+                if (population == null || population == []) {
+                  result = false;
+                }
+
+                result;
+          population:
+            link:
+              path: List populations/result
+              iterate: Iterate
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      'MapBuild  ':
+        parent: MapBuild
+        in:
+          key:
+            const: population
+            schema: string
+          value:
+            link:
+              path: List populations/result/name
+              iterate: Iterate
+        out:
+          map:
+            schema: '#ref'
+    split: '--------------------'
+  Population Exists:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Get Populations
+    actors:
+      MapBuild:
+        parent: MapBuild
+        in:
+          key:
+            const: population
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  'Merge All Tables Info ':
+    actors:
+      MapMerge:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Lookup  /result
+              pos: 0
+            - path: MapBuild  /map
+              pos: 1
+            - path: MapBuild/map
+              pos: 1
+        out:
+          map:
+            schema: '#ref'
+  Build Result:
+    last: 1
+    actors:
+      'StringBuild ':
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: MapMerge/map
+              pos: 0
+            mandatory: false
+  Tables Info Output:
+    transactional: false
+    actors:
+      'StringFormat ':
+        parent: StringFormat
+        in:
+          format:
+            const: '[${TABLES_INFO}]'
+          TABLES_INFO:
+            link: StringBuild /string
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: table_id
+schemas:
+  ls TDM_LIBRARY tables.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+  Lookup  .in.lookupData:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+  Lookup  .out.result:
+    type: object
+    properties:
+      table_name:
+        type: string
+      column_name:
+        type: string
+      active:
+        type: boolean
+  List populations.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+  JavaScript  .in.population:
+    type: object
+    properties:
+      name:
+        type: string
+      size:
+        type: integer
+      createTime:
+        type: integer
+      lastModifiedTime:
+        type: integer
+      lastAccessTime:
+        type: integer
+      directory:
+        type: boolean
+  MapBuild  .out.map:
+    type: object
+    properties:
+      population:
+        type: array
+        items:
+          type: string
+  MapBuild.out.map:
+    type: object
+    properties:
+      population:
+        type: array
+        items:
+          type: string
+  MapMerge.out.map:
+    type: object
+    properties:
+      table_name:
+        type: string
+      column_name:
+        type: string
+      active:
+        type: boolean
+      population:
+        type: array
+        items:
+          type: string

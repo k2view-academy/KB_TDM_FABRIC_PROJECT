@@ -1,0 +1,89 @@
+tags: TDM
+stages:
+  Get Variables:
+    actors:
+      Get Variable TDM_DELETE_BEFORE_LOAD:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM.TDM_DELETE_BEFORE_LOAD
+            default: false
+  Check DeleteBeforeLoad:
+    dependsOn: Get Variables
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Variable TDM_DELETE_BEFORE_LOAD/result
+            schema: string
+          b:
+            const: 'false'
+            schema: string
+      Const1:
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: deleteOnlyInd
+            schema: boolean
+    split: '--------------------'
+  DeleteBeforeLoad is true:
+    else: true
+    transactional: false
+    dependsOn: Get Variables
+    actors:
+      Get Variable TDM_INSERT_TO_TARGET:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM.TDM_INSERT_TO_TARGET
+            default: false
+  Do Nothing:
+    transactional: false
+    dependsOn: Check DeleteBeforeLoad
+    split: '--------------------'
+  Check InsertToTarget:
+    transactional: false
+    dependsOn: DeleteBeforeLoad is true
+    actors:
+      Equals3:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Variable TDM_INSERT_TO_TARGET/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Const2:
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: deleteOnlyInd
+            schema: boolean
+    split: '--------------------'
+  It Is A DeleteOnly Task:
+    else: true
+    transactional: false
+    dependsOn: DeleteBeforeLoad is true
+    actors:
+      Const3:
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: deleteOnlyInd
+            schema: boolean

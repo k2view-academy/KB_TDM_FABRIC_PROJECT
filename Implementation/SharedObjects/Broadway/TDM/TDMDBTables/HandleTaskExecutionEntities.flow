@@ -1,0 +1,194 @@
+tags: TDM
+stages:
+  child Indicator:
+    actors:
+      Get Child Indicator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: CHILD_LU_IND
+            default: false
+      Get IID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IID
+            default: false
+      Get Target Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      Get Target Environment Id:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENVIRONMENT_ID
+            default: false
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+  Child LU:
+    dependsOn: child Indicator
+    actors:
+      Child LU?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Child Indicator/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Update Task Execution Entities:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTaskExecutionEntitiesNotRoot
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Root LU:
+    else: true
+    dependsOn: child Indicator
+    actors:
+      Populate Task Execution Entities For Root:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForRoot
+          targetEnvId:
+            link: Get Target Environment Id/result
+            schema: string
+            mandatory: false
+          sourceEnv:
+            link: Get Source Environment/result
+            schema: string
+            mandatory: false
+  Do Nothing:
+    dependsOn: Child LU
+    split: '--------------------'
+  Root Data:
+    dependsOn: Root LU
+    actors:
+      Root IID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get IID/result
+            schema: string
+        out:
+          value:
+            schema: string
+      Root Target Entity ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Target Entity ID/result
+            schema: string
+        out:
+          value:
+            schema: string
+      Root LU Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: luName
+            schema: string
+        out:
+          value:
+            schema: string
+  Create Children Entities:
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: handleChildren
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Populate Task Execution Entities For Children:
+        parent: InnerFlow
+        height: 407
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForChildren
+          rootEntityId:
+            link:
+            - path: Update Task Execution Entities/result/root_entity_id
+              iterate: First
+            - Root IID/value
+            schema: string
+            mandatory: false
+          parentLuName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          parentEntityId:
+            link: Get IID/result
+            schema: string
+            mandatory: false
+          parentTargetEntityId:
+            link: Get Target Entity ID/result
+            schema: string
+            mandatory: false
+          rootTargetEntityId:
+            link:
+            - path: Update Task Execution Entities/result/root_target_entity_id
+              iterate: First
+            - Root Target Entity ID/value
+            schema: string
+            mandatory: false
+          rootLuName:
+            link:
+            - path: Update Task Execution Entities/result/root_lu_name
+              iterate: First
+            - Root LU Name/value
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          sourceEnv:
+            link: Get Source Environment/result
+            schema: string
+            mandatory: false
+          targetEnvId:
+            link: Get Target Environment Id/result
+            schema: string
+            mandatory: false
+schemas:
+  Update Task Execution Entities.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        root_lu_name:
+          type: string
+        root_entity_id:
+          type: string
+        root_target_entity_id:
+          type: string

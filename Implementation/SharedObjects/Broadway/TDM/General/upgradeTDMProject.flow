@@ -1,0 +1,1347 @@
+tags: TDM
+stages:
+  'START: Backup Project':
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+      Get Current time:
+        parent: Now
+  Stage 12:
+    actors:
+      PROJECT_FOLDER_NAME:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_FOLDER_NAME
+        out:
+          value:
+            schema: string
+      Format date and time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyyMMdd_HH'h'mm
+          date:
+            link: Get Current time/date
+      Backup Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}\..
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+  Stage 14:
+    actors:
+      Compress Param:
+        parent: Const
+        in:
+          value:
+            const: -cvzf
+            schema: string
+        out:
+          value:
+            schema: string
+      Bkp folder and file name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${bkp_path}\${proj_name}_bkp_${date}.tar.gz
+          bkp_path:
+            link: Backup Folder/string
+            schema: string
+            mandatory: false
+          proj_name:
+            link: PROJECT_FOLDER_NAME/value
+            schema: string
+            mandatory: false
+          date:
+            link: Format date and time/string
+            schema: string
+            mandatory: false
+      -C Param:
+        parent: Const
+        in:
+          value:
+            const: -C
+            schema: string
+        out:
+          value:
+            schema: string
+      Implementation Folder1:
+        parent: Const
+        in:
+          value:
+            const: Implementation
+            schema: string
+        out:
+          value:
+            schema: string
+  Stage 8:
+    actors:
+      Prepare bkp command:
+        parent: ArrayBuilder
+        height: 239
+        in:
+          input:
+            link:
+            - path: Compress Param/value
+              pos: 0
+            - path: Bkp folder and file name/string
+              pos: 1
+            - path: -C Param/value
+              pos: 2
+            - path: PROJECT_DIR/value
+              pos: 3
+            - path: Implementation Folder1/value
+              pos: 4
+        out:
+          array:
+            schema: '#ref'
+  Stage 16:
+    actors:
+      Execute BKP command:
+        parent: Exec
+        in:
+          command:
+            const: tar
+          params:
+            const: null
+            link: Prepare bkp command/array
+      Output bkp location:
+        parent: StringFormat
+        in:
+          format:
+            const: BACKUP SAVED ON ${bkp_file_name}
+          bkp_file_name:
+            link: Bkp folder and file name/string
+            schema: string
+            mandatory: false
+        out:
+          string:
+            external: Pre-Process
+  'DONE: Backup Project':
+    actors:
+      Done Phase 1:
+        parent: Const
+        in:
+          value:
+            const: DONE BACKUP
+            schema: string
+        out:
+          value:
+            external: Phase1
+            schema: string
+  'START: Delete files':
+    actors:
+      Delete file ignore list:
+        parent: ConstTable
+        in:
+          table:
+            const:
+            - filename: TaskExecutionUtils
+              type: SharedJava
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TaskValidationsUtils
+              type: SharedJava
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM
+              type: SharedJava
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDMRef
+              type: SharedJava
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TdmSharedUtils
+              type: SharedJava
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TemplateUtils
+              type: SharedJava
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: StatsLoader.java
+              type: SharedJava
+              active: true
+              is_file: true
+              excluded_files: ''
+              included_files: ''
+            - filename: TDMPopulationArgs.java
+              type: SharedJava
+              active: true
+              is_file: true
+              excluded_files: ''
+              included_files: ''
+            - filename: TDMSourceDbQuery.java
+              type: SharedJava
+              active: true
+              is_file: true
+              excluded_files: ''
+              included_files: ''
+            - filename: custom_TDM_Tasks
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_BusinessEntities
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_DataCenters
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_Environments
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_Permissions
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_Products
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_ReserveEntities
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_Tasks
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_utils
+              type: Webservices
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\TDMTemplates
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: '"TDMSeqList.actor","TDMSeqSrc2TrgMapping.actor","TDMFilterOutTargetTables.actor","TDMTargetTablesNames.actor"'
+              included_files: '"*.flow","*.actor"'
+            - filename: TDM\CustomLogic
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: '"CustomLogicFlows.actor"'
+              included_files: '"*.flow","*.actor"'
+            - filename: TDM\General
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\GenerateData
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\Init
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\Mtables
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\Reserve
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\TDMDBTables
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\TDMLUInit
+              type: Shared_Broadway
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM\TDMOrchestrator.flow
+              type: Shared_Broadway
+              active: true
+              is_file: true
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM
+              type: LogicalUnit
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            - filename: TDM_LIBRARY
+              type: LogicalUnit
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
+            schema: '#ref'
+        out:
+          table:
+            schema: '#ref'
+  Stage 44:
+    actors:
+      Filetype Location Lookup:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - type
+          lookupData:
+            const:
+            - type: SharedJava
+              path: \Implementation\SharedObjects\Java\src\com\k2view\cdbms\usercode\common
+            - type: Shared_Broadway
+              path: \Implementation\SharedObjects\Broadway
+            - type: Webservices
+              path: \Implementation\LogicalUnits\k2_ws\Java\src\com\k2view\cdbms\usercode\lu\k2_ws
+            - type: LogicalUnit
+              path: \Implementation\LogicalUnits
+            schema: '#ref'
+          type:
+            link:
+              path: Delete file ignore list/table/type
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Create Include List if supplied:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var included = \"\";\r\nif(included_files != \"\") {\r\n\
+                \    included = \" -Include \" + included_files;\r\n}\r\nincluded"
+              script: |-
+                var included = "";
+
+                if (included_files != "") {
+                  included = " -Include " + included_files;
+                }
+
+                included;
+          included_files:
+            link: Delete file ignore list/table/included_files
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Create Exclude List if supplied:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var execluded = \"\";\r\nif(execluded_files != \"\") {\r\n\
+                \    execluded = \" -Exclude \" + execluded_files;\r\n}\r\nexecluded"
+              script: |-
+                var execluded = "";
+
+                if (execluded_files != "") {
+                  execluded = " -Exclude " + execluded_files;
+                }
+
+                execluded;
+          execluded_files:
+            link: Delete file ignore list/table/excluded_files
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 45:
+    actors:
+      Prepare delete command:
+        parent: StringFormat
+        in:
+          format:
+            const: Remove-Item -Path '${projdir}${path}\${file}' ${include} ${exclude}
+              -Recurse
+          projdir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          path:
+            link:
+              path: Filetype Location Lookup/result/path
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          file:
+            link:
+              path: Delete file ignore list/table/filename
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          include:
+            link: Create Include List if supplied/result
+            schema: string
+            mandatory: false
+          exclude:
+            link: Create Exclude List if supplied/result
+            schema: string
+            mandatory: false
+  Stage 46:
+    last: 1
+    actors:
+      Delete files:
+        parent: Exec
+        in:
+          command:
+            const: powershell
+          params:
+            const: null
+          in:
+            link: Prepare delete command/string
+  Stage 47:
+    last: 1
+  'END: Delete Files':
+    actors:
+      Done Phase 2:
+        parent: Const
+        in:
+          value:
+            const: DONE DELETE OLD OBJECTS
+            schema: string
+        out:
+          value:
+            external: Phase2
+            schema: string
+  'START: Extract Library':
+    actors:
+      Extract Ignore List:
+        parent: ConstTable
+        in:
+          table:
+            const:
+            - file: CustomLogicFlows.actor
+              active: true
+            - file: TDMSeqList.actor
+              active: true
+            - file: TDMSeqSrc2TrgMapping.actor
+              active: true
+            - file: TDMFilterOutTargetTables.actor
+              active: true
+            - file: TDMTargetTablesNames.actor
+              active: true
+            - file: FABRIC_TDM_LIBRARY.k2proj
+              active: true
+            - file: ItemsProperties.k2projItems.xml
+              active: true
+            - file: POSTGRESQL_ADMIN.k2dbConn.xml
+              active: true
+            - file: TDM.k2dbConn.xml
+              active: true
+            - file: DB_CASSANDRA.k2dbConn.xml
+              active: true
+            - file: CASSANDRA_LD.k2interface.xml
+              active: true
+            - file: FabricRedis.k2interface.xml
+              active: true
+            - file: SharedGlobals.java
+              active: true
+            - file: common/SharedLogic.java
+              active: true
+            - file: Environments.k2fabEnv.xml
+              active: true
+            - file: ChildLink.csv
+              active: true
+            - file: LuParams.csv
+              active: true
+            - file: MigrateList.csv
+              active: true
+            - file: MigrateListQueryFormats.csv
+              active: true
+            - file: PostProcessList.csv
+              active: true
+            - file: RefList.csv
+              active: true
+            schema: '#ref'
+        out:
+          table:
+            schema: '#ref'
+  Prepare Ignore List:
+    last: 1
+    actors:
+      Check ignore active:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link:
+              path: Extract Ignore List/table/active
+              iterate: Iterate
+      Build Ignore Array:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Extract Ignore List/table/file
+              iterate: Iterate
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Stage 53:
+    actors:
+      Get K2Exprot filename:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: library_file_name
+            schema: string
+        out:
+          value:
+            schema: string
+      Temp Folder:
+        parent: Const
+        in:
+          value:
+            const: null
+            schema: string
+        out:
+          value:
+            schema: string
+      K2export location:
+        parent: StringFormat
+        in:
+          format:
+            const: file://${library_file_location}
+          library_file_location:
+            external: library_file_location
+            schema: string
+            mandatory: false
+  Stage 7:
+    actors:
+      K2Export File!!!:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: K2export location/string
+          path:
+            link: Get K2Exprot filename/value
+      PROJ_DIR Interface:
+        parent: StringFormat
+        in:
+          format:
+            const: file://${proj_dir}
+          proj_dir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+  Stage 19:
+    actors:
+      Extract TDM Library:
+        parent: Unzip
+        in:
+          stream:
+            link: K2Export File!!!/stream
+  Stage 4:
+    actors:
+      Check Not Null:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Extract TDM Library/files/path
+              iterate: Iterate
+      Split and build folder list:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var pathArr = path.split(\"/\");\r\nvar outArr = [];\r\n\r\
+                \nfor(var i=0; i<pathArr.length; i++) {\r\n    if(i==0) {\r\n    \
+                \    outArr.push(pathArr[i]);\r\n    } else {\r\n        outArr.push(\
+                \ (outArr[i-1] + \"/\" + pathArr[i]) );\r\n    }\r\n}\r\n\r\noutArr;"
+              script: |-
+                var pathArr = path.split("/");
+                var outArr = [];
+
+                for (var i = 0; i < pathArr.length; i++) {
+                  if (i == 0) {
+                    outArr.push(pathArr[i]);
+                  } else {
+                    outArr.push(outArr[i - 1] + "/" + pathArr[i]);
+                  }
+                }
+
+                outArr;
+          path:
+            link:
+              path: Extract TDM Library/files/path
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Stage 11:
+    actors:
+      Create folder if not exists:
+        parent: md
+        in:
+          interface:
+            const: null
+            link: PROJ_DIR Interface/string
+          path:
+            link:
+              path: Split and build folder list/result
+              iterate: Iterate
+  Stage 13:
+    last: 1
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: 1
+            schema: integer
+          a:
+            link: Create folder if not exists/affected
+  Stage 3:
+    actors:
+      File Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Extract TDM Library/files/name
+              iterate: Iterate
+        out:
+          value:
+            schema: string
+  Stage 15:
+    actors:
+      Check if not in ignore:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const:
+              userCode: "if(ignoreList.indexOf(fileName)>-1) {\r\n    false;\r\n}\
+                \ else {\r\n    true;\r\n}"
+              script: |-
+                if (ignoreList.indexOf(fileName) > -1) {
+                  false;
+                } else {
+                  true;
+                }
+          fileName:
+            link: File Name/value
+            schema: string
+            mandatory: false
+          ignoreList:
+            link: Build Ignore Array/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Stage 18:
+    actors:
+      Build path and filename:
+        parent: Concat
+        in:
+          delimiter:
+            const: /
+          elements:
+            link:
+            - path: Temp Folder/value
+              pos: 0
+            - path: Extract TDM Library/files/path
+              iterate: Iterate
+              pos: 1
+            - path: File Name/value
+              pos: 2
+  Stage 5:
+    last: 1
+    actors:
+      Save file from Library:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: PROJ_DIR Interface/string
+          stream:
+            link:
+              path: Extract TDM Library/files/stream
+              iterate: Iterate
+          path:
+            link: Build path and filename/string
+  'DONE: Extract Library':
+    actors:
+      Done Phase 3:
+        parent: Const
+        in:
+          value:
+            const: DONE EXTRACT K2EXPORT
+            schema: string
+        out:
+          value:
+            external: Phase3
+            schema: string
+  'START: Update Globals':
+    actors:
+      SharedGlobals Path:
+        parent: Const
+        in:
+          value:
+            const: SharedObjects/Java/src/com/k2view/cdbms/usercode/common
+            schema: string
+        out:
+          value:
+            schema: string
+  Stage 2:
+    actors:
+      Implementation Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: file://${ProjDir}/Implementation/${globalsPath}
+          ProjDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          globalsPath:
+            link: SharedGlobals Path/value
+            schema: string
+            mandatory: false
+  Stage 17:
+    actors:
+      Read Globals File:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: Implementation Folder/string
+          path:
+            const: SharedGlobals.java
+  Stage 21:
+    actors:
+      Convert to String:
+        parent: ToString
+        in:
+          value:
+            link: Read Globals File/stream
+      New Globals List:
+        parent: ConstTable
+        in:
+          table:
+            const:
+            - global_name: TDM_DELETE_TABLES_PREFIX
+              description: TDM added an automatic generation of the target LU table
+                to support the deletion of an entity by a TDM task. This Global defines
+                the prefix for the generated target LU tables.
+              value: _TAR
+              final: true
+            - global_name: TDM_BATCH_LIMIT
+              description: Limit the number of entities to be populated into the TDM
+                execution tables for a task execution. By default, the number of entities
+                for a task execution is unlimited (-1)
+              value: '-1'
+              final: true
+            - global_name: TDM_SEQ_REPORT
+              description: When set to true (the default value), the task execution
+                populates the TDM_SEQ_MAPPING ta ble and generates the Replace Sequence
+                Summary Report tab in the task execution report. This Global can be
+                set to false to avoid the population of TDM_SEQ_MAPPING and the generation
+                of the Replace Sequence Summary Report for a better performance.
+              value: 'true'
+              final: true
+            - global_name: TDM_POPULATE_JMX_STATS
+              description: Set this Global to true to enable the execution of populationJMX
+                populatio n flow on TASK_EXECUTION TDM LU table.
+              value: 'false'
+              final: true
+            - global_name: SEQ_CACHE_INTERFACE
+              description: Starting from Fabric V7.2, SQLite and PostgreSQL are also
+                supported as Fabric operational DBs in addition to Cassandra. If you
+                use the TDM PG DB as the operational (system) DB, update this Global
+                accordingly and set it to TDM.
+              value: DB_CASSANDRA
+              final: true
+            - global_name: TDM_PARAMETERS_SEPARATOR
+              description: The separator to be used for parsing the values of Parameters
+              value: <#>
+              final: true
+            schema: '#ref'
+        out:
+          table:
+            schema: '#ref'
+  Stage 22:
+    actors:
+      Prepare new Globals file:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var foundEOF = false;\r\nvar inc = 0;\r\nvar streamLen =\
+                \ stream.length;\r\nvar ident = '\t';\r\n\r\nwhile(!foundEOF) {\r\n\
+                \    if( stream.substring( streamLen-inc, streamLen-(inc+1) ) ==\"\
+                }\") {\r\n        foundEOF = true;\r\n    }\r\n    inc++;\r\n\r\n\
+                \    if(inc==1000) { break; }\r\n}\r\n\r\nvar newFileContent = stream.substring(0,\
+                \ stream.length-inc);\r\n\r\nfor(var i=0; i<newGlobals.length; i++)\
+                \ {\r\n\r\n    if(newFileContent.indexOf(newGlobals[i].global_name)==-1)\
+                \ {\r\n        newFileContent += ident+\"@desc(\\\"\"+newGlobals[i].description+\"\
+                \\\")\"+\"\\r\\n\";\r\n        newFileContent += ident+\"@category(\\\
+                \"TDM\\\")\"+\"\\r\\n\";\r\n        if (newGlobals[i].final == true)\
+                \ {\r\n            newFileContent += ident+\"public static final String\
+                \ \"+newGlobals[i].global_name+\" = \\\"\"+newGlobals[i].value+\"\\\
+                \";\\r\\n\";\r\n        } else {\r\n            newFileContent +=\
+                \ ident+\"public static String \"+newGlobals[i].global_name+\" = \\\
+                \"\"+newGlobals[i].value+\"\\\";\\r\\n\";\r\n        }\r\n    }\r\n\
+                }\r\n\r\nnewFileContent += \"\\r\\n\\r\\n\\r\\n}\\r\\n\";\r\n\r\n\
+                newFileContent;"
+              script: "var foundEOF = false;\nvar inc = 0;\nvar streamLen = stream.length;\n\
+                var ident = '\t';\n\nwhile (!foundEOF) {\n  if (stream.substring(streamLen\
+                \ - inc, streamLen - (inc + 1)) == \"}\") {\n    foundEOF = true;\n\
+                \  }\n\n  inc++;\n\n  if (inc == 1000) {\n    break;\n  }\n}\n\nvar\
+                \ newFileContent = stream.substring(0, stream.length - inc);\n\nfor\
+                \ (var i = 0; i < newGlobals.length; i++) {\n  if (newFileContent.indexOf(newGlobals[i].global_name)\
+                \ == -1) {\n    newFileContent += ident + \"@desc(\\\"\" + newGlobals[i].description\
+                \ + \"\\\")\" + \"\\r\\n\";\n    newFileContent += ident + \"@category(\\\
+                \"TDM\\\")\" + \"\\r\\n\";\n\n    if (newGlobals[i].final == true)\
+                \ {\n      newFileContent += ident + \"public static final String\
+                \ \" + newGlobals[i].global_name + \" = \\\"\" + newGlobals[i].value\
+                \ + \"\\\";\\r\\n\";\n    } else {\n      newFileContent += ident\
+                \ + \"public static String \" + newGlobals[i].global_name + \" = \\\
+                \"\" + newGlobals[i].value + \"\\\";\\r\\n\";\n    }\n  }\n}\n\nnewFileContent\
+                \ += \"\\r\\n\\r\\n\\r\\n}\\r\\n\";\nnewFileContent;"
+          stream:
+            link: Convert to String/string
+            schema: string
+            mandatory: false
+          newGlobals:
+            link: New Globals List/table
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 23:
+    actors:
+      Save new globals file:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: Implementation Folder/string
+          path:
+            const: SharedGlobals.java
+          stream:
+            link: Prepare new Globals file/result
+  'DONE: Update Globals':
+    actors:
+      Done Phase 4:
+        parent: Const
+        in:
+          value:
+            const: DONE COPYING NEW GLOBALS
+            schema: string
+        out:
+          value:
+            external: Phase4
+            schema: string
+  'START: Override Implementation':
+    dependsOn: 'DONE: Update Globals'
+    actors:
+      Check override Implementation:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            const: true
+            external: override_user_implementation
+            schema: boolean
+            default: true
+          b:
+            const: true
+            schema: boolean
+      IgnoreLUs:
+        parent: ConstTable
+        in:
+          table:
+            const:
+            - luname: k2_ref
+              active: true
+            - luname: k2_ws
+              active: true
+            - luname: TDM
+              active: true
+            - luname: TDM_LIBRARY
+              active: true
+            - luname: TDM_Reference
+              active: true
+            schema: '#ref'
+        out:
+          table:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 34:
+    else: true
+    transactional: false
+    dependsOn: 'DONE: Update Globals'
+  Stage 25:
+    last: 1
+    dependsOn: 'START: Override Implementation'
+    actors:
+      Check Active:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link:
+              path: IgnoreLUs/table/active
+              iterate: Iterate
+      Build LU array list:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: IgnoreLUs/table/luname
+              iterate: Iterate
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 35:
+    last: 1
+    transactional: false
+    dependsOn: Stage 34
+  Stage 26:
+    dependsOn: Stage 25
+    actors:
+      PROJECT_DIR1:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Stage 36:
+    transactional: false
+    dependsOn: Stage 35
+  Stage 27:
+    dependsOn: Stage 26
+    actors:
+      Build LU location folder:
+        parent: StringFormat
+        in:
+          format:
+            const: file://${ProjDir}/Implementation/LogicalUnits/
+          ProjDir:
+            link: PROJECT_DIR1/value
+            schema: string
+            mandatory: false
+      TDM_LIBRARY Tables:
+        parent: StringFormat
+        in:
+          format:
+            const: file://${ProjDir}/Implementation/LogicalUnits/TDM_LIBRARY/Tables/
+          ProjDir:
+            link: PROJECT_DIR1/value
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 37:
+    transactional: false
+    dependsOn: Stage 36
+  Stage 28:
+    dependsOn: Stage 27
+    actors:
+      List LU Folders:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: Build LU location folder/string
+          path:
+            const: .
+          directories:
+            const: true
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 38:
+    transactional: false
+    dependsOn: Stage 37
+  Stage 29:
+    dependsOn: Stage 28
+    actors:
+      Check ignore LU list:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const:
+              userCode: "if(ignoreList.indexOf(fileName)>-1) {\r\n    false;\r\n}\
+                \ else {\r\n    true;\r\n}"
+              script: |-
+                if (ignoreList.indexOf(fileName) > -1) {
+                  false;
+                } else {
+                  true;
+                }
+          fileName:
+            link:
+              path: List LU Folders/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ignoreList:
+            link: Build LU array list/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      List Library Folder files:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: TDM_LIBRARY Tables/string
+          path:
+            const: .
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 39:
+    transactional: false
+    dependsOn: Stage 38
+  Stage 30:
+    dependsOn: Stage 29
+    actors:
+      FROM:
+        parent: StringFormat
+        in:
+          format:
+            const: TDM_LIBRARY/Tables/${filename}
+          filename:
+            link:
+              path: List Library Folder files/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+      TO:
+        parent: StringFormat
+        in:
+          format:
+            const: ${luname}/Tables/${filename}
+          luname:
+            link:
+              path: List LU Folders/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          filename:
+            link:
+              path: List Library Folder files/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 40:
+    transactional: false
+    dependsOn: Stage 39
+  Stage 31:
+    last: 1
+    dependsOn: Stage 30
+    actors:
+      Copy from TDM_LIBRARY to LU:
+        parent: cp
+        in:
+          interface:
+            const: null
+            link: Build LU location folder/string
+          from:
+            link: FROM/string
+          to:
+            link: TO/string
+    split: '--------------------'
+  Stage 41:
+    last: 1
+    transactional: false
+    dependsOn: Stage 40
+  Stage 32:
+    last: 1
+    dependsOn: Stage 31
+    split: '--------------------'
+  Stage 42:
+    last: 1
+    transactional: false
+    dependsOn: Stage 41
+  'DONE: Override Implementation':
+    actors:
+      Done Phase 5:
+        parent: Const
+        in:
+          value:
+            const: DONE UPDATING USER IMPLEMENTATION
+            schema: string
+        out:
+          value:
+            external: Phase5
+            schema: string
+  COMPLETE UPGRADE:
+    actors:
+      Process Complete:
+        parent: Const
+        in:
+          value:
+            const: UPGRADE PROCESS COMPLETED
+            schema: string
+        out:
+          value:
+            external: Process
+            schema: string
+schemas:
+  Prepare bkp command.out.array:
+    type: array
+    items:
+      type: string
+  Delete file ignore list.in.table:
+    type: array
+    items:
+      type: object
+      properties:
+        filename:
+          type: string
+        type:
+          type: string
+        active:
+          type: boolean
+        is_file:
+          type: boolean
+        excluded_files:
+          type: string
+        included_files:
+          type: string
+  Delete file ignore list.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        filename:
+          type: string
+        type:
+          type: string
+        active:
+          type: boolean
+        is_file:
+          type: boolean
+        excluded_files:
+          type: string
+        included_files:
+          type: string
+  Filetype Location Lookup.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties:
+        type:
+          type: string
+        path:
+          type: string
+  Filetype Location Lookup.out.result:
+    type: object
+    properties:
+      type:
+        type: string
+      path:
+        type: string
+  Extract Ignore List.in.table:
+    type: array
+    items:
+      type: object
+      properties:
+        file:
+          type: string
+        active:
+          type: boolean
+  Extract Ignore List.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        file:
+          type: string
+        active:
+          type: boolean
+  Build Ignore Array.out.array:
+    type: array
+    items:
+      type: string
+  Split and build folder list.out.result:
+    type: array
+    items:
+      type: string
+  Check if not in ignore.in.ignoreList:
+    type: array
+    items:
+      type: string
+  New Globals List.in.table:
+    type: array
+    items:
+      type: object
+      properties:
+        global_name:
+          type: string
+        description:
+          type: string
+        value:
+          type: string
+        final:
+          type: boolean
+  New Globals List.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        global_name:
+          type: string
+        description:
+          type: string
+        value:
+          type: string
+  Prepare new Globals file.in.newGlobals:
+    type: array
+    items:
+      type: object
+      properties:
+        global_name:
+          type: string
+        description:
+          type: string
+        value:
+          type: string
+  IgnoreLUs.in.table:
+    type: array
+    items:
+      type: object
+      properties:
+        luname:
+          type: string
+        active:
+          type: boolean
+  IgnoreLUs.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        luname:
+          type: string
+        active:
+          type: boolean
+  Build LU array list.out.array:
+    type: array
+    items:
+      type: string
+  List LU Folders.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+  Check ignore LU list.in.ignoreList:
+    type: array
+    items:
+      type: string
+  List Library Folder files.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

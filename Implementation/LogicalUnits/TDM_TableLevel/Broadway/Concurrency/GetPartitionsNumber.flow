@@ -1,0 +1,289 @@
+tags: Concurrency
+stages:
+  Get Data From Cache:
+    actors:
+      Get Partition Number Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: Definitions
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: partition_count_source
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Partition Records Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: Definitions
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: partition_records_flow
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  Get Flow Name:
+    actors:
+      Flow Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Partition Number Flow/result
+        out:
+          value:
+            schema: string
+  If Number:
+    dependsOn: Get Flow Name
+    actors:
+      JavaScript:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var isNum=false;
+              if(!isNaN(input) || typeof input === "number"){
+                  isNum = true;
+              }
+              isNum;
+          input:
+            link: Flow Name/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+    split: '--------------------'
+  Call Flow:
+    else: true
+    dependsOn: Get Flow Name
+    actors:
+      fnGetCachedTableInfoBySection:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: PartitionFlowInputs
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            link: Get Partition Records Flow/result
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+  'Get Number  ':
+    dependsOn: If Number
+    actors:
+      Number:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Flow Name/value
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Get Inputs:
+    dependsOn: Call Flow
+    actors:
+      Inputs:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: fnGetCachedTableInfoBySection/result
+  Do Nothing:
+    dependsOn: 'Get Number  '
+    actors:
+      No Number:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: Number/value
+      '1':
+        parent: Const
+        in:
+          value:
+            const: 1
+            schema: integer
+        out:
+          value:
+            external: value
+            schema: integer
+    split: '--------------------'
+  Return Number:
+    else: true
+    dependsOn: 'Get Number  '
+    actors:
+      'Number  ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Number/value
+        out:
+          value:
+            external: value
+            schema: string
+    split: '--------------------'
+  Call Inner Flow With Inputs:
+    dependsOn: Get Inputs
+    actors:
+      Error Handler - Call Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+      InnerFlow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: Flow Name/value
+          flowInputs:
+            link: Inputs/value
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+        out:
+          value:
+            external: value
+            schema: integer
+  Stage 1: {
+    }
+  Stage 2: {
+    }
+  Stage 3: {
+    }
+  Stage 4: {
+    }
+schemas:
+  fnGetCachedTableInfoBySection.out.result:
+    type: object
+    properties:
+      message:
+        type: string

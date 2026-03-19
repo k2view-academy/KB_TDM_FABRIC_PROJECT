@@ -1,0 +1,80 @@
+tags: TDM
+stages:
+  Get Field Values:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Get Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      Get TDM Eid:
+        parent: buildTDMEid
+        in:
+          SOURCE_IID:
+            external: SOURCE_IID
+            remark: The Source Identifier
+  Stage 2:
+    actors:
+      Set Name of Entity List Table:
+        parent: StringFormat
+        in:
+          format:
+            const: entity_list_${TASK_EXECUTION_ID}
+          TASK_EXECUTION_ID:
+            link: Get Task Execution ID/result
+            schema: string
+            mandatory: false
+  Load Data to Table:
+    actors:
+      Insert Data to Entity List Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: null
+            link: Set Name of Entity List Table/string
+          fields:
+            const:
+            - lu_name
+            - source_env_name
+            - task_execution_id
+            - source_iid
+            - tdm_eid
+          dialect:
+            const: postgres
+          lu_name:
+            external: LU_NAME
+            schema: string
+          source_env_name:
+            link: Get Source Environment/result
+            schema: string
+          task_execution_id:
+            link: Get Task Execution ID/result
+            schema: string
+          source_iid:
+            external: SOURCE_IID
+            schema: string
+          tdm_eid:
+            link: Get TDM Eid/TDM_EID
+            schema: string
+  Stage 1: {
+    }

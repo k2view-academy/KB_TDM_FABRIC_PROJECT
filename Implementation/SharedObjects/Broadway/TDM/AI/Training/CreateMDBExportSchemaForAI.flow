@@ -1,0 +1,200 @@
+tags: TDM
+stages:
+  'Get Inputs ':
+    actors:
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      trainingExcludedTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingExcludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      Getk2SystemSchemaName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+      trainingIncludedTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingIncludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      Lowercase luName:
+        parent: Lowercase
+        in:
+          string:
+            external: luName
+  Get Data:
+    actors:
+      'ErrorHandler  ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      'Count Running AI Jobs ':
+        parent: DbFetchField
+        in:
+          interface:
+            const: null
+            link: AI_DB_ENTITIES/result
+          sql:
+            const: select count(id) from ${@k2system}.task_executions where status
+              = 'STARTED' OR status = 'IN_PROCESS' OR status = 'NEW'
+          k2system:
+            link: Getk2SystemSchemaName/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      DbFetchField:
+        parent: DbFetchField
+        in:
+          interface:
+            const: AI_DB
+          sql:
+            const: |-
+              SELECT schema_name
+              FROM information_schema.schemata
+              WHERE schema_name = '${@schemaName}'
+          schemaName:
+            link: Lowercase luName/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Schema Exists:
+    dependsOn: Get Data
+    actors:
+      'EqualsIgnoreCase ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            link: Lowercase luName/string
+          a:
+            link: DbFetchField/result
+    split: '--------------------'
+  Doesn't Exists Then Create:
+    else: true
+    dependsOn: Get Data
+    actors:
+      MDBExportSchemaAI1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: MDBExportSchemaAI
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+  Check for running jobs:
+    actors:
+      Ongoing Jobs:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Count Running AI Jobs /result
+        out:
+          value:
+            schema: integer
+  Schema Changed Check Running Jobs:
+    dependsOn: Check for running jobs
+    actors:
+      Zero:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link: Ongoing Jobs/value
+      TDM_TASK_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_ID
+            default: false
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    dependsOn: Check for running jobs
+  Check Globals To Update Schema:
+    dependsOn: Schema Changed Check Running Jobs
+    actors:
+      CheckGlobalToUpdateMDBExport1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckGlobalToUpdateMDBExport
+          taskID:
+            link: TDM_TASK_ID/result
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          value:
+            schema: any
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: Do Nothing
+  Update MDB Schema:
+    dependsOn: Check Globals To Update Schema
+    actors:
+      'EqualsIgnoreCase  ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: CheckGlobalToUpdateMDBExport1/value
+      MDBExportSchemaAI11:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: MDBExportSchemaAI
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'Do Nothing     ':
+    dependsOn: 'Do Nothing  '

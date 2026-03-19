@@ -1,0 +1,69 @@
+tags: TDM
+stages:
+  Entity Reserved by Other?:
+    actors:
+      Check If Reserved:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckIfReserved
+          value:
+            external: SOURCE_IID
+            schema: '#ref'
+            mandatory: false
+        out:
+          value:
+            schema: boolean
+  check if Reserved by other:
+    dependsOn: Entity Reserved by Other?
+    actors:
+      Already Reserved?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check If Reserved/value
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      Output Zero:
+        parent: Const
+        in:
+          value:
+            const: 0
+            schema: integer
+        out:
+          value:
+            external: recordLoaded
+            schema: integer
+    split: '--------------------'
+  Not Reserved:
+    else: true
+    transactional: false
+    dependsOn: Entity Reserved by Other?
+    actors:
+      insert To Lu External Entity List:
+        parent: insertToLuExternalEntityList
+        in:
+          SOURCE_IID:
+            const: null
+            external: SOURCE_IID
+            default: false
+          LU_NAME:
+            external: LU_NAME
+      Output 1:
+        parent: Const
+        in:
+          value:
+            const: 1
+            schema: integer
+        out:
+          value:
+            external: recordLoaded
+            schema: integer
+schemas:
+  Check If Reserved.in.value:
+    type: array
+    items:
+      type: blob

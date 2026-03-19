@@ -1,0 +1,223 @@
+tags: TDM
+stages:
+  Get Object Type:
+    actors:
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            external: SOURCE_TABLE
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: any
+  PWD:
+    actors:
+      Main Regular Table?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Get Template For Main table Population:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: main_table_population_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Templates Path:
+    actors:
+      ReadTemplate:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            link: Get Template For Main table Population/result
+  Template Content:
+    actors:
+      Const:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: ReadTemplate/stream
+        out:
+          value:
+            schema: '#ref'
+  Search For {{LU_NAME}}:
+    actors:
+      Replace:
+        parent: Replace
+        in:
+          search:
+            const: '{{__LU_NAME}}'
+          replace:
+            const: null
+            external: LU_NAME
+          string:
+            link: Const/value
+  Search For {{TABLE_NAME}}:
+    actors:
+      'Replace ':
+        parent: Replace
+        in:
+          search:
+            const: '{{TABLE_NAME}}'
+          replace:
+            const: null
+            external: TABLE_NAME
+          string:
+            link: Replace/string
+  Search For {{KEY}}:
+    actors:
+      'Replace  ':
+        parent: Replace
+        in:
+          search:
+            const: '{{KEY}}'
+          replace:
+            const: null
+            external: TABLE_KEY
+          string:
+            link: Replace /string
+  Search For {{SOURCE_INTERFACE}}:
+    actors:
+      'Replace       ':
+        parent: Replace
+        in:
+          search:
+            const: '{{SOURCE_INTERFACE}}'
+          replace:
+            const: null
+            external: SOURCE_INTERFACE
+          string:
+            link: Replace  /string
+  'Check for Schema ':
+    dependsOn: Search For {{SOURCE_INTERFACE}}
+    actors:
+      Schema is Not Null?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            external: SOURCE_SCHEMA
+      'Const  ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Replace       /string
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Schema is NULL:
+    else: true
+    dependsOn: Search For {{SOURCE_INTERFACE}}
+    actors:
+      'Replace         ':
+        parent: Replace
+        in:
+          search:
+            const: '{{SOURCE_SCHEMA}}.'
+          string:
+            link: Replace       /string
+  'Search For  {{SOURCE_SCHEMA}} ':
+    actors:
+      'Replace   ':
+        parent: Replace
+        in:
+          search:
+            const: '{{SOURCE_SCHEMA}}'
+          replace:
+            const: null
+            external: SOURCE_SCHEMA
+          string:
+            link:
+            - Const  /value
+            - Replace         /string
+  Search For {{{SOURCE_TABLE}}}:
+    actors:
+      'Replace               ':
+        parent: Replace
+        in:
+          search:
+            const: '{{{SOURCE_TABLE}}}'
+          replace:
+            const: null
+            external: SOURCE_TABLE
+          string:
+            link: Replace   /string
+      LU Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${LU_PATH}Tables/
+          LU_PATH:
+            external: LU_PATH
+            schema: string
+            mandatory: false
+  Get Population Flow Path:
+    actors:
+      StringFormat:
+        parent: StringFormat
+        in:
+          format:
+            const: ${TABLE_NAME}.population.flow
+          TABLE_NAME:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+  'Write Population ':
+    actors:
+      FileWrite:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: LU Folder/string
+          stream:
+            link: Replace               /string
+          path:
+            link: StringFormat/string
+schemas:
+  Const.out.value:
+    type: array
+    items:
+      type: blob

@@ -1,0 +1,750 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LU Folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${LU_PATH}Broadway/DeleteFlows"
+                                    },
+                                    {
+                                        "name": "LU_PATH",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TAR prefix",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "tar_"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ls1",
+                            "actorType": {
+                                "parentType": "ls",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "."
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "size": {
+                                                        "type": "integer"
+                                                    },
+                                                    "createTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastModifiedTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastAccessTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "directory": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Ignore DeleteAllTablesflow",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DeleteAllTables.flow"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "FileRead1",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Replace1",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": ".flow"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonParser1",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "levels": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "stages": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "dependsOnList": {
+                                                                            "type": "array",
+                                                                            "items": {}
+                                                                        },
+                                                                        "isLast": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "isTransactional": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "remark": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "actors": {
+                                                                            "type": "array",
+                                                                            "items": {}
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "connections": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "leftPort": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "actor": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "rightPort": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "actor": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "iterate": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Replace2",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "delete_"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonStringify1",
+                            "actorType": {
+                                "parentType": "JsonStringify",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Table Keys",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTableKeys"
+                                    },
+                                    {
+                                        "name": "LU_PATH",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TABLE_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "TABLE_KEYS",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JavaScript1",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var objTmp = JSON.parse(objStr);\r\nvar levels = [...objTmp.levels];\r\nvar connections = [...objTmp.connections];\r\nvar actorInputs = [];\r\nvar arrKeys = [];\r\nif (keys != null) {\r\n    arrKeys = keys.split(\",\");\r\n}\r\nvar objOut = {};\r\n\r\nvar tableNameSplit = tableName.split(\".\");\r\n\r\nfor(var i=0; i<levels.length; i++) {\r\n\r\n    var objStage = levels[i].stages;\r\n\r\n    // Find Source stage\r\n    for(var y=0; y<objStage.length; y++) {\r\n        if(objStage[y].name=='Get Fabric Table Data') {\r\n            for(var a=0; a<objStage[y].actors.length; a++) {\r\n                if(objStage[y].actors[a].actorType.parentType=='DbCommand') {\r\n                    actorInputs = [...objStage[y].actors[a].actorType.inputs];\r\n                    actorInputs.push({\"name\": \"sql\",\"const\": \"select * from \"+lu_name+\".\"+prefix+tableName});\r\n\r\n                    objStage[y].actors[a].actorType.inputs = actorInputs;\r\n                }\r\n            }\r\n        }\r\n\r\n        if(objStage[y].name=='Delete Data From Target') {\r\n            for(var a=0; a<objStage[y].actors.length; a++) {\r\n                if(objStage[y].actors[a].actorType.parentType=='DbDelete') {\r\n                    actorInputs = [...objStage[y].actors[a].actorType.inputs];\r\n\r\n                    for(var b=0; b<actorInputs.length; b++) {\r\n                        if(actorInputs[b].name=='keys') {\r\n                            actorInputs[b].const = arrKeys;\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\nobjOut = {levels,connections};\r\nobjOut;\r\n\r\n\r\n",
+                                            "script": "var objTmp = JSON.parse(objStr);\nvar levels = [].concat(objTmp.levels);\nvar connections = [].concat(objTmp.connections);\nvar actorInputs = [];\nvar arrKeys = [];\n\nif (keys != null) {\n  arrKeys = keys.split(\",\");\n}\n\nvar objOut = {};\nvar tableNameSplit = tableName.split(\".\");\n\nfor (var i = 0; i < levels.length; i++) {\n  var objStage = levels[i].stages; // Find Source stage\n\n  for (var y = 0; y < objStage.length; y++) {\n    if (objStage[y].name == 'Get Fabric Table Data') {\n      for (var a = 0; a < objStage[y].actors.length; a++) {\n        if (objStage[y].actors[a].actorType.parentType == 'DbCommand') {\n          actorInputs = [].concat(objStage[y].actors[a].actorType.inputs);\n          actorInputs.push({\n            \"name\": \"sql\",\n            \"const\": \"select * from \" + lu_name + \".\" + prefix + tableName\n          });\n          objStage[y].actors[a].actorType.inputs = actorInputs;\n        }\n      }\n    }\n\n    if (objStage[y].name == 'Delete Data From Target') {\n      for (var a = 0; a < objStage[y].actors.length; a++) {\n        if (objStage[y].actors[a].actorType.parentType == 'DbDelete') {\n          actorInputs = [].concat(objStage[y].actors[a].actorType.inputs);\n\n          for (var b = 0; b < actorInputs.length; b++) {\n            if (actorInputs[b].name == 'keys') {\n              actorInputs[b].const = arrKeys;\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nobjOut = {\n  levels: levels,\n  connections: connections\n};\nobjOut;"
+                                        }
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "objStr",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "blob"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "prefix",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "levels": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "stages": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "dependsOnList": {
+                                                                            "type": "array",
+                                                                            "items": {}
+                                                                        },
+                                                                        "isLast": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "isTransactional": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "remark": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "actors": {
+                                                                            "type": "array",
+                                                                            "items": {}
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "connections": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "leftPort": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "actor": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "rightPort": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "actor": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "iterate": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonStringify2",
+                            "actorType": {
+                                "parentType": "JsonStringify",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileWrite1",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 9",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "ls1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TAR prefix",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "prefix"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ls1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Ignore DeleteAllTablesflow",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ls1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "path"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ls1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Replace1",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ls1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "path"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "FileRead1",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "JsonParser1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace2",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser1",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "JsonStringify1",
+                "name": "object"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Get Table Keys",
+                "name": "TABLE_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JsonStringify1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "objStr"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Keys",
+                "name": "TABLE_KEYS"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "keys"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JsonStringify2",
+                "name": "object"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JsonStringify2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_PATH"
+            },
+            "rightPort": {
+                "actor": "LU Folder",
+                "name": "LU_PATH"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_PATH"
+            },
+            "rightPort": {
+                "actor": "Get Table Keys",
+                "name": "LU_PATH"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "lu_name"
+            }
+        }
+    ]
+}

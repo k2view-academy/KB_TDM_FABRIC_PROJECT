@@ -1,0 +1,422 @@
+tags: TDM
+stages:
+  Prepare Data of LU's Tables:
+    actors:
+      Prepare Tables' Data:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDbTablesInfo
+          envName:
+            external: SOURCE_ENVIRONMENT
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          targetInterface:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+            createdBy: functionName
+          targetSchema:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          defaultSourceInterface:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+            createdBy: functionName
+          defaultSourceSchema:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: functionName
+      Get LU's Main Table and Column1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetMainTableAndColumn
+          luName:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Get Source Interface:
+    actors:
+      Get Source Interface of Main Tablle:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableSourceInterface
+          table:
+            link: Get LU's Main Table and Column1/result/main_table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  Get Inputs:
+    actors:
+      Check LU and Envs Deploy:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: checkPreRequisite
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Get Interface Type:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetInterfaceType
+          interfaceName:
+            link: Get Source Interface of Main Tablle/result
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+          environmentName:
+            const: _dev
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Build Path:
+    actors:
+      Set Key Type Of Main Table:
+        parent: FabricSet
+        in:
+          key:
+            const: ROOT_COLUMN_TYPE
+            default: false
+          value:
+            const: null
+            link: Get LU's Main Table and Column1/result/main_column_type
+            default: false
+      Set Main Table Of LU:
+        parent: FabricSet
+        in:
+          key:
+            const: ROOT_TABLE_NAME
+            default: false
+          value:
+            const: null
+            link: Get LU's Main Table and Column1/result/main_table_name
+            default: false
+      Set Key Of Main Table:
+        parent: FabricSet
+        in:
+          key:
+            const: ROOT_COLUMN_NAME
+            default: false
+          value:
+            const: null
+            link: Get LU's Main Table and Column1/result/main_column_name
+            default: false
+      TDM_LIBRARY folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/TDM_LIBRARY/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      LU folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/${LU_NAME}/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+  'Check if Ran Before? ':
+    actors:
+      TDMLUInit First Run:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMLUInitFirstRun
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  'First Run?   ':
+    dependsOn: 'Check if Ran Before? '
+    actors:
+      First Run?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: TDMLUInit First Run/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Copy TDM Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: copyTDMTables
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            mandatory: false
+          TDM_LIBRARY_PATH:
+            link: TDM_LIBRARY folder/string
+            schema: string
+            mandatory: false
+        out:
+          table_id:
+            schema: string
+    split: '--------------------'
+  Already Ran Do Nothing:
+    else: true
+    dependsOn: 'Check if Ran Before? '
+  'Copy Tdm Tables  ':
+    dependsOn: 'First Run?   '
+    actors:
+      Get Tables Info:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUTableCoulumnID
+          TABLE_LIST:
+            link: Copy TDM Tables/table_id
+            schema: '#ref'
+            mandatory: false
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file://
+            mandatory: false
+        out:
+          tables:
+            schema: string
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Already Ran Do Nothing
+  Update Lu Schema With Tdm Tables:
+    dependsOn: 'Copy Tdm Tables  '
+    actors:
+      Update LU Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: updateLUSchema
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            editor:
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+              id: com.k2view.interface
+            mandatory: false
+          tables_to_add:
+            link: Get Tables Info/tables
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          SOURCE_TABLE:
+            link: Get LU's Main Table and Column1/result/main_table_name
+            schema: string
+            mandatory: false
+          TABLE_KEY:
+            link: Get LU's Main Table and Column1/result/main_column_name
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            link: Get Interface Type/result
+            schema: string
+            mandatory: false
+          ROOT_COLUMN_TYPE:
+            link: Get LU's Main Table and Column1/result/main_column_type
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          rootInfo:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: Do Nothing
+  'Create Delete and Load Flows ':
+    actors:
+      Create From Templates:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateFromTemplates
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          ROOT_TABLE_NAME:
+            link: Get LU's Main Table and Column1/result/main_table_name
+            schema: string
+            mandatory: false
+          INTERFACE_TYPE:
+            link: Get Interface Type/result
+            schema: string
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          CREATE_DELETE_TABLES:
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+            mandatory: false
+          CREATE_GENERATE_FLOWS:
+            external: CREATE_GENERATE_FLOWS
+            schema: boolean
+            mandatory: false
+          useFabric:
+            const: true
+            schema: boolean
+            mandatory: false
+          ROOT_FIELD_NAME:
+            link: Get LU's Main Table and Column1/result/main_column_name
+            schema: string
+            mandatory: false
+  Finish:
+    actors:
+      Clear Tables' Data:
+        parent: LuFunction
+        in:
+          functionName:
+            const: clearTablesInfo
+      End:
+        parent: Const
+        in:
+          value:
+            const: TDM Implementation is created!
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+  Stage 1: {
+    }
+schemas:
+  Get LU's Main Table and Column1.out.result:
+    type: object
+    properties:
+      main_column_type:
+        type: string
+      main_table_name:
+        type: string
+      main_column_name:
+        type: string
+  Get Tables Info.in.TABLE_LIST:
+    type: array
+    items:
+      type: blob
+  Update LU Schema.out.rootInfo:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }

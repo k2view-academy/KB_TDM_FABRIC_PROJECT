@@ -1,0 +1,252 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Start",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PostAndPreExecutionProcess",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "PostAndPreExecutionProcess"
+                                    },
+                                    {
+                                        "name": "Process_type",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Process_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "Lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "Process_type": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Map LuName+Value",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapBuild LuName",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "lu_name"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "lu_name": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Map ProcessName + Value",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "MapBuild PrrocessName",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "preTaskExePrintToLog": {
+                                                    "type": "string"
+                                                },
+                                                "preTaskExePrintToLog2": {
+                                                    "type": "string"
+                                                },
+                                                "postTaskExePrintToLog": {
+                                                    "type": "string"
+                                                },
+                                                "postTaskExePrintToLog2": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapMerge",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "preTaskExePrintToLog": {
+                                                    "type": "string"
+                                                },
+                                                "preTaskExePrintToLog2": {
+                                                    "type": "string"
+                                                },
+                                                "postTaskExePrintToLog": {
+                                                    "type": "string"
+                                                },
+                                                "postTaskExePrintToLog2": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PostAndPreExecutionProcess",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MapBuild PrrocessName",
+                "name": "key"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "Process_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PostAndPreExecutionProcess",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MapBuild LuName",
+                "name": "value"
+            },
+            "path": [
+                "Lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild LuName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapBuild PrrocessName",
+                "name": "value"
+            },
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild PrrocessName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "process_type"
+            },
+            "rightPort": {
+                "actor": "PostAndPreExecutionProcess",
+                "name": "Process_type"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapMerge",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "map"
+            }
+        }
+    ]
+}

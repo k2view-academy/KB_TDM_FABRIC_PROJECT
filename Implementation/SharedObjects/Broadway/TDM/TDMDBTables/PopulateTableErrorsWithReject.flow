@@ -1,0 +1,11 @@
+tags: TDM
+stages:
+  Call Error Flow:
+    actors:
+      Populate Table Errors:
+        parent: PopulateTableErrors
+        in:
+          error_category:
+            const: Record Rejected
+          error:
+            external: error

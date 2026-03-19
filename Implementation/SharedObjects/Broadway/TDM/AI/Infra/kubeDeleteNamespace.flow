@@ -1,0 +1,234 @@
+{
+    "tags": [
+        "Medoid",
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapCreate",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [
+                                    {
+                                        "const": "application/yaml",
+                                        "name": "Content-Type",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Content-Type": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "format",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "/${api}/namespaces/${namespace}/${kind}"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "kind",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "api/v1",
+                                        "name": "api",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "apply",
+                            "actorType": {
+                                "parentType": "Http",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "AI_Execution"
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "method",
+                                        "const": "DELETE"
+                                    },
+                                    {
+                                        "name": "headers",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "noCertificateCheck",
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "header",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Transfer-Encoding": {
+                                                    "type": "string"
+                                                },
+                                                "X-Kubernetes-Pf-Flowschema-Uid": {
+                                                    "type": "string"
+                                                },
+                                                "Cache-Control": {
+                                                    "type": "string"
+                                                },
+                                                "Audit-Id": {
+                                                    "type": "string"
+                                                },
+                                                "X-Kubernetes-Pf-Prioritylevel-Uid": {
+                                                    "type": "string"
+                                                },
+                                                "Content-Type": {
+                                                    "type": "string"
+                                                },
+                                                "Content-Length": {
+                                                    "type": "integer"
+                                                },
+                                                "Date": {
+                                                    "type": "date"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "format",
+                "name": "namespace"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "MapCreate",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "apply",
+                "name": "headers"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "format",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "apply",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "namespace"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            }
+        }
+    ]
+}

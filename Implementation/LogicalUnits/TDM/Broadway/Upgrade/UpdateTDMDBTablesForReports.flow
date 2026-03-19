@@ -1,0 +1,321 @@
+tags: Upgrade
+stages:
+  Get Schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Add Columns:
+    actors:
+      Column permession_group:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              alter table ${@TDMDB_SCHEMA}.task_execution_summary add column if not exists permission_group text ;
+              alter table ${@TDMDB_SCHEMA}.task_execution_summary add column if not exists fabric_roles text ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+      Select Data:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select task_execution_id,task_id,task_executed_by
+              from ${@TDMDB_SCHEMA}.task_execution_summary
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+  Permission Group:
+    actors:
+      Get User Permission Group:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetUserPermissionGroup
+          userName:
+            link: Select Data/result/task_executed_by
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  Update:
+    last: 1
+    actors:
+      Update Permission Group:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.task_execution_summary s set permission_group=${permission_group}
+              where task_execution_id=${task_execution_id} and task_id=${task_id}
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            link:
+              path: Select Data/result/task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          task_id:
+            link:
+              path: Select Data/result/task_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          permission_group:
+            link: Get User Permission Group/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+  'update executed by ':
+    actors:
+      'Update Executed By ':
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |
+              update ${@TDMDB_SCHEMA}.task_execution_summary s set fabric_roles = (
+                  select SPLIT_PART(l.task_executed_by, '##', 2) from ${@TDMDB_SCHEMA}.task_execution_list l where s.task_execution_id = l.task_execution_id and s.task_id=l.task_id
+                  LIMIT 1
+              );
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+  'add constrains ':
+    actors:
+      constrains:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |
+              ALTER TABLE ${@TDMDB_SCHEMA}.task_execution_summary
+              DROP CONSTRAINT IF EXISTS task_execution_summary_pkey;
+
+              ALTER TABLE ${@TDMDB_SCHEMA}.task_execution_summary
+              ADD CONSTRAINT task_execution_summary_pkey
+              PRIMARY KEY (task_execution_id,task_id);
+
+              ALTER TABLE ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              DROP CONSTRAINT IF EXISTS task_ref_exe_stats_pkey;
+
+              ALTER TABLE ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              ADD CONSTRAINT task_ref_exe_stats_pkey
+              PRIMARY KEY (task_execution_id,task_id,task_ref_table_id);
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+  tasks table changes:
+    actors:
+      add columns:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              alter table ${@TDMDB_SCHEMA}.tasks add column if not exists permission_group text ;
+              alter table ${@TDMDB_SCHEMA}.tasks add column if not exists fabric_roles text ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+  select from tasks:
+    actors:
+      Select Data Tasks:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select task_id,task_created_by
+              from ${@TDMDB_SCHEMA}.tasks
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+  Get Created By permession:
+    actors:
+      Get User Permission Group1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetUserPermissionGroup
+          userName:
+            link:
+              path: Select Data Tasks/result/task_created_by
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  update:
+    last: 1
+    actors:
+      Update Permission Group1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.tasks set permission_group=${permission_group}
+              where task_id=${task_id}
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_id:
+            link:
+              path: Select Data Tasks/result/task_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          permission_group:
+            link: Get User Permission Group1/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+  'Update fabric_roles ':
+    actors:
+      'fabric_roles tasks ':
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.tasks set fabric_roles = SPLIT_PART(task_created_by,
+              '##', 2);
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+  add be times to summary:
+    actors:
+      Column times:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              alter table ${@TDMDB_SCHEMA}.task_execution_summary add column if not exists start_be_execution timestamp without time zone ;
+              alter table ${@TDMDB_SCHEMA}.task_execution_summary add column if not exists end_be_execution timestamp without time zone ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+      update times:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |
+              UPDATE ${@TDMDB_SCHEMA}.task_execution_summary s
+              SET
+                start_be_execution = agg.min_entity_start_time,
+                end_be_execution   = agg.max_entity_end_time
+              FROM (
+                SELECT
+                    task_execution_id,
+                    MIN(entity_start_time) FILTER (WHERE id_type = 'ENTITY') AS min_entity_start_time,
+                    MAX(entity_end_time)   FILTER (WHERE id_type = 'ENTITY') AS max_entity_end_time
+                FROM ${@TDMDB_SCHEMA}.task_execution_entities
+                GROUP BY task_execution_id
+              ) agg
+              WHERE s.task_execution_id = agg.task_execution_id;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+            createdBy: sql
+schemas:
+  Column permession_group.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: integer
+        task_executed_by:
+          type: string
+  Select Data.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: integer
+        task_id:
+          type: integer
+        task_executed_by:
+          type: string
+  Select Data Tasks.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_id:
+          type: integer
+        task_created_by:
+          type: string
+  Column times.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: integer
+        task_executed_by:
+          type: string
