@@ -200,7 +200,7 @@ stages:
             const: fabric
           sql:
             const: batch ${@luName} from ${@AI_DB_K2SYSTEM} using (?) FABRIC_COMMAND='${@command}'
-              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
+              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}' ${@maxNumOfWorkers};
           luName:
             link: luName/value
             schema: string
@@ -215,6 +215,10 @@ stages:
             mandatory: false
           taskTitle:
             external: taskTitle
+            schema: string
+            mandatory: false
+          maxNumOfWorkers:
+            external: maxNumOfWorkers
             schema: string
             mandatory: false
           params:
@@ -235,7 +239,8 @@ stages:
             const: fabric
           sql:
             const: batch ${@luName} from ${@AI_DB_K2SYSTEM} using (?) FABRIC_COMMAND='${@command}'
-              WITH AFFINITY=${dcName} ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
+              WITH AFFINITY=${dcName} ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}'
+              ${@maxNumOfWorkers};
           luName:
             link: luName/value
             schema: string
@@ -256,6 +261,11 @@ stages:
             external: taskTitle
             schema: string
             mandatory: false
+          maxNumOfWorkers:
+            external: maxNumOfWorkers
+            schema: string
+            mandatory: false
+            createdBy: sql
           params:
             link: EntityInclusion Command/string
         out:

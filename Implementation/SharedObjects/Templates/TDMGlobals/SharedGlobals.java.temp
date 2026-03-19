@@ -10,11 +10,11 @@ public class SharedGlobals {
 
 	@desc("Maximum values of combo box input object")
 	@category("TDM")
-	public static final String COMBO_MAX_COUNT = "100";
+	public static String COMBO_MAX_COUNT = "100";
 
 	@desc("The TTL for masking cache")
 	@category("TDM")
-	public static final String MASKING_CACHE_TTL = "2592000";
+	public static String MASKING_CACHE_TTL = "2592000";
 
 	@desc("The maximum number of entities to be returned to be displayed in list of entities")
 	@category("TDM")
@@ -33,10 +33,10 @@ public class SharedGlobals {
 	public static String GET_RESERVED_ENTITIES_LIMIT = "0";
 
 	@category("TDM")
-	public static final String TDM_REF_UPD_SIZE = "1000";
+	public static String TDM_REF_UPD_SIZE = "1000";
 
 	@category("TDM")
-	public static final String TDMDB_SCHEMA = "k2tdm_${ClusterID}";
+	public static final String TDMDB_SCHEMA = "public";
 
 	@category("TDM")
 	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
@@ -56,7 +56,7 @@ public class SharedGlobals {
 
 	@desc("The interface to be used for storing the cache of Masking")
 	@category("TDM")
-	public static final String SEQ_CACHE_INTERFACE = "POSTGRESQL_ADMIN";
+	public static String SEQ_CACHE_INTERFACE = "TDM";
 
 	@desc("The separator to be used for parsing the values of Parameters")
 	@category("TDM")

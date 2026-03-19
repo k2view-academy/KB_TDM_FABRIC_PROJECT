@@ -6,8 +6,7 @@
   <SerializationName />
   <Columns>
   {{#each Columns~}}
-    <Column name="{{getDeleleColumnName this}}" id="{{getDeleleColumnName this}}" index="{{@index}}" datatype="{{getDeleleColumnType this}}" mandatory="true" serializationName="{{getDeleleColumnName this}}" />
-  {{/each}}
+    <Column name="{{getDeleleXMLColumnName this}}" id="{{getDeleleXMLColumnName this}}" index="{{@index}}" datatype="{{getDeleleColumnType this}}" mandatory="true" serializationName="{{getDeleleXMLColumnName this}}" />{{/each}}
   </Columns>
   <IndexesList />
   <EnrichmentList />

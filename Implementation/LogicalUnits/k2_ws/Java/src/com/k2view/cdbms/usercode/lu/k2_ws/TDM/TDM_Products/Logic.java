@@ -4,6 +4,8 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Products;
 
+import com.k2view.cdbms.interfaces.FabricInterface;
+import com.k2view.cdbms.lut.InterfacesManager;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
@@ -18,9 +20,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsOwner;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getAllSuppressedInterfaces;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
@@ -31,234 +35,312 @@ public class Logic extends WebServiceUserCode {
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 
 	@desc("Gets all TDM System (products), Active and Inactive, to populate Systems window")
-	@webService(path = "products", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"product_versions\": \"1.0,2.0\",\r\n" +
-			"      \"product_last_updated_by\": \"K2View\",\r\n" +
-			"      \"product_vendor\": null,\r\n" +
-			"      \"product_last_updated_date\": \"2021-04-18 14:49:32.536\",\r\n" +
-			"      \"product_id\": 1,\r\n" +
-			"      \"product_created_by\": \"K2View\",\r\n" +
-			"      \"product_status\": \"Active\",\r\n" +
-			"      \"product_creation_date\": \"2021-04-18 09:32:14.981\",\r\n" +
-			"      \"product_description\": null,\r\n" +
-			"      \"product_name\": \"PROD\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
+	@webService(path = "products", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+			  "result": [
+			    {
+			      "product_id": 1,
+			      "product_name": "PROD",
+			      "product_description": null,
+			      "product_vendor": null,
+			      "product_versions": "1.0,2.0",
+			      "related_interfaces": ["BILLING_DB", "CRM_DB"],
+			      "product_status": "Active",
+			      "product_created_by": "K2View",
+			      "product_creation_date": "2021-04-18 09:32:14.981",
+			      "product_last_updated_date": "2021-04-18 14:49:32.536",
+			      "product_last_updated_by": "K2View"
+			    }
+			  ],
+			  "errorCode": "SUCCESS",
+			  "message": null
+			}
+			""")
 	public static Object wsGetProducts() throws Exception {
-		HashMap<String,Object> response=new HashMap<>();
-		String errorCode="";
-		String message=null;
-		
-		try{
-			String sql = "SELECT * FROM " + schema + ".products";
+		HashMap<String, Object> response = new HashMap<>();
+		String errorCode = "";
+		String message = null;
+
+		try {			
+			String sql = """
+					SELECT * FROM %s.products
+					""".formatted(schema);
+
 			Db.Rows rows = db(TDM).fetch(sql);
-			List<Map<String,Object>> result=new ArrayList<>();
-			Map<String,Object> product;
-			for(Db.Row row:rows) {
-				product=new HashMap<>();
-				product.put("product_name", row.get("product_name"));
-				product.put("product_description", row.get("product_description"));
-				product.put("product_vendor", row.get("product_vendor"));
-				product.put("product_versions", row.get("product_versions"));
-				product.put("product_id",Integer.parseInt(row.get("product_id").toString()));
-				product.put("product_created_by", row.get("product_created_by"));
-				product.put("product_creation_date", row.get("product_creation_date"));
-				product.put("product_last_updated_date", row.get("product_last_updated_date"));
-				product.put("product_last_updated_by", row.get("product_last_updated_by"));
-				product.put("product_status", row.get("product_status"));
-				result.add(product);
+			List<Map<String, Object>> result = new ArrayList<>();
+
+			try {
+				for (Db.Row row : rows) {
+					Map<String, Object> product = new HashMap<>();
+					product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
+					product.put("product_name", row.get("product_name"));
+					product.put("product_description", row.get("product_description"));
+					product.put("product_vendor", row.get("product_vendor"));
+					product.put("product_versions", row.get("product_versions"));					
+					product.put("related_interfaces", row.get("related_interfaces"));
+					product.put("product_created_by", row.get("product_created_by"));
+					product.put("product_creation_date", row.get("product_creation_date"));
+					product.put("product_last_updated_date", row.get("product_last_updated_date"));
+					product.put("product_last_updated_by", row.get("product_last_updated_by"));
+					product.put("product_status", row.get("product_status"));
+
+					result.add(product);
+				}
+			} finally {
+				if (rows != null)
+					rows.close();
 			}
+
 			response.put("result", result);
-			errorCode= "SUCCESS";
-			if (rows != null) {
-				rows.close();
-			}
-		
-		}
-		catch(Exception e){
-			errorCode= "FAILED";
-			message= e.getMessage();
+			errorCode = "SUCCESS";
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
 			log.error(message);
 		}
-		response.put("errorCode",errorCode);
+
+		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}
 
 
-	@desc("Gets a System (product) by a product id.")
-	@webService(path = "product/{prodId}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"product_versions\": \"1.0,2.0\",\r\n" +
-			"    \"product_last_updated_by\": \"K2View\",\r\n" +
-			"    \"product_vendor\": null,\r\n" +
-			"    \"product_last_updated_date\": \"2021-04-18 14:49:32.536\",\r\n" +
-			"    \"product_id\": 1,\r\n" +
-			"    \"product_created_by\": \"K2View\",\r\n" +
-			"    \"product_status\": \"Active\",\r\n" +
-			"    \"product_creation_date\": \"2021-04-18 09:32:14.981\",\r\n" +
-			"    \"product_description\": null,\r\n" +
-			"    \"product_name\": \"PROD\"\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsGetProduct(@param(required=true) Long prodId) throws Exception {
-		HashMap<String,Object> response=new HashMap<>();
-		String errorCode="";
-		String message=null;
-		
-		try{
-			String sql = "SELECT * FROM " + schema + ".products " +
-					"WHERE product_id = " + prodId;
-			Db.Row row = db(TDM).fetch(sql).firstRow();
-			Map<String,Object> product;
-			if(!row.isEmpty()) {
-				product=new HashMap<>();
+	@desc("""
+			Gets a System (product) by a product id.
+			""")
+	@webService(path = "product/{prodId}", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+			  "result": {
+			    "product_id": 1,
+			    "product_name": "PROD",
+			    "product_description": null,
+			    "product_vendor": null,
+			    "product_versions": "1.0,2.0",
+			    "related_interfaces": ["BILLING_DB", "CRM_DB"],
+			    "product_status": "Active",
+			    "product_created_by": "K2View",
+			    "product_creation_date": "2021-04-18 09:32:14.981",
+			    "product_last_updated_date": "2021-04-18 14:49:32.536",
+			    "product_last_updated_by": "K2View"
+			  },
+			  "errorCode": "SUCCESS",
+			  "message": null
+			}
+			""")
+	public static Object wsGetProduct(@param(required = true) Long prodId) throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		String errorCode = "";
+		String message = null;
+
+		try {			
+			String sql = """
+					SELECT * FROM %s.products
+					WHERE product_id = (?)
+					""".formatted(schema);
+
+			Db.Row row = db(TDM).fetch(sql, prodId).firstRow();
+
+			if (!row.isEmpty()) {
+				Map<String, Object> product = new HashMap<>();
+				product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
 				product.put("product_name", row.get("product_name"));
 				product.put("product_description", row.get("product_description"));
 				product.put("product_vendor", row.get("product_vendor"));
-				product.put("product_versions", row.get("product_versions"));
-				product.put("product_id",Integer.parseInt(row.get("product_id").toString()));
+				product.put("product_versions", row.get("product_versions"));				
+				product.put("related_interfaces", row.get("related_interfaces"));
 				product.put("product_created_by", row.get("product_created_by"));
 				product.put("product_creation_date", row.get("product_creation_date"));
 				product.put("product_last_updated_date", row.get("product_last_updated_date"));
 				product.put("product_last_updated_by", row.get("product_last_updated_by"));
 				product.put("product_status", row.get("product_status"));
+
 				response.put("result", product);
 			}
-			errorCode= "SUCCESS";
-		}
-		catch(Exception e){
-			errorCode= "FAILED";
-			message= e.getMessage();
+			errorCode = "SUCCESS";
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
 			log.error(message);
 		}
-		response.put("errorCode",errorCode);
+
+		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}
 
 
-	@desc("Creates a TDM System (product).\r\n" +
-			"\r\n" +
-			"Notes:\r\n" +
-			"\r\n" +
-			"> The product_name and product_versions parameters are mandatory.\r\n" +
-			"\r\n" +
-			"> At least one version must be set for a product. Multiple product versions can also be set, seperaed by a comma. For example: \"1.5,1.0,2.0\".\r\n" +
-			"\r\n" +
-			"> Each Active product gets a unique product name.")
-	@webService(path = "product", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"id\": 16\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsPostProduct(String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
+	@desc("""
+			Creates a TDM System (product).
+
+			Notes:
+			> The product_name and product_versions parameters are mandatory.
+			> At least one version must be set for a product. Multiple versions can be separated by a comma.
+			  Example: "1.5,1.0,2.0".
+			> Each Active product gets a unique product name.
+			> related_interfaces is an optional list of external systems.
+			""")
+	@webService(path = "product", verb = {
+			MethodType.POST }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+			  "result": {
+			    "id": 16
+			  },
+			  "errorCode": "SUCCESS",
+			  "message": null
+			}
+			""")
+	public static Object wsPostProduct(String product_name, String product_description, String product_vendor,
+			String product_versions, List<String> related_interfaces) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
-		if(product_name==null||product_versions==null) return wrapWebServiceResults("FAILED","product_name and product_versions are mandatory fields.",null);
-		HashMap<String,Object> response=new HashMap<>();
-		String message=null;
-		String errorCode="";
+		if (!"admin".equals(permissionGroup))
+			return wrapWebServiceResults("FAILED", admin_pg_access_denied_msg, null);
+
+		if (product_name == null || product_versions == null) {
+			return wrapWebServiceResults("FAILED", "product_name and product_versions are mandatory fields.", null);
+		}
+
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
-		
-		try {
-			String sql= "INSERT INTO " + schema + ".products " +
-					"(product_name, product_description, product_vendor, product_versions, product_created_by, " +
-					"product_creation_date, product_last_updated_date, product_last_updated_by, product_status) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING product_id";
+
+		try {			
+			String sql = """
+					INSERT INTO %s.products (
+					    product_name,
+					    product_description,
+					    product_vendor,
+					    product_versions,
+					    product_created_by,
+					    product_creation_date,
+					    product_last_updated_date,
+					    product_last_updated_by,
+					    product_status,
+					    related_interfaces
+					)
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+					RETURNING product_id
+					""".formatted(schema);
+
 			String username = sessionUser().name();
-			Db.Row row = db(TDM).fetch(sql,product_name, product_description, product_vendor, product_versions, username, now, now,
-					username, "Active").firstRow();
+			
+			Object interfacesArray = (related_interfaces != null)
+					? related_interfaces.toArray(new String[0])
+					: new String[0];
+
+			Db.Row row = db(TDM).fetch(sql,
+					product_name,
+					product_description,
+					product_vendor,
+					product_versions,
+					username,
+					now,
+					now,
+					username,
+					"Active",
+					interfacesArray).firstRow();
+
 			int prodId = Integer.parseInt(row.get("product_id").toString());
-		
-			String activityDesc = "Product " + product_name + " was created";
+
+			String activityDesc = "System " + product_name + " was created";
 			try {
-				fnInsertActivity("create", "Product", activityDesc);
-			}
-			catch(Exception e){
+				fnInsertActivity("create", "Systems", activityDesc);
+			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
-			HashMap<String,Object> result=new HashMap<>();
-			result.put("id",prodId);
-			response.put("result",result);
-			errorCode="SUCCESS";
-		
-		}catch(Exception e){
-			message=e.getMessage();
-			errorCode= "FAILED";
+
+			HashMap<String, Object> result = new HashMap<>();
+			result.put("id", prodId);
+			response.put("result", result);
+			errorCode = "SUCCESS";
+
+		} catch (Exception e) {
+			message = e.getMessage();
+			errorCode = "FAILED";
 			log.error(message);
 		}
-		response.put("message",message);
-		response.put("errorCode",errorCode);
+
+		response.put("message", message);
+		response.put("errorCode", errorCode);
 		return response;
 	}
 
 
-	@desc("Updates the System's (product) description, vendor, or versions. The versions are separated by a comma.\r\n" +
-			"Example request body:\r\n" +
-			"{\r\n" +
-			"  \"product_name\": \"PROD\",\r\n" +
-			"  \"product_description\": \"desc\",\r\n" +
-			"  \"product_vendor\": \"verndor\",\r\n" +
-			"  \"product_versions\": \"1.0,2.0\"\r\n" +
-			"}")
-	@webService(path = "product/{prodId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@desc("""
+			Updates the System's (product) description, vendor, versions, and related interfaces.
+			The versions are separated by a comma.
+
+			Example request body:
+			{
+			  "product_name": "PROD",
+			  "product_description": "Detailed description",
+			  "product_vendor": "VendorName",
+			  "product_versions": "1.0,2.0",
+			  "related_interfaces": ["BILLING_DB", "CRM_SYSTEM"]
+			}
+			""")
+	@webService(path = "product/{prodId}", verb = {
+			MethodType.PUT }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateProduct(@param(required=true) Long prodId, String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
+	public static Object wsUpdateProduct(@param(required = true) Long prodId, String product_name,
+			String product_description, String product_vendor, String product_versions, List<String> related_interfaces)
+			throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
-		HashMap<String,Object> response=new HashMap<>();
-		String message=null;
-		String errorCode="";
+		if (!"admin".equals(permissionGroup))
+			return wrapWebServiceResults("FAILED", admin_pg_access_denied_msg, null);
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 		try {
 			String sql = "UPDATE " + schema + ".products SET " +
-			"product_name=(?)," +
+					"product_name=(?)," +
 					"product_description=(?)," +
 					"product_vendor=(?)," +
 					"product_versions=(?), " +
 					"product_last_updated_date=(?)," +
-					"product_last_updated_by=(?) " +
-					"WHERE product_id = " + prodId;
+					"product_last_updated_by=(?), " +
+					"related_interfaces=(?) " +
+					"WHERE product_id = ?";
 			String username = sessionUser().name();
-			db(TDM).execute(sql, product_name, product_description, product_vendor, product_versions, now, username);
-		
-			String activityDesc = "Product " + product_name + " was updated";
+			Object interfacesArray = (related_interfaces != null) ? related_interfaces.toArray(new String[0])
+					: new String[0];
+			db(TDM).execute(sql, product_name, product_description, product_vendor, product_versions, now, username,
+					interfacesArray, prodId);
+
+			String activityDesc = "System " + product_name + " was updated";
 			try {
-				fnInsertActivity("update", "Product", activityDesc);
-			}
-			catch(Exception e){
+				fnInsertActivity("update", "Systems", activityDesc);
+			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
-		
-			errorCode="SUCCESS";
-		
-		}catch(Exception e){
-			errorCode="FAILED";
-			message=e.getMessage();
+
+			errorCode = "SUCCESS";
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
 			log.error(message);
 		}
-		response.put("errorCode",errorCode);
-		response.put("message",message);
+		response.put("errorCode", errorCode);
+		response.put("message", message);
 		return response;
 	}
 
@@ -461,8 +543,8 @@ public class Logic extends WebServiceUserCode {
 			}
 		
 			try {
-				String activityDesc = "Product " + prodName + " was deleted";
-				fnInsertActivity("delete", "Data Center", activityDesc);
+				String activityDesc = "System " + prodName + " was deleted";
+				fnInsertActivity("delete", "Systems", activityDesc);
 			}
 			catch(Exception e){
 				log.error(e.getMessage());
@@ -578,75 +660,108 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
+	@desc("Gets active Systems that have at least one LU or at least one related Interface in the product metadata.")
+	@webService(path = "product/{envId}/loadAvailableSystems", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = {
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+				{
+			"result": [
+			  {
+				"product_versions": "1",
+				"product_id": 1,
+				"related_interfaces": "{BILLING_DB,CRM_DB}",
+				"lus": 2,
+				"product_name": "CRM"
+			  },
+			  {
+				"product_versions": "PROD",
+				"product_id": 2,
+				"related_interfaces": "{}",
+				"lus": 2,
+				"product_name": "Billing"
+			  },
+			  {
+				"product_versions": "TEST",
+				"product_id": 3,
+				"related_interfaces": "{BILLING_DB,CRM_DB}",
+				"lus": 0,
+				"product_name": "CRM2"
+			  }
+			],
+			"errorCode": "SUCCESS",
+			"message": null
+			 }
+				""")
 
-	@desc("Gets active System (products) that have at least one LU. This API is called when adding a System (product) to a TDM environment.")
-	@webService(path = "product/{envId}/productsWithLUs", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"product_versions\": \"1\",\r\n" +
-			"      \"product_id\": 15,\r\n" +
-			"      \"lus\": 3,\r\n" +
-			"      \"product_name\": \"PROD\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"product_versions\": \"1\",\r\n" +
-			"      \"product_id\": 16,\r\n" +
-			"      \"lus\": 4,\r\n" +
-			"      \"product_name\": \"PROD2\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsProductsWithLUs(@param(required=true) Long envId) throws Exception {
-		HashMap<String,Object> response=new HashMap<>();
-		String errorCode="";
-		String message=null;
-		final String SYNTHETIC = "Synthetic";
-		final String AI = "AI";
-		try{
-			String sql="SELECT products.product_id, products.product_versions, products.product_name, COUNT(product_logical_units.lu_id) as lus " +
-					"FROM " + schema + ".products " +
-					"LEFT JOIN " + schema + ".product_logical_units ON (product_logical_units.product_id = products.product_id) " +
-					"WHERE products.product_status = 'Active' " +
-					"GROUP BY products.product_id ";
-			Db.Rows rows= db(TDM).fetch(sql);
-		
-			List<Map<String,Object>> result=new ArrayList<>();
-			Map<String,Object> product;
-			for(Db.Row row:rows) {
-				product=new HashMap<>();
-				product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
-		            if (envId != null && envId == -1) {
-		            	product.put("product_versions", SYNTHETIC);
-		            }else if (envId != null && envId == -2){
-						product.put("product_versions", AI);
+	public static Object wsLoadAvailableSystems(@param(required = true) Long envId) throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		List<Map<String, Object>> result = new ArrayList<>();
+		String errorCode = "SUCCESS";
+		String message = null;
+
+		String checkEnvSql = "SELECT 1 FROM " + schema + ".environments WHERE environment_id = ?";
+		Db.Row envRow = db(TDM).fetch(checkEnvSql, envId).firstRow();
+
+		if (envRow.isEmpty()) {
+			return wrapWebServiceResults("FAILED", "Environment ID " + envId + " not found.", null);
+		}
+
+		try {
+			String sql = "SELECT p.product_id, p.product_versions, p.product_name, p.related_interfaces, " +
+					"COUNT(lu.lu_id) as lu_count " +
+					"FROM " + schema + ".products p " +
+					"LEFT JOIN " + schema + ".product_logical_units lu ON p.product_id = lu.product_id " +
+					"WHERE p.product_status = 'Active' " +
+					"GROUP BY p.product_id, p.product_versions, p.product_name, p.related_interfaces";
+
+			Db.Rows rows = db(TDM).fetch(sql);
+
+			for (Db.Row row : rows) {
+				int luCount = Integer.parseInt(row.get("lu_count").toString());
+
+				// Logic to check if the related_interfaces field has data
+				Object interfacesObj = row.get("related_interfaces");
+				String interfacesStr = (interfacesObj != null) ? interfacesObj.toString().trim() : "";
+				// Checks if it's not null, not empty, and not just an empty JSON array "[]"
+				boolean hasInterfaces = !interfacesStr.isEmpty() && !interfacesStr.equals("{}");
+
+				// Filter: Return only if it has LUs OR has Interfaces
+				if (luCount > 0 || hasInterfaces) {
+					Map<String, Object> product = new HashMap<>();
+					product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
+					product.put("product_name", row.get("product_name"));
+
+					// Versioning logic based on envId
+					if (envId != null && envId == -1) {
+						product.put("product_versions", "Synthetic");
+					} else if (envId != null && envId == -2) {
+						product.put("product_versions", "AI");
 					} else {
-				    	product.put("product_versions", row.get("product_versions"));
-		            }
-				product.put("product_name",row.get("product_name"));
-				product.put("lus", Integer.parseInt(row.get("lus").toString()));
-				result.add(product);
+						product.put("product_versions", row.get("product_versions"));
+					}
+
+					product.put("lus", luCount);
+					product.put("related_interfaces", interfacesStr);
+
+					result.add(product);
+				}
 			}
-			response.put("result", result);
-			errorCode= "SUCCESS";
-			if (rows != null) {
+
+			if (rows != null)
 				rows.close();
-			}
-		
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error("Error in wsLoadAvailableSystems: " + message);
 		}
-		catch(Exception e){
-			errorCode= "FAILED";
-			message= e.getMessage();
-			log.error(message);
-		}
-		response.put("errorCode",errorCode);
+
+		response.put("result", result);
+		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}
-
-
 
 	static void fnUpdateProductDate(long prodId,String username) throws Exception{
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
@@ -674,8 +789,16 @@ public class Logic extends WebServiceUserCode {
 	
 	@webService(path = "product/{envId}/{productId}/DisableEnvironmentProduct", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsDisableEnvironmentProduct(@param(required=true) Long productId,Long envId,Long envProdcutID,String envName) throws Exception {
-	String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
+		if (!"admin".equals(permissionGroup)) {
+			if ("tester".equals(permissionGroup)) {
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore are not allowed to disable environment products.", null);
+			} else if("owner".equals(permissionGroup)){
+				if(!fnIsOwner(envId.toString())) 	
+					return wrapWebServiceResults("FAILED", "You are not the owner of this environment and therefore are not allowed to disable its products.", null);
+			}
+		}		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -737,9 +860,13 @@ public class Logic extends WebServiceUserCode {
 			db(TDM).execute(updateSourceTasks,"false",envName,envId,envProdcutID,productId);
 			db(TDM).execute(updateTargetTasks,"false",envName,envId,envProdcutID,productId);
 
-			String activityDesc = "'Environment Prodcut " + envProdcutID + " was disbaled in enviroment " + envName ;
+			String activityDesc = "'Environment System " + envProdcutID + " was disbaled in environment " + envName ;
+			String tasksActivityDesc = "Tasks were disabled because environment system '" + envProdcutID +
+			"' was disabled in environment '" + envName + "'.";
+		
 			try {
-				EnvironmentUtils.fnInsertActivity("disable", "Environment", activityDesc);
+				fnInsertActivity("update", "Environments", activityDesc);
+				fnInsertActivity("update", "Tasks", tasksActivityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -758,8 +885,16 @@ public class Logic extends WebServiceUserCode {
 	
 	@webService(path = "product/{envId}/{productId}/EnableEnvironmentProduct", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsEnableEnvironmentProduct(@param(required=true) Long productId,Long envId,Long envProdcutID,String envName) throws Exception {
-	String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
+		if (!"admin".equals(permissionGroup)) {
+			if ("tester".equals(permissionGroup)) {
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore are not allowed to disable environment products.", null);
+			} else if("owner".equals(permissionGroup)){
+				if(!fnIsOwner(envId.toString())) 	
+					return wrapWebServiceResults("FAILED", "You are not the owner of this environment and therefore are not allowed to disable its products.", null);
+			}
+		}		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -833,15 +968,67 @@ public class Logic extends WebServiceUserCode {
 			db(TDM).execute(updateSourceTasks,"true",envName,envId,envProdcutID,productId);
 			db(TDM).execute(updateTargetTasks,"true",envName,envId,envProdcutID,productId);
 
-			String activityDesc = "'Environment Prodcut " + envProdcutID + " was enabled for enviroment " + envName ;
+			String activityDesc = "'Environment System " + envProdcutID + " was enabled in environment " + envName ;
+			String tasksActivityDesc = "Tasks were enabled because environment system '" + envProdcutID +
+			"' was disabled in environment '" + envName + "'.";
+		
 			try {
-				EnvironmentUtils.fnInsertActivity("enable", "Environment", activityDesc);
+				fnInsertActivity("update", "Environments", activityDesc);
+				fnInsertActivity("update", "Tasks", tasksActivityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
 		
 			errorCode = "SUCCESS";
 		
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error(message);
+		}
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+	@desc("Gets all active interfaces that are not suppressed in the configuration table")
+	@webService(path = "interfaces", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+						{
+			  "result": [
+			    "TAR_CRM_DB",
+			    "TAR_ORDERS_DB",
+			    "ORDERS_DB",
+			    "BILLING_DB",
+			    "TAR_COLLECTION_DB",
+			    "COLLECTION_DB",
+			    "TAR_BILLING_DB",
+			    "CRM_DB"
+			  ],
+			  "errorCode": "SUCCESS",
+			  "message": null
+			}
+						""")
+	public static Object wsGetActiveInterfaces() throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		String errorCode = "";
+		String message = null;
+
+		try {
+			Set<FabricInterface> interfaces = InterfacesManager.getInstance().getAllInterfaces();
+			List<String> result = new ArrayList<>();
+			Set<String> suppressedInterfaces = getAllSuppressedInterfaces();
+			for (FabricInterface interfaceRec : interfaces) {
+					String interfaceName = interfaceRec.getName();
+				if (interfaceRec.getActiveMode() && !suppressedInterfaces.contains(interfaceName)) {
+					result.add(interfaceName);
+				}
+			}
+			response.put("result", result);
+			errorCode = "SUCCESS";
+
 		} catch (Exception e) {
 			errorCode = "FAILED";
 			message = e.getMessage();

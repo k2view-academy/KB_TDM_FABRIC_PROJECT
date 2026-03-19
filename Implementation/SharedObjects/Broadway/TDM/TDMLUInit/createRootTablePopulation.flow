@@ -1,7 +1,45 @@
 tags: TDM
 stages:
-  Get Template:
+  Get Object Type:
     actors:
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            external: SOURCE_TABLE
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: any
+  PWD:
+    actors:
+      Main Regular Table?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
       Get Template For Main table Population:
         parent: InnerFlow
         in:
@@ -19,26 +57,6 @@ stages:
             mandatory: false
         out:
           result:
-            schema: string
-  PWD:
-    actors:
-      Tempate Found?:
-        parent: NotEquals
-        condition: result
-        in:
-          a:
-            link: Get Template For Main table Population/result
-            schema: string
-          b:
-            const: ''
-            schema: string
-      Get Project Directory:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: GetProjectFolder
-        out:
-          PROJECT_FOLDER:
             schema: string
   Templates Path:
     actors:

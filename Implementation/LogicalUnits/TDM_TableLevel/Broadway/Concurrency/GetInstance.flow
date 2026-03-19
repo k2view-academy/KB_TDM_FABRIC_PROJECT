@@ -1,0 +1,45 @@
+tags: Concurrency
+stages:
+  Get Inputs:
+    actors:
+      IID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: IID
+        out:
+          value:
+            schema: string
+  'Fabric Get Partition Instance ':
+    dependsOn: Get Inputs
+    actors:
+      Snapshot ?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'OFF'
+            schema: string
+          a:
+            external: syncMode
+    split: '--------------------'
+  'Sync     ':
+    else: true
+    dependsOn: Get Inputs
+    actors:
+      FabricGet:
+        parent: FabricGet
+        in:
+          luType:
+            const: TDM_TableLevel
+          iid:
+            const: null
+            link:
+              path: IID/value
+              pos: 0
+            default: false
+          syncMode:
+            const: FORCE
+  Create Table ?: {
+    }

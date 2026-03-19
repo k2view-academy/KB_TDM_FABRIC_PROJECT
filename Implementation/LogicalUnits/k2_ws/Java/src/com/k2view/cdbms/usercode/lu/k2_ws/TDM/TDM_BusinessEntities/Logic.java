@@ -10,7 +10,6 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.Util;
-
 import com.k2view.fabric.common.mtable.MTable;
 import org.json.JSONObject;
 
@@ -46,6 +45,7 @@ public class Logic extends WebServiceUserCode {
 	public static final String PARAM_NAME = "PARAM_NAME";
 	public static final String PARAM_TYPE = "PARAM_TYPE";
 	public static final String DESCRIPTION = "DESCRIPTION";
+
 
 	public static final String COMBO_INDICATOR = "COMBO_INDICATOR";
 	public static final String VALID_VALUES = "VALID_VALUES";
@@ -547,6 +547,7 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
+		String activityDesc="";
 		try {
 			String username = sessionUser().name();
 			fnUpdateBusinessEntityDate(beId, username);
@@ -554,12 +555,14 @@ public class Logic extends WebServiceUserCode {
 		catch(Exception e){
 			log.error(e.getMessage());
 		}
-		
-		if (logicalUnit.get("product_id")!=null && !"-1".equals(logicalUnit.get("product_id").toString())) {
-			try {
-				String username = sessionUser().name();
-				Long prodId = Long.parseLong(logicalUnit.get("product_id").toString());
-				fnUpdateProductDate(prodId,username);
+			if (logicalUnit.get("product_id")!=null && !"-1".equals(logicalUnit.get("product_id").toString())) {
+				try {
+					String username = sessionUser().name();
+					Long prodId = Long.parseLong(logicalUnit.get("product_id").toString());
+					fnUpdateProductDate(prodId,username);
+					activityDesc = "System with Id " + logicalUnit.get("product_id") + " was updated for busniess enitity Id " + beId;
+					fnInsertActivity("update", "Business entities", activityDesc);
+
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
@@ -568,9 +571,8 @@ public class Logic extends WebServiceUserCode {
 		try{
 			fnUpdateLogicalUnit(logicalUnit);
 			errorCode = "SUCCESS";
-		
 			try {
-				String activityDesc = "Logical unit " + logicalUnit.get("lu_name") + " was updated";
+			 	activityDesc = "Logical unit " + logicalUnit.get("lu_name") + " was updated for busniess enitity Id " + beId;
 				fnInsertActivity("update", "Business entities", activityDesc);
 			}
 			catch(Exception e){
@@ -623,18 +625,25 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
+		String activityDesc="";
 
 		if (product_id!=null && product_id != -1) {
 			String username = sessionUser().name();
 			
 			fnUpdateProductDate(product_id,username);
+			activityDesc = "System with Id " + product_id + " was updated for busniess enitity Id " + beId;
+			try {
+				fnInsertActivity("update", "Business entities", activityDesc);
+			} catch(Exception e){
+				log.error(e.getMessage());
+			}
 		}
 		for(Map<String,Object> logicalUnit:logicalUnits){
 			logicalUnit.put("product_id",product_id);
 			logicalUnit.put("product_name",product_name);
 			try {
 				fnUpdateLogicalUnit(logicalUnit);
-				String activityDesc = "Logical unit " + logicalUnit.get("lu_name") + " was updated";
+				activityDesc = "Logical unit " + logicalUnit.get("lu_name") + " was updated for busniess enitity Id " + beId;
 				try {
 					fnInsertActivity("update", "Business entities", activityDesc);
 				}
@@ -816,13 +825,14 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		
 		try {
 			String sql="UPDATE " + schema + ".tasks " +
 					"SET task_status=(?) " +
 					"WHERE be_id = " + beId;
 			db(TDM).execute(sql,"Inactive");
 			errorCode="SUCCESS";
+			String activityDesc = "Tasks were deleted for business entity Id " + beId;
+			fnInsertActivity("update", "Business entities", activityDesc);
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
@@ -1421,7 +1431,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetActiveBusinessentities() throws Exception {
 		String sql = "SELECT be_id, be_name, execution_mode FROM "+ TDMDB_SCHEMA +".business_entities be WHERE EXISTS"+ 
-        "(SELECT be_id FROM "+ TDMDB_SCHEMA +".product_logical_units plu WHERE plu.be_id=be.be_id) AND be_status = 'Active'";
+        "(SELECT be_id FROM "+ TDMDB_SCHEMA +".product_logical_units plu WHERE plu.be_id=be.be_id AND plu.product_id > 0) AND be_status = 'Active'";
 		String errorCode="";
 		String message=null;
 		
@@ -1522,7 +1532,6 @@ public class Logic extends WebServiceUserCode {
                 String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
                 Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
 				String descirption = getParamDescription(colNameUpper,paramCoupling);
-
                 String isCombo = "false";
                 Boolean isNumeric = Boolean.parseBoolean(fieldValuesRec.get("is_numeric").toString());
                 String min = fieldValuesRec.get("min_value").toString();
@@ -1631,7 +1640,8 @@ public class Logic extends WebServiceUserCode {
         
         return result.toString();
     }
-	private static String getParamDescription(String colNameUpper,boolean paramCoupling) throws Exception{
+
+    private static String getParamDescription(String colNameUpper,boolean paramCoupling) throws Exception{
 		String description="";
 		try{
 			Map<String, Object> mapListInputs = new HashMap<>();
@@ -1650,5 +1660,4 @@ public class Logic extends WebServiceUserCode {
     	}
     	return description;
 	}
-    
 }

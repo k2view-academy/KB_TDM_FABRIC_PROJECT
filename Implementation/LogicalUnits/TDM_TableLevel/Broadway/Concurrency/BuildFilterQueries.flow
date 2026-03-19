@@ -1,0 +1,217 @@
+tags: Concurrency
+stages:
+  Build Select Clause:
+    actors:
+      Build Select Clause For Query:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildSelectClauseForQuery
+          interfaceName:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: string
+  Prepare Select Statements:
+    actors:
+      Create Count Statement:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var cntStatement = "select count(*) as CNT from " + schemaName + "." + tableName;
+              if (schemaName == null || schemaName == "") {
+                 cntStatement = "select count(*) as CNT from " + tableName;
+              }
+              cntStatement;
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Create Select Statement:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var selectStatement = "select " + selectFields + " from " + schemaName + "." + tableName + " t";
+              if (schemaName == null || schemaName == "") {
+                 selectStatement = "select " + selectFields + " from " + tableName + " t";
+              }
+              selectStatement;
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          selectFields:
+            link: Build Select Clause For Query/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Without Filter:
+    else: false
+    dependsOn: Prepare Select Statements
+    actors:
+      IsNull:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            external: tableFilter
+      No Where clause For Count:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Create Count Statement/result
+            schema: string
+        out:
+          value:
+            schema: string
+      No Where clause:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Create Select Statement/result
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  With Filter:
+    else: true
+    dependsOn: Prepare Select Statements
+    actors:
+      Add  Wherer Count Clause:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Create Count Statement/result
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      Add  Wherer Filter Clause:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Create Select Statement/result
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      Mark Filter As Used:
+        parent: FabricSet
+        in:
+          key:
+            const: filterUsed
+            default: false
+          value:
+            const: 'true'
+            default: false
+  Return Output:
+    actors:
+      Count Query:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - No Where clause For Count/value
+            - Add  Wherer Count Clause/selectStatement
+        out:
+          value:
+            external: countClause
+            schema: string
+      Where Query:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - No Where clause/value
+            - Add  Wherer Filter Clause/selectStatement
+        out:
+          value:
+            external: filterClause
+            schema: string
+      Parameters:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Add  Wherer Filter Clause/paramters
+        out:
+          value:
+            external: clauseParameters
+            schema: '#ref'
+schemas:
+  Add  Wherer Count Clause.out.paramters:
+    type: array
+    items:
+      type: string
+  Add  Wherer Filter Clause.out.paramters:
+    type: array
+    items:
+      type: string
+  Parameters.out.value:
+    type: array
+    items:
+      type: string

@@ -63,3 +63,10 @@ stages:
         in:
           flowName:
             const: UpgradeDistinctValues
+  Stage 10:
+    actors:
+      RemoveOldAddWebRole1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveOldAddWebRole

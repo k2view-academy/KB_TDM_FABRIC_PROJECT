@@ -1,0 +1,19 @@
+{
+    "type": "TDMDbErrorHandlerBatch",
+    "badge": "TEB",
+    "inputs": [
+        {
+            "const": "target",
+            "name": "__active_environment",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": false
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "TDM"
+    ],
+    "parentType": "DbErrorHandlerBatch"
+}

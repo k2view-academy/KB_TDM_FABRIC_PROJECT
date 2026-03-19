@@ -1,0 +1,91 @@
+tags: Upgrade
+stages:
+  'Get Global ':
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  'Update Table Values ':
+    actors:
+      Systems:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.activities set entity='Systems' where entity
+              In ('Product','Products','Data Center','Prodcuts');
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+      ExecuteTasks:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.activities set action='execute' where action='Update'
+              and entity='Tasks' and description Like '%Execution list of task%';
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+      'Env Gloabls  ':
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.activities set action='update' where action='global'
+              ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+      Release Reserve:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.activities set action='delete' where action='release'
+              ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+      'Environments ':
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.activities set entity='Environments' where
+              entity='Environment';
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+      Action Lower Case:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.activities set action = LOWER(action);
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql

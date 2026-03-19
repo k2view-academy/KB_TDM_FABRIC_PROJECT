@@ -10,7 +10,7 @@ stages:
         out:
           schema:
             schema: string
-      truncate date:
+      Const1:
         parent: Const
         in:
           value:
@@ -40,14 +40,14 @@ stages:
                   t.task_id = s.task_id
               WHERE
                   LOWER(s.execution_status) = 'stopped'
-                  AND t.selection_method = 'C'
+                  AND (t.selection_method = 'C' OR t.selection_method = 'GENERATE')
                   AND t.task_last_updated_date < ${truncate_date};
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
             schema: string
             mandatory: false
           truncate_date:
-            link: truncate date/value/date_trunc
+            link: Const1/value/date_trunc
             schema: '#ref'
             mandatory: false
         out:
@@ -174,7 +174,7 @@ stages:
             schema: '#ref'
   Get Task Execution ID:
     actors:
-      'Substring   ':
+      Substring1:
         parent: Substring
         in:
           begin:
@@ -200,7 +200,7 @@ stages:
             schema: string
             mandatory: false
           taskExecutionId:
-            link: Substring   /string
+            link: Substring1/string
             schema: string
             mandatory: false
         out:
@@ -236,7 +236,7 @@ stages:
             schema: string
             mandatory: false
 schemas:
-  truncate date.out.value:
+  Const1.out.value:
     type: object
     properties:
       date_trunc:

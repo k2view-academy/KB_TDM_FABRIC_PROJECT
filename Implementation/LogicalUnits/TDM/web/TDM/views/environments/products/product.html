@@ -19,8 +19,8 @@
                             <input type="text" class="form-control1" ng-model="envProductCtrl.envProduct.product_name" disabled>
                         </div>
                         <div class="form-group col-lg-12">
-                            <label class="control-label">Data Center Name</label>
-                            <select class="form-control1" ng-model="envProductCtrl.envProduct.data_center_name" ng-disabled="envProductCtrl.disableChange" ng-options="option.data_center_name as option.data_center_name for option in envProductCtrl.dataCenters">
+                            <label class="control-label">Affinity</label>
+                            <select class="form-control1" multiple chosen ng-model="envProductCtrl.envProduct.data_center_name" ng-disabled="envProductCtrl.disableChange" ng-options="option.data_center_name as option.data_center_name for option in envProductCtrl.dataCenters">
                             </select>
                         </div>
                         <div class="form-group col-lg-12">

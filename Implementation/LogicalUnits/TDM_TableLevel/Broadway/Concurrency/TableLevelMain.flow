@@ -1,0 +1,357 @@
+tags: Concurrency
+stages:
+  Inputs:
+    actors:
+      deleteBeforeLoad:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: deleteBeforeLoad
+            schema: string
+        out:
+          value:
+            schema: string
+      taskExecutionId:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskExecutionId
+            schema: string
+        out:
+          value:
+            schema: string
+      syncMode:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: syncMode
+            schema: string
+        out:
+          value:
+            schema: string
+      taskType:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskType
+            schema: string
+        out:
+          value:
+            schema: string
+      tableLevelInd:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableLevelInd
+            schema: string
+        out:
+          value:
+            schema: string
+      inPlaceMasking:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: inPlaceMaskingInd
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+      Set Source Entity ID:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: ALL_TABLES
+            default: false
+      Initiate Target Entity ID after IID Split:
+        parent: FabricSet
+        remark: The Target Entity ID should be initiated in case the flows fails during
+          the next stage and before setting this ID as it is used in the Error handler
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: ALL_TABLES
+            default: false
+  Prepare Order of Tables:
+    actors:
+      'Delete Error Handler  ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+      Clear Tables' Orders Cache:
+        parent: LuFunction
+        height: 130
+        in:
+          functionName:
+            const: tablesOrderCleanUp
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Prepare Tables' Order:
+        parent: LuFunction
+        in:
+          functionName:
+            const: prepareTablesOrder
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskAction:
+            external: taskType
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Set IN_PLACE_MASKING_IND:
+        parent: FabricSet
+        in:
+          key:
+            const: IN_PLACE_MASKING_IND
+            default: false
+          value:
+            const: 'false'
+            link: inPlaceMasking/value
+  In Case of InPlace Masking Set to the masking flag:
+    dependsOn: Prepare Order of Tables
+    actors:
+      In Place Masking Task?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: inPlaceMasking/value
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Set Masking Flag to true:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_masking
+            default: false
+          value:
+            const: 'true'
+            default: false
+    split: '--------------------'
+  Not an InPlace Masking Task:
+    else: true
+    dependsOn: Prepare Order of Tables
+  'Add ':
+    actors:
+      MathAdd:
+        parent: MathAdd
+        in:
+          b:
+            const: 1
+          a:
+            link: Prepare Tables' Order/result
+  Load Tables Data To Cache:
+    actors:
+      Table Error Handler No Fields Or No Key Fields:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
+      LoadTablesDataToCache1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadTablesDataToCache
+          maxOrder:
+            link: MathAdd/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          isInPlaceMaskingTask:
+            link: inPlaceMasking/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            schema: string
+            mandatory: false
+            createdBy: flowName
+      False if Table Level Task:
+        parent: Not
+        in:
+          value:
+            link: tableLevelInd/value
+  Run Count For Supporting Tables:
+    dependsOn: Load Tables Data To Cache
+    actors:
+      Not Loading From Snapshot?:
+        parent: NotEquals
+        condition: result
+        in:
+          b:
+            const: 'OFF'
+            schema: string
+          a:
+            link: syncMode/value
+      Count Main Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CountMainFlow
+          taskExecutionId:
+            external: taskExecutionId
+            schema: any
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  Load From Snapshot:
+    else: true
+    dependsOn: Load Tables Data To Cache
+  Merge: {
+    }
+  If Delete is Requested:
+    dependsOn: Merge
+    actors:
+      Delete is Requested Or Task With Entities:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: deleteBeforeLoad/value
+          b:
+            link: False if Table Level Task/result
+      Delete Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+      Delete Main Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DeleteMainFlow
+          maxOrder:
+            link: Prepare Tables' Order/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          sourceEnv:
+            link: Get Source Environment/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  No Deletion:
+    else: true
+    dependsOn: Merge
+  Extract & Load:
+    actors:
+      Extarct And Load Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+      ExtractAndLoadMainFlow1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ExtractAndLoadMainFlow
+          maxOrder:
+            link: MathAdd/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          syncMode:
+            link: syncMode/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskType:
+            link: taskType/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExeID:
+            link: taskExecutionId/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
+  Clear the cache:
+    actors:
+      clear cache:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnClearTaskCache
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName

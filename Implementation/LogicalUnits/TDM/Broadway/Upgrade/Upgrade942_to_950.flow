@@ -1,0 +1,78 @@
+tags: Upgrade
+stages:
+  Change Globals To Non Finals:
+    actors:
+      'ChangeGlobalsToNonFinal ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ChangeGlobalsToNonFinal
+  Update Activities Table:
+    actors:
+      UpdateActivitiesTable1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateActivitiesTable
+  Add New Coulmns For Reports:
+    actors:
+      UpdateTDMDBTablesForReports1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTDMDBTablesForReports
+  Upgrade Cleanup Mtable:
+    actors:
+      RemoveTDMCleanUpFromTDMLU1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveTDMCleanUpFromTDMLU
+  Add new columns to Mtable:
+    actors:
+      UpgradeTableLevelDefinitions9_51:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTableLevelDefinitions9_5
+  Handle count indicator:
+    actors:
+      ErrorHandler1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      UpdateCountIndicatorDB1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateCountIndicatorDB
+      UpdateCountIndicatorOnTableLevelDef1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateCountIndicatorOnTableLevelDef
+  Remove count indicator from TableLevelInterfaces:
+    actors:
+      UpgradeTableLevelInterfaces9_51:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTableLevelInterfaces9_5
+  'Remove Old Files ':
+    actors:
+      RemoveTableLevelOldFiles1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveTableLevelOldFiles

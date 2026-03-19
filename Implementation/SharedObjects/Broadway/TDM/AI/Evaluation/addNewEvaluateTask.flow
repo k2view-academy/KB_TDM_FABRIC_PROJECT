@@ -56,11 +56,10 @@ stages:
           format:
             const: "{\r\n   \"training_task_execution_id\":${training_execution_id},\r\
               \n   \"generation_task_execution_id\":${generation_execution_id},\r\n\
-              \   \"high_cardinality_column_ratio_threshold\": 0.2,\r\n   \"lr_score_leniency\"\
-              :2,\r\n   \"max_fully_joined_n_rows\": 1000000,\r\n   \"max_one_to_many_rows\"\
-              : 10,\r\n   \"logical_relations\":{\r\n      \"logical_relations_root_table_sampling\"\
-              :null,\r\n      \"root_table_n_rows_for_fully_joined_table\":null,\r\
-              \n      \"root_table_n_rows_for_memory_estimation_for_fully_joined_table\"\
+              \   \"lr_score_leniency\":2,\r\n   \"max_fully_joined_n_rows\": 1000000,\r\
+              \n   \"max_one_to_many_rows\": 10,\r\n   \"logical_relations\":{\r\n\
+              \      \"logical_relations_root_table_sampling\":null,\r\n      \"root_table_n_rows_for_fully_joined_table\"\
+              :null,\r\n      \"root_table_n_rows_for_memory_estimation_for_fully_joined_table\"\
               :20,\r\n      \"ram_safety_factor_for_fully_joined_table\":0.2\r\n \
               \  },\r\n   \"use_fully_joined_table_for_pairwise_metrics\": true,\r\
               \n   \"root_table_sampling_source\":null,\r\n   \"root_table_sampling_synthetic\"\

@@ -40,7 +40,7 @@
                                 <div class="form-group option-button" style="align-items: flex-start">
                                     <input id="environment_role_allow_read" ng-disabled="environmentCtrl.disableChangeRole || environmentCtrl.roleData.allow_read == true && !environmentCtrl.roleData.allow_write" 
                                         type="checkbox" ng-model="environmentCtrl.roleData.allow_read"/>
-                                    <label class="control-label option-button-label">Read permssions</label>
+                                    <label class="control-label option-button-label">Read permissions</label>
                                 </div>
                             </div>
                             <div class="col-lg-1" ></div>
@@ -70,7 +70,7 @@
                                 <div class="form-group option-button" style="align-items: flex-start">
                                     <input id="environment_role_allow_write" ng-disabled="environmentCtrl.disableChangeRole ||  !environmentCtrl.roleData.allow_read && environmentCtrl.roleData.allow_write" 
                                         type="checkbox" ng-init="environmentCtrl.showAllInterfaces = false;" ng-model="environmentCtrl.roleData.allow_write"/>
-                                    <label class="control-label option-button-label">Write Permissions</label>
+                                    <label class="control-label option-button-label">Write permissions</label>
                                 </div>
                             </div>
                             <div class="col-lg-1" ></div>
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="form-group option-button" style="flex-direction: column;align-items: flex-start;">
                                     <label>Maximum number of entities</label>
-                                    <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1" 
+                                    <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="0" 
                                         ng-disabled="environmentCtrl.disableChangeRole || environmentCtrl.roleData.write_unlimited_entities || !environmentCtrl.roleData.allow_write"
                                         ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_copy === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_copy" 
                                         ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_copy"
@@ -181,7 +181,7 @@
                                    ng-model="environmentCtrl.roleData.allowed_creation_of_synthetic_data"/>
                         </div>
                         <label class="option-button-label">
-                            Entity Clone
+                            Entity clone
                         </label>
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput">
@@ -240,13 +240,13 @@
                                 ng-model="environmentCtrl.roleData.allowed_entity_versioning" />
                         </div>
                         <label class="option-button-label">
-                            Data Versioning
+                            Data versioning
                         </label>
                     </div>
                     <div class="form-group col-lg-12 permissionsLabelsNew" ng-if="environmentCtrl.envType !== 'Source' && environmentCtrl.isFluxMode">
                         <div class="option-button" style="flex-direction: column;justify-content: flex-start;align-items: flex-start;">
                             <label class="option-button-label">
-                                Max Number of Reserved Entities On Env
+                                Max number of reserved entities on env
                             </label>
                             <input id="environment_role_reserve_entities" ng-disabled="environmentCtrl.disableChangeRole" style="width: 100%" type="number" class="form-control1" 
                             min="{{!environmentCtrl.roleData.allowed_number_of_entities_to_copy && environmentCtrl.envType === 'Target' ? 1 : 0}}"

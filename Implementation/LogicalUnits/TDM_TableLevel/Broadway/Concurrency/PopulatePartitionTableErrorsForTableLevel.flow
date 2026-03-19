@@ -1,0 +1,515 @@
+tags: Concurrency
+stages:
+  Get Inputs:
+    actors:
+      Get Current Time:
+        parent: Now
+      Get the Error Fields:
+        parent: ErrorFields
+        in:
+          error:
+            external: error
+        out:
+          inputs:
+            schema: '#ref'
+      Get Source Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+      'Get Target Entity ID ':
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      Get tableName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+        out:
+          value:
+            schema: string
+      Get partitionNumber:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: partitionNumber
+        out:
+          value:
+            schema: string
+      Get refTableID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: refTableID
+        out:
+          value:
+            schema: integer
+  'Prepare the Data   ':
+    actors:
+      Build string from input parameters:
+        parent: CsvBuilder
+        in:
+          header:
+            const: false
+          maps:
+            link: Get the Error Fields/inputs
+      Format the current date:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Current Time/date
+      Get Task Exec ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      Get Executor Name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: USER_NAME
+            default: false
+      Set Entity Status to Failure:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Build Queries:
+    actors:
+      TASK_REF_PARTITION:
+        parent: StringFormat
+        in:
+          format:
+            const: "update ${TDMDB_SCHEMA}.task_ref_partition\r\n set execution_status='failed',\
+              \ end_time=NOW(), error_msg = ?\r\n where task_execution_id=${task_execution_id}"
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: format
+          task_execution_id:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+            createdBy: format
+      TASK_REF_EXE_STATS:
+        parent: StringFormat
+        in:
+          format:
+            const: "UPDATE ${TDMDB_SCHEMA}.TASK_REF_EXE_STATS\r\nSET execution_status\
+              \ = 'failed',\r\nerror_msg = ?,\r\nend_time = CURRENT_TIMESTAMP AT TIME\
+              \ ZONE 'UTC',\r\nupdated_by = '${userName}'\r\nWHERE task_execution_id\
+              \ = ${taskExecutionID}"
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+            createdBy: format
+          userName:
+            link: Get Executor Name/result
+            schema: string
+            mandatory: false
+            createdBy: format
+          taskExecutionID:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+            createdBy: format
+  Table Name Exists:
+    else: false
+    dependsOn: Build Queries
+    actors:
+      'We have Table Name  ':
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get tableName/value
+            schema: string
+      Source Entity ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Source Entity ID/result
+            schema: string
+        out:
+          value:
+            schema: string
+      Target Entity ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Target Entity ID /result
+            schema: string
+        out:
+          value:
+            schema: string
+      Table Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get tableName/value
+            schema: string
+        out:
+          value:
+            schema: string
+      ' Where clause for partition table: StringFormat':
+        parent: StringFormat
+        in:
+          format:
+            const: '${query} and task_ref_table_id=${task_ref_table_id} '
+          query:
+            link: TASK_REF_PARTITION/string
+            schema: string
+            mandatory: false
+            createdBy: format
+          task_ref_table_id:
+            link: Get refTableID/value
+            schema: integer
+            mandatory: false
+            createdBy: format
+      ' Where clause for exe table: StringFormat':
+        parent: StringFormat
+        in:
+          format:
+            const: '${query} and task_ref_table_id=${task_ref_table_id} '
+          query:
+            link: TASK_REF_EXE_STATS/string
+            schema: string
+            mandatory: false
+            createdBy: format
+          task_ref_table_id:
+            link: Get refTableID/value
+            schema: integer
+            mandatory: false
+            createdBy: format
+    split: '--------------------'
+  No Table:
+    else: true
+    dependsOn: Build Queries
+    actors:
+      'ALL_TABLES ':
+        parent: Const
+        in:
+          value:
+            const: ALL_TABLES
+            schema: string
+        out:
+          value:
+            schema: string
+      Task Ref Partition:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: TASK_REF_PARTITION/string
+        out:
+          value:
+            schema: string
+      Task Ref Exe Stats:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: TASK_REF_EXE_STATS/string
+        out:
+          value:
+            schema: string
+  Merge:
+    actors:
+      Ref Partition Query:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - ' Where clause for partition table: StringFormat/string'
+            - Task Ref Partition/value
+        out:
+          value:
+            schema: string
+      StringPadding:
+        parent: StringPadding
+        in:
+          length:
+            const: 100
+          input:
+            link: Get the Error Fields/message
+  Partition Is Found:
+    dependsOn: Merge
+    actors:
+      ALL_PARTITIONS?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            schema: string
+          b:
+            const: ALL_PARTITIONS
+            schema: string
+      ' Where clause for partition number':
+        parent: StringFormat
+        in:
+          format:
+            const: ${query} AND partition_no=${partition_no}
+          query:
+            link: Ref Partition Query/value
+            schema: string
+            mandatory: false
+            createdBy: format
+          partition_no:
+            link: Get partitionNumber/value
+            schema: string
+            mandatory: false
+            createdBy: format
+    split: '--------------------'
+  No Partition:
+    else: true
+    dependsOn: Merge
+    actors:
+      'Task Ref Partition  ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Ref Partition Query/value
+        out:
+          value:
+            schema: string
+  Load Data to Detailed Error table:
+    transactional: false
+    actors:
+      Error Handler for reporting to TDM Error Table:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Load Data To Error Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_exe_error_detailed
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - entity_id
+            - iid
+            - target_entity_id
+            - error_category
+            - error_code
+            - error_message
+            - creation_date
+            - flow_name
+            - stage_name
+            - actor_name
+            - actor_parameters
+          dialect:
+            const: postgres
+          task_execution_id:
+            link: Get Task Exec ID/result
+            schema: string
+          lu_name:
+            const: TDM_TableLevel
+            schema: string
+          entity_id:
+            link:
+            - Source Entity ID/value
+            - ALL_TABLES /value
+            schema: string
+          iid:
+            link:
+            - Table Name/value
+            - ALL_TABLES /value
+            schema: string
+          target_entity_id:
+            const: ''
+            link:
+            - Table Name/value
+            - ALL_TABLES /value
+            schema: string
+            default: true
+          error_category:
+            const: Rejected Table
+            schema: string
+          error_code:
+            link: Get the Error Fields/errorCode
+            schema: string
+          error_message:
+            link: StringPadding/string
+            schema: string
+          creation_date:
+            link: Format the current date/string
+            schema: string
+          flow_name:
+            link: Get the Error Fields/flow
+            schema: string
+          stage_name:
+            link: Get the Error Fields/stage
+            schema: string
+          actor_name:
+            link: Get the Error Fields/actor
+            schema: string
+          actor_parameters:
+            const: ''
+            link: Build string from input parameters/csv
+            schema: string
+            default: true
+      Set Entity Status to Failed:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Set Record Status to Failed:
+        parent: FabricSet
+        in:
+          key:
+            const: RECORD_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Get LU Name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TABLES_LU_NAME
+            default: false
+  Update TASK_REF_EXE_STATS for All tables:
+    transactional: false
+    actors:
+      Error Handler for reporting to TDM Error Table1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      'Update task_ref_partition   ':
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link:
+            - ' Where clause for partition number/string'
+            - Task Ref Partition  /value
+          params:
+            link: StringPadding/string
+      'Update task_exe_ref_stats  ':
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link:
+            - ' Where clause for exe table: StringFormat/string'
+            - Task Ref Exe Stats/value
+          params:
+            link: StringPadding/string
+  Update Table Entity:
+    actors:
+      Error Handler for reporting to TDM Error Table11:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Populate Task Execution Entities For Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForTables
+          luName:
+            const: ''
+            link: Get LU Name/result
+            schema: string
+            default: true
+            mandatory: false
+          taskExecutionId:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+          tableName:
+            link:
+            - Source Entity ID/value
+            - ALL_TABLES /value
+            schema: string
+            mandatory: false
+schemas:
+  Get the Error Fields.out.inputs:
+    type: object
+    properties:
+      interface:
+        type: string
+      luType:
+        type: string
+      parallel:
+        type: boolean
+      stop_on_error:
+        type: boolean
+      syncMode:
+        type: string
+      iid:
+        type: string

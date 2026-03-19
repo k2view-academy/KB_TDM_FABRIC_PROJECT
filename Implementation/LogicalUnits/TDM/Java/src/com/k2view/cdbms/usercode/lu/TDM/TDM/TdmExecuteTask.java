@@ -97,10 +97,8 @@ public class TdmExecuteTask {
 
     public static void fnTdmExecuteTask() throws Exception {
         log.info("----------------- Starting tdmExecuteTask -------------------");
-
-      //Initiate the separators cache
+        //Initiate the separators cache
         fnGetSeparators();
-
         String query = new String(loadAndReplace("TDM/fnTdmExecuteTask/query_get_tasks.sql"));
         Db tdmDB = db(TDM);
         tdmDB.fetch(query).forEach(row -> {
@@ -115,6 +113,8 @@ public class TdmExecuteTask {
             //log.info("tdmExecuteTask - taskExecutionID: " + taskExecutionID + ", luID: " + luID + ", processID: " + processID);
             
             String startTime = "" + Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
+            if (processID == 0) {
+                // skip the update for post/pre process
             try {
                 db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
                                 "start_execution_time = ? " +
@@ -123,6 +123,7 @@ public class TdmExecuteTask {
 
             } catch (SQLException e) {
                 throw new RuntimeException(e);
+            }
             }
 
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
@@ -400,14 +401,13 @@ public class TdmExecuteTask {
                 entityInclusionOverride = getEntityInclusionForChildLU(taskProperties, luName);
             }
             String entityInclusionInterface = entityInclusions.getOrDefault(INTERFACE, TDMDB);
-            String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
-            String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";            
-
+            String affinity = getAffinityString(SOURCE_AFFINITY.get(taskProperties).toString()) ;          
+            String maxNumOfWorkers = findMaxNumOfWorkers(SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties).toString());                        
             String batchCommand = "";
             if ("L".equalsIgnoreCase(selectionMethod) && !isChildLU(taskProperties)) {
-                batchCommand = "BATCH " + luName + ".(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+                batchCommand = "BATCH " + luName + ".(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
             } else {
-                batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+                batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
             }
 
             if (!"ON".equalsIgnoreCase(syncMode)) {
@@ -509,17 +509,17 @@ public class TdmExecuteTask {
             syncMode = "off";
         }
 
-        String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
-        String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
+        String affinity = getAffinityString(TARGET_AFFINITY.get(taskProperties).toString());
+        String maxNumOfWorkers = findMaxNumOfWorkers(TARGET_MAX_WORKERS_PER_NODE.get(taskProperties).toString());
 
         //TDM 7.4 - For Custom Logic the source DB is Cassandra
         // In case of entity list, the batch command will be different as it gets a entity list and not an SQL statement
         //String batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true";
         String batchCommand = "";
         if ("L".equalsIgnoreCase(selectionMethod) && !isChildLU(taskProperties) && !cloneInd) {
-            batchCommand = "BATCH " + luName + ".(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+            batchCommand = "BATCH " + luName + ".(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
         } else {
-            batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+            batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
         }
 
         String broadwayCommand = "broadway " + luName + ".TDMOrchestrator " + "iid=?, luName=" + luName +
@@ -568,8 +568,8 @@ public class TdmExecuteTask {
 
         //log.info(" entity inclusion: " + entityInclusionOverride);
 
-        String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
-        String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
+        String affinity = getAffinityString(TARGET_AFFINITY.get(taskProperties).toString());
+        String maxNumOfWorkers = findMaxNumOfWorkers(TARGET_MAX_WORKERS_PER_NODE.get(taskProperties).toString());
 
         // In case of entity list, the batch command will be different as it gets a entity list and not an SQL statement
         //String batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true";
@@ -577,9 +577,9 @@ public class TdmExecuteTask {
         Boolean cloneInd = CLONE_IND.get(taskProperties);
         String taskTitle = "" + TASK_TITLE.get(taskProperties);
         if ("L".equalsIgnoreCase(selectionMethod) && !isChildLU(taskProperties) && !cloneInd) {
-            batchCommand = "BATCH " + luName + ".(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+            batchCommand = "BATCH " + luName + ".(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
         } else {
-            batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+            batchCommand = "BATCH " + luName + " FROM " + entityInclusionInterface + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
         }
         String parentLuName = "";
         String broadwayCommand = "broadway " + luName + ".TDMReserveOrchestrator " + "iid=?, luName=" + luName +
@@ -619,11 +619,11 @@ public class TdmExecuteTask {
             batchDB = entityInclusions.getOrDefault(INTERFACE, TDMDB);
         }
         String subset_expiration_date = setTTL(taskProperties);
-
-        String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
-        String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
+        
+        String affinity = getAffinityString(SOURCE_AFFINITY.get(taskProperties).toString()) ;          
+        String maxNumOfWorkers = findMaxNumOfWorkers(SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties).toString());        
         String taskTitle = "" + TASK_TITLE.get(taskProperties);
-        String batchCommand = "BATCH " + luName + " FROM " + batchDB + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+        String batchCommand = "BATCH " + luName + " FROM " + batchDB + " USING(?) fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
         String parentLuName = entityInclusions.getOrDefault(PARENT_LU, "");
         String broadwayCommand = "broadway " + luName + ".TDMGenerateOrchestrator " + "iid=?, luName=" + luName
                 + ", syncMode=FORCE , isParamCoupling = " + isParamCoupling +
@@ -652,17 +652,17 @@ public class TdmExecuteTask {
                 if(handleTables == null) {
                     return null;
                 }
+
+                //TDM 9.0 - HF1, check if the Table Level already ran or not
+                String filter = "TableLevelMain iid=?, taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties);
+
+                Object batchId = fabric().fetch("batch_list status='ALL' filter = '" + filter + "'").firstRow().get("Id");
+
+                if (batchId != null) {
+                    return null;
+                }
             }
-
-            //TDM 9.0 - HF1, check if the Table Level already ran or not
-            String filter = "TableLevelJob iid=?, taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties);
-
-            Object batchId = fabric().fetch("batch_list status='ALL' filter = '" + filter + "'").firstRow().get("Id");
-
-            if (batchId != null) {
-                return null;
-            }
-
+            
             String taskType = TASK_TYPE.get(taskProperties).toString().toLowerCase();
             if ("extract".equals(taskType)) {
                 setGlobalsForTask("extract", taskProperties);
@@ -673,13 +673,14 @@ public class TdmExecuteTask {
             String version_exp_date = setTTL(taskProperties);
             ExecutionInfo.put("expiration_date", version_exp_date);
             String taskTitle = "" + TASK_TITLE.get(taskProperties);
-            String batchCommand = "BATCH " + TABLE_LEVEL_LU + ".(?) fabric_command=? with async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
-            String broadwayCommand = "broadway " + TABLE_LEVEL_LU + ".TableLevelJob iid=?, " + 
-                "taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties) +",syncMode=\"" + OriginalSyncMode + 
-                "\", taskType=" + taskType + ", deleteBeforeLoad=" + DELETE_BEFORE_LOAD.get(taskProperties) +
-                ", loadEntity=" + LOAD_ENTITY.get(taskProperties) + ", tableLevelInd=" + tableLevelInd + 
-                ", retentionPeriodValue=\"" + RETENTION_PERIOD_VALUE.get(taskProperties) + "\", taskTitle=\"" + taskTitle + "\"";
-
+            String batchCommand = "BATCH " + TABLE_LEVEL_LU + ".(?) fabric_command=? with async=true"
+                    + " BATCH_ID_PREFIX ='" + taskTitle + "'";
+           
+            String broadwayCommand = "broadway " + TABLE_LEVEL_LU + ".TableLevelMain iid=?, " +
+                    "taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties) + ",syncMode=\"" + OriginalSyncMode +
+                    "\", taskType=" + taskType + ", tableLevelInd=" + tableLevelInd + ", deleteBeforeLoad="
+                    + DELETE_BEFORE_LOAD.get(taskProperties)+ ", inPlaceMaskingInd="
+                    + IN_PLACE_MASKING_IND.get(taskProperties);   
 
             //log.info("executeTableLevelBatch - batchCommand: " + batchCommand);
             //log.info("executeTableLevelBatch - broadwayCommand: " + broadwayCommand);
@@ -759,8 +760,8 @@ public class TdmExecuteTask {
         Map<String, String> ExecutionInfo = new LinkedHashMap<>();
         setGlobalsForTask("ai_generated", taskProperties);
         String luName = LU_NAME.get(taskProperties);
-        String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
-        String dcName = "" + DATA_CENTER_NAME.get(taskProperties);
+        String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);        
+        String sourceAffinity = "" + SOURCE_AFFINITY.get(taskProperties);
         String LuID = "" + LU_ID.get(taskProperties);
         String generation_exp_date = setTTL(taskProperties);
         boolean isParamCoupling = Boolean.TRUE.equals(PARAMS_COUPLING.get(taskProperties));
@@ -769,13 +770,15 @@ public class TdmExecuteTask {
         String loadIndicator= "" + LOAD_ENTITY.get(taskProperties);
         String beID= "" + BE_ID.get(taskProperties);
         String taskTitle = "" + TASK_TITLE.get(taskProperties);
+        String maxNumOfWorkers = findMaxNumOfWorkers(SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties));
 
         String broadwayCommand = "broadway TDM.ImportDataSubset " + "luName = '" + luName + "'" +
-                ", dcName='" + dcName + "'" +
+                ", dcName='" + sourceAffinity + "'" +
                 ", taskExecutionID='" + taskExecutionID + "'" +
                 ", loadIndicator='" + loadIndicator + "'" +
                 ", beID='" + beID + "'" +
-                ", LuID='" + LuID +"' ,isParamCoupling = " + isParamCoupling + " , taskTitle = '" + taskTitle + "'";
+                ", LuID='" + LuID +"' ,isParamCoupling = " + isParamCoupling + " , taskTitle = '" + taskTitle + "'"
+                + " , maxNumOfWorkers = '" + maxNumOfWorkers + "'";
 
         //Check if param table does not exist and create it, and if it exists, check if its structure is correct
         if(!isParamCoupling){
@@ -841,8 +844,6 @@ public class TdmExecuteTask {
         
         //Run the batch to handle all process type executions
        
-        String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
-        String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
         setGlobalsForTask(taskType, taskProperties);
         String args = " ARGS = '%s'".formatted(Json.get().toJson(
                 Map.of(
@@ -851,10 +852,12 @@ public class TdmExecuteTask {
                         "sessionGlobals", sessionGlobals, "numOfEntities", NUM_OF_ENTITIES.get(taskProperties),
                         "subsetID", SELECTED_SUBSET_TASK_EXE_ID.get(taskProperties),
                         "luID", LU_ID.get(taskProperties),
-                        "taskTitle", TASK_TITLE.get(taskProperties))));
+                        "taskTitle", TASK_TITLE.get(taskProperties),
+                        "sourceMaxWorkers", SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties),
+                        "targetMaxWorkers", TARGET_MAX_WORKERS_PER_NODE.get(taskProperties))));
 
         String jobCommand = "startjob USER_JOB NAME='TDM.tdmProcessExecution' UID='tdmProcessExecution_"
-                + taskExecutionID + "' " + affinity + args;
+                + taskExecutionID + "' " + args;
         fabric().execute(jobCommand);
 
         return true;
@@ -987,10 +990,11 @@ public class TdmExecuteTask {
             String taskType = "" + TASK_TYPE.get(taskProperties);
             String taskExecutionId = "" + TASK_EXECUTION_ID.get(taskProperties);
             String taskTitle = "" + TASK_TITLE.get(taskProperties);
+            String sourceMaxWorkers = "" + SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties);
+            String sourceAffinity = "" + SOURCE_AFFINITY.get(taskProperties);
             String selectedSubsetTaskExeId = "" + SELECTED_SUBSET_TASK_EXE_ID.get(taskProperties);
             String luName = LU_NAME.get(taskProperties);
-            Boolean cloneInd = CLONE_IND.get(taskProperties);
-            String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
+            Boolean cloneInd = CLONE_IND.get(taskProperties);            
 
             String entityExclusionListWhere = "";
             String broadwayCommand = "";
@@ -1023,17 +1027,17 @@ public class TdmExecuteTask {
                     }
                     //entitiesList = entitiesList.replaceAll("\\s+","");
                     String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
-                    if(!"".equalsIgnoreCase(entityExclusionListWhere)){
-                        entityExclusionListWhere=entityExclusionListWhere.replace("'", "''");
-                        String command = "broadway " + luName + ".FilterOutReservedFromEntityList sqlQuery = '" + entityExclusionListWhere + "'" + ", entityList = '" + entitiesList + "'";
-                        String filterOutReserveList = fabric().fetch(command).firstValue().toString();
-                        if(!"".equalsIgnoreCase(filterOutReserveList)){
-                            entitiesListArray = filterOutReserveList.split(",");
-                        }else{
-                            entitiesListArray=new String[]{};
-                            log.error("No matching instances were found");
-                        }
-                    }
+                    // if(!"".equalsIgnoreCase(entityExclusionListWhere)){
+                    //     entityExclusionListWhere=entityExclusionListWhere.replace("'", "''");
+                    //     String command = "broadway " + luName + ".FilterOutReservedFromEntityList sqlQuery = '" + entityExclusionListWhere + "'" + ", entityList = '" + entitiesList + "'";
+                    //     String filterOutReserveList = fabric().fetch(command).firstValue().toString();
+                    //     if(!"".equalsIgnoreCase(filterOutReserveList)){
+                    //         entitiesListArray = filterOutReserveList.split(",");
+                    //     }else{
+                    //         entitiesListArray=new String[]{};
+                    //         log.error("No matching instances were found");
+                    //     }
+                    // }
                     //TDM 9.0 - There is no longer CLONE selection method
                     if (cloneInd) {
                         entityInclusion = "SELECT '" + env + SEPARATOR.get(taskProperties) + addSeparators(entitiesListArray[0]) +
@@ -1229,8 +1233,8 @@ public class TdmExecuteTask {
                         String closeSeparator = iidSeparators[1].toString();
                         Map<String, String> batchStrings = getCommandForAll("" + LU_NAME.get(taskProperties), "" + TASK_EXECUTION_ID.get(taskProperties), "" +
                                         SOURCE_ENVIRONMENT_NAME.get(taskProperties), "" + VERSION_IND.get(taskProperties), SEPARATOR.get(taskProperties), openSeparator, closeSeparator,
-                                "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties), "" + DATA_CENTER_NAME.get(taskProperties),
-                                Long.valueOf("" + LU_ID.get(taskProperties)), sessionGlobals, taskTitle);
+                                "" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties),
+                                Long.valueOf("" + LU_ID.get(taskProperties)), sessionGlobals, taskTitle, sourceMaxWorkers, sourceAffinity);
                         String entityInclusionInterface = batchStrings.get(INTERFACE);
                         entityInclusion = batchStrings.get("usingClause");
                         entityInclusions.put(INTERFACE, entityInclusionInterface);
@@ -1253,9 +1257,9 @@ public class TdmExecuteTask {
                     String globalsJson = Json.get().toJson(globals);
 
                     Map<String, String> BFCmdAndInterface = getCustomLogicBatch(luName, customLogicFlow,
-                            "" + TASK_EXECUTION_ID.get(taskProperties), LU_ID.get(taskProperties), dcName,
+                            "" + TASK_EXECUTION_ID.get(taskProperties), LU_ID.get(taskProperties),
                             Long.parseLong("" + NUM_OF_ENTITIES.get(taskProperties).toString()), PARAMETERS.get(taskProperties),
-                            globalsJson, cloneInd, taskTitle);
+                            globalsJson, cloneInd, taskTitle, sourceMaxWorkers, sourceAffinity);
                     entityInclusion = BFCmdAndInterface.get("batchQuery");
                     entityInclusions.put(INTERFACE, BFCmdAndInterface.get("batchInterface"));
                     //log.info("getEntityInclusion: entityInclusion For C: " + entityInclusion);
@@ -1270,7 +1274,7 @@ public class TdmExecuteTask {
 
                     Map<String, String> listOfInstances = getEntityListByBF(luName, broadwayCommand, taskExecutionId,
                             LU_ID.get(taskProperties),
-                            dcName, NUM_OF_ENTITIES.get(taskProperties), cloneInd, taskTitle);
+                            NUM_OF_ENTITIES.get(taskProperties), cloneInd, taskTitle, sourceMaxWorkers, sourceAffinity);
                     
                         entityInclusion = listOfInstances.get("batchQuery");
                         entityInclusions.put(INTERFACE, listOfInstances.get("batchInterface"));
@@ -1319,7 +1323,7 @@ public class TdmExecuteTask {
         String taskID="" + TASK_ID.get(taskProperties);
         String userID = "" + TASK_EXECUTED_BY.get(taskProperties);
         if ("TDM.tdmTaskScheduler".equalsIgnoreCase(userID)) {
-            userID=fnGetTaskCreatedBy(userID,taskID);
+            userID=fnGetTaskCreatedBy(taskID);
         }
         String taskType = "" + TASK_TYPE.get(taskProperties);
         String selectionMethod = "" + SELECTION_METHOD.get(taskProperties);
@@ -1331,7 +1335,7 @@ public class TdmExecuteTask {
         String filterOutReserved = "" + FILTEROUT_RESERVED.get(taskProperties);
         String reservedExclusionListWhere = "";
         // In version 9.2, reserve will include two modes , by other and by all 
-        if ("ALL".equalsIgnoreCase(filterOutReserved)) {
+        if ("ALL".equalsIgnoreCase(filterOutReserved) || Util.isEmpty(userID)) {
             reservedExclusionListWhere = " WHERE cast(" + selectClause + " as text) NOT IN ("
                     + "SELECT entity_id FROM " + TDMDB_SCHEMA + ".tdm_reserved_entities "
                     + "WHERE env_id = " + envID + " AND be_id = " + beID
@@ -1373,7 +1377,10 @@ public class TdmExecuteTask {
         String userName = "" + TASK_EXECUTED_BY.get(taskProperties);
         String taskID= "" +TASK_ID.get(taskProperties);
         if ("TDM.tdmTaskScheduler".equalsIgnoreCase(userName)) {
-            userName=fnGetTaskCreatedBy(userName,taskID);
+            userName=fnGetTaskCreatedBy(taskID);
+        }
+        if(Util.isEmpty(userName)){
+            userName = "Unassigned";
         }
         String userRoles = USER_ROLES.get(taskProperties);
         //log.info("ExecuteTask - userName: " + userName + ", userRoles: " + userRoles);
@@ -1616,11 +1623,7 @@ public class TdmExecuteTask {
         String taskExeId = "" + TASK_EXECUTION_ID.get(taskProperties);
         Set<String> entityList = new HashSet<>();
 
-        String getSrcDCSQL = "select p.data_center_name from " + TDMDB_SCHEMA + ".environment_products p, " + TDMDB_SCHEMA + ".task_execution_list l, " + TDMDB_SCHEMA + ".tasks_logical_units u " +
-                "where l.task_execution_id=? and l.task_id = u.task_id and l.lu_id = u.lu_id and u.lu_name = ? " +
-                "and l.source_environment_id= p.environment_id and l.product_id = p.product_id ";
-
-        String srcDC = "" + db(TDMDB).fetch(getSrcDCSQL, taskExeId, luName).firstValue();
+        String srcDC = SOURCE_AFFINITY.get(taskProperties);
 
         //log.info("syncInstanceForCloning - entityInclusion: " + entityInclusion);
         //log.info("syncInstanceForCloning - sync:" + SYNC_MODE.get(taskProperties));
@@ -2061,8 +2064,11 @@ public class TdmExecuteTask {
         TASK_ID(null),
         TASK_EXECUTION_ID(""),
         TASK_TYPE(""),
-        TASK_TITLE(""),
-        DATA_CENTER_NAME(""),
+        TASK_TITLE(""),     
+        SOURCE_MAX_WORKERS_PER_NODE(""),
+        TARGET_MAX_WORKERS_PER_NODE(""),
+        SOURCE_AFFINITY(""),
+        TARGET_AFFINITY(""),
         LU_NAME(""),
         LU_ID(""),
         BE_ID(null),
@@ -2104,7 +2110,8 @@ public class TdmExecuteTask {
         TABLE_DEFAULT_DISTRIBUTION_MIN("1"),
         TABLE_DEFAULT_DISTRIBUTION_MAX("3"),
         PARAMS_COUPLING(false),
-        EXECUTION_MODE("HORIZONTAL");
+        EXECUTION_MODE("HORIZONTAL"),
+        IN_PLACE_MASKING_IND("false");
         private Object def;
 
         TASK_PROPERTIES(Object def) {
@@ -2145,7 +2152,7 @@ public class TdmExecuteTask {
         }
     }
 
-    private static String fnGetTaskCreatedBy(String userID, String taskID) {
+    private static String fnGetTaskCreatedBy(String taskID) {
         try {
             String createdBy = "" + db(TDM).fetch("SELECT task_created_by FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id=?", taskID).firstValue();
             String userName = createdBy.split("##")[0];

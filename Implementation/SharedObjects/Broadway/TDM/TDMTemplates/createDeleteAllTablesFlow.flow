@@ -42,6 +42,11 @@ stages:
             external: LU_NAME
             schema: string
             mandatory: false
+          documents:
+            external: documents
+            schema: any
+            mandatory: false
+            createdBy: functionName
         out:
           res:
             schema: '#ref'

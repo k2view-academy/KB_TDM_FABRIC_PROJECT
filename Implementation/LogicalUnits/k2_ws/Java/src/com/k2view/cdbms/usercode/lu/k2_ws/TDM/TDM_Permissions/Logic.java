@@ -11,7 +11,9 @@ import java.util.*;
 import com.k2view.cdbms.shared.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode{
@@ -140,6 +142,8 @@ public class Logic extends WebServiceUserCode{
 		try {
 			String userName = sessionUser().name();
 			db(TDM).execute(INSERT_PERMISSION_GROUP_MAPPINGS, description, role, permission_group, userName, userName);
+			String activityDesc = "Role '" + role + "' was mapped to permission group '" + permissionGroup + "'.";
+			fnInsertActivity("create", "Permission Groups", activityDesc);
 			return wrapWebServiceResults("SUCCESS", null, null);
 		} catch (Exception e) {
 			return wrapWebServiceResults("FAILED", "Can't add new permission group mapping: " + e.getMessage(), null);
@@ -163,7 +167,9 @@ public class Logic extends WebServiceUserCode{
 			String userName = sessionUser().name(); //assigned to updated by
 			String OldMappingPG = (String)db(TDM).fetch("select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=(?)",old_role).firstValue();
 			db(TDM).execute(UPDATE_PERMISSION_GROUP_MAPPINGS, description, new_role, permission_group, userName, old_role);
-
+			String activityDesc = "Role '" + old_role + "' was updated to '" + new_role +
+                      "' and mapped to permission group '" + permission_group + "'.";
+			fnInsertActivity("update", "Permission Groups", activityDesc);
 			List<String> usersByFabricRole = (List<String>) ((Map<String, Object>) wsGetUsersByFabricRole(old_role)).get("result");
 			List<String> roles = new ArrayList<>();
 			roles.add(old_role);										  
@@ -200,6 +206,8 @@ public class Logic extends WebServiceUserCode{
             }
             List<String> usersByFabricRole = (List<String>) ((Map<String, Object>) wsGetUsersByFabricRole(role)).get("result");
             String permissionGroup = (String) db(TDM).fetch(DELETE_PERMISSION_GROUP_MAPPINGS, role).firstValue();
+			String activityDesc = "Role '" + role + "' was deleted from permission group '" + permissionGroup + "'.";
+			fnInsertActivity("delete", "Permission Groups", activityDesc);
             List<String> roles = new ArrayList<>();
             roles.add(role);	   
             if ("owner".equals(permissionGroup)) {
@@ -350,6 +358,18 @@ public class Logic extends WebServiceUserCode{
 			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
 	}
+	
+	public static void fnInsertActivity(String action, String entity, String description) throws Exception {
+        String userId = sessionUser().name();
+        String username = userId;
+        String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+                .withZone(ZoneOffset.UTC)
+                .format(Instant.now());
+        String sql = "INSERT INTO " + TDMDB_SCHEMA + ".activities " +
+                "(date, action, entity, user_id, username, description) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+        db(TDM).execute(sql, now, action, entity, userId, username, description);
+    }
 
 
 }

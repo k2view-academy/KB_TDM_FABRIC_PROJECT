@@ -56,19 +56,40 @@ stages:
             const: 10
           a:
             link: Get Max Population Order/result
-  Filter Out Tables:
+  Filter Out Documents:
     actors:
-      filter Out TDM Tables:
-        parent: filterOutTDMTables
+      Get Type Of Table:
+        parent: LuFunction
         in:
-          tableName:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
             link:
               path: List Population Flows/result/tableName
               iterate: Iterate
-          luName:
-            external: luName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
   Prepare Input Data:
     actors:
+      Table?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
       Calculate Table's Order:
         parent: MathAdd
         in:
@@ -85,7 +106,7 @@ stages:
             const: buildDeleteTablesTemplateData
           table:
             link:
-              path: filter Out TDM Tables/tableNameOut
+              path: List Population Flows/result/tableName
               iterate: Iterate
             schema: string
             mandatory: false
@@ -227,10 +248,54 @@ stages:
         out:
           array:
             schema: '#ref'
-  Close Inner Loop:
-    last: 1
   Close Loop:
     last: 1
+  Handle Duplicates:
+    actors:
+      Remove Duplicates:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var arrIn = [];
+                arrIn = [...arr];
+                var fieldList = [];
+
+                var arrOut = [];
+                for(var i=0; i<arrIn.length; i++) {
+                    var row = arrIn[i];
+                    if (fieldList.indexOf(row)=== -1) {
+                        fieldList.push(row)
+                        arrOut.push(arrIn[i]);
+                    }
+
+                }
+
+                arrOut;
+              script: |-
+                var arrIn = [];
+                arrIn = [].concat(arr);
+                var fieldList = [];
+                var arrOut = [];
+
+                for (var i = 0; i < arrIn.length; i++) {
+                  var row = arrIn[i];
+
+                  if (fieldList.indexOf(row) === -1) {
+                    fieldList.push(row);
+                    arrOut.push(arrIn[i]);
+                  }
+                }
+
+                arrOut;
+          arr:
+            link: Aggregate Table's Names/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
   Concatenate:
     actors:
       Concatenate Table's Properties:
@@ -246,7 +311,7 @@ stages:
           delimiter:
             const: ''
           elements:
-            link: Aggregate Table's Names/array
+            link: Remove Duplicates/result
       Concatenate Table's Relation:
         parent: Concat
         in:
@@ -397,6 +462,8 @@ schemas:
               type: string
             name:
               type: string
+            upperName:
+              type: string
       PARENT_TABLE_DATA:
         type: array
         items:
@@ -433,6 +500,14 @@ schemas:
     items:
       type: string
   Aggregate Table's Graph.out.array:
+    type: array
+    items:
+      type: string
+  Remove Duplicates.in.arr:
+    type: array
+    items:
+      type: string
+  Remove Duplicates.out.result:
     type: array
     items:
       type: string

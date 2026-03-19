@@ -1,0 +1,103 @@
+{
+  "name": "TASK_CREATION_REPORT_LEVEL_1",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "type": "function",
+      "code": "var minTaskID;"
+    },
+    {
+      "type": "function",
+      "code": "var maxTaskID;"
+    },
+    {
+      "name": "Min&MaxTasklDs",
+      "type": "sqlNonPrepared",
+      "code": "select min(task_id) as min_task_id, max(task_id) as max_task_id \nfrom \"${TDMDB_SCHEMA}\".tasks \nwhere task_creation_date >= DATE '${FROM_DATE}' and task_creation_date <  DATE '${END_DATE}' + 1;",
+      "sessionProvider": "TDM",
+      "children": [
+        {
+          "name": "minTaskID",
+          "type": "function",
+          "code": "minTaskID = min_task_id;"
+        },
+        {
+          "name": "maxTaskID",
+          "type": "function",
+          "code": "maxTaskID = max_task_id;"
+        }
+      ]
+    },
+    {
+      "name": "TasksPerUserAndPermissionGroup",
+      "type": "sqlNonPrepared",
+      "code": "SELECT\n    COUNT(t.task_id) AS no_of_tasks,\n    fr.creator_role,\n    t.permission_group\nFROM \"${TDMDB_SCHEMA}\".tasks t\nCROSS JOIN LATERAL\n     unnest(string_to_array(t.fabric_roles, '<#>')) AS fr(creator_role)\nWHERE t.task_status = 'Active'\n  AND t.task_id >= ${minTaskID}\n  AND t.task_id <= ${maxTaskID}\nGROUP BY\n    fr.creator_role,\n    t.permission_group;\n\n--select count(task_list.task_id) as no_of_tasks, task_list.creator_role, permission_group \n--      from permission_groups_mapping p, \n--    (select task_id, unnest(string_to_array(split_part(task_created_by, '##', 2), '<#>')) as creator_role \n--     from \"${TDMDB_SCHEMA}\".tasks t \n--     where t.task_status = 'Active' \n--     and --t.task_creation_date >= DATE '${FROM_DATE}' and t.task_creation_date <= DATE '${END_DATE}' + 1  \n--     task_id >= ${minTaskID} and task_id <= ${maxTaskID}\n--     ) task_list \n--     where p.fabric_role = task_list.creator_role \n--     group by task_list.creator_role, p.permission_group;",
+      "sessionProvider": "TDM",
+      "children": [
+        {
+          "name": "no_of_tasks",
+          "type": "variable",
+          "code": "no_of_tasks"
+        },
+        {
+          "name": "creator_role",
+          "type": "variable",
+          "code": "creator_role"
+        },
+        {
+          "name": "permission_group",
+          "type": "variable",
+          "code": "permission_group"
+        }
+      ]
+    },
+    {
+      "name": "ActiveTasks",
+      "type": "sqlNonPrepared",
+      "code": "select count(*) as no_of_tasks, table_list.task_type, table_list.processed_data \nfrom \n    (select t.task_id,  \n    CASE \n        WHEN t.in_place_masking_ind = true THEN 'In-place masking' \n        WHEN t.TASK_TYPE = 'EXTRACT' THEN 'Extract' \n        WHEN t.TASK_TYPE = 'LOAD' and t.sync_mode <> 'OFF' THEN 'Extract & Load'\n     \tWHEN t.TASK_TYPE = 'LOAD' AND t.reserve_ind = true AND t.delete_before_load = false THEN 'Load & Reserve'\n\t \tWHEN t.TASK_TYPE = 'LOAD' AND t.reserve_ind = true AND t.delete_before_load = true THEN 'Load & Reserve & Delete'\n        WHEN t.TASK_TYPE = 'LOAD' AND t.reserve_ind = false AND t.delete_before_load = true THEN 'Load & Delete' \n        WHEN t.TASK_TYPE = 'LOAD' THEN 'Load'  \n        WHEN t.TASK_TYPE = 'DELETE' THEN 'Delete' \n        WHEN t.TASK_TYPE = 'RESERVE' THEN 'Reserve' \n        WHEN t.TASK_TYPE = 'TRAINING' THEN 'AI training' \n        WHEN t.TASK_TYPE = 'GENERATE' THEN 'Rule-based SDG' \n        WHEN t.TASK_TYPE = 'AI_GENERATED' THEN 'AI-based SDG'   \n        ELSE t.task_type\n    END AS task_type  ,\n     CASE\n            WHEN t.be_id = -1 THEN 'Tables'\n            WHEN t.be_id >= 0\n                 AND EXISTS (\n                        SELECT 1\n                        FROM \"${TDMDB_SCHEMA}\".task_ref_tables tr\n                        WHERE tr.task_id = t.task_id\n                 )\n                THEN 'Entities & Tables'\n            WHEN t.be_id >= 0 THEN 'Entities'\n        END AS processed_data \n        from \"${TDMDB_SCHEMA}\".tasks t where task_status = 'Active' \n        and -- task_creation_date <  DATE '${END_DATE}' + 1\n        task_id <= ${maxTaskID}\n        ) table_list \n        group by  table_list.task_type, table_list.processed_data;",
+      "sessionProvider": "TDM"
+    },
+    {
+      "name": "AvgTasksByUser",
+      "type": "sqlNonPrepared",
+      "code": "SELECT\n    ROUND(AVG(no_of_tasks_per_user)) AS avg_no_of_tasks,\n    permission_group AS user_permission_group\nFROM (\n    SELECT\n        COUNT(*) AS no_of_tasks_per_user,\n        split_part(task_created_by, '##', 1) AS user_id,\n        permission_group\n    FROM \"${TDMDB_SCHEMA}\".tasks t\n    WHERE t.task_status = 'Active'\n      AND t.task_id >= ${minTaskID}\n      AND t.task_id <= ${maxTaskID}\n    GROUP BY\n        user_id,\n        permission_group\n) no_of_task\nGROUP BY\n    permission_group;\n\n--SELECT ROUND(AVG(no_of_tasks_per_user)) as avg_no_of_tasks, user_permission_Group \n--     FROM \n--     (\n--    select no_of_tasks_per_user, task_creator, \n--    CASE \n--      WHEN 'admin' = ANY(pg_list) THEN 'admin' \n--      WHEN 'owner' = ANY(pg_list) THEN 'owner'\n--      WHEN 'tester' = ANY(pg_list) THEN 'tester' \n--    END as user_permission_Group  \n--    from\n--      (select task_users.user_id,  array_agg(pgm.permission_group)  as pg_list\n--       from \"${TDMDB_SCHEMA}\".permission_groups_mapping pgm,  \n--       (select distinct  split_part(task_created_by, '##', 1) as user_id, \n--        unnest(string_to_array(split_part(task_created_by, '##', 2), '<#>')) as creator_role \n--        from \"${TDMDB_SCHEMA}\".tasks t) task_users \n--        where task_users.creator_role = pgm.fabric_role \n--        group by user_id\n--       ) user_pg, \n--      ( select count(*) no_of_tasks_per_user, split_part(task_created_by, '##', 1) as task_creator\n--        from \"${TDMDB_SCHEMA}\".tasks t \n--        where t.task_status = 'Active' \n--        and -- t.task_creation_date >= DATE '${FROM_DATE}' and t.task_creation_date <= DATE '${END_DATE}' + 1 \n--        task_id >= ${minTaskID} and task_id <= ${maxTaskID}\n--        group by split_part(task_created_by, '##', 1)) no_of_task \n--     where no_of_task.task_creator = user_pg.user_id \n--     ) tasks \n--     group by user_permission_Group;",
+      "sessionProvider": "TDM"
+    },
+    {
+      "name": "NoOfTasksPerSelectionMethod",
+      "type": "sqlNonPrepared",
+      "code": " select count(*) as no_of_tasks, selection_method \n from \n (select task_id, \n   CASE \n        \tWHEN t.selection_method = 'ALL' THEN 'Predefined entity list' \n        \tWHEN t.selection_method = 'TABLES' THEN 'Tables'\n        \tWHEN t.selection_method = 'C'  THEN 'Custom logic' \n        \tWHEN t.selection_method = 'L' THEN 'Entity list' \n        \tWHEN t.selection_method in ('P', 'PR') THEN 'Business parameters' \n        \tWHEN t.selection_method = 'GENERATE_SUBSET' THEN 'Load pre-generated subset' \n        \tWHEN t.selection_method ='R' THEN 'Random list'  \n        \tWHEN t.selection_method = 'GENERATE' THEN 'Synthetic generation'\n        \tELSE t.selection_method \n    \tEND as selection_method   \n    FROM \"${TDMDB_SCHEMA}\".tasks t \n    where task_status = 'Active' \n    and task_id <= ${maxTaskID}\n    and be_id >= 0 ) t \n    group by selection_method;",
+      "sessionProvider": "TDM"
+    }
+  ],
+  "params": [
+    {
+      "name": "FROM_DATE",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    },
+    {
+      "name": "TDMDB_SCHEMA",
+      "dataType": "String",
+      "description": "",
+      "mandatory": false
+    },
+    {
+      "name": "END_DATE",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "description": "",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

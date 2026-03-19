@@ -1,0 +1,110 @@
+tags: Upgrade
+stages:
+  Get data:
+    actors:
+      Get entries with count_indicator false:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TableLevelInterfaces
+          mtableKey:
+            const:
+              count_indicator: 'false'
+        out:
+          result:
+            schema: '#ref'
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Build interfaces for in clause:
+    actors:
+      'JavaScript   ':
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                // 1. Assign input to mtable as per your system's pattern
+                flowArgs.mtable = input;
+
+                // 2. Clone the array
+                const data = [...flowArgs.mtable];
+
+                // 3. Map to the specific single-quote format: 'Value1','Value2'
+                const result = data.map(item => `'${item.interface_name}'`).join(',');
+
+                // 4. Return the string
+                result;
+              script: |-
+                // 1. Assign input to mtable as per your system's pattern
+                flowArgs.mtable = input; // 2. Clone the array
+
+                var data = [].concat(flowArgs.mtable); // 3. Map to the specific single-quote format: 'Value1','Value2'
+
+                var result = data.map(function (item) {
+                  return "'" + item.interface_name + "'";
+                }).join(','); // 4. Return the string
+
+                result;
+          input:
+            link: Get entries with count_indicator false/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Update DB:
+    actors:
+      Update task_ref_tables:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_tables set count_ind=false
+              where lu_name = 'TDM_TableLevel' and interface_name in (${@interfaces});
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          interfaces:
+            link: JavaScript   /result
+            schema: string
+            mandatory: false
+schemas:
+  Get entries with count_indicator false.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        suppress_indicator:
+          type: string
+        truncate_indicator: {
+          }
+        count_indicator:
+          type: string
+        order_flow: {
+          }
+        no_schema: {
+          }
+  JavaScript   .in.input:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        param_name:
+          type: string
+        lu_table:
+          type: string
+        lu_table_field:
+          type: string

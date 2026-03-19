@@ -7,6 +7,10 @@
         overflow: unset;
     }
 </style>
+<script type="text/ng-template" id="rowTaskStatsHtmlTooltip.html">
+    <div ng-bind-html="rowNoteHtml"></div>
+</script>
+
 <div class="col-lg-12" style="min-height: 590px;display:flex; padding-top: 30px; background: white">
 
     <div class="ibox float-e-margins col-lg-3" ng-if="!taskStatesCtrl.hideLogicalUnit">

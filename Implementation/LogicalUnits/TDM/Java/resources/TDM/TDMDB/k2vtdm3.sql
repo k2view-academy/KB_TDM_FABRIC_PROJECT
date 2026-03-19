@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_products
     status text NOT NULL,
     data_center_name text,
     enable_product Boolean DEFAULT 'true',
+    max_number_of_workers bigint,
     CONSTRAINT environment_products_pkey PRIMARY KEY (environment_product_id)
 );
 
@@ -204,6 +205,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.products
     product_last_updated_date timestamp without time zone,
     product_last_updated_by text,
     product_status text,
+    related_interfaces TEXT[] NOT NULL DEFAULT '{}',
     CONSTRAINT products_pkey PRIMARY KEY (product_id)
    --, CONSTRAINT products_product_name_key UNIQUE (product_name)
 );
@@ -233,8 +235,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
     end_execution_time timestamp without time zone,
     num_of_processed_entities numeric(10),
     num_of_copied_entities numeric(10),
-    num_of_failed_entities numeric(10),
-    data_center_name text,
+    num_of_failed_entities numeric(10),    
     lu_id bigint NOT NULL default 0,
     num_of_processed_ref_tables numeric(10,0),
     num_of_copied_ref_tables numeric(10,0),
@@ -253,7 +254,11 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
     process_id bigint NOT NULL default 0, -- IDM 7.0.1
     execution_note text, -- TDM 7.4
     source_product_version text, -- TDM 7.5.2
-    entity_inclusion_query TEXT, -- TDM 9.1 params coupling 
+    entity_inclusion_query TEXT, -- TDM 9.1 params coupling
+    source_max_no_of_workers bigint,
+    target_max_no_of_workers bigint,
+    source_affinity text,
+    target_affinity text,
     CONSTRAINT task_execution_list_pkey PRIMARY KEY (task_execution_id, lu_id, process_id)
 );
 
@@ -319,6 +324,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     clone_ind boolean NOT NULL DEFAULT false,
     execution_mode text DEFAULT 'INHERITED',
     enable_execution boolean DEFAULT 'true',
+    in_place_masking_ind boolean NOT NULL DEFAULT false,
+    permission_group text,
+    fabric_roles text,
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
@@ -406,6 +414,10 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks_logical_units
   task_id bigint NOT NULL,
   lu_id  bigint NOT NULL,
   lu_name text,
+  source_max_no_of_workers bigint,
+  target_max_no_of_workers bigint,
+  source_affinity text,
+  target_affinity text,
   CONSTRAINT tasks_logical_units_pkey PRIMARY KEY (task_id, lu_name)
 );
 
@@ -431,7 +443,32 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
   gui_filter text,
   filter_parameters text,
   filter_fields text,
+  source_max_no_of_workers bigint,
+  target_max_no_of_workers bigint,
+  source_affinity text,
+  target_affinity text,
+  count_ind boolean DEFAULT true,
   CONSTRAINT task_ref_tables_pkey PRIMARY KEY (task_ref_table_id) 
+);
+
+-- Table: ${@schema}.task_ref_partition
+CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_partition
+(
+  task_id bigint NOT NULL, 
+  task_execution_id bigint NOT NULL,
+  task_ref_table_id bigint NOT NULL,
+  table_name text,
+  partition_no bigint default 1,
+  instance_id text,
+  batch_id text,
+  start_time timestamp without time zone,
+  end_time timestamp without time zone,
+  execution_status text,
+  number_of_records_to_process bigint,
+  number_of_processed_records bigint,
+  number_of_failed_records bigint,
+  error_msg text,
+  CONSTRAINT task_ref_partition_pkey PRIMARY KEY (task_execution_id,task_ref_table_id,partition_no) 
 );
 
 -- Table: ${@schema}.task_ref_exe_stats
@@ -449,17 +486,16 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_exe_stats
   start_time timestamp without time zone,
   end_time timestamp without time zone,
   execution_status text, 
-  number_of_records_to_process numeric(10,0),
-  number_of_processed_records numeric(10,0),
+  number_of_records_to_process bigint,
+  number_of_processed_records bigint,
+  number_of_failed_records bigint,
   error_msg text,
   updated_by text,
   table_filter text,
-  filter_type text		
+  filter_type text,
+  number_of_partitions bigint default 1,
+  CONSTRAINT task_ref_exe_stats_pkey PRIMARY KEY (task_id,task_execution_id,task_ref_table_id) 		
   );
-
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX1 on ${@schema}.task_ref_exe_stats(task_execution_id);
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX2 on ${@schema}.task_ref_exe_stats(task_execution_id, execution_status);
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX3 on ${@schema}.task_ref_exe_stats(task_execution_id, task_ref_table_id, execution_status);
 
 -- Table: ${@schema}.tdm_general_parameters
 
@@ -484,7 +520,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '9.4.0' 
+    select 'TDM_VERSION', '9.5.0' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -524,6 +560,16 @@ INSERT INTO ${@schema}.tdm_general_parameters(
 
 INSERT INTO ${@schema}.tdm_general_parameters (param_name, param_value)
 VALUES ('ENABLE_TASK_LU_EDITING_FOR_TESTERS', 'true') ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.tdm_general_parameters (param_name, param_value)
+VALUES ('CREATE_NEW_TASK_VERSION_ON_UPDATE', 'false') ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.tdm_general_parameters(
+        param_name, param_value)
+    VALUES ('TABLES_USE_SPLIT_API', 'true') ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.tdm_general_parameters (param_name, param_value)
+VALUES ('MAX_NO_OF_WORKERS_FOR_EXECUTION', -1) ON CONFLICT DO NOTHING;  
 -- Table: ${@schema}.task_globals
 
 --DROP TABLE IF EXISTS ${@schema}.task_globals;
@@ -585,7 +631,11 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
   tot_num_of_processed_pre_executions numeric(10,0),
   tot_num_of_succeeded_pre_executions numeric(10,0),
   tot_num_of_failed_pre_executions numeric(10,0),
-  CONSTRAINT task_execution_summary_pkey PRIMARY KEY (task_execution_id)
+  permission_group text,
+  fabric_roles text,
+  start_be_execution timestamp without time zone,
+  end_be_execution timestamp without time zone,
+  CONSTRAINT task_execution_summary_pkey PRIMARY KEY (task_id,task_execution_id)
 );
 -- DROP INDEX IF EXISTS ${@schema}.task_exec_summary_ix1;
 
@@ -674,7 +724,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks_exe_process (
     process_type TEXT,
     parameters TEXT,
     status text DEFAULT 'Active',
-	CONSTRAINT tasks_exe_pkey PRIMARY KEY (task_id, process_id)
+	CONSTRAINT tasks_exe_pkey PRIMARY KEY (task_id, process_id,process_type)
 );
 
 -- Table ${@schema}.task_exe_stats_detailed

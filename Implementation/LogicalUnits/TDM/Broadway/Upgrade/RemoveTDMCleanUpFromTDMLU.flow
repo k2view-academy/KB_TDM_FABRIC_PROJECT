@@ -1,0 +1,71 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Stage 2:
+    actors:
+      CleanUp folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}${path}
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          path:
+            const: /LogicalUnits/TDM/Mtable/
+            schema: string
+            mandatory: false
+      file name:
+        parent: Const
+        in:
+          value:
+            const: TDMCleanUp.csv
+            schema: string
+        out:
+          value:
+            schema: string
+  Stage 3:
+    actors:
+      Check If File Exists:
+        parent: InnerFlow
+        condition: FILE_FOUND
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: CleanUp folder/string
+            schema: string
+            editor:
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+              id: com.k2view.interface
+            mandatory: false
+          pattern:
+            link: file name/value
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      rm file:
+        parent: rm
+        in:
+          interface:
+            const: null
+            link: CleanUp folder/string
+          path:
+            link: file name/value

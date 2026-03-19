@@ -7,7 +7,7 @@ stages:
         in:
           key:
             const: AI_ENVIRONMENT
-      AI_DB_K2SYSTEM1:
+      AI_DB_INTERFACE:
         parent: FabricSetRead
         in:
           key:
@@ -17,11 +17,6 @@ stages:
         in:
           key:
             const: TDM_TASK_EXE_ID
-      AI_DB_ENTITIES:
-        parent: FabricSetRead
-        in:
-          key:
-            const: AI_DB_INTERFACE
       Get BE_ID:
         parent: FabricSetRead
         in:
@@ -34,6 +29,14 @@ stages:
             const: getTDMDBSchema
         out:
           schema:
+            schema: string
+      Getk2SystemSchemaName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
             schema: string
   'Build IIDS ':
     actors:
@@ -48,15 +51,6 @@ stages:
             mandatory: false
         out:
           tables:
-            schema: string
-      IID:
-        parent: Const
-        in:
-          value:
-            const: null
-            external: IID
-        out:
-          value:
             schema: string
       BE_NAME:
         parent: DbFetchField
@@ -87,27 +81,24 @@ stages:
         out:
           tables:
             schema: string
-  Split IID:
-    actors:
-      JsonParser:
-        parent: JsonParser
-        in:
-          stream:
-            link: IID/value
-        out:
-          object:
-            schema: '#ref'
   Get The Fabric TDM root IID:
     actors:
-      Replace:
-        parent: Replace
+      DbFetchField:
+        parent: DbFetchField
         in:
-          search:
-            const: _\d+
-          regex:
-            const: true
-          string:
-            link: JsonParser/object/iid
+          interface:
+            const: null
+            link: AI_DB_INTERFACE/result
+          sql:
+            const: SELECT nextval('${@schema}.ai_instance_id_seq');
+          schema:
+            link: Getk2SystemSchemaName1/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: integer
   Strip the IID:
     actors:
       id:
@@ -115,7 +106,7 @@ stages:
         in:
           value:
             const: null
-            link: Replace/string
+            link: DbFetchField/result
         out:
           value:
             schema: string
@@ -231,7 +222,7 @@ stages:
             schema: string
             mandatory: false
           INTERFACE:
-            link: AI_DB_K2SYSTEM1/result
+            link: AI_DB_INTERFACE/result
             schema: string
             mandatory: false
     split: '--------------------'
@@ -278,7 +269,7 @@ stages:
             schema: string
             mandatory: false
           INTERFACE:
-            link: AI_DB_K2SYSTEM1/result
+            link: AI_DB_INTERFACE/result
             schema: string
             mandatory: false
           includedTables:
@@ -529,13 +520,3 @@ stages:
     split: '--------------------'
   'Do Nothing   ':
     dependsOn: 'Else   '
-schemas:
-  JsonParser.out.object:
-    type: object
-    properties:
-      env:
-        type: string
-      iid:
-        type: string
-      exec_id:
-        type: integer

@@ -217,7 +217,25 @@ stages:
     dependsOn: Stage 15
   Get Sequences:
     actors:
-      GetSequenceListForGenerateFlows1:
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            external: sourceTable
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Sequence List For Generate Flows:
         parent: InnerFlow
         in:
           flowName:
@@ -251,19 +269,33 @@ stages:
         out:
           result:
             schema: '#ref'
-  In Case of Document DB:
+  In Case of Document:
     dependsOn: Get Sequences
     actors:
-      Document DB?:
+      Document?:
         parent: Equals
         condition: result
         in:
           a:
-            external: DOCUMENT_IND
-            schema: boolean
+            link: Get Type Of Table/result
+            schema: string
           b:
-            const: true
-            schema: boolean
+            const: TABLE
+            schema: string
+      'false':
+        parent: Const
+        in:
+          value:
+            const: 'false'
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Not  Main Document Table:
+    else: true
+    dependsOn: Get Sequences
+    actors:
       Get Document's Main Table And Class:
         parent: LuFunction
         in:
@@ -281,17 +313,23 @@ stages:
             external: sourceTable
             schema: string
             mandatory: false
-          mainTableName:
-            external: mainTableName
+          luName:
+            external: luType
             schema: string
             mandatory: false
+            createdBy: functionName
         out:
           result:
             schema: '#ref'
-    split: '--------------------'
-  Not A Document DB:
-    else: true
-    dependsOn: Get Sequences
+      'true':
+        parent: Const
+        in:
+          value:
+            const: 'true'
+            schema: string
+        out:
+          value:
+            schema: string
   Template's Input 1:
     actors:
       LU Name:
@@ -371,7 +409,7 @@ stages:
           functionName:
             const: filerOutSequences
           Sequences:
-            link: GetSequenceListForGenerateFlows1/result
+            link: Get Sequence List For Generate Flows/result
             schema: '#ref'
             mandatory: false
           parentRec:
@@ -381,12 +419,6 @@ stages:
         out:
           result:
             schema: '#ref'
-      ToString1:
-        parent: ToString
-        in:
-          value:
-            external: DOCUMENT_IND
-            schema: boolean
   Template's Input 2:
     actors:
       Sequences List:
@@ -419,7 +451,9 @@ stages:
             const: DOCUMENT_IND
             schema: string
           value:
-            link: ToString1/string
+            link:
+            - false/value
+            - true/value
             schema: string
         out:
           map:
@@ -463,6 +497,8 @@ schemas:
       properties:
         columnType:
           type: string
+        upperColumnName:
+          type: string
         columnName:
           type: string
   Default Actor Per Field Type.out.table:
@@ -479,6 +515,8 @@ schemas:
     items:
       type: object
       properties:
+        MAIN_DOCUMENT:
+          type: string
         PARENT_TABLE:
           type: string
         PARENT_FIELD_NAME:
@@ -533,7 +571,7 @@ schemas:
           type: string
         TABLE:
           type: string
-  GetSequenceListForGenerateFlows1.out.result:
+  Get Sequence List For Generate Flows.out.result:
     type: array
     items:
       type: object
@@ -542,13 +580,15 @@ schemas:
           type: string
         FABRIC_FIELD_NAME:
           type: string
-  Get Document's Main Table And Class.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        CATALOG_CLASS_NAME:
+        TARGET_FIELD_NAME:
           type: string
+  Get Document's Main Table And Class.out.result:
+    type: object
+    properties:
+      CATALOG_CLASS_NAME:
+        type: string
+      MAIN_TABLE_NAME:
+        type: string
   LU Name.out.map:
     type: object
     properties:

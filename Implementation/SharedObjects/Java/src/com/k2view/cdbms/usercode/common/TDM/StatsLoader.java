@@ -10,7 +10,6 @@ import com.k2view.fabric.common.io.IoCommand;
 import com.k2view.fabric.common.io.IoSession;
 import com.k2view.cdbms.lut.LUType;
 
-
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -49,7 +48,6 @@ public class StatsLoader implements Actor {
         String targetEntityID = getQueryFirstResult("set TARGET_ENTITY_ID;", "value", "NO_TARGET_IID");
         String luName = getQueryFirstResult("set LU_TYPE;", "value", "NO_LU_TYPE");
         String mainTableName = getQueryFirstResult("set " + luName + ".ROOT_TABLE_NAME", "value", "NO_ROOT_TABLE_NAME");
-        LUType luType = LUType.getTypeByName(luName);
         // Parse input stats
         Map<String, Object> statsInput = (Map<String, Object>) input.get("stats");
         Map<String, TableStats> stats = new HashMap<>();
@@ -98,7 +96,7 @@ public class StatsLoader implements Actor {
                         luName,
                         "",
                         "",
-                        luType.ludbObjects.get(tableName).schemaAndTableName,
+                        tableName,
                         null,
                         null,
                         null,
@@ -120,7 +118,6 @@ public class StatsLoader implements Actor {
                         long diff = sourceCount - targetCount;
                         long suppressedErrorCount = tableStats.errors;
                         String results = "OK";
-                        String fabricTableName = luType.ludbObjects.get(table).schemaAndTableName;
                         if (diff > 0 && suppressedErrorCount == 0) {
                             results = "Mismatch";
                         } else if (suppressedErrorCount > 0) {
@@ -131,7 +128,7 @@ public class StatsLoader implements Actor {
                                 luName,
                                 entityIid,
                                 targetEntityID,
-                                fabricTableName,
+                                tableName != null ? tableName : table,
                                 null,
                                 null,
                                 null,

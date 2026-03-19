@@ -14,10 +14,17 @@
                         </select>
                     </div>
                     <div class="form-group col-lg-12">
-                        <label>{{"DATA_CENTER_NAME" | translate}}</label>
-                        <select id="environment_new_product_data_center_name" class="form-control1" width="'100%'" ng-change="environmentCtrl.dataCenterChanged(option)" ng-model="environmentCtrl.productData.data_center_name" ng-options="option.dc as option.dc for option in environmentCtrl.dataCenters | orderBy:'dc'">
+                        <label>Affinity</label>
+                        <select id="environment_new_product_data_center_name" chosen allow-single-deselect="true" class="form-control1" width="'100%'" ng-change="environmentCtrl.dataCenterChanged(option)" ng-model="environmentCtrl.productData.data_center_name">
                             <option value=""></option>
+                            <optgroup ng-repeat="group in environmentCtrl.affinityOptions" ng-if="group.options.length > 0" label="{{group.label}}">
+                                <option ng-repeat="option in group.options" value="{{option.value}}">{{option.label}}</option>
+                            </optgroup>
                         </select>
+                    </div>
+                    <div class="form-group col-lg-12" title="Maximum number of workersto allocate per node when executing tasks on this system.">
+                        <label>Maximum number of workers</label>
+                        <input id="environment_product_max_num_of_workers" style="width: 100%" max="{{environmentCtrl.max_number_of_workers}}" min="1" type="number" ng-required="true" ng-init="environmentCtrl.productData.max_number_of_workers = environmentCtrl.max_number_of_workers" ng-model="environmentCtrl.productData.max_number_of_workers"/>
                     </div>
                     <div class="form-group col-lg-12" ng-if="environmentCtrl.productData.product_versions">
                         <label>{{"PRODUCT_VERSION" | translate}}</label>
@@ -61,14 +68,13 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="form-group col-lg-12" ng-if="environmentCtrl.productData.lus == 0">
+                    <!-- <div class="form-group col-lg-12" ng-if="environmentCtrl.productData.lus == 0">
                         <h4 style="color: #ec4758">Product does not have Logical Units. Please add a Logical Unit to the product before you can add it to environment</h4>
-                    </div>
+                    </div> -->
                     <div class="form-group">
                         <div class="col-lg-12 form-buttons" >
-                            <a ng-if="environmentCtrl.addProductWarning"
+                            <a ng-if="environmentCtrl.productData.lus == 0"
                                 id="environment_new_product_save"
-                                ng-show="environmentCtrl.productData.lus > 0"
                                 uib-tooltip="Add System Editor"
                                 tooltip-placement="left"
                                 type="button"
@@ -76,7 +82,7 @@
                                 role="1"
                                 ng-if="!environmentCtrl.disableChangeProduct"
                                 class="pull-left"
-                                mwl-confirm message="DC {{environmentCtrl.addProductWarning.dc_name}} is not equal to the DC name of logical unit {{environmentCtrl.addProductWarning.lu_name}}: {{environmentCtrl.addProductWarning.lu_dc_name}}. Are you sure? "
+                                mwl-confirm message="The selected system does not contain any Logical Units (LUs). Are you sure you want to continue ?"
                                 confirm-text="Yes <i class='glyphicon glyphicon-ok'></i>"
                                 cancel-text="No <i class='glyphicon glyphicon-remove'></i>"
                                 placement="left"
@@ -86,7 +92,7 @@
                                 cancel-button-type="default">
                                 <button class="btn k2-primary-btn pull-left" type="submit">{{"ADD" | translate}}</button>
                             </a>
-                            <button id="environment_new_product_save" ng-if="!environmentCtrl.addProductWarning" ng-show="environmentCtrl.productData.lus > 0" 
+                            <button id="environment_new_product_save" ng-if="environmentCtrl.productData.lus != 0"
                                     class="btn k2-primary-btn pull-left" type="submit">{{"ADD" | translate}}</button>
                             <a uib-tooltip="Close System Editor"
                                 id="environment_new_product_close"

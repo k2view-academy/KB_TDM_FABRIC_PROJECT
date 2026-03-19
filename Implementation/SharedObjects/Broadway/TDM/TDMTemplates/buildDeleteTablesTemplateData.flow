@@ -39,71 +39,81 @@ stages:
         out:
           result:
             schema: boolean
-  Stage 8:
+  Stage 14:
     actors:
-      InnerFlow1:
-        parent: InnerFlow
+      Build Delete Table Name:
+        parent: StringFormat
         in:
-          flowName:
-            const: BuildDeleteTableFieldData
-          value:
-            link:
-              path: get Population Argument List/result/FIELD_NAME
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          datatype:
-            link:
-              path: get Population Argument List/result/FIELD_TYPE
-              iterate: Iterate
-            schema: string
-            mandatory: false
-        out:
-          deleteFieldData:
-            schema: '#ref'
-  Stage 3:
-    last: 1
-    actors:
-      Create Array of Fields with Types:
-        parent: ArrayBuilder
-        height: 92
-        in:
-          input:
-            link:
-              path: InnerFlow1/deleteFieldData
-              pos: 0
-        out:
-          array:
-            schema: '#ref'
-  Get Table and PK columns:
-    actors:
-      get Table PK Columns:
-        parent: LuFunction
-        in:
-          functionName:
-            const: getDbTablePKs
-          catalogSchema:
-            external: schemaName
+          format:
+            const: ${prefix}${table}
+          prefix:
+            link: Get Delete Table Prefix/result
             schema: string
             mandatory: false
           table:
             external: table
             schema: string
             mandatory: false
-          dbInterfaceName:
-            external: interfaceName
-            schema: string
-            mandatory: false
+  Stage 1:
+    actors:
+      Get Template Data:
+        parent: LuFunction
+        in:
+          functionName:
+            const: buildTemplateData
           luName:
             external: luType
             schema: string
             mandatory: false
+            createdBy: functionName
+          luTable:
+            external: table
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          targetDbInterface:
+            external: interfaceName
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+            createdBy: functionName
+          targetDbSchema:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          targetDbTable:
+            external: table
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableIidFieldName:
+            const: ''
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          sequenceName:
+            const: ''
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          flowType:
+            const: DELETE
+            schema: string
+            mandatory: false
+            createdBy: functionName
           useFabric:
-            external: useFabric
+            const: true
             schema: boolean
             mandatory: false
+            createdBy: functionName
         out:
-          pks:
+          res:
             schema: '#ref'
       get Lu Table Columns And Types:
         parent: LuFunction
@@ -121,99 +131,32 @@ stages:
         out:
           result:
             schema: '#ref'
-  Stage 18:
+  Stage 6:
     actors:
-      NotEquals2:
-        parent: NotEquals
-        condition: result
-        in:
-          a:
-            link:
-              path: get Table PK Columns/pks
-              iterate: Iterate
-            schema: string
-          b:
-            const: ''
-            schema: string
-      PK Field Upper Case:
-        parent: Uppercase
-        in:
-          string:
-            link:
-              path: get Table PK Columns/pks
-              iterate: Iterate
-  Stage 7:
-    dependsOn: Stage 18
-    actors:
-      Lookup1:
-        parent: Lookup
-        condition: result
-        in:
-          lookupKeys:
-            const:
-            - upperName
-          lookupData:
-            const: null
-            link: Create Array of Fields with Types/array
-            schema: '#ref'
-          upperName:
-            link: PK Field Upper Case/string
-            schema: string
-            mandatory: false
-    split: '--------------------'
-  Stage 2:
-    else: true
-    transactional: false
-    dependsOn: Stage 18
-    actors:
-      Lookup2:
-        parent: Lookup
-        in:
-          lookupKeys:
-            const:
-            - upperColumnName
-          lookupData:
-            const: null
-            link: get Lu Table Columns And Types/result
-            schema: '#ref'
-          upperColumnName:
-            link: PK Field Upper Case/string
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
-  Stage 10:
-    dependsOn: Stage 7
-    split: '--------------------'
-  Stage 11:
-    transactional: false
-    dependsOn: Stage 2
-    actors:
-      InnerFlow2:
+      Get Field Data:
         parent: InnerFlow
         in:
           flowName:
-            const: BuildDeleteTableFieldData
-          value:
-            link: Lookup2/result/columnName
+            const: GetFieldData
+          fieldName:
+            link:
+              path: Get Template Data/res/TARGET_TABLE_PKS
+              iterate: Iterate
             schema: string
             mandatory: false
-          datatype:
-            link: Lookup2/result/columnType
-            schema: string
-            mandatory: false
-        out:
-          deleteFieldData:
+            createdBy: flowName
+          luTableData:
+            link: get Lu Table Columns And Types/result
             schema: '#ref'
-  Stage 4:
+            editor:
+              id: com.k2view.table
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+  Stage 7:
     last: 1
-    dependsOn: Stage 10
-    split: '--------------------'
-  Stage 9:
-    last: 1
-    transactional: false
-    dependsOn: Stage 11
     actors:
       Create Array of Fields with Types1:
         parent: ArrayBuilder
@@ -221,14 +164,14 @@ stages:
         in:
           input:
             link:
-              path: InnerFlow2/deleteFieldData
+              path: Get Field Data/result
               pos: 0
         out:
           array:
             schema: '#ref'
-  Stage 14:
+  Stage 2:
     actors:
-      Const2:
+      Population Arguments:
         parent: Const
         in:
           value:
@@ -239,7 +182,7 @@ stages:
             schema: '#ref'
   Stage 15:
     last: 1
-    dependsOn: Stage 14
+    dependsOn: Stage 2
     actors:
       NotEquals1:
         parent: NotEquals
@@ -247,7 +190,7 @@ stages:
         in:
           a:
             link:
-              path: Const2/value/PARENT_TABLE
+              path: Population Arguments/value/PARENT_TABLE
               iterate: Iterate
             schema: string
           b:
@@ -258,7 +201,7 @@ stages:
         in:
           input:
             link:
-              path: Const2/value
+              path: Population Arguments/value
               iterate: Iterate
         out:
           array:
@@ -268,145 +211,35 @@ stages:
     last: 1
     else: true
     transactional: false
-    dependsOn: Stage 14
+    dependsOn: Stage 2
     actors:
       ArrayBuilder2:
         parent: ArrayBuilder
         in:
           input:
             link:
-              path: Const2/value
+              path: Population Arguments/value
               iterate: Iterate
         out:
           array:
             schema: '#ref'
-  Stage 12:
-    dependsOn: Stage 15
-    actors:
-      IsNull1:
-        parent: IsNull
-        condition: result
-        in:
-          value:
-            link: Create Array of Fields with Types1/array
-      Const1:
-        parent: Const
-        in:
-          value:
-            const: null
-            link: Create Array of Fields with Types/array
-        out:
-          value:
-            schema: '#ref'
-    split: '--------------------'
-  Stage 13:
-    else: true
-    transactional: false
-    dependsOn: Stage 15
-    actors:
-      JavaScript1:
-        parent: JavaScript
-        in:
-          script:
-            const:
-              userCode: "flowArgs.NewArray = new Array();\r\nfor (var i=0; i<array1.length;\
-                \ ++i) {\r\n    flowArgs.NewArray.push(array1[i]);\r\n}\r\nfor (var\
-                \ i=0; i<array2.length; ++i) {\r\n    flowArgs.NewArray.push(array2[i]);\r\
-                \n}\r\nflowArgs.NewArray;"
-              script: |-
-                flowArgs.NewArray = new Array();
-
-                for (var i = 0; i < array1.length; ++i) {
-                  flowArgs.NewArray.push(array1[i]);
-                }
-
-                for (var i = 0; i < array2.length; ++i) {
-                  flowArgs.NewArray.push(array2[i]);
-                }
-
-                flowArgs.NewArray;
-          array1:
-            link: Create Array of Fields with Types/array
-            schema: '#ref'
-            mandatory: false
-          array2:
-            link: Create Array of Fields with Types1/array
-            schema: '#ref'
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
-    split: '--------------------'
-  Stage 17:
-    transactional: false
-    dependsOn: Stage 16
   Stage 5:
     actors:
-      Split1:
+      List of Root Tables:
         parent: Split
         in:
           string:
             link: Get Root Table Name__1/variableValue
-      Build Delete Table Name:
-        parent: StringFormat
-        height: 235
-        in:
-          format:
-            const: ${prefix}${table}
-          prefix:
-            link: Get Delete Table Prefix/result
-            schema: string
-            mandatory: false
-          table:
-            external: table
-            schema: string
-            mandatory: false
-      Sync Method:
-        parent: MapBuild
-        in:
-          key:
-            const: syncMethod
-            schema: string
-          value:
-            const: DecisionFunction
-            schema: string
-        out:
-          map:
-            schema: '#ref'
-      perform Every:
-        parent: MapBuild
-        in:
-          key:
-            const: performEvery
-            schema: string
-          value:
-            const: 1.00:00:00
-            schema: string
-        out:
-          map:
-            schema: '#ref'
-      perform Every1:
-        parent: MapBuild
-        in:
-          key:
-            const: performEvery
-            schema: string
-          value:
-            const: 1.00:00:00
-            schema: string
-        out:
-          map:
-            schema: '#ref'
   Check if table is main table:
     last: 1
     actors:
-      Equals1:
+      Table is a Main Table?:
         parent: Equals
         condition: result
         in:
           a:
             link:
-              path: Split1/strings
+              path: List of Root Tables/strings
               iterate: Iterate
             schema: string
           b:
@@ -424,53 +257,6 @@ stages:
         parent: LoopStop
   'Template''s Input ':
     actors:
-      Remove duplicate fields:
-        parent: JavaScript
-        in:
-          script:
-            const:
-              userCode: |-
-                var arrIn = [];
-                arrIn = [...fieldsArray];
-                var fieldList = [];
-                //const uniqueArr = [...new Set(arrIn)];
-                var arrOut = [];
-                for(var i=0; i<arrIn.length; i++) {
-                    var fieldName = arrIn[i].upperName;
-                    if (fieldList.indexOf(fieldName)=== -1) {
-                        fieldList.push(fieldName)
-                        arrOut.push(arrIn[i]);
-                    }
-
-                }
-
-                arrOut;
-              script: |-
-                var arrIn = [];
-                arrIn = [].concat(fieldsArray);
-                var fieldList = []; //const uniqueArr = [...new Set(arrIn)];
-
-                var arrOut = [];
-
-                for (var i = 0; i < arrIn.length; i++) {
-                  var fieldName = arrIn[i].upperName;
-
-                  if (fieldList.indexOf(fieldName) === -1) {
-                    fieldList.push(fieldName);
-                    arrOut.push(arrIn[i]);
-                  }
-                }
-
-                arrOut;
-          fieldsArray:
-            link:
-            - Const1/value
-            - JavaScript1/result
-            schema: '#ref'
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
       Parent Table Data:
         parent: MapBuild
         in:
@@ -491,17 +277,6 @@ stages:
             schema: string
           value:
             link: ArrayBuilder2/array
-            schema: string
-        out:
-          map:
-            schema: '#ref'
-      Lazy Data Update:
-        parent: MapBuild
-        in:
-          key:
-            const: LazyDataUpdate
-            schema: string
-          value:
             schema: string
         out:
           map:
@@ -535,7 +310,7 @@ stages:
             const: Columns
             schema: string
           value:
-            link: Remove duplicate fields/result
+            link: Create Array of Fields with Types1/array
         out:
           map:
             schema: '#ref'
@@ -584,6 +359,12 @@ stages:
           value:
             external: interfaceName
             schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
         out:
           map:
             schema: '#ref'
@@ -655,30 +436,41 @@ schemas:
           type: string
         FIELD_NAME:
           type: string
-  InnerFlow1.out.deleteFieldData:
+  Get Template Data.out.res:
     type: object
     properties:
-      datatype:
+      DELETE_TABLE:
         type: string
-      name:
+      LU_NAME:
         type: string
-      upperName:
+      LU_TABLE:
         type: string
-  Create Array of Fields with Types.out.array:
-    type: array
-    items:
-      type: object
-      properties:
-        datatype:
+      LU_TABLE_COLUMNS:
+        type: array
+        items:
           type: string
-        name:
+      MAIN_TABLE_IND:
+        type: string
+      MAIN_TABLE_SEQ_ID:
+        type: string
+      MAIN_TABLE_SEQ_NAME:
+        type: string
+      TABLE_SEQ_DATA: {
+        }
+      TARGET_INTERFACE:
+        type: string
+      TARGET_SCHEMA:
+        type: string
+      TARGET_TABLE:
+        type: string
+      TARGET_TABLE_COLUMNS:
+        type: array
+        items:
           type: string
-        upperName:
+      TARGET_TABLE_PKS:
+        type: array
+        items:
           type: string
-  get Table PK Columns.out.pks:
-    type: array
-    items:
-      type: string
   get Lu Table Columns And Types.out.result:
     type: array
     items:
@@ -690,28 +482,13 @@ schemas:
           type: string
         columnName:
           type: string
-  Lookup1.in.lookupData:
+  Get Field Data.in.luTableData:
     type: array
     items:
       type: object
       properties: {
         }
-  Lookup2.in.lookupData:
-    type: array
-    items:
-      type: object
-      properties: {
-        }
-  Lookup2.out.result:
-    type: object
-    properties:
-      columnType:
-        type: string
-      upperColumnName:
-        type: string
-      columnName:
-        type: string
-  InnerFlow2.out.deleteFieldData:
+  Get Field Data.out.result:
     type: object
     properties:
       datatype:
@@ -731,7 +508,7 @@ schemas:
           type: string
         upperName:
           type: string
-  Const2.out.value:
+  Population Arguments.out.value:
     type: array
     items:
       type: object
@@ -770,116 +547,6 @@ schemas:
           type: string
         FIELD_NAME:
           type: string
-  Const1.out.value:
-    type: array
-    items:
-      type: object
-      properties:
-        datatype:
-          type: string
-        name:
-          type: string
-        upperName:
-          type: string
-  JavaScript1.in.array1:
-    type: array
-    items:
-      type: object
-      properties:
-        datatype:
-          type: string
-        name:
-          type: string
-  JavaScript1.in.array2:
-    type: array
-    items:
-      type: object
-      properties:
-        datatype:
-          type: string
-        name:
-          type: string
-  JavaScript1.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        datatype:
-          type: string
-        name:
-          type: string
-        upperName:
-          type: string
-  Sync Method.out.map:
-    type: object
-    properties:
-      TABLE_FIELDS:
-        type: array
-        items:
-          type: object
-          properties:
-            TYPE:
-              type: string
-            ACTOR:
-              type: string
-            PARAMETERS:
-              type: string
-            TABLE:
-              type: string
-  perform Every.out.map:
-    type: object
-    properties:
-      TABLE_FIELDS:
-        type: array
-        items:
-          type: object
-          properties:
-            TYPE:
-              type: string
-            ACTOR:
-              type: string
-            PARAMETERS:
-              type: string
-            TABLE:
-              type: string
-  perform Every1.out.map:
-    type: object
-    properties:
-      TABLE_FIELDS:
-        type: array
-        items:
-          type: object
-          properties:
-            TYPE:
-              type: string
-            ACTOR:
-              type: string
-            PARAMETERS:
-              type: string
-            TABLE:
-              type: string
-  Remove duplicate fields.in.fieldsArray:
-    type: array
-    items:
-      type: object
-      properties:
-        datatype:
-          type: string
-        name:
-          type: string
-        upperName:
-          type: string
-  Remove duplicate fields.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        datatype:
-          type: string
-        name:
-          type: string
-        upperName:
-          type: string
   Parent Table Data.out.map:
     type: object
     properties:
@@ -890,22 +557,6 @@ schemas:
     properties:
       NAME:
         type: string
-  Lazy Data Update.out.map:
-    type: object
-    properties:
-      TABLE_FIELDS:
-        type: array
-        items:
-          type: object
-          properties:
-            TYPE:
-              type: string
-            ACTOR:
-              type: string
-            PARAMETERS:
-              type: string
-            TABLE:
-              type: string
   Full Text Search.out.map:
     type: object
     properties:

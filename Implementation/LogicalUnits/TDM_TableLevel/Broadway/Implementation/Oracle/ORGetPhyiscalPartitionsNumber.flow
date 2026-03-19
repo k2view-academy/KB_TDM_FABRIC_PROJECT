@@ -1,0 +1,139 @@
+tags: Implementation
+stages:
+  Inputs:
+    actors:
+      'Interface ':
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interfaceName
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+        out:
+          value:
+            schema: string
+      Flow Inputs:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: flowInputs
+        out:
+          value:
+            schema: '#ref'
+      Schema Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schemaName
+            schema: string
+        out:
+          value:
+            schema: string
+      Table Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+            schema: string
+        out:
+          value:
+            schema: string
+  Get Query:
+    actors:
+      DbCommand:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: Interface /value
+          sql:
+            const: |-
+              SELECT COUNT(*) AS partition_count
+              FROM user_tab_partitions
+              WHERE table_name = '${@table}'
+          table:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+      Get Number Of Partitions:
+        parent: DbFetchField
+        in:
+          interface:
+            const: null
+            link: Interface /value
+          sql:
+            const: |-
+              SELECT COUNT(*) AS partition_count
+              FROM user_tab_partitions
+              WHERE table_name = ${table}
+          table:
+            link: Table Name/value
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: integer
+  Return Number Of Partitions:
+    dependsOn: Get Query
+    actors:
+      Table Paritioned?:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Get Number Of Partitions/result
+      result:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Number Of Partitions/result
+            schema: integer
+        out:
+          value:
+            external: value
+            schema: integer
+    split: '--------------------'
+  Table is Not Partitioned:
+    else: true
+    dependsOn: Get Query
+    actors:
+      1 partition:
+        parent: Const
+        in:
+          value:
+            const: 1
+            schema: integer
+        out:
+          value:
+            external: value
+            schema: integer
+schemas:
+  Flow Inputs.out.value:
+    type: object
+    properties:
+      message:
+        type: string
+  DbCommand.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        PARTITION_COUNT:
+          type: integer

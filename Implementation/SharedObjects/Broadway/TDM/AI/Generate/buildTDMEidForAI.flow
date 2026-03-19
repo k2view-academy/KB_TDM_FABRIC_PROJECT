@@ -10,19 +10,19 @@ stages:
           value:
             const: null
             external: Env
-      IID:
-        parent: Const
-        in:
+        out:
           value:
-            const: null
-            external: IID
+            schema: string
       ExecutionID:
         parent: Const
         in:
           value:
             const: null
             external: ExecutionID
-  Build TDM_EID:
+        out:
+          value:
+            schema: string
+  'Build TDM_EID ':
     actors:
       Format DataFlux EID:
         parent: StringFormat
@@ -39,14 +39,14 @@ stages:
             link: get TDM Separators/IID_OPEN_SEPARATOR
             schema: string
           sourceIID:
-            link: IID/value
+            external: IID
             schema: string
           iidCloseSeparator:
             link: get TDM Separators/IID_CLOSE_SEPARATOR
             schema: string
           taskExeID:
             link: ExecutionID/value
-            schema: any
+            schema: string
             mandatory: false
         out:
           string:

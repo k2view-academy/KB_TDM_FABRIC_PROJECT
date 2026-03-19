@@ -36,7 +36,8 @@ public class SharedLogic {
  public static String TDMDB_SCHEMA;
     static {
         try {
-            TDMDB_SCHEMA = fabric().fetch("Broadway TDM.getTDMDBSchema").firstValue().toString();
+			String luName = getLuType().luName == null ? "TDM" : getLuType().luName;
+            TDMDB_SCHEMA = fabric().fetch("Broadway "+ luName + ".getTDMDBSchema").firstValue().toString();
         } catch (Exception e) {
             log.error("Failed to fetch TDMDB schema", e);
         }
@@ -401,42 +402,57 @@ public class SharedLogic {
 		return distinctTable;
 	}
 
-	private static Map<String, String> fnGetMinMaxValues(HashSet<String> columnDistinctValues, Map<String, String> currMinMax) {
+	private static Map<String, String> fnGetMinMaxValues(HashSet<String> columnDistinctValues,
+			Map<String, String> currMinMax) {
+		// 1. Safety: Ensure the map isn't null before we try to put values in it
+		if (currMinMax == null)
+			currMinMax = new HashMap<>();
 
-		String min = (currMinMax == null || "\\N".equals(currMinMax.get("MIN"))) ? null : currMinMax.get("MIN");
-		String max = (currMinMax == null || "\\N".equals(currMinMax.get("MAX"))) ? null : currMinMax.get("MAX");
+		String min = (currMinMax.get("MIN") == null || "\\N".equals(currMinMax.get("MIN"))) ? null
+				: currMinMax.get("MIN");
+		String max = (currMinMax.get("MAX") == null || "\\N".equals(currMinMax.get("MAX"))) ? null
+				: currMinMax.get("MAX");
 
 		for (String value : columnDistinctValues) {
+			if (value == null)
+				continue;
+
 			Integer intValue = null;
 			Long longValue = null;
 			Double doubleValue = null;
-			value = value.replace("\"", "");
- 			if (value.startsWith("0")) {
-                currMinMax.put("MIN", "\\N");
-                currMinMax.put("MAX", "\\N");
-                return currMinMax;
-            }
+
+			// Clean quotes and trailing spaces
+			value = value.replace("\"", "").trim();
+
+			// 2. Logic: Reject leading zero IDs (05), but allow 0, 0.0, and 0.5
+			if (value.startsWith("0") && !value.contains(".") && value.length() > 1) {
+				currMinMax.put("MIN", "\\N");
+				currMinMax.put("MAX", "\\N");
+				return currMinMax;
+			}
+
 			try {
 				intValue = Integer.parseInt(value);
-				if (min == null || intValue < Integer.parseInt(min)) {
+				// Comparison using Double to handle mixed integer/decimal sets
+				if (min == null || intValue < Double.parseDouble(min)) {
 					min = value;
 				}
-				if (max == null || intValue > Integer.parseInt(max)) {
+				if (max == null || intValue > Double.parseDouble(max)) {
 					max = value;
 				}
 			} catch (NumberFormatException e) {
 				// Do nothing
 			}
+
 			if (intValue == null) {
 				try {
 					longValue = Long.parseLong(value);
-					if (min == null || longValue <Long.parseLong(min)) {
+					if (min == null || longValue < Double.parseDouble(min)) {
 						min = value;
 					}
-					if (max == null || longValue > Long.parseLong(max)) {
+					if (max == null || longValue > Double.parseDouble(max)) {
 						max = value;
 					}
-
 				} catch (NumberFormatException e) {
 					// Do nothing
 				}
@@ -454,7 +470,8 @@ public class SharedLogic {
 				} catch (NumberFormatException e) {
 					// Do nothing
 				}
-				if (intValue == null && longValue == null && doubleValue == null) {
+
+				if (doubleValue == null) {
 					currMinMax.put("MIN", "\\N");
 					currMinMax.put("MAX", "\\N");
 					return currMinMax;
@@ -462,8 +479,8 @@ public class SharedLogic {
 			}
 		}
 
-		currMinMax.put("MIN", min);
-		currMinMax.put("MAX", max);
+		currMinMax.put("MIN", min == null ? "\\N" : min);
+		currMinMax.put("MAX", max == null ? "\\N" : max);
 
 		return currMinMax;
 	}
@@ -700,17 +717,25 @@ public class SharedLogic {
 
 	@out(name = "refSummaryStats", type = Map.class, desc = "")
 	public static Map<String,Object> fnGetReferenceSummaryData(String refTaskExecutionId) throws Exception {
-		String selectRefTablesStats = "Select count(*) as cnt, to_char(min(start_time), 'YYYY-MM-DD HH24:MI:SS') as start_time, " +
-				"to_char(max(end_time), 'YYYY-MM-DD HH24:MI:SS') as end_time, execution_status, lu_name from " +
-				TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".TASK_REF_TABLES rt where task_execution_id = ? " +
-				"and es.task_id = rt.task_id and es.task_ref_table_id = rt.task_ref_table_id group by execution_status, lu_name order by lu_name";
-
+		String selectRefTablesStats =   "SELECT " +
+										"  COUNT(DISTINCT st.task_ref_table_id) AS cnt, " +
+										"  to_char(MIN(st.start_time), 'YYYY-MM-DD HH24:MI:SS') AS start_time, " +
+										"  to_char(MAX(st.end_time),   'YYYY-MM-DD HH24:MI:SS') AS end_time, " +
+										"  st.execution_status, " +
+										"  rt.lu_name " +
+										"FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats st " +
+										"JOIN " + TDMDB_SCHEMA + ".task_ref_tables rt " +
+										"  ON rt.task_ref_table_id = st.task_ref_table_id " +
+										" AND rt.task_id = st.task_id " +
+										"WHERE st.task_execution_id = ? " +
+										"GROUP BY st.execution_status, rt.lu_name " +
+										"ORDER BY rt.lu_name";
 		Integer tot_num_tables_to_process=0;
-		Integer num_of_processed_ref_tables= 0;
-		Integer num_of_copied_ref_tables = 0;
-		Integer num_of_failed_ref_tables= 0;
+		Integer num_of_processed_ref_tables=0;
+		Integer num_of_copied_ref_tables=0;
+		Integer num_of_failed_ref_tables=0;
 		Integer num_of_processing_tables=0;
-		Integer num_of_not_started_tables= 0;
+		Integer num_of_not_started_tables=0;
 
 		Integer noOfRecords=0;
 
@@ -782,7 +807,7 @@ public class SharedLogic {
 
 			tot_num_tables_to_process += noOfRecords;
 
-			switch (refStatus) {
+			switch (refStatus.toLowerCase()) {
 				case "completed":
 					num_of_copied_ref_tables += noOfRecords;
 					num_of_processed_ref_tables += noOfRecords;
@@ -931,14 +956,35 @@ public class SharedLogic {
 		// Calculate the estimated remaining time for running tasks using the following formula:
 		// ((Current time (UTC) – start_time (UTC) )/ number_of_processed_records) * (number_of_records_to_process- number_of_processed_records)
 
-		String selectDetailedRefTablesStats = "SELECT rt.lu_name, es.ref_table_name, es.execution_status, es.start_time, es.end_time, " +
-				"CASE WHEN execution_status = 'running' and number_of_processed_records > 0 and coalesce(number_of_records_to_process, 0) > 0 THEN " +
-				"to_char(((CURRENT_TIMESTAMP AT TIME ZONE 'UTC' - start_time )/number_of_processed_records) * " +
-				"(number_of_records_to_process - number_of_processed_records), 'HH24:MI:SS') " +
-				"ELSE '0' END estimated_remaining_duration, coalesce(number_of_records_to_process, 0) as number_of_records_to_process, " +
-				"coalesce(number_of_processed_records, 0) as number_of_processed_records, coalesce(error_msg, '') as error_msg " +
-				"FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".task_ref_tables rt where task_execution_id = ? and es.task_id = rt.task_id " +
-				"and es.task_ref_table_id = rt.task_ref_table_id and lower(es.execution_status) != 'pending'";
+		String selectDetailedRefTablesStats ="SELECT rt.lu_name, " +
+											"COALESCE(MAX(p.table_name), '') AS ref_table_name, " +
+											"p.batch_id, " +
+											"CASE " +
+											"WHEN BOOL_OR(LOWER(p.execution_status) = 'failed')  THEN 'failed' " +
+											"WHEN BOOL_OR(LOWER(p.execution_status) = 'stopped') THEN 'stopped' " +
+											"WHEN BOOL_OR(LOWER(p.execution_status) = 'pending') THEN 'pending' " +
+											"WHEN BOOL_AND(LOWER(p.execution_status) = 'completed') THEN 'completed' " +
+											"ELSE 'running' " +
+											"END AS execution_status, " +
+											"min(p.start_time) as start_time, " +
+											"max(p.end_time)   as end_time, " +
+											"NULL::text as estimated_remaining_duration, " +
+											// sums across partitions:
+											"CASE WHEN SUM(COALESCE(p.number_of_records_to_process, 0)) >=0 AND s.number_of_partitions > 1 THEN 0 ELSE s.number_of_records_to_process END AS number_of_records_to_process, " +
+											"SUM(COALESCE(p.number_of_processed_records, 0)) as number_of_processed_records, " +
+											// minimal error aggregation :
+											"COALESCE(max(nullif(p.error_msg, '')), '') as error_msg " +
+											"FROM " + TDMDB_SCHEMA + ".task_ref_partition p " +
+											"JOIN " + TDMDB_SCHEMA + ".task_ref_tables rt " +
+											"  ON rt.task_id = p.task_id " +
+											" AND rt.task_ref_table_id = p.task_ref_table_id " +
+											"LEFT JOIN " + TDMDB_SCHEMA + ".task_ref_exe_stats s " +
+											"  ON s.task_id = p.task_id " +
+											" AND s.task_execution_id = p.task_execution_id " +
+											" AND s.task_ref_table_id = p.task_ref_table_id " +
+											"WHERE p.task_execution_id = ? " +
+											"GROUP BY rt.lu_name, p.task_ref_table_id, p.batch_id, s.number_of_records_to_process, s.number_of_partitions " +
+											"ORDER BY rt.lu_name, ref_table_name";
 
 		//rs = DBQuery("TDM", selectDetailedRefTablesStats, new Object[]{refTaskExecutionId});
 		rows = db(TDM).fetch(selectDetailedRefTablesStats, refTaskExecutionId);
@@ -1350,6 +1396,26 @@ public class SharedLogic {
 		return mtable.mapsByKey(key,features);
 	}
 
+	@out(name = "result", type = Object.class, desc = "")
+    public static Set<Object> MtableGetKeyValues(String name,String key) throws Exception {
+        MTable mtable = MTables.get(name);
+        if (mtable == null) return Collections.emptySet();
+
+        List<String> columns = mtable.columns();
+        int idx = columns.indexOf(key);
+        if (idx == -1) return Collections.emptySet(); // column not found
+
+        // extract just that column, distinct and ordered
+        Set<Object> unique = new LinkedHashSet<>();
+        for (Object[] row : mtable.allRows()) {
+            if (idx < row.length && row[idx] != null) {
+                unique.add(row[idx]);
+            }
+        }
+
+        return unique;
+    }
+	
 	public static void MtableRemove(String name) throws Exception {
 		MTables.remove(name);
 	}

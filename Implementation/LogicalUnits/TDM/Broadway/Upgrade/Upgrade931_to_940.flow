@@ -107,6 +107,11 @@ stages:
             const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParamsMapping.csv
             schema: string
             mandatory: false
+      UpgradeGlobals:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeGlobals
   Stage 5:
     actors:
       RenameLoadAndDeleteFlows1:

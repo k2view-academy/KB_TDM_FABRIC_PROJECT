@@ -36,7 +36,16 @@ stages:
           interface:
             const: TDM
           sql:
-            const: Select * From ${@TDMDB_SCHEMA}.task_exe_stats_detailed
+            const: |
+              Select es.* From ${@TDMDB_SCHEMA}.task_exe_stats_detailed es
+              where EXISTS (
+                    SELECT 1
+                    FROM ${@TDMDB_SCHEMA}.task_execution_entities ee
+                    WHERE ee.task_execution_id = es.task_execution_id
+                      AND ee.lu_name = es.lu_name
+                      AND ee.target_entity_id = es.target_entity_id
+                      AND ee.execution_status = 'completed'
+              )
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
             schema: string
@@ -46,46 +55,6 @@ stages:
         out:
           result:
             schema: '#ref'
-  Get Entity Status:
-    actors:
-      DbFetchField:
-        parent: DbFetchField
-        in:
-          interface:
-            const: fabric
-          sql:
-            const: select EXECUTION_STATUS from TDM.TASK_EXECUTION_LINK_ENTITIES where
-              LU_NAME = ${LU_NAME} and TARGET_ENTITY_ID = ${TARGET_ENTITY_ID} and
-              IID=${IID}
-          IID:
-            link:
-              path: Query/result/entity_id
-              iterate: Iterate
-            schema: any
-            mandatory: false
-          TARGET_ENTITY_ID:
-            link:
-              path: Query/result/target_entity_id
-              iterate: Iterate
-            schema: any
-            mandatory: false
-          LU_NAME:
-            link:
-              path: Query/result/lu_name
-              iterate: Iterate
-            schema: any
-            mandatory: false
-  'Succussed? ':
-    actors:
-      EqualsIgnoreCase:
-        parent: EqualsIgnoreCase
-        condition: result
-        in:
-          b:
-            const: completed
-            schema: string
-          a:
-            link: DbFetchField/result
   LU Table:
     last: 1
     actors:

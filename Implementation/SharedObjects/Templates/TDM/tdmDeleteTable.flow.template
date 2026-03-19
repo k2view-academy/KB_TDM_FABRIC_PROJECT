@@ -1,201 +1,98 @@
-{
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Description",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "remark": "This flow demonstrates the following:\n1. A table flow with field transformations:\n  a. Changing the sequential value of a field\n2. Supporting sequence replacement:\n  a. Regular sequence replacement\n  b. Sequence Caching - when a value was already replaced at a previous stage/actor, the new value will be taken from cache.",
-                    "actors": []
-                }
-            ]
-        },
-	    {
-            "stages": [
-                {
-                    "name": "Initiate",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-						{{#eq MAIN_TABLE_IND "true"}}
-						{
-							"name": "Set Target Environment",
-							"actorType": {
-                                "parentType": "setTargetEnv_Actor",
-                                "inputs": [],
-                                "outputs": []
-                            }
-						},
-						{{/eq}}
-                        {
-                            "name": "Initiate TDM Delete",
-                            "actorType": {
-                                "parentType": "InitiateTDMLoad_Actor",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-		{
-            "stages": [
-                {
-                    "name": "Get Fabric Table Data",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Get Table Data",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select distinct {{#each TARGET_TABLE_PKS~}}{{this}}{{#if @last}}{{^}},{{/if}}{{/each}} from {{LU_NAME}}.{{{DELETE_TABLE}}}"
-                                    }
-                                           
-										 
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {}
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Delete Data From Target",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": "PopulateTableErrorsWithFailed"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Delete {{{TARGET_TABLE}}} Table",
-                            "actorType": {
-                                "parentType": "DbDelete",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "{{TARGET_INTERFACE}}"
-                                    },
-									{
-                                        "name": "schema",
-                                        "const": "{{{TARGET_SCHEMA}}}"
-                                    },
-                                    {
-                                        "name": "table",
-                                        "const": "{{{TARGET_TABLE}}}"
-                                    },
-                                    {
-                                        "name": "keys",
-                                        "const": [
-										   {{#each TARGET_TABLE_PKS~}}
-                                           "{{this}}"{{#if @last}}{{^}},{{/if}}
-										   {{/each}}]
-                                    }{{#each TARGET_TABLE_PKS~}},
-									{
-                                        "name": "{{this}}",
-                                        "schema": {}
-                                    }
-									{{~/each}}
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-	],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Delete {{{TARGET_TABLE}}} Table",
-                "name": "params"
-            },
-            "iterate": "Iterate"
-        },
-	    {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Delete",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Delete",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",							 
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Delete",
-                "name": "syncMode"
-            }
-        }
-    ]
-}
+tags: DeleteFlows
+stages:
+  Description:
+    remark: |-
+      This flow demonstrates the following:
+      1. A table flow with field transformations:
+        a. Changing the sequential value of a field
+      2. Supporting sequence replacement:
+        a. Regular sequence replacement
+        b. Sequence Caching - when a value was already replaced at a previous stage/actor, the new value will be taken from cache.
+    transactional: false
+  Initiate:
+    transactional: false
+    actors:
+      {{#eq MAIN_TABLE_IND "true"}}
+      Set Target Environment:
+        parent: setTargetEnv_Actor {{/eq}}
+      Initiate TDM Delete:
+        parent: InitiateTDMLoad_Actor
+        in:
+          parentLuName:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          isParamCoupling:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          iid:
+            external: iid
+          luName:
+            external: luName
+          syncMode:
+            external: syncMode
+  Get Fabric Table Data:
+    transactional: false
+    actors:
+      Get Table Data:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: select distinct {{#each TARGET_TABLE_PKS~}}{{{getPKFieldWithoutSingleQoute this}}}{{#if @last}}{{^}},{{/if}}{{/each}} from {{LU_NAME}}.{{{DELETE_TABLE}}}
+        out:
+          result:
+            schema: '#ref'
+  Delete Data From Target:
+    last: 1
+    actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Delete {{{TARGET_TABLE}}} Table:
+        parent: DbDelete
+        in:
+          interface:
+            const: {{TARGET_INTERFACE}}
+          schema:
+            const: {{{TARGET_SCHEMA}}}
+          table:
+            const: {{{TARGET_TABLE}}}
+          keys:
+            const:
+            {{#each TARGET_TABLE_PKS~}}
+            - {{{this}}}
+            {{/each}}
+          {{#each TARGET_TABLE_PKS}}
+          {{{this}}}:
+            link: 
+              path: Get Table Data/result/{{getPKFieldWithoutQoutes this}}
+              iterate: Iterate
+            schema: any
+          {{/each}}
+          params:
+            link:
+              path: Get Table Data/result
+              iterate: Iterate
+schemas:
+  Get Table Data.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        {{#each TARGET_TABLE_PKS~}}
+        {{getPKFieldWithoutQoutes this}}:
+          type: any
+        {{/each}}

@@ -6,7 +6,7 @@ stages:
         parent: FabricSetRead
         in:
           key:
-            const: TDM_DELETE_BEFORE_LOAD
+            const: TDM.TDM_DELETE_BEFORE_LOAD
             default: false
   Check DeleteBeforeLoad:
     dependsOn: Get Variables
@@ -41,7 +41,7 @@ stages:
         parent: FabricSetRead
         in:
           key:
-            const: TDM_INSERT_TO_TARGET
+            const: TDM.TDM_INSERT_TO_TARGET
             default: false
   Do Nothing:
     transactional: false

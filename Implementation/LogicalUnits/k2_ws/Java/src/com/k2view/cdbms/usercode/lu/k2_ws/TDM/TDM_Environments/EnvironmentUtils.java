@@ -15,15 +15,16 @@ import java.util.Map;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.validateMaxWorkers;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
 
-
-@SuppressWarnings({"DefaultAnnotationParam"})
+@SuppressWarnings({ "DefaultAnnotationParam" })
 public class EnvironmentUtils {
-    static final Log log = Log.a(UserCode.class);
-	public static final String TDM = "TDM";
-    static final String schema = TDMDB_SCHEMA;
+    private static final Log log = Log.a(UserCode.class);
+    private static final String TDM = "TDM";
+    private static final String schema = TDMDB_SCHEMA;
 
-    static String fnGetInterval(String interval) {
+    public static String fnGetInterval(String interval) {
         if ("Day".equals(interval)) {
             return "1 day";
         } else if ("Week".equals(interval)) {
@@ -39,7 +40,7 @@ public class EnvironmentUtils {
         }
     }
 
-    static Object fnExtractExecutionStatus(Map<String, List<Map<String, Object>>> executionsStatusGroup) {
+    public static Object fnExtractExecutionStatus(Map<String, List<Map<String, Object>>> executionsStatusGroup) {
         Map<String, Integer> executionsStatus = new HashMap<>();
         executionsStatus.put("failed", 0);
         executionsStatus.put("pending", 0);
@@ -48,8 +49,7 @@ public class EnvironmentUtils {
         executionsStatus.put("running", 0);
         executionsStatus.put("completed", 0);
 
-        out:
-        for (Map.Entry<String, List<Map<String, Object>>> entry : executionsStatusGroup.entrySet()) {
+        out: for (Map.Entry<String, List<Map<String, Object>>> entry : executionsStatusGroup.entrySet()) {
             List<Map<String, Object>> group = entry.getValue();
             for (Map<String, Object> execution : group) {
                 if ("FAILED".equals(execution.get("execution_status").toString().toUpperCase())) {
@@ -78,9 +78,12 @@ public class EnvironmentUtils {
 
             Boolean runningFound = false;
             for (Map<String, Object> execution : group) {
-                if (execution.get("execution_status") == null) continue;
-                if ("RUNNING".equals(execution.get("execution_status").toString().toUpperCase()) || "EXECUTING".equals(execution.get("execution_status").toString().toUpperCase()) ||
-                        "STARTED".equals(execution.get("execution_status").toString().toUpperCase()) || "STARTEXECUTIONREQUESTED".equals(execution.get("execution_status").toString())) {
+                if (execution.get("execution_status") == null)
+                    continue;
+                if ("RUNNING".equals(execution.get("execution_status").toString().toUpperCase())
+                        || "EXECUTING".equals(execution.get("execution_status").toString().toUpperCase()) ||
+                        "STARTED".equals(execution.get("execution_status").toString().toUpperCase())
+                        || "STARTEXECUTIONREQUESTED".equals(execution.get("execution_status").toString())) {
                     executionsStatus.put("running", executionsStatus.get("running") + 1);
                     runningFound = true;
                     break;
@@ -96,7 +99,7 @@ public class EnvironmentUtils {
         return executionsStatus;
     }
 
-    static void fnUpdateEnvironmentDate(Long envId) {
+    public static void fnUpdateEnvironmentDate(Long envId) {
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
@@ -112,10 +115,17 @@ public class EnvironmentUtils {
         }
     }
 
-    static Long fnAddProcutToEnvironment(long envId, Long product_id, String data_center_name, String product_version) throws Exception {
+    public static Long fnAddProcutToEnvironment(long envId, Long product_id, String data_center_name,
+            String product_version, Integer max_number_of_workers) throws Exception {
+
+        String msg = validateMaxWorkers(max_number_of_workers);
+        if (!"".equalsIgnoreCase(msg)) {
+            throw new RuntimeException(msg);
+        }
         String sql = "INSERT INTO " + schema + ".environment_products " +
-                "(environment_id, product_id, data_center_name, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING environment_product_id";
+                "(environment_id, product_id, data_center_name, product_version, created_by, creation_date, last_updated_date, last_updated_by, status, max_number_of_workers) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING environment_product_id";
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
@@ -129,12 +139,19 @@ public class EnvironmentUtils {
                 now,
                 now,
                 username,
-                "Active").firstRow();
+                "Active",
+                max_number_of_workers).firstRow();
         return Long.parseLong(row.get("environment_product_id").toString());
     }
 
+    public static void fnUpdateProductToEnvironment(Long environment_product_id, String data_center_name,
+            String product_version, Integer max_number_of_workers) throws Exception {
 
-    static void fnUpdateProductToEnvironment(Long environment_product_id, String data_center_name, String product_version) throws Exception {
+        String msg = validateMaxWorkers(max_number_of_workers);
+        if (!"".equalsIgnoreCase(msg)) {
+            throw new RuntimeException(msg);
+        }
+
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
@@ -142,13 +159,14 @@ public class EnvironmentUtils {
                 "data_center_name=(?)," +
                 "product_version=(?)," +
                 "last_updated_date=(?)," +
-                "last_updated_by=(?) " +
+                "last_updated_by=(?)," +
+                "max_number_of_workers=(?) " +
                 "WHERE environment_product_id = " + environment_product_id;
         String username = sessionUser().name();
-        db(TDM).execute(sql, data_center_name, product_version, now, username);
+        db(TDM).execute(sql, data_center_name, product_version, now, username, max_number_of_workers);
     }
 
-    static void fnUpdateEnvironmentRolesPermissions(Long environment_id, String type, boolean value) {
+    public static void fnUpdateEnvironmentRolesPermissions(Long environment_id, String type, boolean value) {
         try {
             String sql = "UPDATE " + schema + ".environment_roles SET " +
                     "" + type + "=(?)" +
@@ -159,7 +177,6 @@ public class EnvironmentUtils {
         }
     }
 
- 
     public static void fnInsertActivity(String action, String entity, String description) throws Exception {
         String userId = sessionUser().name();
         String username = userId;
@@ -170,6 +187,25 @@ public class EnvironmentUtils {
                 "(date, action, entity, user_id, username, description) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         db(TDM).execute(sql, now, action, entity, userId, username, description);
+    }
+
+    private static String validateMaxWorkers(Integer requestedWorkers) {
+        int maxLimit;
+
+        try {
+            maxLimit = getGlobalMaxWorkersLimit();
+        } catch (Exception e) {
+            return "Error: Could not retrieve the global max workers limit from configuration.";
+        }
+
+        if (requestedWorkers != null && requestedWorkers > maxLimit) {
+            return String.format(
+                    "Validation failed: The requested number of workers (%d) exceeds the maximum allowed for execution, as defined in the Fabric configuration (%d).",
+                    requestedWorkers,
+                    maxLimit);
+        }
+
+        return "";
     }
 
 }

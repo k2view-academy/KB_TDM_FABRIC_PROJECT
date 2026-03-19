@@ -18,6 +18,12 @@ stages:
           targetDbInterface:
             external: targetDbInterface
             schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
             mandatory: false
           targetDbSchema:
             external: targetDbSchema
@@ -30,11 +36,22 @@ stages:
           sourceDBIneterface:
             external: sourceDBIneterface
             schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
             mandatory: false
           sourceDBSchema:
             external: sourceDBSchema
             schema: string
             mandatory: false
+          rootFieldName:
+            external: rootFieldName
+            schema: string
+            mandatory: false
+            createdBy: functionName
         out:
           res:
             schema: '#ref'
@@ -65,7 +82,7 @@ stages:
           flowName:
             const: getTemplate
           TEMPLATE_TYPE:
-            const: delete_template
+            const: delete_document_template
             schema: string
             editor:
               id: com.k2view.mTableKey
@@ -102,6 +119,16 @@ stages:
             link: Get Project Directory/PROJECT_FOLDER
             schema: string
             mandatory: false
+      Build Flow Name:
+        parent: StringFormat
+        in:
+          format:
+            const: delete_${name}.flow
+          name:
+            external: targetDbTable
+            schema: string
+            mandatory: false
+            createdBy: format
       ApplyTemplate:
         parent: LuFunction
         in:
@@ -125,7 +152,7 @@ stages:
             const: null
             link: flow folder/string
           path:
-            const: DeleteFromTarget.flow
+            link: Build Flow Name/string
           stream:
             link: ApplyTemplate/result
 schemas:
@@ -133,6 +160,10 @@ schemas:
     type: object
     properties:
       LU_NAME:
+        type: string
+      MAIN_FIELD_NAME:
+        type: string
+      MAIN_TABLE_IND:
         type: string
       SOURCE_INTERFACE:
         type: string

@@ -1,38 +1,7 @@
 tags: TDM
 stages:
-  Get List of Tables:
-    actors:
-      Set Target Environment:
-        parent: FabricSet
-        in:
-          key:
-            const: ENVIRONMENT
-            default: false
-          value:
-            const: null
-            external: TARGET_ENVIRONMENT
-            default: false
-      Get Delete Table Prefix:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDM_DELETE_TABLES_PREFIX
-            default: false
-      geLuTables:
-        parent: LuFunction
-        in:
-          functionName:
-            const: getLuTables
-          luName:
-            external: LU_NAME
-            schema: string
-            editor:
-              id: com.k2view.logicalUnit
-              addEmptyEntry: true
-            mandatory: false
-        out:
-          res:
-            schema: '#ref'
+  Get List of Tables: {
+    }
   Create the Name Of Delete Table:
     actors:
       Build Delete Table Name:
@@ -40,15 +9,13 @@ stages:
         height: 235
         in:
           format:
-            const: ${prefix}${table}
+            const: ${prefix}${table}.k2table.xml
           prefix:
-            link: Get Delete Table Prefix/result
+            external: TABLE_PREFIX
             schema: string
             mandatory: false
           table:
-            link:
-              path: geLuTables/res
-              iterate: Iterate
+            external: TABLE_NAME
             schema: string
             mandatory: false
   Check If Table Already Exists:
@@ -74,6 +41,8 @@ stages:
             editor:
               id: com.k2view.logicalUnit
               addEmptyEntry: true
+          FOLDER_NAME:
+            const: DeleteFlows
           FLOW_FILE_NAME:
             link: Build Delete Table Name/string
         out:
@@ -96,9 +65,7 @@ stages:
             editor:
               id: com.k2view.logicalUnit
           table:
-            link:
-              path: geLuTables/res
-              iterate: Iterate
+            external: TABLE_NAME
             schema: string
             mandatory: false
           TARGET_SCHEMA:
@@ -108,6 +75,12 @@ stages:
           TARGET_INTERFACE:
             external: TARGET_INTERFACE
             schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
             mandatory: false
           useFabric:
             external: useFabric
@@ -118,7 +91,6 @@ stages:
             schema: string
             mandatory: false
   Create New:
-    last: 1
     dependsOn: Check If Table Already Exists
     actors:
       If table Does Not Exists:
@@ -142,9 +114,7 @@ stages:
             editor:
               id: com.k2view.logicalUnit
           table:
-            link:
-              path: geLuTables/res
-              iterate: Iterate
+            external: TABLE_NAME
             schema: string
             mandatory: false
           TARGET_SCHEMA:
@@ -154,6 +124,12 @@ stages:
           TARGET_INTERFACE:
             external: TARGET_INTERFACE
             schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
             mandatory: false
           useFabric:
             external: useFabric
@@ -165,7 +141,6 @@ stages:
             mandatory: false
     split: '--------------------'
   Table Already Exists:
-    last: 1
     else: true
     transactional: false
     dependsOn: Check If Table Already Exists
@@ -178,41 +153,10 @@ stages:
           level:
             const: info
           TABLE_NAME:
-            link:
-              path: geLuTables/res
-              iterate: Iterate
+            external: TABLE_NAME
             schema: string
     split: '--------------------'
   Stage 6:
-    last: 1
     else: false
     transactional: false
     dependsOn: Create Table Always
-  Update LU's Schema:
-    actors:
-      Add Tables to LU's Schema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: AddDeleteTablesToSchema
-          luName:
-            external: LU_NAME
-            schema: string
-            mandatory: false
-          schemaName:
-            external: TARGET_SCHEMA
-            schema: string
-            mandatory: false
-          interfaceName:
-            external: TARGET_INTERFACE
-            schema: string
-            mandatory: false
-          useFabric:
-            external: useFabric
-            schema: boolean
-            mandatory: false
-schemas:
-  geLuTables.out.res:
-    type: array
-    items:
-      type: string
