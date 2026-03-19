@@ -1,0 +1,232 @@
+tags: TDM
+stages:
+  Get TDMDB schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Get Data:
+    actors:
+      Run Select:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select * from ${@TDMDB_SCHEMA}.tdm_generate_task_field_mappings
+              where task_id = ${task_id}
+              order by param_order
+          task_id:
+            external: task_id
+            schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  In case of Object:
+    dependsOn: Get Data
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        condition: result
+        height: 127
+        in:
+          script:
+            const:
+              userCode: "var res = true;\r\ntry {\r\n    JSON.parse(value);\r\n  \
+                \  } catch (e) {\r\n        res = false;\r\n    }\r\nres;"
+              script: |-
+                var res = true;
+
+                try {
+                  JSON.parse(value);
+                } catch (e) {
+                  res = false;
+                }
+
+                res;
+          value:
+            link:
+              path: Run Select/result/param_value
+              iterate: Iterate
+            schema: any
+            mandatory: false
+      JsonParser1:
+        parent: JsonParser
+        in:
+          stream:
+            link:
+              path: Run Select/result/param_value
+              iterate: Iterate
+        out:
+          object:
+            schema: '#ref'
+    split: '--------------------'
+  Not Object:
+    else: true
+    transactional: false
+    dependsOn: Get Data
+    actors:
+      Const1:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Run Select/result/param_value
+              iterate: Iterate
+        out:
+          value:
+            schema: string
+  Add to Output Map:
+    actors:
+      Create Map for Value:
+        parent: MapBuild
+        height: 181
+        in:
+          key:
+            const: value
+            schema: string
+          value:
+            link:
+            - JsonParser1/object
+            - Const1/value
+        out:
+          map:
+            schema: '#ref'
+          previous:
+            schema: '#ref'
+      Create Map for Order:
+        parent: MapBuild
+        in:
+          key:
+            const: order
+            schema: string
+          value:
+            link:
+              path: Run Select/result/param_order
+              iterate: Iterate
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+  Stage 1:
+    actors:
+      Merge Maps:
+        parent: MapMerge
+        height: 228
+        in:
+          maps:
+            link:
+            - path: Create Map for Value/map
+              pos: 0
+            - path: Create Map for Order/map
+              pos: 1
+        out:
+          map:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      Add to Output:
+        parent: MapBuild
+        in:
+          key:
+            link:
+              path: Run Select/result/param_name
+              iterate: Iterate
+            schema: string
+          value:
+            link: Merge Maps/map
+        out:
+          map:
+            external: result
+            schema: '#ref'
+schemas:
+  Run Select.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_id:
+          type: integer
+        param_name:
+          type: string
+        param_type:
+          type: string
+        param_value:
+          type: string
+        param_order:
+          type: integer
+  JsonParser1.out.object:
+    type: object
+    properties:
+      city:
+        type: string
+  Create Map for Value.out.map:
+    type: object
+    properties:
+      city:
+        type: string
+      contract_ref_id:
+        type: string
+      crm_cases_number_of_records: {
+        }
+  Create Map for Value.out.previous:
+    type: object
+    properties:
+      maximum:
+        type: string
+      distribution:
+        type: string
+      round:
+        type: boolean
+      type:
+        type: string
+      minimum:
+        type: string
+  Create Map for Order.out.map:
+    type: object
+    properties:
+      city:
+        type: string
+      contract_ref_id:
+        type: string
+      crm_cases_number_of_records: {
+        }
+  Merge Maps.out.map:
+    type: object
+    properties:
+      value:
+        type: object
+        properties:
+          maximum:
+            type: string
+          distribution:
+            type: string
+          round:
+            type: boolean
+          type:
+            type: string
+          minimum:
+            type: string
+      order:
+        type: integer
+  Add to Output.out.map:
+    type: object
+    properties:
+      city:
+        type: string
+      contract_ref_id:
+        type: string
+      crm_cases_number_of_records: {
+        }

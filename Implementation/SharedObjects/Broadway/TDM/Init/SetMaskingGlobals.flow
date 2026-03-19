@@ -1,0 +1,205 @@
+tags: TDM
+stages:
+  Create Maps:
+    actors:
+      TDM_USING_CATALOG_SEQUENCES:
+        parent: MapBuild
+        in:
+          key:
+            const: TDM_USING_CATALOG_SEQUENCES
+            schema: string
+          value:
+            external: TDM_USING_CATALOG_SEQUENCES
+        out:
+          map:
+            schema: '#ref'
+      TDM_SEQ_REPORT:
+        parent: MapBuild
+        in:
+          key:
+            const: TDM_SEQ_REPORT
+            schema: string
+          value:
+            external: TDM_SEQ_REPORT
+        out:
+          map:
+            schema: '#ref'
+      enable_sequences:
+        parent: MapBuild
+        in:
+          key:
+            const: enable_sequences
+            schema: string
+          value:
+            external: enable_sequences
+        out:
+          map:
+            schema: '#ref'
+      TDM_TASK_EXE_ID:
+        parent: MapBuild
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            schema: string
+          value:
+            external: TDM_TASK_EXE_ID
+        out:
+          map:
+            schema: '#ref'
+      TDM_SOURCE_ENVIRONMENT_NAME:
+        parent: MapBuild
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            schema: string
+          value:
+            external: TDM_SOURCE_ENVIRONMENT_NAME
+        out:
+          map:
+            schema: '#ref'
+      TARGET_ENTITY_ID:
+        parent: MapBuild
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            schema: string
+          value:
+            external: TARGET_ENTITY_ID
+        out:
+          map:
+            schema: '#ref'
+      LU_TYPE:
+        parent: MapBuild
+        in:
+          key:
+            const: LU_TYPE
+            schema: string
+          value:
+            external: LU_TYPE
+        out:
+          map:
+            schema: '#ref'
+      ROOT_TABLE_NAME:
+        parent: MapBuild
+        in:
+          key:
+            const: ROOT_TABLE_NAME
+            schema: string
+          value:
+            external: ROOT_TABLE_NAME
+        out:
+          map:
+            schema: '#ref'
+      ROOT_COLUMN_NAME:
+        parent: MapBuild
+        in:
+          key:
+            const: ROOT_COLUMN_NAME
+            schema: string
+          value:
+            external: ROOT_COLUMN_NAME
+        out:
+          map:
+            schema: '#ref'
+  Map of Globals:
+    actors:
+      Create Map Of Globals:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: TDM_USING_CATALOG_SEQUENCES/map
+              pos: 0
+            - path: TDM_SEQ_REPORT/map
+              pos: 1
+            - path: enable_sequences/map
+              pos: 2
+            - path: TDM_TASK_EXE_ID/map
+              pos: 3
+            - path: TDM_SOURCE_ENVIRONMENT_NAME/map
+              pos: 4
+            - path: TARGET_ENTITY_ID/map
+              pos: 5
+            - path: LU_TYPE/map
+              pos: 6
+            - path: ROOT_TABLE_NAME/map
+              pos: 7
+            - path: ROOT_COLUMN_NAME/map
+              pos: 8
+        out:
+          map:
+            schema: '#ref'
+  Stage 1:
+    actors:
+      TDMSetBroadwayGlobals1:
+        parent: TDMSetBroadwayGlobals
+        in:
+          params:
+            link: Create Map Of Globals/map
+schemas:
+  TDM_USING_CATALOG_SEQUENCES.out.map:
+    type: object
+    properties:
+      TDM_USING_CATALOG_SEQUENCES:
+        type: string
+  TDM_SEQ_REPORT.out.map:
+    type: object
+    properties:
+      TDM_SEQ_REPORT: {
+        }
+  enable_sequences.out.map:
+    type: object
+    properties:
+      enable_sequences: {
+        }
+  TDM_TASK_EXE_ID.out.map:
+    type: object
+    properties:
+      TDM_TASK_EXE_ID: {
+        }
+  TDM_SOURCE_ENVIRONMENT_NAME.out.map:
+    type: object
+    properties:
+      TDM_SOURCE_ENVIRONMENT_NAME: {
+        }
+  TARGET_ENTITY_ID.out.map:
+    type: object
+    properties:
+      TARGET_ENTITY_ID: {
+        }
+  LU_TYPE.out.map:
+    type: object
+    properties:
+      LU_TYPE: {
+        }
+  ROOT_TABLE_NAME.out.map:
+    type: object
+    properties:
+      ROOT_TABLE_NAME: {
+        }
+  ROOT_COLUMN_NAME.out.map:
+    type: object
+    properties:
+      ROOT_COLUMN_NAME: {
+        }
+  Create Map Of Globals.out.map:
+    type: object
+    properties:
+      TDM_USING_CATALOG_SEQUENCES:
+        type: string
+      TDM_SEQ_REPORT: {
+        }
+      enable_sequences: {
+        }
+      TDM_TASK_EXE_ID: {
+        }
+      TDM_SOURCE_ENVIRONMENT_NAME: {
+        }
+      TARGET_ENTITY_ID: {
+        }
+      LU_TYPE: {
+        }
+      ROOT_TABLE_NAME: {
+        }
+      ROOT_COLUMN_NAME: {
+        }

@@ -1,0 +1,106 @@
+tags: TDM
+stages:
+  Get Globals:
+    actors:
+      Get Instance ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SOURCE_INSTANCE_ID
+            default: false
+      Get Target Environment ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENVIRONMENT_ID
+            default: false
+      Get Business Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: BE_ID
+            default: false
+      Get Session User:
+        parent: FabricSetRead
+        in:
+          key:
+            const: USER_NAME
+            default: false
+      Get Session User Roles:
+        parent: FabricSetRead
+        in:
+          key:
+            const: USER_FABRIC_ROLES
+            default: false
+  Append Roles To UserName:
+    actors:
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${userName}##${roles}
+          userName:
+            link: Get Session User/result
+            schema: any
+            mandatory: false
+          roles:
+            link: Get Session User Roles/result
+            schema: any
+            mandatory: false
+  'Check permission and release entity ':
+    actors:
+      Release Entity:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnReleaseReservedEntity
+          entityID:
+            link: Get Instance ID/result
+            schema: string
+            mandatory: false
+          envID:
+            link: Get Target Environment ID/result
+            schema: string
+            mandatory: false
+          beID:
+            link: Get Business Entity ID/result
+            schema: string
+            mandatory: false
+          userName:
+            link: StringFormat1/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check status of release:
+    actors:
+      ErrorHandler1:
+        parent: ErrorHandler
+        error: result
+      JavaScript:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "if(result.get('ErrorCode') == 'ERROR') {\r\n    throw \"\
+                The release of entity \" + result.get(\"id\") + \"had failed due to:\
+                \ \" + result.get(\"ErrorMessage\");\r\n}"
+              script: |-
+                if (result.get('ErrorCode') == 'ERROR') {
+                  throw "The release of entity " + result.get("id") + "had failed due to: " + result.get("ErrorMessage");
+                }
+          result:
+            link: Release Entity/result
+            schema: object
+            mandatory: false
+schemas:
+  Release Entity.out.result:
+    type: object
+    properties:
+      id:
+        type: string
+      ErrorCode:
+        type: string
+      ErrorMessage:
+        type: string

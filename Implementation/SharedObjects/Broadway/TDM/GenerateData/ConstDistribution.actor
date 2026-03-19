@@ -1,0 +1,25 @@
+{
+    "type": "ConstDistribution",
+    "badge": "Co",
+    "inputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "object"
+            },
+            "const": null,
+            "editor": {
+                "id": "com.k2view.distribution"
+            }
+        }
+    ],
+    "outputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "object"
+            }
+        }
+    ],
+    "parentType": "Const"
+}

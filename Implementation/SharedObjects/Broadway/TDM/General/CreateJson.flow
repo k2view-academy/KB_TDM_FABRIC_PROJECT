@@ -1,0 +1,165 @@
+{
+    "tags": [
+        "TDM",
+        "TDMGeneral"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FIELDS' NAMES",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "FIELDS' VALUES",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "MapBuild1",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "A": {
+                                                    "type": "string"
+                                                },
+                                                "b": {
+                                                    "type": "string"
+                                                },
+                                                "C": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonStringify1",
+                            "actorType": {
+                                "parentType": "JsonStringify",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "FIELDS' NAMES",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MapBuild1",
+                "name": "key"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "FIELDS' VALUES",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MapBuild1",
+                "name": "value"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "JsonStringify1",
+                "name": "object"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "fieldsNames"
+            },
+            "rightPort": {
+                "actor": "FIELDS' NAMES",
+                "name": "strings"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "fieldsValues"
+            },
+            "rightPort": {
+                "actor": "FIELDS' VALUES",
+                "name": "strings"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JsonStringify1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "json"
+            }
+        }
+    ]
+}

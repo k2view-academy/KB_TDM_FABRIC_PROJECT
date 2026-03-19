@@ -1,0 +1,224 @@
+stages:
+  inputs:
+    actors:
+      taskAffinity:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskAffinity
+        out:
+          value:
+            schema: string
+      taskMaxWorkers:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskMaxWorkers
+        out:
+          value:
+            schema: string
+      interfaceName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interfaceName
+        out:
+          value:
+            schema: string
+      envId:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: envId
+        out:
+          value:
+            schema: integer
+  check for null:
+    actors:
+      isAffinityNull:
+        parent: IsNull
+        in:
+          value:
+            link: taskAffinity/value
+      isMaxWorkersNull:
+        parent: IsNull
+        in:
+          value:
+            link: taskMaxWorkers/value
+  call the getInterfaceConfig if needed:
+    dependsOn: check for null
+    actors:
+      Or1:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: isAffinityNull/result
+          b:
+            link: isMaxWorkersNull/result
+      getInterfaceConfig:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfaceConfig
+          envId:
+            link: envId/value
+            schema: integer
+            mandatory: false
+            createdBy: functionName
+          interfaceName:
+            link: interfaceName/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  pass the values as is:
+    else: true
+    dependsOn: check for null
+    actors:
+      taskAffinity1:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskAffinity
+        out:
+          value:
+            schema: string
+      taskMaxWorkers1:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskMaxWorkers
+        out:
+          value:
+            schema: string
+  merge stage: {
+    }
+  Stage 3 (Env Affinity):
+    dependsOn: merge stage
+    actors:
+      affinityCheck:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: isAffinityNull/result
+      ConstAffinityEnv:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: getInterfaceConfig/result/result/affinity
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Stage 4 (Direct Affinity):
+    else: true
+    dependsOn: merge stage
+    actors:
+      taskAffinityDirect:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskAffinity
+        out:
+          value:
+            schema: string
+  merge stage2: {
+    }
+  Stage 5 (Env MaxWorkers):
+    dependsOn: merge stage2
+    actors:
+      maxWorkersCheck:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link: isMaxWorkersNull/result
+      ConstMaxWorkersEnv:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: getInterfaceConfig/result/result/max_number_of_workers
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  Stage 6 (Direct MaxWorkers):
+    else: true
+    dependsOn: merge stage2
+    actors:
+      taskMaxWorkersDirect:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskMaxWorkers
+        out:
+          value:
+            schema: string
+  resolve_values:
+    actors:
+      getAffinityString:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getAffinityString
+          affinity:
+            link:
+            - taskAffinity1/value
+            - ConstAffinityEnv/value
+            - taskAffinityDirect/value
+            schema: string
+        out:
+          result:
+            external: affinity
+            schema: string
+      findMaxNumOfWorkers:
+        parent: LuFunction
+        in:
+          functionName:
+            const: findMaxNumOfWorkers
+          maxWorkersFromTask:
+            link:
+            - taskMaxWorkers1/value
+            - ConstMaxWorkersEnv/value
+            - taskMaxWorkersDirect/value
+            schema: integer
+        out:
+          result:
+            external: maxWorkers
+            schema: string
+schemas:
+  getInterfaceConfig.out.result:
+    type: object
+    properties:
+      result:
+        type: object
+        properties:
+          max_number_of_workers:
+            type: integer
+          affinity:
+            type: string
+      errorCode:
+        type: string
+      message: {
+        }

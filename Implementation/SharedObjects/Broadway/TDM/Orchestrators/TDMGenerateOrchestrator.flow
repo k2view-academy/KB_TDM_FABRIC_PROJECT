@@ -1,0 +1,288 @@
+tags: TDM
+stages:
+  Start:
+    actors:
+      Split IID:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            external: iid
+        out:
+          cloneNo:
+            schema: string
+          UID:
+            schema: string
+          versionExeID:
+            schema: string
+      Print Inputs to Log:
+        parent: Logger
+        in:
+          message:
+            const: 'TDMGenerateOrchestrator --> Handling task with following parameters:
+              iid: ${iid}, luType: ${luName}, syncMode: ${syncMode}'
+          level:
+            const: info
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+      Set LU_TYPE:
+        parent: FabricSet
+        in:
+          key:
+            const: LU_TYPE
+            default: false
+          value:
+            const: null
+            external: luName
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            default: false
+      Set INPUT_IID:
+        parent: FabricSet
+        in:
+          key:
+            const: INPUT_IID
+            default: false
+          value:
+            const: null
+            external: iid
+            default: false
+      Get Start Time:
+        parent: Now
+  Set Session Variables:
+    actors:
+      Set TARGET_ENTITY_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Split IID/instanceID
+            default: false
+      Format Start Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Start Time/date
+      Set Clone No:
+        parent: FabricSet
+        in:
+          key:
+            const: clone_id
+            default: false
+          value:
+            const: '0'
+            default: false
+      Initiate Entity Status:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: completed
+            default: false
+      Set IID:
+        parent: FabricSet
+        in:
+          key:
+            const: IID
+            default: false
+          value:
+            const: null
+            link: Split IID/instanceID
+            default: false
+      Set SOURCE_ENTIT_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Split IID/UID
+            default: false
+      TDM_VERSION_TASK_EXECUTION_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_VERSION_TASK_EXECUTION_ID
+            default: false
+          value:
+            link: Split IID/versionExeID
+      Set enable_sequences  To True:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_sequences
+            default: false
+          value:
+            const: 'true'
+            default: false
+  'Get Instance ':
+    actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Set Start Processing Time:
+        parent: FabricSet
+        in:
+          key:
+            const: IID_START_DATETIME
+            default: false
+          value:
+            link: Format Start Time/string
+      isParamCoupling:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isParamCoupling
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - 'true'
+              - 'false'
+        out:
+          value:
+            schema: string
+      Get Instance:
+        parent: FabricGet
+        in:
+          luType:
+            const: null
+            external: luName
+          syncMode:
+            const: null
+            external: syncMode
+          iid:
+            external: iid
+  'Is Params Coupling ':
+    dependsOn: 'Get Instance '
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link: isParamCoupling/value
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      ExportIidForParams:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ExportIidForParams
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          IID:
+            external: iid
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'False':
+    else: true
+    dependsOn: 'Get Instance '
+  Task Execution Entities:
+    transactional: true
+    actors:
+      Error Handler For Entities:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Handle Task Execution Entities:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: true
+            schema: boolean
+            mandatory: false
+  TDM Sequence Mapping:
+    actors:
+      Error Handler For Sequences:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Populate TDM Sequence Mapping:
+        parent: PopulateTdmSeqMapping_Actor
+  End:
+    actors:
+      Print Finish Note:
+        parent: Logger
+        in:
+          message:
+            const: Finished Extracting Entity ${luType}.${iid}.
+          level:
+            const: info
+          luType:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          iid:
+            external: iid
+            schema: string
+            mandatory: false

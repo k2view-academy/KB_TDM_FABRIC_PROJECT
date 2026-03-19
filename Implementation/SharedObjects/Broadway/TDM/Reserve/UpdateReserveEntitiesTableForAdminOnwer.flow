@@ -1,0 +1,434 @@
+tags: TDM
+stages:
+  Get Field's Values:
+    actors:
+      Get Reserve Retention Value:
+        parent: FabricSetRead
+        in:
+          key:
+            const: RESERVE_RETENTION_PERIOD_VALUE
+            default: false
+          interface:
+            schema: any
+      Now:
+        parent: Now
+      Get Reserve Retention Type__1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: RESERVE_RETENTION_PERIOD_TYPE
+            default: false
+          interface:
+            schema: any
+      Get Target Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          interface:
+            schema: any
+      Get Business Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: BE_ID
+            default: false
+          interface:
+            schema: any
+        out:
+          result:
+            schema: integer
+      Get Target Environment ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENVIRONMENT_ID
+            default: false
+          interface:
+            schema: any
+        out:
+          result:
+            schema: integer
+      Get Task ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_ID
+            default: false
+          interface:
+            schema: any
+        out:
+          result:
+            schema: integer
+      Get Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+          interface:
+            schema: any
+        out:
+          result:
+            schema: integer
+      Get Session User:
+        parent: FabricSetRead
+        in:
+          key:
+            const: USER_NAME
+            default: false
+          interface:
+            schema: any
+      Get User's Fabric Roles:
+        parent: FabricSetRead
+        in:
+          key:
+            const: USER_FABRIC_ROLES
+            default: false
+          interface:
+            schema: any
+      Get Reserve Note:
+        parent: FabricSetRead
+        in:
+          key:
+            const: RESERVE_NOTE
+            default: false
+          interface:
+            schema: any
+  Get TDMDB schema:
+    actors:
+      ToNumber:
+        parent: ToNumber
+        in:
+          value:
+            link: Get Reserve Retention Value/result
+            schema: string
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Calculate Retention:
+    dependsOn: Get TDMDB schema
+    actors:
+      NotEquals1:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: ToNumber/number
+            schema: number
+          b:
+            const: 0
+            schema: number
+      GetNewEndDate1:
+        parent: GetNewEndDate
+        in:
+          nowDate:
+            link: Now/date
+          retentionPeriodType:
+            link: Get Reserve Retention Type__1/result
+          retentionPeriodValue:
+            link: ToNumber/number
+    split: '--------------------'
+  No end Date:
+    else: true
+    transactional: false
+    dependsOn: Get TDMDB schema
+    actors:
+      infinity Date:
+        parent: Const
+        in:
+          value:
+            const: infinity
+            schema: string
+        out:
+          value:
+            schema: string
+  Format the Date:
+    transactional: false
+    dependsOn: Calculate Retention
+    actors:
+      Date Format:
+        parent: DateFormat
+        in:
+          date:
+            link: GetNewEndDate1/newEndDate
+    split: '--------------------'
+  continue:
+    transactional: false
+    dependsOn: No end Date
+  Get reservation Owner:
+    transactional: false
+    actors:
+      Const:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - infinity Date/value
+            - Date Format/string
+            schema: string
+        out:
+          value:
+            schema: string
+      'DbFetchFirstRow ':
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "SELECT TDM_RESERVED_ENTITIES.reserve_owner, TDM_RESERVED_ENTITIES.start_datetime,\
+              \ TDM_RESERVED_ENTITIES.end_datetime\r\nFROM ${@schema}.TDM_RESERVED_ENTITIES\r\
+              \nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id\
+              \ = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId} AND\r\nTDM_RESERVED_ENTITIES.start_datetime\
+              \ <= timezone('UTC', now()) AND\r\n(TDM_RESERVED_ENTITIES.end_datetime\
+              \ IS NULL OR TDM_RESERVED_ENTITIES.end_datetime >= timezone('UTC', now()))\r\
+              \nUNION SELECT null as reserve_owner, null as start_datetime, null as\
+              \ end_datetime\r\nLIMIT 1"
+          entityId:
+            link: Get Target Entity ID/result
+            schema: string
+            mandatory: false
+          beId:
+            link: Get Business Entity ID/result
+            schema: integer
+            mandatory: false
+          envId:
+            link: Get Target Environment ID/result
+            schema: integer
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check Record Exists:
+    dependsOn: Get reservation Owner
+    actors:
+      NotNull1:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: DbFetchFirstRow /result/reserve_owner
+            schema: string
+      Compare Owner with User:
+        parent: Equals
+        in:
+          a:
+            link: DbFetchFirstRow /result/reserve_owner
+            schema: string
+          b:
+            link: Get Session User/result
+            schema: string
+      GetNewEndDate2:
+        parent: GetNewEndDate
+        in:
+          retentionPeriodType:
+            link: Get Reserve Retention Type__1/result
+          retentionPeriodValue:
+            link: ToNumber/number
+          nowDate:
+            link: DbFetchFirstRow /result/start_datetime
+      StringFormat1:
+        parent: StringFormat
+        height: 354
+        in:
+          format:
+            const: 'Entity cannot be reserved by user ${userName} as it is reserved
+              by user: ${owner}'
+          owner:
+            link: DbFetchFirstRow /result/reserve_owner
+            schema: string
+            mandatory: false
+          userName:
+            link: Get Session User/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Insert New Reservation:
+    else: true
+    transactional: false
+    dependsOn: Get reservation Owner
+    actors:
+      ErrorHandler1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Insert Record Into TDM_RESERVED_ENTITIES:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "INSERT INTO ${@schema}.TDM_RESERVED_ENTITIES (entity_id, be_id,\
+              \ env_id, task_id, task_execution_id, start_datetime, end_datetime,\
+              \ reserve_owner, reserve_notes) \r\n(SELECT ${entityId}, ${beId}, ${envId},\
+              \ ${taskId}, ${taskExecutionId}, timezone('UTC', now()), \r\n(CASE WHEN\
+              \ ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate},\
+              \ 'YYYY-MM-DD HH24:MI:SS.MS') END), ${userName}, ${reserveNote})\r\n\
+              ON CONFLICT ON CONSTRAINT TDM_RESERVED_ENTITIES_PKEY DO UPDATE SET task_id\
+              \ = ${taskId}, task_execution_id = ${taskExecutionId}, \r\n    start_datetime\
+              \ = timezone('UTC', now()), end_datetime = (CASE WHEN ${newEndDate}\
+              \ = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD\
+              \ HH24:MI:SS.MS') END), \r\n    reserve_owner = ${userName}, reserve_notes\
+              \ = ${reserveNote}\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId}\
+              \ AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id\
+              \ = ${envId}"
+          entityId:
+            link: Get Target Entity ID/result
+            schema: string
+            mandatory: false
+          beId:
+            link: Get Business Entity ID/result
+            schema: integer
+            mandatory: false
+          envId:
+            link: Get Target Environment ID/result
+            schema: integer
+            mandatory: false
+          taskId:
+            link: Get Task ID/result
+            schema: integer
+            mandatory: false
+          taskExecutionId:
+            link: Get Task Execution ID/result
+            schema: integer
+            mandatory: false
+          newEndDate:
+            link: Const/value
+            schema: string
+            mandatory: false
+          userName:
+            link: Get Session User/result
+            schema: string
+            mandatory: false
+          reserveNote:
+            link: Get Reserve Note/result
+            schema: string
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Do nothing:
+    transactional: false
+    dependsOn: Get reservation Owner
+  Check Owner:
+    transactional: false
+    dependsOn: Check Record Exists
+    actors:
+      Check if the user is the owner:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Compare Owner with User/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Update the End date:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "UPDATE ${@schema}.TDM_RESERVED_ENTITIES set task_id = ${taskID},\
+              \ task_execution_id = ${taskExecID}, \r\nend_datetime = (CASE WHEN ${newEndDate}\
+              \ = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD\
+              \ HH24:MI:SS.MS') END),\r\nreserve_notes = ${reserveNote}\r\nWHERE entity_id\
+              \ = ${entityID} AND be_id = ${beID} AND env_id = ${envID}"
+          taskID:
+            link: Get Task ID/result
+            schema: string
+            mandatory: false
+          taskExecID:
+            link: Get Task Execution ID/result
+            schema: string
+            mandatory: false
+          newEndDate:
+            link: GetNewEndDate2/newEndDate
+            schema: date
+            mandatory: false
+          entityID:
+            link: Get Target Entity ID/result
+            schema: string
+            mandatory: false
+          beID:
+            link: Get Business Entity ID/result
+            schema: integer
+            mandatory: false
+          envID:
+            link: Get Target Environment ID/result
+            schema: integer
+            mandatory: false
+          reserveNote:
+            link: Get Reserve Note/result
+            schema: string
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'Throw Exception ':
+    else: true
+    transactional: false
+    dependsOn: Check Record Exists
+    actors:
+      ErrorHandler2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Throw Exception, reserved by other:
+        parent: Fail
+        in:
+          message:
+            const: null
+            link: StringFormat1/string
+    split: '--------------------'
+  End:
+    transactional: false
+    dependsOn: Insert New Reservation
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: Do nothing
+schemas:
+  DbFetchFirstRow .out.result:
+    type: object
+    properties:
+      reserve_owner:
+        type: string
+      start_datetime:
+        type: date
+      end_datetime:
+        type: date

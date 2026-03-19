@@ -1,0 +1,565 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      luName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: luName
+        out:
+          value:
+            schema: string
+      dcName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: dcName
+        out:
+          value:
+            schema: string
+      taskExecutionID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskExecutionID
+        out:
+          value:
+            schema: string
+      LuID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: LuID
+            schema: string
+        out:
+          value:
+            schema: string
+      JsonParser1:
+        parent: JsonParser
+        in:
+          stream:
+            const:
+              categorical_cardinality_column_ratio_threshold: 0.1
+              categorical_force_if_nunique_lt: 10
+              categorical_reject_gte_nunique_values: 150
+              categorical_table_columns: {
+                }
+              high_cardinality_column_ratio_threshold: 0.2
+              logical_relations:
+                border_tolerance: 0.25
+                correlation_strength: strong
+                cut_off_threshold: 10
+                cut_off_threshold_for_corr: 50
+                cut_off_threshold_for_eq: 90
+                cut_off_threshold_for_less_than: 50
+                cut_off_threshold_for_sub: 90
+                dense_1_to_n_threshold: 3
+                identification_joined_max_na_ratio: 0.8
+                identification_max_na_ratio: 0.5
+                identification_min_non_na: 100
+                logical_relations_overrides:
+                  groups: [
+                    ]
+                  participation: [
+                    ]
+                logical_relations_root_table_sampling: null
+                logical_relations_training_rows_sampling: 400000
+                lt_random_pairs_percent_threshold: 20
+                max_fully_joined_n_rows: 1000000
+                max_n_categories_for_ranges: 50
+                max_one_to_many_rows: 10
+                meaningful_less_than_comparison_threshold: 0.5
+                prevalence_threshold_1_1: 0.98
+                prevalence_threshold_1_n: 0.85
+                prevalence_threshold_eq: 0.98
+                ram_safety_factor_for_fully_joined_table: 0.2
+                root_table_n_rows_for_fully_joined_table: null
+                root_table_n_rows_for_memory_estimation_for_fully_joined_table: 20
+                set_forming_threshold: 0.12
+                sig_level: 0.01
+              logical_relations_table_generation:
+                batch_size: 768
+                n_samples: 268800
+                skip_row_pruning_threshold: 0.8
+              logical_relations_table_training:
+                batch_size: 8
+                early_stopping_patience: 5
+                early_stopping_threshold: 0
+                max_fully_joined_n_rows: null
+                max_one_to_many_rows: 500
+                n_epochs: 3
+                n_gradient_accumulation_steps: 1
+                ram_safety_factor_for_fully_joined_table: 0.6
+                root_table_n_rows_for_fully_joined_table: null
+                root_table_n_rows_for_memory_estimation_for_fully_joined_table: 20
+                train_size: 0.8
+              numeric_normalisation_max_val: 1
+              numeric_normalisation_min_val: -1
+              random_state: 42
+              skip_logical_relations: false
+              special_column_force_gte_nunique_values: 5000
+              special_column_ratio_threshold: 0.05
+              special_column_training:
+                batch_size: 1024
+                bidirectional: false
+                dropout: 0
+                early_stopping_patience: 2
+                embedding_dim: 128
+                gradient_clipping_max_norm: 5
+                learning_rate: 7.5E-4
+                max_samples: 16384
+                meta_token: <meta>
+                min_samples: 32
+                n_epochs: 60
+                num_workers: 0
+                pad_token: <pad>
+                print_every_n_epochs: 1
+                rnn_layers: 3
+                rnn_size: 256
+                shuffle: true
+                window_size: 32
+              table_training:
+                batch_size: 8
+                early_stopping_patience: 5
+                early_stopping_threshold: 0
+                max_one_to_many_rows: 400
+                n_embd: 128
+                n_epochs: 2
+                n_gradient_accumulation_steps: 1
+                n_head: 2
+                n_layer: 1
+                output_max_length: 4096
+                root_table_sampling: null
+                train_size: 0.8
+              verbose: true
+        out:
+          object:
+            schema: number
+      Execution Params Base:
+        parent: Const
+        in:
+          value:
+            const: |-
+              {
+                "skip_logical_relations": false,
+                "numeric_normalisation_min_val": -1,
+                "numeric_normalisation_max_val": 1,
+                "high_cardinality_column_ratio_threshold": 0.2,
+                "categorical_cardinality_column_ratio_threshold": 0.1,
+                "categorical_force_if_nunique_lt": 10,
+                "categorical_reject_gte_nunique_values": 150,
+                "logical_relations": {
+                  "prevalence_threshold_eq": 0.98,
+                  "prevalence_threshold_1_1": 0.98,
+                  "prevalence_threshold_1_n": 0.85,
+                  "lt_random_pairs_percent_threshold": 20,
+                  "cut_off_threshold": 10,
+                  "cut_off_threshold_for_eq": 90,
+                  "cut_off_threshold_for_less_than": 50,
+                  "cut_off_threshold_for_corr": 50,
+                  "cut_off_threshold_for_sub": 90,
+                  "sig_level": 0.01,
+                  "correlation_strength": "strong",
+                  "logical_relations_root_table_sampling": null,
+                  "logical_relations_training_rows_sampling": 400000,
+                  "root_table_n_rows_for_fully_joined_table": null,
+                  "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
+                  "ram_safety_factor_for_fully_joined_table": 0.2,
+                  "max_one_to_many_rows": 10,
+                  "max_fully_joined_n_rows": 1000000,
+                  "meaningful_less_than_comparison_threshold": 0.5,
+                  "min_cats_perc_for_set_formation": 0.12,
+                  "border_tolerance": 0.25,
+                  "max_n_categories_for_ranges": 50,
+                  "identification_min_non_na": 100,
+                  "identification_max_na_ratio": 0.5,
+                  "identification_joined_max_na_ratio": 0.8,
+                  "dense_1_to_n_threshold": 3,
+                  "logical_relations_overrides": {
+                    "groups": [],
+                    "participation": []
+                  }
+                },
+                "logical_relations_table_training": {
+                  "n_epochs": 3,
+                  "batch_size": 8,
+                  "n_gradient_accumulation_steps": 1,
+                  "train_size": 0.8,
+                  "early_stopping_patience": 5,
+                  "early_stopping_threshold": 0,
+                  "root_table_n_rows_for_fully_joined_table": null,
+                  "root_table_n_rows_for_memory_estimation_for_fully_joined_table": 20,
+                  "ram_safety_factor_for_fully_joined_table": 0.6,
+                  "max_one_to_many_rows": 500,
+                  "max_fully_joined_n_rows": null
+                },
+                "logical_relations_table_generation": {
+                  "batch_size": 768,
+                  "n_samples": 268800,
+                  "skip_row_pruning_threshold": 0.8
+                },
+                "table_training": {
+                  "n_epochs": 2,
+                  "batch_size": 8,
+                  "n_gradient_accumulation_steps": 1,
+                  "train_size": 0.8,
+                  "early_stopping_patience": 5,
+                  "early_stopping_threshold": 0,
+                  "max_one_to_many_rows": 400,
+                  "root_table_sampling": null,
+                  "output_max_length": 4096,
+                  "n_embd": 128,
+                  "n_layer": 1,
+                  "n_head": 2
+                },
+                "special_column_training": {
+                  "n_epochs": 60,
+                  "batch_size": 1024,
+                  "min_samples": 32,
+                  "max_samples": 16384,
+                  "shuffle": true,
+                  "window_size": 32,
+                  "num_workers": 0,
+                  "print_every_n_epochs": 1,
+                  "learning_rate": 0.00075,
+                  "meta_token": "<meta>",
+                  "pad_token": "<pad>",
+                  "embedding_dim": 128,
+                  "rnn_size": 256,
+                  "rnn_layers": 3,
+                  "dropout": 0,
+                  "bidirectional": false,
+                  "early_stopping_patience": 2,
+                  "early_stopping_patience_accuracy": 5,
+                  "early_stopping_patience_accuracy_min_delta": 0.0005,
+                  "gradient_clipping_max_norm": 5
+                },
+                "special_column_ratio_threshold": 0.05,
+                "special_column_force_gte_nunique_values": 5000,
+                "range_tolerance_special": 0.25,
+                "range_tolerance_key": 0.6,
+                "unique_columns_override": [
+                  {
+                    "table": null,
+                    "column": "_docid",
+                    "type": "Integer Range",
+                    "step_or_version": 1
+                  },
+                  {
+                    "table": null,
+                    "column": "_docguid",
+                    "type": "GUID/UUID",
+                    "step_or_version": 4
+                  }
+                ],
+                "random_state": 42,
+                "verbose": true
+              }
+            schema: string
+        out:
+          value:
+            schema: string
+      Now:
+        parent: Now
+      getMappingAndSpecialColumns1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getCategoricalAndSpecialColumns
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          specialFields:
+            schema: '#ref'
+          mappingTables:
+            schema: '#ref'
+          categoricalFields:
+            schema: '#ref'
+      Set LuType:
+        parent: FabricSet
+        in:
+          key:
+            const: LU_TYPE
+          value:
+            const: null
+            external: luName
+            default: false
+  Set Inputs:
+    actors:
+      enable_masking:
+        parent: FabricSet
+        in:
+          key:
+            default: false
+          value:
+            default: false
+      postgres schema name:
+        parent: Lowercase
+        in:
+          string:
+            link: luName/value
+      'Format the current date to load it ':
+        parent: DateFormat
+        in:
+          date:
+            link: Now/date
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      Execution params:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |
+                var newParams = JSON.parse(execParams);
+
+                newParams.special_table_columns =
+                  (specialFields && typeof specialFields === "object") ? specialFields : {};
+
+                newParams.categorical_table_columns =
+                  (categoricalFields && typeof categoricalFields === "object") ? categoricalFields : {};
+
+                newParams;
+              script: |-
+                function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+                var newParams = JSON.parse(execParams);
+                newParams.special_table_columns = specialFields && (typeof specialFields === "undefined" ? "undefined" : _typeof(specialFields)) === "object" ? specialFields : {};
+                newParams.categorical_table_columns = categoricalFields && (typeof categoricalFields === "undefined" ? "undefined" : _typeof(categoricalFields)) === "object" ? categoricalFields : {};
+                newParams;
+          execParams:
+            link: Execution Params Base/value
+            schema: string
+            mandatory: false
+          specialFields:
+            link: getMappingAndSpecialColumns1/specialFields
+            schema: '#ref'
+            mandatory: false
+          categoricalFields:
+            link: getMappingAndSpecialColumns1/categoricalFields
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: string
+      TDM_TASK_EXE_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+          value:
+            link: taskExecutionID/value
+      Set TDM_LU_NAME:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_LU_NAME
+            default: false
+          value:
+            link: luName/value
+      AI_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_ENVIRONMENT
+            default: false
+  'Get Execution Parameters ':
+    actors:
+      Training Execution Params:
+        parent: ToString
+        in:
+          value:
+            link: Execution params/result
+      set environment:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: AI_ENVIRONMENT/result
+            default: false
+      Getk2SystemSchemaName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  'Export ':
+    actors:
+      Export:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: prepareTrainingTask
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+          dcName:
+            link: dcName/value
+            schema: string
+            mandatory: false
+          taskExecutionID:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          LuID:
+            link: LuID/value
+            schema: string
+            mandatory: false
+          creation_time:
+            link: Format the current date to load it /string
+            schema: string
+            mandatory: false
+          execution_params:
+            link: Training Execution Params/string
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: string
+            mandatory: false
+          maxNumOfWorkers:
+            external: maxNumOfWorkers
+            schema: string
+            mandatory: false
+        out:
+          entityList:
+            schema: '#ref'
+          batchID:
+            schema: string
+  k2_system.entity_list:
+    last: 1
+    actors:
+      ErrorHandler 2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      'DbLoad entity_list   ':
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM1/result
+          sql:
+            const: |-
+              insert into ${@K2SCHEMA_NAME}.entity_list (task_execution_id,task_type,schema,iid,creation_time)
+              Values (${task_execution_id},'TRAINING',${schema_name},${iid},${creation_time})
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          schema_name:
+            link: postgres schema name/string
+            schema: string
+            mandatory: false
+          iid:
+            link:
+              path: Export/entityList
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          creation_time:
+            link: Format the current date to load it /string
+            schema: string
+            mandatory: false
+          K2SCHEMA_NAME:
+            link: Getk2SystemSchemaName/result
+            schema: string
+            mandatory: false
+  End:
+    actors:
+      batchID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Export/batchID
+        out:
+          value:
+            external: batchID
+            schema: string
+schemas:
+  getMappingAndSpecialColumns1.out.specialFields:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        table_name:
+          type: string
+        column_name:
+          type: string
+        indicator:
+          type: string
+        active:
+          type: string
+  getMappingAndSpecialColumns1.out.mappingTables:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        table_name:
+          type: string
+        column_name:
+          type: string
+        indicator:
+          type: string
+        active:
+          type: string
+  getMappingAndSpecialColumns1.out.categoricalFields:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        table_name:
+          type: string
+        column_name:
+          type: string
+        indicator:
+          type: string
+        active:
+          type: string
+  Execution params.in.specialFields:
+    type: object
+    properties:
+      Customer.address:
+        type: object
+        properties:
+          city:
+            type: boolean
+          zip:
+            type: boolean
+  Export.out.entityList:
+    type: array
+    items:
+      type: string

@@ -1,0 +1,105 @@
+tags: TDM,TDMAI ML
+stages:
+  Get Globals:
+    actors:
+      ParamsExcludeTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ParamsExcludeTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      ParamsIncludedTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ParamsIncludedTables
+          lu_name:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          string:
+            schema: string
+      TDM Interface:
+        parent: Const
+        in:
+          value:
+            const: TDM
+            schema: string
+        out:
+          value:
+            schema: string
+      getLUVariable:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          variableName:
+            const: CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
+  Export:
+    actors:
+      ErrorHandler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+                number_of_retries: ''
+                retry_interval: ''
+      MDB_EXPORT luNameIID:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: MDB_EXPORT ${luName}.${IID} WITH INTERFACE_NAME=${Interfacename}
+              INCLUDED_TABLES=${includedTables} EXCLUDED_TABLES=${excludedTables}
+              FK='true' PHYSICAL_FK=${physicalFk}
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          IID:
+            external: IID
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: ParamsExcludeTables1/tables
+            schema: string
+            mandatory: false
+          includedTables:
+            link: ParamsIncludedTables1/string
+            schema: string
+            mandatory: false
+          Interfacename:
+            link: TDM Interface/value
+            schema: string
+            mandatory: false
+          physicalFk:
+            link: getLUVariable/variableValue
+            schema: string
+            mandatory: false

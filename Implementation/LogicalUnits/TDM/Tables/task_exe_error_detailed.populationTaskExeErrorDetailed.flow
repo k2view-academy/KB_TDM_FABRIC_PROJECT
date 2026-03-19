@@ -1,0 +1,470 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Get Task Type and List of LUs:
+    actors:
+      Fetch Task Type:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: |-
+              select t.task_type, group_concat(l.lu_name, ',') as lu_list from tasks t, task_execution_list l where t.task_execution_id=${@task_execution_id}
+                  and t.task_execution_id = l.task_execution_id
+          task_execution_id:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      TDM_TableLeve:
+        parent: Const
+        in:
+          value:
+            const: TDM_TableLevel
+            schema: string
+        out:
+          value:
+            schema: string
+  Add TDM_TableLevel LU:
+    actors:
+      Concat1:
+        parent: Concat
+        in:
+          elements:
+            link:
+            - path: Fetch Task Type/result/lu_list
+              pos: 0
+            - path: TDM_TableLeve/value
+              pos: 1
+  Add quote:
+    actors:
+      Add quote to LU Names:
+        parent: Replace
+        in:
+          search:
+            const: ','
+          replace:
+            const: ''','''
+          string:
+            link: Concat1/string
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Build Query:
+    actors:
+      Format Query:
+        parent: StringFormat
+        in:
+          format:
+            const: "select distinct task_execution_id,lu_name,entity_id,iid,target_entity_id,\
+              \ error_category, error_code,\r\nerror_message, creation_date, flow_name,\
+              \ stage_name, actor_name, actor_parameters\r\nfrom ${TDMDB_SCHEMA}.TASK_EXE_ERROR_DETAILED\
+              \ where lu_name in ('${LU_LIST}') and task_execution_id = ${TASK_EXECUTION_ID}"
+          TASK_EXECUTION_ID:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+          LU_LIST:
+            link: Add quote to LU Names/string
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+  Fetch errTableData:
+    actors:
+      errTableData:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Format Query/string
+        out:
+          result:
+            schema: '#ref'
+  Extract Task:
+    dependsOn: Fetch errTableData
+    actors:
+      extract:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: extract
+            schema: string
+          a:
+            link: Fetch Task Type/result/TASK_TYPE
+      TASK_EXE_ERROR_DETAILED extract:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_ERROR_DETAILED
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - LU_NAME
+            - ENTITY_ID
+            - IID
+            - TARGET_ENTITY_ID
+            - ERROR_CATEGORY
+            - ERROR_CODE
+            - ERROR_MESSAGE
+            - CREATION_DATE
+            - FLOW_NAME
+            - STAGE_NAME
+            - ACTOR_NAME
+            - ACTOR_PARAMETERS
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            schema: any
+            mandatory: false
+          LU_NAME:
+            schema: any
+            mandatory: false
+          ENTITY_ID:
+            schema: any
+            mandatory: false
+          IID:
+            schema: any
+            mandatory: false
+          TARGET_ENTITY_ID:
+            schema: any
+            mandatory: false
+          ERROR_CATEGORY:
+            schema: any
+            mandatory: false
+          ERROR_CODE:
+            schema: any
+            mandatory: false
+          ERROR_MESSAGE:
+            schema: any
+            mandatory: false
+          CREATION_DATE:
+            schema: any
+            mandatory: false
+          FLOW_NAME:
+            schema: any
+            mandatory: false
+          STAGE_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_PARAMETERS:
+            schema: any
+            mandatory: false
+          params:
+            link:
+              path: errTableData/result
+              iterate: Iterate
+    split: '--------------------'
+  Load Task:
+    else: true
+    transactional: false
+    dependsOn: Fetch errTableData
+    actors:
+      task_execution_entities:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: |-
+              select id_type, target_entity_id, iid from task_execution_link_entities
+              where TASK_EXECUTION_ID = ${TASK_EXECUTION_ID} AND LU_NAME = ${LU_NAME} AND ENTITY_ID = ${ENTITY_ID}
+          TASK_EXECUTION_ID:
+            link: errTableData/result/task_execution_id
+            schema: integer
+            mandatory: false
+          LU_NAME:
+            link: errTableData/result/lu_name
+            schema: string
+            mandatory: false
+          ENTITY_ID:
+            link:
+              path: errTableData/result/entity_id
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Do Nothing:
+    transactional: false
+    dependsOn: Extract Task
+    split: '--------------------'
+  idType=entity:
+    transactional: false
+    dependsOn: Load Task
+    actors:
+      entity:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: entity
+            schema: string
+          a:
+            link: task_execution_entities/result/ID_TYPE
+      TASK_EXE_ERROR_DETAILED load1:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_ERROR_DETAILED
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - LU_NAME
+            - ENTITY_ID
+            - IID
+            - TARGET_ENTITY_ID
+            - ERROR_CATEGORY
+            - ERROR_CODE
+            - ERROR_MESSAGE
+            - CREATION_DATE
+            - FLOW_NAME
+            - STAGE_NAME
+            - ACTOR_NAME
+            - ACTOR_PARAMETERS
+          TASK_EXECUTION_ID:
+            link:
+              path: errTableData/result/task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          LU_NAME:
+            link:
+              path: errTableData/result/lu_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ENTITY_ID:
+            link:
+              path: errTableData/result/entity_id
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          IID:
+            link: task_execution_entities/result/IID
+            schema: string
+            mandatory: false
+          TARGET_ENTITY_ID:
+            link: task_execution_entities/result/TARGET_ENTITY_ID
+            schema: string
+            mandatory: false
+          ERROR_CATEGORY:
+            link:
+              path: errTableData/result/error_category
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ERROR_CODE:
+            link:
+              path: errTableData/result/error_code
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ERROR_MESSAGE:
+            link:
+              path: errTableData/result/error_message
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          CREATION_DATE:
+            link:
+              path: errTableData/result/creation_date
+              iterate: Iterate
+            schema: date
+            mandatory: false
+          FLOW_NAME:
+            link:
+              path: errTableData/result/flow_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          STAGE_NAME:
+            link:
+              path: errTableData/result/stage_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ACTOR_NAME:
+            link:
+              path: errTableData/result/actor_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          ACTOR_PARAMETERS:
+            link:
+              path: errTableData/result/actor_parameters
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  else:
+    else: true
+    transactional: false
+    dependsOn: Load Task
+    actors:
+      TASK_EXE_ERROR_DETAILED load2:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_ERROR_DETAILED
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - LU_NAME
+            - ENTITY_ID
+            - IID
+            - TARGET_ENTITY_ID
+            - ERROR_CATEGORY
+            - ERROR_CODE
+            - ERROR_MESSAGE
+            - CREATION_DATE
+            - FLOW_NAME
+            - STAGE_NAME
+            - ACTOR_NAME
+            - ACTOR_PARAMETERS
+          TASK_EXECUTION_ID:
+            schema: any
+            mandatory: false
+          LU_NAME:
+            schema: any
+            mandatory: false
+          ENTITY_ID:
+            schema: any
+            mandatory: false
+          IID:
+            schema: any
+            mandatory: false
+          TARGET_ENTITY_ID:
+            schema: any
+            mandatory: false
+          ERROR_CATEGORY:
+            schema: any
+            mandatory: false
+          ERROR_CODE:
+            schema: any
+            mandatory: false
+          ERROR_MESSAGE:
+            schema: any
+            mandatory: false
+          CREATION_DATE:
+            schema: any
+            mandatory: false
+          FLOW_NAME:
+            schema: any
+            mandatory: false
+          STAGE_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_NAME:
+            schema: any
+            mandatory: false
+          ACTOR_PARAMETERS:
+            schema: any
+            mandatory: false
+          params:
+            link:
+              path: errTableData/result
+              iterate: Iterate
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string
+  Fetch Task Type.out.result:
+    type: object
+    properties:
+      TASK_TYPE:
+        type: string
+      lu_list:
+        type: string
+  errTableData.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: integer
+        lu_name:
+          type: string
+        entity_id:
+          type: string
+        iid:
+          type: string
+        target_entity_id:
+          type: string
+        error_category:
+          type: string
+        error_code:
+          type: string
+        error_message:
+          type: string
+        creation_date:
+          type: date
+        flow_name:
+          type: string
+        stage_name:
+          type: string
+        actor_name:
+          type: string
+        actor_parameters:
+          type: string
+  task_execution_entities.out.result:
+    type: object
+    properties:
+      ID_TYPE: {
+        }
+      TARGET_ENTITY_ID:
+        type: string
+      IID: {
+        }

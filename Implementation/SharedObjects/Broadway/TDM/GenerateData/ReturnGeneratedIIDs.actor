@@ -1,0 +1,46 @@
+{
+    "type": "ReturnGeneratedIIDs",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "task_execution_id",
+            "schema": {}
+        },
+        {
+            "name": "lu_name",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "num_iids",
+            "schema": {
+                "type": "integer"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "ReturnGeneratedIIDs",
+            "mandatory": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "array",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
+    ],
+    "tags": [
+        "dm"
+    ],
+    "badge": "dm"
+}

@@ -1,0 +1,322 @@
+tags: Create
+stages:
+  SQL dialect:
+    actors:
+      Get Interface Type:
+        parent: DbSqlDialect
+        in:
+          interface:
+            const: null
+            external: interface
+  SQL queries:
+    actors:
+      Create Keyspace/Schema Statement:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var sql = {\r\n  generic: \"CREATE SCHEMA k2masking\",\r\n\
+                \  cassandra: \"CREATE KEYSPACE IF NOT EXISTS k2masking WITH REPLICATION\
+                \ = {'class':'SimpleStrategy', 'replication_factor':1};\",\r\n  postgres:\
+                \ \"CREATE SCHEMA IF NOT EXISTS k2masking\"\r\n};\r\nif (sql[dialect])\
+                \ {\r\n  sql[dialect]\r\n} else {\r\n  sql[\"generic\"]\r\n}"
+              script: |-
+                var sql = {
+                  generic: "CREATE SCHEMA k2masking",
+                  cassandra: "CREATE KEYSPACE IF NOT EXISTS k2masking WITH REPLICATION = {'class':'SimpleStrategy', 'replication_factor':1};",
+                  postgres: "CREATE SCHEMA IF NOT EXISTS k2masking"
+                };
+
+                if (sql[dialect]) {
+                  sql[dialect];
+                } else {
+                  sql["generic"];
+                }
+          dialect:
+            link: Get Interface Type/dialect
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - Default
+              - Cassandra
+              - PostgreSQL
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Get Cluster ID:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: clusterid
+        out:
+          result:
+            schema: string
+  Create DB tables:
+    remark: |+
+      This flow creates the database keyspace and tables needed for the masking actor cache.
+
+      Run the flow and select the correct Cassandra interface where you want the keyspace to reside.
+
+      Switch truncate to "true" if you want to clean up the table of masking caching in case the table already exists.
+
+    actors:
+      Create Keyspace/Schema:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            external: interface
+          sql:
+            const: null
+            link: Create Keyspace%2FSchema Statement/result
+      Create Cache Table:
+        parent: DbCreateTable
+        in:
+          interface:
+            const: null
+            external: interface
+          table:
+            const: k2masking.masking_cache
+          fields:
+            const:
+            - name: environment
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: execution_id
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: masking_id
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: instance_id
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: original_value_hash
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: masked_value
+              type: TEXT
+              pk: false
+              mandatory: false
+            - name: clone_id
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: expiration_date
+              type: BIGINT
+              pk: false
+              mandatory: false
+          dialect:
+            const: cassandra
+      Create Uniqueness Table:
+        parent: DbCreateTable
+        in:
+          interface:
+            const: null
+            external: interface
+          table:
+            const: k2masking.uniqueness
+          fields:
+            const:
+            - name: environment
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: execution_id
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: masking_id
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: masked_value
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: expiration_date
+              type: BIGINT
+              pk: false
+              mandatory: false
+          dialect:
+            const: cassandra
+      Create Relations Table:
+        parent: DbCreateTable
+        disabled: true
+        in:
+          interface:
+            const: null
+            external: interface
+          table:
+            const: k2masking.tdm_seq_mapping
+          fields:
+            const:
+            - name: task_execution_id
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: lu_type
+              type: TEXT
+              pk: true
+              mandatory: false
+            - name: seq_name
+              type: TEXT
+              pk: true
+              mandatory: false
+            - name: table_name
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: column_name
+              type: TEXT
+              pk: false
+              mandatory: false
+            - name: source_value
+              type: TEXT
+              pk: false
+              mandatory: false
+            - name: target_value
+              type: TEXT
+              pk: true
+              mandatory: true
+            - name: iid
+              type: TEXT
+              pk: true
+              mandatory: true
+          dialect:
+            const: cassandra
+      Create Cache Indexes:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            external: interface
+          sql:
+            const: CREATE INDEX IF NOT EXISTS masking_cache_ttl ON k2masking.masking_cache
+              (expiration_date);
+      CreateUniquenessIndexes:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            external: interface
+          sql:
+            const: CREATE INDEX IF NOT EXISTS masking_uniqueness_ttl ON k2masking.uniqueness
+              (expiration_date);
+  Get Cluster ID of System DB:
+    actors:
+      In Case Of PG System DB:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link: Get Interface Type/dialect
+            schema: string
+          b:
+            const: postgres
+            schema: string
+      Error Handler For Checking if PG:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Set Cluster ID:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var table_postifx = '';
+              if(clusterId != null &&  clusterId != '') {
+                  table_postifx = '_' + clusterId;
+              }
+              table_postifx;
+          clusterId:
+            link: Get Cluster ID/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Check if System DB is PG and k2masking is in it:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: cql select schema_name FROM information_schema.schemata where schema_name
+              = 'k2masking'
+        out:
+          result:
+            schema: string
+  Add TTL for Masking Tables for PG:
+    actors:
+      SYSTEM_DB is PG & Includes k2masking?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check if System DB is PG and k2masking is in it/result
+            schema: string
+          b:
+            const: k2masking
+            schema: string
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Add TTL for Masking Cache Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: INSERT INTO k2system${@cluster_id}.k2_table_level_ttl(schema,tablename,columnname,columntype,ttl)
+              values('k2masking','masking_cache','expiration_date','timestamp_expired',0)
+              ON CONFLICT (schema,tablename) DO NOTHING;
+          cluster_id:
+            link: Set Cluster ID/result
+            schema: string
+            mandatory: false
+      Add TTL for Uniqueness Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: POSTGRESQL_ADMIN
+          sql:
+            const: INSERT INTO k2system${@cluster_id}.k2_table_level_ttl(schema,tablename,columnname,columntype,ttl)
+              values('k2masking','uniqueness','expiration_date','timestamp_expired',0)
+              ON CONFLICT (schema,tablename) DO NOTHING
+          cluster_id:
+            link: Set Cluster ID/result
+            schema: string
+            mandatory: false

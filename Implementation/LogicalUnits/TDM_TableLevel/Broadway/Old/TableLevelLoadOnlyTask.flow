@@ -1,0 +1,696 @@
+stages:
+  Initiation:
+    actors:
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Task with BE:
+        parent: Not
+        in:
+          value:
+            external: tableLevelInd
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Get List of Tables:
+    transactional: false
+    actors:
+      Sync Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
+      Get List of Tables of Task:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTablesOfTask
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Create Array of Tables' Names:
+    transactional: false
+    actors:
+      Split Tables Names:
+        parent: Split
+        in:
+          string:
+            link:
+              path: Get List of Tables of Task/result/tableSet
+              iterate: First
+      Set Lu Name:
+        parent: FabricSet
+        height: 251
+        in:
+          key:
+            const: TABLES_LU_NAME
+            default: false
+          value:
+            const: null
+            link:
+              path: Get List of Tables of Task/result/lu_name
+              iterate: Iterate
+            default: false
+  Get Tables' Order:
+    transactional: false
+    actors:
+      Get Tables' Order Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
+      Init Source Entity ID for Error Handler1:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: ALL_TABLES
+            default: false
+      Set Target Entity ID for Error Handler:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link:
+              path: Split Tables Names/strings
+              iterate: First
+            default: false
+      Get Order Of Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetOrderOfTables
+          interfaceName:
+            link:
+              path: Get List of Tables of Task/result/interfaceName
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schemaName:
+            link:
+              path: Get List of Tables of Task/result/schemaName
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          tableList:
+            link: Get List of Tables of Task/result/tableSet
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Set Start Point:
+    transactional: false
+    actors:
+      Set The Start For Loop:
+        parent: MathAdd
+        in:
+          b:
+            const: -1
+          a:
+            link: Get Order Of Tables/result/maxOrder
+      set Target Environment:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: setTargetEnv
+  Delete Tables:
+    transactional: false
+    dependsOn: Set Start Point
+    actors:
+      Delete Tables?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const:
+              userCode: |-
+                var result = false;
+                if(deleteBeforeLoad != 'false' || (taskWithBE && taskType != 'extract')) {
+                    result = true;
+                }
+                result;
+              script: |-
+                var result = false;
+
+                if (deleteBeforeLoad != 'false' || taskWithBE && taskType != 'extract') {
+                  result = true;
+                }
+
+                result;
+          deleteBeforeLoad:
+            external: deleteBeforeLoad
+            schema: string
+            mandatory: false
+          taskWithBE:
+            link: Task with BE/result
+            schema: boolean
+            mandatory: false
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      For Loop For Deleting Tables:
+        parent: ForLoop
+        in:
+          to:
+            const: -1
+          step:
+            const: -1
+          from:
+            link: Set The Start For Loop/result
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    transactional: false
+    dependsOn: Set Start Point
+  Get Tables Of Current Index:
+    transactional: false
+    dependsOn: Delete Tables
+    actors:
+      Get Tables by Order For Deletion:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTablesByOrder
+          order:
+            link:
+              path: For Loop For Deleting Tables/i
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          tablesList:
+            link: Get Order Of Tables/result/tablesList
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Do Nothing 1:
+    transactional: false
+    dependsOn: Do Nothing
+  Delete Tables of Current index:
+    last: 1
+    transactional: false
+    dependsOn: Get Tables Of Current Index
+    actors:
+      There Are Tables to Delete?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Tables by Order For Deletion/result
+      Delete Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Delete Tables of Current Index:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DeleteTables
+          interface:
+            link:
+              path: Get List of Tables of Task/result/targetInterfaceName
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema:
+            link:
+              path: Get List of Tables of Task/result/targetSchemaName
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.dbtable
+            mandatory: false
+          tablesForDelete:
+            link: Get Tables by Order For Deletion/result
+            schema: '#ref'
+            mandatory: false
+          targetTables:
+            link: Get List of Tables of Task/result/targetTableMap
+            schema: '#ref'
+            mandatory: false
+    split: '--------------------'
+  Do Nothing 2:
+    last: 1
+    transactional: false
+    dependsOn: Do Nothing 1
+  Loop:
+    transactional: false
+    actors:
+      For Loop For Handling Tables:
+        parent: ForLoop
+        in:
+          from:
+            const: 0
+          to:
+            link: Get Order Of Tables/result/maxOrder
+  Get Tables of Current Index:
+    transactional: false
+    actors:
+      Get Tables by Order For Handling1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTablesByOrder
+          order:
+            link:
+              path: For Loop For Handling Tables/i
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          tablesList:
+            link: Get Order Of Tables/result/tablesList
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Create IIDs:
+    transactional: false
+    actors:
+      Build IIDs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildIID
+          sourceEnv:
+            link: Get Source Environment/result
+            schema: string
+            mandatory: false
+          tableName:
+            link:
+              path: Get Tables by Order For Handling1/result
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          interfaceName:
+            link:
+              path: Get List of Tables of Task/result/interfaceName
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          schemaName:
+            link:
+              path: Get List of Tables of Task/result/taskSchemaName
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          iid:
+            schema: string
+  Check If Table Already Failed:
+    transactional: false
+    actors:
+      Table Failed?:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |
+              SELECT count(1) CNT from ${@TDMDB_SCHEMA}.task_exe_error_detailed
+              WHERE task_execution_id = ${taskExecutionId}
+              AND lu_name = ${luName}
+              AND iid = ${tableName}
+              and entity_id = ${tableName}
+              limit 1
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          luName:
+            const: TDM_TableLevel
+            schema: string
+            mandatory: false
+          tableName:
+            link:
+              path: Get Tables by Order For Handling1/result
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Create Instance List:
+    last: 1
+    transactional: false
+    dependsOn: Check If Table Already Failed
+    actors:
+      Table Did not Fail?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Table Failed?/result
+            schema: integer
+          b:
+            const: 0
+            schema: integer
+      Build Table List:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: Get Tables by Order For Handling1/result
+              iterate: Iterate
+              pos: 0
+      Build Instance List:
+        parent: StringBuild
+        height: 199
+        in:
+          input:
+            link:
+              path: Build IIDs/iid
+              pos: 0
+    split: '--------------------'
+  Table Failed:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Check If Table Already Failed
+    actors:
+      'Null':
+        parent: NullValue
+  Create Batch Command:
+    transactional: false
+    actors:
+      Broadway Command:
+        parent: StringFormat
+        in:
+          format:
+            const: broadway TDM_TableLevel.TDMTableLevelLoadOnlyOrchestrator iid=?,
+              syncMode="${syncMode}", taskType=${taskType}, luName=${luName}, retentionPeriodValue="${retentionPeriodValue}"
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+          luName:
+            link:
+              path: Get List of Tables of Task/result/lu_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          retentionPeriodValue:
+            external: retentionPeriodValue
+            schema: string
+            mandatory: false
+  Run Batch:
+    transactional: false
+    actors:
+      There are tables to handle?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+            - Build Instance List/string
+            - Null/value
+      Batch Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      'Batch ':
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
+              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
+          command:
+            link: Broadway Command/string
+            schema: string
+            mandatory: false
+          instanceList:
+            link: Build Instance List/string
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Reset Actor:
+        parent: ResetActors
+        in:
+          actorId:
+            const:
+            - Build Instance List
+            - Build Table List
+  Update Batch ID:
+    transactional: false
+    actors:
+      Update Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Update task_ref_exe_stats Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats es
+              set job_uid = ${batchId},
+                  execution_status = 'running',
+                  start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+              where task_execution_id = ${taskExecutionId}
+              and task_ref_table_id in (select t.task_ref_table_id from ${@TDMDB_SCHEMA}.task_ref_tables t
+                  where t.task_id = es.task_id and t.ref_table_name = any(string_to_array(${tableList}, ',')) and t.interface_name = ${interfaceName}
+                  and schema_name = ${schemaName})
+          tableList:
+            link: Build Table List/string
+            schema: string
+            mandatory: false
+          interfaceName:
+            link:
+              path: Get List of Tables of Task/result/interfaceName
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          schemaName:
+            link:
+              path: Get List of Tables of Task/result/taskSchemaName
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          batchId:
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+      Wait  For Current Table Level to Finish:
+        parent: BatchWait
+        in:
+          batchId:
+            const: null
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            default: false
+schemas:
+  Get List of Tables of Task.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        tableSet:
+          type: array
+          items:
+            type: string
+        targetTableMap:
+          type: object
+          properties:
+            addresses:
+              type: string
+        lu_name:
+          type: string
+        taskSchemaName:
+          type: string
+        interfaceName:
+          type: string
+        schemaName: {
+          }
+        targetInterfaceName:
+          type: string
+        targetSchemaName: {
+          }
+  Get Order Of Tables.in.tableList:
+    type: array
+    items:
+      type: string
+  Get Order Of Tables.out.result:
+    type: object
+    properties:
+      tablesList:
+        type: object
+        properties:
+          '0':
+            type: array
+            items:
+              type: string
+          '1':
+            type: array
+            items:
+              type: string
+          '2':
+            type: array
+            items:
+              type: string
+          '3':
+            type: array
+            items:
+              type: string
+      maxOrder:
+        type: integer
+  Get Tables by Order For Deletion.in.tablesList:
+    type: object
+    properties:
+      '0':
+        type: array
+        items:
+          type: string
+  Get Tables by Order For Deletion.out.result:
+    type: array
+    items:
+      type: string
+  Delete Tables of Current Index.in.tablesForDelete:
+    type: array
+    items:
+      type: string
+  Delete Tables of Current Index.in.targetTables:
+    type: object
+    properties: {
+      }
+  Get Tables by Order For Handling1.in.tablesList:
+    type: object
+    properties:
+      '0':
+        type: array
+        items:
+          type: string
+  Get Tables by Order For Handling1.out.result:
+    type: array
+    items:
+      type: string
+  Batch .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
+          type: string
+        Execution id:
+          type: string
+        Notes:
+          type: string

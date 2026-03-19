@@ -1,0 +1,912 @@
+{
+    "tags": [
+        "TDM",
+        "TDMGeneral"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDMDB_SCHEMA",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "PROJECT_DIR",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "PROJECT_DIR"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "List All MTables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "list MTABLE ",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "list MTABLE "
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "columns": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Split",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "luName",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "LuParams"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LuParams",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lu Params",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "LuParams"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Mtable Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NameLuParam",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check If MTable Exists",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Search",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": "True!!"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "True ",
+                    "dependsOnList": [
+                        "Check If MTable Exists"
+                    ],
+                    "isLast": 0,
+                    "hasElse": false,
+                    "actors": [
+                        {
+                            "name": "True",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "True!!"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flase",
+                    "dependsOnList": [
+                        "Check If MTable Exists"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Details of MTable",
+                    "dependsOnList": [
+                        "True "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MtableFolder",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "let path;\r\npath = PROJECT_DIR.value + \"\\\\Implementation\\\\LogicalUnits\\\\\" + sourceLU + \"\\\\Mtable\";\r\npath;",
+                                            "script": "var path;\npath = PROJECT_DIR.value + \"\\\\Implementation\\\\LogicalUnits\\\\\" + sourceLU + \"\\\\Mtable\";\npath;"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceLU",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "mTablePath",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${0}/Implementation/LogicalUnits/k2_ref/Mtable/LuParams.csv"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "Flase"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LuParams Lookup",
+                    "dependsOnList": [
+                        "Get Details of MTable"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lookup",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "INDEX": {
+                                                        "type": "string"
+                                                    },
+                                                    "COLUMN_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "SQL": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Record Build",
+                    "dependsOnList": [
+                        "LuParams Lookup"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapCreate",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "column_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "parent_lu": {
+                                                    "type": "string"
+                                                },
+                                                "child_lu": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "custom_sql": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "custom_target_sql": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Put Record In CSV",
+                    "dependsOnList": [
+                        "Record Build"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CsvBuilder",
+                            "actorType": {
+                                "parentType": "CsvBuilder",
+                                "inputs": [
+                                    {
+                                        "name": "columns",
+                                        "const": [
+                                            "lu_name",
+                                            "column_name",
+                                            "sql"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Write To Joined MTable",
+                    "dependsOnList": [
+                        "Put Record In CSV"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "FileWrite",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "file://"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Delete LUs Mtable",
+                    "dependsOnList": [
+                        "Write To Joined MTable"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MtableRemove",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "MtableRemove"
+                                    },
+                                    {
+                                        "name": "name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Path",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "\\"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "csv",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "csv"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get path",
+                    "dependsOnList": [
+                        "Delete LUs Mtable"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Path  ",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "."
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [
+                        "Stage 6"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Remove csv file",
+                    "dependsOnList": [
+                        "Get path"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "remove File",
+                            "actorType": {
+                                "parentType": "rm",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "file://"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [
+                        "Stage 7"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "mTablePath",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "list MTABLE ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Search",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "list MTABLE ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "luName",
+                "name": "string"
+            },
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "NameLuParam",
+                "name": "elements"
+            },
+            "iterate": "First",
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MapCreate",
+                "name": "lu_name"
+            },
+            "iterate": "First"
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MtableFolder",
+                "name": "sourceLU"
+            },
+            "iterate": "First"
+        },
+        {
+            "leftPort": {
+                "actor": "Lu Params",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "NameLuParam",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "NameLuParam",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Search",
+                "name": "search"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "NameLuParam",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Lookup",
+                "name": "mtable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "NameLuParam",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Path",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "NameLuParam",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "MtableRemove",
+                "name": "name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Search",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "True",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MtableFolder",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Path",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "mTablePath",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MapCreate",
+                "name": "column_name"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "COLUMN_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MapCreate",
+                "name": "sql"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "SQL"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MapCreate",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "CsvBuilder",
+                "name": "maps"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CsvBuilder",
+                "name": "csv"
+            },
+            "rightPort": {
+                "actor": "FileWrite",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Path",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Path  ",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "csv",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Path  ",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Path  ",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "remove File",
+                "name": "path"
+            }
+        }
+    ]
+}

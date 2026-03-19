@@ -1,0 +1,108 @@
+tags: Medoid,TDM
+stages:
+  Get Params:
+    actors:
+      format:
+        parent: StringFormat
+        in:
+          format:
+            const: /${api}/namespaces/${namespace}/${kind}
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false
+          kind:
+            external: kind
+            schema: string
+            mandatory: false
+          api:
+            external: api
+            schema: string
+            mandatory: false
+      payload:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: payload
+            schema: string
+        out:
+          value:
+            schema: string
+      MapCreate:
+        parent: MapCreate
+        in:
+          Content-Type:
+            const: application/yaml
+            schema: string
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+  'Apply   ':
+    actors:
+      'ErrorHandler 1   ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      apply:
+        parent: Http
+        in:
+          interface:
+            const: AI_Execution
+          path:
+            const: null
+            link: format/string
+          method:
+            const: null
+            external: method
+          headers:
+            const: null
+            link: MapCreate/map
+          noCertificateCheck:
+            const: true
+          stream:
+            link: payload/value
+        out:
+          header:
+            schema: '#ref'
+  Stage 3: {
+    }
+  Stage 4: {
+    }
+  Stage 5: {
+    }
+schemas:
+  MapCreate.out.map:
+    type: object
+    properties:
+      Content-Type:
+        type: string
+  apply.out.header:
+    type: object
+    properties:
+      Transfer-Encoding:
+        type: string
+      X-Kubernetes-Pf-Flowschema-Uid:
+        type: string
+      Cache-Control:
+        type: string
+      Audit-Id:
+        type: string
+      X-Kubernetes-Pf-Prioritylevel-Uid:
+        type: string
+      Content-Type:
+        type: string
+      Content-Length:
+        type: integer
+      Date:
+        type: date

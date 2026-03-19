@@ -1,0 +1,424 @@
+tags: Concurrency
+stages:
+  Split Instance ID:
+    actors:
+      Get Table Instance Fields:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableInstanceFields
+          ref_instance_id:
+            external: iid
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Get Target Details:
+    actors:
+      Get Target Interface:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TargetInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: target_interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Target Schema:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TargetInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: target_schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Target Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TargetInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: target_ref_table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Ref Table ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  Get Target Table Details:
+    actors:
+      delete flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: Definitions
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: delete_flow
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Delete Or Truncate Indicator:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TableLevelInterfaces
+          interface_name:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          truncate_indicator:
+            schema: string
+  Delete:
+    else: true
+    dependsOn: Get Target Table Details
+    split: '--------------------'
+  Truncate:
+    dependsOn: Get Target Table Details
+    actors:
+      truncate?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link: Get Delete Or Truncate Indicator/truncate_indicator
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Truncate Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+          refTableID:
+            link: Get Ref Table ID/result
+            schema: any
+            mandatory: false
+      Truncate Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: Get Target Interface/result
+          sql:
+            const: TRUNCATE TABLE ${@schema}.${@table}
+          schema:
+            link: Get Target Schema/result
+            schema: string
+            mandatory: false
+          table:
+            link: Get Target Table/result
+            schema: string
+            mandatory: false
+  Delete By DB Command:
+    dependsOn: Delete
+    actors:
+      No Delete Flow?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: delete flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Delete  Command Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+          refTableID:
+            link: Get Ref Table ID/result
+            schema: any
+            mandatory: false
+      Delete Table By DBCommand:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DeleteTableByDBCommand
+          schema:
+            link: Get Target Schema/result
+            schema: string
+            mandatory: false
+          interface:
+            link: Get Target Interface/result
+            schema: string
+            editor:
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+              id: com.k2view.interface
+            mandatory: false
+          table:
+            link: Get Target Table/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Delete by Custom Flow:
+    else: true
+    dependsOn: Delete
+    actors:
+      Error Handler For Delete Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+          refTableID:
+            link: Get Ref Table ID/result
+            schema: any
+            mandatory: false
+      Run Delete Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: delete flow/result
+          interface:
+            link: Get Target Interface/result
+            schema: string
+            mandatory: false
+          schema:
+            link: Get Target Schema/result
+            schema: string
+            mandatory: false
+          table:
+            link: Get Target Table/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: Truncate
+schemas:
+  Get Table Instance Fields.out.result:
+    type: object
+    properties:
+      source_env:
+        type: string
+      interface_name:
+        type: string
+      schema_name:
+        type: string
+      table_name:
+        type: string
+      task_execution_id:
+        type: string
+      partition_num: {
+        }
+  Get Delete Or Truncate Indicator.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface_name:
+          type: string
+        suppress_indicator:
+          type: string
+        truncate_indicator:
+          type: string
+        count_indicator: {
+          }
+        order_flow: {
+          }
+        no_schema: {
+          }

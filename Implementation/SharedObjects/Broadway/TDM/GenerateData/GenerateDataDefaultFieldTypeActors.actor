@@ -1,0 +1,55 @@
+{
+    "type": "GenerateDataDefaultFieldTypeActors",
+    "badge": "Ge",
+    "inputs": [
+        {
+            "name": "table",
+            "const": [
+                {
+                    "TYPE": "TEXT",
+                    "ACTOR": "RandomStringRegex.actor"
+                },
+                {
+                    "TYPE": "INTEGER",
+                    "ACTOR": "RandomNumber.actor"
+                },
+                {
+                    "TYPE": "REAL",
+                    "ACTOR": "RandomNumber.actor"
+                },
+                {
+                    "TYPE": "DATETIME",
+                    "ACTOR": "ConstDateTime.actor"
+                },
+                {
+                    "TYPE": "DATE",
+                    "ACTOR": "ConstDate.actor"
+                },
+                {
+                    "TYPE": "TIME",
+                    "ACTOR": "ConstTime.actor"
+                },
+                {
+                    "TYPE": "BLOB",
+                    "ACTOR": "EmptyBlob.actor"
+                }
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "TYPE": {
+                            "type": "string"
+                        },
+                        "ACTOR": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

@@ -1,0 +1,375 @@
+tags: TDM
+stages:
+  Dummy Stage to Allow Condition: {
+    }
+  Set Child Flag in Case of Vertical Execution of child instance:
+    dependsOn: Dummy Stage to Allow Condition
+    actors:
+      Vertiical Child Instance?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: verticalChildInd
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - 'true'
+              - 'false'
+          b:
+            const: 'true'
+            schema: string
+      set CHILD_LU_IND:
+        parent: FabricSet
+        in:
+          key:
+            const: CHILD_LU_IND
+            default: false
+          value:
+            const: 'true'
+            default: false
+    split: '--------------------'
+  Not Vertiical Child Instance:
+    else: true
+    dependsOn: Dummy Stage to Allow Condition
+  Start:
+    actors:
+      Print Inputs to Log:
+        parent: Logger
+        in:
+          message:
+            const: 'TDMExtractOrchestrator --> Handling task with following parameters:
+              iid: ${iid}, luType: ${luName}, syncMode: ${syncMode}'
+          level:
+            const: info
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ''
+              - 'ON'
+              - 'OFF'
+              - FORCE
+              - DELTA
+            mandatory: false
+      Get Start Time:
+        parent: Now
+      Set LU_TYPE:
+        parent: FabricSet
+        in:
+          key:
+            const: LU_TYPE
+            default: false
+          value:
+            const: null
+            external: luName
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            default: false
+      Split IID:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            external: iid
+        out:
+          cloneNo:
+            schema: string
+          UID:
+            schema: string
+          versionExeID:
+            schema: string
+      Set INPUT_IID:
+        parent: FabricSet
+        in:
+          key:
+            const: INPUT_IID
+            default: false
+          value:
+            const: null
+            external: iid
+            default: false
+  Set Session Variables:
+    actors:
+      Set TARGET_ENTITY_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Split IID/instanceID
+            default: false
+      Format Start Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Start Time/date
+      Set Clone No:
+        parent: FabricSet
+        in:
+          key:
+            const: clone_id
+            default: false
+          value:
+            const: '0'
+            default: false
+      Initiate Entity Status:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: completed
+            default: false
+      Set IID:
+        parent: FabricSet
+        in:
+          key:
+            const: IID
+            default: false
+          value:
+            const: null
+            link: Split IID/instanceID
+            default: false
+      Set SOURCE_ENTIT_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Split IID/UID
+            default: false
+      Set Source Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            link: Split IID/envName
+      set Sync Mode:
+        parent: FabricSet
+        in:
+          key:
+            const: sync
+            default: false
+          value:
+            const: null
+            external: syncMode
+            default: false
+  Get Synthetic Entities:
+    actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Set Start Processing Time:
+        parent: FabricSet
+        in:
+          key:
+            const: IID_START_DATETIME
+            default: false
+          value:
+            link: Format Start Time/string
+      Get Instance:
+        parent: FabricGet
+        in:
+          luType:
+            const: null
+            external: luName
+          iid:
+            const: null
+            external: iid
+            default: false
+          syncMode:
+            const: null
+            external: syncMode
+      Get Time After Get:
+        parent: Now
+      isParamCoupling:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: isParamCoupling
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - 'true'
+              - 'false'
+        out:
+          value:
+            schema: string
+  'Populate Statistic Report ':
+    actors:
+      PopulateTaskExecutionStatsDetailed1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionStatsDetailed
+          luName:
+            external: luName
+            schema: any
+            mandatory: false
+  'Is Params Coupling ':
+    dependsOn: 'Populate Statistic Report '
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link: isParamCoupling/value
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      ExportIidForParams:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ExportIidForParams
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          IID:
+            external: iid
+            schema: '#ref'
+            mandatory: false
+    split: '--------------------'
+  'False':
+    else: true
+    dependsOn: 'Populate Statistic Report '
+  Populate Tables:
+    transactional: true
+    actors:
+      Format Current Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Time After Get/date
+      Handle Task Execution Entities:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: HandleTaskExecutionEntities
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          handleChildren:
+            const: true
+            schema: boolean
+            mandatory: false
+  Get Execution Mode:
+    actors:
+      get EXECUTION_MODE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: EXECUTION_MODE
+            default: false
+  Run Children For Vertical:
+    dependsOn: Get Execution Mode
+    actors:
+      Vertical?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: get EXECUTION_MODE/result
+            schema: string
+          b:
+            const: VERTICAL
+            schema: string
+      Run Children LUs:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnRunVerticalChildren
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Not Vertical:
+    else: true
+    dependsOn: Get Execution Mode
+  End:
+    actors:
+      Set End Time of Get Command:
+        parent: FabricSet
+        in:
+          key:
+            const: IID_AFTER_GET_DATETIME
+            default: false
+          value:
+            link: Format Current Time/string
+      Print Finish Note:
+        parent: Logger
+        in:
+          message:
+            const: Finished Extracting Entity ${luType}.${iid}.
+          level:
+            const: info
+          luType:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          iid:
+            external: iid
+            schema: string
+            mandatory: false
+schemas:
+  ExportIidForParams.in.IID:
+    type: array
+    items:
+      type: string

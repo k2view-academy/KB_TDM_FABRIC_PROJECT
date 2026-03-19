@@ -1,0 +1,196 @@
+tags: TDM
+stages:
+  Stage 5:
+    actors:
+      JavaScript2:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.matchFound = false;
+        out:
+          result:
+            schema: boolean
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: any
+  Stage 7:
+    dependsOn: Stage 5
+    actors:
+      Equals2:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
+    split: '--------------------'
+  Stage 11:
+    else: true
+    dependsOn: Stage 5
+  Stage 1:
+    dependsOn: Stage 7
+    actors:
+      TDMFilterOutTargetTables1:
+        parent: TDMFilterOutTargetTables
+        out:
+          table:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 12:
+    dependsOn: Stage 11
+    actors:
+      JavaScript4:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.matchFound = false;
+        out:
+          result:
+            schema: boolean
+  Stage 6:
+    dependsOn: Stage 1
+    actors:
+      Uppercase1:
+        parent: Uppercase
+        height: 198
+        in:
+          string:
+            link:
+              path: TDMFilterOutTargetTables1/table/table_regex
+              iterate: Iterate
+      Uppercase2:
+        parent: Uppercase
+        in:
+          string:
+            external: tableName
+    split: '--------------------'
+  Stage 4:
+    dependsOn: Stage 12
+  Stage 10:
+    dependsOn: Stage 6
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link:
+              path: TDMFilterOutTargetTables1/table/active
+              iterate: Iterate
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Regex1:
+        parent: Regex
+        in:
+          pattern:
+            const: null
+            link: Uppercase1/string
+          input:
+            link: Uppercase2/string
+        out:
+          strings:
+            schema: string
+    split: '--------------------'
+  Stage 9:
+    dependsOn: Stage 4
+  Stage 2:
+    last: 1
+    dependsOn: Stage 10
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "if ((FilterOutLU == 'ALL_LUS' || FilterOutLU == luName) &&\
+                \ genaeratorFilterOut == true) {\r\n    if (match != '[]' && flowArgs.matchFound\
+                \ == false) {\r\n        flowArgs.matchFound = true;\r\n    }\r\n\
+                }\r\nflowArgs.matchFound \r\n"
+              script: |-
+                if ((FilterOutLU == 'ALL_LUS' || FilterOutLU == luName) && genaeratorFilterOut == true) {
+                  if (match != '[]' && flowArgs.matchFound == false) {
+                    flowArgs.matchFound = true;
+                  }
+                }
+
+                flowArgs.matchFound;
+          match:
+            link: Regex1/strings
+            schema: string
+          luName:
+            external: luName
+            schema: string
+          genaeratorFilterOut:
+            link:
+              path: TDMFilterOutTargetTables1/table/generator_filterout
+              iterate: Iterate
+            schema: boolean
+            mandatory: false
+          FilterOutLU:
+            link:
+              path: TDMFilterOutTargetTables1/table/lu_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+    split: '--------------------'
+  Stage 14:
+    last: 1
+    dependsOn: Stage 9
+  Stage 3:
+    actors:
+      Not1:
+        parent: Not
+        condition: result
+        in:
+          value:
+            link:
+            - JavaScript4/result
+            - JavaScript1/result
+      Const2:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+            schema: string
+        out:
+          value:
+            external: tableNameOut
+            schema: string
+schemas:
+  TDMFilterOutTargetTables1.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean

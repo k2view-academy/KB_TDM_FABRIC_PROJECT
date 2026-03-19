@@ -1,0 +1,348 @@
+tags: Medoid,TDM
+stages:
+  Get Params:
+    actors:
+      id:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: id
+            schema: string
+        out:
+          value:
+            schema: string
+      AIConfigParams:
+        parent: AIConfigParams
+        out:
+          table:
+            schema: '#ref'
+  YAML:
+    actors:
+      JOB_memory_request:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: JOB_memory_request
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      JOB_memory_limit:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: JOB_memory_limit
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      AI_generation_image:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: AI_generation_image
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      JOB_node_selector:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: JOB_node_selector_group
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      JOB_node_label:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: JOB_node_selector_label
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Build Manifest:
+    dependsOn: YAML
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: JOB_node_selector/result/param_value
+      Yaml:
+        parent: StringFormat
+        in:
+          format:
+            const: "apiVersion: batch/v1\r\nkind: Job\r\nmetadata:\r\n  name: generation-job${id}\r\
+              \nspec:\r\n  backoffLimit: 0\r\n  template:\r\n    spec:\r\n      containers:\r\
+              \n      - name: generation\r\n        image: ${generation_image}\r\n\
+              \        command: [\"python\", \"main.py\"]\r\n        args: [\"--task_execution_id\"\
+              , \"${id}\"]\r\n        resources:\r\n          requests:\r\n      \
+              \      memory: \"${memory_requested}Gi\"\r\n            nvidia.com/gpu:\
+              \ 1\r\n          limits:\r\n            memory: \"${memory_limit}Gi\"\
+              \r\n            nvidia.com/gpu: 1\r\n        volumeMounts:\r\n     \
+              \   - name: shared-storage\r\n          mountPath: /app/artifacts\r\n\
+              \        env:\r\n        - name: POSTGRES_USER\r\n          valueFrom:\r\
+              \n            secretKeyRef:\r\n              name: medoid-secrets\r\n\
+              \              key: pg-user\r\n        - name: POSTGRES_PASSWORD\r\n\
+              \          valueFrom:\r\n            secretKeyRef:\r\n             \
+              \ name: medoid-secrets\r\n              key: pg-password\r\n       \
+              \ - name: POSTGRES_DB\r\n          valueFrom:\r\n            secretKeyRef:\r\
+              \n              name: medoid-secrets\r\n              key: pg-db\r\n\
+              \        - name: POSTGRES_HOST\r\n          valueFrom:\r\n         \
+              \   secretKeyRef:\r\n              name: medoid-secrets\r\n        \
+              \      key: pg-host\r\n        - name: POSTGRES_PORT\r\n          valueFrom:\r\
+              \n            secretKeyRef:\r\n              name: medoid-secrets\r\n\
+              \              key: pg-port\r\n        - name: SQLALCHEMY_DATABASE_URI\r\
+              \n          value: \"postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)\"\
+              \r\n      restartPolicy: OnFailure\r\n      volumes:\r\n      - name:\
+              \ shared-storage\r\n        persistentVolumeClaim:\r\n          claimName:\
+              \ shared-artifacts-pvc"
+          generation_image:
+            link: AI_generation_image/result/param_value
+            schema: string
+            mandatory: false
+          id:
+            link: id/value
+            schema: string
+            mandatory: false
+          memory_requested:
+            link: JOB_memory_request/result/param_value
+            schema: any
+            mandatory: false
+          memory_limit:
+            link: JOB_memory_limit/result/param_value
+            schema: any
+            mandatory: false
+    split: '--------------------'
+  Add Node Selector:
+    else: true
+    dependsOn: YAML
+    actors:
+      Yaml with node selector:
+        parent: StringFormat
+        in:
+          format:
+            const: "apiVersion: batch/v1\r\nkind: Job\r\nmetadata:\r\n  name: generation-job${id}\r\
+              \nspec:\r\n  backoffLimit: 0\r\n  template:\r\n    spec:\r\n      containers:\r\
+              \n      - name: generation\r\n        image: ${generation_image}\r\n\
+              \        command: [\"python\", \"main.py\"]\r\n        args: [\"--task_execution_id\"\
+              , \"${id}\"]\r\n        resources:\r\n          requests:\r\n      \
+              \      memory: \"${memory_requested}Gi\"\r\n            nvidia.com/gpu:\
+              \ 1\r\n          limits:\r\n            memory: \"${memory_limit}Gi\"\
+              \r\n            nvidia.com/gpu: 1\r\n        volumeMounts:\r\n     \
+              \   - name: shared-storage\r\n          mountPath: /app/artifacts\r\n\
+              \        env:\r\n        - name: POSTGRES_USER\r\n          valueFrom:\r\
+              \n            secretKeyRef:\r\n              name: medoid-secrets\r\n\
+              \              key: pg-user\r\n        - name: POSTGRES_PASSWORD\r\n\
+              \          valueFrom:\r\n            secretKeyRef:\r\n             \
+              \ name: medoid-secrets\r\n              key: pg-password\r\n       \
+              \ - name: POSTGRES_DB\r\n          valueFrom:\r\n            secretKeyRef:\r\
+              \n              name: medoid-secrets\r\n              key: pg-db\r\n\
+              \        - name: POSTGRES_HOST\r\n          valueFrom:\r\n         \
+              \   secretKeyRef:\r\n              name: medoid-secrets\r\n        \
+              \      key: pg-host\r\n        - name: POSTGRES_PORT\r\n          valueFrom:\r\
+              \n            secretKeyRef:\r\n              name: medoid-secrets\r\n\
+              \              key: pg-port\r\n        - name: SQLALCHEMY_DATABASE_URI\r\
+              \n          value: \"postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)\"\
+              \r\n      restartPolicy: OnFailure\r\n      volumes:\r\n      - name:\
+              \ shared-storage\r\n        persistentVolumeClaim:\r\n          claimName:\
+              \ shared-artifacts-pvc\r\n      nodeSelector:\r\n        ${node_label}:\
+              \ ${node_group}\r\n"
+          generation_image:
+            link: AI_generation_image/result/param_value
+            schema: string
+            mandatory: false
+          id:
+            link: id/value
+            schema: string
+            mandatory: false
+          memory_requested:
+            link: JOB_memory_request/result/param_value
+            schema: any
+            mandatory: false
+          memory_limit:
+            link: JOB_memory_limit/result/param_value
+            schema: any
+            mandatory: false
+          node_label:
+            link: JOB_node_label/result/param_value
+            schema: any
+            mandatory: false
+          node_group:
+            link: JOB_node_selector/result/param_value
+            schema: any
+            mandatory: false
+  k8 Apply:
+    actors:
+      ErrorHandler 1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      'kubeApply  ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeApply
+          method:
+            const: POST
+            schema: string
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ''
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+            mandatory: false
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false
+          kind:
+            const: jobs
+            schema: string
+            mandatory: false
+          api:
+            const: apis/batch/v1
+            schema: string
+            mandatory: false
+          payload:
+            link:
+            - Yaml/string
+            - Yaml with node selector/string
+            schema: string
+            mandatory: false
+schemas:
+  AIConfigParams.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        param_name:
+          type: string
+        param_value:
+          type: string
+  JOB_memory_request.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  JOB_memory_request.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string
+  JOB_memory_limit.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  JOB_memory_limit.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string
+  AI_generation_image.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  AI_generation_image.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string
+  JOB_node_selector.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  JOB_node_selector.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string
+  JOB_node_label.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  JOB_node_label.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string

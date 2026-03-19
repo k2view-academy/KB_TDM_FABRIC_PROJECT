@@ -1,0 +1,308 @@
+stages:
+  Get TDMDB schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Initiation:
+    actors:
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Build Select Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: "SELECT  rt.lu_name, rt.interface_name, rt.schema_name, es.ref_table_name\
+              \ as table_name\r\nFROM  ${schema}.TASK_REF_EXE_STATS es, ${schema}.TASK_REF_TABLES\
+              \ rt\r\nWHERE lower(es.execution_status) = 'pending'\r\nAND rt.task_id\
+              \ = es.task_id AND rt.task_ref_table_id = es.task_ref_table_id\r\nAND\
+              \ es.task_execution_id = ${taskExecutionId}"
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+  Get List of Tables:
+    transactional: false
+    actors:
+      Sync Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Get Tables List:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Build Select Statement/string
+        out:
+          result:
+            schema: '#ref'
+  Initiate internal variables:
+    transactional: false
+    actors:
+      Set Lu Name:
+        parent: FabricSet
+        in:
+          key:
+            const: TABLES_LU_NAME
+            default: false
+          value:
+            const: TDM_TableLevel
+            default: false
+      Init Source Entity ID for Error Handler1:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: ALL_TABLES
+            default: false
+      Set Target Entity ID for Error Handler:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link:
+              path: Get Tables List/result/table_name
+              iterate: First
+            default: false
+  Create IIDs:
+    transactional: false
+    actors:
+      Build IIDs:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildIID
+          sourceEnv:
+            link: Get Source Environment/result
+            schema: string
+            mandatory: false
+          tableName:
+            link:
+              path: Get Tables List/result/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          interfaceName:
+            link:
+              path: Get Tables List/result/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          schemaName:
+            link:
+              path: Get Tables List/result/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          iid:
+            schema: string
+  Create Instance List:
+    last: 1
+    transactional: false
+    actors:
+      Build Table List:
+        parent: StringBuild
+        in:
+          input:
+            link:
+              path: Get Tables List/result/table_name
+              iterate: Iterate
+              pos: 0
+      Build Instance List:
+        parent: StringBuild
+        height: 199
+        in:
+          input:
+            link:
+              path: Build IIDs/iid
+              pos: 0
+  Create Batch Command:
+    transactional: false
+    actors:
+      Broadway Command:
+        parent: StringFormat
+        in:
+          format:
+            const: broadway TDM_TableLevel.TDMTableLevelExtractOnlyOrchestrator iid=?,
+              syncMode="${syncMode}", taskType = ${taskType}, luName=${luName}
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+          luName:
+            const: TDM_TableLevel
+            schema: string
+            mandatory: false
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+  Run Batch:
+    transactional: false
+    actors:
+      Batch Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      'Batch ':
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
+              WITH ASYNC='true' BATCH_ID_PREFIX='${@taskTitle}';
+          command:
+            link: Broadway Command/string
+            schema: string
+            mandatory: false
+          instanceList:
+            link: Build Instance List/string
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Update Batch ID:
+    transactional: false
+    actors:
+      Update Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Update task_ref_exe_stats Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@schema}.task_ref_exe_stats es
+              set job_uid = ${batchId},
+                  execution_status = 'running',
+                  start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+              where task_execution_id = ${taskExecutionId}
+              and task_ref_table_id in (select t.task_ref_table_id from ${@schema}.task_ref_tables t
+                  where t.task_id = es.task_id and t.ref_table_name = any(string_to_array(${tableList}, ',')) and t.interface_name = ${interfaceName}
+                  and schema_name = ${schemaName})
+          tableList:
+            link: Build Table List/string
+            schema: string
+            mandatory: false
+          interfaceName:
+            link:
+              path: Get Tables List/result/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          schemaName:
+            link:
+              path: Get Tables List/result/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          batchId:
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+      Wait  For Current Table Level to Finish:
+        parent: BatchWait
+        in:
+          batchId:
+            const: null
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            default: false
+schemas:
+  Get Tables List.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        table_name:
+          type: string
+  Batch .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
+          type: string
+        Execution id:
+          type: string
+        Notes:
+          type: string

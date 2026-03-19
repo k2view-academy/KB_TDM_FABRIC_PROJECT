@@ -1,0 +1,93 @@
+{
+    "type": "SeqMappingStore",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "innerFlowClose",
+            "hidden": true
+        },
+        {
+            "name": "params",
+            "schema": {},
+            "hidden": true
+        },
+        {
+            "name": "batch",
+            "schema": {
+                "type": "bool"
+            },
+            "hidden": true
+        },
+        {
+            "name": "task_execution_id",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "iid",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "lu_type",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "seq_name",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "table_name",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "column_name",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "source_value",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "target_value",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "TTL",
+            "const": 86400,
+            "schema": {
+                "type": "integer"
+            },
+            "isDefault": true
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "TDMSeqMappingStore",
+            "mandatory": true,
+            "hidden": true
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "TDM"
+    ],
+    "doc": ""
+}

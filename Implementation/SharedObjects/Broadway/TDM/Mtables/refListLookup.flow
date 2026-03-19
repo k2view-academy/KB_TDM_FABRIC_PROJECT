@@ -1,0 +1,822 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "luName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "refTableName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Map Build",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapBuild luName",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "lu_name"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "lu_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MapBuild refTableName",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "reference_table_name"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "reference_table_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if LuName is empty",
+                    "dependsOnList": [
+                        "Map Build"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "True",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LuName is not empty",
+                    "dependsOnList": [
+                        "Map Build"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if TableName is empty",
+                    "dependsOnList": [
+                        "Check if LuName is empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "True ",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "TableName is not empty",
+                    "dependsOnList": [
+                        "Check if LuName is empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                },
+                {
+                    "name": "Check if TableName is empty  ",
+                    "dependsOnList": [
+                        "LuName is not empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "True  ",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Inputs Are Not Empty",
+                    "dependsOnList": [
+                        "LuName is not empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "MapMerge Two Keys",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "lu_name": {
+                                                    "type": "string"
+                                                },
+                                                "reference_table_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Lookup with no keys",
+                    "dependsOnList": [
+                        "Check if TableName is empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Lookup Without Keys",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "RefList"
+                                    },
+                                    {
+                                        "name": "mtableKey",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Return based on TableName Key",
+                    "dependsOnList": [
+                        "TableName is not empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Lookup With TableName as key ",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "RefList"
+                                    },
+                                    {
+                                        "name": "mtableKey",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Return based on LuName Key",
+                    "dependsOnList": [
+                        "Check if TableName is empty  "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Lookup With LuName as key ",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "RefList"
+                                    },
+                                    {
+                                        "name": "mtableKey",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Return based on two keys",
+                    "dependsOnList": [
+                        "Inputs Are Not Empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Lookup With Both Keys",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "RefList"
+                                    },
+                                    {
+                                        "name": "mtableKey",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Return all Mtable",
+                    "dependsOnList": [
+                        "Lookup with no keys"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Return As Array",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing",
+                    "dependsOnList": [
+                        "Return based on TableName Key"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Do Nothing  ",
+                    "dependsOnList": [
+                        "Return based on LuName Key"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Do Nothing                ",
+                    "dependsOnList": [
+                        "Return based on two keys"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapBuild luName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "True",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "refTableName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapBuild refTableName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "refTableName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "True ",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "refTableName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "True  ",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild luName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Lookup With LuName as key ",
+                "name": "mtableKey"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild luName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge Two Keys",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild refTableName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Lookup With TableName as key ",
+                "name": "mtableKey"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild refTableName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge Two Keys",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "MapMerge Two Keys",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Lookup With Both Keys",
+                "name": "mtableKey"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup Without Keys",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Return As Array",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "luName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "refTableName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup With TableName as key ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup With LuName as key ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup With Both Keys",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Return As Array",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

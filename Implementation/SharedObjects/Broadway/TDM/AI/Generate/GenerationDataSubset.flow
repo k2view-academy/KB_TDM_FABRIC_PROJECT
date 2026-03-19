@@ -1,0 +1,278 @@
+tags: TDM
+stages:
+  Get Source Env:
+    actors:
+      AI:
+        parent: Const
+        in:
+          value:
+            const: AI
+            schema: string
+        out:
+          value:
+            schema: string
+  Pre Execution:
+    actors:
+      Set Source Environment:
+        parent: FabricSet
+        height: 106
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: AI/value
+            default: false
+      TDM_SOURCE_ENVIRONMENT_NAME:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+          value:
+            link: AI/value
+      trainingTaskId:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: trainingTaskId
+        out:
+          value:
+            schema: string
+      numOfEntities:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: numOfEntities
+        out:
+          value:
+            schema: string
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      taskExecutionID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskExecutionID
+        out:
+          value:
+            schema: string
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      LuID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: LuID
+        out:
+          value:
+            schema: string
+      TDM_LU_NAME:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_LU_NAME
+            default: false
+          value:
+            const: null
+            external: luName
+            default: false
+  check Schema:
+    actors:
+      getNamespaceName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getNamespaceName
+          taskExecutionID:
+            link: trainingTaskId/value
+            schema: any
+            mandatory: false
+        out:
+          string:
+            schema: string
+  Insert new Generate task:
+    actors:
+      ErrorHandler 1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      addNewGenerateTask1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: addNewGenerateTask
+          trainingTaskId:
+            link: trainingTaskId/value
+            schema: string
+            mandatory: false
+          task_exe_id:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+          numOfEntities:
+            link: numOfEntities/value
+            schema: string
+            mandatory: false
+      Update task_execution_list1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "UPDATE ${@TDMDB_SCHEMA}.task_execution_list set execution_status='running'\
+              \ where\r\ntask_execution_id =${task_execution_id} and lu_id=${lu_id}\
+              \ and process_id=-2"
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          lu_id:
+            link: LuID/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+  Execute Generate Task:
+    actors:
+      kubeCreateGenerationTaskGPU1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeCreateGenerationTaskGPU
+          namespace:
+            link: getNamespaceName1/string
+            schema: string
+            mandatory: false
+          id:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+  Check Medoid task status:
+    actors:
+      ErrorHandler 2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Check task status:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnCheckMedoidTaskStatus
+          interface_name:
+            link: AI_DB_K2SYSTEM1/result
+            schema: string
+            mandatory: false
+          task_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          task_type:
+            const: GENERATION
+            schema: string
+            mandatory: false
+        out:
+          taskStatus:
+            schema: string
+  If status Failed:
+    dependsOn: Check Medoid task status
+    actors:
+      Failed:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: FAILED
+            schema: string
+          a:
+            link: Check task status/taskStatus
+    split: '--------------------'
+  Update Num Of Entites:
+    else: true
+    transactional: false
+    dependsOn: Check Medoid task status
+    actors:
+      Update task_execution_list:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "UPDATE ${@TDMDB_SCHEMA}.task_execution_list SET  num_of_processed_entities=${total},\
+              \ num_of_copied_entities=${copied},\r\nnum_of_failed_entities=${failed}\
+              \ where task_execution_id=${execution_id} and process_id=-2;"
+          total:
+            link: numOfEntities/value
+            schema: string
+            mandatory: false
+          copied:
+            link: numOfEntities/value
+            schema: string
+            mandatory: false
+          failed:
+            const: '0'
+            schema: string
+            mandatory: false
+          execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+  AI Task Failed:
+    transactional: false
+    dependsOn: If status Failed
+    actors:
+      PopulateAITablesWithFailed:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateAITablesWithFailed
+          error:
+            schema: any
+            mandatory: false
+      Throw Exception:
+        parent: JavaScript
+        in:
+          script:
+            const: throw "The AI Task Failed"
+    split: '--------------------'
+  'Do nothing   ':
+    transactional: false
+    dependsOn: Update Num Of Entites

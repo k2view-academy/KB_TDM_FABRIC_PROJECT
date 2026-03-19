@@ -1,0 +1,207 @@
+tags: Concurrency
+stages:
+  Get Inputs:
+    actors:
+      Get Current Time:
+        parent: Now
+      Get the Error Fields:
+        parent: ErrorFields
+        in:
+          error:
+            external: error
+        out:
+          inputs:
+            schema: '#ref'
+  'Prepare the Data   ':
+    actors:
+      Format the current date:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Current Time/date
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get Task Exec ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      Get Source Entity ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+      Get Source Table Name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SOURCE_TABLE_NAME
+            default: false
+      Get TARGET_ENTITY_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+      Build string from input parameters:
+        parent: CsvBuilder
+        in:
+          header:
+            const: false
+          maps:
+            link: Get the Error Fields/inputs
+      Limit Error Message:
+        parent: Substring
+        in:
+          begin:
+            const: 1
+          end:
+            const: 1000
+          string:
+            link: Get the Error Fields/message
+  Load Data to Detailed Error table:
+    transactional: false
+    actors:
+      Error Handler for reporting to TDM Error Table:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Load Data To Error Table:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_exe_error_detailed
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - entity_id
+            - iid
+            - target_entity_id
+            - error_category
+            - error_code
+            - error_message
+            - creation_date
+            - flow_name
+            - stage_name
+            - actor_name
+            - actor_parameters
+          dialect:
+            const: postgres
+          task_execution_id:
+            link: Get Task Exec ID/result
+            schema: string
+          lu_name:
+            const: TDM_TableLevel
+            schema: string
+          entity_id:
+            link: Get Source Entity ID/result
+            schema: string
+          iid:
+            link: Get Source Table Name/result
+            schema: string
+          target_entity_id:
+            link: Get TARGET_ENTITY_ID/result
+            schema: string
+          error_category:
+            const: Rejected Record
+            schema: string
+          error_code:
+            link: Get the Error Fields/errorCode
+            schema: string
+          error_message:
+            link: Limit Error Message/string
+            schema: string
+          creation_date:
+            link: Format the current date/string
+            schema: string
+          flow_name:
+            link: Get the Error Fields/flow
+            schema: string
+          stage_name:
+            link: Get the Error Fields/stage
+            schema: string
+          actor_name:
+            link: Get the Error Fields/actor
+            schema: string
+          actor_parameters:
+            const: ''
+            link: Build string from input parameters/csv
+            schema: string
+            default: true
+      Set Entity Status to Failed:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Set Record Status to Failed:
+        parent: FabricSet
+        in:
+          key:
+            const: RECORD_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Get LU Name:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TABLES_LU_NAME
+            default: false
+  Send True as result:
+    actors:
+      Return True:
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean
+schemas:
+  Get the Error Fields.out.inputs:
+    type: object
+    properties:
+      interface:
+        type: string
+      luType:
+        type: string
+      parallel:
+        type: boolean
+      stop_on_error:
+        type: boolean
+      syncMode:
+        type: string
+      iid:
+        type: string

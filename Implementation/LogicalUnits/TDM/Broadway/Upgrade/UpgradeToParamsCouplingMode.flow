@@ -1,0 +1,154 @@
+tags: Upgrade
+stages:
+  Get TDMDB_SCHEMA:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  'True ':
+    actors:
+      Update PARAMS_COUPLING:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.tdm_general_parameters
+               set param_value=true
+               where param_name='PARAMS_COUPLING';
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+  Create Backup:
+    actors:
+      tdm_params_distinct_values_backup:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: CREATE TABLE IF NOT EXISTS ${@TDMDB_SCHEMA}.tdm_params_distinct_values_backup
+              as select * from ${@TDMDB_SCHEMA}.tdm_params_distinct_values
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+  Truncate Orignal:
+    actors:
+      truncate tdm_params_distinct_values:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: truncate table ${@TDMDB_SCHEMA}.tdm_params_distinct_values;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+  Upgrade Params Mtable:
+    actors:
+      ParamsUpgradeMtableMapping1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ParamsUpgradeMtableMapping
+  Get all LUS:
+    actors:
+      list lut:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: list lut;
+        out:
+          result:
+            schema: '#ref'
+  Filter TDM lus:
+    actors:
+      JavaScript:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                let name = lu ;
+                if(name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel"){
+                    name=true;
+                }
+                name;
+              script: |-
+                var name = lu;
+
+                if (name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel") {
+                  name = true;
+                }
+
+                name;
+          lu:
+            link:
+              path: list lut/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  'Upgrade Schema Add new table ':
+    last: 1
+    dependsOn: Filter TDM lus
+    actors:
+      EqualsIgnoreCase:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: JavaScript/result
+      ParamsUpgradeTDMTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ParamsUpgradeTDMTables
+          LU_NAME:
+            link:
+              path: list lut/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+      ParamsUpgradeBackupTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ParamsUpgradeBackupTables
+          luName:
+            link:
+              path: list lut/result/LU_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Do Nothing:
+    last: 1
+    else: true
+    dependsOn: Filter TDM lus
+schemas:
+  list lut.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        LU_NAME:
+          type: string
+        Project Version:
+          type: string

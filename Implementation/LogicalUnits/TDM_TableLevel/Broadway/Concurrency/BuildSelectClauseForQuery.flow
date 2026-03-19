@@ -1,0 +1,148 @@
+tags: Concurrency
+stages:
+  In Place Masking Indicator:
+    actors:
+      Get IN_PLACE_MASKING_IND:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IN_PLACE_MASKING_IND
+            default: false
+  Get List of Delete's Keys:
+    dependsOn: In Place Masking Indicator
+    actors:
+      In Place Masking?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get IN_PLACE_MASKING_IND/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Get List of Fields to Update:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: MaskingFields
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: ''
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  No Deletion:
+    else: true
+    dependsOn: In Place Masking Indicator
+    actors:
+      No Additional Fields:
+        parent: Const
+        in:
+          value:
+            const: '*'
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+  Format Field Name:
+    dependsOn: Get List of Delete's Keys
+    actors:
+      Format Delete key Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0} as k2key__${0}
+          params:
+            link:
+              path: Get List of Fields to Update/result
+              iterate: Iterate
+              pos: 0
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: No Deletion
+  Aggregate Key Fields:
+    last: 1
+    dependsOn: Format Field Name
+    actors:
+      Build list of Fields:
+        parent: StringBuild
+        in:
+          delimiter:
+            const: ', '
+          input:
+            link:
+              path: Format Delete key Name/string
+              pos: 0
+    split: '--------------------'
+  'Do Nothing ':
+    last: 1
+    dependsOn: Do Nothing
+  Add Star:
+    dependsOn: Aggregate Key Fields
+    actors:
+      No Fields?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Build list of Fields/string
+      Star:
+        parent: Const
+        in:
+          value:
+            const: t.*
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+    split: '--------------------'
+  Add Where Fields:
+    else: true
+    dependsOn: Aggregate Key Fields
+    actors:
+      Final select fields:
+        parent: StringFormat
+        in:
+          format:
+            const: t.*, ${0}
+          params:
+            link:
+              path: Build list of Fields/string
+              pos: 0
+        out:
+          string:
+            external: result
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: 'Do Nothing '

@@ -1,0 +1,281 @@
+tags: TDM
+stages:
+  Get Data:
+    actors:
+      Get Project Directory:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Prepare Template Data:
+        parent: LuFunction
+        height: 261
+        in:
+          functionName:
+            const: buildTemplateData
+          luTable:
+            external: LU_TABLE
+            schema: string
+          targetDbInterface:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+          targetDbSchema:
+            external: TARGET_SCHEMA
+            schema: string
+          targetDbTable:
+            external: TARGET_TABLE
+            schema: string
+          tableIidFieldName:
+            external: IID_FIELD_NAME
+            schema: string
+          sequenceName:
+            external: SEQUENCE_NAME
+            schema: string
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          flowType:
+            const: LOAD
+            schema: string
+            mandatory: false
+          useFabric:
+            external: useFabric
+            schema: boolean
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+      Get Template For Load Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: load_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Read Templates:
+    actors:
+      Load Flow Template:
+        parent: FileRead
+        height: 153
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            link: Get Template For Load Flow/result
+  Apply Templates:
+    actors:
+      Get TDM_USING_CATALOG_SEQUENCES:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUVariable
+          luName:
+            external: luType
+            schema: string
+            mandatory: false
+          variableName:
+            const: TDM_USING_CATALOG_SEQUENCES
+            schema: string
+            mandatory: false
+        out:
+          variableValue:
+            schema: string
+      Load Flow Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/LoadFlows
+          LU_NAME:
+            external: luType
+            schema: string
+          PROJECT_DIRECTORY:
+            link: Get Project Directory/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      Apply Load Template:
+        parent: LuFunction
+        in:
+          functionName:
+            const: transform
+          templateContent:
+            link: Load Flow Template/stream
+            schema: string
+          data:
+            link: Prepare Template Data/res
+            schema: string
+        out:
+          result:
+            schema: string
+  Write Flows:
+    actors:
+      Not (TDM_USING_CATALOG_SEQUENCES):
+        parent: Not
+        in:
+          value:
+            link: Get TDM_USING_CATALOG_SEQUENCES/variableValue
+            schema: string
+      Write Load File:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: Load Flow Folder/string
+          stream:
+            link: Apply Load Template/result
+          path:
+            external: FLOW_NAME
+  Create Sequences' Flow?:
+    actors:
+      Sequences Exists and Not Using Catalog?:
+        parent: And
+        condition: result
+        in:
+          b:
+            link: Prepare Template Data/res/TABLE_SEQ_DATA
+          a:
+            link: Not (TDM_USING_CATALOG_SEQUENCES)/result
+      Get Template For Sequence Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: sequence_table_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Create Sequences Flow:
+    actors:
+      Tempate Found?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Template For Sequence Flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Sequences Flow Template:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: Get Project Directory/PROJECT_FOLDER
+          path:
+            link: Get Template For Sequence Flow/result
+      Sequences Fiow Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${luTable}_sequences.flow
+          luTable:
+            external: LU_TABLE
+            schema: string
+            mandatory: false
+      Sequences Flow Folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/SequencesFlows
+          LU_NAME:
+            external: luType
+            schema: string
+          PROJECT_DIRECTORY:
+            link: Get Project Directory/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+  Build the Sequence File:
+    actors:
+      Apply Sequences Template:
+        parent: LuFunction
+        in:
+          functionName:
+            const: transform
+          templateContent:
+            link: Sequences Flow Template/stream
+            schema: string
+          data:
+            link: Prepare Template Data/res
+            schema: string
+        out:
+          result:
+            schema: string
+  Write Sequences Flow:
+    actors:
+      Write Sequences File:
+        parent: FileWrite
+        in:
+          interface:
+            const: null
+            link: Sequences Flow Folder/string
+          path:
+            link: Sequences Fiow Name/string
+          stream:
+            link: Apply Sequences Template/result
+schemas:
+  Prepare Template Data.out.res:
+    type: object
+    properties:
+      DELETE_TABLE:
+        type: string
+      LU_NAME:
+        type: string
+      LU_TABLE:
+        type: string
+      LU_TABLE_COLUMNS:
+        type: array
+        items:
+          type: string
+      MAIN_TABLE_IND:
+        type: string
+      MAIN_TABLE_SEQ_ID:
+        type: string
+      MAIN_TABLE_SEQ_NAME:
+        type: string
+      TABLE_SEQ_DATA: {
+        }
+      TARGET_INTERFACE:
+        type: string
+      TARGET_SCHEMA:
+        type: string
+      TARGET_TABLE:
+        type: string
+      TARGET_TABLE_COLUMNS:
+        type: array
+        items:
+          type: string
+      TARGET_TABLE_PKS:
+        type: array
+        items:
+          type: string

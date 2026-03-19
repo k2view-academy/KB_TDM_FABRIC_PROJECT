@@ -1,0 +1,347 @@
+tags: TDM
+stages:
+  'Get Inputs ':
+    actors:
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      trainingExcludedTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingExcludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      Param Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${luName}_schema_hash
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+      Getk2SystemSchemaName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  Get Data:
+    actors:
+      Information Schema:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_ENTITIES/result
+          sql:
+            const: "SELECT EXISTS (\r\n    SELECT 1\r\n    FROM information_schema.schemata\r\
+              \n    WHERE schema_name = Lower('${@LuName}')\r\n);"
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Validate Schema Hash Val:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnValidateSchemaHashVal
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      'Select From General Params           ':
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select param_value as hash_value from ${@TDMDB_SCHEMA}.tdm_general_parameters
+              where param_name=${param_name}
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          param_name:
+            link: Param Name/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      'Count Running AI Jobs ':
+        parent: DbFetchField
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM1/result
+          sql:
+            const: select count(id) from ${@k2system}.task_executions where status
+              = 'STARTED' OR status = 'IN_PROCESS' OR status = 'NEW'
+          k2system:
+            link: Getk2SystemSchemaName/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Schema Does Not Exists:
+    dependsOn: Get Data
+    actors:
+      Create Schema:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'false'
+            schema: string
+          a:
+            link:
+              path: Information Schema/result/exists
+              iterate: First
+      'ErrorHandler  ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Insert Into General Params21:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              insert into ${@TDMDB_SCHEMA}.tdm_general_parameters (param_name,param_value)
+              values (${param_name}, ${param_value})
+              ON CONFLICT (param_name) DO UPDATE
+              SET param_value=${param_value};
+          param_name:
+            link: Param Name/string
+            schema: string
+            mandatory: false
+          param_value:
+            link: Validate Schema Hash Val/result
+            schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+      MDB_EXPORT LuName:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: "MDB_EXPORT ${@luName} WITH INTERFACE_NAME='${@interfaceName}'\
+              \ EXCLUDED_TABLES=${@excludedTables} FK='true'\r\n"
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          interfaceName:
+            link: AI_DB_ENTITIES/result
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Schema Exists:
+    else: true
+    dependsOn: Get Data
+    actors:
+      ToNumber1:
+        parent: ToNumber
+        in:
+          value:
+            link: Select From General Params           /result
+      ToNumber2:
+        parent: ToNumber
+        in:
+          value:
+            link: Validate Schema Hash Val/result
+  'Do Nothing ':
+    dependsOn: Schema Does Not Exists
+    split: '--------------------'
+  Schema didn't change:
+    dependsOn: Schema Exists
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: ToNumber1/number
+          b:
+            link: ToNumber2/number
+    split: '--------------------'
+  Schema Changed Check Running Jobs:
+    else: true
+    dependsOn: Schema Exists
+    actors:
+      Ongoing Jobs:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Count Running AI Jobs /result
+        out:
+          value:
+            schema: integer
+  'Do Nothing   ':
+    dependsOn: 'Do Nothing '
+    split: '--------------------'
+  'Do Nothing     ':
+    dependsOn: Schema didn't change
+    split: '--------------------'
+  No Job Is Running Create A New Schema:
+    dependsOn: Schema Changed Check Running Jobs
+    actors:
+      Zero:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link: Ongoing Jobs/value
+      ErrorHandler 2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Insert Into General Params2:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              insert into ${@TDMDB_SCHEMA}.tdm_general_parameters (param_name,param_value)
+              values (${param_name}, ${param_value})
+              ON CONFLICT (param_name) DO UPDATE
+              SET param_value=${param_value};
+          param_name:
+            link: Param Name/string
+            schema: string
+            mandatory: false
+          param_value:
+            link: Validate Schema Hash Val/result
+            schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+      MDB_EXPORT LuName1:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: "MDB_EXPORT ${@luName} WITH INTERFACE_NAME='${@interfaceName}'\
+              \ EXCLUDED_TABLES=${@excludedTables} FK='true'\r\n"
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          interfaceName:
+            link: AI_DB_ENTITIES/result
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'Jobs Are Running in Background ':
+    else: true
+    dependsOn: Schema Changed Check Running Jobs
+    actors:
+      ErrorHandler  2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Throw Exception:
+        parent: JavaScript
+        in:
+          script:
+            const: throw "Schema export failed due to inconsistencies and ongoing
+              AI jobs"
+  'Do Nothing  ':
+    dependsOn: 'Do Nothing   '
+    split: '--------------------'
+  'Do Nothing             ':
+    dependsOn: 'Do Nothing     '
+    split: '--------------------'
+  'Do Nothing                    ':
+    dependsOn: No Job Is Running Create A New Schema
+    split: '--------------------'
+  ERROR:
+    dependsOn: 'Jobs Are Running in Background '
+schemas:
+  Information Schema.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        exists:
+          type: boolean

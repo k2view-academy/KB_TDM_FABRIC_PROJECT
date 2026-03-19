@@ -1,0 +1,81 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          {{#each PARENT_TABLE_DATA~}}
+          {{getInputFieldName this}}:
+            external: {{getInputFieldName this}}
+            schema: any {{#if @last}} {{else}} , {{/if}}{{/each}}
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Set Target Environment:
+    actors:
+      setTargetEnv:
+        parent: setTargetEnv_Actor
+  Source:
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: {{TARGET_INTERFACE}}
+          sql:
+            const: Select {{#each Columns~}} {{{getDelelePopColumnName this}}} {{#if @last}} {{else}} , {{/if}} {{/each}} From {{{TARGET_SCHEMA}}}.{{{OriginalTableName}}}
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+  Stage 1: {
+    }
+  LU Table:
+    last: 1
+    actors:
+      {{{TableName}}}:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: null
+            external: schema
+          table:
+            const: null
+            external: table
+          fields:
+            const:
+            {{#each Columns~}}
+			      - {{{getDeleleColumnName this}}}
+            {{/each}}
+          dialect:
+            const: sqlite
+          {{#each Columns~}}
+          {{{getDeleleColumnName this}}}:
+            schema: any
+            {{#if (fieldWithQoutesInd this)}}
+            link:
+              path: Query/result/{{getDeleleColumnWithoutQoutes this}}{{/if}}
+          {{/each}}
+          params:
+            link:
+              path: Query/result
+              iterate: Iterate
+  Post Load: {
+    }
+schemas:
+  Query.out.result:
+    type: object
+    properties:
+      {{#each Columns~}}
+      {{{getDeleleColumnWithoutQoutes this}}}:
+        type: {{{getDeleleColumnType this}}}
+      {{/each}}

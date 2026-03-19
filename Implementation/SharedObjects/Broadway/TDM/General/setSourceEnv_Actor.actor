@@ -1,0 +1,17 @@
+{
+  "type": "setSourceEnv_Actor",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "setSourceEnv",
+      "mandatory": true
+    }
+  ],
+  "outputs": [],
+  "tags": null
+}

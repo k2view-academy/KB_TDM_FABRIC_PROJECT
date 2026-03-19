@@ -1,0 +1,30 @@
+tags: Upgrade
+stages:
+  Upgrade Executed By:
+    actors:
+      UpgradeTaskExecutedBy1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTaskExecutedBy
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Update Root And BE_IIDs population:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/PROJECT_FOLDER
+      CopyRootAndBeIidsPopulations1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CopyRootAndBeIidsPopulations

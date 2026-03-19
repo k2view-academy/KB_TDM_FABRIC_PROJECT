@@ -1,0 +1,27 @@
+tags: TDM
+stages:
+  Call Error Flow:
+    actors:
+      Populate Table Errors:
+        parent: PopulateTableErrors
+        in:
+          error_category:
+            const: Entity Failed
+          error:
+            external: error
+      Set Entity Status to Failure:
+        parent: FabricSet
+        in:
+          key:
+            const: ENTITY_STATUS
+            default: false
+          value:
+            const: failed
+            default: false
+      Populate Task Execution Entities For Failed:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForFailed
+      Populate TDM Sequence Mapping:
+        parent: PopulateTdmSeqMapping_Actor

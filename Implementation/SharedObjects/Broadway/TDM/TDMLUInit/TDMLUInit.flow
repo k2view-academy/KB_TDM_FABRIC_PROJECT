@@ -1,0 +1,36 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Source Interface Type:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetInterfaceType
+          interfaceName:
+            external: SOURCE_INTERFACE
+            schema: string
+            mandatory: false
+          environmentName:
+            const: _dev
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Get Target Interface Type:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetInterfaceType
+          interfaceName:
+            external: TARGET_INTERFACE
+            schema: string
+            mandatory: false
+          environmentName:
+            const: _dev
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string

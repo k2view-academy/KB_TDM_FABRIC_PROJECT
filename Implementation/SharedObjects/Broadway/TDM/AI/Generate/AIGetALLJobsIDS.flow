@@ -1,0 +1,457 @@
+tags: CleanUp
+stages:
+  Start:
+    actors:
+      AI_DB_K2SYSTEM:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+            default: false
+      Get k2system Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      'Space ID ':
+        parent: SysEnv
+        in:
+          name:
+            const: SPACE_NAME
+        out:
+          value:
+            schema: string
+      Tenant ID:
+        parent: SysEnv
+        in:
+          name:
+            const: TENANT_NAME
+        out:
+          value:
+            schema: string
+  Get Namespaces:
+    transactional: false
+    actors:
+      kubeGetNamespaces:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeGetNamespaces
+        out:
+          result:
+            schema: '#ref'
+      namespaces:
+        parent: StringFormat
+        in:
+          format:
+            const: -${space_id}-${tenant_id}
+          space_id:
+            link: Space ID /value
+            schema: '#ref'
+            mandatory: false
+          tenant_id:
+            link: Tenant ID/value
+            schema: string
+            mandatory: false
+  'Substring ':
+    transactional: false
+    actors:
+      Regex find space and tenant names:
+        parent: Regex
+        in:
+          pattern:
+            const: null
+            link: namespaces/string
+          input:
+            link:
+              path: kubeGetNamespaces/result
+              iterate: Iterate
+  'Build Array ':
+    last: 1
+    else: false
+    transactional: false
+    dependsOn: 'Substring '
+    actors:
+      IsNull1:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Regex find space and tenant names/strings
+              iterate: Iterate
+    split: '--------------------'
+  Stage 1:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: 'Substring '
+    actors:
+      ArrayBuilder namespaces:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: kubeGetNamespaces/result
+              iterate: Iterate
+        out:
+          array:
+            schema: '#ref'
+  close:
+    last: 1
+    transactional: false
+  build array:
+    transactional: false
+    actors:
+      Const:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: ArrayBuilder namespaces/array
+        out:
+          value:
+            schema: '#ref'
+  find ids:
+    actors:
+      Regex:
+        parent: Regex
+        in:
+          pattern:
+            const: ^tdmml(\d+)-[a-zA-Z0-9]+-[a-zA-Z0-9]+-.*
+          input:
+            link:
+              path: Const/value
+              iterate: Iterate
+  build ids:
+    last: 1
+    actors:
+      ArrayBuilder ids:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: Regex/strings
+        out:
+          array:
+            external: array
+            schema: '#ref'
+  Stage 4: {
+    }
+  Stage 5: {
+    }
+schemas:
+  kubeGetNamespaces.out.result:
+    type: array
+    items:
+      type: string
+  namespaces.in.space_id:
+    type: object
+    properties:
+      PROJECT_ID:
+        type: string
+      FABRIC_EXT_JARS:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT_FABRIC_PORT:
+        type: string
+      KUBERNETES_SERVICE_PORT:
+        type: string
+      JAVA:
+        type: string
+      PATH:
+        type: string
+      PROJECT_DIR:
+        type: string
+      KUBERNETES_PORT:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PROTO:
+        type: string
+      TENANT_ID:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_ADDR:
+        type: string
+      ADD_CERTS:
+        type: string
+      DEMO_DIR:
+        type: string
+      NVM_DIR:
+        type: string
+      FABRIC_URL_HOST:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_ADDR:
+        type: string
+      POSTGRES_SERVICE_PORT:
+        type: string
+      FABRIC_CONF:
+        type: string
+      JAVA_HOME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PROTO:
+        type: string
+      SPACE_NAME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PORT:
+        type: string
+      POSTGRES_SERVICE_SERVICE_HOST:
+        type: string
+      WEB_STUDIO:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP_ADDR:
+        type: string
+      K2_HOME:
+        type: string
+      TENANT_NAME:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PORT:
+        type: string
+      MONITORING:
+        type: string
+      HOSTNAME:
+        type: string
+      CLUSTER_ID:
+        type: string
+      SHLVL:
+        type: string
+      CODE_GUARD_KEY_FILE:
+        type: string
+      ROOTDIR:
+        type: string
+      CLASSPATH:
+        type: string
+      FABRIC_SERVICE_SERVICE_HOST:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT_POSTGRES_PORT:
+        type: string
+      HOME:
+        type: string
+      FABRIC_URL_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP:
+        type: string
+      SPACE_ID:
+        type: string
+      KUBERNETES_SERVICE_HOST:
+        type: string
+      FABRIC_URL_SCHEMA:
+        type: string
+      FABRIC_HOME:
+        type: string
+      JVM_OPTS:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT:
+        type: string
+      WORKSPACE:
+        type: string
+      CONFIG_UPDATE_FILE:
+        type: string
+      PROJECT_NAME:
+        type: string
+      COPY_FILES:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PROTO:
+        type: string
+      KUBERNETES_SERVICE_PORT_HTTPS:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP:
+        type: string
+      FABRIC_JDBC_PORT:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT:
+        type: string
+      JSTACK:
+        type: string
+      CLOUD_SCRIPTS_DIR:
+        type: string
+      PWD:
+        type: string
+      FABRIC_SERVICE_PORT:
+        type: string
+      com.sun.management.jmxremote.rmi.port:
+        type: string
+      java.specification.version:
+        type: string
+      javax.net.ssl.trustStorePassword:
+        type: string
+      sun.jnu.encoding:
+        type: string
+      sun.arch.data.model:
+        type: string
+      nashorn.args:
+        type: string
+      java.vendor.url:
+        type: string
+      catalina.useNaming:
+        type: string
+      sun.boot.library.path:
+        type: string
+      com.sun.management.jmxremote.ssl:
+        type: string
+      projectDir:
+        type: string
+      sun.java.command:
+        type: string
+      jdk.debug:
+        type: string
+      java.specification.vendor:
+        type: string
+      java.version.date:
+        type: string
+      java.home:
+        type: string
+      file.separator:
+        type: string
+      java.vm.compressedOopsMode:
+        type: string
+      line.separator:
+        type: string
+      java.vm.specification.vendor:
+        type: string
+      java.specification.name:
+        type: string
+      localDeploy:
+        type: string
+      oracle.jdbc.maxCachedBufferSize:
+        type: string
+      com.sun.management.jmxremote.password.file:
+        type: string
+      javax.xml.parsers.DocumentBuilderFactory:
+        type: string
+      sun.net.httpserver.maxReqTime:
+        type: string
+      javax.net.ssl.trustStore:
+        type: string
+      sun.management.compiler:
+        type: string
+      java.runtime.version:
+        type: string
+      user.name:
+        type: string
+      file.encoding:
+        type: string
+      broadwayUI:
+        type: string
+      DynamicJarsDir:
+        type: string
+      java.io.tmpdir:
+        type: string
+      com.sun.management.jmxremote.port:
+        type: string
+      java.version:
+        type: string
+      sun.net.httpserver.maxRspTime:
+        type: string
+      K2_FABRIC_SERVER_HOME:
+        type: string
+      java.vm.specification.name:
+        type: string
+      native.encoding:
+        type: string
+      java.library.path:
+        type: string
+      stderr.encoding:
+        type: string
+      java.vendor:
+        type: string
+      java.rmi.server.randomIDs:
+        type: string
+      sun.io.unicode.encoding:
+        type: string
+      javax.xml.transform.TransformerFactory:
+        type: string
+      java.class.path:
+        type: string
+      com.sun.management.jmxremote.authenticate:
+        type: string
+      java.vm.vendor:
+        type: string
+      oracle.jdbc.implicitStatementCacheSize:
+        type: string
+      user.timezone:
+        type: string
+      java.vm.specification.version:
+        type: string
+      os.name:
+        type: string
+      sun.java.launcher:
+        type: string
+      user.country:
+        type: string
+      sun.cpu.endian:
+        type: string
+      user.home:
+        type: string
+      user.language:
+        type: string
+      compilationDir:
+        type: string
+      javax.net.ssl.keyStorePassword:
+        type: string
+      java.system.class.loader:
+        type: string
+      org.apache.xml.security.ignoreLineBreaks:
+        type: string
+      com.sun.management.jmxremote.access.file:
+        type: string
+      javax.xml.parsers.SAXParserFactory:
+        type: string
+      java.net.preferIPv4Stack:
+        type: string
+      stdout.encoding:
+        type: string
+      path.separator:
+        type: string
+      os.version:
+        type: string
+      java.runtime.name:
+        type: string
+      java.vm.name:
+        type: string
+      PROCID:
+        type: string
+      javax.net.ssl.keyStore:
+        type: string
+      java.vendor.url.bug:
+        type: string
+      app.class.path:
+        type: string
+      catalina.home:
+        type: string
+      oracle.jdbc.ReadTimeout:
+        type: string
+      user.dir:
+        type: string
+      os.arch:
+        type: string
+      catalina.base:
+        type: string
+      java.vm.info:
+        type: string
+      java.vm.version:
+        type: string
+      java.rmi.server.hostname:
+        type: string
+      java.class.version:
+        type: string
+  ArrayBuilder namespaces.out.array:
+    type: array
+    items:
+      type: string
+  Const.out.value:
+    type: array
+    items:
+      type: string
+  ArrayBuilder ids.out.array:
+    type: array
+    items:
+      type: string

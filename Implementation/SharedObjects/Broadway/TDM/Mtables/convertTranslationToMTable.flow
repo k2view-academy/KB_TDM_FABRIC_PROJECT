@@ -1,0 +1,1609 @@
+{
+    "tags": [
+        "convert",
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TranslationPath",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Read Files",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "readTranslationFile",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "file://"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse File",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "XmlParser",
+                            "actorType": {
+                                "parentType": "XmlParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Translation": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "_value": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Name": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "InputNotFoundAction": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "SchemaColumns": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "Column": {
+                                                                                    "type": "array",
+                                                                                    "items": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "_value": {
+                                                                                                "type": "object",
+                                                                                                "properties": {
+                                                                                                    "Title": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_value": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "ColumnName": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_value": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "Direction": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_value": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "Type": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_value": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "Length": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_value": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "Format": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {}
+                                                                                                    },
+                                                                                                    "Index": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_value": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "AllowNULL": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_value": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "GridColumnProperties": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "_attributes": {
+                                                                                                                "type": "object",
+                                                                                                                "properties": {
+                                                                                                                    "width": {
+                                                                                                                        "type": "string"
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "IsImportFromSQL": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "IsDynamicData": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "ColumnMapping": {
+                                                                    "type": "object",
+                                                                    "properties": {}
+                                                                },
+                                                                "TranslationData": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "schema": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "_attributes": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "id": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        "_value": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "element": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "_attributes": {
+                                                                                                            "type": "object",
+                                                                                                            "properties": {
+                                                                                                                "name": {
+                                                                                                                    "type": "string"
+                                                                                                                },
+                                                                                                                "IsDataSet": {
+                                                                                                                    "type": "string"
+                                                                                                                },
+                                                                                                                "MainDataTable": {
+                                                                                                                    "type": "string"
+                                                                                                                },
+                                                                                                                "UseCurrentLocale": {
+                                                                                                                    "type": "string"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "_value": {
+                                                                                                            "type": "object",
+                                                                                                            "properties": {
+                                                                                                                "complexType": {
+                                                                                                                    "type": "object",
+                                                                                                                    "properties": {
+                                                                                                                        "_value": {
+                                                                                                                            "type": "object",
+                                                                                                                            "properties": {
+                                                                                                                                "choice": {
+                                                                                                                                    "type": "object",
+                                                                                                                                    "properties": {
+                                                                                                                                        "_attributes": {
+                                                                                                                                            "type": "object",
+                                                                                                                                            "properties": {
+                                                                                                                                                "minOccurs": {
+                                                                                                                                                    "type": "string"
+                                                                                                                                                },
+                                                                                                                                                "maxOccurs": {
+                                                                                                                                                    "type": "string"
+                                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        },
+                                                                                                                                        "_value": {
+                                                                                                                                            "type": "object",
+                                                                                                                                            "properties": {
+                                                                                                                                                "element": {
+                                                                                                                                                    "type": "object",
+                                                                                                                                                    "properties": {
+                                                                                                                                                        "_attributes": {
+                                                                                                                                                            "type": "object",
+                                                                                                                                                            "properties": {
+                                                                                                                                                                "name": {
+                                                                                                                                                                    "type": "string"
+                                                                                                                                                                }
+                                                                                                                                                            }
+                                                                                                                                                        },
+                                                                                                                                                        "_value": {
+                                                                                                                                                            "type": "object",
+                                                                                                                                                            "properties": {
+                                                                                                                                                                "complexType": {
+                                                                                                                                                                    "type": "object",
+                                                                                                                                                                    "properties": {
+                                                                                                                                                                        "_value": {
+                                                                                                                                                                            "type": "object",
+                                                                                                                                                                            "properties": {
+                                                                                                                                                                                "sequence": {
+                                                                                                                                                                                    "type": "object",
+                                                                                                                                                                                    "properties": {
+                                                                                                                                                                                        "_value": {
+                                                                                                                                                                                            "type": "object",
+                                                                                                                                                                                            "properties": {
+                                                                                                                                                                                                "element": {
+                                                                                                                                                                                                    "type": "array",
+                                                                                                                                                                                                    "items": {
+                                                                                                                                                                                                        "type": "object",
+                                                                                                                                                                                                        "properties": {
+                                                                                                                                                                                                            "_attributes": {
+                                                                                                                                                                                                                "type": "object",
+                                                                                                                                                                                                                "properties": {
+                                                                                                                                                                                                                    "name": {
+                                                                                                                                                                                                                        "type": "string"
+                                                                                                                                                                                                                    },
+                                                                                                                                                                                                                    "default": {
+                                                                                                                                                                                                                        "type": "string"
+                                                                                                                                                                                                                    },
+                                                                                                                                                                                                                    "minOccurs": {
+                                                                                                                                                                                                                        "type": "string"
+                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            },
+                                                                                                                                                                                                            "_value": {
+                                                                                                                                                                                                                "type": "object",
+                                                                                                                                                                                                                "properties": {
+                                                                                                                                                                                                                    "simpleType": {
+                                                                                                                                                                                                                        "type": "object",
+                                                                                                                                                                                                                        "properties": {
+                                                                                                                                                                                                                            "_value": {
+                                                                                                                                                                                                                                "type": "object",
+                                                                                                                                                                                                                                "properties": {
+                                                                                                                                                                                                                                    "restriction": {
+                                                                                                                                                                                                                                        "type": "object",
+                                                                                                                                                                                                                                        "properties": {
+                                                                                                                                                                                                                                            "_attributes": {
+                                                                                                                                                                                                                                                "type": "object",
+                                                                                                                                                                                                                                                "properties": {
+                                                                                                                                                                                                                                                    "base": {
+                                                                                                                                                                                                                                                        "type": "string"
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                            },
+                                                                                                                                                                                                                                            "_value": {
+                                                                                                                                                                                                                                                "type": "object",
+                                                                                                                                                                                                                                                "properties": {
+                                                                                                                                                                                                                                                    "maxLength": {
+                                                                                                                                                                                                                                                        "type": "object",
+                                                                                                                                                                                                                                                        "properties": {
+                                                                                                                                                                                                                                                            "_attributes": {
+                                                                                                                                                                                                                                                                "type": "object",
+                                                                                                                                                                                                                                                                "properties": {
+                                                                                                                                                                                                                                                                    "value": {
+                                                                                                                                                                                                                                                                        "type": "string"
+                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                }
+                                                                                                                                                                                            }
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                }
+                                                                                                                                                                            }
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                                }
+                                                                                                                                                            }
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "diffgram": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "_value": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "DocumentElement": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "_value": {
+                                                                                                            "type": "object",
+                                                                                                            "properties": {
+                                                                                                                "t2": {
+                                                                                                                    "type": "array",
+                                                                                                                    "items": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {
+                                                                                                                            "_attributes": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    "id": {
+                                                                                                                                        "type": "string"
+                                                                                                                                    },
+                                                                                                                                    "rowOrder": {
+                                                                                                                                        "type": "string"
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            "_value": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    "in1": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {
+                                                                                                                                            "_value": {
+                                                                                                                                                "type": "string"
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    },
+                                                                                                                                    "out1": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {
+                                                                                                                                            "_value": {
+                                                                                                                                                "type": "string"
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "DataRowsHeight": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "info",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "standalone": {
+                                                    "type": "boolean"
+                                                },
+                                                "header": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonParser Diffgram",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [
+                                    {
+                                        "name": "single",
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_attributes": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "rowOrder": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    },
+                                                    "_value": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "auto": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "in1": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "out1": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TranslationFileName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "List Has values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonParser Columns",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [
+                                    {
+                                        "name": "single",
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_attributes": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "rowOrder": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    },
+                                                    "_value": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "auto": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "in1": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "out1": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Column Names",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Column Name",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var column ;\r\ncolumn = input._value.ColumnName._value ;\r\ncolumn ; ",
+                                            "script": "var column;\ncolumn = input._value.ColumnName._value;\ncolumn;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "_value": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Title": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "ColumnName": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "Direction": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "Type": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "Length": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "Format": {
+                                                            "type": "object",
+                                                            "properties": {}
+                                                        },
+                                                        "Index": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "DefaultValue": {
+                                                            "type": "object",
+                                                            "properties": {}
+                                                        },
+                                                        "AllowNULL": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "Comment": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_value": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "GridColumnProperties": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "_attributes": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "width": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Array of Column Names",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Build Columns",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Csv",
+                    "dependsOnList": [
+                        "Array of Column Names"
+                    ],
+                    "isLast": 0,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "CsvBuilder For Non Empty List",
+                            "actorType": {
+                                "parentType": "CsvBuilder",
+                                "inputs": [
+                                    {
+                                        "name": "columns",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Build Csv ",
+                    "dependsOnList": [
+                        "Array of Column Names"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Empty",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": []
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CsvBuilder For Empty List",
+                            "actorType": {
+                                "parentType": "CsvBuilder",
+                                "inputs": [
+                                    {
+                                        "name": "columns",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Reformat ",
+                    "dependsOnList": [
+                        "Build Csv"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "\\$\\{(\\w+)\\}"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": "%%$1%%"
+                                    },
+                                    {
+                                        "name": "regex",
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "JsonStringify",
+                            "actorType": {
+                                "parentType": "JsonStringify",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "Build Csv "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Reformat  ",
+                    "dependsOnList": [
+                        "Reformat "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace  ",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "(?s)\\{(_value=)?(.*?)\\}"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": "$2"
+                                    },
+                                    {
+                                        "name": "regex",
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "JavaScript Data",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "let inputArray = JSON.parse(str);\r\nconst transformedArray = inputArray.map(obj => {\r\n  const transformedObj = {};\r\n  for (const key in obj) {\r\n    if (obj.hasOwnProperty(key)) {\r\n      transformedObj[key] = obj[key]._value || \"\";\r\n    }\r\n  }\r\n  return transformedObj;\r\n});\r\ntransformedArray;",
+                                            "script": "var inputArray = JSON.parse(str);\nvar transformedArray = inputArray.map(function (obj) {\n  var transformedObj = {};\n\n  for (var key in obj) {\n    if (obj.hasOwnProperty(key)) {\n      transformedObj[key] = obj[key]._value || \"\";\n    }\n  }\n\n  return transformedObj;\n});\ntransformedArray;"
+                                        }
+                                    },
+                                    {
+                                        "name": "str",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "source_env_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "ig_sql": {
+                                                        "type": "string"
+                                                    },
+                                                    "external_table_flow": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Reformat",
+                    "dependsOnList": [
+                        "Reformat  "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace    ",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "%%(\\w+)%%"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": "\\${$1}"
+                                    },
+                                    {
+                                        "name": "regex",
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Path Objects",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PROJECT_DIR",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "PROJECT_DIR"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Mtable Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Lu Name ",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "File Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Path",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "mTablePath",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${0}/Implementation/LogicalUnits/${1}/Mtable/${2}.csv"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Mtable",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "writeMTableFile",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "file://"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Mtable",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MTableLoad",
+                            "actorType": {
+                                "parentType": "MTableLoad",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "columns",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "TranslationPath",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "readTranslationFile",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "readTranslationFile",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "XmlParser",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "XmlParser",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "JsonParser Diffgram",
+                "name": "stream"
+            },
+            "path": [
+                "Translation",
+                "_value",
+                "TranslationData",
+                "_value",
+                "diffgram",
+                "_value",
+                "DocumentElement",
+                "_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "XmlParser",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "JsonParser Columns",
+                "name": "stream"
+            },
+            "path": [
+                "Translation",
+                "_value",
+                "SchemaColumns",
+                "_value",
+                "Column"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser Diffgram",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "CsvBuilder For Non Empty List",
+                "name": "maps"
+            },
+            "path": [
+                "_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser Diffgram",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Empty",
+                "name": "a"
+            },
+            "path": [
+                "_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser Diffgram",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "JsonStringify",
+                "name": "object"
+            },
+            "path": [
+                "_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser Columns",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Get Column Name",
+                "name": "input"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Get Column Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Build Columns",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Build Columns",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "CsvBuilder For Empty List",
+                "name": "columns"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build Columns",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "CsvBuilder For Non Empty List",
+                "name": "columns"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build Columns",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "MTableLoad",
+                "name": "columns"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CsvBuilder For Non Empty List",
+                "name": "csv"
+            },
+            "rightPort": {
+                "actor": "Replace",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CsvBuilder For Empty List",
+                "name": "csv"
+            },
+            "rightPort": {
+                "actor": "writeMTableFile",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace  ",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JsonStringify",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "JavaScript Data",
+                "name": "str"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace  ",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace    ",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MTableLoad",
+                "name": "data"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace    ",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "writeMTableFile",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "mTablePath",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Mtable Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "File Name",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Mtable Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MTableLoad",
+                "name": "mtable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lu Name ",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "mTablePath",
+                "name": "params"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "File Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "mTablePath",
+                "name": "params"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "mTablePath",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "writeMTableFile",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "translationPath"
+            },
+            "rightPort": {
+                "actor": "TranslationPath",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "translationFileName"
+            },
+            "rightPort": {
+                "actor": "TranslationFileName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "mTableName"
+            },
+            "rightPort": {
+                "actor": "Mtable Name",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LuName"
+            },
+            "rightPort": {
+                "actor": "Lu Name ",
+                "name": "value"
+            }
+        }
+    ]
+}

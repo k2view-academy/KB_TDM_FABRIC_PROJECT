@@ -1,0 +1,245 @@
+tags: TDM
+stages:
+  Get Source Env:
+    actors:
+      AI:
+        parent: Const
+        in:
+          value:
+            const: AI
+            schema: string
+        out:
+          value:
+            schema: string
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Get Training ID:
+    actors:
+      'DbFetchField   ':
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: select subset_task_execution_id from ${@TDMDB_SCHEMA}.task_execution_list
+              where task_execution_id=${task_execution_id} and process_id=-2
+          task_execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Pre Execution:
+    actors:
+      TDM_SOURCE_ENVIRONMENT_NAME:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+          value:
+            link: AI/value
+      Set Source Environment:
+        parent: FabricSet
+        height: 106
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: AI/value
+            default: false
+      trainingTaskId:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: DbFetchField   /result
+            schema: string
+        out:
+          value:
+            schema: string
+      AI_DB:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      generationTaskId:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+        out:
+          value:
+            schema: string
+      taskExecutionID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+        out:
+          value:
+            schema: string
+  check Schema:
+    actors:
+      getNamespaceName1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getNamespaceName
+          taskExecutionID:
+            link: trainingTaskId/value
+            schema: any
+            mandatory: false
+        out:
+          string:
+            schema: string
+  Insert new Generate task:
+    actors:
+      ErrorHandler 1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      addNewEvaluateTask1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: addNewEvaluateTask
+          trainingTaskId:
+            link: trainingTaskId/value
+            schema: string
+            mandatory: false
+  Execute Generate Task:
+    actors:
+      kubeCreateEvaluationTaskGPU1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeCreateEvaluationTaskGPU
+          namespace:
+            link: getNamespaceName1/string
+            schema: string
+            mandatory: false
+          id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+  Sleep:
+    actors:
+      'Sleep   ':
+        parent: Sleep
+  Check Medoid task status:
+    actors:
+      ErrorHandler 2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Check task status:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnCheckMedoidTaskStatus
+          interface_name:
+            link: AI_DB/result
+            schema: string
+            mandatory: false
+          task_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          task_type:
+            const: EVALUATION
+            schema: string
+            mandatory: false
+        out:
+          taskStatus:
+            schema: string
+  If status Failed:
+    dependsOn: Check Medoid task status
+    actors:
+      Failed:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: FAILED
+            schema: string
+          a:
+            link: Check task status/taskStatus
+    split: '--------------------'
+  'Do Nothing ':
+    else: true
+    transactional: false
+    dependsOn: Check Medoid task status
+  AI Task Failed:
+    transactional: false
+    dependsOn: If status Failed
+    actors:
+      PopulateAITablesWithFailed:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateAITablesWithFailed
+          error:
+            schema: any
+            mandatory: false
+      Throw Exception:
+        parent: JavaScript
+        in:
+          script:
+            const: throw "The AI Task Failed"
+    split: '--------------------'
+  'Do Nothing     ':
+    transactional: false
+    dependsOn: 'Do Nothing '
+  Evaluation Result:
+    actors:
+      returnEvaluationResult:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: returnEvaluationResult
+          EvaluationID:
+            link: TDM_TASK_EXE_ID/result
+            schema: any
+            mandatory: false

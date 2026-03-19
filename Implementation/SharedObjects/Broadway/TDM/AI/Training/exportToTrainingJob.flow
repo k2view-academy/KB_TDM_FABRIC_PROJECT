@@ -1,0 +1,174 @@
+tags: TDM,TDMAI ML
+stages:
+  Get Globals:
+    actors:
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      trainingExcludedTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingExcludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+      trainingIncludedTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingIncludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      Get Start Time:
+        parent: Now
+  'Remote IID ':
+    actors:
+      Format Start Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Start Time/date
+      Target IID:
+        parent: StringFormat
+        in:
+          format:
+            const: ${IID}_${executionID}
+          IID:
+            external: IID
+            schema: string
+            mandatory: false
+          executionID:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+  Set Globals:
+    actors:
+      Set Start Processing Time:
+        parent: FabricSet
+        in:
+          key:
+            const: IID_START_DATETIME
+            default: false
+          value:
+            link: Format Start Time/string
+  Export:
+    dependsOn: Set Globals
+    actors:
+      Included List:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: trainingIncludedTables1/tables
+      ErrorHandler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      MDB_EXPORT luNameIID1:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: MDB_EXPORT ${luName}.${IID} WITH INTERFACE_NAME=${Interfacename}
+              EXCLUDED_TABLES=${excludedTables} FK='true' PHYSICAL_FK='true' REMOTE_IID=${remoteIID}
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          IID:
+            external: IID
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+          remoteIID:
+            link: Target IID/string
+            schema: string
+            mandatory: false
+          Interfacename:
+            link: AI_DB_ENTITIES/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Export With Included:
+    else: true
+    dependsOn: Set Globals
+    actors:
+      'ErrorHandler    ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      MDB_EXPORT luNameIID:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: MDB_EXPORT ${luName}.${IID} WITH INTERFACE_NAME=${Interfacename}
+              INCLUDED_TABLES=${includedTables} EXCLUDED_TABLES=${excludedTables}
+              FK='true' PHYSICAL_FK='true' REMOTE_IID=${remoteIID}
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          IID:
+            external: IID
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+          remoteIID:
+            link: Target IID/string
+            schema: string
+            mandatory: false
+          Interfacename:
+            link: AI_DB_ENTITIES/result
+            schema: string
+            mandatory: false
+          includedTables:
+            link: trainingIncludedTables1/tables
+            schema: string
+            mandatory: false

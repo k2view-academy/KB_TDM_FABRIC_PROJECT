@@ -1,0 +1,145 @@
+tags: TDM,TDMCustomLogic
+stages:
+  Init:
+    actors:
+      Set Session Globals:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMSetSessionGlobals
+          SESSION_GLOBALS:
+            external: SESSION_GLOBALS
+            schema: string
+            mandatory: false
+      Input SQL params:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: SQLParams
+            schema: string
+            remark: Optional parameters for the select query. You can set multiple
+              input parameters separated by a comma.
+        out:
+          value:
+            schema: string
+  Check if SQL Got Parameters:
+    dependsOn: Init
+    actors:
+      Parameters Equals "null"?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Input SQL params/value
+            schema: string
+          b:
+            const: 'null'
+            schema: string
+      Set to Empty String:
+        parent: Const
+        in:
+          value:
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Keep As is:
+    else: true
+    transactional: false
+    dependsOn: Init
+    actors:
+      SQLParams:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Input SQL params/value
+            schema: string
+        out:
+          value:
+            schema: string
+  Join Stages:
+    transactional: false
+  If Params Are Given:
+    transactional: false
+    dependsOn: Join Stages
+    actors:
+      Params Is Not Empty?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link:
+            - Set to Empty String/value
+            - SQLParams/value
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Trim Params:
+        parent: Trim
+        in:
+          string:
+            link:
+            - Set to Empty String/value
+            - SQLParams/value
+    split: '--------------------'
+  No Parameters are Given:
+    else: true
+    transactional: false
+    dependsOn: Join Stages
+  Prepare The Params:
+    transactional: false
+    dependsOn: If Params Are Given
+    actors:
+      Split The Params:
+        parent: Split
+        in:
+          string:
+            link: Trim Params/string
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: No Parameters are Given
+  Run SQL:
+    actors:
+      Run Input SQL:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            remark: Set the DB interface for the select query.
+          sql:
+            const: null
+            external: SQL
+            remark: Select statement to get the task's entities.
+          params:
+            link: Split The Params/strings
+        out:
+          result:
+            schema: '#ref'
+  Filter Reserved And Create TDM EIDs:
+    actors:
+      Filter Reserved And Format IIDs:
+        parent: customLogicDirectFlowUtil
+        in:
+          innerFlowClose:
+            const: false
+          NUM_OF_ENTITIES:
+            external: NUM_OF_ENTITIES
+            schema: integer
+          values:
+            link: Run Input SQL/result
+        out:
+          values:
+            external: result
+schemas:
+  Run Input SQL.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer

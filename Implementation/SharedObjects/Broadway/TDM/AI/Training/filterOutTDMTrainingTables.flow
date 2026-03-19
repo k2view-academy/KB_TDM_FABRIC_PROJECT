@@ -1,0 +1,163 @@
+tags: TDM
+stages:
+  Get Filter Out Tables:
+    actors:
+      flowArgsmatchFound = false;:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.matchFound = false;
+        out:
+          result:
+            schema: boolean
+      TDMFilterOutTargetTables1:
+        parent: TDMFilterOutTargetTables
+        out:
+          table:
+            schema: '#ref'
+  Return If Match:
+    actors:
+      'JavaScript         ':
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "const filteredTables = [];    \r\nfor (let i = 0; i < tables.length;\
+                \ i++) {\r\n    const name = names[i].toLowerCase();\r\n    const\
+                \ active = actives[i];\r\n    const table = tables[i].toLowerCase();\r\
+                \n        \r\n    //if (table !== \"fabric_tdm_root\" && active &&\
+                \ (name === \"all_lus\" || name === lu.toLowerCase())) {\r\n    if\
+                \ (active && (name === \"all_lus\" || name === lu.toLowerCase()))\
+                \ {\r\n        filteredTables.push(tables[i]);\r\n    }\r\n}\r\nfilteredTables;"
+              script: |-
+                var filteredTables = [];
+
+                for (var i = 0; i < tables.length; i++) {
+                  var name = names[i].toLowerCase();
+                  var active = actives[i];
+                  var table = tables[i].toLowerCase(); //if (table !== "fabric_tdm_root" && active && (name === "all_lus" || name === lu.toLowerCase())) {
+
+                  if (active && (name === "all_lus" || name === lu.toLowerCase())) {
+                    filteredTables.push(tables[i]);
+                  }
+                }
+
+                filteredTables;
+          lu:
+            external: luName
+            schema: string
+            mandatory: false
+          names:
+            link: TDMFilterOutTargetTables1/table/lu_name
+            schema: string
+            mandatory: false
+          actives:
+            link: TDMFilterOutTargetTables1/table/active
+            schema: boolean
+            mandatory: false
+          tables:
+            link: TDMFilterOutTargetTables1/table/table_regex
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check If Match:
+    actors:
+      'Uppercase  ':
+        parent: Uppercase
+        height: 198
+        in:
+          string:
+            link:
+              path: JavaScript         /result
+              iterate: Iterate
+      'Uppercase ':
+        parent: Uppercase
+        in:
+          string:
+            external: tableName
+  Pattern:
+    actors:
+      Regex:
+        parent: Regex
+        in:
+          pattern:
+            const: null
+            link: Uppercase  /string
+          input:
+            link: Uppercase /string
+        out:
+          strings:
+            schema: string
+  Match Found:
+    last: 1
+    actors:
+      'JavaScript   ':
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "if (match != '[]' && flowArgs.matchFound == false) {\r\n\
+                \    flowArgs.matchFound = true;\r\n}\r\nflowArgs.matchFound \r\n"
+              script: |-
+                if (match != '[]' && flowArgs.matchFound == false) {
+                  flowArgs.matchFound = true;
+                }
+
+                flowArgs.matchFound;
+          match:
+            link: Regex/strings
+            schema: string
+          luName:
+            schema: string
+          luType:
+            external: luName
+            schema: string
+        out:
+          result:
+            schema: boolean
+  'True':
+    dependsOn: Match Found
+    actors:
+      Not:
+        parent: Not
+        condition: result
+        in:
+          value:
+            link: JavaScript   /result
+    split: '--------------------'
+  'False':
+    else: true
+    transactional: false
+    dependsOn: Match Found
+    actors:
+      tableName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+            schema: string
+        out:
+          value:
+            external: tableNameOut
+            schema: string
+schemas:
+  TDMFilterOutTargetTables1.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean
+  JavaScript         .out.result:
+    type: array
+    items:
+      type: string

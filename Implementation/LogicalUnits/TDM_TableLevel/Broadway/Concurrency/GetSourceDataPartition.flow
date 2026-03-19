@@ -1,0 +1,427 @@
+tags: Concurrency
+stages:
+  Inputs:
+    actors:
+      Sync Off ?:
+        parent: Equals
+        in:
+          b:
+            const: 'OFF'
+            schema: string
+          a:
+            external: syncMode
+      'Not inPlaceMasking ?  ':
+        parent: Equals
+        in:
+          a:
+            external: inPlaceMasking
+            schema: string
+          b:
+            const: 'false'
+            schema: string
+  Check if Snapshot and not in place masking:
+    dependsOn: Inputs
+    actors:
+      And:
+        parent: And
+        condition: result
+        in:
+          a:
+            link: Sync Off ?/result
+          b:
+            link: Not inPlaceMasking ?  /result
+    split: '--------------------'
+  Not Snapshot:
+    else: true
+    dependsOn: Inputs
+  Get SnapshotIID:
+    else: false
+    dependsOn: Check if Snapshot and not in place masking
+    actors:
+      Build IID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildIID
+          sourceEnv:
+            external: sourceEnv
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: versionTaskExecutionId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          partitionNum:
+            external: partitionNum
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          iid:
+            schema: string
+    split: '--------------------'
+  'Get Records ':
+    else: false
+    dependsOn: Not Snapshot
+    actors:
+      Table Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+      Get Partition Records:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetPartitionRecords
+          innerFlowClose:
+            const: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          filterGUI:
+            external: filterGUI
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExeId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          countIndicator:
+            external: countIndicator
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          countFlow:
+            external: countFlow
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableRefID:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+  Get Records:
+    dependsOn: Get SnapshotIID
+    actors:
+      'Table Error Handler  ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+      FabricGet:
+        parent: FabricGet
+        in:
+          luType:
+            const: TDM_TableLevel
+          iid:
+            const: null
+            link:
+              path: Build IID/iid
+              pos: 0
+            default: false
+          syncMode:
+            const: 'OFF'
+      Get Partition Data From Fabric:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetPartitionDataFromFabric
+          innerFlowClose:
+            const: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          tableRefID:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          countIndicator:
+            const: true
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          filterIndicator:
+            const: true
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  'Get Records  ':
+    dependsOn: 'Get Records '
+    actors:
+      Records From Source:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Partition Records/result
+        out:
+          value:
+            schema: '#ref'
+  Return Records:
+    dependsOn: Get Records
+    actors:
+      Records From Fabric:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Partition Data From Fabric/result
+        out:
+          value:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing    ':
+    dependsOn: 'Get Records  '
+  Get Masking Definitons:
+    actors:
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Mask:
+    actors:
+      Catalog Masking:
+        parent: CatalogMaskingMapper
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: null
+            external: interfaceName
+          schema:
+            const: null
+            external: catalogSchema
+          dataset:
+            const: null
+            external: tableName
+          TTL:
+            const: null
+            link: Get MASKING_CACHE_TTL/result
+            mandatory: false
+          useEnvironment:
+            const: true
+            schema: boolean
+          values:
+            link:
+            - Records From Source/value
+            - Records From Fabric/value
+        out:
+          values:
+            external: result
+            schema: '#ref'
+schemas:
+  Get Partition Records.in.filterParametersInfo:
+    type: array
+    items: {
+      }
+  Get Partition Records.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        ssn:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+        driver_type:
+          type: string
+        email:
+          type: string
+  Get Partition Data From Fabric.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: string
+        note_text:
+          type: string
+  Records From Source.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_id:
+          type: integer
+        order_id:
+          type: integer
+        order_type:
+          type: string
+        order_date:
+          type: date
+        order_status:
+          type: string
+  Records From Fabric.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_id:
+          type: integer
+        order_date:
+          type: date
+        order_id:
+          type: integer
+        order_status:
+          type: string
+        order_type:
+          type: string
+  Catalog Masking.out.values:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string

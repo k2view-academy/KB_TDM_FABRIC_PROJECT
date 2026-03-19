@@ -1,0 +1,322 @@
+tags: TDM
+stages:
+  Get Queries:
+    actors:
+      Get Queries Of Child LUs:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: ChildLink
+          parent_lu:
+            external: parentLuName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Get Version Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_VERSION_TASK_EXECUTION_ID
+            default: false
+      Get TDM_DELETE_BEFORE_LOAD:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_BEFORE_LOAD
+            default: false
+      Get Task Execution ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      Get Clone No:
+        parent: FabricSetRead
+        in:
+          key:
+            const: clone_id
+            default: false
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Check If Child LU is Part Of The Task:
+    actors:
+      Check Child LU:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select child.lu_name from ${@TDMDB_SCHEMA}.task_execution_list l, ${@TDMDB_SCHEMA}.tasks_logical_units parent, ${@TDMDB_SCHEMA}.tasks_logical_units child
+              where l.task_execution_id = ${taskExecutionId} and parent.lu_name = ${parentLuName} and child.lu_name = ${childLuName}
+              and parent.lu_id = l.parent_lu_id and child.lu_id = l.lu_id and l.task_id = parent.task_id and l.task_id = child.task_id
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          parentLuName:
+            external: parentLuName
+            schema: string
+            mandatory: false
+          childLuName:
+            link:
+              path: Get Queries Of Child LUs/result/child_lu
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+          params:
+            link: Get Queries Of Child LUs/result/child_lu
+        out:
+          result:
+            schema: string
+  Run Query To Get Entities:
+    actors:
+      Child LU Part of Task?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link:
+              path: Get Queries Of Child LUs/result/child_lu
+              iterate: Iterate
+            schema: string
+          b:
+            link: Check Child LU/result
+            schema: string
+      Run Query:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link:
+              path: Get Queries Of Child LUs/result/child_lu_eid_sql
+              iterate: Iterate
+        out:
+          result:
+            schema: '#ref'
+      Check if Task Deletes From Target:
+        parent: Equals
+        in:
+          a:
+            link: Get TDM_DELETE_BEFORE_LOAD/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+  Insert Record to Entities Table:
+    last: 1
+    actors:
+      Populate Task Execution Entities For Child:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForChild
+          input:
+            link:
+              path: Run Query/result
+              iterate: Iterate
+            schema: '#ref'
+            mandatory: false
+          rootEntityId:
+            external: rootEntityId
+            schema: string
+            mandatory: false
+          parentEntityId:
+            external: parentEntityId
+            schema: string
+            mandatory: false
+          parentLuName:
+            external: parentLuName
+            schema: string
+            mandatory: false
+          parentTargetEntityId:
+            external: parentTargetEntityId
+            schema: string
+            mandatory: false
+          rootTargetEntityId:
+            external: rootTargetEntityId
+            schema: string
+            mandatory: false
+          rootLuName:
+            external: rootLuName
+            schema: string
+            mandatory: false
+          sourceEnv:
+            external: sourceEnv
+            schema: string
+            mandatory: false
+          versionExeID:
+            link: Get Version Task Execution ID/result
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            link: Get Task Execution ID/result
+            schema: string
+            mandatory: false
+          cloneNo:
+            link: Get Clone No/result
+            schema: string
+            mandatory: false
+          luName:
+            link:
+              path: Get Queries Of Child LUs/result/child_lu
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          targetEnvId:
+            external: targetEnvId
+            schema: string
+            mandatory: false
+          subsetExeID:
+            link: Get Version Task Execution ID/result
+            schema: any
+            mandatory: false
+  Run Query for Target Instances:
+    actors:
+      Child LU Part of Task For Delete:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check if Task Deletes From Target/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      Run TAR Query:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link:
+              path: Get Queries Of Child LUs/result/child_lu_tar_eid_sql
+              iterate: Iterate
+        out:
+          result:
+            schema: '#ref'
+  Insert TAR Record to Entities Table:
+    last: 1
+    actors:
+      Populate Task Execution Entities For Child1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForChild
+          input:
+            link:
+              path: Run TAR Query/result
+              iterate: Iterate
+            schema: '#ref'
+            mandatory: false
+          rootEntityId:
+            external: rootEntityId
+            schema: string
+            mandatory: false
+          parentEntityId:
+            external: parentEntityId
+            schema: string
+            mandatory: false
+          parentLuName:
+            external: parentLuName
+            schema: string
+            mandatory: false
+          parentTargetEntityId:
+            external: parentTargetEntityId
+            schema: string
+            mandatory: false
+          rootTargetEntityId:
+            external: rootTargetEntityId
+            schema: string
+            mandatory: false
+          rootLuName:
+            external: rootLuName
+            schema: string
+            mandatory: false
+          sourceEnv:
+            external: sourceEnv
+            schema: string
+            mandatory: false
+          versionExeID:
+            link: Get Version Task Execution ID/result
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            link: Get Task Execution ID/result
+            schema: string
+            mandatory: false
+          cloneNo:
+            link: Get Clone No/result
+            schema: string
+            mandatory: false
+          luName:
+            link:
+              path: Get Queries Of Child LUs/result/child_lu
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          targetEnvId:
+            external: targetEnvId
+            schema: string
+            mandatory: false
+          subsetExeID:
+            link: Get Version Task Execution ID/result
+            schema: any
+            mandatory: false
+  END: {
+    }
+schemas:
+  Get Queries Of Child LUs.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        parent_lu:
+          type: string
+        child_lu:
+          type: string
+        child_lu_eid_sql:
+          type: string
+        child_lu_tar_eid_sql:
+          type: string
+  Run Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        CONTRACT_ID:
+          type: string
+  Populate Task Execution Entities For Child.in.input:
+    type: object
+    properties:
+      CONTRACT_ID:
+        type: string
+  Run TAR Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        CONTRACT_ID:
+          type: string
+  Populate Task Execution Entities For Child1.in.input:
+    type: object
+    properties:
+      CONTRACT_ID:
+        type: string

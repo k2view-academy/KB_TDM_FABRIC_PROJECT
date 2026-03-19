@@ -1,0 +1,69 @@
+{
+    "type": "GenerateConsistent",
+    "tags": [
+        "masking"
+    ],
+    "parentType": "Masking",
+    "inputs": [
+        {
+            "name": "maskingId",
+            "const": ""
+        },
+        {
+            "name": "category",
+            "const": "generate_consistent",
+            "mandatory": true,
+            "final": true
+        },
+        {
+            "name": "onEmpty",
+            "const": "MASK_AND_CACHE",
+            "final": true
+        },
+        {
+            "name": "value",
+            "schema": {
+                "type": "object"
+            },
+            "const": {}
+        },
+        {
+            "name": "interface",
+            "const": "",
+            "isDefault": false
+        },
+        {
+            "name": "TTL",
+            "const": 86400,
+            "isDefault": false
+        },
+        {
+            "name": "verifyUnique",
+            "isDefault": false
+        },
+        {
+            "name": "hashedInputValue",
+            "isDefault": false
+        },
+        {
+            "name": "useInstanceId",
+            "const": "",
+            "isDefault": false
+        },
+        {
+            "name": "useExecutionId",
+            "isDefault": false
+        },
+        {
+            "name": "flowName",
+            "const": ""
+        },
+        {
+            "name": "useEnvironment",
+            "const": false,
+            "isDefault": false
+        }
+    ],
+    "outputs": [],
+    "badge": "GC"
+}

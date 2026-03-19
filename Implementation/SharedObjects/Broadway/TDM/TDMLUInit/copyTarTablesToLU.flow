@@ -1,0 +1,543 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TAR_ prefix",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TAR_"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add TAR Tables",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var arrIn = [];\r\nvar arrTmp = [];\r\nvar objOut = {};\r\narrIn = [ ...objIn ];\r\n\r\nfor(var i=0; i<arrIn.length; i++) {\r\n    arrTmp.push({\"_value\": prefix+arrIn[i]._value});\r\n}\r\n\r\n(arrIn.concat(arrTmp));",
+                                            "script": "var arrIn = [];\nvar arrTmp = [];\nvar objOut = {};\narrIn = [].concat(objIn);\n\nfor (var i = 0; i < arrIn.length; i++) {\n  arrTmp.push({\n    \"_value\": prefix + arrIn[i]._value\n  });\n}\n\narrIn.concat(arrTmp);"
+                                        }
+                                    },
+                                    {
+                                        "name": "objIn",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_value": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "prefix",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_value": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Add TAR Populations",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var arrIn = [];\r\nvar arrTmp = [];\r\nvar arrOut = [];\r\nvar objOut = {};\r\nvar popOrders = [];\r\narrIn = [ ...objIn ];\r\n\r\n//print(arrIn);\r\n\r\nfor(var i=0; i<arrIn.length; i++) {\r\n    var tmpOrder = parseInt(arrIn[i]._value.Populations._value.Population._attributes.order);\r\n    popOrders.push(tmpOrder);\r\n\r\n    arrTmp.push({\r\n  \"_attributes\": {\r\n    \"name\": prefix+arrIn[i]._attributes.name\r\n  },\r\n  \"_value\": {\r\n    \"Populations\": {\r\n      \"_value\": {\r\n        \"Population\": {\r\n          \"_attributes\": {\r\n            \"name\": \"population.flow\",\r\n            \"order\": (tmpOrder+arrIn.length+100),\r\n            \"disabled\": \"false\",\r\n            \"populationType\": \"Flow\"\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n});\r\n}\r\n\r\narrOut=(arrIn.concat(arrTmp));\r\n/*\r\npopOrders.sort(function(a, b){return a - b});\r\nvar lastPopOrder = parseInt(popOrders[popOrders.length-1]);\r\n\r\nfor(var i=0; i<arrOut.length; i++) {\r\n  //print(\"@@@ \"+arrOut[i]);\r\n  var tmpOrder = arrOut[i]._value.Populations._value.Population._attributes.order;\r\n  var tmpTableName = arrOut[i]._attributes.name;\r\n  \r\n  if(tmpTableName.indexOf(\"TAR_\")>-1) {\r\n    tmpOrder = tmpOrder+(100+lastPopOrder);\r\n  }\r\n\r\n  arrOut[i]._value.Populations._value.Population._attributes.order = parseInt(tmpOrder)+\"\";\r\n  print(arrOut[i]+\" - \"+JSON.stringify(arrOut[i]));\r\n  print(\"@@@ pop order: \"+tmpTableName+\" | \"+tmpOrder);\r\n}\r\n*/\r\n\r\n\r\n//[{arrOut,popOrders}];\r\narrOut;\r\n\r\n",
+                                            "script": "var arrIn = [];\nvar arrTmp = [];\nvar arrOut = [];\nvar objOut = {};\nvar popOrders = [];\narrIn = [].concat(objIn); //print(arrIn);\n\nfor (var i = 0; i < arrIn.length; i++) {\n  var tmpOrder = parseInt(arrIn[i]._value.Populations._value.Population._attributes.order);\n  popOrders.push(tmpOrder);\n  arrTmp.push({\n    \"_attributes\": {\n      \"name\": prefix + arrIn[i]._attributes.name\n    },\n    \"_value\": {\n      \"Populations\": {\n        \"_value\": {\n          \"Population\": {\n            \"_attributes\": {\n              \"name\": \"population.flow\",\n              \"order\": tmpOrder + arrIn.length + 100,\n              \"disabled\": \"false\",\n              \"populationType\": \"Flow\"\n            }\n          }\n        }\n      }\n    }\n  });\n}\n\narrOut = arrIn.concat(arrTmp);\n/*\r\npopOrders.sort(function(a, b){return a - b});\r\nvar lastPopOrder = parseInt(popOrders[popOrders.length-1]);\r\n\r\nfor(var i=0; i<arrOut.length; i++) {\r\n  //print(\"@@@ \"+arrOut[i]);\r\n  var tmpOrder = arrOut[i]._value.Populations._value.Population._attributes.order;\r\n  var tmpTableName = arrOut[i]._attributes.name;\r\n  \r\n  if(tmpTableName.indexOf(\"TAR_\")>-1) {\r\n    tmpOrder = tmpOrder+(100+lastPopOrder);\r\n  }\r\n\r\n  arrOut[i]._value.Populations._value.Population._attributes.order = parseInt(tmpOrder)+\"\";\r\n  print(arrOut[i]+\" - \"+JSON.stringify(arrOut[i]));\r\n  print(\"@@@ pop order: \"+tmpTableName+\" | \"+tmpOrder);\r\n}\r\n*/\n//[{arrOut,popOrders}];\n\narrOut;"
+                                        }
+                                    },
+                                    {
+                                        "name": "objIn",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "prefix",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_attributes": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    },
+                                                    "_value": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "Populations": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_value": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "Population": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "_attributes": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "name": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "order": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "disabled": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "populationType": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Set TAR Diagram Graph",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var arrIn = [];\r\nvar arrTmp = [];\r\nvar objOut = {};\r\nvar startTablePosX=302;\r\nvar tablePosX=302;\r\nvar tablePosY=839;\r\nvar posYIncrement = 150;\r\narrIn = [ ...objIn._value.Node ];\r\nvar arrTablePosX = [];\r\nvar arrTablePosY = [];\r\nvar arrGroup = [];\r\n\r\nfor(var i=0; i<arrIn.length; i++) {\r\n  var postSplit = arrIn[i]._attributes.pos.split(\" \");\r\n  arrTablePosX.push(postSplit[0]);\r\n  arrTablePosY.push(postSplit[1]);\r\n\r\n  arrIn[i]._attributes.pos = ((parseInt(postSplit[0])+tablePosX) +\" \"+(parseInt(postSplit[1])+25) );\r\n}\r\n\r\narrTablePosX.sort(function(a, b){return a - b});\r\narrTablePosY.sort(function(a, b){return a - b});\r\nvar highestPosY = parseInt(arrTablePosY[arrTablePosY.length-1])+50;\r\nvar lowestPosX = parseInt(arrTablePosX[0]);\r\n\r\narrGroup.push({\"_attributes\": {\"name\": \"SOURCE Tables\",\"pos\": (startTablePosX-5)+\" 15\",\"size\": \"300 300\",\"wasexpanded\": \"false\",\"expanded\": \"true\"}, \"_value\": {\"Node\": arrIn} });\r\n\r\nfor(var i=0; i<arrIn.length; i++) {\r\n    var postSplit = arrIn[i]._attributes.pos.split(\" \");\r\n\r\n    tablePosX=postSplit[0];\r\n    tablePosY=parseInt(postSplit[1])+25 + (highestPosY+150);\r\n\r\n    arrTmp.push({\"_attributes\": { \"name\": prefix+arrIn[i]._attributes.name, \"pos\": tablePosX+\" \"+tablePosY, \"size\": \"257 136\", \"listGroupSize\": \"250 100\", \"viewType\": \"Table\" }});\r\n}\r\n\r\n\r\narrTablePosY[0];\r\narrGroup.push({\"_attributes\": {\"name\": \"TARGET Tables\",\"pos\": (startTablePosX-5)+\" \"+(highestPosY+150),\"size\": \"300 300\",\"wasexpanded\": \"false\",\"expanded\": \"true\"}, \"_value\": {\"Node\": arrTmp} });\r\n\r\n//objOut.DiagramGraph = {\"_attributes\" : objIn._attributes, \"_value\" : {\"Node\" : (arrIn.concat(arrTmp)) }  }; // OK!!!\r\nobjOut.DiagramGraph = {\"_attributes\" : objIn._attributes, \"_value\" : {\"Group\":arrGroup}  };",
+                                            "script": "var arrIn = [];\nvar arrTmp = [];\nvar objOut = {};\nvar startTablePosX = 302;\nvar tablePosX = 302;\nvar tablePosY = 839;\nvar posYIncrement = 150;\narrIn = [].concat(objIn._value.Node);\nvar arrTablePosX = [];\nvar arrTablePosY = [];\nvar arrGroup = [];\n\nfor (var i = 0; i < arrIn.length; i++) {\n  var postSplit = arrIn[i]._attributes.pos.split(\" \");\n\n  arrTablePosX.push(postSplit[0]);\n  arrTablePosY.push(postSplit[1]);\n  arrIn[i]._attributes.pos = parseInt(postSplit[0]) + tablePosX + \" \" + (parseInt(postSplit[1]) + 25);\n}\n\narrTablePosX.sort(function (a, b) {\n  return a - b;\n});\narrTablePosY.sort(function (a, b) {\n  return a - b;\n});\nvar highestPosY = parseInt(arrTablePosY[arrTablePosY.length - 1]) + 50;\nvar lowestPosX = parseInt(arrTablePosX[0]);\narrGroup.push({\n  \"_attributes\": {\n    \"name\": \"SOURCE Tables\",\n    \"pos\": startTablePosX - 5 + \" 15\",\n    \"size\": \"300 300\",\n    \"wasexpanded\": \"false\",\n    \"expanded\": \"true\"\n  },\n  \"_value\": {\n    \"Node\": arrIn\n  }\n});\n\nfor (var i = 0; i < arrIn.length; i++) {\n  var postSplit = arrIn[i]._attributes.pos.split(\" \");\n\n  tablePosX = postSplit[0];\n  tablePosY = parseInt(postSplit[1]) + 25 + (highestPosY + 150);\n  arrTmp.push({\n    \"_attributes\": {\n      \"name\": prefix + arrIn[i]._attributes.name,\n      \"pos\": tablePosX + \" \" + tablePosY,\n      \"size\": \"257 136\",\n      \"listGroupSize\": \"250 100\",\n      \"viewType\": \"Table\"\n    }\n  });\n}\n\narrTablePosY[0];\narrGroup.push({\n  \"_attributes\": {\n    \"name\": \"TARGET Tables\",\n    \"pos\": startTablePosX - 5 + \" \" + (highestPosY + 150),\n    \"size\": \"300 300\",\n    \"wasexpanded\": \"false\",\n    \"expanded\": \"true\"\n  },\n  \"_value\": {\n    \"Node\": arrTmp\n  }\n}); //objOut.DiagramGraph = {\"_attributes\" : objIn._attributes, \"_value\" : {\"Node\" : (arrIn.concat(arrTmp)) }  }; // OK!!!\n\nobjOut.DiagramGraph = {\n  \"_attributes\": objIn._attributes,\n  \"_value\": {\n    \"Group\": arrGroup\n  }\n};"
+                                        }
+                                    },
+                                    {
+                                        "name": "objIn",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "prefix",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_value": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Add TAR tables relations",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var arrIn = [];\r\nvar arrTmp = [];\r\nvar arrOut = [];\r\nvar objOut = {};\r\nvar objTmp = {};\r\nvar tableObj = {};\r\nvar tablesObjt = [];\r\narrIn = [ ...objIn ];\r\n\r\n\r\nfor(var i=0; i<arrIn.length; i++) {\r\n    tableObj = arrIn[i];\r\n    var origFrom = tableObj._value.From._attributes;\r\n    var origTo = tableObj._value.To._attributes;\r\n\r\n    objTmp = {\r\n                    \"From\": {\r\n                    \"_attributes\": {\r\n                      \"tableType\": \"TableObject\",\r\n                      \"table\": prefix + origFrom.table,\r\n                      \"column\": origFrom.column,\r\n                      \"columnId\": origFrom.columnId\r\n                    }\r\n                    },\r\n                    \"To\": {\r\n                    \"_attributes\": {\r\n                      \"tableType\": \"TableObject\",\r\n                      \"table\": prefix + origTo.table,\r\n                      \"populationObjectName\": origTo.populationObjectName,\r\n                      \"column\": origTo.column,\r\n                      \"columnId\": origTo.columnId\r\n                    }\r\n                    }\r\n                  };\r\n\r\n    arrTmp.push(objTmp);\r\n}\r\n\r\narrOut=(arrIn.concat(arrTmp));\r\narrOut;",
+                                            "script": "var arrIn = [];\nvar arrTmp = [];\nvar arrOut = [];\nvar objOut = {};\nvar objTmp = {};\nvar tableObj = {};\nvar tablesObjt = [];\narrIn = [].concat(objIn);\n\nfor (var i = 0; i < arrIn.length; i++) {\n  tableObj = arrIn[i];\n  var origFrom = tableObj._value.From._attributes;\n  var origTo = tableObj._value.To._attributes;\n  objTmp = {\n    \"From\": {\n      \"_attributes\": {\n        \"tableType\": \"TableObject\",\n        \"table\": prefix + origFrom.table,\n        \"column\": origFrom.column,\n        \"columnId\": origFrom.columnId\n      }\n    },\n    \"To\": {\n      \"_attributes\": {\n        \"tableType\": \"TableObject\",\n        \"table\": prefix + origTo.table,\n        \"populationObjectName\": origTo.populationObjectName,\n        \"column\": origTo.column,\n        \"columnId\": origTo.columnId\n      }\n    }\n  };\n  arrTmp.push(objTmp);\n}\n\narrOut = arrIn.concat(arrTmp);\narrOut;"
+                                        }
+                                    },
+                                    {
+                                        "name": "objIn",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "_value": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "From": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_attributes": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "tableType": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "table": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "column": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "columnId": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            "To": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "_attributes": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "tableType": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "table": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "populationObjectName": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "column": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "columnId": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "prefix",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "DatabaseRelations": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "_value": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Relation": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "_value": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "From": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "_attributes": {
+                                                                                                "type": "object",
+                                                                                                "properties": {
+                                                                                                    "tableType": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "table": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "column": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "columnId": {
+                                                                                                        "type": "string"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "To": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "_attributes": {
+                                                                                                "type": "object",
+                                                                                                "properties": {
+                                                                                                    "tableType": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "table": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "populationObjectName": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "column": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "columnId": {
+                                                                                                        "type": "string"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "TAR_ prefix",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Add TAR Tables",
+                "name": "prefix"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TAR_ prefix",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Add TAR Populations",
+                "name": "prefix"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TAR_ prefix",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Set TAR Diagram Graph",
+                "name": "prefix"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TAR_ prefix",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Add TAR tables relations",
+                "name": "prefix"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tables"
+            },
+            "rightPort": {
+                "actor": "Add TAR Tables",
+                "name": "objIn"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add TAR Tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "vdb_tables"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "populations"
+            },
+            "rightPort": {
+                "actor": "Add TAR Populations",
+                "name": "objIn"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add TAR Populations",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "vdb_populations"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "diagram"
+            },
+            "rightPort": {
+                "actor": "Set TAR Diagram Graph",
+                "name": "objIn"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set TAR Diagram Graph",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "vdb_diagram"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "relations"
+            },
+            "rightPort": {
+                "actor": "Add TAR tables relations",
+                "name": "objIn"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add TAR tables relations",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "fdb_relations"
+            }
+        }
+    ]
+}

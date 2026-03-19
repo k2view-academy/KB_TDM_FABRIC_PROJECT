@@ -1,0 +1,35 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Get Cluster ID:
+        parent: DbFetchField
+        disabled: true
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: clusterid
+        out:
+          result:
+            schema: string
+  Stage 2:
+    actors:
+      Set k2system Schema Name:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var name = 'k2system';
+              if(clusterId != null &&  clusterId != '') {
+                  name = name + '_' + clusterId;
+              }
+              name;
+          clusterId:
+            link: Get Cluster ID/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: string

@@ -1,0 +1,334 @@
+tags: TDM
+stages:
+  Get PAth:
+    actors:
+      Path format:
+        parent: StringFormat
+        in:
+          format:
+            const: Tables/${ROOT_TABLE}.k2table.xml
+          ROOT_TABLE:
+            external: ROOT_TABLE
+            schema: string
+            mandatory: false
+      Table Filter Pattern:
+        parent: StringFormat
+        in:
+          format:
+            const: ${ROOT_TABLE}.*.flow
+          ROOT_TABLE:
+            external: ROOT_TABLE
+            schema: string
+            mandatory: false
+  Read XML:
+    actors:
+      Read Table XML:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            external: LU_PATH
+          path:
+            link: Path format/string
+      'ls ':
+        parent: ls
+        in:
+          interface:
+            const: null
+            external: LU_PATH
+          path:
+            const: Tables/
+          pattern:
+            const: null
+            link: Table Filter Pattern/string
+        out:
+          result:
+            schema: '#ref'
+      'StringFormat ':
+        parent: StringFormat
+        in:
+          format:
+            const: ${ROOT_TABLE}.
+          ROOT_TABLE:
+            external: ROOT_TABLE
+            schema: string
+            mandatory: false
+  Parse XML:
+    actors:
+      Parse Table XML:
+        parent: XmlParser
+        in:
+          stream:
+            link: Read Table XML/stream
+        out:
+          object:
+            schema: '#ref'
+          info:
+            schema: '#ref'
+      'Replace ':
+        parent: Replace
+        in:
+          search:
+            const: null
+            link: StringFormat /string
+          string:
+            link:
+              path: ls /result/name
+              iterate: First
+  Get IID and Column ID:
+    actors:
+      Get IID column ID:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var arrIn = [];\r\nvar columnName = \"\";\r\nvar columnId;\r\
+                \narrIn = [ ...objIn ];\r\n\r\nfor(var i=0; i<arrIn.length; i++) {\r\
+                \n    columnName = arrIn[i]._attributes.name;\r\n\r\n    if(columnName==iid)\
+                \ {\r\n        columnId = arrIn[i]._attributes.id;\r\n        break;\r\
+                \n    }\r\n}\r\n\r\ncolumnId;"
+              script: |-
+                var arrIn = [];
+                var columnName = "";
+                var columnId;
+                arrIn = [].concat(objIn);
+
+                for (var i = 0; i < arrIn.length; i++) {
+                  columnName = arrIn[i]._attributes.name;
+
+                  if (columnName == iid) {
+                    columnId = arrIn[i]._attributes.id;
+                    break;
+                  }
+                }
+
+                columnId;
+          iid:
+            external: ROOT_TABLE_KEY
+            schema: string
+            mandatory: false
+          objIn:
+            link: Parse Table XML/object/TableObject/_value/Columns/_value/Column
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Result:
+    actors:
+      Return Root Info:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var obj = [{\"table_name\":table_name,\"column_name\": iid,\"\
+                population\":population,\"id\":columnID}];\r\n\r\nobj;"
+              script: |-
+                var obj = [{
+                  "table_name": table_name,
+                  "column_name": iid,
+                  "population": population,
+                  "id": columnID
+                }];
+                obj;
+          table_name:
+            external: ROOT_TABLE
+            schema: string
+            mandatory: false
+          iid:
+            external: ROOT_TABLE_KEY
+            schema: string
+            mandatory: false
+          population:
+            link: Replace /string
+            schema: string
+            mandatory: false
+          columnID:
+            link: Get IID column ID/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: rootInfo
+            schema: '#ref'
+schemas:
+  ls .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+  Parse Table XML.out.object:
+    type: object
+    properties:
+      TableObject:
+        type: object
+        properties:
+          _value:
+            type: object
+            properties:
+              Name:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              ID:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              EntityId:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              Columns:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Column:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _attributes:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                id:
+                                  type: string
+                                index:
+                                  type: string
+                                datatype:
+                                  type: string
+                                mandatory:
+                                  type: string
+              IndexesList:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Index:
+                        type: object
+                        properties:
+                          _attributes:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              pk:
+                                type: string
+                              unique:
+                                type: string
+                              instanceOnly:
+                                type: string
+                              columnsIdsList:
+                                type: string
+              EnrichmentList:
+                type: object
+                properties: {
+                  }
+              LazyDataUpdate:
+                type: object
+                properties:
+                  _attributes:
+                    type: object
+                    properties:
+                      syncMethod:
+                        type: string
+                      performEvery:
+                        type: string
+                  _value:
+                    type: object
+                    properties:
+                      DecisionFunction:
+                        type: object
+                        properties: {
+                          }
+              TriggersList:
+                type: object
+                properties: {
+                  }
+              BasedOn:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Source:
+                        type: object
+                        properties:
+                          _attributes:
+                            type: object
+                            properties:
+                              interface:
+                                type: string
+                              schema:
+                                type: string
+                              table:
+                                type: string
+                              timestamp:
+                                type: string
+                          _value:
+                            type: object
+                            properties:
+                              ColumnsList:
+                                type: object
+                                properties:
+                                  _value:
+                                    type: string
+  Parse Table XML.out.info:
+    type: object
+    properties:
+      version:
+        type: string
+      standalone:
+        type: boolean
+      header:
+        type: string
+  Get IID column ID.in.objIn:
+    type: array
+    items:
+      type: object
+      properties:
+        _attributes:
+          type: object
+          properties:
+            name:
+              type: string
+            id:
+              type: string
+            index:
+              type: string
+            datatype:
+              type: string
+            mandatory:
+              type: string
+  Return Root Info.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }

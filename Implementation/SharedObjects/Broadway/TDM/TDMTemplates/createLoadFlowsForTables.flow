@@ -1,0 +1,406 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Set Target Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: ENVIRONMENT
+            default: false
+          value:
+            const: null
+            external: TARGET_ENVIRONMENT
+            default: false
+      Create Folder For Load:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: LoadFlows
+            schema: string
+            mandatory: false
+      Create Folder For Sequences:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: SequencesFlows
+            schema: string
+            mandatory: false
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTables
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      list Of Tables:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: geLuTables/res
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+  Stage 4:
+    actors:
+      Get Target Interface of Main Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableTargetInterface
+          table:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Target Schema of Main Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableTargetSchema
+          table:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Type Of Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          name:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Source Interface of Main Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableSourceInterface
+          table:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Source Schema of Main Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableSourceSchema
+          table:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  Stage 2:
+    actors:
+      Check Target Interface:
+        parent: IfElse
+        in:
+          a:
+            link: Get Target Interface of Main Table/result
+            schema: string
+          b:
+            schema: string
+          test:
+            link: Get Target Interface of Main Table/result
+        out:
+          result:
+            schema: string
+      Check Target Schema:
+        parent: IfElse
+        in:
+          a:
+            link: Get Target Schema of Main Table/result
+            schema: string
+          b:
+            schema: string
+          test:
+            link: Get Target Schema of Main Table/result
+        out:
+          result:
+            schema: string
+  Stage 5:
+    dependsOn: Stage 2
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: TABLE
+            schema: string
+      Create Load Table Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateLoadTableFlow
+          TABLE_NAME:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+            mandatory: false
+            createdBy: flowName
+          SOURCE_INTERFACE:
+            link: Get Source Interface of Main Table/result
+            schema: string
+            editor:
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+              id: com.k2view.interface
+            mandatory: false
+            createdBy: flowName
+          SOURCE_SCHEMA:
+            link: Get Source Schema of Main Table/result
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          TARGET_INTERFACE:
+            link: Check Target Interface/result
+            schema: string
+            editor:
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+              id: com.k2view.interface
+            mandatory: false
+            createdBy: flowName
+          TARGET_SCHEMA:
+            link: Check Target Schema/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          useFabric:
+            const: true
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  Stage 6:
+    else: true
+    dependsOn: Stage 2
+    actors:
+      Document?:
+        parent: Equals
+        in:
+          a:
+            link: Get Type Of Table/result
+            schema: string
+          b:
+            const: DOC_MAIN
+            schema: string
+  Stage 7:
+    last: 1
+    dependsOn: Stage 5
+    split: '--------------------'
+  Stage 8:
+    last: 1
+    dependsOn: Stage 6
+    actors:
+      Equals3:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Document?/result
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      List of Documents:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+        out:
+          array:
+            schema: '#ref'
+      'Create Load Flow For Main Document ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateLoadFlowForOneDataSet
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceTable:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetDbInterface:
+            link: Check Target Interface/result
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+            createdBy: flowName
+          targetDbSchema:
+            link: Check Target Schema/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetDbTable:
+            link:
+              path: list Of Tables/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceDBIneterface:
+            link: Get Source Interface of Main Table/result
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+            mandatory: false
+            createdBy: flowName
+          sourceDBSchema:
+            link: Get Source Schema of Main Table/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          rootFieldName:
+            external: ROOT_FIELD_NAME
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  Stage 9:
+    last: 1
+    else: true
+    dependsOn: Stage 6
+  Stage 10:
+    actors:
+      createLoadAllTablesFlow1:
+        parent: createLoadAllTablesFlow
+        in:
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          documents:
+            link: List of Documents/array
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          LU_NAME:
+            external: LU_NAME
+schemas:
+  geLuTables.out.res:
+    type: array
+    items:
+      type: string
+  list Of Tables.in.value:
+    type: array
+    items:
+      type: string
+  list Of Tables.out.value:
+    type: array
+    items:
+      type: string
+  List of Documents.out.array:
+    type: array
+    items:
+      type: string
+  createLoadAllTablesFlow1.in.documents:
+    type: array
+    items:
+      type: string

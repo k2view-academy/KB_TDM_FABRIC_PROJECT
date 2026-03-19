@@ -1,0 +1,462 @@
+tags: TDM,CleanUp
+stages:
+  Start:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  param_value:
+    actors:
+      tdm_general_parameters:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT param_value FROM ${@TDMDB_SCHEMA}.tdm_general_parameters
+              where UPPER(param_name) = 'CLEANUP_RETENTION_PERIOD'
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check if Null or Empty:
+    actors:
+      Empty String:
+        parent: EqualsIgnoreCase
+        in:
+          a:
+            link: tdm_general_parameters/result/param_value
+      'Null':
+        parent: IsNull
+        in:
+          value:
+            link: tdm_general_parameters/result/param_value
+  Not Empty:
+    else: true
+    dependsOn: Check if Null or Empty
+    split: '--------------------'
+  Empty:
+    else: false
+    transactional: false
+    dependsOn: Check if Null or Empty
+    actors:
+      Or:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: Empty String/result
+          b:
+            link: Null/result
+  TDMCleanUp Lookup:
+    remark: "This flow will run automatically during deploy.\nIt will not run in case\
+      \ of soft deploy.\nIf the deploy command contains custom parameters, they can\
+      \ be accessed as additional external parameters with the same name. You can\
+      \ use the constants below, or use the external names in other actors. \n"
+    dependsOn: Not Empty
+    actors:
+      MTableLookup:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TDMCleanUp
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  throw exception:
+    transactional: false
+    dependsOn: Empty
+    actors:
+      missing parameter:
+        parent: Logger
+        in:
+          message:
+            const: tdm_general_parameters is missing parameter for CleanUp process
+  Get Mtable Data:
+    dependsOn: TDMCleanUp Lookup
+    actors:
+      Mtable Data:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: MTableLookup/result
+        out:
+          array:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing              ':
+    transactional: false
+    dependsOn: throw exception
+  'Sort By CLEANUP_ORDER  ':
+    dependsOn: Get Mtable Data
+    actors:
+      Sort:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "function customSort(arr) {\r\n  const sortedArray = [...arr];//\
+                \ Create a copy of the original array\r\n  \r\n  sortedArray.sort((a,\
+                \ b) => {\r\n    const orderA = parseInt(a.CLEANUP_ORDER);\r\n   \
+                \ const orderB = parseInt(b.CLEANUP_ORDER);\r\n\r\n    if (orderA\
+                \ === orderB) {\r\n      const seqA = parseInt(a.SEQ);\r\n      const\
+                \ seqB = parseInt(b.SEQ);\r\n      return seqA - seqB; // Maintain\
+                \ the original order if CLEANUP_ORDER is the same\r\n    }\r\n\r\n\
+                \    return orderA - orderB;\r\n  });\r\n  \r\n  return sortedArray;\r\
+                \n}\r\n// Sort the array using the custom sorting algorithm\r\nconst\
+                \ sortedArray = customSort(input);\r\nsortedArray;"
+              script: |-
+                function customSort(arr) {
+                  var sortedArray = [].concat(arr); // Create a copy of the original array
+
+                  sortedArray.sort(function (a, b) {
+                    var orderA = parseInt(a.CLEANUP_ORDER);
+                    var orderB = parseInt(b.CLEANUP_ORDER);
+
+                    if (orderA === orderB) {
+                      var seqA = parseInt(a.SEQ);
+                      var seqB = parseInt(b.SEQ);
+                      return seqA - seqB; // Maintain the original order if CLEANUP_ORDER is the same
+                    }
+
+                    return orderA - orderB;
+                  });
+                  return sortedArray;
+                } // Sort the array using the custom sorting algorithm
+
+
+                var sortedArray = customSort(input);
+                sortedArray;
+          input:
+            link: Mtable Data/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: number
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: 'Do Nothing              '
+  Get The Sorted Data:
+    dependsOn: 'Sort By CLEANUP_ORDER  '
+    actors:
+      Sorted Data:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Sort/result
+        out:
+          value:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing                 ':
+    transactional: false
+    dependsOn: Do Nothing
+  'True':
+    dependsOn: Get The Sorted Data
+    actors:
+      CLEANUP_IND:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: true
+            schema: boolean
+          a:
+            link:
+              path: Sorted Data/value/CLEANUP_IND
+              iterate: Iterate
+    split: '--------------------'
+  'False':
+    else: true
+    transactional: false
+    dependsOn: Get The Sorted Data
+    actors:
+      Disabled table:
+        parent: Logger
+        in:
+          message:
+            const: 'TDMDB_CleanUp - Disabled table: ${table} , will not be cleaned
+              up'
+          level:
+            const: warning
+          table:
+            link:
+              path: Sorted Data/value/TABLE_NAME
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'Do Nothing ':
+    transactional: false
+    dependsOn: 'Do Nothing                 '
+  Clean Tables:
+    dependsOn: 'True'
+    split: '--------------------'
+  'Do Nothing                    ':
+    transactional: false
+    dependsOn: 'False'
+    split: '--------------------'
+  'Do Nothing  ':
+    transactional: false
+    dependsOn: 'Do Nothing '
+  'Default Retention ':
+    dependsOn: Clean Tables
+    actors:
+      IsNull:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Sorted Data/value/OVERRIDE_CLEANUP_RETENTION_PERIOD
+              iterate: Iterate
+      date_trunc:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT date_trunc('day', NOW()- interval ' ${@retentionPeriod}
+              MONTH' )
+          retentionPeriod:
+            link: tdm_general_parameters/result/param_value
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Override Retention:
+    else: true
+    dependsOn: Clean Tables
+    actors:
+      date_trunc override:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT date_trunc('day', NOW()- interval ' ${@retentionPeriod}
+              MONTH' )
+          retentionPeriod:
+            link:
+              path: Sorted Data/value/OVERRIDE_CLEANUP_RETENTION_PERIOD
+              iterate: Iterate
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing             ':
+    transactional: false
+    dependsOn: 'Do Nothing                    '
+    split: '--------------------'
+  'Do Nothing     ':
+    transactional: false
+    dependsOn: 'Do Nothing  '
+  Stage 7:
+    dependsOn:
+    - Override Retention
+    - 'Default Retention '
+    actors:
+      Param:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - path: date_trunc/result/date_trunc
+              iterate: First
+            - path: date_trunc override/result/date_trunc
+              iterate: First
+        out:
+          value:
+            schema: date
+    split: '--------------------'
+  'Do Nothing         ':
+    transactional: false
+    dependsOn: 'Do Nothing             '
+    split: '--------------------'
+  'Do Nothing       ':
+    transactional: false
+    dependsOn: 'Do Nothing     '
+  Stage 5:
+    last: 1
+    dependsOn: Stage 7
+    actors:
+      'ErrorHandler   ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      CleanUp Statement:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link:
+              path: Sorted Data/value/CLEANUP_STATEMENT
+              iterate: Iterate
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          TRUNC_DATE:
+            link: Param/value
+            schema: date
+            mandatory: false
+    split: '--------------------'
+  'Do Nothing                     ':
+    last: 1
+    transactional: false
+    dependsOn: 'Do Nothing         '
+    split: '--------------------'
+  'Do Nothing   ':
+    last: 1
+    transactional: false
+    dependsOn: 'Do Nothing       '
+  CustomLogic Cleanup Tasks:
+    actors:
+      CustomLogicCleanUp:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CustomLogicCleanUp
+          truncate_date:
+            link:
+              path: date_trunc/result
+              iterate: First
+            schema: '#ref'
+            mandatory: false
+schemas:
+  tdm_general_parameters.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        param_value:
+          type: string
+  MTableLookup.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  Mtable Data.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  Sort.in.input:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+  Sorted Data.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  date_trunc.in.retentionPeriod:
+    type: array
+    items:
+      type: string
+  date_trunc.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        date_trunc:
+          type: date
+  date_trunc override.in.retentionPeriod:
+    type: array
+    items:
+      type: string
+  date_trunc override.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        date_trunc:
+          type: date
+  CustomLogicCleanUp.in.truncate_date:
+    type: object
+    properties:
+      date_trunc:
+        type: date

@@ -1,0 +1,83 @@
+tags: TDM
+stages:
+  Create Sequences:
+    actors:
+      Create Sequence Flows From Template:
+        parent: createSeqFlowsOnlyFromTemplates
+        in:
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+  Create Load flows For Tables:
+    actors:
+      Create Load Table Flows From Template:
+        parent: createLoadTableFlows
+        in:
+          LU_NAME:
+            external: LU_NAME
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+  Create Load All Tables:
+    actors:
+      Create Load All Tables Flow From Template:
+        parent: createLoadAllTablesFlow
+        in:
+          LU_NAME:
+            external: LU_NAME
+  Create Delete flows For Tables:
+    actors:
+      Create TAR Tables?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            const: ''
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+            default: true
+          b:
+            const: true
+            schema: boolean
+      Create Delete Table Flows From Template:
+        parent: createDeleteTableFlows
+        in:
+          LU_NAME:
+            external: LU_NAME
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+          OVERRIDE_EXISTING_FLOWS:
+            external: OVERRIDE_EXISTING_FLOWS
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+  Create Delete All Tables:
+    actors:
+      Create Delete All Tables Flow From Template:
+        parent: createDeleteAllTablesFlow
+        in:
+          LU_NAME:
+            external: LU_NAME

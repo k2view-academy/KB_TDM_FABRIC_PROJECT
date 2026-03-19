@@ -1,0 +1,774 @@
+tags: Concurrency
+stages:
+  Get Source Data:
+    actors:
+      inputRecords:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: inputRecords
+        out:
+          value:
+            schema: '#ref'
+      'retentionPeriodValue ':
+        parent: Const
+        in:
+          value:
+            const: null
+            external: retentionPeriodValue
+        out:
+          value:
+            schema: string
+      'syncMode   ':
+        parent: Uppercase
+        in:
+          string:
+            external: syncMode
+  Get Retention:
+    actors:
+      Do Retain ?:
+        parent: NotEquals
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link: retentionPeriodValue /value
+      Sync Is Not OFF ?:
+        parent: NotEquals
+        in:
+          b:
+            const: 'OFF'
+            schema: string
+          a:
+            link: syncMode   /string
+      Not:
+        parent: Not
+        in:
+          value:
+            external: inPlaceMasking
+  Get Instance:
+    transactional: true
+    dependsOn: Get Retention
+    actors:
+      And:
+        parent: And
+        condition: result
+        in:
+          a:
+            link: Sync Is Not OFF ?/result
+          b:
+            link: Not/result
+      Table Error Handler Load to fabric:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+      FabricGet:
+        parent: FabricGet
+        in:
+          luType:
+            const: TDM_TableLevel
+          iid:
+            const: null
+            external: IID
+            schema: string
+            default: false
+          syncMode:
+            const: null
+            external: syncMode
+    split: '--------------------'
+  'Do Not Sync  ':
+    else: true
+    transactional: false
+    dependsOn: Get Retention
+  'Create in Sqlite?  ':
+    transactional: true
+    dependsOn: Get Instance
+    actors:
+      'And ':
+        parent: And
+        condition: result
+        in:
+          a:
+            link: Do Retain ?/result
+          b:
+            link: Sync Is Not OFF ?/result
+      CreateSqliteTable:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CreateSqliteTable
+          sourceInterface:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceSchema:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          SqliteInsertStatement:
+            schema: string
+    split: '--------------------'
+  'Do Not Retain  ':
+    else: true
+    transactional: false
+    dependsOn: Get Instance
+    split: '--------------------'
+  'Do Not Sync   ':
+    transactional: false
+    dependsOn: 'Do Not Sync  '
+  Populate in Sqlite:
+    transactional: true
+    dependsOn: 'Create in Sqlite?  '
+    actors:
+      Load Patition To Fabric:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadPartitionToFabric
+          task_execution_id:
+            external: taskExeId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          task_ref_table_id:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          inputRecords:
+            link: inputRecords/value
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          commitSize:
+            external: commitSize
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sql:
+            link: CreateSqliteTable/SqliteInsertStatement
+            schema: string
+            editor:
+              template: true
+              language: sql
+              id: com.k2view.code
+            mandatory: false
+            createdBy: flowName
+      Finish Loading To Fabric Message:
+        parent: Logger
+        in:
+          message:
+            const: 'Successfully finished loading table ${table} (schema: ${schema},
+              interface: ${interface}, partition: ${partition}) into Fabric.'
+          level:
+            const: info
+          table:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: message
+          schema:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+            createdBy: message
+          interface:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: message
+          partition:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: message
+    split: '--------------------'
+  'Do Not Retain    ':
+    transactional: false
+    dependsOn: 'Do Not Retain  '
+    split: '--------------------'
+  'Do Not Sync    ':
+    transactional: false
+    dependsOn: 'Do Not Sync   '
+  Get Stream From Fabric:
+    dependsOn: Populate in Sqlite
+    actors:
+      Read Data From Fabic:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: Load
+            schema: string
+          a:
+            external: taskType
+      Get Partition Data From Fabric:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetPartitionDataFromFabric
+          innerFlowClose:
+            const: false
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          tableRefID:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          countIndicator:
+            const: false
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+          filterIndicator:
+            const: ''
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Extract Only - No Need to Read Data:
+    else: true
+    dependsOn: Populate in Sqlite
+    split: '--------------------'
+  'Records to Pass    ':
+    dependsOn: 'Do Not Retain    '
+    actors:
+      'inputRecords    ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: inputRecords/value
+    split: '--------------------'
+  Records To Pass:
+    dependsOn: 'Do Not Sync    '
+    actors:
+      'inputRecords     ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: inputRecords/value
+        out:
+          value:
+            schema: '#ref'
+  Set Env To Target:
+    actors:
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Load Task?:
+    transactional: false
+    dependsOn: Set Env To Target
+    actors:
+      Load ?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: Load
+            schema: string
+          a:
+            external: taskType
+      Get IN_PLACE_MASKING_IND:
+        parent: FabricSetRead
+        in:
+          key:
+            const: IN_PLACE_MASKING_IND
+            default: false
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    dependsOn: Set Env To Target
+  Load To Target:
+    transactional: false
+    dependsOn: Load Task?
+    actors:
+      Regular Load? Not In Place Masking?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get IN_PLACE_MASKING_IND/result
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      'Table Error Handler Load to target ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+      LoadPartitionToTarget1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadPartitionToTarget
+          sourceInterfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceTableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceSchemaName:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExeId:
+            external: taskExeId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetInterface:
+            external: targetInterface
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetSchema:
+            external: targetSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetTable:
+            external: targetTable
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          customLoadFlow:
+            external: customLoadFlow
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          inputRecords:
+            link:
+            - Get Partition Data From Fabric/result
+            - inputRecords    /value
+            - inputRecords     /value
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          refTableID:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          commitSize:
+            external: commitSize
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+      Finish Loading To Traget Message:
+        parent: Logger
+        in:
+          message:
+            const: 'Successfully finished loading table ${table} (schema: ${schema},
+              interface: ${interface}, partition: ${partition}) into Target.'
+          level:
+            const: info
+          table:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: message
+          schema:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+            createdBy: message
+          interface:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: message
+          partition:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: message
+    split: '--------------------'
+  In Place Masking:
+    else: true
+    transactional: false
+    dependsOn: Load Task?
+    actors:
+      Table Error Handler For Update In Target:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Update Partition In Target:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdatePartitionInTarget
+          customUpdateFlow:
+            external: customUpdateFlow
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceTableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          refTableID:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          targetInterface:
+            external: targetInterface
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetSchema:
+            external: targetSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetTable:
+            external: targetTable
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          inputRecords:
+            link:
+            - Get Partition Data From Fabric/result
+            - inputRecords    /value
+            - inputRecords     /value
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          commitSize:
+            external: commitSize
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceInterfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceSchemaName:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExeId:
+            external: taskExeId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  'Do Nothing ':
+    dependsOn: Do Nothing
+  Populate TDMDB Tables:
+    transactional: false
+    actors:
+      Update task_ref_exe_stats Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              WITH agg AS (
+                SELECT
+                  task_ref_table_id,
+                  task_execution_id,
+                  MIN(start_time) AS start_time,
+                  MAX(end_time)   AS end_time,
+                  CASE
+                    WHEN BOOL_AND(number_of_records_to_process = -1) THEN -1
+                    WHEN SUM(COALESCE(number_of_records_to_process, 0)) > 0 THEN SUM(COALESCE(number_of_records_to_process, 0)) END AS number_of_records_to_process,
+                  SUM(COALESCE(number_of_processed_records, 0))   AS number_of_processed_records,
+                  CASE
+                    WHEN SUM(COALESCE(number_of_failed_records, 0)) > 0 THEN  SUM(COALESCE(number_of_failed_records, 0))
+                    ELSE 0 END AS number_of_failed_records,
+                  CASE
+                    WHEN BOOL_OR(LOWER(execution_status) = 'failed')  THEN 'failed'
+                    WHEN BOOL_OR(LOWER(execution_status) = 'stopped') THEN 'stopped'
+                    WHEN BOOL_OR(LOWER(execution_status) = 'pending') THEN 'pending'
+                    WHEN BOOL_AND(LOWER(execution_status) = 'completed') THEN 'completed'
+                    ELSE 'running'
+                  END AS execution_status
+                FROM ${@TDMDB_SCHEMA}.task_ref_partition
+                WHERE task_execution_id = ${task_execution_id}
+                AND task_ref_table_id = ${task_ref_table_id}
+                GROUP BY task_ref_table_id, task_execution_id
+              )
+
+              UPDATE ${@TDMDB_SCHEMA}.task_ref_exe_stats s
+              SET
+                execution_status = a.execution_status,
+                start_time       = a.start_time,
+                end_time         = a.end_time,
+                number_of_records_to_process = CASE
+                  WHEN a.number_of_records_to_process >= 0 THEN a.number_of_records_to_process
+                  ELSE s.number_of_records_to_process END,
+                number_of_processed_records  = a.number_of_processed_records,
+                number_of_failed_records  = a.number_of_failed_records,
+                update_date      = NOW()
+              FROM agg a
+              WHERE s.task_execution_id = a.task_execution_id
+                AND s.task_ref_table_id = a.task_ref_table_id
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+          task_execution_id:
+            external: taskExeId
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+            createdBy: sql
+      Populate Task Execution Entities:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTaskExecutionEntitiesForTables
+          luName:
+            const: ''
+            external: luName
+            schema: string
+            default: true
+            mandatory: false
+          taskExecutionId:
+            external: taskExeId
+            schema: string
+            mandatory: false
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+schemas:
+  inputRecords.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: date
+        note_text: {
+          }
+  Load Patition To Fabric.in.inputRecords:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_id:
+          type: integer
+        order_id:
+          type: integer
+        order_type:
+          type: string
+        order_date:
+          type: date
+        order_status:
+          type: string
+  Get Partition Data From Fabric.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: string
+        note_text:
+          type: string
+  inputRecords     .out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        PATIENT_ID:
+          type: string
+        SSN:
+          type: string
+        FIRST_NAME:
+          type: string
+        LAST_NAME:
+          type: string
+        ADDRESS:
+          type: string
+        CITY:
+          type: string
+        ZIP:
+          type: string
+        STATE:
+          type: string
+        COUNTRY:
+          type: string
+        DATE1:
+          type: date
+  LoadPartitionToTarget1.in.inputRecords:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        collection_id:
+          type: integer
+        last_update:
+          type: date
+        collection_status:
+          type: string
+  Update Partition In Target.in.inputRecords:
+    type: array
+    items: {
+      }

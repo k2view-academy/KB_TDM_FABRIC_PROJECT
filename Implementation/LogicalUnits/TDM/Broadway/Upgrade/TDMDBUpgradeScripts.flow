@@ -1,0 +1,339 @@
+tags: Upgrade
+stages:
+  Start:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Schema Name:
+    actors:
+      TDMDB_SCHEMA Value:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: getTDMDBSchema/schema
+  Get Versions:
+    actors:
+      Get Target Version:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TARGET_TDM_VERSION
+            default: false
+      Get Current Version:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: select param_value from ${@TDMDB_SCHEMA}.tdm_general_parameters
+              where param_name='TDM_VERSION'
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA Value/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Get List of Upgrade Scripts:
+    actors:
+      NotEquals:
+        parent: NotEquals
+        condition: result
+        in:
+          b:
+            link: Get Target Version/result
+          a:
+            link: Get Current Version/result
+      List of Upgrade Scripts:
+        parent: TDMDBUpgradeScripts
+        height: 303
+        out:
+          table:
+            schema: '#ref'
+  Lookup According To Versions:
+    actors:
+      Lookup CURRENT_TDM_VERSION:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - version_name
+          lookupData:
+            const: null
+            link: List of Upgrade Scripts/table
+            schema: '#ref'
+          version_name:
+            link: Get Current Version/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Lookup TARGET_TDM_VERSION:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - version_name
+          lookupData:
+            const: null
+            link: List of Upgrade Scripts/table
+            schema: '#ref'
+          version_name:
+            link: Get Target Version/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check Versions Not Null:
+    actors:
+      assert Current TDM Version:
+        parent: assertNotNull
+        in:
+          message:
+            const: The given Current TDM Version is not valid
+          object:
+            link: Lookup CURRENT_TDM_VERSION/result/script_id
+      assert Target TDM Version:
+        parent: assertNotNull
+        in:
+          message:
+            const: The given Target TDM Version is not valid
+          object:
+            link: Lookup TARGET_TDM_VERSION/result/script_id
+      MathAdd Current Version:
+        parent: MathAdd
+        in:
+          b:
+            const: 1
+          a:
+            link: Lookup CURRENT_TDM_VERSION/result/script_id
+      MathAdd Target Version:
+        parent: MathAdd
+        in:
+          b:
+            const: 1
+          a:
+            link: Lookup TARGET_TDM_VERSION/result/script_id
+  Start Loop:
+    actors:
+      For Loop:
+        parent: ForLoop
+        in:
+          from:
+            link: MathAdd Current Version/result
+          to:
+            link: MathAdd Target Version/result
+  'Lookup For The Upgrade Script  ':
+    actors:
+      Lookup For Upgrade Script:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - script_id
+          lookupData:
+            const: null
+            link: List of Upgrade Scripts/table
+            schema: '#ref'
+          script_id:
+            link:
+              path: For Loop/i
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Not Empty:
+    dependsOn: 'Lookup For The Upgrade Script  '
+    actors:
+      Script Exists:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Lookup For Upgrade Script/result/script_name
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Scripts Names:
+        parent: Split
+        in:
+          string:
+            link: Lookup For Upgrade Script/result/script_name
+    split: '--------------------'
+  Else:
+    else: true
+    transactional: false
+    dependsOn: 'Lookup For The Upgrade Script  '
+  'Get File Path ':
+    dependsOn: Not Empty
+    actors:
+      Format Upgrade Script name:
+        parent: StringFormat
+        in:
+          format:
+            const: TDM/TDMDB_Upgrade/${fileName}
+          fileName:
+            link:
+              path: Scripts Names/strings
+              iterate: Iterate
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 14:
+    transactional: false
+    dependsOn: Else
+  Load From Resource:
+    dependsOn: 'Get File Path '
+    actors:
+      Get  SQL Resource File To Upgrade TDMDB Schema:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            link: Format Upgrade Script name/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+    split: '--------------------'
+  Stage 11:
+    transactional: false
+    dependsOn: Stage 14
+  Apply Script:
+    last: 1
+    dependsOn: Load From Resource
+    actors:
+      Apply Upgrade script:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Upgrade TDMDB Schema/result
+          schema:
+            link: TDMDB_SCHEMA Value/value
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 12:
+    last: 1
+    transactional: false
+    dependsOn: Stage 11
+  If Flow Exists In Const Table:
+    last: 1
+    actors:
+      If Flow is Given:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Lookup For Upgrade Script/result/flow_name
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Run Upgrade flow:
+        parent: InnerFlow
+        height: 302
+        in:
+          flowName:
+            const: null
+            link: Lookup For Upgrade Script/result/flow_name
+  Update TDM Version:
+    actors:
+      TDM_VERSION:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@schema}.tdm_general_parameters set param_value = ${updated_version}
+              where param_name = 'TDM_VERSION' ;
+          schema:
+            link: TDMDB_SCHEMA Value/value
+            schema: string
+            mandatory: false
+          updated_version:
+            link: Get Target Version/result
+            schema: string
+            mandatory: false
+schemas:
+  List of Upgrade Scripts.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        version_name:
+          type: string
+        script_id:
+          type: integer
+        script_name:
+          type: string
+        flow_name:
+          type: string
+  Lookup CURRENT_TDM_VERSION.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Lookup CURRENT_TDM_VERSION.out.result:
+    type: object
+    properties:
+      version_name:
+        type: string
+      script_id:
+        type: integer
+      script_name:
+        type: string
+      flow_name:
+        type: string
+  Lookup TARGET_TDM_VERSION.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Lookup TARGET_TDM_VERSION.out.result:
+    type: object
+    properties:
+      version_name:
+        type: string
+      script_id:
+        type: integer
+      script_name:
+        type: string
+      flow_name:
+        type: string
+  Lookup For Upgrade Script.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Lookup For Upgrade Script.out.result:
+    type: object
+    properties:
+      version_name:
+        type: string
+      script_id:
+        type: integer
+      script_name:
+        type: string
+      flow_name:
+        type: string

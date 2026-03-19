@@ -1,0 +1,455 @@
+stages:
+  Prepare Select Statements:
+    actors:
+      set Source Environment:
+        parent: setSourceEnv_Actor
+      Create Count Statement:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var cntStatement = "select count(*) as CNT from " + schemaName + "." + tableName;
+              if (schemaName == null || schemaName == "") {
+                 cntStatement = "select count(*) as CNT from " + tableName;
+              }
+              cntStatement;
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Create Select Statement:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var selectStatement = "select * from " + schemaName + "." + tableName;
+              if (schemaName == null || schemaName == "") {
+                 selectStatement = "select * from " + tableName;
+              }
+              selectStatement;
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Without Filter:
+    else: false
+    dependsOn: Prepare Select Statements
+    actors:
+      There is No Table Filter?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: tableFilter
+            schema: string
+          b:
+            const: ''
+            schema: string
+      No Where clause For Count:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Create Count Statement/result
+            schema: string
+        out:
+          value:
+            schema: string
+      No Where clause:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Create Select Statement/result
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  With Filter:
+    else: true
+    dependsOn: Prepare Select Statements
+    actors:
+      Add  Wherer Clause to Count:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Create Count Statement/result
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      'Add  Wherer Clause to Query: InnerFlow':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildTableFilter
+          selectClause:
+            link: Create Select Statement/result
+            schema: string
+            mandatory: false
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+        out:
+          selectStatement:
+            schema: string
+          paramters:
+            schema: '#ref'
+      Mark Filter As Used:
+        parent: FabricSet
+        in:
+          key:
+            const: filterUsed
+            default: false
+          value:
+            const: 'true'
+            default: false
+  Get Extract Flow if Exists:
+    actors:
+      Get Extract Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableDefinitions
+          interfaceName:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          attrName:
+            const: extract_flow
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Get Source Data:
+    else: false
+    dependsOn: Get Extract Flow if Exists
+    actors:
+      No Extract Flow?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Extract Flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Error Handler For Extract By Query:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      Get Source Data By Query:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSourceDataByQuery
+          innerFlowClose:
+            const: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          countStatement:
+            link:
+            - No Where clause For Count/value
+            - Add  Wherer Clause to Count/selectStatement
+            schema: string
+            mandatory: false
+          selectStatement:
+            link:
+            - No Where clause/value
+            - 'Add  Wherer Clause to Query: InnerFlow/selectStatement'
+            schema: string
+            mandatory: false
+          queryParameters:
+            link: 'Add  Wherer Clause to Query: InnerFlow/paramters'
+            schema: string
+            mandatory: false
+          whereClause:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          sourceTableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          paramtersStr:
+            external: filterParameters
+            schema: string
+            mandatory: false
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          tableCount:
+            schema: integer
+    split: '--------------------'
+  Call Custom Flow:
+    else: true
+    dependsOn: Get Extract Flow if Exists
+    actors:
+      Error Handler For Extract By Custom Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+      Run Extract Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: Get Extract Flow/result
+          innerFlowClose:
+            const: false
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceTableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          whereClause:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          paramtersStr:
+            external: filterParameters
+            schema: string
+            mandatory: false
+          countStatement:
+            link:
+            - No Where clause For Count/value
+            - Add  Wherer Clause to Count/selectStatement
+            schema: string
+            mandatory: false
+          selectStatement:
+            link:
+            - No Where clause/value
+            - 'Add  Wherer Clause to Query: InnerFlow/selectStatement'
+            schema: string
+            mandatory: false
+          queryParameters:
+            link: 'Add  Wherer Clause to Query: InnerFlow/paramters'
+            schema: '#ref'
+            mandatory: false
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: any
+            mandatory: false
+          filterGUI:
+            external: filterGUI
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+          tableCount:
+            schema: integer
+  Get Masking Definitons:
+    actors:
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+      Get MASKING_CACHE_TTL:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_CACHE_TTL
+            default: false
+  Update Table Total:
+    dependsOn: Get Masking Definitons
+    actors:
+      NotEquals1:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link:
+            - Get Source Data By Query/tableCount
+            - Run Extract Flow/tableCount
+            schema: integer
+          b:
+            const: -1
+            schema: integer
+      UpdateTotalNumberOfRecords1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTotalNumberOfRecords
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          recCount:
+            link:
+            - Get Source Data By Query/tableCount
+            - Run Extract Flow/tableCount
+            schema: integer
+            mandatory: false
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    dependsOn: Get Masking Definitons
+  Mask Data:
+    actors:
+      Catalog Masking:
+        parent: CatalogMaskingMapper
+        height: 327
+        in:
+          interface:
+            const: null
+            link: Get SEQ_CACHE_INTERFACE/result
+          mtable:
+            schema: any
+          dataPlatform:
+            const: null
+            external: sourceInterface
+          schema:
+            const: null
+            external: catalogSchema
+          dataset:
+            const: null
+            external: tableName
+          TTL:
+            const: null
+            link: Get MASKING_CACHE_TTL/result
+            mandatory: false
+          useEnvironment:
+            const: true
+            schema: any
+          values:
+            link:
+            - Get Source Data By Query/result
+            - Run Extract Flow/result
+        out:
+          values:
+            external: result
+            schema: '#ref'
+schemas:
+  Add  Wherer Clause to Count.out.paramters:
+    type: array
+    items:
+      type: string
+  'Add  Wherer Clause to Query: InnerFlow.out.paramters':
+    type: array
+    items:
+      type: string
+  Get Source Data By Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        ssn:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+  Run Extract Flow.in.queryParameters:
+    type: array
+    items:
+      type: string
+  Run Extract Flow.out.result:
+    type: array
+    items:
+      type: object
+  Catalog Masking.out.values:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string

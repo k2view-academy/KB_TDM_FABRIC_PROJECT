@@ -1,0 +1,100 @@
+tags: TDM
+stages:
+  Stage 5:
+    actors:
+      InnerFlow1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Stage 1:
+    actors:
+      flow folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRECTORY}/SharedObjects/Broadway/Sequences
+          PROJECT_DIRECTORY:
+            link: InnerFlow1/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      File Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${FLOW_FILE_NAME}
+          FLOW_FILE_NAME:
+            external: FLOW_FILE_NAME
+            schema: string
+  Stage 2:
+    actors:
+      Find File:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: flow folder/string
+          path:
+            const: .
+          pattern:
+            const: null
+            link: File Name/string
+        out:
+          result:
+            schema: '#ref'
+  Stage 3:
+    dependsOn: Stage 2
+    actors:
+      File Not Found?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Find File/result/name
+      File Does Not exist:
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: SKIP_TABLE
+            schema: boolean
+    split: '--------------------'
+  Stage 4:
+    else: true
+    transactional: false
+    dependsOn: Stage 2
+    actors:
+      File Exists:
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: SKIP_TABLE
+            schema: boolean
+schemas:
+  Find File.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

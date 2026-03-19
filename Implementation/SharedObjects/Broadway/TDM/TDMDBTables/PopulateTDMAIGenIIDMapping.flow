@@ -1,0 +1,71 @@
+tags: TDM,TDMTDMDBTables
+stages:
+  Get Schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  'Load ':
+    actors:
+      Populate tdm_ai_gen_iid_mapping:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: tdm_ai_gen_iid_mapping
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - env_name
+            - generated_iid
+            - imported_lui
+            - root_lu_name
+            - root_generated_iid
+            - root_imported_lui
+          keys:
+            const:
+            - ' '
+          dialect:
+            const: postgres
+          lu_name:
+            external: lu_name
+            schema: string
+            mandatory: false
+          env_name:
+            external: env_name
+            schema: string
+            mandatory: false
+          task_execution_id:
+            external: task_execution_id
+            schema: string
+            mandatory: false
+          generated_iid:
+            external: generated_iid
+            schema: string
+            mandatory: false
+          imported_lui:
+            external: imported_lui
+            schema: string
+            mandatory: false
+          root_lu_name:
+            external: root_lu_name
+            schema: string
+            mandatory: false
+          root_generated_iid:
+            external: root_generated_iid
+            schema: string
+            mandatory: false
+          root_imported_lui:
+            external: root_imported_lui
+            schema: string
+            mandatory: false

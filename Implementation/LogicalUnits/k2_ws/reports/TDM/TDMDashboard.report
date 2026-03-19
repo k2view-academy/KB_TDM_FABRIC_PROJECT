@@ -1,0 +1,2857 @@
+{
+    "Name": "Report",
+    "Author": "K2view reports",
+    "Width": "12.4in",
+    "ReportParameters": [
+        {
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    "=Format(AddMonths(Now(), -1), \"yyyy-MM-dd\")"
+                ]
+            },
+            "Name": "FROM_DATE",
+            "Prompt": "From date (YYYY-MM-DD)"
+        },
+        {
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    "=Format(Now(), \"yyyy-MM-dd\")"
+                ]
+            },
+            "Name": "END_DATE",
+            "Prompt": "End date (YYYY-MM-DD)"
+        },
+        {
+            "DataType": "String",
+            "Hidden": true,
+            "Name": "TDMDB_SCHEMA",
+            "Nullable": true,
+            "Prompt": "TDM DB schema"
+        }
+    ],
+    "EmbeddedImages": [
+        {
+            "Name": "k2view",
+            "ImageData": "PHN2ZyB3aWR0aD0iMTA3IiBoZWlnaHQ9IjMyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWw6c3BhY2U9InByZXNlcnZlIiBvdmVyZmxvdz0iaGlkZGVuIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjMgLTI2KSI+PHBhdGggZD0iTTM5LjU3IDI3LjY5MjggMzguNTE0OCAyNS4wMzg0QzM4LjQ0NDkgMjQuODc5NSAzOC4yODg3IDI0Ljc3NzggMzguMTE1MiAyNC43Nzc4TDMwLjg0NjcgMjQuNzc3OEMzMC42MzUxIDI0Ljc3NzggMzAuNTA2MiAyNC42Nzc5IDMwLjQ1NTMgMjQuNTQ5IDMwLjQ0MDggMjQuNTExNyAzMC40NDg5IDI0LjM3MjggMzAuNTA4OSAyNC4zMjU2TDMxLjk2NTUgMjIuNTgxMUMzMy4wOTg4IDIxLjM1OTcgMzMuNTg2NSAyMC41Nzg3IDMzLjk4MDYgMTkuNzU3OCAzNC4zNzQ3IDE4LjkzNjggMzQuNTc0NSAxOC4wNDYgMzQuNTc0NSAxNy4xMTA2IDM0LjU3NDUgMTYuMDc3MiAzNC4zMDM5IDE1LjE2NjQgMzMuNzcwOCAxNC40MDI2IDMzLjIzNjggMTMuNjM5OCAzMi40ODA0IDEzLjA0MDUgMzEuNTIwNSAxMi42MjE4IDMwLjU1ODggMTIuMjAzMiAyOS40MjEgMTEuOTkwNyAyOC4xNDA1IDExLjk5MDcgMjYuNjEzMSAxMS45OTA3IDI1LjIzODIgMTIuMjc4NiAyNC4wNTQgMTIuODQ1MiAyMy4wNDk3IDEzLjMyNjUgMjIuMjE2OSAxMy45NzMxIDIxLjU4MDMgMTQuNzY4NiAyMS40OTY4IDE0Ljg3MjEgMjEuNDYxNCAxNS4wMDgzIDIxLjQ4MzIgMTUuMTQyNyAyMS41MDU5IDE1LjI3OTkgMjEuNTg1OCAxNS40MDA2IDIxLjcwMTEgMTUuNDc2TDIzLjc5NzkgMTYuODI2NEMyMy44NzUxIDE2Ljg3NzIgMjMuOTY1IDE2LjkwMzYgMjQuMDU3NyAxNi45MDM2IDI0LjE5OTMgMTYuOTAzNiAyNC4zMzQ2IDE2Ljg0MTggMjQuNDI5MSAxNi43MzM4IDI0Ljc4OTYgMTYuMzIzMyAyNS4yMTczIDE1Ljk5ODIgMjUuNzAyMyAxNS43Njg0IDI2LjMxMzQgMTUuNDc5NyAyNy4wMDkgMTUuMzMzNCAyNy43NjgyIDE1LjMzMzQgMjguNjc4MSAxNS4zMzM0IDI5LjM3ODMgMTUuNTIyMyAyOS44NDk2IDE1Ljg5NTYgMzAuMzIyNyAxNi4yNjg4IDMwLjU2MjUgMTYuODExOSAzMC41NjI1IDE3LjUwODQgMzAuNTYyNSAxNy45ODg4IDMwLjQyNzIgMTguNDc0NiAzMC4xODgzIDE4Ljk2NjggMjkuOTA4NiAxOS41NDM0IDI5LjIwMjEgMjAuNzAyMiAyOC40NzkzIDIxLjQ3MzIgMjcuMjA0MyAyMi44MzQ0IDI2LjI0OCAyMy42MjA5IDI1LjYxMDUgMjQuMDc2NyAyNS4zMTgxIDI0LjI4NTYgMjUuMDAwMyAyNC40NTYzIDI0LjY1NyAyNC41NjM1IDIzLjgwODggMjQuODI5NiAyMi44OTM1IDI0Ljg3OTUgMjEuOTAzNiAyNC42OTk3IDE5LjQ2OSAyNC4wOTc2IDE4LjA3MzIgMjIuMzUwNCAxNi4yNTUyIDE5LjIxMzggMTYuMTc4IDE5LjA4MDMgMTYuMDM1NCAxOC44Mzk3IDE2LjAxNDUgMTguNjg3MSAxNS45NjU1IDE4LjMyMjkgMTYuMTgwNyAxOC4wNDY5IDE2LjQ0MDQgMTcuNzg3MkwyMS4yODUyIDEyLjkxN0MyMS40MzMyIDEyLjc2OCAyMS40ODIzIDEyLjU1ODMgMjEuNDE2IDEyLjM2MjEgMjEuMzM3OSAxMi4xMjg3IDIxLjA5ODEgMTEuOTg4IDIwLjg1MiAxMS45ODhMMTcuNDcyIDExLjk4OEMxNy4zMzQ5IDExLjk4OCAxNy4yMDMyIDEyLjAzOTcgMTcuMTAyNCAxMi4xMzMzTDEwLjUyNjggMTguMTczMUMxMC40NDY5IDE4LjI0NzYgMTAuMzQ4OCAxOC4yODY2IDEwLjI0MjYgMTguMjg2NiAxMC4xMzYzIDE4LjI4NjYgMTAuMDI3NCAxOC4yNDM5IDkuOTQ3NDQgMTguMTY5NSA5Ljg2Mjk5IDE4LjA5MDUgOS44MTY2OCAxNy45ODE1IDkuODE2NjggMTcuODYzNEw5LjgxNjY4IDQuMDMyMDFDOS44MTY2OCAzLjcxNTA4IDkuNTU5NjggMy40NTg5OSA5LjI0MzY2IDMuNDU4OTlMNi4zOTMxIDMuNDU4OTlDNi4wNzYxNyAzLjQ1ODk5IDUuODIwMDggMy43MTU5OSA1LjgyMDA4IDQuMDMyMDFMNS44MjAwOCAyNy43MzQ2QzUuODIwMDggMjguMDUxNSA2LjA3NzA4IDI4LjMwNzYgNi4zOTMxIDI4LjMwNzZMOS4yNDM2NiAyOC4zMDc2QzkuNTYwNTkgMjguMzA3NiA5LjgxNjY4IDI4LjA1MDYgOS44MTY2OCAyNy43MzQ2TDkuODE2NjggMjQuMDY0OUM5LjgxNjY4IDIzLjk0MTQgOS44Njc1MyAyMy44MjI1IDkuOTU3NDMgMjMuNzM3MUwxMi4zODEyIDIxLjQ0MzJDMTIuNDYwMiAyMS4zNjg3IDEyLjU2MjggMjEuMzI3OSAxMi42NzA5IDIxLjMyNzkgMTIuNzk4OSAyMS4zMjc5IDEyLjkxODggMjEuMzg1MSAxMi45OTk2IDIxLjQ4NUwxNi4wMjYzIDI1LjEyNDdDMTYuMzMxNSAyNS41MDA3IDE2LjY2MTEgMjUuODU5NCAxNy4wMzA3IDI2LjE3MjcgMTguOTA0MSAyNy43NTkxIDIxLjAyMTkgMjguMzIyMiAyMi43NzQ1IDI4LjMwNjdMMzkuMTY5NSAyOC4zMDIyQzM5LjQ4NDYgMjguMzAyMiAzOS42OTUzIDI3Ljk3ODkgMzkuNTY5MSAyNy42OTFaIiBmaWxsPSIjMTQ4M0YzIiB0cmFuc2Zvcm09Im1hdHJpeCgxLjAwMjU2IDAgMCAxIDIzLjA1NjggMjYpIi8+PHBhdGggZD0iTTQyLjk5OSAyOC4yNTMxQzQyLjc2MiAyOC4yNTMxIDQyLjU0NzcgMjguMTEyNCA0Mi40NTQyIDI3Ljg5MzVMMzYuMDQ1NiAxMi45NDg3QzM1Ljk2NTcgMTIuNzYyNiAzNS45ODM5IDEyLjU1ODMgMzYuMDk1NiAxMi4zODk0IDM2LjIwNzMgMTIuMjIwNCAzNi4zODcxIDEyLjEyMjQgMzYuNTkwNSAxMi4xMjI0TDM5LjMyOTQgMTIuMTIyNEMzOS41NjkxIDEyLjEyMjQgMzkuNzgzNCAxMi4yNjQ5IDM5Ljg3NiAxMi40ODY1TDQ0LjIyMTQgMjIuODc0NEM0NC4yOTU4IDIzLjA1MTUgNDQuNDYxMSAyMy4xNjIzIDQ0LjY1MzYgMjMuMTYyMyA0NC44NDYxIDIzLjE2MjMgNDUuMDA3OCAyMy4wNTQyIDQ1LjA4MzIgMjIuODc5OEw0OS41ODgzIDEyLjQ3OTNDNDkuNjgyNyAxMi4yNjIyIDQ5Ljg5NjEgMTIuMTIyNCA1MC4xMzIyIDEyLjEyMjRMNTIuNTc2IDEyLjEyMjRDNTIuNzc4NSAxMi4xMjI0IDUyLjk1OTIgMTIuMjE5NSA1My4wNzA5IDEyLjM4OTQgNTMuMTgyNiAxMi41NTgzIDUzLjIwMDggMTIuNzYyNiA1My4xMjA4IDEyLjk0ODdMNDYuNzEyMyAyNy44OTI2QzQ2LjYxODggMjguMTEwNiA0Ni40MDQ0IDI4LjI1MjIgNDYuMTY3NCAyOC4yNTIyTDQzLjAwMDkgMjguMjUyMloiIGZpbGw9IiMyQTJCMkUiIHRyYW5zZm9ybT0ibWF0cml4KDEuMDAyNTYgMCAwIDEgMjMuMDU2OCAyNikiLz48cGF0aCBkPSJNNTQuODk5OCAxMi4xMjMzIDU3LjU4NTEgMTIuMTIzM0M1Ny45MTIgMTIuMTIzMyA1OC4xNzgxIDEyLjM4ODQgNTguMTc4MSAxMi43MTYzTDU4LjE3ODEgMjcuNjYwMUM1OC4xNzgxIDI3Ljk4NzEgNTcuOTEyOSAyOC4yNTMxIDU3LjU4NTEgMjguMjUzMUw1NC44OTk4IDI4LjI1MzFDNTQuNTcyOSAyOC4yNTMxIDU0LjMwNjggMjcuOTg3MSA1NC4zMDY4IDI3LjY2MDFMNTQuMzA2OCAxMi43MTYzQzU0LjMwNjggMTIuMzg5NCA1NC41NzIgMTIuMTIzMyA1NC44OTk4IDEyLjEyMzNaIiBmaWxsPSIjMkEyQjJFIiB0cmFuc2Zvcm09Im1hdHJpeCgxLjAwMjU2IDAgMCAxIDIzLjA1NjggMjYpIi8+PHBhdGggZD0iTTY4LjM0MjYgMjguNDYyOUM2Ni41NjE4IDI4LjQ2MjkgNjQuOTgzNSAyOC4xMDI0IDYzLjY1MzEgMjcuMzkxMyA2Mi4zMiAyNi42ODAzIDYxLjI3MjkgMjUuNjg5NSA2MC41NDE5IDI0LjQ0NTQgNTkuODEgMjMuMjAzMSA1OS40Mzk1IDIxLjc3MSA1OS40Mzk1IDIwLjE4ODIgNTkuNDM5NSAxOC42MDU0IDU5LjggMTcuMTQ4OCA2MC41MTE5IDE1LjkxNjUgNjEuMjIzIDE0LjY4NDEgNjIuMjE5MiAxMy43MDM0IDYzLjQ3MjQgMTMuMDAwNSA2NC43MjQ3IDEyLjI5OTQgNjYuMTcxMyAxMS45NDM1IDY3Ljc3NDEgMTEuOTQzNSA2OS4zNzY5IDExLjk0MzUgNzAuNzQ3MyAxMi4yODg2IDcxLjk3MDUgMTIuOTcwNSA3My4xOTM3IDEzLjY1MjUgNzQuMTY5OSAxNC42Mjg4IDc0Ljg3MTkgMTUuODcyIDc1LjU3MyAxNy4xMTUyIDc1LjkyODkgMTguNTk4MSA3NS45Mjg5IDIwLjI3ODEgNzUuOTI4OSAyMC40MzcgNzUuOTIzNSAyMC42MTk2IDc1LjkxMzUgMjAuODIxMkw3NS45MDk5IDIwLjg5NTZDNzUuODkxNyAyMS4yMDYyIDc1LjYzMiAyMS40NDk2IDc1LjMxNzggMjEuNDQ5Nkw2My45MzczIDIxLjQ0OTZDNjMuNzg1NyAyMS40NDk2IDYzLjY0MTMgMjEuNTI0IDYzLjU1MzIgMjEuNjQ4NCA2My40NjUxIDIxLjc3MjkgNjMuNDQyNCAyMS45MjU0IDYzLjQ5MTUgMjIuMDY4OSA2My41OTA0IDIyLjM1MzEgNjMuNzE3NiAyMi42MjgzIDYzLjg3MTEgMjIuODg1MyA2NC4zMDE1IDIzLjYxMDkgNjQuOTE4MSAyNC4xNzc1IDY1LjcwMzYgMjQuNTY5OCA2Ni40OSAyNC45NjMxIDY3LjQwODEgMjUuMTYyOCA2OC40MzM0IDI1LjE2MjggNjkuMzIxNSAyNS4xNjI4IDcwLjEzMDcgMjUuMDIzIDcwLjgzOSAyNC43NDc4IDcxLjM4NjYgMjQuNTM0NCA3MS44OTQyIDI0LjIyMjkgNzIuMzQ4MyAyMy44MjA2IDcyLjQ2MDkgMjMuNzIxNyA3Mi42MDM0IDIzLjY2NzIgNzIuNzUxNSAyMy42NjcyIDcyLjkyNCAyMy42NjcyIDczLjA4MTEgMjMuNzM4OSA3My4xOTQ2IDIzLjg2ODhMNzQuNTIyMyAyNS4zOTQ0Qzc0LjcyNTcgMjUuNjI4NyA3NC43MTM5IDI1Ljk4NDcgNzQuNDk0MSAyNi4yMDUzIDczLjgzMyAyNi44NzEgNzMuMDI3NSAyNy40MDMxIDcyLjA5OTQgMjcuNzg1NSA3MS4wMDc5IDI4LjIzNTkgNjkuNzQzOCAyOC40NjQ3IDY4LjM0NDQgMjguNDY0N1pNNjcuNzczMiAxNS4wNjU2QzY2Ljg2OTYgMTUuMDY1NiA2Ni4wNjg3IDE1LjI2NDQgNjUuMzkxMiAxNS42NTY3IDY0LjcxNDcgMTYuMDQ5IDY0LjE3OCAxNi42MDAzIDYzLjc5NTcgMTcuMjk1OSA2My42MzY4IDE3LjU4NTYgNjMuNTA4NyAxNy45MDM0IDYzLjQxNjEgMTguMjM4NSA2My4zNzYxIDE4LjM4MjkgNjMuNDA1MiAxOC41MzQ1IDYzLjQ5NiAxOC42NTM1IDYzLjU4NSAxOC43NzA2IDYzLjcyMTIgMTguODM3OCA2My44NjgzIDE4LjgzNzhMNzEuNjc2MyAxOC44Mzc4QzcxLjgyMzQgMTguODM3OCA3MS45NTg3IDE4Ljc3MDYgNzIuMDQ3NyAxOC42NTQ0IDcyLjEzODUgMTguNTM1NCA3Mi4xNjc1IDE4LjM4NDcgNzIuMTI4NSAxOC4yNDAzIDcyLjAzNTkgMTcuOTAwNyA3MS45MDMzIDE3LjU3ODMgNzEuNzM1MyAxNy4yODMyIDcxLjM0MyAxNi41OTY2IDcwLjgwMDggMTYuMDQ5OSA3MC4xMjQzIDE1LjY1NzYgNjkuNDQ3OCAxNS4yNjUzIDY4LjY1NTkgMTUuMDY2NSA2Ny43NzIzIDE1LjA2NjVaIiBmaWxsPSIjMkEyQjJFIiB0cmFuc2Zvcm09Im1hdHJpeCgxLjAwMjU2IDAgMCAxIDIzLjA1NjggMjYpIi8+PHBhdGggZD0iTTkzLjQ2MjcgMjguMjUzMUM5My4yMTY2IDI4LjI1MzEgOTIuOTk0MiAyOC4wOTg4IDkyLjkwNzkgMjcuODY4MUw4OS40MDI2IDE4LjQ5NzNDODkuMzMzNiAxOC4zMTMgODkuMTYxIDE4LjE5MzEgODguOTY0IDE4LjE5MzEgODguNzY2OSAxOC4xOTMxIDg4LjU5ODkgMTguMzA1NyA4OC41MjYzIDE4LjQ5NDZMODQuOTUxIDI3Ljg3MTdDODQuODYzOCAyOC4wOTk3IDg0LjY0MTQgMjguMjUzMSA4NC4zOTcxIDI4LjI1MzFMODEuNTM2NSAyOC4yNTMxQzgxLjI4OTUgMjguMjUzMSA4MS4wNjUyIDI4LjA5NjkgODAuOTc5OSAyNy44NjQ1TDc1LjQ5NDkgMTIuOTE5N0M3NS40MjY4IDEyLjczNTMgNzUuNDUzMSAxMi41Mzc0IDc1LjU2NTcgMTIuMzc2NiA3NS42NzgzIDEyLjIxNTkgNzUuODU1NCAxMi4xMjMzIDc2LjA1MTUgMTIuMTIzM0w3OC40NTQ0IDEyLjEyMzNDNzguNzA0MSAxMi4xMjMzIDc4LjkyODQgMTIuMjgxMyA3OS4wMTI5IDEyLjUxNjVMODIuNjE0NCAyMi42MTQ3QzgyLjY4MTYgMjIuODAzNiA4Mi44NTUxIDIyLjkyNTMgODMuMDU1OCAyMi45MjUzIDgzLjI1NjUgMjIuOTI1MyA4My40MjI3IDIyLjgxMTcgODMuNDk0NCAyMi42MjFMODcuMjc0IDEyLjUwNzRDODcuMzYwMiAxMi4yNzY3IDg3LjU4MjcgMTIuMTIyNCA4Ny44Mjg4IDEyLjEyMjRMOTAuMjM2MiAxMi4xMjI0QzkwLjQ4NDEgMTIuMTIyNCA5MC43MDg0IDEyLjI3OTUgOTAuNzkzOCAxMi41MTI5TDk0LjQ3NzEgMjIuNjU4M0M5NC41NDUyIDIyLjg0NTMgOTQuNzE3OCAyMi45NjcgOTQuOTE3NSAyMi45NjcgOTUuMTE3MyAyMi45NjcgOTUuMjg5IDIyLjg0NjIgOTUuMzU3MSAyMi42NjAxTDk5LjA4NDkgMTIuNTExQzk5LjE3MDIgMTIuMjc4NiA5OS4zOTM2IDEyLjEyMjQgOTkuNjQxNSAxMi4xMjI0TDEwMS44MzcgMTIuMTIyNEMxMDIuMDM0IDEyLjEyMjQgMTAyLjIxMSAxMi4yMTUgMTAyLjMyMyAxMi4zNzU3IDEwMi40MzYgMTIuNTM3NCAxMDIuNDYxIDEyLjczNTMgMTAyLjM5MyAxMi45MTk3TDk2Ljg4IDI3Ljg2MzZDOTYuNzk0NiAyOC4wOTUxIDk2LjU3MTIgMjguMjUxMyA5Ni4zMjQyIDI4LjI1MTNMOTMuNDY1NSAyOC4yNTEzWiIgZmlsbD0iIzJBMkIyRSIgdHJhbnNmb3JtPSJtYXRyaXgoMS4wMDI1NiAwIDAgMSAyMy4wNTY4IDI2KSIvPjwvZz48L3N2Zz4=",
+            "MIMEType": "image/svg+xml"
+        }
+    ],
+    "Layers": [
+        {
+            "Name": "default"
+        }
+    ],
+    "CustomProperties": [
+        {
+            "Name": "DisplayType",
+            "Value": "Page"
+        },
+        {
+            "Name": "SizeType",
+            "Value": "Default"
+        },
+        {
+            "Name": "PaperOrientation",
+            "Value": "Landscape"
+        }
+    ],
+    "Page": {
+        "PageWidth": "12.6in",
+        "PageHeight": "8.5in",
+        "RightMargin": "0in",
+        "LeftMargin": "0in",
+        "TopMargin": "0in",
+        "BottomMargin": "0in",
+        "Columns": 1,
+        "ColumnSpacing": "0.5in"
+    },
+    "DataSources": [
+        {
+            "Name": "fabricApi",
+            "ConnectionProperties": {
+                "DataProvider": "JSON",
+                "ConnectString": "endpoint=/api/"
+            }
+        }
+    ],
+    "Body": {
+        "Height": "8.15in",
+        "ReportItems": [
+            {
+                "Type": "rectangle",
+                "Name": "TitleArea",
+                "ZIndex": 3,
+                "RoundingRadius": {
+                    "Default": "5pt"
+                },
+                "Style": {
+                    "Border": {
+                        "Color": "#cccccc",
+                        "Style": "Solid"
+                    },
+                    "BackgroundColor": "White"
+                },
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "MainTitle",
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "TDM Dashboard",
+                        "Style": {
+                            "FontSize": "18pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#1483f3",
+                            "TextAlign": "Left",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "1.73in",
+                        "Top": "0.11in",
+                        "Width": "2.0625in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "ReportPeriod",
+                        "ZIndex": 1,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "=\"Period: \" & Parameters!FROM_DATE.Value & \" - \" & Parameters!END_DATE.Value",
+                        "Style": {
+                            "FontSize": "11pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Right",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "8.9in",
+                        "Top": "0.11in",
+                        "Width": "3.1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "image",
+                        "Name": "Logo",
+                        "ZIndex": 3,
+                        "Source": "Embedded",
+                        "Value": "k2view",
+                        "MIMEType": "image/svg+xml",
+                        "Sizing": "FitProportional",
+                        "HorizontalAlignment": "Center",
+                        "Left": "0.3in",
+                        "Top": "0.1in",
+                        "Width": "1.2in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "Split",
+                        "ZIndex": 4,
+                        "StartPoint": {
+                            "X": "1.6in",
+                            "Y": "0.12in"
+                        },
+                        "EndPoint": {
+                            "X": "1.6in",
+                            "Y": "0.5in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    }
+                ],
+                "Left": "0.2in",
+                "Top": "0.15in",
+                "Width": "12.2in",
+                "Height": "0.65in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "TaskSummary",
+                "ZIndex": 5,
+                "RoundingRadius": {
+                    "Default": "5pt"
+                },
+                "Style": {
+                    "Border": {
+                        "Color": "#cccccc",
+                        "Style": "Solid"
+                    },
+                    "BackgroundColor": "White"
+                },
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox11",
+                        "ZIndex": 6,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Task creation & execution summary",
+                        "Style": {
+                            "FontSize": "12pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.1in",
+                        "Width": "3.1in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table7",
+                        "ZIndex": 11,
+                        "DataSetName": "TotalExeDuringReportPeriod",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox17",
+                                                "DataElementName": "count",
+                                                "Action": {
+                                                    "Drillthrough": {
+                                                        "ReportName": "TaskExecutionStatsLevel1.report",
+                                                        "Parameters": [
+                                                            {
+                                                                "ParameterName": "FROM_DATE",
+                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                                            },
+                                                            {
+                                                                "ParameterName": "END_DATE",
+                                                                "Value": "=Parameters!END_DATE.Value"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!count.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#1483f3",
+                                                    "TextAlign": "Left",
+                                                    "TextDecoration": "Underline",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "0.4in",
+                        "Top": "2.15in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "TitleLineTaskCre",
+                        "ZIndex": 14,
+                        "StartPoint": {
+                            "X": "0.3in",
+                            "Y": "0.35in"
+                        },
+                        "EndPoint": {
+                            "X": "8.9in",
+                            "Y": "0.35in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox13",
+                        "ZIndex": 15,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Executed during report period",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Left",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.4in",
+                        "Top": "2.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "dvchart",
+                        "Name": "Chart2",
+                        "ZIndex": 16,
+                        "NoRowsMessage": "There is no available data",
+                        "DataSetName": "NoOfExePerTaskType",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e"
+                        },
+                        "Header": {
+                            "Style": {
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            },
+                            "TextStyle": {
+                                "FontWeight": "Bold",
+                                "Color": "#2e2e2e"
+                            },
+                            "Title": "Executions per task type and processed data",
+                            "Height": 0.1,
+                            "VAlign": "Top"
+                        },
+                        "Footer": {
+                            "Style": {
+                                "PaddingTop": "2pt",
+                                "PaddingBottom": "4pt"
+                            }
+                        },
+                        "Palette": "Cerulan",
+                        "Legend": {
+                            "Orientation": "Vertical",
+                            "Style": {
+                                "PaddingRight": "10pt",
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            }
+                        },
+                        "PlotArea": {
+                            "Axes": [
+                                {
+                                    "LabelStyle": {
+                                        "FontSize": "9pt",
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "Gray",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "TitleStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                },
+                                {
+                                    "AxisType": "Y",
+                                    "LabelStyle": {
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGrid": true,
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Dotted"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "TitleStyle": {
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                }
+                            ],
+                            "Legends": [
+                                {
+                                    "Position": "Bottom",
+                                    "Style": {
+                                        "PaddingRight": "10pt",
+                                        "PaddingTop": "6pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "TextStyle": {
+                                        "FontSize": "9pt",
+                                        "Color": "#2e2e2e"
+                                    }
+                                }
+                            ],
+                            "Style": {
+                                "BackgroundColor": "#f7f7f7"
+                            }
+                        },
+                        "Plots": [
+                            {
+                                "PlotName": "Plot 1",
+                                "Encodings": {
+                                    "Values": [
+                                        {
+                                            "Field": {
+                                                "FieldType": "Simple",
+                                                "Value": [
+                                                    "=Fields!no_of_task_executions.Value"
+                                                ],
+                                                "Captions": [
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "Category": {
+                                        "Field": {
+                                            "FieldType": "Simple",
+                                            "Value": [
+                                                "=Fields!task_type.Value"
+                                            ],
+                                            "Captions": [
+                                                ""
+                                            ]
+                                        },
+                                        "Sort": "Descending",
+                                        "SortingField": "=Fields!task_type.Value",
+                                        "SortingAggregate": "Max"
+                                    },
+                                    "Details": [
+                                        {
+                                            "Field": {
+                                                "FieldType": "Simple",
+                                                "Value": [
+                                                    "=Fields!processed_data.Value"
+                                                ],
+                                                "Captions": [
+                                                    ""
+                                                ]
+                                            },
+                                            "Group": "Stack"
+                                        }
+                                    ],
+                                    "Color": {
+                                        "Field": {
+                                            "FieldType": "Simple",
+                                            "Value": [
+                                                "=Fields!processed_data.Value"
+                                            ],
+                                            "Captions": [
+                                                ""
+                                            ]
+                                        }
+                                    },
+                                    "Shape": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    },
+                                    "Size": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    }
+                                },
+                                "Config": {
+                                    "SwapAxes": true,
+                                    "Text": {
+                                        "TextPosition": "Center",
+                                        "Template": "{valueField.value}",
+                                        "Style": {
+                                            "FontWeight": "Bold",
+                                            "Color": "White"
+                                        }
+                                    },
+                                    "Tooltip": {
+                                        "Template": "{detailFields.value}, {valueField.value}"
+                                    }
+                                },
+                                "PlotChartType": "Bar",
+                                "PlotChartSubtype": "Stacked"
+                            }
+                        ],
+                        "Left": "1.65in",
+                        "Top": "0.4in",
+                        "Width": "7.3in",
+                        "Height": "3.05in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox12",
+                        "ZIndex": 18,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Created during report period",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Left",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.4in",
+                        "Top": "0.85in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table5",
+                        "ZIndex": 19,
+                        "DataSetName": "TotalCrtdDuringReportPeriod",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox14",
+                                                "DataElementName": "count",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!count.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#2e2e2e",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "0.4in",
+                        "Top": "0.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox15",
+                        "ZIndex": 20,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Overall active tasks",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Left",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.4in",
+                        "Top": "1.7in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table6",
+                        "ZIndex": 21,
+                        "DataSetName": "TotalActiveTasks",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox16",
+                                                "DataElementName": "count",
+                                                "Action": {
+                                                    "Drillthrough": {
+                                                        "ReportName": "TaskCreationStatsLevel1.report",
+                                                        "Parameters": [
+                                                            {
+                                                                "ParameterName": "FROM_DATE",
+                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                                            },
+                                                            {
+                                                                "ParameterName": "END_DATE",
+                                                                "Value": "=Parameters!END_DATE.Value"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!count.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#1483f3",
+                                                    "TextAlign": "Left",
+                                                    "TextDecoration": "Underline",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "0.4in",
+                        "Top": "1.35in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "VerticalLine2",
+                        "ZIndex": 22,
+                        "StartPoint": {
+                            "X": "1.5in",
+                            "Y": "0.6in"
+                        },
+                        "EndPoint": {
+                            "X": "1.5in",
+                            "Y": "3in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "HorizontalLine1",
+                        "ZIndex": 23,
+                        "StartPoint": {
+                            "X": "0.4in",
+                            "Y": "1.3in"
+                        },
+                        "EndPoint": {
+                            "X": "1.4in",
+                            "Y": "1.3in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "HorizontalLine2",
+                        "ZIndex": 24,
+                        "StartPoint": {
+                            "X": "0.4in",
+                            "Y": "2.15in"
+                        },
+                        "EndPoint": {
+                            "X": "1.4in",
+                            "Y": "2.15in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    }
+                ],
+                "Left": "0.2in",
+                "Top": "0.9in",
+                "Width": "9.1in",
+                "Height": "3.55in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "Systems",
+                "ZIndex": 7,
+                "RoundingRadius": {
+                    "Default": "5pt"
+                },
+                "Style": {
+                    "Border": {
+                        "Color": "#cccccc",
+                        "Style": "Solid"
+                    },
+                    "BackgroundColor": "White"
+                },
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox10",
+                        "ZIndex": 6,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Systems, BEs, LUs",
+                        "Style": {
+                            "FontSize": "12pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.1in",
+                        "Width": "1.6021in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "TitleLine",
+                        "ZIndex": 9,
+                        "StartPoint": {
+                            "X": "0.3in",
+                            "Y": "0.35in"
+                        },
+                        "EndPoint": {
+                            "X": "2.8in",
+                            "Y": "0.35in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table4",
+                        "ZIndex": 10,
+                        "DataSetName": "NumberOfSystems",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox8",
+                                                "DataElementName": "no_of_systems",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!no_of_systems.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#2e2e2e",
+                                                    "TextAlign": "Center",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox9",
+                        "ZIndex": 11,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Systems",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.9in",
+                        "Width": "1in",
+                        "Height": "0.3in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "VertLine3",
+                        "ZIndex": 12,
+                        "StartPoint": {
+                            "X": "1.5in",
+                            "Y": "0.5in"
+                        },
+                        "EndPoint": {
+                            "X": "1.5in",
+                            "Y": "1.2in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table8",
+                        "ZIndex": 13,
+                        "DataSetName": "NumOfBEsAndLUs",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox23",
+                                                "DataElementName": "no_of_business_entities",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!no_of_business_entities.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#2e2e2e",
+                                                    "TextAlign": "Center",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "1.75in",
+                        "Top": "0.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox26",
+                        "ZIndex": 14,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Business entities",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "1.75in",
+                        "Top": "0.9in",
+                        "Width": "1.1in",
+                        "Height": "0.3in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table9",
+                        "ZIndex": 15,
+                        "DataSetName": "NumOfBEsAndLUs",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox28",
+                                                "DataElementName": "no_of_lus",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!no_of_lus.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#2e2e2e",
+                                                    "TextAlign": "Center",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "0.3in",
+                        "Top": "1.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox29",
+                        "ZIndex": 16,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Logical units",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.3in",
+                        "Top": "1.9in",
+                        "Width": "1in",
+                        "Height": "0.3in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "VertLine4",
+                        "ZIndex": 17,
+                        "StartPoint": {
+                            "X": "1.5in",
+                            "Y": "1.5in"
+                        },
+                        "EndPoint": {
+                            "X": "1.5in",
+                            "Y": "2.2in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table10",
+                        "ZIndex": 18,
+                        "DataSetName": "AvgLUPerBE",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox30",
+                                                "DataElementName": "avg",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!avg.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#2e2e2e",
+                                                    "TextAlign": "Center",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "1.75in",
+                        "Top": "1.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox31",
+                        "ZIndex": 19,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Avg LUs per BE",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "1.75in",
+                        "Top": "1.9in",
+                        "Width": "1.1in",
+                        "Height": "0.3in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "HorLine3",
+                        "ZIndex": 20,
+                        "StartPoint": {
+                            "X": "0.3in",
+                            "Y": "1.35in"
+                        },
+                        "EndPoint": {
+                            "X": "2.8in",
+                            "Y": "1.35in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox34",
+                        "ZIndex": 21,
+                        "Action": {
+                            "Drillthrough": {
+                                "ReportName": "SystemsBEsLUs.report",
+                                "Parameters": [
+                                    {
+                                        "ParameterName": "TDMDB_SCHEMA",
+                                        "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                    },
+                                    {
+                                        "ParameterName": "FROM_DATE",
+                                        "Value": "=Parameters!FROM_DATE.Value"
+                                    },
+                                    {
+                                        "ParameterName": "END_DATE",
+                                        "Value": "=Parameters!END_DATE.Value"
+                                    }
+                                ]
+                            }
+                        },
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Show all",
+                        "Style": {
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#1483f3",
+                            "TextAlign": "Right",
+                            "TextDecoration": "Underline"
+                        },
+                        "Left": "2in",
+                        "Top": "0.1in",
+                        "Width": "0.8in",
+                        "Height": "0.25in"
+                    }
+                ],
+                "Left": "9.4in",
+                "Top": "0.9in",
+                "Width": "3in",
+                "Height": "2.5in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "Top5",
+                "ZIndex": 8,
+                "RoundingRadius": {
+                    "Default": "5pt"
+                },
+                "Style": {
+                    "Border": {
+                        "Color": "#cccccc",
+                        "Style": "Solid"
+                    },
+                    "BackgroundColor": "White"
+                },
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox21",
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Top environments by task exec",
+                        "Style": {
+                            "FontSize": "12pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.1in",
+                        "Width": "2.7042in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "TitleLineTop5",
+                        "ZIndex": 11,
+                        "StartPoint": {
+                            "X": "0.3in",
+                            "Y": "0.35in"
+                        },
+                        "EndPoint": {
+                            "X": "4.3in",
+                            "Y": "0.35in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "dvchart",
+                        "Name": "Chart4",
+                        "ZIndex": 12,
+                        "NoRowsMessage": "There is no available data",
+                        "DataSetName": "Top5ExePerEnv",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e"
+                        },
+                        "Header": {
+                            "Style": {
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            },
+                            "TextStyle": {
+                                "FontWeight": "Bold",
+                                "Color": "#2e2e2e"
+                            },
+                            "Height": 0.1
+                        },
+                        "Footer": {
+                            "Style": {
+                                "PaddingTop": "2pt",
+                                "PaddingBottom": "4pt"
+                            }
+                        },
+                        "Palette": "Blue",
+                        "Legend": {
+                            "Orientation": "Vertical",
+                            "Style": {
+                                "PaddingRight": "10pt",
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            }
+                        },
+                        "PlotArea": {
+                            "Axes": [
+                                {
+                                    "LabelStyle": {
+                                        "FontSize": "9pt",
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "Gray",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "TitleStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                },
+                                {
+                                    "AxisType": "Y",
+                                    "LabelStyle": {
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGrid": true,
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Dotted"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "TitleStyle": {
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                }
+                            ],
+                            "Legends": [
+                                {
+                                    "Position": "Bottom",
+                                    "Style": {
+                                        "PaddingRight": "10pt",
+                                        "PaddingTop": "6pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "TextStyle": {
+                                        "FontSize": "9pt",
+                                        "Color": "#2e2e2e"
+                                    },
+                                    "TitleStyle": {
+                                        "Color": "#2e2e2e"
+                                    }
+                                }
+                            ],
+                            "Style": {
+                                "BackgroundColor": "#f7f7f7"
+                            }
+                        },
+                        "Plots": [
+                            {
+                                "PlotName": "Plot 1",
+                                "Encodings": {
+                                    "Values": [
+                                        {
+                                            "Field": {
+                                                "FieldType": "Simple",
+                                                "Value": [
+                                                    "=Fields!no_of_executions.Value"
+                                                ],
+                                                "Captions": [
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "Category": {
+                                        "Field": {
+                                            "FieldType": "Simple",
+                                            "Value": [
+                                                "=Fields!environment_name.Value"
+                                            ],
+                                            "Captions": [
+                                                ""
+                                            ]
+                                        },
+                                        "Sort": "Descending",
+                                        "SortingField": "=Fields!no_of_executions.Value"
+                                    },
+                                    "Details": [
+                                        {
+                                            "Field": {
+                                                "FieldType": "Simple",
+                                                "Value": [
+                                                    "=Fields!env_type.Value"
+                                                ],
+                                                "Captions": [
+                                                    ""
+                                                ]
+                                            },
+                                            "Group": "Stack"
+                                        }
+                                    ],
+                                    "Color": {
+                                        "Field": {
+                                            "FieldType": "Simple",
+                                            "Value": [
+                                                "=Fields!env_type.Value"
+                                            ],
+                                            "Captions": [
+                                                ""
+                                            ]
+                                        }
+                                    },
+                                    "Shape": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    },
+                                    "Size": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    }
+                                },
+                                "Config": {
+                                    "Action": {
+                                        "Drillthrough": {
+                                            "ReportName": "EnvExecutionDetails.report",
+                                            "Parameters": [
+                                                {
+                                                    "ParameterName": "TDMDB_SCHEMA",
+                                                    "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                                },
+                                                {
+                                                    "ParameterName": "FROM_DATE",
+                                                    "Value": "=Parameters!FROM_DATE.Value"
+                                                },
+                                                {
+                                                    "ParameterName": "END_DATE",
+                                                    "Value": "=Parameters!END_DATE.Value"
+                                                },
+                                                {
+                                                    "ParameterName": "ENV_NAME",
+                                                    "Value": "=Fields!environment_name.Value"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "Text": {
+                                        "TextPosition": "Center",
+                                        "Template": "{valueField.value}",
+                                        "Style": {
+                                            "FontWeight": "Bold",
+                                            "Color": "White"
+                                        }
+                                    },
+                                    "Tooltip": {
+                                        "Template": "{detailFields.value}, {valueField.value} task exec"
+                                    }
+                                },
+                                "PlotChartType": "Column",
+                                "PlotChartSubtype": "Stacked"
+                            }
+                        ],
+                        "Left": "0.3in",
+                        "Top": "0.5in",
+                        "Width": "4in",
+                        "Height": "3in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox32",
+                        "ZIndex": 13,
+                        "Action": {
+                            "Drillthrough": {
+                                "ReportName": "EnvExecutionDetails.report",
+                                "Parameters": [
+                                    {
+                                        "ParameterName": "FROM_DATE",
+                                        "Value": "=Parameters!FROM_DATE.Value"
+                                    },
+                                    {
+                                        "ParameterName": "TDMDB_SCHEMA",
+                                        "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                    },
+                                    {
+                                        "ParameterName": "END_DATE",
+                                        "Value": "=Parameters!END_DATE.Value"
+                                    },
+                                    {
+                                        "ParameterName": "ENV_NAME",
+                                        "Value": "ALL_ENV"
+                                    }
+                                ]
+                            }
+                        },
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Show all",
+                        "Style": {
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#1483f3",
+                            "TextAlign": "Right",
+                            "TextDecoration": "Underline"
+                        },
+                        "Left": "3.5in",
+                        "Top": "0.1in",
+                        "Width": "0.8in",
+                        "Height": "0.25in"
+                    }
+                ],
+                "Left": "0.2in",
+                "Top": "4.55in",
+                "Width": "4.45in",
+                "Height": "3.6in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "Environments",
+                "ZIndex": 12,
+                "RoundingRadius": {
+                    "Default": "5pt"
+                },
+                "Style": {
+                    "Border": {
+                        "Color": "#cccccc",
+                        "Style": "Solid"
+                    },
+                    "BackgroundColor": "White"
+                },
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox1",
+                        "ZIndex": 1,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Environments",
+                        "Style": {
+                            "FontSize": "12pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.1in",
+                        "Width": "1.4in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "TitleLineEnv",
+                        "ZIndex": 2,
+                        "StartPoint": {
+                            "X": "0.3in",
+                            "Y": "0.35in"
+                        },
+                        "EndPoint": {
+                            "X": "2.8in",
+                            "Y": "0.35in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox33",
+                        "ZIndex": 4,
+                        "Action": {
+                            "Drillthrough": {
+                                "ReportName": "EnvironmentsListAndSystems.report",
+                                "Parameters": [
+                                    {
+                                        "ParameterName": "TDMDB_SCHEMA",
+                                        "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                    },
+                                    {
+                                        "ParameterName": "FROM_DATE",
+                                        "Value": "=Parameters!FROM_DATE.Value"
+                                    },
+                                    {
+                                        "ParameterName": "END_DATE",
+                                        "Value": "=Parameters!END_DATE.Value"
+                                    }
+                                ]
+                            }
+                        },
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Show all",
+                        "Style": {
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#1483f3",
+                            "TextAlign": "Right",
+                            "TextDecoration": "Underline"
+                        },
+                        "Left": "2in",
+                        "Top": "0.1in",
+                        "Width": "0.8in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "dvchart",
+                        "Name": "Chart3",
+                        "ZIndex": 5,
+                        "NoRowsMessage": "There is no available data",
+                        "DataSetName": "TotalEnvsPerType",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e"
+                        },
+                        "Bar": {
+                            "Width": 1
+                        },
+                        "Header": {
+                            "Style": {
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            },
+                            "TextStyle": {
+                                "FontWeight": "Bold"
+                            }
+                        },
+                        "Footer": {
+                            "Style": {
+                                "PaddingTop": "2pt",
+                                "PaddingBottom": "4pt"
+                            }
+                        },
+                        "Palette": "Cyborg",
+                        "Legend": {
+                            "Orientation": "Vertical",
+                            "Style": {
+                                "PaddingRight": "10pt",
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            }
+                        },
+                        "PlotArea": {
+                            "Axes": [
+                                {
+                                    "LabelStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "Gray",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "Position": "None",
+                                    "Title": "Category",
+                                    "TitleStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                },
+                                {
+                                    "AxisType": "Y",
+                                    "Format": "p0",
+                                    "LabelStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGrid": true,
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "Gray",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "Position": "None",
+                                    "Scale": "Percentage",
+                                    "Title": "no_of_environments",
+                                    "TitleStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                }
+                            ],
+                            "Legends": [
+                                {
+                                    "Position": "Bottom",
+                                    "Style": {
+                                        "PaddingTop": "2pt"
+                                    },
+                                    "TextStyle": {
+                                        "FontSize": "9pt",
+                                        "Color": "#2e2e2e"
+                                    }
+                                }
+                            ]
+                        },
+                        "Plots": [
+                            {
+                                "PlotName": "Plot 1",
+                                "Encodings": {
+                                    "Values": [
+                                        {
+                                            "Field": {
+                                                "FieldType": "Simple",
+                                                "Value": [
+                                                    "=Fields!no_of_environments.Value"
+                                                ],
+                                                "Captions": [
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "Category": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    },
+                                    "Details": [
+                                        {
+                                            "Field": {
+                                                "FieldType": "Simple",
+                                                "Value": [
+                                                    "=Fields!environment_type.Value"
+                                                ],
+                                                "Captions": [
+                                                    ""
+                                                ]
+                                            },
+                                            "Group": "Stack"
+                                        }
+                                    ],
+                                    "Color": {
+                                        "Field": {
+                                            "FieldType": "Simple",
+                                            "Value": [
+                                                "=Fields!environment_type.Value"
+                                            ],
+                                            "Captions": [
+                                                ""
+                                            ]
+                                        }
+                                    },
+                                    "Shape": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    },
+                                    "Size": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    }
+                                },
+                                "Config": {
+                                    "AxisMode": "Radial",
+                                    "Offset": 0.01,
+                                    "Radial": true,
+                                    "Text": {
+                                        "Offset": 1,
+                                        "TextPosition": "Center",
+                                        "Template": "{valueField.value}",
+                                        "Style": {
+                                            "FontSize": "11pt",
+                                            "FontWeight": "Bold",
+                                            "Color": "White"
+                                        }
+                                    },
+                                    "Tooltip": {
+                                        "Template": "{detailFields.value}, {valueField.value}"
+                                    }
+                                },
+                                "PlotChartType": "Pie",
+                                "PlotChartSubtype": "Stacked"
+                            }
+                        ],
+                        "Left": "0.3in",
+                        "Top": "0.5in",
+                        "Width": "2.5in",
+                        "Height": "2.4in"
+                    }
+                ],
+                "Left": "9.4in",
+                "Top": "5.1in",
+                "Width": "3in",
+                "Height": "3.05in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "TaskExecution",
+                "ZIndex": 13,
+                "RoundingRadius": {
+                    "Default": "5pt"
+                },
+                "Style": {
+                    "Border": {
+                        "Color": "#cccccc",
+                        "Style": "Solid"
+                    },
+                    "BackgroundColor": "White"
+                },
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox2",
+                        "ZIndex": 6,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Tasks execution over time",
+                        "Style": {
+                            "FontSize": "12pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.1in",
+                        "Width": "2.3in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "Line10",
+                        "ZIndex": 14,
+                        "StartPoint": {
+                            "X": "0.3in",
+                            "Y": "0.35in"
+                        },
+                        "EndPoint": {
+                            "X": "4.3in",
+                            "Y": "0.35in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "dvchart",
+                        "Name": "Chart1",
+                        "ZIndex": 15,
+                        "NoRowsMessage": "There is no available data",
+                        "DataSetName": "TotalExeOverTimeline",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "BackgroundColor": "#f7f7f7"
+                        },
+                        "Header": {
+                            "Style": {
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            },
+                            "TextStyle": {
+                                "FontWeight": "Bold"
+                            }
+                        },
+                        "Footer": {
+                            "Style": {
+                                "PaddingTop": "2pt",
+                                "PaddingBottom": "4pt"
+                            }
+                        },
+                        "Palette": "Green",
+                        "Legend": {
+                            "Orientation": "Vertical",
+                            "Style": {
+                                "PaddingRight": "10pt",
+                                "PaddingTop": "4pt",
+                                "PaddingBottom": "2pt"
+                            }
+                        },
+                        "PlotArea": {
+                            "Axes": [
+                                {
+                                    "LabelStyle": {
+                                        "FontSize": "9pt",
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "Gray",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "Title": "Task execution date",
+                                    "TitleStyle": {
+                                        "Color": "#2e2e2e",
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                },
+                                {
+                                    "AxisType": "Y",
+                                    "LabelStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LineStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Solid"
+                                        }
+                                    },
+                                    "MajorGrid": true,
+                                    "MajorGridStyle": {
+                                        "Border": {
+                                            "Color": "#aaaaaa",
+                                            "Style": "Dotted"
+                                        }
+                                    },
+                                    "Plots": [
+                                        "Plot 1"
+                                    ],
+                                    "TitleStyle": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                }
+                            ],
+                            "Legends": [
+                                {
+                                    "Orientation": "Vertical",
+                                    "Style": {
+                                        "PaddingRight": "10pt",
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                },
+                                {
+                                    "Orientation": "Vertical",
+                                    "Style": {
+                                        "PaddingRight": "10pt",
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LegendType": "Shape"
+                                },
+                                {
+                                    "Orientation": "Vertical",
+                                    "Style": {
+                                        "PaddingRight": "10pt",
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt"
+                                    },
+                                    "LegendType": "Size"
+                                }
+                            ]
+                        },
+                        "Plots": [
+                            {
+                                "PlotType": "Line",
+                                "PlotName": "Plot 1",
+                                "Encodings": {
+                                    "Values": [
+                                        {
+                                            "Field": {
+                                                "FieldType": "Simple",
+                                                "Value": [
+                                                    "=Fields!executed_tasks.Value"
+                                                ],
+                                                "Captions": [
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "Category": {
+                                        "Field": {
+                                            "FieldType": "Simple",
+                                            "Value": [
+                                                "=Fields!exe_date.Value"
+                                            ],
+                                            "Captions": [
+                                                ""
+                                            ]
+                                        }
+                                    },
+                                    "Color": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    },
+                                    "Shape": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    },
+                                    "Size": {
+                                        "Field": {
+                                            "FieldType": "Simple"
+                                        }
+                                    }
+                                },
+                                "Config": {
+                                    "LineStyle": {
+                                        "Style": "Solid"
+                                    },
+                                    "Symbols": true,
+                                    "Tooltip": {
+                                        "Template": "{valueField.value}"
+                                    }
+                                },
+                                "PlotChartType": "Line",
+                                "PlotChartSubtype": "Clustered"
+                            }
+                        ],
+                        "Left": "0.3in",
+                        "Top": "0.5in",
+                        "Width": "4in",
+                        "Height": "3in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox20",
+                        "ZIndex": 16,
+                        "Action": {
+                            "Drillthrough": {
+                                "ReportName": "TaskExecutionStatsLevel1.report",
+                                "Parameters": [
+                                    {
+                                        "ParameterName": "FROM_DATE",
+                                        "Value": "=Parameters!FROM_DATE.Value"
+                                    },
+                                    {
+                                        "ParameterName": "TDMDB_SCHEMA",
+                                        "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                    },
+                                    {
+                                        "ParameterName": "END_DATE",
+                                        "Value": "=Parameters!END_DATE.Value"
+                                    }
+                                ]
+                            }
+                        },
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Show all",
+                        "Style": {
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#1483f3",
+                            "TextAlign": "Right",
+                            "TextDecoration": "Underline"
+                        },
+                        "Left": "3.5in",
+                        "Top": "0.1in",
+                        "Width": "0.8in",
+                        "Height": "0.25in"
+                    }
+                ],
+                "Left": "4.85in",
+                "Top": "4.55in",
+                "Width": "4.45in",
+                "Height": "3.6in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "UsersAndRoles",
+                "ZIndex": 14,
+                "RoundingRadius": {
+                    "Default": "5pt"
+                },
+                "Style": {
+                    "Border": {
+                        "Color": "#cccccc",
+                        "Style": "Solid"
+                    },
+                    "BackgroundColor": "White"
+                },
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox5",
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "TDM users & roles",
+                        "Style": {
+                            "FontSize": "12pt",
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.1in",
+                        "Width": "1.6in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox18",
+                        "ZIndex": 6,
+                        "Action": {
+                            "Drillthrough": {
+                                "ReportName": "UserLoginStats.report",
+                                "Parameters": [
+                                    {
+                                        "ParameterName": "FROM_DATE",
+                                        "Value": "=Parameters!FROM_DATE.Value"
+                                    },
+                                    {
+                                        "ParameterName": "TDMDB_SCHEMA",
+                                        "Value": "=First(Fields!TDMDB_SCHEMA.Value, \"SchemaDataSet\")"
+                                    },
+                                    {
+                                        "ParameterName": "END_DATE",
+                                        "Value": "=Parameters!END_DATE.Value"
+                                    }
+                                ]
+                            }
+                        },
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Show all",
+                        "Style": {
+                            "FontWeight": "Bold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#1483f3",
+                            "TextAlign": "Right",
+                            "TextDecoration": "Underline"
+                        },
+                        "Left": "2in",
+                        "Top": "0.1in",
+                        "Width": "0.8in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "TitleLineUsers",
+                        "ZIndex": 7,
+                        "StartPoint": {
+                            "X": "0.3in",
+                            "Y": "0.35in"
+                        },
+                        "EndPoint": {
+                            "X": "2.8in",
+                            "Y": "0.35in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table3",
+                        "ZIndex": 8,
+                        "DataSetName": "NumberOfActiveUsers",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox24",
+                                                "DataElementName": "no_of_active_users",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!no_of_active_users.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#2e2e2e",
+                                                    "TextAlign": "Center",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox25",
+                        "ZIndex": 9,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Active users",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.3in",
+                        "Top": "0.85in",
+                        "Width": "1in",
+                        "Height": "0.3in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table2",
+                        "ZIndex": 10,
+                        "DataSetName": "NumberOfFabricRoles",
+                        "Style": {
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.4in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox6",
+                                                "DataElementName": "no_of_fabric_roles",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!no_of_fabric_roles.Value",
+                                                "Style": {
+                                                    "FontSize": "14pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#2e2e2e",
+                                                    "TextAlign": "Center",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                },
+                                                "Width": "1in",
+                                                "Height": "0.4in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "1.75in",
+                        "Top": "0.5in",
+                        "Width": "1in",
+                        "Height": "0.4in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox7",
+                        "ZIndex": 11,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "User groups",
+                        "Style": {
+                            "FontSize": "9pt",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "TextAlign": "Center",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "1.75in",
+                        "Top": "0.85in",
+                        "Width": "1in",
+                        "Height": "0.3in"
+                    },
+                    {
+                        "Type": "line",
+                        "Name": "Line1",
+                        "ZIndex": 14,
+                        "StartPoint": {
+                            "X": "1.5in",
+                            "Y": "0.5in"
+                        },
+                        "EndPoint": {
+                            "X": "1.5in",
+                            "Y": "1.2in"
+                        },
+                        "LineColor": "#aaaaaa"
+                    }
+                ],
+                "Left": "9.4in",
+                "Top": "3.5in",
+                "Width": "3in",
+                "Height": "1.5in"
+            }
+        ],
+        "Style": {
+            "BackgroundColor": "#f2f2f2"
+        }
+    },
+    "PageFooter": {
+        "Name": "PageFooter",
+        "ReportItems": [
+            {
+                "Type": "textbox",
+                "Name": "Footer",
+                "CanGrow": true,
+                "KeepTogether": true,
+                "Value": "=\"Generated by K2reports on: \" & Now()",
+                "Style": {
+                    "PaddingLeft": "2pt",
+                    "PaddingRight": "2pt",
+                    "PaddingTop": "2pt",
+                    "PaddingBottom": "2pt",
+                    "Color": "#2e2e2e",
+                    "TextAlign": "Left",
+                    "VerticalAlign": "Middle"
+                },
+                "Left": "0.2in",
+                "Width": "4in",
+                "Height": "0.2in"
+            },
+            {
+                "Type": "textbox",
+                "Name": "TextBox22",
+                "ZIndex": 1,
+                "CanGrow": true,
+                "KeepTogether": true,
+                "Value": "=\"Page \" & Globals!PageNumber & \" of \" & Globals!TotalPages",
+                "Style": {
+                    "FontSize": "11pt",
+                    "PaddingLeft": "2pt",
+                    "PaddingRight": "2pt",
+                    "PaddingTop": "2pt",
+                    "PaddingBottom": "2pt",
+                    "Color": "#2e2e2e",
+                    "TextAlign": "Right",
+                    "VerticalAlign": "Middle"
+                },
+                "Left": "8in",
+                "Width": "3.4in",
+                "Height": "0.2in"
+            }
+        ],
+        "Style": {
+            "BackgroundColor": "#f2f2f2"
+        }
+    },
+    "DataSets": [
+        {
+            "Name": "TDMUsers",
+            "Fields": [
+                {
+                    "Name": "NumberOfActiveUsers",
+                    "DataField": "NumberOfActiveUsers"
+                },
+                {
+                    "Name": "NumberOfFabricRoles",
+                    "DataField": "NumberOfFabricRoles"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&TDMDB_SCHEMA=\" & Parameters!TDMDB_SCHEMA.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.TDMUsers\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "NumberOfActiveUsers",
+            "Fields": [
+                {
+                    "Name": "no_of_active_users",
+                    "DataField": "no_of_active_users"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TDMUsers/NumberOfActiveUsers"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "NumberOfFabricRoles",
+            "Fields": [
+                {
+                    "Name": "no_of_fabric_roles",
+                    "DataField": "no_of_fabric_roles"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TDMUsers/NumberOfFabricRoles"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TaskCreation",
+            "Fields": [
+                {
+                    "Name": "TotalActiveTasks",
+                    "DataField": "TotalActiveTasks"
+                },
+                {
+                    "Name": "TotalCrtdDuringReportPeriod",
+                    "DataField": "TotalCrtdDuringReportPeriod"
+                },
+                {
+                    "Name": "daysInterval1",
+                    "DataField": "daysInterval1"
+                },
+                {
+                    "Name": "getTimeInterval",
+                    "DataField": "getTimeInterval"
+                },
+                {
+                    "Name": "TaskCrtdOverTimeline",
+                    "DataField": "TaskCrtdOverTimeline"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&TDMDB_SCHEMA=\" & Parameters!TDMDB_SCHEMA.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.TaskCreation\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "Environments",
+            "Fields": [
+                {
+                    "Name": "TotalEnvsPerType",
+                    "DataField": "TotalEnvsPerType"
+                },
+                {
+                    "Name": "TotalSensitiveAndNonSensitiveEnvs",
+                    "DataField": "TotalSensitiveAndNonSensitiveEnvs"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&TDMDB_SCHEMA=\" & Parameters!TDMDB_SCHEMA.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.Environments\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TaskExecutions",
+            "Fields": [
+                {
+                    "Name": "TotalExeDuringReportPeriod",
+                    "DataField": "TotalExeDuringReportPeriod"
+                },
+                {
+                    "Name": "TotalExeOverTimeline",
+                    "DataField": "TotalExeOverTimeline"
+                },
+                {
+                    "Name": "NoOfExePerTaskType",
+                    "DataField": "NoOfExePerTaskType"
+                },
+                {
+                    "Name": "Top5ExePerEnv",
+                    "DataField": "Top5ExePerEnv"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&TDMDB_SCHEMA=\" & Parameters!TDMDB_SCHEMA.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.TaskExecutions\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "Systems",
+            "Fields": [
+                {
+                    "Name": "NumOfBEsAndLUs",
+                    "DataField": "NumOfBEsAndLUs"
+                },
+                {
+                    "Name": "AvgLUPerBE",
+                    "DataField": "AvgLUPerBE"
+                },
+                {
+                    "Name": "NumberOfSystems",
+                    "DataField": "NumberOfSystems"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&TDMDB_SCHEMA=\" & Parameters!TDMDB_SCHEMA.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.Systems\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "NumberOfSystems",
+            "Fields": [
+                {
+                    "Name": "no_of_systems",
+                    "DataField": "no_of_systems"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:Systems/NumberOfSystems"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TotalActiveTasks",
+            "Fields": [
+                {
+                    "Name": "count",
+                    "DataField": "count"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskCreation/TotalActiveTasks"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TotalCrtdDuringReportPeriod",
+            "Fields": [
+                {
+                    "Name": "count",
+                    "DataField": "count"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskCreation/TotalCrtdDuringReportPeriod"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TotalEnvsPerType",
+            "Fields": [
+                {
+                    "Name": "no_of_environments",
+                    "DataField": "no_of_environments"
+                },
+                {
+                    "Name": "environment_type",
+                    "DataField": "environment_type"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:Environments/TotalEnvsPerType"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TotalSensitiveAndNonSensitiveEnvs",
+            "Fields": [
+                {
+                    "Name": "no_of_environments",
+                    "DataField": "no_of_environments"
+                },
+                {
+                    "Name": "mask_sensitive_data",
+                    "DataField": "mask_sensitive_data"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:Environments/TotalSensitiveAndNonSensitiveEnvs"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TotalExeDuringReportPeriod",
+            "Fields": [
+                {
+                    "Name": "count",
+                    "DataField": "count"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskExecutions/TotalExeDuringReportPeriod"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TotalExeOverTimeline",
+            "Fields": [
+                {
+                    "Name": "exe_date",
+                    "DataField": "exe_date"
+                },
+                {
+                    "Name": "executed_tasks",
+                    "DataField": "executed_tasks"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskExecutions/TotalExeOverTimeline"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "NoOfExePerTaskType",
+            "Fields": [
+                {
+                    "Name": "no_of_task_executions",
+                    "DataField": "no_of_task_executions"
+                },
+                {
+                    "Name": "task_type",
+                    "DataField": "task_type"
+                },
+                {
+                    "Name": "processed_data",
+                    "DataField": "processed_data"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskExecutions/NoOfExePerTaskType"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "Top5ExePerEnv",
+            "Fields": [
+                {
+                    "Name": "no_of_executions",
+                    "DataField": "no_of_executions"
+                },
+                {
+                    "Name": "environment_name",
+                    "DataField": "environment_name"
+                },
+                {
+                    "Name": "env_type",
+                    "DataField": "env_type"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskExecutions/Top5ExePerEnv"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "NumOfBEsAndLUs",
+            "Fields": [
+                {
+                    "Name": "no_of_business_entities",
+                    "DataField": "no_of_business_entities"
+                },
+                {
+                    "Name": "no_of_lus",
+                    "DataField": "no_of_lus"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:Systems/NumOfBEsAndLUs"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "AvgLUPerBE",
+            "Fields": [
+                {
+                    "Name": "avg",
+                    "DataField": "avg"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:Systems/AvgLUPerBE"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "getTimeInterval",
+            "Fields": [
+                {
+                    "Name": "intervalValue",
+                    "DataField": "intervalValue"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskCreation/getTimeInterval"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TaskCrtdOverTimeline",
+            "Fields": [
+                {
+                    "Name": "exe_date",
+                    "DataField": "exe_date"
+                },
+                {
+                    "Name": "created_tasks",
+                    "DataField": "created_tasks"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TaskCreation/TaskCrtdOverTimeline"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "SchemaDataSet",
+            "Fields": [
+                {
+                    "Name": "schema",
+                    "DataField": "schema"
+                },
+                {
+                    "Name": "TDMDB_SCHEMA",
+                    "DataField": "TDMDB_SCHEMA"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.GetTDMDBSchemaName[0]\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        }
+    ]
+}

@@ -1,0 +1,79 @@
+stages:
+  Look For Given Schema:
+    actors:
+      If No Catalog:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: MTable "catalog_field_info" not found
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Check if Schema is used in Catalog:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: catalog_field_info
+          dataPlatform:
+            external: interface
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema:
+            external: schema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          dataset:
+            external: table
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+  Schema Found:
+    dependsOn: Look For Given Schema
+    actors:
+      Schema Found?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Check if Schema is used in Catalog/result
+              iterate: First
+      schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schema
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+    split: '--------------------'
+  Schema Not Found:
+    else: true
+    dependsOn: Look For Given Schema
+    actors:
+      Task Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskSchema
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string

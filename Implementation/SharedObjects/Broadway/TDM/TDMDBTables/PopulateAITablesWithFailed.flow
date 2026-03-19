@@ -1,0 +1,452 @@
+tags: TDM,TDMTDMDBTables
+stages:
+  Get Globals:
+    actors:
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+      TDM_LU_NAME:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_LU_NAME
+            default: false
+      Now:
+        parent: Now
+      AI_DB_K2SYSTEM:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Set Task execution List:
+    actors:
+      Update task_execution_summary:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: update ${@TDMDB_SCHEMA}.task_execution_summary set execution_status
+              = 'failed' where task_execution_id =${execution_id} ;
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+      'Format the current date to load it ':
+        parent: DateFormat
+        in:
+          date:
+            link: Now/date
+      Getk2SystemSchemaName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+      Get Status:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM/result
+          sql:
+            const: select status from k2system.task_executions where id=${task_exe_id}
+          task_exe_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Set Task Execution Summary:
+    dependsOn: Set Task execution List
+    actors:
+      FAILED:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: FAILED
+            schema: string
+          a:
+            link:
+              path: Get Status/result/status
+              iterate: First
+      Get result:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM/result
+          sql:
+            const: select result from ${@k2system}.task_executions where id=${task_exe_id}
+          task_exe_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          k2system:
+            link: Getk2SystemSchemaName/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Diff Error:
+    else: true
+    transactional: false
+    dependsOn: Set Task execution List
+    actors:
+      Get the Error Fields:
+        parent: ErrorFields
+        in:
+          error:
+            external: error
+        out:
+          inputs:
+            schema: '#ref'
+          additional:
+            schema: '#ref'
+  Json Parese Result:
+    dependsOn: Set Task Execution Summary
+    actors:
+      Get Error Msg:
+        parent: JsonParser
+        in:
+          stream:
+            link: Get result/result
+        out:
+          object:
+            schema: '#ref'
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: Diff Error
+  Update Task Execution List:
+    actors:
+      Update task_execution_list:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.task_execution_list
+              SET execution_status = 'failed'
+              WHERE task_execution_id = ${execution_id}
+              AND (
+                  (task_type = 'TRAINING' AND process_id < 0)
+                  OR
+                  (task_type != 'TRAINING' AND process_id <= 0)
+              );
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+      update status:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM/result
+          sql:
+            const: update ${@k2system}.task_executions set status='FAILED' where id=${id}
+          k2system:
+            link: Getk2SystemSchemaName/result
+            schema: string
+            mandatory: false
+          id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+  'Update Task Exe Error Summary    ':
+    actors:
+      Update Task Exe Error Summary:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_exe_error_summary
+          fields:
+            const:
+            - task_execution_id
+            - etl_execution_id
+            - lu_name
+            - error_category
+            - error_code
+            - error_msg
+            - creation_date
+            - no_of_records
+            - no_of_entities
+          keys:
+            const:
+            - task_execution_id
+            - etl_execution_id
+            - lu_name
+            - error_category
+            - error_code
+            - error_msg
+          task_execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          etl_execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          lu_name:
+            const: ''
+            link: TDM_LU_NAME/result
+            schema: string
+            default: true
+            mandatory: false
+          error_category:
+            const: AI
+            schema: string
+            default: true
+            mandatory: false
+          error_code:
+            const: 0
+            link: Get the Error Fields/errorCode
+            schema: integer
+            default: true
+            mandatory: false
+          error_msg:
+            link:
+            - Get the Error Fields/message
+            - Get Error Msg/object/result/value
+            schema: string
+            mandatory: false
+          creation_date:
+            link: Format the current date to load it /string
+            schema: integer
+            mandatory: false
+          no_of_records:
+            const: 0
+            schema: integer
+            default: true
+            mandatory: false
+          no_of_entities:
+            const: 0
+            schema: integer
+            default: true
+            mandatory: false
+  Update Task Exe Error Detailed:
+    actors:
+      'Update Task Exe Error Detailed  ':
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_exe_error_detailed
+          fields:
+            const:
+            - task_execution_id
+            - lu_name
+            - entity_id
+            - iid
+            - target_entity_id
+            - error_category
+            - error_code
+            - error_message
+            - creation_date
+            - flow_name
+            - stage_name
+            - actor_name
+            - actor_parameters
+          dialect:
+            const: postgres
+          task_execution_id:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          lu_name:
+            const: ''
+            link: TDM_LU_NAME/result
+            schema: string
+            default: true
+            mandatory: false
+          entity_id:
+            const: ''
+            schema: string
+            mandatory: false
+          iid:
+            const: ''
+            schema: string
+            mandatory: false
+          target_entity_id:
+            const: ''
+            schema: string
+            mandatory: false
+          error_category:
+            const: 'AI '
+            schema: string
+            default: true
+            mandatory: false
+          error_code:
+            const: 0
+            link: Get the Error Fields/errorCode
+            schema: integer
+            default: true
+            mandatory: false
+          error_message:
+            link:
+            - Get the Error Fields/message
+            - Get Error Msg/object/result/value
+            schema: string
+            mandatory: false
+          creation_date:
+            link: Format the current date to load it /string
+            schema: string
+            mandatory: false
+          flow_name:
+            link: Get the Error Fields/flow
+            schema: string
+            mandatory: false
+          stage_name:
+            link: Get the Error Fields/stage
+            schema: string
+            mandatory: false
+          actor_name:
+            link: Get the Error Fields/actor
+            schema: string
+            mandatory: false
+          actor_parameters:
+            schema: '#ref'
+            mandatory: false
+schemas:
+  Get Status.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        status:
+          type: string
+  Get result.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        result: {
+          }
+  Get the Error Fields.out.inputs:
+    type: object
+    properties:
+      interface:
+        type: string
+      command:
+        type: string
+      schema:
+        type: string
+      table:
+        type: string
+      fields:
+        type: array
+        items:
+          type: string
+      keys:
+        type: array
+        items:
+          type: string
+      dialect:
+        type: string
+      ignoreNulls:
+        type: boolean
+      params:
+        type: object
+        properties:
+          PATIENT_ID:
+            type: string
+          SSN:
+            type: string
+          FIRST_NAME:
+            type: string
+          LAST_NAME:
+            type: string
+          ADDRESS:
+            type: string
+          CITY:
+            type: string
+          ZIP:
+            type: string
+          STATE:
+            type: string
+          COUNTRY:
+            type: string
+          DATE1: {
+            }
+          ATTR_LIST:
+            type: string
+          PATIENT_CODE:
+            type: string
+      PATIENT_ID:
+        type: integer
+      DATE1:
+        type: string
+      ATTR_LIST:
+        type: string
+      PATIENT_CODE:
+        type: string
+  Get the Error Fields.out.additional:
+    type: object
+    properties:
+      rootExceptionClass:
+        type: string
+      exceptionClass:
+        type: string
+      sql:
+        type: string
+  Get Error Msg.out.object:
+    type: object
+    properties:
+      result:
+        type: object
+        properties:
+          type:
+            type: string
+          value:
+            type: string
+  Update Task Exe Error Detailed  .in.actor_parameters:
+    type: object
+    properties:
+      sql:
+        type: string
+      batch:
+        type: boolean
+      interface:
+        type: string
+      creation_time:
+        type: string
+      execution_params:
+        type: string
+      task_exe_id:
+        type: string

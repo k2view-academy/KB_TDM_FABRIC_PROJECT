@@ -1,0 +1,370 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get List Of tables to be filtered Out",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDM Filter Out Target Tables",
+                            "actorType": {
+                                "parentType": "TDMFilterOutTargetTables",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "table_regex": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "generator_filterout": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Initiate Flag",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.matchFound = false;"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Change Case",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Upper Case of Table Name from List",
+                            "actorType": {
+                                "parentType": "Uppercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Uppercase Input Table",
+                            "actorType": {
+                                "parentType": "Uppercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Filter Out Table?",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Regex1",
+                            "actorType": {
+                                "parentType": "Regex",
+                                "inputs": [
+                                    {
+                                        "name": "pattern",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "strings",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Flag",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Set Filter Out Flag",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "if (luName == 'ALL_LUS' || luName == luType) {\r\n    if (match != '[]' && flowArgs.matchFound == false) {\r\n        flowArgs.matchFound = true;\r\n    }\r\n}\r\nflowArgs.matchFound \r\n",
+                                            "script": "if (luName == 'ALL_LUS' || luName == luType) {\n  if (match != '[]' && flowArgs.matchFound == false) {\n    flowArgs.matchFound = true;\n  }\n}\n\nflowArgs.matchFound;"
+                                        }
+                                    },
+                                    {
+                                        "name": "match",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Not1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Not",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Table Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "TDM Filter Out Target Tables",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "active"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "TDM Filter Out Target Tables",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Set Filter Out Flag",
+                "name": "luName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "TDM Filter Out Target Tables",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Upper Case of Table Name from List",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "table_regex"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Upper Case of Table Name from List",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Regex1",
+                "name": "pattern"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Uppercase Input Table",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Regex1",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Regex1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Set Filter Out Flag",
+                "name": "match"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set Filter Out Flag",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Not1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Uppercase Input Table",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Set Filter Out Flag",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Table Name",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Table Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "tableNameOut"
+            }
+        }
+    ]
+}

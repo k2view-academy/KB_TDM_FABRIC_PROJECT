@@ -1,0 +1,207 @@
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Set Target Environment:
+        parent: FabricSet
+        in:
+          key:
+            const: ENVIRONMENT
+            default: false
+          value:
+            external: TARGET_ENVIRONMENT
+      Create Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createFolderForFlows
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          FOLDER_NAME:
+            const: DeleteFlows
+            schema: string
+            mandatory: false
+      geLuTables:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getLuTables
+          luName:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          res:
+            schema: '#ref'
+  Stage 7:
+    actors:
+      Set Target Table Name:
+        parent: SetTargetTableName
+        in:
+          TABLE_NAME:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+          LU_NAME:
+            external: LU_NAME
+  Stage 10:
+    actors:
+      Flow Name:
+        parent: StringFormat
+        height: 191
+        in:
+          format:
+            const: delete_${0}.flow
+          params:
+            link:
+              path: Set Target Table Name/TARGET_TABLE_NAME
+              pos: 0
+  Stage 2:
+    dependsOn: Stage 10
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: OVERRIDE_EXISTING_FLOWS
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      CheckIfFlowExists1:
+        parent: CheckIfFlowExists
+        height: 232
+        in:
+          FOLDER_NAME:
+            const: DeleteFlows
+          FLOW_FILE_NAME:
+            link: Flow Name/string
+          LU_NAME:
+            external: LU_NAME
+        out:
+          SKIP_TABLE:
+            schema: boolean
+    split: '--------------------'
+  Stage 5:
+    else: true
+    transactional: false
+    dependsOn: Stage 10
+    actors:
+      create Delete Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createDeleteTableFromTargetFlow
+          LU_TABLE:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+          TARGET_TABLE:
+            link: Set Target Table Name/TARGET_TABLE_NAME
+            schema: string
+          luType:
+            external: LU_NAME
+            schema: string
+          FLOW_NAME:
+            link: Flow Name/string
+            schema: string
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+  Stage 3:
+    last: 1
+    dependsOn: Stage 2
+    actors:
+      Equals2:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: CheckIfFlowExists1/SKIP_TABLE
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      create New Delete Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createDeleteTableFromTargetFlow
+          LU_TABLE:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+          TARGET_TABLE:
+            link: Set Target Table Name/TARGET_TABLE_NAME
+            schema: string
+          luType:
+            external: LU_NAME
+            schema: string
+          FLOW_NAME:
+            link: Flow Name/string
+            schema: string
+          useFabric:
+            const: ''
+            external: useFabric
+            schema: boolean
+            default: true
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 8:
+    last: 1
+    else: true
+    transactional: false
+    dependsOn: Stage 2
+    actors:
+      Logger1:
+        parent: Logger
+        in:
+          message:
+            const: 'The DELETE Flow for table: <${TABLE_NAME}> Exists and it will
+              not recreated. If you want to recreate it please delete its related
+              flow'
+          level:
+            const: info
+          TABLE_NAME:
+            link:
+              path: geLuTables/res
+              iterate: Iterate
+            schema: string
+    split: '--------------------'
+  Stage 6:
+    last: 1
+    transactional: false
+    dependsOn: Stage 5
+schemas:
+  geLuTables.out.res:
+    type: array
+    items:
+      type: string

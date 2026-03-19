@@ -1,0 +1,264 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+      TDMFilterOutTargetTables1:
+        parent: TDMFilterOutTargetTables
+        out:
+          table:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      Lookup1:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - table_regex
+          lookupData:
+            const: null
+            link: TDMFilterOutTargetTables1/table
+            schema: '#ref'
+          table_regex:
+            const: TDM_BE_IIDS
+            schema: string
+            mandatory: false
+      ConstTable1:
+        parent: ConstTable
+        in:
+          table:
+            const:
+            - table_regex: TDM_BE_IIDS
+              active: true
+              lu_name: ALL_LUS
+              generator_filterout: true
+            schema: '#ref'
+        out:
+          table:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      IsNull1:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Lookup1/result
+      TDMFilterOutTargetTables2:
+        parent: TDMFilterOutTargetTables
+        out:
+          table:
+            schema: '#ref'
+      MapCreate2:
+        parent: MapCreate
+        in:
+          input1:
+            link:
+              path: ConstTable1/table
+              iterate: First
+            schema: '#ref'
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+  Stage 8:
+    actors:
+      ArrayBuilder2:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: MapCreate2/map/input1
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Stage 5:
+    actors:
+      ArrayConcat1:
+        parent: ArrayConcat
+        in:
+          input:
+            link:
+            - path: TDMFilterOutTargetTables2/table
+              pos: 0
+            - path: ArrayBuilder2/array
+              pos: 1
+        out:
+          array:
+            schema: '#ref'
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${0}/Implementation/SharedObjects/Broadway/TDM/TDMImplementorActors/TDMFilterOutTargetTables.actor
+          params:
+            link:
+              path: PROJECT_DIR/value
+              pos: 0
+  Stage 6:
+    actors:
+      JsonStringify1:
+        parent: JsonStringify
+        in:
+          object:
+            link: ArrayConcat1/array
+  Stage 7:
+    actors:
+      StringFormat2:
+        parent: StringFormat
+        in:
+          format:
+            const: "{\r\n    \"type\": \"TDMFilterOutTargetTables\",\r\n    \"badge\"\
+              : \"TD\",\r\n    \"tags\": [\r\n        \"basic\"\r\n    ],\r\n    \"\
+              inputs\": [\r\n        {\r\n            \"name\": \"table\",\r\n   \
+              \         \"const\": ${0},\r\n            \"schema\": {\r\n        \
+              \        \"type\": \"array\",\r\n                \"items\": {\r\n  \
+              \                  \"type\": \"object\",\r\n                    \"properties\"\
+              : {\r\n                        \"table_regex\": {\r\n              \
+              \              \"type\": \"string\"\r\n                        },\r\n\
+              \                        \"active\": {\r\n                         \
+              \   \"type\": \"boolean\"\r\n                        },\r\n        \
+              \                \"lu_name\": {\r\n                            \"type\"\
+              : \"string\"\r\n                        },\r\n                     \
+              \   \"generator_filterout\": {\r\n                            \"type\"\
+              : \"boolean\"\r\n                        }\r\n                    }\r\
+              \n                }\r\n            }\r\n        }\r\n    ],\r\n    \"\
+              outputs\": [],\r\n    \"parentType\": \"ConstTable\"\r\n}"
+          params:
+            link: JsonStringify1/string
+  Stage 4:
+    actors:
+      FileWrite1:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            link: StringFormat1/string
+          stream:
+            link: StringFormat2/string
+schemas:
+  TDMFilterOutTargetTables1.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean
+  Lookup1.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  ConstTable1.in.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean
+  ConstTable1.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean
+  TDMFilterOutTargetTables2.out.table:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean
+  MapCreate2.in.input1:
+    type: object
+    properties:
+      table_regex:
+        type: string
+      active:
+        type: boolean
+      lu_name:
+        type: string
+      generator_filterout:
+        type: boolean
+  MapCreate2.out.map:
+    type: object
+    properties:
+      input1:
+        type: object
+        properties:
+          table_regex:
+            type: string
+          active:
+            type: boolean
+          lu_name:
+            type: string
+          generator_filterout:
+            type: boolean
+  ArrayBuilder2.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean
+  ArrayConcat1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        table_regex:
+          type: string
+        active:
+          type: boolean
+        lu_name:
+          type: string
+        generator_filterout:
+          type: boolean

@@ -1,0 +1,84 @@
+tags: Deploy
+stages:
+  Get Roles:
+    actors:
+      Get List of Roles:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: list roles
+        out:
+          result:
+            schema: '#ref'
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Check Role Name:
+    actors:
+      StringPos1:
+        parent: StringPos
+        in:
+          substring:
+            const: _k2v_
+          string:
+            link:
+              path: Get List of Roles/result/name
+              iterate: Iterate
+  Insert Role to Permission Groups Table:
+    dependsOn: Check Role Name
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: StringPos1/found
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+      DbCommand1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "INSERT INTO ${@schema}.permission_groups_mapping(\r\n\tdescription,\
+              \ fabric_role, permission_group, created_by, updated_by, creation_date,\
+              \ update_date)\r\n\tVALUES ('Initial mapping for admin user',${k2v_user}\
+              \ ,'admin', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\r\
+              \n\t"
+          k2v_user:
+            link:
+              path: Get List of Roles/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Stage 3:
+    else: true
+    transactional: false
+    dependsOn: Check Role Name
+schemas:
+  Get List of Roles.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        security profiles:
+          type: string
+        description:
+          type: string
