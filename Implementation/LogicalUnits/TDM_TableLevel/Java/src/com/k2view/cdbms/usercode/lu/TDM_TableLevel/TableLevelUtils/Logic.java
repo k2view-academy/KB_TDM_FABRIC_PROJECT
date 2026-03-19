@@ -22,6 +22,7 @@ import com.k2view.cdbms.func.oracle.OracleRownum;
 import com.k2view.cdbms.usercode.lu.TDM_TableLevel.*;
 import com.k2view.fabric.events.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
 import java.lang.reflect.Field;
@@ -705,20 +706,28 @@ public class Logic extends UserCode {
                 String schemaName,
                 String tableName) throws Exception {
             Map<String, Map<String, Object>> result = new HashMap<>();
-            Map<Integer, List<Map<String, Object>>> hierarchy = fnGetHierarchyLevels("TableLevelPartitionFlow",
+            Map<Integer, List<Map<String, Object>>> hierarchy = fnGetHierarchyLevels("TableLevelDefinitions",
                     interfaceName, schemaName, tableName);
 
             // Fill from Priority 0 (Table) to Priority 2 (Interface)
             for (int i = 0; i <= 2; i++) {
                 List<Map<String, Object>> records = hierarchy.get(i);
-                if (records == null)
+                if (records == null || records.size() == 0) {
                     continue;
+                }
 
-                for (Map<String, Object> row : records) {
-                    String flow = (String) row.get("flow_name");
-                    String param = (String) row.get("param_name");
-                    if (flow != null && param != null) {
-                        result.computeIfAbsent(flow, k -> new HashMap<>()).putIfAbsent(param, row.get("value"));
+                Map<String, Object> levelRow = records.get(0);
+                Object flowInputs = levelRow.get("partition_flow_inputs");
+                Object flowName = levelRow.get("partition_records_flow");
+                
+                if(flowName != null && flowInputs != null){
+                    Map<String, Object> flowParamJson = Json.get().fromJson(flowInputs.toString(), Map.class);
+
+                    if (flowParamJson != null && !(flowParamJson.isEmpty())) {
+                        flowParamJson.forEach((key, value) -> {
+                            result.computeIfAbsent(flowName.toString(), k -> new HashMap<>()).putIfAbsent(key, value);
+                        });
+                        
                     }
                 }
             }
@@ -792,7 +801,8 @@ public class Logic extends UserCode {
                 fieldNames = fnGetPKFieldsOnly(interfaceName, schemaName, tableName);
                 if (fieldNames.isEmpty()) {
                     log.error("Table: " + tableName + ", has no key fields for updates and not Primary Key, failing the table");
-                    throw new RuntimeException("Table: " + tableName + ", has no key fields for updates and not Primary Key, failing the table");
+                    //throw new RuntimeException("Table: " + tableName + ", has no key fields for updates and not Primary Key, failing the table");
+                    fieldNames = null;
                 }
             }
             return fieldNames;

@@ -581,21 +581,6 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
-          task_execution_id:
-            external: taskExeId
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          task_ref_table_id:
-            external: tableRefId
-            schema: integer
-            mandatory: false
-            createdBy: flowName
-          partition_no:
-            external: partitionNumber
-            schema: string
-            mandatory: false
-            createdBy: flowName
           sourceInterfaceName:
             external: sourceInterfaceName
             schema: string
@@ -608,6 +593,11 @@ stages:
             createdBy: flowName
           catalogSchema:
             external: catalogSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExeId:
+            external: taskExeId
             schema: string
             mandatory: false
             createdBy: flowName
@@ -644,7 +634,6 @@ stages:
                     WHEN BOOL_AND(LOWER(execution_status) = 'completed') THEN 'completed'
                     ELSE 'running'
                   END AS execution_status
-
                 FROM ${@TDMDB_SCHEMA}.task_ref_partition
                 WHERE task_execution_id = ${task_execution_id}
                 AND task_ref_table_id = ${task_ref_table_id}

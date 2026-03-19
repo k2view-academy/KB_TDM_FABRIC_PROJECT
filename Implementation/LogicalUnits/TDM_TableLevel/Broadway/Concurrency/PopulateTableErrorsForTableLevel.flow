@@ -4,6 +4,18 @@ stages:
     actors:
       Get Current Time:
         parent: Now
+      Get source env:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+      Get Task Exec ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
       Get the Error Fields:
         parent: ErrorFields
         in:
@@ -12,100 +24,76 @@ stages:
         out:
           inputs:
             schema: '#ref'
-      Get Source Entity ID:
-        parent: FabricSetRead
-        in:
-          key:
-            const: SOURCE_ENTITY_ID
-            default: false
-      Get Table Name:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TARGET_ENTITY_ID
-            default: false
-      Check if Table Name is given:
-        parent: IfElse
-        in:
-          a:
-            external: tableName
-            schema: string
-          b:
-            const: ALL_TABLES
-            schema: string
-          test:
-            external: tableName
-        out:
-          result:
-            schema: string
-      Check if Partition is given:
-        parent: IfElse
-        in:
-          a:
-            external: partitionNumber
-            schema: string
-          b:
-            const: '-1'
-            schema: string
-          test:
-            external: partitionNumber
-        out:
-          result:
-            schema: string
-  Failure At Delete Table:
+  Create IID:
     dependsOn: Prepare the Data
     actors:
-      ALL_TABLES?:
-        parent: Equals
+      Table Name Given?:
+        parent: NotEquals
         condition: result
         in:
           a:
-            link: Get Source Entity ID/result
+            external: tableName
             schema: string
           b:
             const: ALL_TABLES
             schema: string
-      Table Name:
+      Build IID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildIID
+          partitionNum:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          sourceEnv:
+            link: Get source env/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          iid:
+            schema: string
+      TABLE_NAME:
         parent: Const
         in:
           value:
             const: null
-            link: Check if Table Name is given/result
+            external: tableName
             schema: string
         out:
           value:
             schema: string
     split: '--------------------'
-  Rest Of Cases:
+  No Table Name:
     else: true
     dependsOn: Prepare the Data
     actors:
-      Source Entity ID:
+      ALL_TABLES:
         parent: Const
         in:
           value:
-            const: null
-            link: Get Source Entity ID/result
-            schema: string
-        out:
-          value:
-            schema: string
-      Target Entity ID:
-        parent: Const
-        in:
-          value:
-            const: null
-            link: Get Table Name/result
-            schema: string
-        out:
-          value:
-            schema: string
-      Source Table Name:
-        parent: Const
-        in:
-          value:
-            const: null
-            link: Check if Table Name is given/result
+            const: ALL_TABLES
             schema: string
         out:
           value:
@@ -125,12 +113,6 @@ stages:
         in:
           date:
             link: Get Current Time/date
-      Get Task Exec ID:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDM_TASK_EXE_ID
-            default: false
       Get Executor Name:
         parent: FabricSetRead
         in:
@@ -146,7 +128,7 @@ stages:
           value:
             const: failed
             default: false
-      getTDMDBSchema:
+      Get TDMDB Schema:
         parent: InnerFlow
         in:
           flowName:
@@ -154,22 +136,6 @@ stages:
         out:
           schema:
             schema: string
-  Partition Is Found:
-    dependsOn: Format the actor's parameters
-    actors:
-      ALL_PARTITIONS?:
-        parent: Equals
-        condition: result
-        in:
-          a:
-            link: Check if Partition is given/result
-            schema: string
-          b:
-            const: '-1'
-            schema: string
-    split: '--------------------'
-  Stage 1:
-    dependsOn: Format the actor's parameters
   Load Data to Detailed Error table:
     actors:
       Error Handler for reporting to TDM Error Table:
@@ -182,7 +148,7 @@ stages:
             const: TDM
           schema:
             const: null
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
           table:
             const: task_exe_error_detailed
           fields:
@@ -209,20 +175,18 @@ stages:
             const: TDM_TableLevel
             schema: string
           entity_id:
-            link:
-            - Table Name/value
-            - Source Entity ID/value
+            link: Build IID/iid
             schema: string
           iid:
             link:
-            - Table Name/value
-            - Source Table Name/value
+            - TABLE_NAME/value
+            - ALL_TABLES/value
             schema: string
           target_entity_id:
             const: ''
             link:
-            - Table Name/value
-            - Target Entity ID/value
+            - TABLE_NAME/value
+            - ALL_TABLES/value
             schema: string
             default: true
           error_category:
@@ -278,54 +242,16 @@ stages:
   Update TASK_REF_EXE_STATS:
     dependsOn: Load Data to Detailed Error table
     actors:
-      We have Table Name:
-        parent: NotNull
+      '!All_TABLES?':
+        parent: NotEquals
         condition: result
         in:
-          value:
+          a:
             external: tableName
             schema: string
-      Update task_ref_partition2:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: |-
-              update ${@TDMDB_SCHEMA}.task_ref_partition
-               set execution_status=${execution_status}, end_time=NOW() , error_msg = ${error_msg}
-               where task_execution_id=${task_execution_id}
-               AND (${table_name} = 'ALL_TABLES' OR table_name=${table_name})
-               AND (${partition_no} = -1 OR partition_no=${partition_no})
-          TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+          b:
+            const: ALL_TABLES
             schema: string
-            mandatory: false
-            createdBy: sql
-          task_execution_id:
-            link: Get Task Exec ID/result
-            schema: string
-            mandatory: false
-            createdBy: sql
-          partition_no:
-            link: Check if Partition is given/result
-            schema: string
-            mandatory: false
-            createdBy: sql
-          execution_status:
-            const: completed
-            schema: string
-            mandatory: false
-            createdBy: sql
-          error_msg:
-            link: Get the Error Fields/message
-            schema: string
-            mandatory: false
-            createdBy: sql
-          table_name:
-            schema: any
-            mandatory: false
-            createdBy: sql
       Update TDMDB table for Reference Table:
         parent: DbCommand
         in:
@@ -339,14 +265,9 @@ stages:
               end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
               updated_by = ${userName}
               WHERE task_execution_id = ${taskExecutionID}
-              and trim(lower(ref_table_name))= lower(${refTableName})
+              and (${tableName} = 'ALL_TABLES' OR task_ref_table_id = ${refTableID})
           taskExecutionID:
             link: Get Task Exec ID/result
-            schema: string
-          refTableName:
-            link:
-            - Table Name/value
-            - Source Table Name/value
             schema: string
           errorMsg:
             link: Get the Error Fields/message
@@ -356,44 +277,24 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: sql
     split: '--------------------'
   Update TASK_REF_EXE_STATS for All tables:
     else: true
     dependsOn: Load Data to Detailed Error table
     actors:
-      Update task_ref_partition21:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: |-
-              update ${@TDMDB_SCHEMA}.task_ref_partition
-               set execution_status=${execution_status}, end_time=NOW() , error_msg = ${error_msg}
-               where task_execution_id=${task_execution_id}
-          TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
-            schema: string
-            mandatory: false
-            createdBy: sql
-          task_execution_id:
-            link: Get Task Exec ID/result
-            schema: string
-            mandatory: false
-            createdBy: sql
-          execution_status:
-            const: failed
-            schema: string
-            mandatory: false
-            createdBy: sql
-          error_msg:
-            link: Get the Error Fields/message
-            schema: string
-            mandatory: false
-            createdBy: sql
       Update TDMDB table for Reference Table1:
         parent: DbCommand
         in:
@@ -418,7 +319,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
   Update Table Entity:
@@ -440,8 +341,8 @@ stages:
             mandatory: false
           tableName:
             link:
-            - Table Name/value
-            - Source Entity ID/value
+            - TABLE_NAME/value
+            - ALL_TABLES/value
             schema: string
             mandatory: false
 schemas:

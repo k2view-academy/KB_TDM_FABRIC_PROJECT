@@ -28,7 +28,7 @@ stages:
             schema: '#ref'
   Get Array Of Info:
     actors:
-      Const1:
+      Array:
         parent: Const
         in:
           value:
@@ -42,25 +42,6 @@ stages:
   Cache:
     last: 1
     actors:
-      Table Error Handler No Fields Or No Key Fields:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: true
-                flowName: PopulateTableErrorsForTableLevel
-                number_of_retries: ''
-                retry_interval: ''
-          tableName:
-            external: tableName
-            schema: string
-            mandatory: false
       GetTableInformation:
         parent: InnerFlow
         in:
@@ -68,21 +49,21 @@ stages:
             const: GetTableInformation
           interfaceName:
             link:
-              path: Const1/value/interface_name
+              path: Array/value/interface_name
               iterate: Iterate
             schema: string
             mandatory: false
             createdBy: flowName
           schemaName:
             link:
-              path: Const1/value/schema_name
+              path: Array/value/schema_name
               iterate: Iterate
             schema: string
             mandatory: false
             createdBy: flowName
           tableName:
             link:
-              path: Const1/value/table_name
+              path: Array/value/table_name
               iterate: Iterate
             schema: string
             mandatory: false
@@ -130,7 +111,7 @@ schemas:
                 type: string
               table_name:
                 type: string
-  Const1.out.value:
+  Array.out.value:
     type: object
     properties:
       interface_name:

@@ -94,8 +94,8 @@ public class StatsLoader implements Actor {
                     statement.execute(
                         executionId,
                         luName,
-                        "",
-                        "",
+                        entityIid,
+                        targetEntityID,
                         tableName,
                         null,
                         null,

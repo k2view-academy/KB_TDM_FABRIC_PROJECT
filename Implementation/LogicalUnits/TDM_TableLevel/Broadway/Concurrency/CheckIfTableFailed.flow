@@ -78,7 +78,7 @@ stages:
         out:
           result:
             schema: integer
-      getTDMDBSchema1:
+      Get TDMDB Schema:
         parent: InnerFlow
         in:
           flowName:
@@ -88,17 +88,18 @@ stages:
             schema: string
   Select Status:
     actors:
-      task_ref_exe_stats:
-        parent: DbCommand
+      Get Status:
+        parent: DbFetchField
         in:
           interface:
             const: TDM
           sql:
-            const: select execution_status from ${@TDMDB_SCHEMA}.task_ref_exe_stats
+            const: |-
+              select execution_status from ${@TDMDB_SCHEMA}.task_ref_exe_stats
               where task_execution_id=${task_execution_id} and task_id=${task_id}
               and task_ref_table_id=${task_ref_table_id}
           TDMDB_SCHEMA:
-            link: getTDMDBSchema1/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
             createdBy: sql
@@ -117,22 +118,6 @@ stages:
             schema: integer
             mandatory: false
             createdBy: sql
-        out:
-          result:
-            schema: '#ref'
-  Execution Status:
-    actors:
-      'status ':
-        parent: Const
-        in:
-          value:
-            const: null
-            link:
-              path: task_ref_exe_stats/result/execution_status
-              iterate: First
-        out:
-          value:
-            schema: string
   'Return Condition ':
     actors:
       Not Failed ?:
@@ -142,15 +127,7 @@ stages:
             const: failed
             schema: string
           a:
-            link: status /value
+            link: Get Status/result
         out:
           result:
             external: result
-schemas:
-  task_ref_exe_stats.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        execution_status:
-          type: string

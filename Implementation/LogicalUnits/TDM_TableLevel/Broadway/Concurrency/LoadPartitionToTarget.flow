@@ -713,7 +713,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "update ${@TDMDB_SCHEMA}.task_ref_partition\n set number_of_processed_records=${number_of_processed_records},\n    number_of_failed_records = ${number_of_failed_records}, end_time=NOW(),\n    execution_status= CASE\n        WHEN ${number_of_processed_records} > 0 AND ${number_of_processed_records} - ${number_of_failed_records} > 0 THEN 'completed'\n        ELSE 'failed' END\nwhere task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}\n AND partition_no=${partition_no}"
+                                        "const": "update ${@TDMDB_SCHEMA}.task_ref_partition\n set number_of_processed_records=${number_of_processed_records},\n    number_of_failed_records = ${number_of_failed_records}, end_time=NOW(),\n    execution_status= CASE\n        WHEN ${number_of_failed_records} > 0 THEN 'failed'\n        ELSE 'completed' END,\n    number_of_records_to_process = case\n        when number_of_records_to_process = -1 then ${number_of_records_to_process} else number_of_records_to_process end\nwhere task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}\n AND partition_no=${partition_no}"
                                     },
                                     {
                                         "name": "TDMDB_SCHEMA",
@@ -757,6 +757,14 @@
                                     },
                                     {
                                         "name": "number_of_failed_records",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "createdBy": "sql",
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "number_of_records_to_process",
                                         "schema": {
                                             "type": "integer"
                                         },
@@ -1046,6 +1054,16 @@
             "rightPort": {
                 "actor": "Update task_ref_partition - Status And Counts",
                 "name": "number_of_processed_records"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_ref_partition - Status And Counts",
+                "name": "number_of_records_to_process"
             }
         },
         {

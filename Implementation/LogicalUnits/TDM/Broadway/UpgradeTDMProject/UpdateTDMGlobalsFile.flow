@@ -12,6 +12,12 @@ stages:
             schema: string
   Stage 2:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
       Set Global Files Location:
         parent: StringFormat
         in:

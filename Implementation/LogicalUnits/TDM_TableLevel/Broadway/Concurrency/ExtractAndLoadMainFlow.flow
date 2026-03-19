@@ -10,7 +10,7 @@ stages:
         out:
           schema:
             schema: string
-      For Loop For Deleting Tables:
+      Loop On Tables:
         parent: ForLoop
         in:
           from:
@@ -26,7 +26,7 @@ stages:
             const: getTablesByOrder
           order:
             link:
-              path: For Loop For Deleting Tables/i
+              path: Loop On Tables/i
               iterate: Iterate
             schema: integer
             mandatory: false
@@ -54,7 +54,7 @@ stages:
             mandatory: false
           order:
             link:
-              path: For Loop For Deleting Tables/i
+              path: Loop On Tables/i
               iterate: Iterate
             schema: integer
             mandatory: false
@@ -77,9 +77,9 @@ stages:
         out:
           value:
             schema: '#ref'
-  'Run Only If Table Didn''t Already Failed ':
+  Run Only If Table Didn't Already Failed:
     actors:
-      CheckIfTableFailedInDelete:
+      Check Table Before Extract And Load:
         parent: InnerFlow
         condition: result
         in:
@@ -116,12 +116,27 @@ stages:
             schema: boolean
   'Get Table Insrances    ':
     actors:
-      setSourceEnv:
+      Error Handler - Get Table Insrances:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Set Source Env:
         parent: InnerFlow
         in:
           flowName:
             const: setSourceEnv
-      GenerateTable Instances:
+      Generate Table Instances:
         parent: InnerFlow
         in:
           flowName:
@@ -168,7 +183,7 @@ stages:
           flowName:
             const: InsertIntoTaskRefPartitions
           TablesInstanceList:
-            link: GenerateTable Instances/instances
+            link: Generate Table Instances/instances
             schema: string
             mandatory: false
             createdBy: flowName
@@ -205,7 +220,7 @@ stages:
         parent: ArrayBuilder
         in:
           input:
-            link: GenerateTable Instances/instances
+            link: Generate Table Instances/instances
         out:
           array:
             schema: '#ref'
@@ -358,7 +373,7 @@ stages:
             schema: string
           a:
             link: Concat IIDs to Instance Group/string
-      Table Error Handler Load to fabric1:
+      Table Error Handler - Batch:
         parent: ErrorHandler
         error: result
         in:
@@ -370,7 +385,7 @@ stages:
               actions:
                 suppress: false
                 log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
           tableName:
@@ -382,6 +397,18 @@ stages:
           refTableID:
             link: Get Table Ref ID    /result
             schema: integer
+            mandatory: false
+          interfaceName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          schemaName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
             mandatory: false
       'Batch ':
         parent: DbCommand
@@ -426,6 +453,12 @@ stages:
           value:
             schema: '#ref'
       Reset List Of IIDs:
+        parent: ResetActors
+        in:
+          actorId:
+            const:
+            - Concat IIDs to Instance Group
+      Reset List Of IIDs1:
         parent: ResetActors
         in:
           actorId:
@@ -491,7 +524,7 @@ stages:
   Update TDMDB Tables:
     last: 1
     actors:
-      Table Error Handler Load to fabric:
+      Table Error Handler Update TDMDB:
         parent: ErrorHandler
         error: result
         in:
@@ -675,7 +708,7 @@ schemas:
               type: string
             table_name:
               type: string
-  GenerateTable Instances.out.instances:
+  Generate Table Instances.out.instances:
     type: array
     items:
       type: string

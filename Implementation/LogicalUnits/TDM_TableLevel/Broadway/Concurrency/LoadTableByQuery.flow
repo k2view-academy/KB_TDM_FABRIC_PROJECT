@@ -77,9 +77,6 @@ stages:
           value:
             const: null
             external: inputRecords
-        out:
-          value:
-            schema: '#ref'
   Load Data To Target:
     transactional: true
     actors:
@@ -134,7 +131,7 @@ stages:
     transactional: true
     dependsOn: Load Data To Target
     actors:
-      Commit?:
+      Flush?:
         parent: Equals
         condition: result
         in:
@@ -150,9 +147,6 @@ stages:
           interface:
             const: null
             link: Target Interface/value
-        out:
-          tables:
-            schema: '#ref'
     split: '--------------------'
   Do Nothing:
     else: true
@@ -219,8 +213,6 @@ stages:
             const: null
             link: Target Interface/value
         out:
-          tables:
-            schema: '#ref'
           okay:
             external: okay
           total:

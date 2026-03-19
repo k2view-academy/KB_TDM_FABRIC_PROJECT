@@ -65,12 +65,12 @@ stages:
         in:
           interface:
             const: TDM
-      DB Error Handler Batch1:
+      DB Error Handler Batch:
         parent: TDMDbErrorHandlerBatch
         in:
           interface:
             const: null
-            external: targetInterface
+            link: Target Interface/value
           config:
             const:
             - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
@@ -139,6 +139,9 @@ stages:
             const: null
             external: inputRecords
             schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
   Load Data To Target:
     transactional: true
     actors:
@@ -147,10 +150,16 @@ stages:
         in:
           interface:
             const: null
-            external: targetInterface
+            link: Target Interface/value
           sql:
             const: null
             link: Build Update Statement/result
+          batch:
+            const: true
+          __active_environment:
+            const: target
+            schema: string
+            mandatory: false
           params:
             link:
               path: Input Records/value
@@ -176,27 +185,35 @@ stages:
             mandatory: false
         out:
           result:
+            schema: boolean
+      Count1:
+        parent: Count
+        out:
+          value:
             schema: integer
   Stage To Commit every Commit Size:
     transactional: true
     dependsOn: Load Data To Target
     actors:
-      Report Count?:
+      Flush?:
         parent: Equals
         condition: result
         in:
           a:
             link: Count Records/result
-            schema: integer
+            schema: boolean
           b:
-            const: 0
-            schema: integer
+            const: true
+            schema: boolean
       DB Flush Batch:
         parent: TDMDbFlushBatch
         in:
           interface:
             const: null
-            external: targetInterface
+            link: Target Interface/value
+        out:
+          tables:
+            schema: '#ref'
     split: '--------------------'
   Do Nothing:
     else: true
@@ -261,8 +278,10 @@ stages:
         in:
           interface:
             const: null
-            external: targetInterface
+            link: Target Interface/value
         out:
+          tables:
+            schema: '#ref'
           okay:
             external: okay
           total:
@@ -297,4 +316,29 @@ schemas:
   Input Records.in.value:
     type: array
     items: {
+      }
+  Input Records.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: date
+        note_text: {
+          }
+        k2key__note_text: {
+          }
+        k2key__note_id:
+          type: integer
+  DB Flush Batch.out.tables:
+    type: object
+    properties: {
+      }
+  DB Flush Batch At End.out.tables:
+    type: object
+    properties: {
       }

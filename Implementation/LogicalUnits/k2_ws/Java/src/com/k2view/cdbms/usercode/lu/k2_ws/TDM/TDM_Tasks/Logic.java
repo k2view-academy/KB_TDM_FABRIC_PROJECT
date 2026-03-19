@@ -1225,6 +1225,17 @@ public class Logic extends WebServiceUserCode {
                     custom_logic_lu_name, selected_subset_task_exe_id, clone_ind, execution_mode,in_place_masking_ind);
                                 
                 finalTaskId = taskId;
+
+                if ("TABLES".equalsIgnoreCase(selection_method)) {
+                    try {
+                        db(TDM).execute("DELETE FROM " + TDMDB_SCHEMA + ".tasks_logical_units WHERE task_id = ?",
+                                finalTaskId);
+                    } catch (Exception e) {
+                        db(TDM).rollback();
+                        return wrapWebServiceResults("FAILED",
+                                "Failed to clear old Logical Units for Table-level task: " + e.getMessage(), null);
+                    }
+                }
             }
             if (!checkWsResponse(result)) {
                 db(TDM).rollback();
@@ -3085,23 +3096,23 @@ public class Logic extends WebServiceUserCode {
         //log.info("wsGetTDMTaskExecutionStats - start handling reference");
         if (!(luEntityId == null || luEntityId.isEmpty()) && "REFERENCE".equals(luIdType)) {
             sqlCopiedRefTabBuf = "select distinct ref_table_name, " +
-                "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records " +
+                "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records, batch_id " +
                 "from TDM.task_ref_exe_stats t where ref_table_name = ? and t.Execution_Status = 'completed' and Lu_Name = ?";
             copiedRefTabBuf = fabric().fetch(sqlCopiedRefTabBuf, luEntityId, luName);
 
             sqlFailedRefRabBuf = "select distinct ref_table_name, " +
-                "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records "+
+                "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records, batch_id "+
                 "from TDM.task_ref_exe_stats t where ref_table_name = ? and ifNull(t.Execution_Status, 'failed') <> 'completed' and Lu_Name = ?";
             failedRefTabBuf = fabric().fetch(sqlCopiedRefTabBuf, luEntityId, luName);
             //log.info("wsGetTDMTaskExecutionStats - got failed reference");
         } else {
             sqlCopiedRefTabBuf = "select distinct ref_table_name, "+
-                "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records " +
+                "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records, batch_id " +
                 "from TDM.task_ref_exe_stats t where t.Execution_Status = 'completed' and Lu_Name = ?";
             copiedRefTabBuf = fabric().fetch(sqlCopiedRefTabBuf, luName);
 
             sqlFailedRefRabBuf = "select distinct ref_table_name, " +
-            "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records " +
+            "(number_of_processed_records - COALESCE(number_of_failed_records, 0)) as number_of_processed_records, number_of_failed_records, batch_id " +
             "from TDM.task_ref_exe_stats t where ifNull(t.Execution_Status, 'failed') <> 'completed' and Lu_Name = ?";
             failedRefTabBuf = fabric().fetch(sqlFailedRefRabBuf, luName);
         }
@@ -3115,6 +3126,7 @@ public class Logic extends WebServiceUserCode {
             mapInnerCopiedRefEnt.put("RerernceTableName", copiedRefEnt.get("ref_table_name"));
             mapInnerCopiedRefEnt.put("RerernceTableCount", copiedRefEnt.get("number_of_processed_records"));
             mapInnerCopiedRefEnt.put("RerernceTableErrCount", copiedRefEnt.get("number_of_failed_records"));
+            mapInnerCopiedRefEnt.put("BatchId", copiedRefEnt.get("batch_id"));
             copiedRefEntitiesList.add(mapInnerCopiedRefEnt);
         }
         if (copiedRefTabBuf != null) {
@@ -3132,8 +3144,9 @@ public class Logic extends WebServiceUserCode {
             String reTableName = "" + failedRefEnt.get("ref_table_name");
             
             mapInnerFailedRefEnt.put("RerernceTableName", reTableName);
-            mapInnerFailedRefEnt.put("RerernceTableCount", 0);
+            mapInnerFailedRefEnt.put("RerernceTableCount", failedRefEnt.get("number_of_processed_records"));
             mapInnerFailedRefEnt.put("RerernceTableErrCount", failedRefEnt.get("number_of_failed_records"));
+            mapInnerFailedRefEnt.put("BatchId", failedRefEnt.get("batch_id"));
 
             // TDM 6.1.1 - 20-may-20, add the error msg that casued the failure
             String errorMsgSql = "select error_message from task_exe_error_detailed where " + "task_execution_id = ? and target_entity_id = ? LIMIT 5";

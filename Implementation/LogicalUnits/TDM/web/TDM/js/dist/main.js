@@ -5563,6 +5563,7 @@ const invokeFabricWebService = async (path, body, method, force) => {
     }
     if (runningRequests[path]) {
       clearTimeout(runningRequests[path]);
+      delete runningRequests[path];
     }
     return new Promise((resolve, reject) => {
       runningRequests[path] = setTimeout(async () => {
@@ -5573,6 +5574,7 @@ const invokeFabricWebService = async (path, body, method, force) => {
           reject(error);
         } finally {
           clearTimeout(runningRequests[path]);
+          delete runningRequests[path];
         }
       }, 100);
     });
@@ -6141,7 +6143,7 @@ const useToast = () => {
   }), []);
 };
 /* harmony default export */ var hooks_useToast = (useToast);
-// CONCATENATED MODULE: ./src/components/task/AdvancedBE/index.tsx
+// CONCATENATED MODULE: ./src/components/task/AdvancedBE/LogicalUnitTemplate.tsx
 
 
 
@@ -6158,17 +6160,15 @@ const useToast = () => {
 
 
 
-
-function AdvancedBE(props) {
+function LogicalUnitTemplate(props) {
   const {
-    type
+    type,
+    setOpen,
+    open
   } = props;
   const {
     taskData,
     saveForm,
-    register,
-    errors,
-    unregister,
     allLogicalUnits
   } = Object(react["useContext"])(TaskContext);
   const toast = hooks_useToast();
@@ -6185,7 +6185,6 @@ function AdvancedBE(props) {
     source_environment_id,
     environment_id
   } = taskData;
-  const [open, setOpen] = Object(react["useState"])(false);
   const [error, setError] = Object(react["useState"])('');
   const [localExecutionMode, setLocalExecutionMode] = Object(react["useState"])('');
   const [maxWorkersPerNode, setMaxWorkersPerNode] = Object(react["useState"])(undefined);
@@ -6209,7 +6208,6 @@ function AdvancedBE(props) {
         setMaxWorkersLimit(maxWorkers);
       } catch (error) {
         console.error('Failed to fetch data centers:', error);
-        setDataCenters([]);
       }
     };
     fetchMaxWorkersLimit();
@@ -6226,6 +6224,9 @@ function AdvancedBE(props) {
       }
     };
     fetchDataCenters();
+    return () => {
+      console.log('destruct datacenters');
+    };
   }, []);
   const affinityOptions = Object(react["useMemo"])(() => {
     const dataCenterOptions = [];
@@ -6272,6 +6273,7 @@ function AdvancedBE(props) {
     }
     return groups;
   }, [dataCenters]);
+  console.log('affinityOptions', affinityOptions);
   Object(react["useEffect"])(() => {
     if (execution_mode) {
       setLocalExecutionMode(execution_mode);
@@ -6463,7 +6465,6 @@ function AdvancedBE(props) {
           // Mark as explicitly changed by user
           // Store as single-item array or empty array
           luFound[type].affinity = selectedOption ? selectedOption.value : null;
-          luFound[type].affinityTouched = true;
         }
       }
       return newData;
@@ -6477,7 +6478,6 @@ function AdvancedBE(props) {
         const luFound = found.logicalUnits.find(it => it.lu_id === lu_id);
         if (luFound && luFound[type]) {
           luFound[type].affinity = null;
-          luFound[type].affinityTouched = false;
         }
       }
       return newData;
@@ -6590,12 +6590,6 @@ function AdvancedBE(props) {
         var _lu$source, _lu$target;
         // If affinity wasn't explicitly changed by user, set it to null
         // This ensures environment defaults are not saved to the task
-        if (lu.source && !lu.source.affinityTouched) {
-          lu.source.affinity = null;
-        }
-        if (lu.target && !lu.target.affinityTouched) {
-          lu.target.affinity = null;
-        }
         if (type === 'source' && (((_lu$source = lu.source) === null || _lu$source === void 0 ? void 0 : _lu$source.maxWorkers) || 0) > (maxWorkersLimit || 0)) {
           var _lu$source2;
           maxWorkersError = ((_lu$source2 = lu.source) === null || _lu$source2 === void 0 ? void 0 : _lu$source2.maxWorkers) || 0;
@@ -6660,7 +6654,7 @@ function AdvancedBE(props) {
           }), openedSystems.indexOf(it.system) >= 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
             children: type === 'source' || type === 'target' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemBody, {
               children: it.logicalUnits.map(luItem => {
-                var _luItem$type, _luItem$type2, _luItem$type3, _luItem$type4, _luItem$type5, _luItem$type6, _luItem$type7;
+                var _luItem$type, _luItem$type2, _luItem$type3, _luItem$type4, _luItem$type5, _luItem$type6, _luItem$type7, _luItem$type8, _luItem$type9, _luItem$type10, _luItem$type11;
                 return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitContainer, {
                   children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LUHeaderRow, {
                     children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
@@ -6691,10 +6685,10 @@ function AdvancedBE(props) {
                           isClearable: false,
                           isMulti: false,
                           options: affinityOptions,
-                          value: luItem !== null && luItem !== void 0 && (_luItem$type = luItem[type]) !== null && _luItem$type !== void 0 && _luItem$type.affinity && luItem[type].affinity.length > 0 ? affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === luItem[type].affinity) : luItem.env_affinity && luItem.env_affinity.length > 0 ? affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === luItem.env_affinity) : null,
+                          value: luItem !== null && luItem !== void 0 && (_luItem$type = luItem[type]) !== null && _luItem$type !== void 0 && _luItem$type.affinity ? affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === luItem[type].affinity) : luItem.env_affinity && luItem.env_affinity.length > 0 ? affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === luItem.env_affinity) : null,
                           onChange: selectedOption => handleAffinityChange(luItem.lu_id, it.system, selectedOption),
                           placeholder: ""
-                        }), (luItem === null || luItem === void 0 ? void 0 : (_luItem$type2 = luItem[type]) === null || _luItem$type2 === void 0 ? void 0 : _luItem$type2.affinityTouched) && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type3 = luItem[type]) === null || _luItem$type3 === void 0 ? void 0 : _luItem$type3.affinity) && /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ResetButton, {
+                        }), (luItem === null || luItem === void 0 ? void 0 : (_luItem$type2 = luItem[type]) === null || _luItem$type2 === void 0 ? void 0 : _luItem$type2.affinity) !== undefined && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type3 = luItem[type]) === null || _luItem$type3 === void 0 ? void 0 : _luItem$type3.affinity) !== null && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type4 = luItem[type]) === null || _luItem$type4 === void 0 ? void 0 : _luItem$type4.affinity) !== luItem.env_affinity && /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ResetButton, {
                           type: "button",
                           onClick: () => handleAffinityReset(luItem.lu_id, it.system),
                           title: "Reset to environment default",
@@ -6708,17 +6702,17 @@ function AdvancedBE(props) {
                         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
                           title: "",
                           type: InputTypes.number,
-                          value: (luItem === null || luItem === void 0 ? void 0 : (_luItem$type4 = luItem[type]) === null || _luItem$type4 === void 0 ? void 0 : _luItem$type4.maxWorkers) || luItem.env_max_number_of_workers || maxWorkersPerNode,
+                          value: (luItem === null || luItem === void 0 ? void 0 : (_luItem$type5 = luItem[type]) === null || _luItem$type5 === void 0 ? void 0 : _luItem$type5.maxWorkers) !== undefined && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type6 = luItem[type]) === null || _luItem$type6 === void 0 ? void 0 : _luItem$type6.maxWorkers) !== null ? luItem === null || luItem === void 0 ? void 0 : (_luItem$type7 = luItem[type]) === null || _luItem$type7 === void 0 ? void 0 : _luItem$type7.maxWorkers : luItem.env_max_number_of_workers || maxWorkersPerNode,
                           onChange: value => handleMaxWorkersChange(luItem.lu_id, it.system, (value === null || value === void 0 ? void 0 : value.toString()) || '0'),
                           min: 0,
                           max: maxWorkersPerNode,
                           width: '200px'
-                        }), (luItem === null || luItem === void 0 ? void 0 : (_luItem$type5 = luItem[type]) === null || _luItem$type5 === void 0 ? void 0 : _luItem$type5.maxWorkers) && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type6 = luItem[type]) === null || _luItem$type6 === void 0 ? void 0 : _luItem$type6.maxWorkers) !== luItem.env_max_number_of_workers && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type7 = luItem[type]) === null || _luItem$type7 === void 0 ? void 0 : _luItem$type7.maxWorkers) !== maxWorkersPerNode && /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ResetButton, {
+                        }), (luItem === null || luItem === void 0 ? void 0 : (_luItem$type8 = luItem[type]) === null || _luItem$type8 === void 0 ? void 0 : _luItem$type8.maxWorkers) !== undefined && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type9 = luItem[type]) === null || _luItem$type9 === void 0 ? void 0 : _luItem$type9.maxWorkers) !== null && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type10 = luItem[type]) === null || _luItem$type10 === void 0 ? void 0 : _luItem$type10.maxWorkers) !== luItem.env_max_number_of_workers && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type11 = luItem[type]) === null || _luItem$type11 === void 0 ? void 0 : _luItem$type11.maxWorkers) !== maxWorkersPerNode ? /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ResetButton, {
                           type: "button",
                           onClick: () => handleMaxWorkersReset(luItem.lu_id, it.system),
                           title: "Reset to environment default",
                           children: "\u21BB"
-                        })]
+                        }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
                       })]
                     })]
                   })]
@@ -6756,35 +6750,54 @@ function AdvancedBE(props) {
     }
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
   }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle, role, enable_advanced_for_testers, type]);
-  const getLogicalUnitTemplate = () => {
-    return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitsContainer, {
-      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitTitle, {
-        children: ["Advanced BE", /*#__PURE__*/Object(jsx_runtime["jsx"])(CloseIcon, {
-          onClick: () => setOpen(false),
-          src: xclose
-        })]
-      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitBody, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Tabs, {
-          tabs: tabs,
-          selected: selectedTab,
-          changedTabs: [],
-          setSelectedTab: setSelectedTab,
-          children: getSelectedTab()
-        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Actions, {
-          border: false,
-          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
-            onClick: () => setOpen(false),
-            children: "Cancel"
-          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
-            onClick: () => SaveData(),
-            children: "Save"
-          })]
-        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
-          relativePosition: true,
-          submit: true,
-          error: error
-        })]
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitsContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitTitle, {
+      children: ["Advanced BE", /*#__PURE__*/Object(jsx_runtime["jsx"])(CloseIcon, {
+        onClick: () => setOpen(false),
+        src: xclose
       })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Seprator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitBody, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Tabs, {
+        tabs: tabs,
+        selected: selectedTab,
+        changedTabs: [],
+        setSelectedTab: setSelectedTab,
+        children: getSelectedTab()
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Actions, {
+        border: false,
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
+          onClick: () => setOpen(false),
+          children: "Cancel"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ActionItem, {
+          onClick: () => SaveData(),
+          children: "Save"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
+        relativePosition: true,
+        submit: true,
+        error: error
+      })]
+    })]
+  });
+}
+/* harmony default export */ var AdvancedBE_LogicalUnitTemplate = (LogicalUnitTemplate);
+// CONCATENATED MODULE: ./src/components/task/AdvancedBE/index.tsx
+
+
+
+
+
+function AdvancedBE(props) {
+  const {
+    type
+  } = props;
+  const [open, setOpen] = Object(react["useState"])(false);
+  const ref = Object(react["useRef"])();
+  const getLogicalUnitTemplate = () => {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_LogicalUnitTemplate, {
+      type: type,
+      open: open,
+      setOpen: setOpen
     });
   };
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Container, {
@@ -9632,7 +9645,6 @@ function TablesAdvanced(props) {
 
     // Mark as explicitly changed by user
     newSettings[dbName][type].affinity = selectedOption ? selectedOption.value : null;
-    newSettings[dbName][type].affinityTouched = true;
     setPendingSettings(newSettings);
   }, [pendingSettings, type]);
   const handleAffinityReset = Object(react["useCallback"])(dbName => {
@@ -9641,21 +9653,29 @@ function TablesAdvanced(props) {
     };
     if (newSettings[dbName] && newSettings[dbName][type]) {
       newSettings[dbName][type].affinity = null;
-      newSettings[dbName][type].affinityTouched = false;
     }
     setPendingSettings(newSettings);
   }, [pendingSettings, type]);
-  const handleMaxWorkersReset = Object(react["useCallback"])(dbName => {
+  const handleMaxWorkersReset = Object(react["useCallback"])((dbName, defaultValue) => {
     const newSettings = {
       ...pendingSettings
     };
     if (newSettings[dbName] && newSettings[dbName][type]) {
-      delete newSettings[dbName][type].maxWorkers;
+      newSettings[dbName][type].maxWorkers = null;
     }
     setPendingSettings(newSettings);
   }, [pendingSettings, type]);
   const resetAllSettings = Object(react["useCallback"])(() => {
     setPendingSettings({});
+    const newSettings = {
+      ...pendingSettings
+    };
+    Object.keys(newSettings).forEach(dbName => {
+      if (newSettings[dbName] && newSettings[dbName][type]) {
+        newSettings[dbName][type].maxWorkers = null;
+        newSettings[dbName][type].affinity = null;
+      }
+    });
     setExpandedDatabases([]);
   }, []);
   const handleSave = Object(react["useCallback"])(() => {
@@ -9664,23 +9684,23 @@ function TablesAdvanced(props) {
       const errors = {};
       let maxWorkersError = 0;
       Object.keys(pendingSettings).forEach(dbName => {
-        var _db$source, _db$target;
+        var _db$source, _db$source2, _db$target, _db$target2;
         const db = pendingSettings[dbName];
 
         // Check source maxWorkers
-        if (((_db$source = db.source) === null || _db$source === void 0 ? void 0 : _db$source.maxWorkers) !== undefined && db.source.maxWorkers > maxWorkersLimit) {
-          var _db$source2;
+        if (((_db$source = db.source) === null || _db$source === void 0 ? void 0 : _db$source.maxWorkers) !== undefined && ((_db$source2 = db.source) === null || _db$source2 === void 0 ? void 0 : _db$source2.maxWorkers) !== null && db.source.maxWorkers > maxWorkersLimit) {
+          var _db$source3;
           if (!errors[dbName]) errors[dbName] = {};
           errors[dbName].source = true;
-          maxWorkersError = (_db$source2 = db.source) === null || _db$source2 === void 0 ? void 0 : _db$source2.maxWorkers;
+          maxWorkersError = (_db$source3 = db.source) === null || _db$source3 === void 0 ? void 0 : _db$source3.maxWorkers;
         }
 
         // Check target maxWorkers
-        if (((_db$target = db.target) === null || _db$target === void 0 ? void 0 : _db$target.maxWorkers) !== undefined && db.target.maxWorkers > maxWorkersLimit) {
-          var _db$target2;
+        if (((_db$target = db.target) === null || _db$target === void 0 ? void 0 : _db$target.maxWorkers) !== undefined && ((_db$target2 = db.target) === null || _db$target2 === void 0 ? void 0 : _db$target2.maxWorkers) !== null && db.target.maxWorkers > maxWorkersLimit) {
+          var _db$target3;
           if (!errors[dbName]) errors[dbName] = {};
           errors[dbName].target = true;
-          maxWorkersError = (_db$target2 = db.target) === null || _db$target2 === void 0 ? void 0 : _db$target2.maxWorkers;
+          maxWorkersError = (_db$target3 = db.target) === null || _db$target3 === void 0 ? void 0 : _db$target3.maxWorkers;
         }
       });
 
@@ -9717,7 +9737,7 @@ function TablesAdvanced(props) {
             children: "Reset all"
           })
         }), databases.map(db => {
-          var _pendingSettings$db$n5, _pendingSettings$db$n6, _validationErrors$db$, _ref, _ref2, _pendingSettings$db$n7, _pendingSettings$db$n8, _pendingSettings$db$n9, _db$defaultConfig2, _validationErrors$db$2, _pendingSettings$db$n10, _pendingSettings$db$n11, _pendingSettings$db$n12, _pendingSettings$db$n13, _db$defaultConfig3, _pendingSettings$db$n14, _pendingSettings$db$n15;
+          var _pendingSettings$db$n3, _pendingSettings$db$n4, _db$defaultConfig2, _validationErrors$db$, _ref, _ref2, _pendingSettings$db$n5, _pendingSettings$db$n6, _pendingSettings$db$n7, _db$defaultConfig3, _validationErrors$db$2, _pendingSettings$db$n8, _pendingSettings$db$n9, _pendingSettings$db$n10, _pendingSettings$db$n11, _pendingSettings$db$n12, _pendingSettings$db$n13, _db$defaultConfig4;
           return /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_DatabaseRow, {
             children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_DatabaseHeader, {
               onClick: () => toggleDatabaseExpansion(db.name),
@@ -9744,11 +9764,10 @@ function TablesAdvanced(props) {
                     isClearable: false,
                     isMulti: false,
                     options: affinityOptions,
-                    value: ((_pendingSettings$db$n, _pendingSettings$db$n2, _pendingSettings$db$n3, _pendingSettings$db$n4, _db$defaultConfig) => {
+                    value: ((_pendingSettings$db$n, _pendingSettings$db$n2, _db$defaultConfig) => {
                       const currentAffinity = (_pendingSettings$db$n = pendingSettings[db.name]) === null || _pendingSettings$db$n === void 0 ? void 0 : (_pendingSettings$db$n2 = _pendingSettings$db$n[type]) === null || _pendingSettings$db$n2 === void 0 ? void 0 : _pendingSettings$db$n2.affinity;
-                      const affinityTouched = (_pendingSettings$db$n3 = pendingSettings[db.name]) === null || _pendingSettings$db$n3 === void 0 ? void 0 : (_pendingSettings$db$n4 = _pendingSettings$db$n3[type]) === null || _pendingSettings$db$n4 === void 0 ? void 0 : _pendingSettings$db$n4.affinityTouched;
-                      const defaultAffinity = (_db$defaultConfig = db.defaultConfig) === null || _db$defaultConfig === void 0 ? void 0 : _db$defaultConfig.affinity;
-                      const affinityToUse = currentAffinity !== null && currentAffinity !== void 0 ? currentAffinity : affinityTouched ? null : defaultAffinity;
+                      const defaultAffinity = ((_db$defaultConfig = db.defaultConfig) === null || _db$defaultConfig === void 0 ? void 0 : _db$defaultConfig.affinity) || null;
+                      const affinityToUse = currentAffinity !== null && currentAffinity !== void 0 ? currentAffinity : defaultAffinity;
                       if (affinityToUse) {
                         return affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === affinityToUse);
                       }
@@ -9756,7 +9775,7 @@ function TablesAdvanced(props) {
                     })(),
                     onChange: selectedOption => handleAffinityChange(db.name, selectedOption),
                     placeholder: ""
-                  }), ((_pendingSettings$db$n5 = pendingSettings[db.name]) === null || _pendingSettings$db$n5 === void 0 ? void 0 : (_pendingSettings$db$n6 = _pendingSettings$db$n5[type]) === null || _pendingSettings$db$n6 === void 0 ? void 0 : _pendingSettings$db$n6.affinityTouched) && /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ResetButton, {
+                  }), ((_pendingSettings$db$n3 = pendingSettings[db.name]) === null || _pendingSettings$db$n3 === void 0 ? void 0 : (_pendingSettings$db$n4 = _pendingSettings$db$n3[type]) === null || _pendingSettings$db$n4 === void 0 ? void 0 : _pendingSettings$db$n4.affinity) != (((_db$defaultConfig2 = db.defaultConfig) === null || _db$defaultConfig2 === void 0 ? void 0 : _db$defaultConfig2.affinity) || null) && /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ResetButton, {
                     type: "button",
                     onClick: () => handleAffinityReset(db.name),
                     title: "Reset to environment default",
@@ -9777,15 +9796,18 @@ function TablesAdvanced(props) {
                   children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
                     title: "",
                     type: InputTypes.number,
-                    value: (_ref = (_ref2 = (_pendingSettings$db$n7 = (_pendingSettings$db$n8 = pendingSettings[db.name]) === null || _pendingSettings$db$n8 === void 0 ? void 0 : (_pendingSettings$db$n9 = _pendingSettings$db$n8[type]) === null || _pendingSettings$db$n9 === void 0 ? void 0 : _pendingSettings$db$n9.maxWorkers) !== null && _pendingSettings$db$n7 !== void 0 ? _pendingSettings$db$n7 : (_db$defaultConfig2 = db.defaultConfig) === null || _db$defaultConfig2 === void 0 ? void 0 : _db$defaultConfig2.max_number_of_workers) !== null && _ref2 !== void 0 ? _ref2 : maxWorkersPerNode) !== null && _ref !== void 0 ? _ref : '',
+                    value: (_ref = (_ref2 = (_pendingSettings$db$n5 = (_pendingSettings$db$n6 = pendingSettings[db.name]) === null || _pendingSettings$db$n6 === void 0 ? void 0 : (_pendingSettings$db$n7 = _pendingSettings$db$n6[type]) === null || _pendingSettings$db$n7 === void 0 ? void 0 : _pendingSettings$db$n7.maxWorkers) !== null && _pendingSettings$db$n5 !== void 0 ? _pendingSettings$db$n5 : (_db$defaultConfig3 = db.defaultConfig) === null || _db$defaultConfig3 === void 0 ? void 0 : _db$defaultConfig3.max_number_of_workers) !== null && _ref2 !== void 0 ? _ref2 : maxWorkersPerNode) !== null && _ref !== void 0 ? _ref : '',
                     onChange: value => handleMaxWorkersChange(db.name, (value === null || value === void 0 ? void 0 : value.toString()) || '0'),
                     min: 0,
-                    max: maxWorkersPerNode,
+                    max: maxWorkersLimit,
                     width: '175px',
                     error: (_validationErrors$db$2 = validationErrors[db.name]) !== null && _validationErrors$db$2 !== void 0 && _validationErrors$db$2[type] ? 'Invalid value' : undefined
-                  }), ((_pendingSettings$db$n10 = pendingSettings[db.name]) === null || _pendingSettings$db$n10 === void 0 ? void 0 : (_pendingSettings$db$n11 = _pendingSettings$db$n10[type]) === null || _pendingSettings$db$n11 === void 0 ? void 0 : _pendingSettings$db$n11.maxWorkers) !== undefined && ((_pendingSettings$db$n12 = pendingSettings[db.name]) === null || _pendingSettings$db$n12 === void 0 ? void 0 : (_pendingSettings$db$n13 = _pendingSettings$db$n12[type]) === null || _pendingSettings$db$n13 === void 0 ? void 0 : _pendingSettings$db$n13.maxWorkers) !== ((_db$defaultConfig3 = db.defaultConfig) === null || _db$defaultConfig3 === void 0 ? void 0 : _db$defaultConfig3.max_number_of_workers) && ((_pendingSettings$db$n14 = pendingSettings[db.name]) === null || _pendingSettings$db$n14 === void 0 ? void 0 : (_pendingSettings$db$n15 = _pendingSettings$db$n14[type]) === null || _pendingSettings$db$n15 === void 0 ? void 0 : _pendingSettings$db$n15.maxWorkers) !== maxWorkersPerNode && /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ResetButton, {
+                  }), ((_pendingSettings$db$n8 = pendingSettings[db.name]) === null || _pendingSettings$db$n8 === void 0 ? void 0 : (_pendingSettings$db$n9 = _pendingSettings$db$n8[type]) === null || _pendingSettings$db$n9 === void 0 ? void 0 : _pendingSettings$db$n9.maxWorkers) !== undefined && ((_pendingSettings$db$n10 = pendingSettings[db.name]) === null || _pendingSettings$db$n10 === void 0 ? void 0 : (_pendingSettings$db$n11 = _pendingSettings$db$n10[type]) === null || _pendingSettings$db$n11 === void 0 ? void 0 : _pendingSettings$db$n11.maxWorkers) !== null && ((_pendingSettings$db$n12 = pendingSettings[db.name]) === null || _pendingSettings$db$n12 === void 0 ? void 0 : (_pendingSettings$db$n13 = _pendingSettings$db$n12[type]) === null || _pendingSettings$db$n13 === void 0 ? void 0 : _pendingSettings$db$n13.maxWorkers) !== ((_db$defaultConfig4 = db.defaultConfig) === null || _db$defaultConfig4 === void 0 ? void 0 : _db$defaultConfig4.max_number_of_workers) && /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ResetButton, {
                     type: "button",
-                    onClick: () => handleMaxWorkersReset(db.name),
+                    onClick: () => {
+                      var _db$defaultConfig5;
+                      return handleMaxWorkersReset(db.name, (_db$defaultConfig5 = db.defaultConfig) === null || _db$defaultConfig5 === void 0 ? void 0 : _db$defaultConfig5.max_number_of_workers);
+                    },
                     title: "Reset to environment default",
                     children: "\u21BB"
                   })]
@@ -10050,12 +10072,15 @@ function ReferenceTables(props) {
     return [];
   }, [tablesData, be_name, source_environment_name, sync_mode]);
   const toggleTables = Object(react["useCallback"])((BE, schemaKey) => {
+    const old = tableList != null ? tableList : [];
     getSchemaTableList(BE, schemaKey).then(data => {
       setTablesData(prevData => {
         const foundBE = prevData.find(it => it.env_name === BE);
         if (foundBE) {
           foundBE.schemas[schemaKey].opened = !foundBE.schemas[schemaKey].opened;
           data.forEach(item => {
+            const isFound = old.find(el => el.reference_table_name === item.table_name && el.schema_name === item.schema_name && el.interface_name === item.interface_name);
+            const isMoved = !!isFound;
             foundBE.schemas[schemaKey].tables.push({
               name: item.table_name,
               version_task_execution_id: item.task_execution_id,
@@ -10063,7 +10088,7 @@ function ReferenceTables(props) {
               schema_name: item.schema_name,
               lu_name: null,
               selected: false,
-              moved: false,
+              moved: isMoved,
               count_ind: item.count_ind === 'true' ? true : false
             });
           });
@@ -10282,11 +10307,6 @@ function ReferenceTables(props) {
           const cleanedSettings = {
             ...settings
           };
-          Object.keys(cleanedSettings).forEach(interfaceName => {
-            if (cleanedSettings[interfaceName].source && !cleanedSettings[interfaceName].source.affinityTouched) {
-              cleanedSettings[interfaceName].source.affinity = null;
-            }
-          });
           saveForm({
             advancedReferenceTables: cleanedSettings
           });
@@ -16127,11 +16147,6 @@ function TargetForm(props) {
                     const cleanedSettings = {
                       ...settings
                     };
-                    Object.keys(cleanedSettings).forEach(interfaceName => {
-                      if (cleanedSettings[interfaceName].target && !cleanedSettings[interfaceName].target.affinityTouched) {
-                        cleanedSettings[interfaceName].target.affinity = null;
-                      }
-                    });
                     saveForm({
                       advancedReferenceTables: cleanedSettings
                     });
@@ -18225,25 +18240,30 @@ const prepareDataForSave = (taskData, logicalUnits, copy) => {
       };
       new_item.count_ind = new_item.include_row_count !== undefined ? new_item.include_row_count : new_item.count_ind || false;
       if ((_taskData$advancedRef = taskData.advancedReferenceTables) !== null && _taskData$advancedRef !== void 0 && _taskData$advancedRef[new_item.interface_name]) {
-        var _taskData$advancedRef2, _taskData$advancedRef7;
+        var _taskData$advancedRef2, _taskData$advancedRef8;
         if ((_taskData$advancedRef2 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef2 !== void 0 && _taskData$advancedRef2[new_item.interface_name].source) {
-          var _taskData$advancedRef3, _taskData$advancedRef5;
-          if ((_taskData$advancedRef3 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef3 !== void 0 && _taskData$advancedRef3[new_item.interface_name].source.affinity) {
+          var _taskData$advancedRef5;
+          if (taskData.in_place_masking_ind) {
+            var _taskData$advancedRef3;
+            new_item.target_affinity = ((_taskData$advancedRef3 = taskData.advancedReferenceTables) === null || _taskData$advancedRef3 === void 0 ? void 0 : _taskData$advancedRef3[new_item.interface_name].source.affinity) || null;
+          } else {
             var _taskData$advancedRef4;
-            new_item.source_affinity = (_taskData$advancedRef4 = taskData.advancedReferenceTables) === null || _taskData$advancedRef4 === void 0 ? void 0 : _taskData$advancedRef4[new_item.interface_name].source.affinity;
+            new_item.source_affinity = ((_taskData$advancedRef4 = taskData.advancedReferenceTables) === null || _taskData$advancedRef4 === void 0 ? void 0 : _taskData$advancedRef4[new_item.interface_name].source.affinity) || null;
           }
-          if ((_taskData$advancedRef5 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef5 !== void 0 && _taskData$advancedRef5[new_item.interface_name].source.maxWorkers) {
-            var _taskData$advancedRef6;
-            new_item.source_max_no_of_workers = (_taskData$advancedRef6 = taskData.advancedReferenceTables) === null || _taskData$advancedRef6 === void 0 ? void 0 : _taskData$advancedRef6[new_item.interface_name].source.maxWorkers;
+          if (((_taskData$advancedRef5 = taskData.advancedReferenceTables) === null || _taskData$advancedRef5 === void 0 ? void 0 : _taskData$advancedRef5[new_item.interface_name].source.maxWorkers) !== undefined) {
+            if (taskData.in_place_masking_ind) {
+              var _taskData$advancedRef6;
+              new_item.target_max_no_of_workers = (_taskData$advancedRef6 = taskData.advancedReferenceTables) === null || _taskData$advancedRef6 === void 0 ? void 0 : _taskData$advancedRef6[new_item.interface_name].source.maxWorkers;
+            } else {
+              var _taskData$advancedRef7;
+              new_item.source_max_no_of_workers = (_taskData$advancedRef7 = taskData.advancedReferenceTables) === null || _taskData$advancedRef7 === void 0 ? void 0 : _taskData$advancedRef7[new_item.interface_name].source.maxWorkers;
+            }
           }
         }
-        if ((_taskData$advancedRef7 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef7 !== void 0 && _taskData$advancedRef7[new_item.interface_name].target) {
-          var _taskData$advancedRef8, _taskData$advancedRef10;
-          if ((_taskData$advancedRef8 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef8 !== void 0 && _taskData$advancedRef8[new_item.interface_name].target.affinity) {
-            var _taskData$advancedRef9;
-            new_item.target_affinity = (_taskData$advancedRef9 = taskData.advancedReferenceTables) === null || _taskData$advancedRef9 === void 0 ? void 0 : _taskData$advancedRef9[new_item.interface_name].target.affinity;
-          }
-          if ((_taskData$advancedRef10 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef10 !== void 0 && _taskData$advancedRef10[new_item.interface_name].target.maxWorkers) {
+        if ((_taskData$advancedRef8 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef8 !== void 0 && _taskData$advancedRef8[new_item.interface_name].target) {
+          var _taskData$advancedRef9, _taskData$advancedRef10;
+          new_item.target_affinity = ((_taskData$advancedRef9 = taskData.advancedReferenceTables) === null || _taskData$advancedRef9 === void 0 ? void 0 : _taskData$advancedRef9[new_item.interface_name].target.affinity) || null;
+          if (((_taskData$advancedRef10 = taskData.advancedReferenceTables) === null || _taskData$advancedRef10 === void 0 ? void 0 : _taskData$advancedRef10[new_item.interface_name].target.maxWorkers) !== undefined) {
             var _taskData$advancedRef11;
             new_item.target_max_no_of_workers = (_taskData$advancedRef11 = taskData.advancedReferenceTables) === null || _taskData$advancedRef11 === void 0 ? void 0 : _taskData$advancedRef11[new_item.interface_name].target.maxWorkers;
           }
@@ -19029,13 +19049,21 @@ const useInit = (saveForm, taskData) => {
             advancedReferenceTables[it.interface_name].source.affinity = it.source_affinity;
           }
           if (it.target_affinity) {
-            advancedReferenceTables[it.interface_name].target.affinity = it.target_affinity;
+            if (taskData.in_place_masking_ind) {
+              advancedReferenceTables[it.interface_name].source.affinity = it.target_affinity;
+            } else {
+              advancedReferenceTables[it.interface_name].target.affinity = it.target_affinity;
+            }
           }
-          if (it.source_max_no_of_workers) {
+          if (it.source_max_no_of_workers !== undefined) {
             advancedReferenceTables[it.interface_name].source.maxWorkers = it.source_max_no_of_workers;
           }
-          if (it.target_max_no_of_workers) {
-            advancedReferenceTables[it.interface_name].target.maxWorkers = it.target_max_no_of_workers;
+          if (it.target_max_no_of_workers !== undefined) {
+            if (taskData.in_place_masking_ind) {
+              advancedReferenceTables[it.interface_name].source.maxWorkers = it.target_max_no_of_workers;
+            } else {
+              advancedReferenceTables[it.interface_name].target.maxWorkers = it.target_max_no_of_workers;
+            }
           }
         });
         saveForm({

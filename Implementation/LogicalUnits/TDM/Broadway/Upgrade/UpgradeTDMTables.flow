@@ -1,4 +1,4 @@
-tags: TDM
+tags: TDM,Upgrade
 stages:
   Project Dir:
     actors:
@@ -12,6 +12,12 @@ stages:
             schema: string
   Get Lu and TDM LIB Path:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/PROJECT_FOLDER
       TDM_LIBRARY folder:
         parent: StringFormat
         in:

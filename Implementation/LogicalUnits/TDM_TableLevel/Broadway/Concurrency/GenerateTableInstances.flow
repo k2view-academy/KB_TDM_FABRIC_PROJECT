@@ -1,4 +1,4 @@
-tags: Concurrency
+tags: Partition,Concurrency
 stages:
   Get Inputs:
     actors:
@@ -99,7 +99,10 @@ stages:
     else: true
     dependsOn: Get Inputs
     actors:
-      GetPartitionNumberFlow1:
+      Error Handler - Get Num of Partitions:
+        parent: ErrorHandler
+        error: result
+      Get Partition Number Flow:
         parent: InnerFlow
         in:
           flowName:
@@ -122,6 +125,11 @@ stages:
           taskExecutionId:
             external: taskExecutionID
             schema: string
+            mandatory: false
+            createdBy: flowName
+          refTableID:
+            link: Get Ref Table ID/result
+            schema: integer
             mandatory: false
             createdBy: flowName
         out:
@@ -217,7 +225,7 @@ stages:
           value:
             const: null
             link:
-            - GetPartitionNumberFlow1/value
+            - Get Partition Number Flow/value
             - path: Get Partition Number From Table/result/number_of_partitions
               iterate: First
         out:
@@ -236,7 +244,7 @@ stages:
             schema: string
           a:
             link:
-            - GetPartitionNumberFlow1/value
+            - Get Partition Number Flow/value
             - path: Get Partition Number From Table/result/number_of_partitions
               iterate: First
       Default:

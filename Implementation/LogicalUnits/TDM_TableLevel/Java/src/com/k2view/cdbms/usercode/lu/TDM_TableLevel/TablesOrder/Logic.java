@@ -337,7 +337,7 @@ public class Logic extends UserCode {
                 interfaces.add(r.get("interface_name").toString());
             }
 
-            if ("extract".equalsIgnoreCase(taskAction)) {
+            if ("extract".equalsIgnoreCase(taskAction) || taskTables.size() == 1) {
                 tablesOrder.put(0, buildInterfaceTablesList(taskTables));
                 return 0; //maxOrder is zero in case of extract only task
             }

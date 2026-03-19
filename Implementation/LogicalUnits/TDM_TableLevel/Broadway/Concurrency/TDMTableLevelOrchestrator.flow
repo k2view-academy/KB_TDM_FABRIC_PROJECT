@@ -62,6 +62,7 @@ stages:
             const: TABLES_LU_NAME
             default: false
           value:
+            const: TDM_TableLevel
             external: luName
       'Get inplace masking ind ':
         parent: FabricSetRead

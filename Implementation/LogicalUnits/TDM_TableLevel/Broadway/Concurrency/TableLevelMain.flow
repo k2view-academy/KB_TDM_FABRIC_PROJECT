@@ -95,8 +95,8 @@ stages:
                 message: ''
               actions:
                 suppress: false
-                log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                log: false
+                flowName: ''
                 number_of_retries: ''
                 retry_interval: ''
       Clear Tables' Orders Cache:
@@ -166,7 +166,7 @@ stages:
     dependsOn: Prepare Order of Tables
   'Add ':
     actors:
-      MathAdd:
+      '+1':
         parent: MathAdd
         in:
           b:
@@ -186,21 +186,17 @@ stages:
                 message: ''
               actions:
                 suppress: false
-                log: true
-                flowName: PopulateTableErrorsForTableLevel
+                log: false
+                flowName: ''
                 number_of_retries: ''
                 retry_interval: ''
-          tableName:
-            const: ALL_TABLES
-            schema: string
-            mandatory: false
-      LoadTablesDataToCache1:
+      LoadTables Data To Cache:
         parent: InnerFlow
         in:
           flowName:
             const: LoadTablesDataToCache
           maxOrder:
-            link: MathAdd/result
+            link: +1/result
             schema: integer
             mandatory: false
             createdBy: flowName
@@ -214,15 +210,6 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
-          tableName:
-            schema: string
-            mandatory: false
-            createdBy: flowName
-      False if Table Level Task:
-        parent: Not
-        in:
-          value:
-            link: tableLevelInd/value
   Run Count For Supporting Tables:
     dependsOn: Load Tables Data To Cache
     actors:
@@ -242,7 +229,7 @@ stages:
             const: CountMainFlow
           taskExecutionId:
             external: taskExecutionId
-            schema: any
+            schema: string
             mandatory: false
             createdBy: flowName
     split: '--------------------'
@@ -254,14 +241,16 @@ stages:
   If Delete is Requested:
     dependsOn: Merge
     actors:
-      Delete is Requested Or Task With Entities:
-        parent: Or
+      Delete is Requested?:
+        parent: EqualsIgnoreCase
         condition: result
         in:
           a:
             link: deleteBeforeLoad/value
+            schema: string
           b:
-            link: False if Table Level Task/result
+            const: 'true'
+            schema: string
       Delete Error Handler:
         parent: ErrorHandler
         error: result
@@ -273,10 +262,14 @@ stages:
                 message: ''
               actions:
                 suppress: false
-                log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                log: false
+                flowName: ''
                 number_of_retries: ''
                 retry_interval: ''
+          tableName:
+            const: ''
+            schema: string
+            mandatory: false
       Delete Main Flow:
         parent: InnerFlow
         in:
@@ -314,17 +307,17 @@ stages:
                 message: ''
               actions:
                 suppress: false
-                log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                log: false
+                flowName: ''
                 number_of_retries: ''
                 retry_interval: ''
-      ExtractAndLoadMainFlow1:
+      Extract And Load Main Flow:
         parent: InnerFlow
         in:
           flowName:
             const: ExtractAndLoadMainFlow
           maxOrder:
-            link: MathAdd/result
+            link: +1/result
             schema: integer
             mandatory: false
             createdBy: flowName

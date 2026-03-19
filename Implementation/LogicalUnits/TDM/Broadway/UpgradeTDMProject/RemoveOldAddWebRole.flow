@@ -25,6 +25,12 @@ stages:
             const: SharedObjects/Broadway/TDM/TDMImplementorActors
   Create New Folder:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/value
       Create Folder if it does not exist:
         parent: md
         in:

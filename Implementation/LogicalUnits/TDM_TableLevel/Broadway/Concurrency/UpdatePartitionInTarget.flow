@@ -2,7 +2,7 @@ tags: Concurrency
 stages:
   Get Table's Fields & PKs:
     actors:
-      Table Error Handler No Fields Or No Key Fields:
+      'Table Error - Handler No Fields ':
         parent: ErrorHandler
         error: result
         in:
@@ -82,7 +82,7 @@ stages:
             mandatory: false
             createdBy: functionName
           taskExecutionId:
-            external: task_execution_id
+            external: taskExeId
             schema: string
             mandatory: false
             createdBy: functionName
@@ -99,8 +99,56 @@ stages:
         out:
           result:
             schema: string
+      Error Message:
+        parent: StringFormat
+        in:
+          format:
+            const: 'Table: ${tableName}, has no key fields for updates and no Primary
+              Key, failing the table!'
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: format
+  Check if Keys are Given:
+    actors:
+      Table Error Handler - No Key Fields:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+      Fail Table if not Key Fields:
+        parent: assertNotNull
+        in:
+          message:
+            const: null
+            link: Error Message/string
+          object:
+            link: Get Fields For Where Clause/result
   Default Update Flow:
-    dependsOn: Get Table's Fields & PKs
+    dependsOn: Check if Keys are Given
     actors:
       No Custom Flow?:
         parent: Equals
@@ -179,17 +227,17 @@ stages:
             mandatory: false
             createdBy: flowName
           task_execution_id:
-            external: task_execution_id
+            external: taskExeId
             schema: string
             mandatory: false
             createdBy: flowName
           task_ref_table_id:
-            external: task_ref_table_id
+            external: refTableID
             schema: integer
             mandatory: false
             createdBy: flowName
           partition_no:
-            external: partition_no
+            external: partitionNumber
             schema: string
             mandatory: false
             createdBy: flowName
@@ -208,7 +256,7 @@ stages:
     split: '--------------------'
   Custom Flow:
     else: true
-    dependsOn: Get Table's Fields & PKs
+    dependsOn: Check if Keys are Given
     actors:
       Table Error Handler Update With Custom Flow:
         parent: ErrorHandler
@@ -276,6 +324,7 @@ stages:
     actors:
       Count:
         parent: Const
+        height: 147
         in:
           value:
             const: null
@@ -288,7 +337,7 @@ stages:
             schema: integer
       Got Errors Count?:
         parent: IfElse
-        height: 326
+        height: 198
         in:
           a:
             link:
@@ -341,8 +390,13 @@ stages:
           sql:
             const: |-
               update ${@TDMDB_SCHEMA}.task_ref_partition
-               set execution_status=${execution_status}, number_of_processed_records=${number_of_processed_records},
-                  number_of_failed_records = ${number_of_failed_records}, end_time=NOW()
+               set execution_status= CASE
+                      WHEN ${number_of_processed_records} > 0 AND ${number_of_processed_records} - ${number_of_failed_records} > 0 THEN 'completed'
+                      ELSE 'failed' END,
+                  number_of_processed_records=${number_of_processed_records},
+                  number_of_failed_records = ${number_of_failed_records}, end_time=NOW(),
+                  number_of_records_to_process = case
+                      when number_of_records_to_process = -1 then ${number_of_records_to_process} else number_of_records_to_process end
               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
                AND partition_no=${partition_no}
           TDMDB_SCHEMA:
@@ -370,13 +424,13 @@ stages:
             schema: integer
             mandatory: false
             createdBy: sql
-          execution_status:
-            const: completed
-            schema: string
-            mandatory: false
-            createdBy: sql
           number_of_failed_records:
             link: Got Errors Count?/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          number_of_records_to_process:
+            link: Count/value
             schema: integer
             mandatory: false
             createdBy: sql
@@ -417,17 +471,17 @@ stages:
             mandatory: false
             createdBy: sql
           task_execution_id:
-            external: task_execution_id
+            external: taskExeId
             schema: string
             mandatory: false
             createdBy: sql
           task_ref_table_id:
-            external: task_ref_table_id
+            external: refTableID
             schema: integer
             mandatory: false
             createdBy: sql
           partition_no:
-            external: partition_no
+            external: partitionNumber
             schema: string
             mandatory: false
             createdBy: sql

@@ -2,6 +2,9 @@ tags: Concurrency
 stages:
   Mtable Lookup:
     actors:
+      Error Handler - Get Num of Partitions:
+        parent: ErrorHandler
+        error: result
       Get Partitions Number:
         parent: InnerFlow
         in:
@@ -25,6 +28,11 @@ stages:
           taskExecutionId:
             external: taskExecutionId
             schema: string
+            mandatory: false
+            createdBy: flowName
+          refTableID:
+            external: tableRefID
+            schema: integer
             mandatory: false
             createdBy: flowName
         out:

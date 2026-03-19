@@ -39,7 +39,7 @@ stages:
             const: |-
               select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status,
               exe.number_of_records_to_process, exe.number_of_processed_records, exe.number_of_failed_records, exe.error_msg, ref.lu_name, exe.start_time , exe.end_time,
-              ref.table_filter, ref.filter_type, ref.filter_parameters ,ref.version_task_execution_id
+              ref.table_filter, ref.filter_type, ref.filter_parameters ,ref.version_task_execution_id, exe.job_uid as batch_id
               from ${@TDMDB_SCHEMA}.task_ref_exe_stats exe inner join ${@TDMDB_SCHEMA}.task_ref_tables ref on ref.task_id=exe.task_id
               and ref.task_ref_table_id = exe.task_ref_table_id
           TDMDB_SCHEMA:
@@ -80,6 +80,7 @@ stages:
             - filter_type
             - filter_parameters
             - version_task_execution_id
+            - batch_id
           dialect:
             const: sqlite
           task_execution_id:
@@ -116,6 +117,8 @@ stages:
           number_of_failed_records:
             schema: any
             mandatory: false
+          batch_id:
+            schema: any
           params:
             link:
               path: Query/result

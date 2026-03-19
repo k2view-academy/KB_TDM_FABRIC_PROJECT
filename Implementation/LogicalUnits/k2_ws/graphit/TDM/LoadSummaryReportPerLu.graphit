@@ -123,7 +123,7 @@
             {
               "name": "List of Failed Tables",
               "type": "sql",
-              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records, \nstart_time as start_execution_time, end_time as end_execution_time, error_msg, table_filter,v ersion_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records, \nstart_time as start_execution_time, end_time as end_execution_time, error_msg, table_filter,version_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
             }
           ]
         },

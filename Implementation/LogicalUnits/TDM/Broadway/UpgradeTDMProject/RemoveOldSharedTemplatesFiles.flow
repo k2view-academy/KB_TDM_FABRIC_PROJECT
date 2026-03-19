@@ -25,6 +25,12 @@ stages:
             - tdmSequence_Actor.actor.template
   Stage 2:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/value
       Format File/Directory Name:
         parent: StringFormat
         in:

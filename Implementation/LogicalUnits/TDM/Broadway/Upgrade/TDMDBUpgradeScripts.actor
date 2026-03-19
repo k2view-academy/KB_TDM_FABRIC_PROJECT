@@ -199,6 +199,12 @@
                     "script_id": 32,
                     "script_name": "update_tdmdb_from_v9.4.2_to_v9.5.0.sql",
                     "flow_name": "Upgrade942_to_950"
+                },
+                {
+                    "version_name": "9.5.1",
+                    "script_id": 33,
+                    "script_name": "",
+                    "flow_name": "Upgrade950_to_951"
                 }
             ],
             "final": true,

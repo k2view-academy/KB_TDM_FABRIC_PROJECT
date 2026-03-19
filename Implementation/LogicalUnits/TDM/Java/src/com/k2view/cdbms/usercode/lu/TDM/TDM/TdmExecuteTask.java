@@ -643,6 +643,10 @@ public class TdmExecuteTask {
      private static Map<String, String> executeTableLevelBatch(Map<String, Object> taskProperties, Boolean tableLevelInd) throws Exception {
         try {
             Map<String, String> ExecutionInfo = new LinkedHashMap<>();
+
+            String taskType = TASK_TYPE.get(taskProperties).toString().toLowerCase();
+            //TDM9.5 - Set deleteBeforeLoad
+            String deleteBeforeLoad = DELETE_BEFORE_LOAD.get(taskProperties);
             // TDM9.1 check if the task includes table level
             String selectionMethod = SELECTION_METHOD.get(taskProperties);
             if (!TABLES_TASK.equalsIgnoreCase(selectionMethod)) {
@@ -651,6 +655,13 @@ public class TdmExecuteTask {
 
                 if(handleTables == null) {
                     return null;
+                }
+
+                //TDM9.5 - Set deleteBeforeLoad to true for None TABLES task
+                if (!"extract".equals(taskType)) {
+                    selectionMethod = "true";
+                } else {
+                    selectionMethod = "false";
                 }
 
                 //TDM 9.0 - HF1, check if the Table Level already ran or not
@@ -663,7 +674,7 @@ public class TdmExecuteTask {
                 }
             }
             
-            String taskType = TASK_TYPE.get(taskProperties).toString().toLowerCase();
+            
             if ("extract".equals(taskType)) {
                 setGlobalsForTask("extract", taskProperties);
             } else {
@@ -676,10 +687,11 @@ public class TdmExecuteTask {
             String batchCommand = "BATCH " + TABLE_LEVEL_LU + ".(?) fabric_command=? with async=true"
                     + " BATCH_ID_PREFIX ='" + taskTitle + "'";
            
+            
             String broadwayCommand = "broadway " + TABLE_LEVEL_LU + ".TableLevelMain iid=?, " +
                     "taskExecutionId=" + TASK_EXECUTION_ID.get(taskProperties) + ",syncMode=\"" + OriginalSyncMode +
                     "\", taskType=" + taskType + ", tableLevelInd=" + tableLevelInd + ", deleteBeforeLoad="
-                    + DELETE_BEFORE_LOAD.get(taskProperties)+ ", inPlaceMaskingInd="
+                    + deleteBeforeLoad + ", inPlaceMaskingInd="
                     + IN_PLACE_MASKING_IND.get(taskProperties);   
 
             //log.info("executeTableLevelBatch - batchCommand: " + batchCommand);

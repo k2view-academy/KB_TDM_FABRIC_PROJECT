@@ -59,6 +59,46 @@ stages:
         out:
           value:
             schema: boolean
+  Table Ref ID:
+    actors:
+      'Get Table Ref ID    ':
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: interfaceName/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: schemaName/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: tableName/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
   get info:
     actors:
       Table Error Handler No Fields Or No Key Fields:
@@ -78,6 +118,18 @@ stages:
                 retry_interval: ''
           tableName:
             external: tableName
+            schema: string
+            mandatory: false
+          refTableID:
+            link: Get Table Ref ID    /result
+            schema: integer
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schemaName
             schema: string
             mandatory: false
       get table info:

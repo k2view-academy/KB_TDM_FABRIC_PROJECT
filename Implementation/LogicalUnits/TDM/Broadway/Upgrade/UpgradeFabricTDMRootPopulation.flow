@@ -22,6 +22,12 @@ stages:
             schema: string
   Check if TDM should be Handled:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/PROJECT_FOLDER
       Ignore TDM LUs:
         parent: Lookup
         in:

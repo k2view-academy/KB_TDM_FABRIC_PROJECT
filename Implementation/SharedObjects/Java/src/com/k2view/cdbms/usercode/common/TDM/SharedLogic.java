@@ -970,7 +970,7 @@ public class SharedLogic {
 											"max(p.end_time)   as end_time, " +
 											"NULL::text as estimated_remaining_duration, " +
 											// sums across partitions:
-											"CASE WHEN SUM(COALESCE(p.number_of_records_to_process, 0)) >=0 AND s.number_of_partitions > 1 THEN 0 ELSE s.number_of_records_to_process END AS number_of_records_to_process, " +
+											"CASE WHEN s.number_of_records_to_process > 0 THEN s.number_of_records_to_process ELSE 0 END AS number_of_records_to_process, " +
 											"SUM(COALESCE(p.number_of_processed_records, 0)) as number_of_processed_records, " +
 											// minimal error aggregation :
 											"COALESCE(max(nullif(p.error_msg, '')), '') as error_msg " +
@@ -986,7 +986,6 @@ public class SharedLogic {
 											"GROUP BY rt.lu_name, p.task_ref_table_id, p.batch_id, s.number_of_records_to_process, s.number_of_partitions " +
 											"ORDER BY rt.lu_name, ref_table_name";
 
-		//rs = DBQuery("TDM", selectDetailedRefTablesStats, new Object[]{refTaskExecutionId});
 		rows = db(TDM).fetch(selectDetailedRefTablesStats, refTaskExecutionId);
 
 		return rows;

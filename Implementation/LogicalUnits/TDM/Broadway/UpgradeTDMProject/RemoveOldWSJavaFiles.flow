@@ -26,6 +26,12 @@ stages:
             - TDM_utils
   Stage 2:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Project Folder/value
       Format File/Directory Name:
         parent: StringFormat
         height: 174

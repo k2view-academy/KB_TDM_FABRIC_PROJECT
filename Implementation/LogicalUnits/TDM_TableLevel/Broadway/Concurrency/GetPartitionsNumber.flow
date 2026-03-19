@@ -40,6 +40,44 @@ stages:
         out:
           result:
             schema: string
+      Get Partition Records Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: Definitions
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: partition_records_flow
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
   Get Flow Name:
     actors:
       Flow Name:
@@ -108,7 +146,7 @@ stages:
             mandatory: false
             createdBy: functionName
           attrName:
-            link: Flow Name/value
+            link: Get Partition Records Flow/result
             schema: string
             mandatory: false
             createdBy: functionName
@@ -178,6 +216,37 @@ stages:
   Call Inner Flow With Inputs:
     dependsOn: Get Inputs
     actors:
+      Error Handler - Call Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
       InnerFlow:
         parent: InnerFlow
         in:
@@ -204,6 +273,14 @@ stages:
           value:
             external: value
             schema: integer
+  Stage 1: {
+    }
+  Stage 2: {
+    }
+  Stage 3: {
+    }
+  Stage 4: {
+    }
 schemas:
   fnGetCachedTableInfoBySection.out.result:
     type: object
