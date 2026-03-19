@@ -1,0 +1,141 @@
+stages:
+  In Case of Resume Task:
+    actors:
+      Check  For And Handle Resumed Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckAndHandleResumedTables
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+  Extract Data:
+    dependsOn: In Case of Resume Task
+    actors:
+      Run Extract?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = true;
+              if (retentionPeriodValue == '0' || syncMode == 'OFF') {
+                  result = false;
+              }
+              result;
+          retentionPeriodValue:
+            external: retentionPeriodValue
+            schema: string
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+      Extract Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+      Table Level Extract:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TableLevelExtractOnlyTask
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
+            mandatory: false
+    split: '--------------------'
+  No Extract:
+    else: true
+    dependsOn: In Case of Resume Task
+  'Empty Stage to Continue to Load ': {
+    }
+  Load Data:
+    dependsOn: 'Empty Stage to Continue to Load '
+    actors:
+      Run Load?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            external: loadEntity
+            schema: string
+          b:
+            const: 'true'
+            schema: string
+      Load Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+      Table Level Load:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TableLevelLoadOnlyTask
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          tableLevelInd:
+            external: tableLevelInd
+            schema: boolean
+            mandatory: false
+          deleteBeforeLoad:
+            external: deleteBeforeLoad
+            schema: string
+            mandatory: false
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+          retentionPeriodValue:
+            external: retentionPeriodValue
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: any
+            mandatory: false
+    split: '--------------------'
+  No Load:
+    else: true
+    dependsOn: 'Empty Stage to Continue to Load '

@@ -2,35 +2,35 @@ tags: TDM
 stages:
   Get Template For Main Table Population:
     actors:
-      Get Template For Main table Population:
-        parent: InnerFlow
+      Get Type Of Table:
+        parent: LuFunction
         in:
-          flowName:
-            const: getTemplate
-          TEMPLATE_TYPE:
-            const: main_table_population_template
-            schema: string
-            editor:
-              id: com.k2view.mTableKey
-            mandatory: false
-          INTERFACE_TYPE:
-            external: INTERFACE_TYPE
+          functionName:
+            const: fnGetObjectType
+          luName:
+            external: LU_NAME
             schema: string
             mandatory: false
+            createdBy: functionName
+          name:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+            createdBy: functionName
         out:
           result:
-            schema: string
+            schema: any
   PWD:
     actors:
-      No Template For Main Table?:
+      Main Regular Table?:
         parent: Equals
         condition: result
         in:
           a:
-            link: Get Template For Main table Population/result
+            link: Get Type Of Table/result
             schema: string
           b:
-            const: ''
+            const: TABLE
             schema: string
       PROJECT_DIR:
         parent: SysEnv

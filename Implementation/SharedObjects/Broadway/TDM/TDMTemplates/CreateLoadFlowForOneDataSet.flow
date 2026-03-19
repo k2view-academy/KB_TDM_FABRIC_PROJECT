@@ -39,6 +39,10 @@ stages:
             external: rootFieldName
             schema: string
             mandatory: false
+          rootTableName:
+            schema: any
+            mandatory: false
+            createdBy: functionName
         out:
           res:
             schema: '#ref'
@@ -69,7 +73,7 @@ stages:
           flowName:
             const: getTemplate
           TEMPLATE_TYPE:
-            const: load_template
+            const: load_document_template
             schema: string
             editor:
               id: com.k2view.mTableKey
@@ -106,6 +110,16 @@ stages:
             link: Get Project Directory/PROJECT_FOLDER
             schema: string
             mandatory: false
+      Build Flow Name:
+        parent: StringFormat
+        in:
+          format:
+            const: load_${name}.flow
+          name:
+            external: targetDbTable
+            schema: string
+            mandatory: false
+            createdBy: format
       Apply Template:
         parent: LuFunction
         in:
@@ -129,7 +143,7 @@ stages:
             const: null
             link: flow folder/string
           path:
-            const: LoadToTarget.flow
+            link: Build Flow Name/string
           stream:
             link: Apply Template/result
 schemas:

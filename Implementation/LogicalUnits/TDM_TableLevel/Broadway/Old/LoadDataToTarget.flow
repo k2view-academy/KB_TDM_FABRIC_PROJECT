@@ -1,0 +1,335 @@
+stages:
+  Get Table's Fields:
+    actors:
+      set Source Environment:
+        parent: setSourceEnv_Actor
+      Get List of Table's Fields:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableFields
+          dbInterfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Set Target Environment:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: setTargetEnv
+  Remove Escaping Chars:
+    actors:
+      Remove escaping chars:
+        parent: Replace
+        in:
+          search:
+            const: '"'
+          string:
+            link:
+              path: Get List of Table's Fields/result/column_name
+              iterate: Iterate
+  List of Fields:
+    last: 1
+    actors:
+      Build Array of Fields:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Remove escaping chars/string
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Get Custom Flow If Exists:
+    actors:
+      Records To Be Loaded:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: inputRecords
+            schema: object
+        out:
+          value:
+            schema: object
+      Get Commit Size:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_REF_UPD_SIZE
+            default: false
+        out:
+          result:
+            schema: integer
+      Get Load Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableDefinitions
+          interfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          attrName:
+            const: load_flow
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Update Table Current Count:
+    actors:
+      Update Count:
+        parent: Peek
+        in:
+          flowName:
+            const: UpdateTableCurrentCount
+          commitSize:
+            link: Get Commit Size/result
+            schema: integer
+            mandatory: false
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          values:
+            link: Records To Be Loaded/value
+        out:
+          values:
+            schema: '#ref'
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Load By Query:
+    else: false
+    dependsOn: Update Table Current Count
+    actors:
+      No Custom Load Flow?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Load Flow/result
+            schema: string
+          b:
+            const: ''
+            schema: string
+      Error Handler For Load By Query:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+      load Table By Query:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadTableByQuery
+          innerFlowClose:
+            const: false
+          targetInterface:
+            external: targetInterface
+            schema: string
+            mandatory: false
+          targetSchema:
+            external: targetSchema
+            schema: string
+            mandatory: false
+          targetTable:
+            external: targetTable
+            schema: string
+            mandatory: false
+          inputRecords:
+            link: Update Count/values
+            schema: '#ref'
+            mandatory: false
+          fieldsArray:
+            link: Build Array of Fields/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: integer
+    split: '--------------------'
+  Load Flow:
+    else: true
+    dependsOn: Update Table Current Count
+    actors:
+      Error Handler For Load By Custom Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+      Run Load Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            link: Get Load Flow/result
+          innerFlowClose:
+            const: false
+          targetInterface:
+            external: targetInterface
+            schema: string
+            mandatory: false
+          targetSchema:
+            external: targetSchema
+            schema: string
+            mandatory: false
+          targetTable:
+            external: targetTable
+            schema: string
+            mandatory: false
+          inputRecords:
+            link: Update Count/values
+            schema: '#ref'
+            mandatory: false
+          fieldsArray:
+            link: Build Array of Fields/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: integer
+  Update Processed Count:
+    actors:
+      Update Count?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link:
+            - load Table By Query/result
+            - Run Load Flow/result
+            schema: integer
+          b:
+            const: -1
+            schema: integer
+      Update Table's Processed Count:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              set number_of_processed_records = coalesce(${recCount}, 0)
+              where task_execution_id = ${taskExeId}
+              and task_ref_table_id = ${tableId}
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          tableId:
+            external: tableId
+            schema: integer
+            mandatory: false
+          recCount:
+            link:
+            - load Table By Query/result
+            - Run Load Flow/result
+            schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: any
+            mandatory: false
+schemas:
+  Get List of Table's Fields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Build Array of Fields.out.array:
+    type: array
+    items:
+      type: string
+  Update Count.out.values:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string
+  load Table By Query.in.inputRecords:
+    type: array
+    items: {
+      }
+  load Table By Query.in.fieldsArray:
+    type: array
+    items:
+      type: string
+  Run Load Flow.in.inputRecords:
+    type: array
+    items: {
+      }
+  Run Load Flow.in.fieldsArray:
+    type: array
+    items:
+      type: string

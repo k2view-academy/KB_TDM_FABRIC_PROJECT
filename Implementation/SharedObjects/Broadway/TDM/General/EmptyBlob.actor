@@ -18,5 +18,6 @@
             }
         }
     ],
-    "parentType": "Const"
+    "parentType": "Const",
+    "doc": "This actor generate an empty object"
 }

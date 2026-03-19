@@ -1,0 +1,87 @@
+## Fabric Project Information
+
+This section contains information specific about the Fabric implementation project, which the user is currently working on using k2Studio.
+
+### Project Structure
+
+The project contains these folders and files:
+- **extensions**: Holds project-specific VSCode extensions source code for k2Studio
+- **Implementation**: Holds all the Fabric project modules:
+    - **Implementation/LogicalUnits**: Holds all the project logical units folders (aliases: LU, LUT, LU type or Data Product), where each LU holds a set of definitions and instructions used for 
+      integrating data from source systems, processing and governing the data, storing, and delivering it. The LU is the prototype from which LU Instances (LUIs) are created.
+      Each LU folder contains the following folders and one vdb.k2vdb.xml file:
+        - **Broadway**: Contains broadway flow and actor files
+        - **EntityInclusion**: In the UI it is called instance groups. It is a predefined set of Logical Unit instance IDs, selected by an SQL query.
+        - **graphit**: Allows users to model and build response documents (JSON, XML, or CSV) for web services or other purposes with minimal coding
+        - **IidFinder**: Instance ID finder configurations
+        - **Java**: Java source code (src and resources folders)
+        - **Mtable**: CSV files
+        - **reports**: Report configurations
+        - **SecurityProfiles**: Security and access control profiles
+        - **Tables**: LU table definitions (*.k2table.xml) and population flows (*.population.flow)
+        - **Templates**: Handlebars templates
+        - **Views**: LU view definitions
+        - **web**: Web app folders
+        - **vdb.k2vdb.xml**: The LU schema definition file, represents the design for a specific data product dataset, its tables, their relations, population flows, synchronization rules and other business definitions.
+    - **Implementation/LogicalUnits/k2_ref**: A special LU structure that holds reference/common tables used in other LUs. Contains the same folder structure as a regular LU, except EntityInclusion and SecurityProfiles, and except also the vdb (schema) file.
+    - **Implementation/LogicalUnits/k2_ws**: A special LU structure that holds web service definitions. Contains these folders: Broadway, graphit, Java, reports, Templates, web
+    - **Implementation/SharedObjects**: Holds shared objects used in different LUs, References or Web Services.
+      Contains these folders:
+        - **Broadway**: Shared Broadway flows and actors
+        - **Environments**: Contains Environments.k2fabEnv.xml file, which holds environment definitions, each with the list of interfaces and globals overridden values
+        - **Interfaces**: Contains database and generic interface definitions
+            - **Databases**: Contains JDBC interface definitions
+            - **Discovery**: Contains files required for the catalog discovery module
+            - **GenericInterfaces**: Contains non-DB interface definitions
+        - **InterfaceTypes**: Contains custom interface type definitions
+            - **DatabaseDrivers**: Contains definitions for new JDBC drivers 
+            - **GenericTypes**: Contains definitions for new generic/custom interface types
+        - **Java**: Shared Java code (src and resources folders)
+        - **Templates**: Shared handlebars templates
+- **lib**: Contains Java library files required by the project, such as utility JARs or JDBC drivers, that are not provided as part of the product
+    * Direct JAR files under this lib folder are part of the Java classpath
+    * JAR files inside inner folders are loaded dynamically and not in the classpath. These folders are used for project-defined database types, where each folder contains the JDBC driver used to connect to a specific DB type
+- **project-resources**: Used as a container for any miscellaneous file/folder resources
+- **<project_name>.k2proj**: File contains the project name and version and some other metadata
+- **java-dependencies.xml**: File contains third party Java dependencies in Maven format (used only to download dependencies and not in build)
+- **installed_extensions.json**: File holds installed K2-Exchange extensions with their artifact paths and checksums
+
+### Java Structure and Build System
+
+#### Java Package Structure
+- All Java folders (in SharedObjects and each LU) contain:
+    - **src**: Java source code
+    - **resources**: Java resource files
+- LU Java packages follow pattern: `com.k2view.cdbms.usercode.lu.<LU_NAME>` (e.g., `com.k2view.cdbms.usercode.lu.Customer`)
+- Shared Java packages: `com.k2view.cdbms.usercode.common.*`
+- Each LU contains a `Globals.java` class extending `SharedGlobals`
+
+#### Build System: k2Studio Auto-Build
+
+**Classpath Management** (via .theia/settings.json):
+- `java.autobuild.enabled: true` - Automatic compilation on file changes
+- Classpath managed directly via `java.project.referencedLibraries`:
+  - Fabric product JARs: `/path/to/fabric/lib/fabric/*.jar` (cdbms-core, fabric-session, broadway, graphit, discovery, etc.)
+  - Fabric provided JARs: `/path/to/fabric/lib/provided/*.jar`
+  - Project JARs: `lib/*.jar`
+- Output directory: `.studioWeb/java/bin` (configured via `java.project.outputPath`)
+
+**Key Configuration:**
+- Java Language Server uses Red Hat Java extension in Hybrid mode
+- Source paths are automatically updated based on visible LUs in the IDE
+
+**Important Notes:**
+- LUs cannot reference other LUs' Java code (only SharedObjects)
+- The IDE handles compilation automatically when files are saved
+- No manual build commands are needed for normal development
+
+### Broadway Flows
+
+- Flow-based data processing and population
+- Used for table population, data transformations, and business logic
+
+### Notes
+
+- Broadway, graphit, Java (src/resources), and project-resources can have inner folders
+- Each LU is independent at the Java level; shared code must be in SharedObjects
+- Source paths are dynamically managed based on visible LUs in the workspace

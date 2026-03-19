@@ -22,6 +22,7 @@ import java.util.Map;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 
@@ -196,6 +197,11 @@ public class Logic extends WebServiceUserCode {
 		
 		return wrapWebServiceResults("SUCCESS", null, editIndicator);
 	}
+	public static Object wsGetTablesAPIMode() throws Exception {
+		Object splitIndicator =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'TABLES_USE_SPLIT_API'").firstValue();
+		
+		return wrapWebServiceResults("SUCCESS", null, splitIndicator);
+	}
 
 	@desc("This API provides Retention Period Info for TDM GUI")
 	@webService(path = "retentionperiodinfo", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
@@ -299,6 +305,70 @@ public class Logic extends WebServiceUserCode {
 		formats.put("DateFormat", gp.getDateFormat());
 		formats.put("TimeFormat", gp.getTimeFormat());
 		return formats;
+	}
+
+	@desc("This API provides Max Workers Per Node from config with TDM override logic")
+	@webService(path = "getMaxWorkersPerNode", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = false)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+						{
+			  "result": 5,
+			  "errorCode": "SUCCESS",
+			  "message": ""
+			}
+						""")
+	public static Object wsGetMaxWorkersPerNode() throws Exception {
+		try {
+			// 1. Get the base limit from the new helper function
+			int globalLimit = getGlobalMaxWorkersLimit();
+			int finalValue = globalLimit;
+
+			// 2. Load the override from tdm_general_parameters
+			String sql = "SELECT param_value FROM " + TDMDB_SCHEMA +
+					".tdm_general_parameters WHERE param_name = 'MAX_NO_OF_WORKERS_FOR_EXECUTION'";
+
+			Object tdmValueObj = db(TDM).fetch(sql).firstValue();
+
+			// 3. Apply TDM Logic
+			if (tdmValueObj != null && !tdmValueObj.toString().trim().isEmpty()) {
+				int tdmValue = Integer.parseInt(tdmValueObj.toString());
+				// Only override if TDM value is lower than the Global limit
+				if (tdmValue > 0 && tdmValue < globalLimit) {
+					finalValue = tdmValue;
+				}
+			}
+
+			return wrapWebServiceResults("SUCCESS", "", finalValue);
+
+		} catch (NumberFormatException e) {
+			return wrapWebServiceResults("FAILED", "Configuration contains a non-numeric value", null);
+		} catch (Throwable t) {
+			return wrapWebServiceResults("FAILED", t.getMessage(), null);
+		}
+	}
+
+	@desc("This API provides the Global Max Workers limit from configuration, ignoring TDM overrides")
+	@webService(path = "getGlobalMaxWorkersLimit", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = false)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			                       {
+			  "result": 8,
+			  "errorCode": "SUCCESS",
+			  "message": ""
+			}
+			                        """)
+	public static Object wsGetGlobalMaxWorkersLimit() throws Exception {
+		try {
+			int globalLimit = getGlobalMaxWorkersLimit();
+
+			return wrapWebServiceResults("SUCCESS", "", globalLimit);
+
+		} catch (Throwable t) {
+			// Standard error handling for unexpected configuration issues
+			return wrapWebServiceResults("FAILED", t.getMessage(), null);
+		}
 	}
 
 }

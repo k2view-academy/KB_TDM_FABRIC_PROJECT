@@ -38,6 +38,7 @@ import static com.k2view.cdbms.shared.user.UserCode.isFirstSync;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
@@ -264,14 +265,14 @@ public class SharedLogic {
         for (String lu_str : lusList) {
             beAndLus_sql += "and " + lu_str + "=ANY(lu.lu_list) ";
         }
-        
+
         env_id = "" + envDetails.get("environment_id");
         env_name = "" + envDetails.get("environment_name");
         role_id = "" + envDetails.get("role_id");
         ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
         //log.info("fnValidateTargetEnvForTask - role_id: " + role_id);
         if (role_id.equalsIgnoreCase("0") && !"OFF".equalsIgnoreCase(sync_mode)){
-            errorMessages.put("permissionSet", "The user does not have the required permissions to execute in target environment '" + env_name +"'.");
+            errorMessages.put("permissionSet", "The user does not have the required permissions to execute in target environment '" + env_name + "'.");
         
         }
         if (role_id.equalsIgnoreCase("0") && Long.valueOf(env_id) < 0){
@@ -574,4 +575,57 @@ public class SharedLogic {
 
         }
     }
+
+    public static String validateMaxWorkers(List<Map<String, Object>> tables) {
+        return performWorkerValidation(tables, "interface_name");
+    }
+
+    public static String validateLUMaxWorkers(List<Map<String, Object>> lus) {
+        return performWorkerValidation(lus, "lu_name");
+    }
+
+    /**
+     * Common logic to check source/target worker limits.
+     * 
+     * @param items       The list of maps to validate.
+     * @param identityKey The key used to identify the record in error messages
+     *                    (e.g., "interface_name" or "lu_name").
+     */
+    private static String performWorkerValidation(List<Map<String, Object>> items, String identityKey) {
+        int maxLimit;
+
+        try {
+            maxLimit = getGlobalMaxWorkersLimit();
+        } catch (Exception e) {
+            return "Error: Could not retrieve the global max workers limit from configuration.";
+        }
+
+        for (Map<String, Object> item : items) {
+            // Fetch the specific identifier for this item (LU name or Interface name)
+            String displayName = String.valueOf(item.getOrDefault(identityKey, "Unknown " + identityKey));
+
+            String[] workerFields = { "source_max_no_of_workers", "target_max_no_of_workers" };
+
+            for (String field : workerFields) {
+                Object value = item.get(field);
+
+                if (value != null) {
+                    try {
+                        int requestedWorkers = Integer.parseInt(value.toString());
+
+                        if (requestedWorkers > maxLimit) {
+                            return String.format(
+                                    "Validation failed: for %s [%s]: %s (%d) exceeds the maximum allowed for execution, as defined in the Fabric configuration (%d).",
+                                    identityKey.replace("_", " "), displayName, field, requestedWorkers, maxLimit);
+                        }
+                    } catch (NumberFormatException nfe) {
+                        return String.format("Invalid numeric value in %s for %s: %s", field, identityKey, displayName);
+                    }
+                }
+            }
+        }
+
+        return "";
+    }
+    
 }

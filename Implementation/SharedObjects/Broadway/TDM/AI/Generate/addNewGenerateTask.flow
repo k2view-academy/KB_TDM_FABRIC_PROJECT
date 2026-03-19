@@ -64,7 +64,7 @@ stages:
         in:
           date:
             link: Now/date
-      'StringFormat ':
+      Execution Params:
         parent: StringFormat
         in:
           format:
@@ -72,8 +72,9 @@ stages:
               \  \"table_generation\": {\r\n    \"batch_size_parent\": 1024,\r\n \
               \   \"batch_size_child\": 256,\r\n    \"main_entity_table_n_samples\"\
               : ${numOfEntities}\r\n  },\r\n  \"special_column_generation\": {\r\n\
-              \    \"batch_size\": 2048,\r\n    \"temperature\": 0.8\r\n  },\r\n \
-              \ \"schemas\": [\"${schema}\"],\r\n  \"patching\": {\r\n    \"root_table_n_rows_for_memory_estimation_for_fully_joined_table\"\
+              \    \"batch_size\": 2048,\r\n    \"failed_uniqueness_patience\": 20,\r\
+              \n    \"temperature\": 0.8\r\n  },\r\n  \"schemas\": [\"${schema}\"\
+              ],\r\n  \"patching\": {\r\n    \"root_table_n_rows_for_memory_estimation_for_fully_joined_table\"\
               : 20,\r\n    \"ram_safety_factor_for_fully_joined_table\": 0.2,\r\n\
               \    \"group_proximity_intersection_weight\": 0.9\r\n  },\r\n  \"random_state\"\
               : 42,\r\n  \"verbose\": true\r\n}"
@@ -125,7 +126,7 @@ stages:
             schema: string
             mandatory: false
           execution_params:
-            link: StringFormat /string
+            link: Execution Params/string
             schema: string
             mandatory: false
           k2systemName:
@@ -140,7 +141,7 @@ schemas:
       properties:
         schema:
           type: string
-  StringFormat .in.schema:
+  Execution Params.in.schema:
     type: array
     items:
       type: string

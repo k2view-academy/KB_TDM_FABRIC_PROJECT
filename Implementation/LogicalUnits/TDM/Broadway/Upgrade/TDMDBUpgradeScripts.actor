@@ -181,6 +181,24 @@
                     "script_id": 29,
                     "script_name": "update_tdmdb_from_v9.3.1_to_v9.4.0.sql",
                     "flow_name": "Upgrade931_to_940"
+                },
+                {
+                    "version_name": "9.4.1",
+                    "script_id": 30,
+                    "script_name": "",
+                    "flow_name": ""
+                },
+                {
+                    "version_name": "9.4.2",
+                    "script_id": 31,
+                    "script_name": "",
+                    "flow_name": ""
+                },
+                {
+                    "version_name": "9.5.0",
+                    "script_id": 32,
+                    "script_name": "update_tdmdb_from_v9.4.2_to_v9.5.0.sql",
+                    "flow_name": "Upgrade942_to_950"
                 }
             ],
             "final": true,

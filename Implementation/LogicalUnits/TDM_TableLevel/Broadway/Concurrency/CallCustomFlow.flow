@@ -1,0 +1,150 @@
+tags: Concurrency
+stages:
+  Prepare Select Statements:
+    actors:
+      set Source Environment:
+        parent: setSourceEnv_Actor
+  Get Queries And Count:
+    actors:
+      BuildFilterQueries:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildFilterQueries
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          countClause:
+            schema: string
+          filterClause:
+            schema: string
+          clauseParameters:
+            schema: '#ref'
+  Call Custom Flow:
+    actors:
+      Table Error Handler Load to fabric:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            const: '1'
+            schema: string
+            mandatory: false
+          refTableID:
+            external: tableRefId
+            schema: integer
+            mandatory: false
+      Run Extract Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            external: customFlowName
+          innerFlowClose:
+            const: false
+          sourceInterface:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          sourceSchema:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          sourceTableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          whereClause:
+            external: tableFilter
+            schema: string
+            mandatory: false
+          paramtersStr:
+            external: filterParameters
+            schema: string
+            mandatory: false
+          countStatement:
+            schema: string
+            mandatory: false
+          selectStatement:
+            link: BuildFilterQueries/filterClause
+            schema: string
+            mandatory: false
+          queryParameters:
+            link: BuildFilterQueries/clauseParameters
+            schema: '#ref'
+            mandatory: false
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: any
+            mandatory: false
+          filterGUI:
+            external: filterGUI
+            schema: any
+            mandatory: false
+          tableCount:
+            external: tableCount
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: '#ref'
+          tableCount:
+            external: tableCount
+            schema: integer
+schemas:
+  BuildFilterQueries.out.clauseParameters:
+    type: array
+    items:
+      type: string
+  Run Extract Flow.in.queryParameters:
+    type: array
+    items:
+      type: string
+  Run Extract Flow.out.result:
+    type: array
+    items:
+      type: object

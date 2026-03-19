@@ -65,7 +65,7 @@ stages:
             link: AIConfigParams/table
             schema: '#ref'
           param_name:
-            const: JOB_node_selector
+            const: JOB_node_selector_group
             schema: string
             mandatory: false
         out:
@@ -83,6 +83,23 @@ stages:
             schema: '#ref'
           param_name:
             const: AI_training_image
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      JOB_node_label:
+        parent: Lookup
+        in:
+          lookupKeys:
+            const:
+            - param_name
+          lookupData:
+            const: null
+            link: AIConfigParams/table
+            schema: '#ref'
+          param_name:
+            const: JOB_node_selector_label
             schema: string
             mandatory: false
         out:
@@ -180,8 +197,8 @@ stages:
               \n          value: \"postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)\"\
               \r\n      restartPolicy: OnFailure\r\n      volumes:\r\n      - name:\
               \ shared-storage\r\n        persistentVolumeClaim:\r\n          claimName:\
-              \ shared-artifacts-pvc\r\n      nodeSelector:\r\n        node.kubernetes.io/instancegroup:\
-              \ ${node}\r\n"
+              \ shared-artifacts-pvc\r\n      nodeSelector:\r\n        ${node_label}:\
+              \ ${node_group}\r\n"
           training_image:
             link: AI_training_image/result/param_value
             schema: string
@@ -198,9 +215,13 @@ stages:
             link: JOB_memory_limit/result/param_value
             schema: string
             mandatory: false
-          node:
+          node_label:
+            link: JOB_node_label/result/param_value
+            schema: any
+            mandatory: false
+          node_group:
             link: JOB_node_selector/result/param_value
-            schema: string
+            schema: any
             mandatory: false
   'K8 Apply  ':
     actors:
@@ -309,6 +330,19 @@ schemas:
       properties: {
         }
   AI_training_image.out.result:
+    type: object
+    properties:
+      param_name:
+        type: string
+      param_value:
+        type: string
+  JOB_node_label.in.lookupData:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  JOB_node_label.out.result:
     type: object
     properties:
       param_name:

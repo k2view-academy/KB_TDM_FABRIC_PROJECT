@@ -16,8 +16,8 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-12">
-                            <label class="control-label">Data Center Name <span style="color: red">*</span></label>
-                            <select class="form-control1" ng-model="envNewProductCtrl.envProduct.data_center_name" ng-options="option.data_center_name as option.data_center_name for option in envNewProductCtrl.dataCenters" required>
+                            <label class="control-label">Affinity <span style="color: red">*</span></label>
+                            <select class="form-control1" ng-model="envNewProductCtrl.envProduct.data_center_name" multiple chosen ng-options="option.data_center_name as option.data_center_name for option in envNewProductCtrl.dataCenters" required>
                                 <option></option>
                             </select>
                         </div>

@@ -15,9 +15,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 import java.sql.*;
@@ -346,7 +346,10 @@ public class Logic extends WebServiceUserCode {
             if (mask_sensitive_data == true) {
                 String taksSql = "UPDATE " + schema + ".TASKS SET mask_sensitive_data = true where source_environment_id = ?";
                 db(TDM).execute(taksSql, envId);
-            }
+            } else {
+				String taksSql = "UPDATE " + schema + ".TASKS SET mask_sensitive_data = false where source_environment_id = ?";
+                db(TDM).execute(taksSql, envId);
+			}
 			errorCode = "SUCCESS";
 		
 		
@@ -418,93 +421,72 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Gets the environment's systems (products)  regardless of their status (Active and Inactive systems).")
-	@webService(path = "environment/{envId}/products", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"environment_product_id\": 3,\r\n" +
-			"      \"product_version\": \"1\",\r\n" +
-			"      \"environment_id\": 4,\r\n" +
-			"      \"product_vendor\": \"vendor\",\r\n" +
-			"      \"product_last_updated_date\": \"2021-03-18 17:23:16.622\",\r\n" +
-			"      \"product_created_by\": \"k2view\",\r\n" +
-			"      \"product_status\": \"Active\",\r\n" +
-			"      \"creation_date\": \"2020-12-07 08:14:48.336\",\r\n" +
-			"      \"created_by\": \"k2view\",\r\n" +
-			"      \"product_name\": \"PROD\",\r\n" +
-			"      \"product_versions\": \"1\",\r\n" +
-			"      \"product_last_updated_by\": \"K2View\",\r\n" +
-			"      \"last_updated_by\": \"k2view\",\r\n" +
-			"      \"data_center_name\": \"DC1\",\r\n" +
-			"      \"product_id\": 1,\r\n" +
-			"      \"product_id1\": 1,\r\n" +
-			"      \"product_creation_date\": \"2020-10-01 08:26:42.899\",\r\n" +
-			"      \"last_updated_date\": \"2020-12-07 08:14:48.336\",\r\n" +
-			"      \"product_description\": \"description\",\r\n" +
-			"      \"status\": \"Active\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsGetProductsforEnvironment(@param(required=true) Long envId) throws Exception {
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
-		String errorCode = "";
-		
-		try {
-			//getEnv
-			String getEnvironmentSql = "SELECT * FROM " + schema + ".environments WHERE environment_id = " + envId;
-			Db.Row env = db(TDM).fetch(getEnvironmentSql).firstRow();
-		
-			if(env.isEmpty()){ //envId doesn't exist
-				response.put("errorCode", "SUCCESS");
-				response.put("resutl", null);
-				return response;
+	@webService(path = "environment/{envId}/products", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+						{
+			  "result": [
+			    {
+			      "environment_product_id": 4,
+			      "product_version": "PROD",
+			      "environment_id": 2,
+			      "product_vendor": null,
+			      "product_last_updated_date": "2025-11-30 08:21:27.246521",
+			      "max_number_of_workers": null,
+			      "product_created_by": "admin",
+			      "product_status": "Active",
+			      "creation_date": "2025-11-30 08:21:27.246521",
+			      "created_by": "admin",
+			      "product_name": "Billing",
+			      "product_versions": "PROD",
+			      "product_last_updated_by": "admin",
+			      "enable_product": true,
+			      "last_updated_by": "admin",
+			      "taskcount": 12,
+			      "data_center_name": "",
+			      "product_id": 2,
+			      "product_creation_date": "2025-11-30 08:21:27.246521",
+			      "related_interfaces": [],
+			      "last_updated_date": "2025-11-30 08:21:27.246521",
+			      "product_description": "Billing Application",
+			      "status": "Active"
+			    },
+			    {
+			      "environment_product_id": 3,
+			      "product_version": "1",
+			      "environment_id": 2,
+			      "product_vendor": null,
+			      "product_last_updated_date": "2025-12-23 09:42:56.556",
+			      "max_number_of_workers": 6,
+			      "product_created_by": "admin",
+			      "product_status": "Active",
+			      "creation_date": "2025-11-30 08:21:27.246521",
+			      "created_by": "admin",
+			      "product_name": "CRM",
+			      "product_versions": "1",
+			      "product_last_updated_by": "ziv.genat@k2view.com",
+			      "enable_product": true,
+			      "last_updated_by": "ziv.genat@k2view.com",
+			      "taskcount": 12,
+			      "data_center_name": "LOCAL_DC",
+			      "product_id": 1,
+			      "product_creation_date": "2025-11-30 08:21:27.246521",
+			      "related_interfaces": [
+			        "BILLING_DB",
+			        "CRM_DB"
+			      ],
+			      "last_updated_date": "2025-12-09 11:35:53.648",
+			      "product_description": "CRM Application",
+			      "status": "Active"
+			    }
+			  ],
+			  "errorCode": "SUCCESS",
+			  "message": null
 			}
-		
-			//getEnvProduct
-			String sql = "SELECT * , " +
-					"( SELECT COUNT(*) FROM " + schema + ".tasks " +
-					"INNER JOIN " + schema + ".tasks_logical_units " +
-					"ON (tasks_logical_units.task_id = tasks.task_id) " +
-					"INNER JOIN " + schema + ".product_logical_units " +
-					"ON (product_logical_units.lu_id = tasks_logical_units.lu_id) " +
-					"WHERE product_logical_units.product_id = products.product_id AND tasks.task_status = \'Active\' ) AS taskcount " +
-					"FROM " + schema + ".environment_products " +
-					"INNER JOIN " + schema + ".products " +
-					"ON (environment_products.product_id = products.product_id) " +
-					"WHERE environment_products.environment_id = " + envId;
-			Db.Rows rows = db(TDM).fetch(sql);
-		
-			//updateEnvProductInterfaces
-			List<HashMap<String, Object>> products = new ArrayList<>();
-			List<String> columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				HashMap<String, Object> productData = new HashMap<>();
-				ResultSet resultset = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
-				for (String columnName : columnNames) {
-					productData.put(columnName, resultset.getObject(columnName));
-				}
-
-				if (envId < 0) {
-                    productData.put("product_versions", productData.get("product_version"));
-                }
-                products.add(productData);
-			}
-
-            errorCode = "SUCCESS";
-            response.put("result", products);
-
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
-		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
+						""")
+	public static Object wsGetProductsForEnvironment(@param(required = true) Long envId) throws Exception {
+		return getProductsForEnvironment(envId);
 	}
 
 	@desc("Creates an Environment Exclusion List.\r\n" +
@@ -846,7 +828,7 @@ public class Logic extends WebServiceUserCode {
 				}
 				String activityDesc = "Environment " + environment_name + " was created";
 				try {
-					EnvironmentUtils.fnInsertActivity("delete", "Environment", activityDesc);
+					EnvironmentUtils.fnInsertActivity("create", "Environments", activityDesc);
 				} catch (Exception e) {
 					log.error(e.getMessage());
 				}
@@ -1336,7 +1318,6 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "DELETE FROM " + schema + ".environment_role_users WHERE environment_id = " + envId + " AND role_id = " + roleId;
 			db(TDM).execute(sql);
-		
 			for (Map<String, Object> user : users) {
 				sql = "INSERT INTO " + schema + ".environment_role_users (environment_id, role_id, user_id, username, user_type) VALUES (?, ?, ?, ?, ?)";
 				db(TDM).execute(sql,
@@ -1368,7 +1349,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="A unique identifier of the product in Products TDM DB table") long product_id, @param(description="Optional parameter") String data_center_name, @param(description="Populated by one of the product's versions as populated in Products TDM DB table") String product_version) throws Exception {
+	public static Object wsCreateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="A unique identifier of the product in Products TDM DB table") long product_id, @param(description="Optional parameter") String data_center_name, @param(description="Populated by one of the product's versions as populated in Products TDM DB table") String product_version, Integer max_number_of_workers) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
@@ -1386,10 +1367,10 @@ public class Logic extends WebServiceUserCode {
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
-			Long env_product_id = EnvironmentUtils.fnAddProcutToEnvironment(envId, product_id, data_center_name, product_version);
+			Long env_product_id = EnvironmentUtils.fnAddProcutToEnvironment(envId, product_id, data_center_name, product_version, max_number_of_workers);
 			//fnAddProductInterfacesEnvironment(envId, product_id, env_product_id, interfaces);
 		
-			String activityDesc = "Products of environment " + envName + " were updated";
+			String activityDesc = "System with Id " + product_id + " of environment " + envName + " were added";
 			try {
 				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
@@ -1413,7 +1394,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="The unique identifier of the product in environment_products TDM DB table") Long environment_product_id, String data_center_name, @param(description="Populated by one of the product's versions") String product_version, @param(description="A unique identifier of the product in products TDM DB table") long product_id) throws Exception {
+	public static Object wsUpdateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="The unique identifier of the product in environment_products TDM DB table") Long environment_product_id, String data_center_name, @param(description="Populated by one of the product's versions") String product_version, @param(description="A unique identifier of the product in products TDM DB table") long product_id, Integer max_number_of_workers) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
@@ -1429,11 +1410,12 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
-		EnvironmentUtils.fnUpdateProductToEnvironment(environment_product_id, data_center_name, product_version);
-		//fnUpdateProductInterfacesEnvironment(envId,product_id,environment_product_id,interfaces);
-		
 		try {
-			String activityDesc = "Products of environment " + envName + " were updated";
+			EnvironmentUtils.fnUpdateProductToEnvironment(environment_product_id, data_center_name, product_version,
+					max_number_of_workers);
+			// fnUpdateProductInterfacesEnvironment(envId,product_id,environment_product_id,interfaces);
+
+			String activityDesc = "System with Id " + product_id + " of environment " + envName + " were updated";
 			try {
 				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
@@ -1493,7 +1475,7 @@ public class Logic extends WebServiceUserCode {
 				db(TDM).execute(queryString, envId, envId);
 			}
 		
-			String activityDesc = "Products of environment " + envName + " were updated";
+			String activityDesc = "System with Id " + prodId + " of environment " + envName + " were deleted";
 			try {
 				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
@@ -1736,7 +1718,7 @@ public class Logic extends WebServiceUserCode {
 		String userId = sessionUser().name();
 		
 		try {
-			response.put("result", fnGetEnvsByUser(userId));
+			response.put("result", fnGetEnvsByUser(userId, null));
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
@@ -1747,165 +1729,194 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	@desc("Gets the list of all Global variables defined in the Fabric project except the TDM product Globals. If the optional input \"lus\" parameter is populated, return only shared Globals or Globals defined in the input LUs.")
-	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"GET_RESERVED_ENTITIES_LIMIT\",\r\n" +
-			"      \"Description\": \"\",\r\n" +
-			"      \"luList\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"0\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"MAIL_ADDRESS\",\r\n" +
-			"      \"Description\": \"\",\r\n" +
-			"      \"luList\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"DEVELOPMENT_PRODUCT_VERSION\",\r\n" +
-			"      \"Description\": \"\",\r\n" +
-			"      \"luList\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"DEV\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"PRODUCTION_PRODUCT_VERSION\",\r\n" +
-			"      \"Description\": \"\",\r\n" +
-			"      \"luList\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"PROD\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsGetAllFabricGlobals(@param(description="Populated by a list LU names seperated by a comma") String lus) throws Exception {
+	@desc("""
+			Gets the list of all Global variables defined in the Fabric project except the TDM product Globals.
+			If the optional input "lus" parameter is populated, return only shared Globals or Globals defined in the input LUs.
+			Note: Global variables marked as 'Final' are filtered out and will not be returned in the list.
+			""")
+	@webService(path = "environment/getAllGlobals", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+						{
+			  "result": [
+			    {
+			      "globalName": "DEVELOPMENT_PRODUCT_VERSION",
+			      "Description": "",
+			      "luList": [
+			        {
+			          "luName": "ALL",
+			          "defaultValue": "DEV"
+			        }
+			      ]
+			    },
+			    {
+			      "globalName": "PRODUCTION_PRODUCT_VERSION",
+			      "Description": "",
+			      "luList": [
+			        {
+			          "luName": "ALL",
+			          "defaultValue": "PROD"
+			        }
+			      ]
+			    },
+			    {
+			      "globalName": "TDM_SUPPRESS_TEST_CONNECTION",
+			      "Description": "",
+			      "luList": [
+			        {
+			          "luName": "ALL",
+			          "defaultValue": "false"
+			        }
+			      ]
+			    },
+			    {
+			      "globalName": "UPDATE_MDB_EXPORTED_SCHEMA",
+			      "Description": "",
+			      "luList": [
+			        {
+			          "luName": "ALL",
+			          "defaultValue": "false"
+			        }
+			      ]
+			    },
+			    {
+			      "globalName": "ZIV",
+			      "Description": "",
+			      "luList": [
+			        {
+			          "luName": "ALL",
+			          "defaultValue": "TEST"
+			        }
+			      ]
+			    }
+			  ],
+			  "errorCode": "SUCCESS",
+			  "message": null
+			}
+						""")
+	public static Object wsGetAllFabricGlobals(
+			@param(description = "Populated by a list LU names seperated by a comma") String lus) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
+
 		try {
-			//from wsGetAllGlobals
+			// 1. Get the rules/status map
+			Map<String, Map<String, Boolean>> glStatus = getGlobalsStatus();
+
+			// 2. Prepare LU Filter for O(1) performance
+			Set<String> luFilter = (lus != null && !lus.isEmpty())
+					? Arrays.stream(lus.split(",")).map(String::trim).collect(Collectors.toSet())
+					: null;
+
 			Map<String, Map<String, Object>> globalsPerLu = new HashMap<>();
 			Map<String, Map<String, Object>> globalsShared = new HashMap<>();
-		
+
+			// 3. Process session variables (The Value Source)
 			((List) getFabricResponse("set")).forEach(var -> {
-				String[] keyParts = ((String) ((Map) var).get("key")).split("\\.");
+				String key = (String) ((Map) var).get("key");
+				String[] keyParts = key.split("\\.");
+
 				if (keyParts.length == 3 && "Global".equals(keyParts[0])) {
-					if (!EXCLUDED_GLOBALS.contains(keyParts[2]) && !keyParts[2].contains("MASKING_FLAG"))
-					{
-						if ("k2_ws".equals(keyParts[1])) {
-							// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
-							Map<String, Object> sharedGlobals = globalsShared.computeIfAbsent(keyParts[1], k -> new HashMap<>());
-							sharedGlobals.put(keyParts[2], ((Map<String, Object>) var).get("value"));
-						} else if (!"k2_ref".equals(keyParts[1]) &&  !"TDM".equals(keyParts[1])) {
-							Map<String, Object> luGlobals = globalsPerLu.computeIfAbsent(keyParts[1], k -> new HashMap<>());
-							luGlobals.put(keyParts[2], ((Map<String, Object>) var).get("value"));
+					String scope = keyParts[1]; // e.g., "k2_ws" or "Billing"
+					String varName = keyParts[2]; // e.g., "AI_DB_INTERFACE"
+					Object value = ((Map) var).get("value");
+
+					// --- FILTERING LOGIC ---
+					// Skip if marked as FINAL in our status map
+					if (glStatus.containsKey(scope) && Boolean.TRUE.equals(glStatus.get(scope).get(varName))) {
+						return; // Equivalent to 'continue' in forEach
+					}
+
+					// Standard Exclusions
+					if (EXCLUDED_GLOBALS.contains(varName) || varName.contains("MASKING_FLAG"))
+						return;
+
+					if ("k2_ws".equals(scope)) {
+						// Shared globals (ALL)
+						Map<String, Object> sharedGlobals = globalsShared.computeIfAbsent(scope, k -> new HashMap<>());
+						sharedGlobals.put(varName, value);
+					} else if (!"k2_ref".equals(scope) && !"TDM".equals(scope)) {
+						// LU Specific globals (Apply LU filter if exists)
+						if (luFilter == null || luFilter.contains(scope)) {
+							Map<String, Object> luGlobals = globalsPerLu.computeIfAbsent(scope, k -> new HashMap<>());
+							luGlobals.put(varName, value);
 						}
 					}
 				}
 			});
-			//end WsGetAllGlobals
-		
-		    List<HashMap<String,Object>> globals = new ArrayList<>();
-		
-			// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
+
+			// 4. Structure the Response (Merging Shared and LU-specific)
+			List<HashMap<String, Object>> globals = new ArrayList<>();
+			Map<String, HashMap<String, Object>> resultLookup = new HashMap<>();
+
+			// Add Shared Globals first
 			for (Map.Entry<String, Map<String, Object>> entry : globalsShared.entrySet()) {
-				Map<String,Object> value = entry.getValue();
-				//String varName = String.valueOf(value.keySet());
-				for (String varName : value.keySet()) {
-					HashMap<String,Object> global=new HashMap<>();
-					global.put("globalName",  varName);
+				for (Map.Entry<String, Object> varEntry : entry.getValue().entrySet()) {
+					HashMap<String, Object> global = new HashMap<>();
+					global.put("globalName", varEntry.getKey());
+					global.put("Description", "");
+
+					List<Map<String, Object>> luList = new ArrayList<>();
 					Map<String, Object> allLU = new HashMap<>();
 					allLU.put("luName", "ALL");
-					allLU.put("defaultValue", value.get(varName));
-					List<Map<String, Object>> listAllLUs = new ArrayList<>();
-					listAllLUs.add(allLU);
-					global.put("luList", listAllLUs);
-					global.put("Description", "");
+					allLU.put("defaultValue", varEntry.getValue());
+					luList.add(allLU);
+
+					global.put("luList", luList);
 					globals.add(global);
+					resultLookup.put(varEntry.getKey(), global); // Speed up LU merging
 				}
-		
-		
 			}
-			List luNames = null;
-			if (lus != null && !lus.isEmpty()) {
-				luNames = new ArrayList();
-				List finalLuNames = luNames;
-				Arrays.stream(lus.split(",")).forEach(lu -> {
-					finalLuNames.add(lu.trim());
-				});
-			}
-			
+
+			// Add/Merge LU Specific Globals
 			for (Map.Entry<String, Map<String, Object>> entry : globalsPerLu.entrySet()) {
 				String luName = entry.getKey();
-				if (luNames != null && !luNames.contains(luName)) {
-					continue;
-				}
-				Map<String,Object> value = entry.getValue();
-				for (String varName : value.keySet()) {
-					HashMap<String,Object> global=new HashMap<>();
-					
-					for (HashMap<String,Object> map : globals) {
-						if (varName.equals("" + map.get("globalName")) ) {
-							global = map;
-							List<Map<String, Object>>  luList = (List<Map<String, Object>>)map.get("luList");
-							
-							if ((luList.get(0).get("luName")).equals("ALL") && 
-								!(luList.get(0).get("defaultValue")).equals("" + value.get(varName))) {
-								Map<String, Object> luRec = new HashMap<>();
-								luRec.put("luName", luName);
-								luRec.put("defaultValue", value.get(varName));
-								luList.add(luRec);
-							}
-							break;
+				for (Map.Entry<String, Object> varEntry : entry.getValue().entrySet()) {
+					String varName = varEntry.getKey();
+					Object val = varEntry.getValue();
+
+					HashMap<String, Object> global = resultLookup.get(varName);
+					if (global != null) {
+						List<Map<String, Object>> luList = (List<Map<String, Object>>) global.get("luList");
+						// Only add if value differs from "ALL" (shared) value
+						if (!val.equals(luList.get(0).get("defaultValue"))) {
+							Map<String, Object> luRec = new HashMap<>();
+							luRec.put("luName", luName);
+							luRec.put("defaultValue", val);
+							luList.add(luRec);
 						}
-					}
-		
-					if (global == null || global.isEmpty()) {
+					} else {
+						// New global found only at LU level
+						HashMap<String, Object> newGlobal = new HashMap<>();
+						newGlobal.put("globalName", varName);
+						newGlobal.put("Description", "");
+						List<Map<String, Object>> luList = new ArrayList<>();
 						Map<String, Object> luRec = new HashMap<>();
 						luRec.put("luName", luName);
-						luRec.put("defaultValue", value.get(varName));
-						List<Map<String, Object>> listLUs = new ArrayList<>();
-						listLUs.add(luRec);
-						global.put("globalName", varName);
-						global.put("luList", listLUs);
-						global.put("Description", "");
-						globals.add(global);
+						luRec.put("defaultValue", val);
+						luList.add(luRec);
+						newGlobal.put("luList", luList);
+						globals.add(newGlobal);
 					}
 				}
 			}
-			globals.sort((Comparator.comparing(o -> ((String) o.get("globalName")).toLowerCase())));
-		
+
+			globals.sort(Comparator.comparing(o -> ((String) o.get("globalName")).toLowerCase()));
 			errorCode = "SUCCESS";
-			response.put("result",globals);
-			//return globalsPerLu;
-		
+			response.put("result", globals);
+
 		} catch (Exception e) {
 			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
+
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}
-
 
 	@desc("Updates Environment Global")
 	@webService(path = "environment/{envId}/envname/{envName}/global", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
@@ -1949,7 +1960,7 @@ public class Logic extends WebServiceUserCode {
 			String username=sessionUser().name();
 			db(TDM).execute(updateQuery, environment_id, global_name, global_value, now, username, environment_id,global_name);
 		
-			String activityDesc = "Globals of environment " + envName + " were updated";
+			String activityDesc = "Global : " + global_name + " of environment " + envName + " was updated";
 			try {
 				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
@@ -1997,9 +2008,9 @@ public class Logic extends WebServiceUserCode {
 			String sql= "DELETE FROM " + schema + ".tdm_env_globals WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
 			db(TDM).execute(sql);
 		
-			String activityDesc = "Globals of environment " + envName + " were updated";
+			String activityDesc = "Global : " + globalName + " of environment " + envName + " was deleted";
 			try {
-				EnvironmentUtils.fnInsertActivity("global", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -2257,7 +2268,7 @@ public class Logic extends WebServiceUserCode {
 			db(TDM).execute(sql);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was deleted.";
 			try {
-				EnvironmentUtils.fnInsertActivity("Update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -2881,7 +2892,7 @@ public class Logic extends WebServiceUserCode {
                 }
             } else {
                 
-                userEnvs = fnGetEnvsByUser(userId);
+                userEnvs = fnGetEnvsByUser(userId, null);
             }
                 
             for (Map<String, Object> env : userEnvs) {
@@ -3010,87 +3021,121 @@ public class Logic extends WebServiceUserCode {
     }
 
 	@desc("Get a list of environments that are available for the user.")
-	@webService(path = "userEnvironments", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"None\",\r\n" +
-			"      \"environment_id\": 1,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"SOURCE\",\r\n" +
-			"      \"environment_name\": \"SRC\",\r\n" +
-			"\t  \"mask_sensitive_data\": true\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"None\",\r\n" +
-			"      \"environment_id\": 2,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"BOTH\",\r\n" +
-			"      \"environment_name\": \"TAR\",\r\n" +
-			"\t  \"mask_sensitive_data\": true\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"None\",\r\n" +
-			"      \"environment_id\": 3,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"TARGET\",\r\n" +
-			"      \"environment_name\": \"TAR_CRM\",\r\n" +
-			"\t  \"mask_sensitive_data\": false\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"synthetic_indicator\": \"RuleBased\",\r\n" +
-			"      \"environment_id\": -1,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"SOURCE\",\r\n" +
-			"      \"environment_name\": \"Synthetic\",\r\n" +
-			"      \"mask_sensitive_data\": false\r\n" +
-			"\t},\r\n" +
-			"\t{\r\n" +
-			"      \"synthetic_indicator\": \"AI\",\r\n" +
-			"      \"environment_id\": -2,\r\n" +
-			"      \"role_id\": \"admin\",\r\n" +
-			"      \"assignment_type\": \"admin\",\r\n" +
-			"      \"environment_type\": \"SOURCE\",\r\n" +
-			"      \"synthetic_indicator\": \"AI\",\r\n" +
-			"      \"mask_sensitive_data\": false\r\n" +
-			"\t}\r\n" +
-			"\t \r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
+	@webService(path = "userEnvironments", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+				"result": [
+				  {
+					"synthetic_indicator": "None",
+					"environment_id": 1,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "ON",
+					"environment_type": "SOURCE",
+					"environment_name": "Production",
+					"mask_sensitive_data": true
+				  },
+				  {
+					"synthetic_indicator": "None",
+					"environment_id": 2,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "ON",
+					"environment_type": "BOTH",
+					"environment_name": "UAT",
+					"mask_sensitive_data": false
+				  },
+				  {
+					"synthetic_indicator": "AI",
+					"environment_id": -2,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "OFF",
+					"environment_type": "BOTH",
+					"environment_name": "AI",
+					"mask_sensitive_data": false
+				  },
+				  {
+					"synthetic_indicator": "RuleBased",
+					"environment_id": -1,
+					"role_id": "admin",
+					"assignment_type": "admin",
+					"environment_sync_mode": "FORCE",
+					"environment_type": "SOURCE",
+					"environment_name": "Synthetic",
+					"mask_sensitive_data": false
+				  }
+				],
+				"errorCode": "SUCCESS",
+				"message": null
+			  }
+				""")
+
 	public static Object wsGetUserEnvironments(String be_name) throws Exception {
-		Map<String,Object> response=new HashMap<>();
+		Map<String, Object> response = new HashMap<>();
 		Set<Map<String, Object>> result = new HashSet<>();
-		String message=null;
-		String errorCode="SUCCESS";
+		String message = null;
+		String errorCode = "SUCCESS";
 		String userId = sessionUser().name();
 		String permissionGroup = fnGetUserPermissionGroup("");
 		Set<Map<String, Object>> userEnvs = new HashSet<>();
+		Set<Long> productIds = null;
+
 		try {
-		
-			if (admin.equalsIgnoreCase(permissionGroup)){
-				String allEnvs = "Select env.environment_id,env.environment_name," +
-								"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'" +
-								"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'" +
-								"  End As environment_type," +
-								"  'admin' As role_id," +
-								"  'admin' As assignment_type," +
-		                        " env.mask_sensitive_data," +
-		                              " sync_mode" +
-								" From " + schema + ".environments env" +
-								" Where env.environment_status = 'Active'";
-				Db.Rows rows= db(TDM).fetch(allEnvs);
+
+			// Base query to get all active environments
+			String baseQuery = "SELECT DISTINCT env.environment_id, env.environment_name," +
+					" CASE WHEN env.allow_read = TRUE AND env.allow_write = TRUE THEN 'BOTH' " +
+					" WHEN env.allow_write = TRUE THEN 'TARGET' ELSE 'SOURCE' END AS environment_type," +
+					" 'admin' AS role_id, 'admin' AS assignment_type," +
+					" env.mask_sensitive_data, env.sync_mode " +
+					" FROM " + TDMDB_SCHEMA + ".environments env";
+
+			String finalQuery;
+
+			if (be_name != null && !be_name.trim().isEmpty()) {
+				// Logic for when a business entity is specified
+				String productIdsSql = "SELECT DISTINCT plu.product_id FROM " + TDMDB_SCHEMA + ".business_entities be "
+						+
+						"JOIN " + TDMDB_SCHEMA + ".product_logical_units plu ON be.be_id = plu.be_id " +
+						"WHERE be.be_name = ? AND plu.lu_parent_name IS NULL";
+
+				Db.Rows productRows = db(TDM).fetch(productIdsSql, be_name);
+				productIds = new HashSet<>();
+
+				for (Db.Row row : productRows) {
+					productIds.add(Long.parseLong(row.get("product_id").toString()));
+				}
+				productRows.close();
+
+				if (productIds.isEmpty()) {
+					return wrapWebServiceResults("SUCCESS", "No root products found for business entity.",
+							new ArrayList<>());
+				}
+
+				String productIdsString = productIds.stream()
+						.map(String::valueOf)
+						.collect(Collectors.joining(","));
+
+				finalQuery = baseQuery + " JOIN " + TDMDB_SCHEMA
+						+ ".environment_products ep ON env.environment_id = ep.environment_id " +
+						" WHERE env.environment_status = 'Active' AND ep.status = 'Active' AND ep.enable_product = TRUE AND ep.product_id IN ("
+						+ productIdsString + ")";
+			} else {
+				// Original logic for no business entity specified
+				finalQuery = baseQuery + " WHERE env.environment_status = 'Active'";
+			}
+
+			if (admin.equalsIgnoreCase(permissionGroup)) {
+				Db.Rows rows = db(TDM).fetch(finalQuery);
 				List<String> columnNames = rows.getColumnNames();
+				userEnvs = new HashSet<>();
 				for (Db.Row row : rows) {
-					ResultSet resultSet = row.resultSet();
 					Map<String, Object> rowMap = new HashMap<>();
 					for (String columnName : columnNames) {
-						rowMap.put(columnName, resultSet.getObject(columnName));
+						rowMap.put(columnName, row.get(columnName));
 					}
 					userEnvs.add(rowMap);
 				}
@@ -3098,33 +3143,35 @@ public class Logic extends WebServiceUserCode {
 					rows.close();
 				}
 			} else {
-				
-				userEnvs = fnGetEnvsByUser(userId);
+				userEnvs = fnGetEnvsByUser(userId, productIds);
 			}
-				
+
 			for (Map<String, Object> env : userEnvs) {
-		
+
 				String environment_id = "" + env.get("environment_id");
 				String env_type = "" + env.get("environment_type");
-		
 				Map<String, Object> map = new HashMap<>();
 				if ("tester".equalsIgnoreCase(permissionGroup)) {
-					int num_of_reserved = env.get("allowed_number_of_reserved_entities") != null ? Integer.parseInt(env.get("allowed_number_of_reserved_entities").toString()) : 0;
-					int num_of_read = env.get("allowed_number_of_entities_to_read") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_read").toString()) : 0;
-					int num_of_write = env.get("allowed_number_of_entities_to_copy") != null ? Integer.parseInt(env.get("allowed_number_of_entities_to_copy").toString()) : 0;
-					Boolean allowed_refresh_reference_data = env.get("allowed_refresh_reference_data") != null ? Boolean.parseBoolean(env.get("allowed_refresh_reference_data").toString()) : false;
+					int num_of_reserved = env.get("allowed_number_of_reserved_entities") != null
+							? Integer.parseInt(env.get("allowed_number_of_reserved_entities").toString())
+							: 0;
+					int num_of_read = env.get("allowed_number_of_entities_to_read") != null
+							? Integer.parseInt(env.get("allowed_number_of_entities_to_read").toString())
+							: 0;
+					int num_of_write = env.get("allowed_number_of_entities_to_copy") != null
+							? Integer.parseInt(env.get("allowed_number_of_entities_to_copy").toString())
+							: 0;
+					Boolean allowed_refresh_reference_data = env.get("allowed_refresh_reference_data") != null
+							? Boolean.parseBoolean(env.get("allowed_refresh_reference_data").toString())
+							: false;
 					String permission;
 					switch (env_type) {
 						case "SOURCE":
-							if (num_of_read == 0) {
-								permission = (num_of_reserved > 0) ? "reserve" : "error";
-							} else {
-								permission = (num_of_reserved > 0) ? "read + reserve" : "read";
-							}
+							permission = (num_of_read != 0) ? "read" : "error";
 							break;
 						case "TARGET":
 							if (num_of_write == 0) {
-								permission = (num_of_reserved > 0) ? "reserve only" : "error";
+								permission = (num_of_reserved > 0) ? "reserve" : "error";
 							} else {
 								permission = (num_of_reserved > 0) ? "write + reserve" : "write";
 							}
@@ -3132,14 +3179,22 @@ public class Logic extends WebServiceUserCode {
 						case "BOTH":
 							if (num_of_write == 0 && num_of_read == 0) {
 								permission = (num_of_reserved > 0) ? "reserve" : "error";
-							} else if (num_of_write > 0) {
-								if (num_of_read > 0) {
+								env_type = "TARGET";
+							} else if (num_of_write != 0) {
+								if (num_of_read != 0) {
 									permission = (num_of_reserved > 0) ? "read + write + reserve" : "read + write";
 								} else {
 									permission = (num_of_reserved > 0) ? "write + reserve" : "write";
+									env_type="TARGET";
 								}
-							} else if (num_of_read > 0) {
-								permission = (num_of_reserved > 0) ? "read + reserve" : "read";
+							} else if (num_of_read != 0) {
+								 
+								if (num_of_reserved > 0){
+									permission="read + reserve";
+								}else{
+									permission="read";
+									env_type="SOURCE";
+								}
 							} else {
 								permission = "error";
 							}
@@ -3148,79 +3203,82 @@ public class Logic extends WebServiceUserCode {
 							permission = "error";
 							break;
 					}
+					if ("error".equalsIgnoreCase(permission)) {
+						continue;
+					}
 					map.put("permission", permission);
-                    map.put("allowed_refresh_reference_data", allowed_refresh_reference_data);
+					map.put("allowed_refresh_reference_data", allowed_refresh_reference_data);
 				}
-				//TDM 9.0 - Change synthetic_indicator to String to support 2 types of synthetic environments 
+				// TDM 9.0 - Change synthetic_indicator to String to support 2 types of
+				// synthetic environments
 				if (Integer.parseInt(environment_id) >= 0) {
-					map.put("synthetic_indicator","None");
+					map.put("synthetic_indicator", "None");
 				} else if (Integer.parseInt(environment_id) == -1) {
-					map.put("synthetic_indicator","RuleBased");
+					map.put("synthetic_indicator", "RuleBased");
 				} else {
-					map.put("synthetic_indicator","AI");
+					map.put("synthetic_indicator", "AI");
 				}
-				
+
 				map.put("environment_id", env.get("environment_id"));
 				map.put("environment_name", env.get("environment_name"));
 				map.put("environment_type", env.get("environment_type"));
 				map.put("role_id", env.get("role_id"));
 				map.put("assignment_type", env.get("assignment_type"));
 				map.put("mask_sensitive_data", env.get("mask_sensitive_data"));
-		        map.put("environment_sync_mode", env.get("sync_mode"));
+				map.put("environment_sync_mode", env.get("sync_mode"));
 				result.add(map);
 			}
-                // After processing userEnvs, manually add AI and Synthetic environments if they are not already present
-                boolean foundAI = false;
-                boolean foundSynthetic = false;
+			// After processing userEnvs, manually add AI and Synthetic environments if they
+			// are not already present
+			boolean foundAI = false;
+			boolean foundSynthetic = false;
 
-                for (Map<String, Object> res : result) {
-                    String environment_name = (String) res.get("environment_name");
-                    if ("AI".equals(environment_name)) {
-                        foundAI = true;
-                    } else if ("Synthetic".equals(environment_name)) {
-                        foundSynthetic = true;
-                    }
-                }
+			for (Map<String, Object> res : result) {
+				String environment_name = (String) res.get("environment_name");
+				if ("AI".equals(environment_name)) {
+					foundAI = true;
+				} else if ("Synthetic".equals(environment_name)) {
+					foundSynthetic = true;
+				}
+			}
 
-                if (!foundAI) {
-                    Map<String, Object> aiEnv = new HashMap<>();
-                    aiEnv.put("synthetic_indicator", "AI");
-                    aiEnv.put("environment_id", -2);
-                    aiEnv.put("role_id", -2);
-                    aiEnv.put("assignment_type", "all");
-                    aiEnv.put("environment_sync_mode", "OFF");
-                    aiEnv.put("permission", "");
-                    aiEnv.put("allowed_refresh_reference_data", false);
-                    aiEnv.put("environment_type", "BOTH");
-                    aiEnv.put("environment_name", "AI");
-                    aiEnv.put("mask_sensitive_data", false);
-                    result.add(aiEnv);
-                }
+			if (!foundAI) {
+				Map<String, Object> aiEnv = new HashMap<>();
+				aiEnv.put("synthetic_indicator", "AI");
+				aiEnv.put("environment_id", -2);
+				aiEnv.put("role_id", -2);
+				aiEnv.put("assignment_type", "all");
+				aiEnv.put("environment_sync_mode", "OFF");
+				aiEnv.put("permission", "");
+				aiEnv.put("allowed_refresh_reference_data", false);
+				aiEnv.put("environment_type", "BOTH");
+				aiEnv.put("environment_name", "AI");
+				aiEnv.put("mask_sensitive_data", false);
+				result.add(aiEnv);
+			}
 
-                if (!foundSynthetic) {
-                    Map<String, Object> syntheticEnv = new HashMap<>();
-                    syntheticEnv.put("synthetic_indicator", "RuleBased");
-                    syntheticEnv.put("environment_id", -1);
-                    syntheticEnv.put("role_id", -1);
-                    syntheticEnv.put("assignment_type", "all");
-                    syntheticEnv.put("environment_sync_mode", "FORCE");
-                    syntheticEnv.put("permission", "");
-                    syntheticEnv.put("allowed_refresh_reference_data", false);
-                    syntheticEnv.put("environment_type", "SOURCE");
-                    syntheticEnv.put("environment_name", "Synthetic");
-                    syntheticEnv.put("mask_sensitive_data", false);
-                    result.add(syntheticEnv);
-                }
+			if (!foundSynthetic) {
+				Map<String, Object> syntheticEnv = new HashMap<>();
+				syntheticEnv.put("synthetic_indicator", "RuleBased");
+				syntheticEnv.put("environment_id", -1);
+				syntheticEnv.put("role_id", -1);
+				syntheticEnv.put("assignment_type", "all");
+				syntheticEnv.put("environment_sync_mode", "FORCE");
+				syntheticEnv.put("permission", "");
+				syntheticEnv.put("allowed_refresh_reference_data", false);
+				syntheticEnv.put("environment_type", "SOURCE");
+				syntheticEnv.put("environment_name", "Synthetic");
+				syntheticEnv.put("mask_sensitive_data", false);
+				result.add(syntheticEnv);
+			}
 
-		
-
-		} catch(Exception e){
-			message=e.getMessage();
-			errorCode="FAILED";
+		} catch (Exception e) {
+			message = e.getMessage();
+			errorCode = "FAILED";
 		}
-		
+
 		response.put("result", result);
-		response.put("errorCode",errorCode);
+		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}

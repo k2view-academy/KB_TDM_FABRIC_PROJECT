@@ -1,0 +1,576 @@
+tags: Concurrency
+stages:
+  Mtable Lookup:
+    actors:
+      Get Partitions Number:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetPartitionsNumber
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          value:
+            schema: integer
+      Get Partition Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: Definitions
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: partition_records_flow
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Table's Count:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: RecordsCount
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: ''
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  Get Flow Name:
+    actors:
+      Flow Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Partition Flow/result
+        out:
+          value:
+            schema: string
+  Partitions = 1:
+    dependsOn: Get Flow Name
+    actors:
+      Is 1:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 1
+            schema: integer
+          a:
+            link: Get Partitions Number/value
+      Get Extarct Flow:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: Definitions
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: extract_flow
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  Check Inputs For Flow:
+    else: true
+    dependsOn: Get Flow Name
+    actors:
+      fnGetCachedTableInfoBySection:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: PartitionFlowInputs
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            link: Flow Name/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+  Get Extract Flow:
+    dependsOn: Partitions = 1
+    actors:
+      Extract Flow:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Extarct Flow/result
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  Get Inputs:
+    dependsOn: Check Inputs For Flow
+    actors:
+      'Get Inputs if Exsists ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: fnGetCachedTableInfoBySection/result
+        out:
+          value:
+            schema: '#ref'
+  'Call Default Extract ':
+    dependsOn: Get Extract Flow
+    actors:
+      'Empty: EqualsIgnoreCase':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: Extract Flow/value
+      Call Default Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CallDefaultFlow
+          innerFlowClose:
+            const: false
+          sourceSchema:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceInterface:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableRefId:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableCount:
+            link: Get Table's Count/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            external: result
+            schema: '#ref'
+          tableCount:
+            schema: integer
+    split: '--------------------'
+  Call Provided Custom Flow:
+    else: true
+    dependsOn: Get Extract Flow
+    actors:
+      Call Custom Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CallCustomFlow
+          innerFlowClose:
+            const: false
+          sourceSchema:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceInterface:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterGUI:
+            external: filterGUI
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          customFlowName:
+            link: Extract Flow/value
+            schema: string
+            editor:
+              id: com.k2view.innerFlow
+            mandatory: false
+            createdBy: flowName
+          tableRefId:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableCount:
+            link: Get Table's Count/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            external: result
+            schema: '#ref'
+          tableCount:
+            schema: integer
+    split: '--------------------'
+  'Call Partiton Records Flow ':
+    else: false
+    dependsOn: Get Inputs
+    actors:
+      Call Partition Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CallPartitionFlow
+          innerFlowClose:
+            const: false
+          sourceSchema:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            external: tableFilter
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            external: filterParameters
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          countIndicator:
+            external: countIndicator
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceInterface:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParametersInfo:
+            external: filterParametersInfo
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          filterGUI:
+            external: filterGUI
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          customFlowName:
+            link: Flow Name/value
+            schema: string
+            editor:
+              id: com.k2view.innerFlow
+            mandatory: false
+            createdBy: flowName
+          flowInputs:
+            link: Get Inputs if Exsists /value
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          countFlow:
+            external: countFlow
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableRefId:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          currentPartition:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          partitionsNumber:
+            link: Get Partitions Number/value
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableCount:
+            link: Get Table's Count/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            external: result
+            schema: '#ref'
+          tableCount:
+            schema: integer
+  Update Records To Porcess:
+    actors:
+      Update Table Partition Total Number Of Records:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTablePartitionTotalNumberOfRecords
+          taskExeId:
+            external: taskExecutionId
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          tableId:
+            external: tableRefID
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          recCount:
+            link:
+            - Call Default Flow/tableCount
+            - Call Custom Flow/tableCount
+            - Call Partition Flow/tableCount
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: flowName
+schemas:
+  fnGetCachedTableInfoBySection.out.result:
+    type: object
+    properties:
+      message:
+        type: string
+  Get Inputs if Exsists .out.value:
+    type: object
+    properties:
+      message:
+        type: string
+  Call Default Flow.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        ssn:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+        driver_type:
+          type: string
+        email:
+          type: string
+  Call Custom Flow.out.result:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Call Partition Flow.in.filterParametersInfo:
+    type: array
+    items: {
+      }
+  Call Partition Flow.in.filterGUI:
+    type: array
+    items: {
+      }
+  Call Partition Flow.in.flowInputs:
+    type: object
+    properties:
+      message:
+        type: string
+  Call Partition Flow.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_id:
+          type: integer
+        order_id:
+          type: integer
+        order_type:
+          type: string
+        order_date:
+          type: date
+        order_status:
+          type: string

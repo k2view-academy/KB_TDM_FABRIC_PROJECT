@@ -372,7 +372,7 @@ public class Logic extends WebServiceUserCode {
 		} else {
 					String activityDesc = "Reserved Entities were released";
 					try {
-						fnInsertActivity("release", "Reserved Entities", activityDesc);
+						fnInsertActivity("delete", "Reserved Entities", activityDesc);
 					}
 					catch(Exception e){
 						log.error(e.getMessage());

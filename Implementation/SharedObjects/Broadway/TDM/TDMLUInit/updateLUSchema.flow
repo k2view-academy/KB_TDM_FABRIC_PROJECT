@@ -716,6 +716,37 @@ stages:
             link: Get Root Table IID/rootInfo
             schema: '#ref'
             mandatory: false
+          LU_ROOT_COLUMN_TYPE:
+            external: ROOT_COLUMN_TYPE
+            schema: any
+            mandatory: false
+            createdBy: flowName
+      Get Interface of Main Tablle:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableSourceInterface
+          table:
+            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Schema of Main Table:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getDBTableSourceSchema
+          table:
+            link: Parse vdb XML/object/VirtualDB/_value/RootView/_value
+            schema: any
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
   'Replace Main Table Population ':
     actors:
       Create Root Population:
@@ -736,7 +767,7 @@ stages:
             schema: string
             mandatory: false
           SOURCE_INTERFACE:
-            external: SOURCE_INTERFACE
+            link: Get Interface of Main Tablle/result
             schema: string
             mandatory: false
           LU_PATH:
@@ -744,7 +775,7 @@ stages:
             schema: string
             mandatory: false
           SOURCE_SCHEMA:
-            external: SOURCE_SCHEMA
+            link: Get Schema of Main Table/result
             schema: string
             mandatory: false
           SOURCE_TABLE:
@@ -838,6 +869,64 @@ stages:
             const: vdb.k2vdb.xml
           stream:
             link: Convert Obj to XML/xmlString
+  Update Fabric TDM Root And BE IIDS:
+    actors:
+      UpdateMainTableColumnType11:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateMainTableColumnType
+          root_column_type:
+            external: ROOT_COLUMN_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interface:
+            external: LU_PATH
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file://
+            mandatory: false
+            createdBy: flowName
+          table:
+            const: FABRIC_TDM_ROOT
+            schema: string
+            mandatory: false
+            createdBy: flowName
+      UpdateMainTableColumnType1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateMainTableColumnType
+          root_column_type:
+            external: ROOT_COLUMN_TYPE
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interface:
+            external: LU_PATH
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file://
+            mandatory: false
+            createdBy: flowName
+          table:
+            const: TDM_BE_IIDS
+            schema: string
+            mandatory: false
+            createdBy: flowName
 schemas:
   ls .out.result:
     type: array

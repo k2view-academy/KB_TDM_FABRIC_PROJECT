@@ -39,7 +39,7 @@ stages:
             const: SELECT * FROM ${@TDMDB_SCHEMA}.task_execution_list
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
           parent_rows:
             link: PopulationArgs/parent_rows
@@ -104,7 +104,7 @@ stages:
             mandatory: false
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:
@@ -157,6 +157,9 @@ stages:
             link: Integer lu_id/number
             schema: integer
             mandatory: false
+        out:
+          result:
+            schema: string
   Task Type:
     actors:
       task_type:
@@ -222,7 +225,7 @@ stages:
             mandatory: false
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:
@@ -250,7 +253,7 @@ stages:
             mandatory: false
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:
@@ -284,7 +287,7 @@ stages:
             mandatory: false
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:
@@ -342,35 +345,38 @@ stages:
             const: TASK_EXECUTION_LIST
           fields:
             const:
-            - TASK_EXECUTION_ID
-            - TASK_ID
-            - LU_ID
-            - LU_NAME
-            - PARENT_LU_ID
-            - PARENT_LU_NAME
-            - VERSION_IND
-            - VERSION_TASK_EXECUTION_ID
-            - EXPIRATION_DATE
-            - EXECUTION_STATUS
-            - START_EXECUTION_TIME
-            - END_EXECUTION_TIME
-            - NUM_OF_PROCESSED_ENTITIES
-            - NUM_OF_COPIED_ENTITIES
-            - NUM_OF_FAILED_ENTITIES
-            - DATA_CENTER_NAME
-            - NUM_OF_PROCESSED_REF_TABLES
-            - NUM_OF_COPIED_REF_TABLES
-            - NUM_OF_FAILED_REF_TABLES
-            - FABRIC_EXECUTION_ID
-            - TASK_EXECUTED_BY
-            - PROCESS_ID
-            - PROCESS_NAME
-            - PROCESS_TYPE
-            - PRODUCT_NAME
-            - SOURCE_PRODUCT_VERSION
-            - TARGET_PRODUCT_VERSION
-            - SUBSET_TASK_EXECUTION_ID
-            - ENTITY_INCLUSION_QUERY
+            - task_execution_id
+            - task_id
+            - lu_id
+            - lu_name
+            - parent_lu_id
+            - parent_lu_name
+            - version_ind
+            - version_task_execution_id
+            - expiration_date
+            - execution_status
+            - start_execution_time
+            - end_execution_time
+            - num_of_processed_entities
+            - num_of_copied_entities
+            - num_of_failed_entities
+            - num_of_processed_ref_tables
+            - num_of_copied_ref_tables
+            - num_of_failed_ref_tables
+            - fabric_execution_id
+            - task_executed_by
+            - process_id
+            - process_name
+            - process_type
+            - product_name
+            - source_product_version
+            - target_product_version
+            - subset_task_execution_id
+            - entity_inclusion_query
+            - source_affinity
+            - target_affinity
+            - source_max_no_of_workers
+            - target_max_no_of_workers
           keys:
             const:
             - TASK_EXECUTION_ID
@@ -450,12 +456,6 @@ stages:
               iterate: Iterate
             schema: integer
             mandatory: false
-          DATA_CENTER_NAME:
-            link:
-              path: Query/result/data_center_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
           NUM_OF_PROCESSED_REF_TABLES:
             link:
               path: Query/result/num_of_processed_ref_tables
@@ -532,6 +532,26 @@ stages:
               iterate: Iterate
             schema: any
             mandatory: false
+          source_affinity:
+            link:
+              path: Query/result/source_affinity
+              iterate: Iterate
+            schema: any
+          target_affinity:
+            link:
+              path: Query/result/target_affinity
+              iterate: Iterate
+            schema: any
+          source_max_no_of_workers:
+            link:
+              path: Query/result/source_max_no_of_workers
+              iterate: Iterate
+            schema: any
+          target_max_no_of_workers:
+            link:
+              path: Query/result/target_max_no_of_workers
+              iterate: Iterate
+            schema: any
 schemas:
   PopulationArgs.out.parent_rows:
     type: array
@@ -572,9 +592,7 @@ schemas:
         num_of_copied_entities:
           type: integer
         num_of_failed_entities:
-          type: integer
-        data_center_name:
-          type: string
+          type: integer        
         lu_id:
           type: integer
         num_of_processed_ref_tables:
@@ -612,6 +630,14 @@ schemas:
         source_product_version:
           type: string
         entity_inclusion_query:
+          type: string
+        source_max_no_of_workers:
+          type: integer
+        target_max_no_of_workers:
+          type: integer
+        source_affinity:
+          type: string
+        target_affinity:
           type: string
   product_logical_units.out.result:
     type: object

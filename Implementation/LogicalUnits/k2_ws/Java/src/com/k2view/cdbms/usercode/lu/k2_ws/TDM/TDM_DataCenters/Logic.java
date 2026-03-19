@@ -14,27 +14,60 @@ import com.k2view.fabric.api.endpoint.Endpoint.webService;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getFabricResponse;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
-@SuppressWarnings({"DefaultAnnotationParam"})
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@SuppressWarnings({ "DefaultAnnotationParam", "unchecked" })
 public class Logic extends WebServiceUserCode {
 
 	@desc("Gets the list of the Data Centers defined in the Fabric cluster.")
-	@webService(path = "dataCenters", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"notes\": \"local node\",\r\n" +
-			"      \"effective_ip\": \"127.0.0.1\",\r\n" +
-			"      \"logical_ids\": \"\",\r\n" +
-			"      \"node_id\": \"fabric_debug\",\r\n" +
-			"      \"dc\": \"DC1\",\r\n" +
-			"      \"status\": \"ALIVE\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
+	@webService(path = "dataCenters", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON })
+	@resultMetaData(mediaType = Produce.JSON, example = """
+						{
+			  "result": [
+			    {
+			      "notes": "local node",
+			      "effective_ip": "10.176.10.6",
+			      "node_id": "ziv95demo-k2view",
+			      "dc": "LOCAL_DC",
+			      "logical_ids": "",
+			      "status": "ALIVE"
+			    }
+			  ],
+			  "errorCode": "SUCCESS",
+			  "message": null
+			}
+						""")
+
 	public static Object wsGetDataCenters() throws Exception {
-		return wrapWebServiceResults("SUCCESS", null, getFabricResponse("clusterstatus;"));
+
+		final String IID_FINDER_JOB = "iidfinder_job";
+
+		List<Map<String, Object>> rawData = (List<Map<String, Object>>) getFabricResponse("clusterstatus;");
+
+		if (rawData != null) {
+			for (Map<String, Object> node : rawData) {
+				Object logicalIdsObj = node.get("logical_ids");
+
+				if (logicalIdsObj instanceof String) {
+					String logicalIds = (String) logicalIdsObj;
+
+					// Process the string to remove the specific job
+					String cleanedIds = Arrays.stream(logicalIds.split(","))
+							.map(String::trim)
+							.filter(id -> !id.equalsIgnoreCase(IID_FINDER_JOB))
+							.collect(Collectors.joining(","));
+
+					node.put("logical_ids", cleanedIds);
+				}
+			}
+		}
+
+		return wrapWebServiceResults("SUCCESS", null, rawData);
 	}
 
 }

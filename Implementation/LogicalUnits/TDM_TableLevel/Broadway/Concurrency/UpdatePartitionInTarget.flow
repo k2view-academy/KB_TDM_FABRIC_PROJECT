@@ -1,0 +1,480 @@
+tags: Concurrency
+stages:
+  Get Table's Fields & PKs:
+    actors:
+      Table Error Handler No Fields Or No Key Fields:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+      Get Table's Fields:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableColumns
+          sourceInterfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceTableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceSchemaName:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          dataSample:
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+      Get Fields For Where Clause:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: MaskingUpdateFields
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: ''
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  Default Update Flow:
+    dependsOn: Get Table's Fields & PKs
+    actors:
+      No Custom Flow?:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            external: customUpdateFlow
+      Table Error Handler Update With Default Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+      Update Table By Query:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTableByQuery
+          targetInterface:
+            external: targetInterface
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetSchema:
+            external: targetSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          targetTable:
+            external: targetTable
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          fieldsArray:
+            link: Get Table's Fields/result
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          inputRecords:
+            external: inputRecords
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          commitSize:
+            external: commitSize
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          TDMDB_SCHEMA:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          task_execution_id:
+            external: task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          task_ref_table_id:
+            external: task_ref_table_id
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          partition_no:
+            external: partition_no
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          whereArray:
+            link: Get Fields For Where Clause/result
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+        out:
+          okay:
+            schema: number
+          total:
+            schema: number
+          errors:
+            schema: number
+    split: '--------------------'
+  Custom Flow:
+    else: true
+    dependsOn: Get Table's Fields & PKs
+    actors:
+      Table Error Handler Update With Custom Flow:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: sourceTableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+      Run Custom Update Flow:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: null
+            external: flowName
+          innerFlowClose:
+            const: false
+          targetInterface:
+            external: targetInterface
+            schema: string
+            mandatory: false
+          targetSchema:
+            external: targetSchema
+            schema: string
+            mandatory: false
+          targetTable:
+            external: targetTable
+            schema: string
+            mandatory: false
+          inputRecords:
+            external: inputRecords
+            schema: '#ref'
+            mandatory: false
+          fieldsArray:
+            link: Get Table's Fields/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          olay:
+            schema: integer
+          errors:
+            schema: integer
+          total:
+            schema: integer
+  Records Count:
+    actors:
+      Count:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - Update Table By Query/okay
+            - Run Custom Update Flow/olay
+            schema: integer
+        out:
+          value:
+            schema: integer
+      Got Errors Count?:
+        parent: IfElse
+        height: 326
+        in:
+          a:
+            link:
+            - Update Table By Query/errors
+            - Run Custom Update Flow/errors
+            schema: integer
+          b:
+            const: 0
+            schema: integer
+          test:
+            link:
+            - Update Table By Query/errors
+            - Run Custom Update Flow/errors
+        out:
+          result:
+            schema: integer
+  'Update Processed Count ':
+    dependsOn: Records Count
+    actors:
+      Update Count?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Count/value
+            schema: integer
+          b:
+            const: -1
+            schema: integer
+      Error Handler - Status And Counts:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Update task_ref_partition - Status And Counts:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_partition
+               set execution_status=${execution_status}, number_of_processed_records=${number_of_processed_records},
+                  number_of_failed_records = ${number_of_failed_records}, end_time=NOW()
+              where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
+               AND partition_no=${partition_no}
+          TDMDB_SCHEMA:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExeId
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            external: refTableID
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          partition_no:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+            createdBy: sql
+          number_of_processed_records:
+            link: Count/value
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          execution_status:
+            const: completed
+            schema: string
+            mandatory: false
+            createdBy: sql
+          number_of_failed_records:
+            link: Got Errors Count?/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+    split: '--------------------'
+  No Count Done:
+    else: true
+    dependsOn: Records Count
+    actors:
+      Error Handler - Status Only:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Update task_ref_partition - Status Only:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_partition
+               set execution_status=${execution_status}, end_time=NOW()
+              where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
+               AND partition_no=${partition_no}
+          TDMDB_SCHEMA:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            external: task_ref_table_id
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          partition_no:
+            external: partition_no
+            schema: string
+            mandatory: false
+            createdBy: sql
+          execution_status:
+            const: completed
+            schema: string
+            mandatory: false
+            createdBy: sql
+schemas:
+  Get Table's Fields.in.dataSample:
+    type: object
+    properties:
+      customer_id:
+        type: integer
+      ssn:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      age:
+        type: integer
+      driver_type:
+        type: string
+      email:
+        type: string
+  Get Table's Fields.out.result:
+    type: array
+    items:
+      type: string
+  Update Table By Query.in.fieldsArray:
+    type: array
+    items:
+      type: string
+  Update Table By Query.in.inputRecords:
+    type: array
+    items: {
+      }
+  Update Table By Query.in.whereArray:
+    type: array
+    items:
+      type: string
+  Run Custom Update Flow.in.inputRecords:
+    type: array
+    items: {
+      }
+  Run Custom Update Flow.in.fieldsArray:
+    type: array
+    items:
+      type: string

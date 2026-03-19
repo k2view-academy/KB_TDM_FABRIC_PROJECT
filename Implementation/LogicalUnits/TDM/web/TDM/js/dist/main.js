@@ -148,295 +148,295 @@
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([226,1]);
+/******/ 	deferredModules.push([243,1]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 226:
+/***/ 243:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(320);
+module.exports = __webpack_require__(328);
 
 
 /***/ }),
 
-/***/ 266:
+/***/ 274:
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./af": 81,
-	"./af.js": 81,
-	"./ar": 82,
-	"./ar-dz": 83,
-	"./ar-dz.js": 83,
-	"./ar-kw": 84,
-	"./ar-kw.js": 84,
-	"./ar-ly": 85,
-	"./ar-ly.js": 85,
-	"./ar-ma": 86,
-	"./ar-ma.js": 86,
-	"./ar-sa": 87,
-	"./ar-sa.js": 87,
-	"./ar-tn": 88,
-	"./ar-tn.js": 88,
-	"./ar.js": 82,
-	"./az": 89,
-	"./az.js": 89,
-	"./be": 90,
-	"./be.js": 90,
-	"./bg": 91,
-	"./bg.js": 91,
-	"./bm": 92,
-	"./bm.js": 92,
-	"./bn": 93,
-	"./bn-bd": 94,
-	"./bn-bd.js": 94,
-	"./bn.js": 93,
-	"./bo": 95,
-	"./bo.js": 95,
-	"./br": 96,
-	"./br.js": 96,
-	"./bs": 97,
-	"./bs.js": 97,
-	"./ca": 98,
-	"./ca.js": 98,
-	"./cs": 99,
-	"./cs.js": 99,
-	"./cv": 100,
-	"./cv.js": 100,
-	"./cy": 101,
-	"./cy.js": 101,
-	"./da": 102,
-	"./da.js": 102,
-	"./de": 103,
-	"./de-at": 104,
-	"./de-at.js": 104,
-	"./de-ch": 105,
-	"./de-ch.js": 105,
-	"./de.js": 103,
-	"./dv": 106,
-	"./dv.js": 106,
-	"./el": 107,
-	"./el.js": 107,
-	"./en-au": 108,
-	"./en-au.js": 108,
-	"./en-ca": 109,
-	"./en-ca.js": 109,
-	"./en-gb": 110,
-	"./en-gb.js": 110,
-	"./en-ie": 111,
-	"./en-ie.js": 111,
-	"./en-il": 112,
-	"./en-il.js": 112,
-	"./en-in": 113,
-	"./en-in.js": 113,
-	"./en-nz": 114,
-	"./en-nz.js": 114,
-	"./en-sg": 115,
-	"./en-sg.js": 115,
-	"./eo": 116,
-	"./eo.js": 116,
-	"./es": 117,
-	"./es-do": 118,
-	"./es-do.js": 118,
-	"./es-mx": 119,
-	"./es-mx.js": 119,
-	"./es-us": 120,
-	"./es-us.js": 120,
-	"./es.js": 117,
-	"./et": 121,
-	"./et.js": 121,
-	"./eu": 122,
-	"./eu.js": 122,
-	"./fa": 123,
-	"./fa.js": 123,
-	"./fi": 124,
-	"./fi.js": 124,
-	"./fil": 125,
-	"./fil.js": 125,
-	"./fo": 126,
-	"./fo.js": 126,
-	"./fr": 127,
-	"./fr-ca": 128,
-	"./fr-ca.js": 128,
-	"./fr-ch": 129,
-	"./fr-ch.js": 129,
-	"./fr.js": 127,
-	"./fy": 130,
-	"./fy.js": 130,
-	"./ga": 131,
-	"./ga.js": 131,
-	"./gd": 132,
-	"./gd.js": 132,
-	"./gl": 133,
-	"./gl.js": 133,
-	"./gom-deva": 134,
-	"./gom-deva.js": 134,
-	"./gom-latn": 135,
-	"./gom-latn.js": 135,
-	"./gu": 136,
-	"./gu.js": 136,
-	"./he": 137,
-	"./he.js": 137,
-	"./hi": 138,
-	"./hi.js": 138,
-	"./hr": 139,
-	"./hr.js": 139,
-	"./hu": 140,
-	"./hu.js": 140,
-	"./hy-am": 141,
-	"./hy-am.js": 141,
-	"./id": 142,
-	"./id.js": 142,
-	"./is": 143,
-	"./is.js": 143,
-	"./it": 144,
-	"./it-ch": 145,
-	"./it-ch.js": 145,
-	"./it.js": 144,
-	"./ja": 146,
-	"./ja.js": 146,
-	"./jv": 147,
-	"./jv.js": 147,
-	"./ka": 148,
-	"./ka.js": 148,
-	"./kk": 149,
-	"./kk.js": 149,
-	"./km": 150,
-	"./km.js": 150,
-	"./kn": 151,
-	"./kn.js": 151,
-	"./ko": 152,
-	"./ko.js": 152,
-	"./ku": 153,
-	"./ku.js": 153,
-	"./ky": 154,
-	"./ky.js": 154,
-	"./lb": 155,
-	"./lb.js": 155,
-	"./lo": 156,
-	"./lo.js": 156,
-	"./lt": 157,
-	"./lt.js": 157,
-	"./lv": 158,
-	"./lv.js": 158,
-	"./me": 159,
-	"./me.js": 159,
-	"./mi": 160,
-	"./mi.js": 160,
-	"./mk": 161,
-	"./mk.js": 161,
-	"./ml": 162,
-	"./ml.js": 162,
-	"./mn": 163,
-	"./mn.js": 163,
-	"./mr": 164,
-	"./mr.js": 164,
-	"./ms": 165,
-	"./ms-my": 166,
-	"./ms-my.js": 166,
-	"./ms.js": 165,
-	"./mt": 167,
-	"./mt.js": 167,
-	"./my": 168,
-	"./my.js": 168,
-	"./nb": 169,
-	"./nb.js": 169,
-	"./ne": 170,
-	"./ne.js": 170,
-	"./nl": 171,
-	"./nl-be": 172,
-	"./nl-be.js": 172,
-	"./nl.js": 171,
-	"./nn": 173,
-	"./nn.js": 173,
-	"./oc-lnc": 174,
-	"./oc-lnc.js": 174,
-	"./pa-in": 175,
-	"./pa-in.js": 175,
-	"./pl": 176,
-	"./pl.js": 176,
-	"./pt": 177,
-	"./pt-br": 178,
-	"./pt-br.js": 178,
-	"./pt.js": 177,
-	"./ro": 179,
-	"./ro.js": 179,
-	"./ru": 180,
-	"./ru.js": 180,
-	"./sd": 181,
-	"./sd.js": 181,
-	"./se": 182,
-	"./se.js": 182,
-	"./si": 183,
-	"./si.js": 183,
-	"./sk": 184,
-	"./sk.js": 184,
-	"./sl": 185,
-	"./sl.js": 185,
-	"./sq": 186,
-	"./sq.js": 186,
-	"./sr": 187,
-	"./sr-cyrl": 188,
-	"./sr-cyrl.js": 188,
-	"./sr.js": 187,
-	"./ss": 189,
-	"./ss.js": 189,
-	"./sv": 190,
-	"./sv.js": 190,
-	"./sw": 191,
-	"./sw.js": 191,
-	"./ta": 192,
-	"./ta.js": 192,
-	"./te": 193,
-	"./te.js": 193,
-	"./tet": 194,
-	"./tet.js": 194,
-	"./tg": 195,
-	"./tg.js": 195,
-	"./th": 196,
-	"./th.js": 196,
-	"./tk": 197,
-	"./tk.js": 197,
-	"./tl-ph": 198,
-	"./tl-ph.js": 198,
-	"./tlh": 199,
-	"./tlh.js": 199,
-	"./tr": 200,
-	"./tr.js": 200,
-	"./tzl": 201,
-	"./tzl.js": 201,
-	"./tzm": 202,
-	"./tzm-latn": 203,
-	"./tzm-latn.js": 203,
-	"./tzm.js": 202,
-	"./ug-cn": 204,
-	"./ug-cn.js": 204,
-	"./uk": 205,
-	"./uk.js": 205,
-	"./ur": 206,
-	"./ur.js": 206,
-	"./uz": 207,
-	"./uz-latn": 208,
-	"./uz-latn.js": 208,
-	"./uz.js": 207,
-	"./vi": 209,
-	"./vi.js": 209,
-	"./x-pseudo": 210,
-	"./x-pseudo.js": 210,
-	"./yo": 211,
-	"./yo.js": 211,
-	"./zh-cn": 212,
-	"./zh-cn.js": 212,
-	"./zh-hk": 213,
-	"./zh-hk.js": 213,
-	"./zh-mo": 214,
-	"./zh-mo.js": 214,
-	"./zh-tw": 215,
-	"./zh-tw.js": 215
+	"./af": 95,
+	"./af.js": 95,
+	"./ar": 96,
+	"./ar-dz": 97,
+	"./ar-dz.js": 97,
+	"./ar-kw": 98,
+	"./ar-kw.js": 98,
+	"./ar-ly": 99,
+	"./ar-ly.js": 99,
+	"./ar-ma": 100,
+	"./ar-ma.js": 100,
+	"./ar-sa": 101,
+	"./ar-sa.js": 101,
+	"./ar-tn": 102,
+	"./ar-tn.js": 102,
+	"./ar.js": 96,
+	"./az": 103,
+	"./az.js": 103,
+	"./be": 104,
+	"./be.js": 104,
+	"./bg": 105,
+	"./bg.js": 105,
+	"./bm": 106,
+	"./bm.js": 106,
+	"./bn": 107,
+	"./bn-bd": 108,
+	"./bn-bd.js": 108,
+	"./bn.js": 107,
+	"./bo": 109,
+	"./bo.js": 109,
+	"./br": 110,
+	"./br.js": 110,
+	"./bs": 111,
+	"./bs.js": 111,
+	"./ca": 112,
+	"./ca.js": 112,
+	"./cs": 113,
+	"./cs.js": 113,
+	"./cv": 114,
+	"./cv.js": 114,
+	"./cy": 115,
+	"./cy.js": 115,
+	"./da": 116,
+	"./da.js": 116,
+	"./de": 117,
+	"./de-at": 118,
+	"./de-at.js": 118,
+	"./de-ch": 119,
+	"./de-ch.js": 119,
+	"./de.js": 117,
+	"./dv": 120,
+	"./dv.js": 120,
+	"./el": 121,
+	"./el.js": 121,
+	"./en-au": 122,
+	"./en-au.js": 122,
+	"./en-ca": 123,
+	"./en-ca.js": 123,
+	"./en-gb": 124,
+	"./en-gb.js": 124,
+	"./en-ie": 125,
+	"./en-ie.js": 125,
+	"./en-il": 126,
+	"./en-il.js": 126,
+	"./en-in": 127,
+	"./en-in.js": 127,
+	"./en-nz": 128,
+	"./en-nz.js": 128,
+	"./en-sg": 129,
+	"./en-sg.js": 129,
+	"./eo": 130,
+	"./eo.js": 130,
+	"./es": 131,
+	"./es-do": 132,
+	"./es-do.js": 132,
+	"./es-mx": 133,
+	"./es-mx.js": 133,
+	"./es-us": 134,
+	"./es-us.js": 134,
+	"./es.js": 131,
+	"./et": 135,
+	"./et.js": 135,
+	"./eu": 136,
+	"./eu.js": 136,
+	"./fa": 137,
+	"./fa.js": 137,
+	"./fi": 138,
+	"./fi.js": 138,
+	"./fil": 139,
+	"./fil.js": 139,
+	"./fo": 140,
+	"./fo.js": 140,
+	"./fr": 141,
+	"./fr-ca": 142,
+	"./fr-ca.js": 142,
+	"./fr-ch": 143,
+	"./fr-ch.js": 143,
+	"./fr.js": 141,
+	"./fy": 144,
+	"./fy.js": 144,
+	"./ga": 145,
+	"./ga.js": 145,
+	"./gd": 146,
+	"./gd.js": 146,
+	"./gl": 147,
+	"./gl.js": 147,
+	"./gom-deva": 148,
+	"./gom-deva.js": 148,
+	"./gom-latn": 149,
+	"./gom-latn.js": 149,
+	"./gu": 150,
+	"./gu.js": 150,
+	"./he": 151,
+	"./he.js": 151,
+	"./hi": 152,
+	"./hi.js": 152,
+	"./hr": 153,
+	"./hr.js": 153,
+	"./hu": 154,
+	"./hu.js": 154,
+	"./hy-am": 155,
+	"./hy-am.js": 155,
+	"./id": 156,
+	"./id.js": 156,
+	"./is": 157,
+	"./is.js": 157,
+	"./it": 158,
+	"./it-ch": 159,
+	"./it-ch.js": 159,
+	"./it.js": 158,
+	"./ja": 160,
+	"./ja.js": 160,
+	"./jv": 161,
+	"./jv.js": 161,
+	"./ka": 162,
+	"./ka.js": 162,
+	"./kk": 163,
+	"./kk.js": 163,
+	"./km": 164,
+	"./km.js": 164,
+	"./kn": 165,
+	"./kn.js": 165,
+	"./ko": 166,
+	"./ko.js": 166,
+	"./ku": 167,
+	"./ku.js": 167,
+	"./ky": 168,
+	"./ky.js": 168,
+	"./lb": 169,
+	"./lb.js": 169,
+	"./lo": 170,
+	"./lo.js": 170,
+	"./lt": 171,
+	"./lt.js": 171,
+	"./lv": 172,
+	"./lv.js": 172,
+	"./me": 173,
+	"./me.js": 173,
+	"./mi": 174,
+	"./mi.js": 174,
+	"./mk": 175,
+	"./mk.js": 175,
+	"./ml": 176,
+	"./ml.js": 176,
+	"./mn": 177,
+	"./mn.js": 177,
+	"./mr": 178,
+	"./mr.js": 178,
+	"./ms": 179,
+	"./ms-my": 180,
+	"./ms-my.js": 180,
+	"./ms.js": 179,
+	"./mt": 181,
+	"./mt.js": 181,
+	"./my": 182,
+	"./my.js": 182,
+	"./nb": 183,
+	"./nb.js": 183,
+	"./ne": 184,
+	"./ne.js": 184,
+	"./nl": 185,
+	"./nl-be": 186,
+	"./nl-be.js": 186,
+	"./nl.js": 185,
+	"./nn": 187,
+	"./nn.js": 187,
+	"./oc-lnc": 188,
+	"./oc-lnc.js": 188,
+	"./pa-in": 189,
+	"./pa-in.js": 189,
+	"./pl": 190,
+	"./pl.js": 190,
+	"./pt": 191,
+	"./pt-br": 192,
+	"./pt-br.js": 192,
+	"./pt.js": 191,
+	"./ro": 193,
+	"./ro.js": 193,
+	"./ru": 194,
+	"./ru.js": 194,
+	"./sd": 195,
+	"./sd.js": 195,
+	"./se": 196,
+	"./se.js": 196,
+	"./si": 197,
+	"./si.js": 197,
+	"./sk": 198,
+	"./sk.js": 198,
+	"./sl": 199,
+	"./sl.js": 199,
+	"./sq": 200,
+	"./sq.js": 200,
+	"./sr": 201,
+	"./sr-cyrl": 202,
+	"./sr-cyrl.js": 202,
+	"./sr.js": 201,
+	"./ss": 203,
+	"./ss.js": 203,
+	"./sv": 204,
+	"./sv.js": 204,
+	"./sw": 205,
+	"./sw.js": 205,
+	"./ta": 206,
+	"./ta.js": 206,
+	"./te": 207,
+	"./te.js": 207,
+	"./tet": 208,
+	"./tet.js": 208,
+	"./tg": 209,
+	"./tg.js": 209,
+	"./th": 210,
+	"./th.js": 210,
+	"./tk": 211,
+	"./tk.js": 211,
+	"./tl-ph": 212,
+	"./tl-ph.js": 212,
+	"./tlh": 213,
+	"./tlh.js": 213,
+	"./tr": 214,
+	"./tr.js": 214,
+	"./tzl": 215,
+	"./tzl.js": 215,
+	"./tzm": 216,
+	"./tzm-latn": 217,
+	"./tzm-latn.js": 217,
+	"./tzm.js": 216,
+	"./ug-cn": 218,
+	"./ug-cn.js": 218,
+	"./uk": 219,
+	"./uk.js": 219,
+	"./ur": 220,
+	"./ur.js": 220,
+	"./uz": 221,
+	"./uz-latn": 222,
+	"./uz-latn.js": 222,
+	"./uz.js": 221,
+	"./vi": 223,
+	"./vi.js": 223,
+	"./x-pseudo": 224,
+	"./x-pseudo.js": 224,
+	"./yo": 225,
+	"./yo.js": 225,
+	"./zh-cn": 226,
+	"./zh-cn.js": 226,
+	"./zh-hk": 227,
+	"./zh-hk.js": 227,
+	"./zh-mo": 228,
+	"./zh-mo.js": 228,
+	"./zh-tw": 229,
+	"./zh-tw.js": 229
 };
 
 
@@ -457,11 +457,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 266;
+webpackContext.id = 274;
 
 /***/ }),
 
-/***/ 320:
+/***/ 328:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -502,7 +502,7 @@ const FormContainer = styled_components_browser_esm["b" /* default */].div`
     background-color: #fff;
 `;
 // EXTERNAL MODULE: ./node_modules/react-hook-form/dist/index.esm.mjs
-var index_esm = __webpack_require__(20);
+var index_esm = __webpack_require__(24);
 
 // CONCATENATED MODULE: ./src/components/task/TaskForm/styles.ts
 
@@ -1129,13 +1129,14 @@ function FieldError(props) {
     submit,
     relativePosition,
     info,
-    width
+    width,
+    isSubmitted
   } = props;
   let visible = false;
   if (submit) {
     visible = true;
   }
-  if (submit === undefined && submittedForm) {
+  if (submit === undefined && (submittedForm || isSubmitted)) {
     visible = true;
   }
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(FieldError_styles_Container, {
@@ -1171,7 +1172,8 @@ function TDMInput(props) {
     max,
     error,
     disabled,
-    small
+    small,
+    isSubmitted
   } = props;
   const onChangeLocal = Object(react["useCallback"])(event => {
     if (type === 'number') {
@@ -1195,17 +1197,18 @@ function TDMInput(props) {
       placeholder: placeholder,
       type: type,
       name: name,
-      value: value || '',
+      value: value !== undefined && value !== null ? value : '',
       onChange: onChangeLocal,
       disabled: disabled
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
-      error: error
+      error: error,
+      isSubmitted: isSubmitted
     })]
   });
 }
 /* harmony default export */ var components_Input = (TDMInput);
 // EXTERNAL MODULE: ./node_modules/@uidotdev/usehooks/index.js
-var usehooks = __webpack_require__(30);
+var usehooks = __webpack_require__(34);
 
 // CONCATENATED MODULE: ./src/components/fabricWidget/index.tsx
 
@@ -1575,6 +1578,9 @@ const Select_styles_Container = styled_components_browser_esm["b" /* default */]
     .select__input {
         height: unset;
     }
+    .select__menu {
+        z-index: 9999;
+    }
 `;
 const Select_styles_Title = styled_components_browser_esm["b" /* default */].div`
     font-family: Roboto;
@@ -1598,6 +1604,8 @@ const OptionContainer = styled_components_browser_esm["b" /* default */].div`
     min-height: 25px;
     width: 100%;
     position: relative;
+    font-weight: 500;
+    text-align: start;
 `;
 const OptionText = styled_components_browser_esm["b" /* default */].div`
     width: calc(100% - 20px);
@@ -1638,10 +1646,13 @@ const styles_PopoverTemplate = styled_components_browser_esm["b" /* default */].
     background-color: #fff;
 `;
 // EXTERNAL MODULE: ./node_modules/react-select/dist/index-641ee5b8.esm.js + 1 modules
-var index_641ee5b8_esm = __webpack_require__(16);
+var index_641ee5b8_esm = __webpack_require__(17);
 
-// EXTERNAL MODULE: ./node_modules/react-select/dist/react-select.esm.js + 7 modules
-var react_select_esm = __webpack_require__(222);
+// EXTERNAL MODULE: ./node_modules/react-select/dist/react-select.esm.js
+var react_select_esm = __webpack_require__(233);
+
+// EXTERNAL MODULE: ./node_modules/react-select/creatable/dist/react-select-creatable.esm.js + 1 modules
+var react_select_creatable_esm = __webpack_require__(239);
 
 // CONCATENATED MODULE: ./src/components/Select/index.tsx
 
@@ -1652,53 +1663,7 @@ var react_select_esm = __webpack_require__(222);
 
 
 
-const customStyles = {
-  control: provided => ({
-    ...provided,
-    minHeight: '30px',
-    height: '30px',
-    overflow: 'hidden'
-  }),
-  valueContainer: provided => ({
-    ...provided,
-    height: '30px',
-    padding: '0 6px',
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    overflow: 'auto' // allow scrolling if too many chips
-  }),
-  multiValue: provided => ({
-    ...provided,
-    height: '20px',
-    backgroundColor: '#e2e2e2',
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '2px',
-    margin: '2px'
-  }),
-  multiValueLabel: provided => ({
-    ...provided,
-    fontSize: '10px',
-    padding: '0 4px'
-  }),
-  multiValueRemove: provided => ({
-    ...provided,
-    padding: '0 4px',
-    fontSize: '10px'
-  }),
-  input: provided => ({
-    ...provided,
-    margin: '0px',
-    padding: '0px',
-    height: 'unset'
-  }),
-  indicatorsContainer: provided => ({
-    ...provided,
-    height: '30px'
-  })
-};
+
 function TDMSelect(props) {
   const {
     title,
@@ -1718,25 +1683,113 @@ function TDMSelect(props) {
     enableSelectAll,
     titleIcon,
     maxMenuHeight,
-    small
+    small,
+    isCreatable,
+    onCreateOption,
+    isSubmitted,
+    overrideParams,
+    menuPortalTarget,
+    onKeyDown
   } = props;
+  const customStyles = Object(react["useMemo"])(() => ({
+    control: (provided, state) => ({
+      ...provided,
+      minHeight: '38px',
+      height: '38px',
+      overflow: 'hidden',
+      minWidth: '100px',
+      fontwight: 500,
+      '&:hover': {
+        borderColor: '#ccc'
+      },
+      ...(state.isFocused && {
+        borderColor: '#000',
+        boxShadow: '0 0 0 1px #000'
+      })
+    }),
+    valueContainer: provided => ({
+      ...provided,
+      height: '30px',
+      padding: '0 6px',
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      overflow: isMulti ? 'auto' : 'hidden' // allow scrolling if too many chips
+    }),
+    singleValue: provided => ({
+      ...provided,
+      fontWeight: '500',
+      fontSize: '12px'
+    }),
+    multiValue: provided => ({
+      ...provided,
+      height: '20px',
+      backgroundColor: '#e2e2e2',
+      borderRadius: '4px',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '2px',
+      margin: '2px',
+      fontSize: '12px'
+    }),
+    multiValueLabel: provided => ({
+      ...provided,
+      fontSize: '10px',
+      padding: '0 4px'
+    }),
+    multiValueRemove: provided => ({
+      ...provided,
+      padding: '0 4px',
+      fontSize: '10px'
+    }),
+    input: provided => ({
+      ...provided,
+      margin: '0px',
+      padding: '0px',
+      height: 'unset'
+    }),
+    indicatorsContainer: provided => ({
+      ...provided
+    }),
+    groupHeading: provided => ({
+      ...provided,
+      textTransform: 'none'
+    }),
+    menu: provided => ({
+      ...provided,
+      zIndex: 9999
+    }),
+    menuPortal: provided => ({
+      ...provided,
+      zIndex: 9999
+    })
+  }), [isMulti]);
+  const menuZIndexStyles = Object(react["useMemo"])(() => ({
+    menu: provided => ({
+      ...provided,
+      zIndex: 9999
+    }),
+    menuPortal: provided => ({
+      ...provided,
+      zIndex: 9999
+    })
+  }), []);
   const {
-    Option
+    Option,
+    ValueContainer
   } = index_641ee5b8_esm["o" /* c */];
   const [ref, hovering] = Object(usehooks["b" /* useHover */])();
-  const getValues = item => {
+  const getValues = Object(react["useCallback"])(item => {
     let temp = [];
     if (Array.isArray(item)) {
-      item.forEach(it => {
-        temp = temp.concat(getValues(it));
-      });
+      item.forEach(it => temp = temp.concat(getValues(it)));
     } else if (item.options) {
       temp = temp.concat(getValues(item.options));
     } else {
       temp = [item];
     }
     return temp;
-  };
+  }, []);
   const localOptions = Object(react["useMemo"])(() => {
     if (isMulti && enableSelectAll) {
       const allValues = getValues(options || []);
@@ -1748,45 +1801,71 @@ function TDMSelect(props) {
       }
     }
     return options;
-  }, [options, enableSelectAll, isMulti, value]);
+  }, [options, enableSelectAll, isMulti, value, getValues]);
   const onLocalChange = Object(react["useCallback"])(item => {
-    if (isMulti) {
-      if (item.findIndex(it => it.label === 'All') >= 0) {
-        let temp = getValues(options);
-        onChange(temp);
-        return;
-      }
+    if (isMulti && item !== null && item !== void 0 && item.some(it => it.label === 'All')) {
+      onChange(getValues(options));
+      return;
     }
     onChange(item);
-  }, [onChange, isMulti, options]);
-  const ValueOption = props => {
-    var _props$data, _props$data2;
+  }, [onChange, isMulti, options, getValues]);
+  const ValueOption = Object(react["useCallback"])(props => {
+    var _props$data$label, _props$data, _props$data2;
+    const optionTitle = (_props$data$label = (_props$data = props.data) === null || _props$data === void 0 ? void 0 : _props$data.label) !== null && _props$data$label !== void 0 ? _props$data$label : '';
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(Option, {
       ...props,
       children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(OptionContainer, {
+        title: optionTitle,
         children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(OptionText, {
           children: props.data.label
-        }), props !== null && props !== void 0 && (_props$data = props.data) !== null && _props$data !== void 0 && _props$data.description ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
-          title: props === null || props === void 0 ? void 0 : (_props$data2 = props.data) === null || _props$data2 === void 0 ? void 0 : _props$data2.description,
+        }), (props === null || props === void 0 ? void 0 : (_props$data2 = props.data) === null || _props$data2 === void 0 ? void 0 : _props$data2.description) && /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
+          title: props.data.description,
           src: info_icon
-        }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
+        })]
       })
     });
-  };
+  }, [Option]);
+  const CustomValueContainer = Object(react["useCallback"])(props => {
+    const {
+      getValue
+    } = props;
+    const selectedValue = getValue();
+    let titleText = '';
+    if (selectedValue && selectedValue.length > 0) {
+      if (isMulti) {
+        titleText = selectedValue.map(v => v.label).join(', ');
+      } else {
+        var _selectedValue$;
+        titleText = ((_selectedValue$ = selectedValue[0]) === null || _selectedValue$ === void 0 ? void 0 : _selectedValue$.label) || '';
+      }
+    }
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(ValueContainer, {
+      ...props,
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        title: titleText,
+        style: {
+          display: 'contents'
+        },
+        children: props.children
+      })
+    });
+  }, [ValueContainer, isMulti]);
+  const SelectComponent = isCreatable ? react_select_creatable_esm["a" /* default */] : react_select_esm["a" /* default */];
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Select_styles_Container, {
     width: width,
     minWidth: minWidth,
     maxWidth: maxWidth,
-    children: [title ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(Select_styles_Title, {
-      children: [titleIcon ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
+    children: [title && /*#__PURE__*/Object(jsx_runtime["jsxs"])(Select_styles_Title, {
+      children: [titleIcon && /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
         src: titleIcon
-      }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("span", {
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("span", {
         children: [title, /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_MadatoryAsterisk, {
           children: mandatory && title ? '*' : ''
         })]
       })]
-    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(react_select_esm["a" /* default */], {
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SelectComponent, {
       isDisabled: disabled,
+      menuPortalTarget: menuPortalTarget,
       placeholder: placeholder || '',
       className: "basic-single",
       value: value || null,
@@ -1799,13 +1878,20 @@ function TDMSelect(props) {
       onChange: onLocalChange,
       isMulti: isMulti,
       components: {
-        Option: ValueOption
+        Option: ValueOption,
+        ValueContainer: CustomValueContainer
       },
       maxMenuHeight: maxMenuHeight || undefined,
-      styles: small ? customStyles : undefined
+      styles: small ? customStyles : menuZIndexStyles,
+      onKeyDown: onKeyDown,
+      ...(isCreatable ? {
+        onCreateOption,
+        formatCreateLabel: inputValue => `Create "${inputValue}"`
+      } : {})
     }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
-      error: error
-    }), value !== null && value !== void 0 && value.description ? /*#__PURE__*/Object(jsx_runtime["jsx"])(DescriptionContainer, {
+      error: error,
+      isSubmitted: isSubmitted
+    }), (value === null || value === void 0 ? void 0 : value.description) && /*#__PURE__*/Object(jsx_runtime["jsx"])(DescriptionContainer, {
       ref: ref,
       children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
         reposition: false,
@@ -1814,13 +1900,13 @@ function TDMSelect(props) {
         isOpen: hovering,
         positions: ['bottom'],
         content: /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_PopoverTemplate, {
-          children: value === null || value === void 0 ? void 0 : value.description
+          children: value.description
         }),
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select_styles_Icon, {
           src: info_icon
         })
       })
-    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
+    })]
   });
 }
 /* harmony default export */ var Select = (TDMSelect);
@@ -1828,7 +1914,7 @@ function TDMSelect(props) {
 // eslint-disable-next-line @typescript-eslint/no-var-requires,no-undef
 const React = __webpack_require__(1);
 // eslint-disable-next-line @typescript-eslint/no-var-requires,no-undef
-const ReactDOM = __webpack_require__(26);
+const ReactDOM = __webpack_require__(27);
 function ReactToAngularJS(Component, directiveName, angularApp, bindings) {
   bindings = bindings || {};
   if (typeof window === "undefined" || typeof angularApp === "undefined") return;
@@ -1849,7 +1935,6 @@ function ReactToAngularJS(Component, directiveName, angularApp, bindings) {
             keys.push(bindingKey);
           }
         }
-        //debugger;
         scope.$watchGroup(keys, () => {
           ReactDOM.render(React.createElement(Component, scope), element[0]);
         });
@@ -1893,49 +1978,1010 @@ const exampleAPIs = {
       "execution_datetime": "2024-02-13 07:46:01.232883",
       "task_execution_id": 3,
       "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 1,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 2,
+      "number_of_records": 10
+    }, {
+      "task_name": "aaaa",
+      "task_description": "",
+      "executed_by": "[tahata@k2view.com##[k2view_k2v_user]](mailto:tahata@k2view.com )",
+      "execution_datetime": "2024-02-13 07:46:01.232883",
+      "task_execution_id": 3,
+      "number_of_records": 10
     }]
   },
   getTableByBeAndEnv: {
     "result": [{
-      "CRM_DB": [{
-        "public": [{
-          "taskExecutionId": 1449,
-          "taskName": "tables 01-05-2024 01:54:38",
-          "tableName": "activity"
+      "interfaceName": "CRM_DB",
+      "config": {
+        "max_number_of_workers": 6,
+        "affinity": "LOCAL_DC"
+      },
+      "schemas": [{
+        "schemaName": "public",
+        "tables": [{
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "activity",
+          "luName": "PATIENT_LU",
+          "countIndicator": "true"
         }, {
-          "tableName": "address"
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "address",
+          "luName": "PATIENT_LU",
+          "countIndicator": "true"
         }, {
-          "tableName": "case_note"
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "case_note",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }, {
-          "tableName": "cases"
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "cases",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }, {
-          "tableName": "contract"
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "contract",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }, {
-          "tableName": "customer"
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "customer",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }]
       }]
     }, {
-      "BILLING_DB": [{
-        "public": [{
-          "taskExecutionId": 1449,
-          "taskName": "tables 01-05-2024 01:54:38",
-          "tableName": "balance"
+      "interfaceName": "COLLECTION_DB",
+      "config": {
+        "max_number_of_workers": null,
+        "affinity": null
+      },
+      "schemas": [{
+        "schemaName": "public",
+        "tables": [{
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "collection",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }]
+    }, {
+      "interfaceName": "PATIENT_DB",
+      "config": {
+        "max_number_of_workers": null,
+        "affinity": null
+      },
+      "schemas": [{
+        "schemaName": "APPQOSSYS",
+        "tables": [{
+          "tableName": "WLM_CLASSIFIER_PLAN",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }, {
-          "tableName": "contract_offer_mapping"
+          "tableName": "WLM_FEATURE_USAGE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }, {
-          "tableName": "invoice"
+          "tableName": "WLM_METRICS_STREAM",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }, {
-          "tableName": "offer"
+          "tableName": "WLM_MPA_STREAM",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }, {
-          "tableName": "payment"
-        }, {
-          "tableName": "subscriber"
-        }, {
-          "tableName": "case_note"
+          "tableName": "WLM_VIOLATION_STREAM",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }]
       }, {
-        "shaischema": [{
-          "tableName": "subsubsub"
+        "schemaName": "DBSFWUSER",
+        "tables": [{
+          "tableName": "ACL$_OBJ",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "EXADIRECT_ACL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "IP_ACL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }, {
+        "schemaName": "DBSNMP",
+        "tables": [{
+          "tableName": "MGMT_BASELINE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_BASELINE_SQL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_CAPTURE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_CAPTURE_SQL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_DB_FEATURE_LOG",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_DB_FILE_GTT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_DB_SIZE_GTT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_HISTORY",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_HISTORY_SQL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_LATEST",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_LATEST_SQL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_RESPONSE_CONFIG",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_SNAPSHOT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_SNAPSHOT_SQL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MGMT_TEMPT_SQL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }, {
+        "schemaName": "OUTLN",
+        "tables": [{
+          "tableName": "OL$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "OL$HINTS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "OL$NODES",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }, {
+        "schemaName": "PATIENT_DB",
+        "tables": [{
+          "tableName": "ALLERGIES",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "FAMILY_HISTORY",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "INSURANCE_INFORMATION",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "INVOICE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MASSVOL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MEDICATION_REFERENCE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "M_INVOICE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT_QA",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT_TEST",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PAYMENT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PAYMENT_PARTITIONED",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PRESCRIBED_MEDICATION",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "REF_COMPLEX",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "REF_GIBRISH",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "S_INVOICE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "S_INVOICE_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISIT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISITPARTITIONED",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISITS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISIT_PARTITIONED",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISIT_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }, {
+        "schemaName": "SYS",
+        "tables": [{
+          "tableName": "ALL_UNIFIED_AUDIT_ACTIONS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "AUDIT_ACTIONS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "AV_DUAL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "COMMIT_SCN_LOG$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "DATA_PUMP_XPL_TABLE$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "DUAL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "FINALHIST$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "IMPDP_STATS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$NOEXP_TAB",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$XKTFBUE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_DATAPUMP_MASTER_10_1",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_DATAPUMP_MASTER_11_1",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_DATAPUMP_MASTER_11_1_0_7",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_DATAPUMP_MASTER_11_2",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_DATAPUMP_MASTER_12_0",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_DATAPUMP_MASTER_12_2",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_LIST_FILTER_TEMP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_LIST_FILTER_TEMP_2",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "KU$_SHARD_DOMIDX_NAMEMAP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MODELGTTRAW$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MV_CAPABILITIES_TABLE$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "ODCI_PMO_ROWIDS$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "ODCI_SECOBJ$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "ODCI_WARNINGS$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PLAN_TABLE$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PMAPGTT$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "REWRITE_TABLE$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SAM_SPARSITY_ADVICE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SCHEDULER$_FWQ_ANT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SCHEDULER_FILEWATCHER_QT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SPD_SCRATCH_TAB",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "STMT_AUDIT_OPTION_MAP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SYSTEM_PRIVILEGE_MAP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SYS_DIRECTIVE_TRACKED_OBJS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "TABLE_PRIVILEGE_MAP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "USER_PRIVILEGE_MAP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "WRI$_ADV_ASA_RECO_DATA",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "WRI$_HEATMAP_TOPN_DEP1",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "WRI$_HEATMAP_TOPN_DEP2",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "WRR$_REPLAY_CALL_FILTER",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XS$VALIDATION_TABLE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }, {
+        "schemaName": "SYSTEM",
+        "tables": [{
+          "tableName": "AQ$_SCHEDULES",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "HELP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_AJG",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_BASETABLE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_CLIQUE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_ELIGIBLE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_EXCEPTIONS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_FILTER",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_FILTERINSTANCE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_FJG",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_GC",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_INFO",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_JOURNAL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_LEVEL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_LOG",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_OUTPUT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_PARAMETERS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_PLAN",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_PRETTY",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_ROLLUP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_SQLDEPEND",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_TEMP",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MVIEW$_ADV_WORKLOAD",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "OL$",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "OL$HINTS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "OL$NODES",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "REDO_DB",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "REDO_LOG",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SCHEDULER_JOB_ARGS_TBL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SCHEDULER_PROGRAM_ARGS_TBL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "SQLPLUS_PRODUCT_PROFILE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }, {
+        "schemaName": "TAR_PATIENT_DB",
+        "tables": [{
+          "tableName": "ALLERGIES",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "FAMILY_HISTORY",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "INSURANCE_INFORMATION",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "INVOICE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MASSVOL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "MEDICATION_REFERENCE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "M_INVOICE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT_QA",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PATIENT_TEST",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PAYMENT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "PRESCRIBED_MEDICATION",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "REF_COMPLEX",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "REF_GIBRISH",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "S_INVOICE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "S_INVOICE_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISIT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISITS",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISIT_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "VISIT_TICKET",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }, {
+        "schemaName": "XDB",
+        "tables": [{
+          "tableName": "XDB$ACL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$ALL_MODEL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$ANY",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$ANYATTR",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$ATTRGROUP_DEF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$ATTRGROUP_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$ATTRIBUTE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$CHOICE_MODEL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$COMPLEX_TYPE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$ELEMENT",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$GROUP_DEF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$GROUP_REF",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$IMPORT_NM_INFO",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$IMPORT_PT_INFO",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$IMPORT_QN_INFO",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$IMPORT_TT_INFO",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$RESCONFIG",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$SCHEMA",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$SEQUENCE_MODEL",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$SIMPLE_TYPE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB$XIDX_IMP_T",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "tableName": "XDB_INDEX_DDL_CACHE",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }]
+    }, {
+      "interfaceName": "ORDERS_DB",
+      "config": {
+        "max_number_of_workers": null,
+        "affinity": null
+      },
+      "schemas": [{
+        "schemaName": "public",
+        "tables": [{
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "orders",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }]
+      }]
+    }, {
+      "interfaceName": "BILLING_DB",
+      "config": {
+        "max_number_of_workers": 4,
+        "affinity": ""
+      },
+      "schemas": [{
+        "schemaName": "public",
+        "tables": [{
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "balance",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "contract_offer_mapping",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "invoice",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "offer",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "payment",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
+        }, {
+          "taskExecutionId": 114,
+          "taskName": "all tables extract",
+          "tableName": "subscriber",
+          "luName": "TDM_TableLevel",
+          "countIndicator": "true"
         }]
       }]
     }],
@@ -1956,6 +3002,11 @@ const exampleAPIs = {
       "be_name": "Order",
       "execution_mode": "HORIZONTAL"
     }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  getTablesAPIMode: {
+    "result": "true",
     "errorCode": "SUCCESS",
     "message": null
   },
@@ -2630,13 +3681,21 @@ const exampleAPIs = {
   },
   "task/1/logicalunits": {
     "result": [{
+      "target_affinity": "LOCAL_DC",
+      "source_affinity": "LOCAL_DC",
       "lu_name": "PATIENT_LU",
       "lu_id": 1,
-      "task_id": 265
+      "task_id": 265,
+      "source_max_no_of_workers": 3,
+      "target_max_no_of_workers": 3
     }, {
+      "target_affinity": "LOCAL_DC",
+      "source_affinity": "LOCAL_DC",
       "lu_name": "PATIENT_VISITS",
       "lu_id": 15,
-      "task_id": 265
+      "task_id": 265,
+      "source_max_no_of_workers": 6,
+      "target_max_no_of_workers": 6
     }],
     "errorCode": "SUCCESS",
     "message": null
@@ -3611,6 +4670,871 @@ const exampleAPIs = {
     }],
     "errorCode": "SUCCESS",
     "message": null
+  },
+  "task/{taskId}": {
+    "result": {
+      "task_id": 6,
+      "task_title": "Customer 01-09-2025 15:34:21",
+      "task_description": "",
+      "task_type": "Extract entities",
+      "be_name": null,
+      "source_env_name": "Production",
+      "environment_name": "Production",
+      "selection_method": "Entity list",
+      "selection_param_value": "1",
+      "parameters": null,
+      "num_of_entities": 1,
+      "reserve_retention_period_type": "Days",
+      "reserve_retention_period_value": 5,
+      "isSourceDisabled": false,
+      "isTargetDisabled": false,
+      "prompt_text": "Extract data by <be_name> from <source_env_name>. \nSubset by <selection_method> using: <selection_param_value>.",
+      "prompt_text_with_params_replacment": "Extract data by Customer from Production. \nSubset by Entity list using: 1.",
+      "task_override_fields": {
+        value: '{"business_entity":{"field_connector":"be_name","is_editable":true},"source_environment":{"field_connector":"source_env_name","is_editable":false},"target_environment":{"field_connector":"environment_name","is_editable":false},"selection_method":{"field_connector":"selection_method","max_entities":{"is_editable":true},"is_editable":true,"entity_list":{"is_editable":true},"custom_logic":{"is_editable":true,"can_add_params":{"is_editable":true}},"random":{"is_editable":true},"business_parameters":{"is_editable":true,"can_add_params":{"is_editable":true}}}}'
+      }
+    },
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  //     dataCenters:{
+  //     "result": Array(100).fill(null).map((_, index) => ({
+  //         "notes": `Node ${index + 1} description`,
+  //         "effective_ip": `10.244.38.${index + 1}`,
+  //         "node_id": `node-${index + 1}`,
+  //         "dc": `DC_${index + 1}`,
+  //         "logical_ids": `logical_id_${index + 1}`,
+  //         "status": index % 2 === 0 ? "ALIVE" : "INACTIVE"
+  //     })),
+  //     "errorCode": "SUCCESS",
+  //     "message": null
+  // },
+  wsGetPermissionGroupMappings: {
+    "result": [{
+      "updated_by": "admin",
+      "description": "Initial mapping for admin user",
+      "fabric_role": "admin",
+      "permission_group": "admin",
+      "creation_date": "2025-10-06 08:50:03.969681",
+      "allow_creating_tasks": true,
+      "created_by": "admin",
+      "update_date": "2025-10-06 08:50:03.969681"
+    }, {
+      "updated_by": "admin",
+      "description": "Initial mapping for admin user",
+      "fabric_role": "k2view_k2v_user",
+      "permission_group": "admin",
+      "creation_date": "2025-10-06 08:50:04.176413",
+      "allow_creating_tasks": false,
+      "created_by": "admin",
+      "update_date": "2025-10-06 08:50:04.176413"
+    }, {
+      "updated_by": "user",
+      "description": "Initial mapping for user",
+      "fabric_role": "user",
+      "permission_group": "user",
+      "creation_date": "2025-10-06 08:50:03.969681",
+      "allow_creating_tasks": true,
+      "created_by": "user",
+      "update_date": "2025-10-06 08:50:03.969681"
+    }, {
+      "updated_by": "user2",
+      "description": "Initial mapping for user2",
+      "fabric_role": "k2view_k2v_user",
+      "permission_group": "user2",
+      "creation_date": "2025-10-06 08:50:04.176413",
+      "allow_creating_tasks": false,
+      "created_by": "user2",
+      "update_date": "2025-10-06 08:50:04.176413"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  products: {
+    "result": [{
+      "product_versions": "22",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "product_vendor": "test1",
+      "product_last_updated_date": "2025-10-12 11:29:03.938",
+      "product_id": 3,
+      "product_created_by": "saeed.namih@k2view.com.k2v",
+      "product_status": "Active",
+      "product_creation_date": "2025-10-12 11:29:03.938",
+      "product_description": "test1",
+      "product_name": "test1"
+    }, {
+      "product_versions": "05,66",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "product_vendor": "dassa",
+      "product_last_updated_date": "2025-10-20 09:02:27.834",
+      "product_id": 4,
+      "product_created_by": "saeed.namih@k2view.com.k2v",
+      "product_status": "Active",
+      "product_creation_date": "2025-10-20 09:02:27.834",
+      "product_description": "asdas",
+      "product_name": "ssdas"
+    }, {
+      "product_versions": "a",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "product_vendor": "a",
+      "product_last_updated_date": "2025-10-20 09:04:34.065",
+      "product_id": 5,
+      "product_created_by": "saeed.namih@k2view.com.k2v",
+      "product_status": "Active",
+      "product_creation_date": "2025-10-20 09:04:34.065",
+      "product_description": "a",
+      "product_name": "syst1"
+    }, {
+      "product_versions": "KU",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "product_vendor": "33",
+      "product_last_updated_date": "2025-10-20 09:05:11.928",
+      "product_id": 6,
+      "product_created_by": "saeed.namih@k2view.com.k2v",
+      "product_status": "Active",
+      "product_creation_date": "2025-10-20 09:05:11.928",
+      "product_description": "33",
+      "product_name": "sys33"
+    }, {
+      "product_versions": "sys55,121212,2121sys55,121212,2121sys55,121212,2121sys55,121212,2121sys55,121212,2121",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "product_vendor": "sys55",
+      "product_last_updated_date": "2025-10-21 09:37:00.77",
+      "product_id": 7,
+      "product_created_by": "saeed.namih@k2view.com.k2v",
+      "product_status": "Active",
+      "product_creation_date": "2025-10-20 09:43:26.78",
+      "product_description": "sys55",
+      "product_name": "sys55"
+    }, {
+      "product_versions": "PROD",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "product_vendor": null,
+      "product_last_updated_date": "2025-10-21 10:54:24.824",
+      "product_id": 2,
+      "product_created_by": "admin",
+      "product_status": "Active",
+      "product_creation_date": "2025-10-06 08:50:30.320667",
+      "product_description": "Billing Application",
+      "product_name": "Billing"
+    }, {
+      "product_versions": "1,2",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "product_vendor": "0505",
+      "product_last_updated_date": "2025-10-21 11:20:50.972",
+      "product_id": 1,
+      "product_created_by": "admin",
+      "product_status": "Active",
+      "product_creation_date": "2025-10-06 08:50:30.320667",
+      "product_description": "CRM Application",
+      "product_name": "CRM"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  reservedEntities: {
+    "result": [{
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.485",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.589243",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.485",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.589243",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.485",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.589243",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.485",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.589243",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.485",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.589243",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "4",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.494",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.591406",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "3",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.491",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.603769",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "6",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.501",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.606145",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.489",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.608418",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "5",
+      "reserve_notes": null,
+      "task_execution_id": 983,
+      "task_title": "Customer 06-10-2025 13:51:16",
+      "reserve_consumers": null,
+      "expiration_date": "2025-11-05 10:51:47.491",
+      "be_name": "Customer",
+      "reserve_date": "2025-10-06 10:51:47.612357",
+      "reserve_owner": "mohamad@k2view.com",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  'wsGetFabricRoles': {
+    "result": ["k2view_k2v_user", "tester"],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "wsAddPermissionGroupMapping": {
+    "result": null,
+    "errorCode": "FAILED",
+    "message": "Can't add new permission group mapping: ERROR: null value in column \"allow_creating_tasks\" of relation \"permission_groups_mapping\" violates not-null constraint\n  Detail: Failing row contains (, tester, owner, saeed.namih@k2view.com.k2v, saeed.namih@k2view.com.k2v, 2025-10-12 11:20:03.68299, 2025-10-12 11:20:03.68299, null)."
+  },
+  "wsDeletePermissionGroupMapping": {
+    "result": null,
+    "errorCode": "FAILED",
+    "message": "You are not allowed to remove the permissions group mapping for Admin"
+  },
+  "release/listOfEntities": {
+    "result": null,
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "extend": {
+    "result": [],
+    "errorCode": "SUCCESS",
+    "message": ""
+  },
+  "addNote": {
+    "result": [],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "product": {
+    "result": {
+      "id": 7
+    },
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "getMaxWorkersPerNode": {
+    "result": 8,
+    "errorCode": "SUCCESS",
+    "message": ""
+  },
+  "dataCenters": {
+    "result": [{
+      "notes": "local node",
+      "effective_ip": "10.176.10.5",
+      "node_id": "ziv95demo-k2view",
+      "dc": "LOCAL_DC_2312_213123",
+      "logical_ids": "iidfinder_job, iidfinder_job2, iidfinder_job3",
+      "status": "ALIVE"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "logicalunits": {
+    "result": [{
+      "be_id": 2,
+      "lu_parent_id": null,
+      "be_status": "Active",
+      "be_creation_date": "2025-10-06 08:50:30.320667",
+      "be_last_updated_date": "2025-10-21 09:39:26.812",
+      "be_created_by": "admin",
+      "product_name": "Billing",
+      "be_name": "Subscriber",
+      "lu_description": "This is a Child LU.",
+      "lu_parent_name": null,
+      "lu_name": "Billing",
+      "product_id": 2,
+      "lu_id": 3,
+      "be_description": "This is a Business Entity created for the TDM GUI for params9.1 Demo.",
+      "be_last_updated_by": "saeed.namih@k2view.com.k2v"
+    }, {
+      "be_id": 1,
+      "lu_parent_id": 1,
+      "be_status": "Active",
+      "be_creation_date": "2025-10-06 08:50:30.320667",
+      "be_last_updated_date": "2025-10-21 09:39:28.418",
+      "be_created_by": "admin",
+      "product_name": "Billing",
+      "be_name": "Customer",
+      "lu_description": "This is a Child LU.",
+      "lu_parent_name": "Customer",
+      "lu_name": "Billing",
+      "product_id": 2,
+      "lu_id": 2,
+      "be_description": "This is a Business Entity created for the TDM GUI for AI/ML Demo.",
+      "be_last_updated_by": "saeed.namih@k2view.com.k2v"
+    }, {
+      "be_id": 4,
+      "lu_parent_id": null,
+      "be_status": "Active",
+      "be_creation_date": "2025-10-21 04:43:07.083",
+      "be_last_updated_date": "2025-10-21 10:29:46.65",
+      "be_created_by": "saeed.namih@k2view.com.k2v",
+      "product_name": "Billing",
+      "be_name": "v44",
+      "lu_description": null,
+      "lu_parent_name": null,
+      "lu_name": "Collection",
+      "product_id": 2,
+      "lu_id": 10,
+      "be_description": "This is a Business Entity created for the TDM GUI for params9.1 Demo.",
+      "be_last_updated_by": "saeed.namih@k2view.com.k2v"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "logicalunitswithoutproduct": {
+    "result": [{
+      "be_id": 4,
+      "lu_parent_id": null,
+      "be_status": "Active",
+      "be_creation_date": "2025-10-21 04:43:07.083",
+      "be_last_updated_date": "2025-10-21 04:44:25.971",
+      "be_created_by": "saeed.namih@k2view.com.k2v",
+      "product_name": null,
+      "be_name": "v44",
+      "lu_description": null,
+      "lu_parent_name": null,
+      "lu_name": "Collection",
+      "product_id": -1,
+      "lu_id": 10,
+      "be_description": "This is a Business Entity created for the TDM GUI for params9.1 Demo.",
+      "be_last_updated_by": "saeed.namih@k2view.com.k2v"
+    }, {
+      "be_id": 5,
+      "lu_parent_id": null,
+      "be_status": "Active",
+      "be_creation_date": "2025-10-21 04:46:28.039",
+      "be_last_updated_date": "2025-10-21 04:48:05.306",
+      "be_created_by": "saeed.namih@k2view.com.k2v",
+      "product_name": null,
+      "be_name": "v45",
+      "lu_description": "000",
+      "lu_parent_name": null,
+      "lu_name": "Collection",
+      "product_id": -1,
+      "lu_id": 11,
+      "be_description": "",
+      "be_last_updated_by": "saeed.namih@k2view.com.k2v"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "getEnvInterfaceListWithConfig": {
+    "result": [{
+      "interfaceName": "CRM_DB",
+      "config": {
+        "max_number_of_workers": 7,
+        "affinity": "LOCAL_DC"
+      }
+    }, {
+      "interfaceName": "COLLECTION_DB",
+      "config": {
+        "max_number_of_workers": null,
+        "affinity": null
+      }
+    }, {
+      "interfaceName": "ORDERS_DB",
+      "config": {
+        "max_number_of_workers": null,
+        "affinity": null
+      }
+    }, {
+      "interfaceName": "BILLING_DB",
+      "config": {
+        "max_number_of_workers": null,
+        "affinity": ""
+      }
+    }, {
+      "interfaceName": "AI_DB",
+      "config": {
+        "max_number_of_workers": 5,
+        "affinity": "LOCAL_DC"
+      }
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "getInterfaceSchemaList": {
+    "result": ["public"],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "getSchemaTableList": {
+    "result": [{
+      "interface_name": "CRM_DB",
+      "schema_name": "public",
+      "table_name": "activity",
+      "task_name": "tables 30-10-2025 10:13:53",
+      "task_execution_id": 102,
+      "execution_datetime": "2025-10-30 08:14:44.296166",
+      "executed_by": "sivan.mulla@k2view.com",
+      "task_description": "",
+      "number_of_records": 5119,
+      "count_ind": "true"
+    }, {
+      "interface_name": "CRM_DB",
+      "schema_name": "public",
+      "table_name": "address",
+      "count_ind": false
+    }, {
+      "interface_name": "CRM_DB",
+      "schema_name": "public",
+      "table_name": "case_note",
+      "task_name": "tables 30-10-2025 10:13:53",
+      "task_execution_id": 102,
+      "execution_datetime": "2025-10-30 08:14:16.034154",
+      "executed_by": "sivan.mulla@k2view.com",
+      "task_description": "",
+      "number_of_records": 6324,
+      "count_ind": true
+    }, {
+      "interface_name": "CRM_DB",
+      "schema_name": "public",
+      "table_name": "cases",
+      "task_name": "tables 30-10-2025 10:13:53",
+      "task_execution_id": 102,
+      "execution_datetime": "2025-10-30 08:14:16.100478",
+      "executed_by": "sivan.mulla@k2view.com",
+      "task_description": "",
+      "number_of_records": 2551,
+      "count_ind": true
+    }, {
+      "interface_name": "CRM_DB",
+      "schema_name": "public",
+      "table_name": "contract",
+      "count_ind": true
+    }, {
+      "interface_name": "CRM_DB",
+      "schema_name": "public",
+      "table_name": "customer",
+      "task_name": "tables 30-10-2025 10:13:53",
+      "task_execution_id": 102,
+      "execution_datetime": "2025-10-30 08:14:20.596805",
+      "executed_by": "sivan.mulla@k2view.com",
+      "task_description": "",
+      "number_of_records": 1000,
+      "count_ind": true
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "product/3/envcount": {
+    "result": [{
+      "environment_product_id": 7,
+      "environment_id": -2,
+      "environment_created_by": "admin",
+      "environment_last_updated_by": "admin",
+      "allow_read": true,
+      "environment_description": "This is the AI Generationa and Training environment.",
+      "last_updated_by": "admin",
+      "product_id": 1,
+      "last_updated_date": "2025-10-28 09:30:03.024249",
+      "environment_name": "AI",
+      "allow_write": true,
+      "environment_point_of_contact_phone1": null,
+      "product_version": "AI",
+      "environment_last_updated_date": "2025-10-28 09:29:42.722515",
+      "environment_status": "Active",
+      "creation_date": "2025-10-28 09:30:03.024249",
+      "created_by": "admin",
+      "sync_mode": "OFF",
+      "environment_point_of_contact_first_name": null,
+      "data_center_name": "",
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "environment_creation_date": "2025-10-28 09:29:42.722515",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "status": "Active"
+    }, {
+      "environment_product_id": 5,
+      "environment_id": -1,
+      "environment_created_by": "admin",
+      "environment_last_updated_by": "admin",
+      "allow_read": true,
+      "environment_description": "This is the synthetic environment.",
+      "last_updated_by": "admin",
+      "product_id": 1,
+      "last_updated_date": "2025-10-28 09:30:03.024249",
+      "environment_name": "Synthetic",
+      "allow_write": false,
+      "environment_point_of_contact_phone1": null,
+      "product_version": "Synthetic",
+      "environment_last_updated_date": "2025-10-28 09:29:42.722515",
+      "environment_status": "Active",
+      "creation_date": "2025-10-28 09:30:03.024249",
+      "created_by": "admin",
+      "sync_mode": "FORCE",
+      "environment_point_of_contact_first_name": null,
+      "data_center_name": "",
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "environment_creation_date": "2025-10-28 09:29:42.722515",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "status": "Active"
+    }, {
+      "environment_product_id": 1,
+      "environment_id": 1,
+      "environment_created_by": "admin",
+      "environment_last_updated_by": "admin",
+      "allow_read": true,
+      "environment_description": "This is the Source environment.",
+      "last_updated_by": "admin",
+      "product_id": 1,
+      "last_updated_date": "2025-10-28 09:30:03.024249",
+      "environment_name": "Production",
+      "allow_write": false,
+      "environment_point_of_contact_phone1": null,
+      "product_version": "1",
+      "environment_last_updated_date": "2025-10-28 09:30:03.024249",
+      "environment_status": "Active",
+      "creation_date": "2025-10-28 09:30:03.024249",
+      "created_by": "admin",
+      "sync_mode": "ON",
+      "environment_point_of_contact_first_name": null,
+      "data_center_name": "",
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "environment_creation_date": "2025-10-28 09:30:03.024249",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "status": "Active"
+    }, {
+      "environment_product_id": 3,
+      "environment_id": 2,
+      "environment_created_by": "admin",
+      "environment_last_updated_by": "admin",
+      "allow_read": true,
+      "environment_description": "This is the Target environment.",
+      "last_updated_by": "admin",
+      "product_id": 1,
+      "last_updated_date": "2025-10-28 09:30:03.024249",
+      "environment_name": "UAT",
+      "allow_write": true,
+      "environment_point_of_contact_phone1": null,
+      "product_version": "1",
+      "environment_last_updated_date": "2025-10-28 09:30:03.024249",
+      "environment_status": "Active",
+      "creation_date": "2025-10-28 09:30:03.024249",
+      "created_by": "admin",
+      "sync_mode": "ON",
+      "environment_point_of_contact_first_name": null,
+      "data_center_name": "",
+      "environment_point_of_contact_last_name": null,
+      "environment_point_of_contact_email": null,
+      "environment_creation_date": "2025-10-28 09:30:03.024249",
+      "environment_expiration_date": null,
+      "environment_point_of_contact_phone2": null,
+      "status": "Active"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "getReservedEntities": {
+    "result": [{
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "1",
+      "reserve_notes": null,
+      "task_execution_id": 103,
+      "task_title": "Subscriber 29-12-2025 01:01:22",
+      "reserve_consumers": null,
+      "expiration_date": "2026-12-28 23:01:49.568",
+      "be_name": "Subscriber",
+      "reserve_date": "2025-12-28 23:01:49.58653",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }, {
+      "allow_edit": true,
+      "target_entity_id": "2",
+      "reserve_notes": null,
+      "task_execution_id": 102,
+      "task_title": "Customer 23-12-2025 08:23:46",
+      "reserve_consumers": null,
+      "expiration_date": "2026-01-02 23:01:18.731",
+      "be_name": "Customer",
+      "reserve_date": "2025-12-28 23:01:18.828551",
+      "reserve_owner": "saeed.namih@k2view.com.k2v",
+      "environment_name": "UAT",
+      "reserve_tags": null
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
   }
 };
 // CONCATENATED MODULE: ./src/apis/task.ts
@@ -3647,6 +5571,8 @@ const invokeFabricWebService = async (path, body, method, force) => {
           resolve(data);
         } catch (error) {
           reject(error);
+        } finally {
+          clearTimeout(runningRequests[path]);
         }
       }, 100);
     });
@@ -3690,7 +5616,9 @@ const getPreExecutionProcess = async beId => invokeFabricWebService(`businessent
 const getPostExecutionProcess = async beId => invokeFabricWebService(`businessentity/${beId}/postexecutionprocess`, {}, 'GET');
 const getTaskPostExecutionProcess = async taskId => invokeFabricWebService(`task/${taskId}/postexecutionprocess`, {}, 'GET');
 const getTaskPreExecutionProcess = async taskId => invokeFabricWebService(`task/${taskId}/preexecutionprocess`, {}, 'GET');
-const getTaskTables = async taskId => invokeFabricWebService(`task/refsTable/${taskId}`, {}, 'GET');
+const getTaskTables = async (taskId, mode) => invokeFabricWebService(`task/refsTable/${taskId}`, {
+  mode
+}, 'GET');
 const getTaskVariables = async taskId => invokeFabricWebService(`task/${taskId}/globals`, {}, 'GET');
 const getRetentionPeriodsData = async () => invokeFabricWebService('retentionperiodinfo', {}, 'GET');
 const getReferenceTables = async () => invokeFabricWebService('task/getReferenceTaskTable', {}, 'POST');
@@ -3705,9 +5633,24 @@ const checkAIInstallation = async taskType => invokeFabricWebService(`tasks/chec
 }, 'POST');
 
 // const getTableByEnv = async(source_env: string) => invokeFabricWebService('getTableByEnv', {source_env}, 'POST');
-const getTableByBeAndEnv = async (source_env, be_name) => invokeFabricWebService('getTableByBeAndEnv', {
+const getTableByBeAndEnv = async (source_env, envId, be_name) => invokeFabricWebService('getTableByBeAndEnv', {
   source_env,
+  envId,
   be_name
+}, 'POST');
+const getTablesAPIMode = async () => invokeFabricWebService('wsGetTablesAPIMode', {}, 'GET');
+const getEnvInterfaceList = async (environment, envId) => invokeFabricWebService('getEnvInterfaceListWithConfig', {
+  environment,
+  envId
+}, 'POST');
+const task_getInterfaceSchemaList = async (environment, interfaceName) => invokeFabricWebService('getInterfaceSchemaList', {
+  environment,
+  interfaceName
+}, 'POST');
+const task_getSchemaTableList = async (environment, interfaceName, schemaName) => invokeFabricWebService('getSchemaTableList', {
+  environment,
+  interfaceName,
+  schemaName
 }, 'POST');
 const getTableVersions = async (table_name, env_name) => invokeFabricWebService('getTableVersions', {
   table_name,
@@ -3796,6 +5739,9 @@ const getTaskById = async (task_ids, mode) => invokeFabricWebService(`tasks`, {
   task_ids,
   mode
 }, 'GET');
+const getMaxWorkersPerNode = async () => invokeFabricWebService(`getMaxWorkersPerNode`, {}, 'GET');
+const getGlobalMaxWorkersLimit = async () => invokeFabricWebService(`getGlobalMaxWorkersLimit`, {}, 'GET');
+const getDataCenters = async () => invokeFabricWebService(`dataCenters`, {}, 'GET');
 const saveTaskAPI = async taskData => {
   if (taskData.task_id) {
     return invokeFabricWebService(`task/${taskData.task_id}`, taskData, 'PUT');
@@ -3868,7 +5814,14 @@ const taskAPIs = {
   updateTaskGroup,
   searchTasks,
   getEnvironmentsByUser,
-  deleteTaskFromGroup: task_deleteTaskFromGroup
+  deleteTaskFromGroup: task_deleteTaskFromGroup,
+  getEnvInterfaceList,
+  getInterfaceSchemaList: task_getInterfaceSchemaList,
+  getSchemaTableList: task_getSchemaTableList,
+  getMaxWorkersPerNode,
+  getDataCenters,
+  getTablesAPIMode,
+  getGlobalMaxWorkersLimit
 };
 /* harmony default export */ var apis_task = (taskAPIs);
 // CONCATENATED MODULE: ./src/components/task/AdvancedBE/styles.ts
@@ -3879,10 +5832,10 @@ const AdvancedBE_styles_Container = styled_components_browser_esm["b" /* default
     position: relative;
 `;
 const LogicalUnitsContainer = styled_components_browser_esm["b" /* default */].div`
-    width: 400px;
+    width: 510px;
     position: relative;
     z-index: 100;
-    max-height: 350px;
+    max-height: 500px;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 19px 0px 30px 0px;
@@ -3964,7 +5917,7 @@ const SystemsContainer = styled_components_browser_esm["b" /* default */].div`
 
 `;
 const SystemBody = styled_components_browser_esm["b" /* default */].div`
-    padding: 13px 10px 15px 37px;
+    padding: 13px 0px 15px 0px;
     background-color: #f2f2f2;
     display: flex;
     gap: 12px;
@@ -3973,7 +5926,66 @@ const SystemBody = styled_components_browser_esm["b" /* default */].div`
 `;
 const LogicalUnitContainer = styled_components_browser_esm["b" /* default */].div`
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+const LUHeaderRow = styled_components_browser_esm["b" /* default */].div`
+    padding-left: 37px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 11px);
+`;
+const LUConfigSection = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 5px 0px 5px 68px;
+    background-color: #e4e4e4;
+    margin-top: 4px;
+`;
+const ConfigField = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-right: 40px;
+`;
+const ConfigLabel = styled_components_browser_esm["b" /* default */].label`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+`;
+const ConfigSubLabel = styled_components_browser_esm["b" /* default */].label`
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: normal;
+    color: #666;
+    margin-top: 2px;
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+`;
+const LUToggleContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 24px;
+    cursor: pointer;
+    user-select: none;
     
+    &:hover {
+        opacity: 0.8;
+    }
+`;
+const ToggleText = styled_components_browser_esm["b" /* default */].span`
+    font-family: Roboto;
+    font-size: 13px;
+    color: #1483f3;
 `;
 const ExecutionModeContainer = styled_components_browser_esm["b" /* default */].div`
     display: flex;
@@ -3983,6 +5995,44 @@ const ExecutionModeContainer = styled_components_browser_esm["b" /* default */].
     gap: 10px;
     margin-top: 10px;
     padding-bottom: 10px;
+`;
+const ToggleIconContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 24px;
+    height: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+const FieldWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+`;
+const styles_ResetButton = styled_components_browser_esm["b" /* default */].button`
+    background: transparent;
+    position: absolute;
+    right: -30px;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    min-width: 28px;
+    height: 28px;
+    
+    &:hover {
+        color: #1483f3;
+        background-color: none;
+    }
+    
+    &:focus {
+        outline: none;
+    }
 `;
 // CONCATENATED MODULE: ./src/images/xclose.svg
 /* harmony default export */ var xclose = ("js/dist/f7db0cd4cd00f1f6bb2346432c313b0b.svg");
@@ -4077,6 +6127,20 @@ function Tabs(props) {
   });
 }
 /* harmony default export */ var components_Tabs = (Tabs);
+// CONCATENATED MODULE: ./src/hooks/useToast.ts
+
+
+const useToast = () => {
+  const toastr = getService('toastr');
+  return Object(react["useMemo"])(() => ({
+    success: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.success(message),
+    error: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.error(message),
+    warning: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.warning(message, '', {
+      containerId: inForm ? 'react-toast-container' : undefined
+    })
+  }), []);
+};
+/* harmony default export */ var hooks_useToast = (useToast);
 // CONCATENATED MODULE: ./src/components/task/AdvancedBE/index.tsx
 
 
@@ -4091,7 +6155,14 @@ function Tabs(props) {
 
 
 
-function AdvancedBE() {
+
+
+
+
+function AdvancedBE(props) {
+  const {
+    type
+  } = props;
   const {
     taskData,
     saveForm,
@@ -4100,22 +6171,107 @@ function AdvancedBE() {
     unregister,
     allLogicalUnits
   } = Object(react["useContext"])(TaskContext);
+  const toast = hooks_useToast();
   const [data, setData] = Object(react["useState"])([]);
   const [openedSystems, setOpenedSystems] = Object(react["useState"])([]);
+  const [maxWorkersLimit, setMaxWorkersLimit] = Object(react["useState"])(undefined);
   const {
     selected_logical_units,
     execution_mode,
     dataSourceType,
     source_type,
-    enable_advanced_for_testers
+    enable_advanced_for_testers,
+    advancedLogicalUnits,
+    source_environment_id,
+    environment_id
   } = taskData;
   const [open, setOpen] = Object(react["useState"])(false);
   const [error, setError] = Object(react["useState"])('');
   const [localExecutionMode, setLocalExecutionMode] = Object(react["useState"])('');
+  const [maxWorkersPerNode, setMaxWorkersPerNode] = Object(react["useState"])(undefined);
+  const [dataCenters, setDataCenters] = Object(react["useState"])([]);
   const ref = Object(react["useRef"])();
   const [selectedTab, setSelectedTab] = Object(react["useState"])('Systems & Logical units');
   const AuthService = getService('AuthService');
   const role = AuthService === null || AuthService === void 0 ? void 0 : AuthService.getRole();
+  Object(react["useEffect"])(() => {
+    const fetchMaxWorkers = async () => {
+      try {
+        const maxWorkers = await apis_task.getMaxWorkersPerNode();
+        setMaxWorkersPerNode(maxWorkers);
+      } catch (error) {
+        console.error('Failed to fetch max workers per node:', error);
+      }
+    };
+    const fetchMaxWorkersLimit = async () => {
+      try {
+        const maxWorkers = await apis_task.getGlobalMaxWorkersLimit();
+        setMaxWorkersLimit(maxWorkers);
+      } catch (error) {
+        console.error('Failed to fetch data centers:', error);
+        setDataCenters([]);
+      }
+    };
+    fetchMaxWorkersLimit();
+    fetchMaxWorkers();
+  }, []);
+  Object(react["useEffect"])(() => {
+    const fetchDataCenters = async () => {
+      try {
+        const centers = await apis_task.getDataCenters();
+        setDataCenters(centers || []);
+      } catch (error) {
+        console.error('Failed to fetch data centers:', error);
+        setDataCenters([]);
+      }
+    };
+    fetchDataCenters();
+  }, []);
+  const affinityOptions = Object(react["useMemo"])(() => {
+    const dataCenterOptions = [];
+    const logicalAffinityOptions = [];
+    dataCenters.forEach(dc => {
+      // Add to Data Centers group with icon
+      if (dc.dc) {
+        dataCenterOptions.push({
+          value: dc.dc,
+          label: `🖥️ ${dc.dc}`
+        });
+      }
+
+      // Add to Logical Affinities group (parse logical_ids) with icon
+      if (dc.logical_ids) {
+        const logicalIds = dc.logical_ids.split(',').map(id => id.trim()).filter(id => id);
+        logicalIds.forEach(logicalId => {
+          // Avoid duplicates
+          if (!logicalAffinityOptions.find(opt => opt.value === logicalId)) {
+            logicalAffinityOptions.push({
+              value: logicalId,
+              label: `🔗 ${logicalId}`
+            });
+          }
+        });
+      }
+    });
+    const groups = [];
+
+    // Only add groups if they have items
+    if (dataCenterOptions.length > 0) {
+      groups.push({
+        label: 'Data centers',
+        value: 'data-centers-group',
+        options: dataCenterOptions
+      });
+    }
+    if (logicalAffinityOptions.length > 0) {
+      groups.push({
+        label: 'Logical affinities',
+        value: 'logical-affinities-group',
+        options: logicalAffinityOptions
+      });
+    }
+    return groups;
+  }, [dataCenters]);
   Object(react["useEffect"])(() => {
     if (execution_mode) {
       setLocalExecutionMode(execution_mode);
@@ -4142,7 +6298,9 @@ function AdvancedBE() {
           selected: (selected_logical_units || []).indexOf(logicalunitItem.lu_id) >= 0,
           lu_name: logicalunitItem.lu_name,
           lu_id: logicalunitItem.lu_id,
-          lu_parent_name: logicalunitItem.lu_parent_name
+          lu_parent_name: logicalunitItem.lu_parent_name,
+          env_max_number_of_workers: type === 'source' ? logicalunitItem.source_env_max_number_of_workers : logicalunitItem.target_env_max_number_of_workers,
+          env_affinity: type === 'source' ? logicalunitItem.source_env_affinity : logicalunitItem.target_env_affinity
         });
       } else {
         newData.push({
@@ -4152,7 +6310,9 @@ function AdvancedBE() {
             selected: (selected_logical_units || []).indexOf(logicalunitItem.lu_id) >= 0,
             lu_name: logicalunitItem.lu_name,
             lu_id: logicalunitItem.lu_id,
-            lu_parent_name: logicalunitItem.lu_parent_name
+            lu_parent_name: logicalunitItem.lu_parent_name,
+            env_max_number_of_workers: type === 'source' ? logicalunitItem.source_env_max_number_of_workers : logicalunitItem.target_env_max_number_of_workers,
+            env_affinity: type === 'source' ? logicalunitItem.source_env_affinity : logicalunitItem.target_env_affinity
           }]
         });
       }
@@ -4163,8 +6323,33 @@ function AdvancedBE() {
         it.selected = true;
       }
     });
+
+    // Merge source and target from advancedLogicalUnits into newData
+    if (advancedLogicalUnits && Array.isArray(advancedLogicalUnits)) {
+      advancedLogicalUnits.forEach(advancedSystem => {
+        const systemInNewData = newData.find(system => system.system === advancedSystem.system);
+        if (systemInNewData && advancedSystem.logicalUnits) {
+          advancedSystem.logicalUnits.forEach(advancedLU => {
+            const luInNewData = systemInNewData.logicalUnits.find(lu => lu.lu_id === advancedLU.lu_id);
+            if (luInNewData) {
+              // Copy source and target properties
+              if (advancedLU.source) {
+                luInNewData.source = {
+                  ...advancedLU.source
+                };
+              }
+              if (advancedLU.target) {
+                luInNewData.target = {
+                  ...advancedLU.target
+                };
+              }
+            }
+          });
+        }
+      });
+    }
     setData(newData);
-  }, [allLogicalUnits, selected_logical_units, open]);
+  }, [allLogicalUnits, selected_logical_units, open, advancedLogicalUnits]);
   const systemClick = Object(react["useCallback"])(system => {
     setOpenedSystems(prevSystems => {
       if (prevSystems.indexOf(system) >= 0) {
@@ -4235,6 +6420,82 @@ function AdvancedBE() {
       return newData;
     });
   }, [setData]);
+  const toggleLUConfig = Object(react["useCallback"])((lu_id, system) => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const found = newData.find(it => it.system === system);
+      if (found) {
+        const luFound = found.logicalUnits.find(it => it.lu_id === lu_id);
+        if (luFound) {
+          luFound.showConfig = !luFound.showConfig;
+        }
+      }
+      return newData;
+    });
+  }, [setData]);
+  const handleMaxWorkersChange = Object(react["useCallback"])((lu_id, system, value) => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const found = newData.find(it => it.system === system);
+      if (found) {
+        const luFound = found.logicalUnits.find(it => it.lu_id === lu_id);
+        if (luFound) {
+          const numValue = parseInt(value, 10);
+          if (!luFound[type]) {
+            luFound[type] = {};
+          }
+          luFound[type].maxWorkers = isNaN(numValue) ? 0 : Math.max(0, numValue);
+        }
+      }
+      return newData;
+    });
+  }, [setData, type]);
+  const handleAffinityChange = Object(react["useCallback"])((lu_id, system, selectedOption) => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const found = newData.find(it => it.system === system);
+      if (found) {
+        const luFound = found.logicalUnits.find(it => it.lu_id === lu_id);
+        if (luFound) {
+          if (!luFound[type]) {
+            luFound[type] = {};
+          }
+          // Mark as explicitly changed by user
+          // Store as single-item array or empty array
+          luFound[type].affinity = selectedOption ? selectedOption.value : null;
+          luFound[type].affinityTouched = true;
+        }
+      }
+      return newData;
+    });
+  }, [setData, type]);
+  const handleAffinityReset = Object(react["useCallback"])((lu_id, system) => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const found = newData.find(it => it.system === system);
+      if (found) {
+        const luFound = found.logicalUnits.find(it => it.lu_id === lu_id);
+        if (luFound && luFound[type]) {
+          luFound[type].affinity = null;
+          luFound[type].affinityTouched = false;
+        }
+      }
+      return newData;
+    });
+  }, [setData, type]);
+  const handleMaxWorkersReset = Object(react["useCallback"])((lu_id, system) => {
+    setData(prevData => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const found = newData.find(it => it.system === system);
+      if (found) {
+        const luFound = found.logicalUnits.find(it => it.lu_id === lu_id);
+        if (luFound && luFound[type]) {
+          delete luFound[type].maxWorkers;
+        }
+      }
+      return newData;
+    });
+  }, [setData, type]);
   const isSelectedLU = (lu_name, selectedLus) => {
     return selectedLus.findIndex(it => it.lu_name === lu_name) >= 0;
   };
@@ -4302,13 +6563,60 @@ function AdvancedBE() {
       setError(`Root LU missing, Please add ${missingRoot.join(', ')} .`);
       return;
     }
+
+    // // Validate max workers doesn't exceed maxWorkersPerNode
+    // if (maxWorkersPerNode !== undefined) {
+    //     for (const system of data) {
+    //         for (const lu of system.logicalUnits) {
+    //             // Check source maxWorkers
+    //             if (lu.source?.maxWorkers !== undefined && lu.source.maxWorkers > maxWorkersPerNode) {
+    //                 setError(`Max workers for ${lu.lu_name} (${lu.source.maxWorkers}) exceeds the maximum allowed value of ${maxWorkersPerNode}`);
+    //                 return;
+    //             }
+    //             // Check target maxWorkers
+    //             if (lu.target?.maxWorkers !== undefined && lu.target.maxWorkers > maxWorkersPerNode) {
+    //                 setError(`Max workers for ${lu.lu_name} (${lu.target.maxWorkers}) exceeds the maximum allowed value of ${maxWorkersPerNode}`);
+    //                 return;
+    //             }
+    //         }
+    //     }
+    // }
+
+    // Copy source values to target if target values don't exist
+    // Also clean up affinity values that weren't explicitly changed by user
+    let maxWorkersError = 0;
+    data.forEach(system => {
+      system.logicalUnits.forEach(lu => {
+        var _lu$source, _lu$target;
+        // If affinity wasn't explicitly changed by user, set it to null
+        // This ensures environment defaults are not saved to the task
+        if (lu.source && !lu.source.affinityTouched) {
+          lu.source.affinity = null;
+        }
+        if (lu.target && !lu.target.affinityTouched) {
+          lu.target.affinity = null;
+        }
+        if (type === 'source' && (((_lu$source = lu.source) === null || _lu$source === void 0 ? void 0 : _lu$source.maxWorkers) || 0) > (maxWorkersLimit || 0)) {
+          var _lu$source2;
+          maxWorkersError = ((_lu$source2 = lu.source) === null || _lu$source2 === void 0 ? void 0 : _lu$source2.maxWorkers) || 0;
+        } else if (type === 'target' && (((_lu$target = lu.target) === null || _lu$target === void 0 ? void 0 : _lu$target.maxWorkers) || 0) > (maxWorkersLimit || 0)) {
+          var _lu$target2;
+          maxWorkersError = ((_lu$target2 = lu.target) === null || _lu$target2 === void 0 ? void 0 : _lu$target2.maxWorkers) || 0;
+        }
+      });
+    });
+    if (maxWorkersError > 0) {
+      toast.warning(`The requested number of workers (${maxWorkersError}) exceeds the maximum allowed for execution, as defined in the Fabric configuration (${maxWorkersLimit})`);
+      return;
+    }
     saveForm({
       selected_logical_units: selectedLus.map(it => it.lu_id),
       selected_logical_units_names: selectedLus.map(it => it.lu_name),
-      execution_mode: localExecutionMode
+      execution_mode: localExecutionMode,
+      advancedLogicalUnits: data
     });
     setOpen(false);
-  }, [data, saveForm, setError, localExecutionMode]);
+  }, [data, saveForm, setError, localExecutionMode, maxWorkersLimit]);
   const tabs = Object(react["useMemo"])(() => {
     if (`${dataSourceType}_${source_type}` !== 'data_source_BE') {
       return [{
@@ -4343,22 +6651,80 @@ function AdvancedBE() {
               },
               disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
               value: it.selected
-            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Icon, {
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ToggleIconContainer, {
               onClick: () => systemClick(it.system),
-              src: openedSystems.indexOf(it.system) >= 0 ? arrow_up : arrow_down
-            })]
-          }), openedSystems.indexOf(it.system) >= 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemBody, {
-            children: it.logicalUnits.map(luItem => /*#__PURE__*/Object(jsx_runtime["jsx"])(LogicalUnitContainer, {
-              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
-                name: `logical_unit_${luItem.lu_name}}`,
-                title: luItem.lu_name,
-                onChange: () => {
-                  logicalUnitToggle(luItem.lu_id, it.system);
-                },
-                disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
-                value: luItem.selected
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Icon, {
+                src: openedSystems.indexOf(it.system) >= 0 ? arrow_up : arrow_down
               })
-            }))
+            })]
+          }), openedSystems.indexOf(it.system) >= 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+            children: type === 'source' || type === 'target' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemBody, {
+              children: it.logicalUnits.map(luItem => {
+                var _luItem$type, _luItem$type2, _luItem$type3, _luItem$type4, _luItem$type5, _luItem$type6, _luItem$type7;
+                return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitContainer, {
+                  children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LUHeaderRow, {
+                    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+                      name: `logical_unit_${luItem.lu_name}}`,
+                      title: luItem.lu_name,
+                      onChange: () => {
+                        logicalUnitToggle(luItem.lu_id, it.system);
+                      },
+                      disabled: role && role.type === 'tester' && !enable_advanced_for_testers,
+                      value: luItem.selected
+                    }), type === 'source' && source_environment_id || type === 'target' && environment_id ? /*#__PURE__*/Object(jsx_runtime["jsx"])(ToggleIconContainer, {
+                      onClick: () => toggleLUConfig(luItem.lu_id, it.system),
+                      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedBE_styles_Icon, {
+                        src: luItem.showConfig ? arrow_up : arrow_down
+                      })
+                    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
+                  }), luItem.showConfig && /*#__PURE__*/Object(jsx_runtime["jsxs"])(LUConfigSection, {
+                    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(ConfigField, {
+                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+                        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(ConfigLabel, {
+                          children: "Affinity"
+                        })
+                      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldWrapper, {
+                        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+                          width: "200px",
+                          small: true,
+                          title: "",
+                          isClearable: false,
+                          isMulti: false,
+                          options: affinityOptions,
+                          value: luItem !== null && luItem !== void 0 && (_luItem$type = luItem[type]) !== null && _luItem$type !== void 0 && _luItem$type.affinity && luItem[type].affinity.length > 0 ? affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === luItem[type].affinity) : luItem.env_affinity && luItem.env_affinity.length > 0 ? affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === luItem.env_affinity) : null,
+                          onChange: selectedOption => handleAffinityChange(luItem.lu_id, it.system, selectedOption),
+                          placeholder: ""
+                        }), (luItem === null || luItem === void 0 ? void 0 : (_luItem$type2 = luItem[type]) === null || _luItem$type2 === void 0 ? void 0 : _luItem$type2.affinityTouched) && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type3 = luItem[type]) === null || _luItem$type3 === void 0 ? void 0 : _luItem$type3.affinity) && /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ResetButton, {
+                          type: "button",
+                          onClick: () => handleAffinityReset(luItem.lu_id, it.system),
+                          title: "Reset to environment default",
+                          children: "\u21BB"
+                        })]
+                      })]
+                    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ConfigField, {
+                      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ConfigLabel, {
+                        children: "Max no. of workers"
+                      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldWrapper, {
+                        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+                          title: "",
+                          type: InputTypes.number,
+                          value: (luItem === null || luItem === void 0 ? void 0 : (_luItem$type4 = luItem[type]) === null || _luItem$type4 === void 0 ? void 0 : _luItem$type4.maxWorkers) || luItem.env_max_number_of_workers || maxWorkersPerNode,
+                          onChange: value => handleMaxWorkersChange(luItem.lu_id, it.system, (value === null || value === void 0 ? void 0 : value.toString()) || '0'),
+                          min: 0,
+                          max: maxWorkersPerNode,
+                          width: '200px'
+                        }), (luItem === null || luItem === void 0 ? void 0 : (_luItem$type5 = luItem[type]) === null || _luItem$type5 === void 0 ? void 0 : _luItem$type5.maxWorkers) && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type6 = luItem[type]) === null || _luItem$type6 === void 0 ? void 0 : _luItem$type6.maxWorkers) !== luItem.env_max_number_of_workers && (luItem === null || luItem === void 0 ? void 0 : (_luItem$type7 = luItem[type]) === null || _luItem$type7 === void 0 ? void 0 : _luItem$type7.maxWorkers) !== maxWorkersPerNode && /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ResetButton, {
+                          type: "button",
+                          onClick: () => handleMaxWorkersReset(luItem.lu_id, it.system),
+                          title: "Reset to environment default",
+                          children: "\u21BB"
+                        })]
+                      })]
+                    })]
+                  })]
+                }, luItem.lu_id);
+              })
+            }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})
           }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
         }))]
       });
@@ -4389,7 +6755,7 @@ function AdvancedBE() {
       });
     }
     return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {});
-  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle, role, enable_advanced_for_testers]);
+  }, [selectedTab, setLocalExecutionMode, localExecutionMode, allAction, data, systemClick, openedSystems, logicalUnitToggle, role, enable_advanced_for_testers, type]);
   const getLogicalUnitTemplate = () => {
     return /*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitsContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(LogicalUnitTitle, {
@@ -4429,7 +6795,7 @@ function AdvancedBE() {
       },
       reposition: false,
       padding: 100,
-      align: "end",
+      align: "center",
       isOpen: open,
       positions: ['right'],
       content: getLogicalUnitTemplate(),
@@ -4579,7 +6945,9 @@ function DataMovmentSettings(props) {
         loading: loading,
         onChange: beChangeLocal,
         error: (_errors$be_name = errors.be_name) === null || _errors$be_name === void 0 ? void 0 : _errors$be_name.message
-      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(task_AdvancedBE, {})]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(task_AdvancedBE, {
+        type: type
+      })]
     })
   });
 }
@@ -4861,7 +7229,7 @@ var moment = __webpack_require__(4);
 var moment_default = /*#__PURE__*/__webpack_require__.n(moment);
 
 // EXTERNAL MODULE: ./node_modules/@tanstack/table-core/build/lib/index.esm.js
-var lib_index_esm = __webpack_require__(50);
+var lib_index_esm = __webpack_require__(57);
 
 // CONCATENATED MODULE: ./src/components/SelectTrainingModels/hooks/useTable.tsx
 
@@ -4892,7 +7260,6 @@ const useTable = saveLocalData => {
         if (!trainingStartDate || !trainingEndDate || !be_name || (selected_logical_units_names || []).length !== 1) {
           return;
         }
-        // debugger;
         const data = await apis_task.getTrainingModels(trainingStartDate, trainingEndDate, be_name, (selected_logical_units_names || [])[0]);
         data.forEach(item => {
           item.start_execution_time = moment_default()(item.start_execution_time).format('DD MMM YYYY, HH:mm');
@@ -4982,16 +7349,37 @@ const useTable = saveLocalData => {
 // CONCATENATED MODULE: ./src/components/Table/Filter.tsx
 
 
+
 function Filter(_ref) {
   let {
     column,
-    table
+    table,
+    meta
   } = _ref;
   let filterValue = column.getFilterValue() || '';
-  const meta = column.columnDef.meta;
-  // const firstValue = table
-  //   .getPreFilteredRowModel()
-  //   .flatRows[0]?.getValue(column.id)
+  if ((meta === null || meta === void 0 ? void 0 : meta.type) === 'select' && meta !== null && meta !== void 0 && meta.filterOptions) {
+    const selectedValue = filterValue ? meta.filterOptions.find(opt => opt.value === filterValue) || null : null;
+    const handleKeyDown = e => {
+      if (e.key === ' ' || e.keyCode === 32) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+      title: "",
+      options: meta.filterOptions,
+      value: selectedValue,
+      onChange: option => {
+        column.setFilterValue((option === null || option === void 0 ? void 0 : option.value) || undefined);
+      },
+      onKeyDown: handleKeyDown,
+      placeholder: "",
+      isClearable: true,
+      width: "100%",
+      small: false,
+      menuPortalTarget: document.body
+    });
+  }
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
     title: "",
     type: (meta === null || meta === void 0 ? void 0 : meta.type) === 'string' || (meta === null || meta === void 0 ? void 0 : meta.type) === undefined ? InputTypes.text : InputTypes.number,
@@ -5012,7 +7400,13 @@ const Table_styles_Container = styled_components_browser_esm["b" /* default */].
     width: 100%;
     height: 100%;
     padding: 0;
+    margin-bottom: 20px;
+`;
+const TbodyScrollable = styled_components_browser_esm["b" /* default */].div`
+    /* max-height: calc(100vh - 300px); */
     overflow-x: auto;
+    /* overflow-y: no; */
+    width: 100%;
 `;
 const TableContainer = styled_components_browser_esm["b" /* default */].table`
     width: 100%;
@@ -5020,10 +7414,13 @@ const TableContainer = styled_components_browser_esm["b" /* default */].table`
     background-color: #ccc;
 `;
 const Thead = styled_components_browser_esm["b" /* default */].thead`
-    height: 100px;
+    height:  ${props => props.isFilterEnabled ? '100px' : '51px'};
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #ccc;
 `;
-const Tbody = styled_components_browser_esm["b" /* default */].tbody`
-`;
+const Tbody = styled_components_browser_esm["b" /* default */].tbody``;
 const TableRow = styled_components_browser_esm["b" /* default */].tr`
     height: 50px;
 `;
@@ -5042,6 +7439,7 @@ const TableHeaderText = styled_components_browser_esm["b" /* default */].div`
     padding: 0px 10px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 `;
 const TableHeaderFilter = styled_components_browser_esm["b" /* default */].div`
     border: 0.5px solid #ccc;
@@ -5054,6 +7452,7 @@ const TableHeaderFilter = styled_components_browser_esm["b" /* default */].div`
 `;
 const TableHeadItem = styled_components_browser_esm["b" /* default */].th`
     padding: 0px;
+    min-width: ${props => props.minWidth};
 `;
 const TableRowItem = styled_components_browser_esm["b" /* default */].td`
     font-family: Roboto;
@@ -5066,10 +7465,68 @@ const TableRowItem = styled_components_browser_esm["b" /* default */].td`
     color: #666;
     background-color: ${props => props.row % 2 === 0 ? '#fff' : '#f2f2f2'};
     padding-left: 8px;
+    padding-right: 8px;
     border: 0.5px solid #ccc;
+    user-select: auto;
+    .ellipsis-text {
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        user-select: auto;
+    }
+`;
+const PaginationContainer = styled_components_browser_esm["b" /* default */].div`
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    width: 134px;
+    margin-left: auto;
+
+    button {
+        padding: 4px;
+        border-radius: 4px;
+        border: 1px solid rgba(239, 239, 239, 0.3);
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        color: #000;
+        padding: 0 8px;
+        background-color: light-dark(
+            rgba(239, 239, 239, 0.3),
+            rgba(19, 1, 1, 0.3)
+        );
+        /* color: transparent; */
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: light-dark(
+                rgba(239, 239, 239, 0.3),
+                rgba(19, 1, 1, 0.3)
+            );
+            color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+        }
+    }
+    span {
+        width: 30px;
+        height: 30px;
+        background-color: #eee;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 `;
 // EXTERNAL MODULE: ./node_modules/@tanstack/react-table/build/lib/index.esm.js
-var build_lib_index_esm = __webpack_require__(23);
+var build_lib_index_esm = __webpack_require__(18);
+
+// EXTERNAL MODULE: ./node_modules/lucide-react/dist/esm/icons/arrow-down-wide-narrow.js
+var arrow_down_wide_narrow = __webpack_require__(334);
+
+// EXTERNAL MODULE: ./node_modules/lucide-react/dist/esm/icons/arrow-down-narrow-wide.js
+var arrow_down_narrow_wide = __webpack_require__(335);
+
+// EXTERNAL MODULE: ./node_modules/lucide-react/dist/esm/icons/arrow-down-up.js
+var arrow_down_up = __webpack_require__(336);
 
 // CONCATENATED MODULE: ./src/components/Table/index.tsx
 
@@ -5077,86 +7534,165 @@ var build_lib_index_esm = __webpack_require__(23);
 
 
 
-function IndeterminateCheckbox(_ref) {
-  let {
-    indeterminate,
-    className = '',
-    ...rest
-  } = _ref;
-  const ref = Object(react["useRef"])(null);
-  Object(react["useEffect"])(() => {
-    if (typeof indeterminate === 'boolean') {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate]);
-  return /*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
-    type: "checkbox",
-    ref: ref,
-    className: className + ' cursor-pointer',
-    ...rest
-  });
-}
+
 function Table(props) {
   const {
     data,
     columns,
-    isExpandable
+    isExpandable,
+    pageSize = 10,
+    initialSorting = [],
+    initialColumnFilters = [],
+    children,
+    hidePagination = false
   } = props;
-  const [columnFilters, setColumnFilters] = Object(react["useState"])([]);
-  console.log(columnFilters);
+  const effectivePageSize = hidePagination ? data.length || 1 : pageSize;
+  const [columnFilters, setColumnFilters] = Object(react["useState"])(initialColumnFilters);
+  const [sorting, setSorting] = Object(react["useState"])(initialSorting);
+  const [pagination, setPagination] = Object(react["useState"])({
+    pageIndex: 0,
+    pageSize: effectivePageSize
+  });
+  Object(react["useEffect"])(() => {
+    setPagination(prev => ({
+      pageIndex: 0,
+      pageSize: effectivePageSize
+    }));
+  }, [effectivePageSize]);
   const table = Object(build_lib_index_esm["b" /* useReactTable */])({
     data,
     columns,
     state: {
-      columnFilters // 👈  current filters
+      columnFilters,
+      sorting,
+      pagination
     },
     onColumnFiltersChange: setColumnFilters,
-    // 👈  updater
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getCoreRowModel: Object(lib_index_esm["c" /* getCoreRowModel */])(),
     getFilteredRowModel: Object(lib_index_esm["e" /* getFilteredRowModel */])(),
-    // 👈  enable filtering
+    getSortedRowModel: Object(lib_index_esm["g" /* getSortedRowModel */])(),
+    getPaginationRowModel: Object(lib_index_esm["f" /* getPaginationRowModel */])(),
     getSubRows: row => row.subRows,
     getExpandedRowModel: Object(lib_index_esm["d" /* getExpandedRowModel */])(),
     enableExpanding: isExpandable,
-    defaultColumn: {
-      minSize: 0,
-      size: Number.MAX_SAFE_INTEGER,
-      maxSize: Number.MAX_SAFE_INTEGER
-    }
+    enableSorting: true
   });
-  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Table_styles_Container, {
-    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableContainer, {
-      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Thead, {
-        children: table.getHeaderGroups().map(headerGroup => /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
-          children: headerGroup.headers.map(header => {
-            return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeadItem, {
-              colSpan: header.colSpan,
-              children: header.isPlaceholder ? null : /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
-                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeaderText, {
-                  children: Object(build_lib_index_esm["a" /* flexRender */])(header.column.columnDef.header, header.getContext())
-                }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeaderFilter, {
-                  children: header.column.getCanFilter() ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Table_Filter, {
-                    column: header.column,
-                    table: table
-                  }) : null
-                })]
-              })
-            }, header.id);
-          })
-        }, headerGroup.id))
-      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Tbody, {
-        children: table.getRowModel().rows.map((row, index) => {
-          return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
-            children: row.getVisibleCells().map(cell => {
-              return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRowItem, {
-                row: index,
-                children: Object(build_lib_index_esm["a" /* flexRender */])(cell.column.columnDef.cell, cell.getContext())
-              }, cell.id);
+  const safeFlexRender = Object(react["useCallback"])(cell => {
+    var _cell$column, _cell$column2, _cell$column3, _cell$getValue;
+    const isDisplayOnlyColumn = (cell === null || cell === void 0 ? void 0 : (_cell$column = cell.column) === null || _cell$column === void 0 ? void 0 : _cell$column.id) === 'actions' || (cell === null || cell === void 0 ? void 0 : (_cell$column2 = cell.column) === null || _cell$column2 === void 0 ? void 0 : _cell$column2.id) === 'select' || (cell === null || cell === void 0 ? void 0 : (_cell$column3 = cell.column) === null || _cell$column3 === void 0 ? void 0 : _cell$column3.id) === 'collapse';
+    if (!isDisplayOnlyColumn && !(cell !== null && cell !== void 0 && (_cell$getValue = cell.getValue) !== null && _cell$getValue !== void 0 && _cell$getValue.call(cell))) {
+      return "";
+    }
+    return Object(build_lib_index_esm["a" /* flexRender */])(cell.column.columnDef.cell, cell.getContext());
+  }, []);
+  const hasFilterableColumns = Object(react["useMemo"])(() => {
+    // Only show filters if there's data
+    if (data.length === 0) {
+      return false;
+    }
+    return table.getAllColumns().some(column => column.getCanFilter());
+  }, [table, data]);
+  const paginationInfo = Object(react["useMemo"])(() => {
+    const filteredRows = table.getFilteredRowModel().rows.length;
+    const totalRows = table.getCoreRowModel().rows.length;
+    const currentPage = pagination.pageIndex;
+    const currentPageSize = pagination.pageSize;
+    const startRow = filteredRows > 0 ? currentPage * currentPageSize + 1 : 0;
+    const endRow = Math.min((currentPage + 1) * currentPageSize, filteredRows);
+    const hasActiveFilters = columnFilters.some(filter => {
+      if (initialColumnFilters.some(initialFilter => initialFilter.id === filter.id && initialFilter.value === filter.value)) {
+        return false;
+      }
+      const value = filter.value;
+      return value !== undefined && value !== null && value !== '';
+    });
+    if (filteredRows === 0) {
+      return `Showing 0 to 0 of 0 entries${hasActiveFilters && totalRows > 0 ? ` (filtered from ${totalRows} total entries)` : ''}`;
+    }
+    return `Showing ${startRow} to ${endRow} of ${filteredRows} entries${hasActiveFilters && filteredRows < totalRows ? ` (filtered from ${totalRows} total entries)` : ''}`;
+  }, [table, pagination.pageIndex, pagination.pageSize, columnFilters, initialColumnFilters]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Table_styles_Container, {
+    children: [!hidePagination ? /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: paginationInfo
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(react["Fragment"], {}), children, /*#__PURE__*/Object(jsx_runtime["jsx"])(TbodyScrollable, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableContainer, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Thead, {
+          isFilterEnabled: hasFilterableColumns,
+          children: table.getHeaderGroups().map(headerGroup => /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
+            children: headerGroup.headers.map(header => {
+              var _header$column, _header$column$column;
+              return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeadItem, {
+                colSpan: header.colSpan,
+                minWidth: header.column.id === 'actions' ? "50px" : header.column.id === 'select' ? "40px" : "172px",
+                style: {
+                  cursor: 'pointer'
+                },
+                children: header.isPlaceholder ? null : /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+                  children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TableHeaderText, {
+                    onClick: header.column.getToggleSortingHandler(),
+                    children: [Object(build_lib_index_esm["a" /* flexRender */])(header.column.columnDef.header, header.getContext()), header.column.getIsSorted() === "asc" && /*#__PURE__*/Object(jsx_runtime["jsx"])(arrow_down_wide_narrow["a" /* default */], {
+                      size: 16
+                    }), header.column.getIsSorted() === "desc" && /*#__PURE__*/Object(jsx_runtime["jsx"])(arrow_down_narrow_wide["a" /* default */], {
+                      size: 16
+                    }), header.column.id !== 'actions' && header.column.id !== 'select' && header.column.id !== 'collapse' && header.column.getIsSorted() === false && /*#__PURE__*/Object(jsx_runtime["jsx"])(arrow_down_up["a" /* default */], {
+                      color: "#ccc",
+                      size: 16
+                    })]
+                  }), hasFilterableColumns && /*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeaderFilter, {
+                    children: header.column.getCanFilter() ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Table_Filter, {
+                      column: header.column,
+                      table: table,
+                      meta: header === null || header === void 0 ? void 0 : (_header$column = header.column) === null || _header$column === void 0 ? void 0 : (_header$column$column = _header$column.columnDef) === null || _header$column$column === void 0 ? void 0 : _header$column$column.meta
+                    }) : null
+                  })]
+                })
+              }, header.id);
             })
-          }, row.id);
-        })
+          }, headerGroup.id))
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Tbody, {
+          children: table.getRowModel().rows.length === 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])("td", {
+              colSpan: columns.length,
+              style: {
+                textAlign: 'center',
+                padding: '10px',
+                backgroundColor: '#fff',
+                border: '0.5px solid #ccc'
+              },
+              children: "No data available in table"
+            })
+          }) : table.getRowModel().rows.map((row, index) => {
+            return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRow, {
+              children: row.getVisibleCells().map(cell => {
+                var _cell$getValue2;
+                return /*#__PURE__*/Object(jsx_runtime["jsx"])(TableRowItem, {
+                  row: index,
+                  title: String((_cell$getValue2 = cell.getValue()) !== null && _cell$getValue2 !== void 0 ? _cell$getValue2 : ""),
+                  children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+                    className: "ellipsis-text",
+                    children: safeFlexRender(cell)
+                  })
+                }, cell.id);
+              })
+            }, row.id);
+          })
+        })]
+      })
+    }), !hidePagination && /*#__PURE__*/Object(jsx_runtime["jsxs"])(PaginationContainer, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("button", {
+        onClick: () => table.previousPage(),
+        disabled: !table.getCanPreviousPage(),
+        children: "Previous"
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: table.getState().pagination.pageIndex + 1
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])("button", {
+        onClick: () => table.nextPage(),
+        disabled: !table.getCanNextPage(),
+        children: "Next"
       })]
-    })
+    })]
   });
 }
 /* harmony default export */ var components_Table = (Table);
@@ -5196,16 +7732,17 @@ const styles_DateItem = styled_components_browser_esm["b" /* default */].div`
   display: flex;
   align-items: center;
   gap: 10px;
+  z-index: 11;
 `;
 // EXTERNAL MODULE: ./node_modules/react-datepicker/dist/react-datepicker.min.js
-var react_datepicker_min = __webpack_require__(219);
+var react_datepicker_min = __webpack_require__(234);
 var react_datepicker_min_default = /*#__PURE__*/__webpack_require__.n(react_datepicker_min);
 
 // EXTERNAL MODULE: ./node_modules/react-datepicker/dist/react-datepicker.css
-var react_datepicker = __webpack_require__(267);
+var react_datepicker = __webpack_require__(275);
 
 // EXTERNAL MODULE: ./node_modules/react-datepicker/dist/react-datepicker-cssmodules.css
-var react_datepicker_cssmodules = __webpack_require__(269);
+var react_datepicker_cssmodules = __webpack_require__(277);
 
 // CONCATENATED MODULE: ./src/components/DatePicker/styles.ts
 
@@ -5489,20 +8026,6 @@ const EnvironmentSelect_styles_Container = styled_components_browser_esm["b" /* 
     align-items: flex-end;
     position: relative;
 `;
-// CONCATENATED MODULE: ./src/hooks/useToast.ts
-
-
-const useToast = () => {
-  const toastr = getService('toastr');
-  return Object(react["useMemo"])(() => ({
-    success: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.success(message),
-    error: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.error(message),
-    warning: (message, inForm) => toastr === null || toastr === void 0 ? void 0 : toastr.warning(message, '', {
-      containerId: inForm ? 'react-toast-container' : undefined
-    })
-  }), []);
-};
-/* harmony default export */ var hooks_useToast = (useToast);
 // CONCATENATED MODULE: ./src/components/EnvironmentSelect/index.tsx
 
 
@@ -5582,7 +8105,7 @@ function EnvironmentSelect(props) {
       item.label = item.environment_name;
       if (environment_id && environment_id === item.environment_id) {
         setSelectedEnviornment(item);
-        // onChange(item);
+        onChange(item, true);
       }
     });
   }, [environment_id, environments]);
@@ -5610,6 +8133,7 @@ const ReferenceTables_styles_Container = styled_components_browser_esm["b" /* de
     display: flex;
     flex-direction: column;
     gap: 17px;
+    position: relative;
 `;
 const TablesContainer = styled_components_browser_esm["b" /* default */].div`
     width: 100%;
@@ -5650,6 +8174,10 @@ const ReferenceTables_styles_Icon = styled_components_browser_esm["b" /* default
     width: ${props => props.width || ''};
 `;
 const ReferenceTables_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    width: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-family: Roboto;
     font-size: 16px;
     font-weight: bold;
@@ -5659,6 +8187,18 @@ const ReferenceTables_styles_Title = styled_components_browser_esm["b" /* defaul
     letter-spacing: normal;
     text-align: left;
     color: #2e2e2e;
+`;
+const SubTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
 `;
 const EnvIconContainer = styled_components_browser_esm["b" /* default */].div`
     display: flex;
@@ -5704,6 +8244,114 @@ const TableTitle = styled_components_browser_esm["b" /* default */].div`
 const SelectAllContainer = styled_components_browser_esm["b" /* default */].div`
     width: 12px;
     cursor: pointer;
+`;
+const PopoverContainer = styled_components_browser_esm["b" /* default */].div`
+    width: 510px;
+    position: relative;
+    z-index: 100;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 19px 0px 30px 0px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+`;
+const PopoverHeader = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    position: relative;
+    margin: 0px 20px;
+    margin-bottom: 19px;
+`;
+const PopoverTitle = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: normal;
+    color: #1483f3;
+`;
+const styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    cursor: pointer;
+`;
+const PopoverBody = styled_components_browser_esm["b" /* default */].div`
+    margin: 10px 25px 0px 30px;
+`;
+const Separator = styled_components_browser_esm["b" /* default */].div`
+    border: solid 1px #ccc;
+`;
+const PopoverActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 13px;
+    margin-bottom: 10px;
+`;
+const styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const DatabaseRow = styled_components_browser_esm["b" /* default */].div`
+    margin-bottom: 10px;
+`;
+const DatabaseHeader = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    justify-content: space-between;
+    padding-right: 11px;
+`;
+const DatabaseName = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+`;
+const DatabaseConfig = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px 0px 15px 37px;
+    background-color: #f2f2f2;
+    border-bottom: solid 1px #ccc;
+`;
+const ConfigRow = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-right: 40px;
+`;
+const FilterTableContainer = styled_components_browser_esm["b" /* default */].div`
+    
+`;
+const styles_ConfigLabel = styled_components_browser_esm["b" /* default */].label`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
 `;
 // CONCATENATED MODULE: ./src/images/env-icon.svg
 /* harmony default export */ var env_icon = ("js/dist/7f89285037360b34caf7b2d2a1f8b24e.svg");
@@ -5768,7 +8416,7 @@ const styles_TableRowItem = styled_components_browser_esm["b" /* default */].td`
     letter-spacing: normal;
     text-align: left;
     color: #666;
-    padding-left: 18px;
+    padding-left: 15px;
     border: 0;
     border-bottom: 1px solid #ccc;
 `;
@@ -5847,9 +8495,8 @@ function RegularTable(props) {
               style: {
                 display: 'flex',
                 alignItems: 'flex-start',
-                paddingLeft: '18px',
-                justifyContent: 'flex-start',
-                gap: '8px',
+                paddingRight: '15px',
+                justifyContent: 'flex-end',
                 height: '100%'
               },
               children: data.length > 0 && /*#__PURE__*/Object(jsx_runtime["jsx"])("img", {
@@ -5891,14 +8538,238 @@ function RegularTable(props) {
   });
 }
 /* harmony default export */ var components_RegularTable = (RegularTable);
+// CONCATENATED MODULE: ./src/images/settings-icon.svg
+/* harmony default export */ var settings_icon = ("js/dist/c91068a2c13098ab1c04ec54f77536a9.svg");
+// CONCATENATED MODULE: ./src/components/ToggleSwitch/styles.ts
+
+const ToggleSwitch_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+`;
+const Label = styled_components_browser_esm["b" /* default */].div`
+    font-size: 14px;
+    font-weight: 500;
+    color: ${props => props.disabled ? '#bdc3c7' : '#2c3e50'};
+    margin-bottom: 4px;
+`;
+const Description = styled_components_browser_esm["b" /* default */].div`
+    font-size: 12px;
+    color: ${props => props.disabled ? '#bdc3c7' : '#7f8c8d'};
+    line-height: 1.4;
+`;
+const SwitchContainer = styled_components_browser_esm["b" /* default */].label`
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    flex-shrink: 0;
+`;
+const Switch = styled_components_browser_esm["b" /* default */].input`
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:focus + span {
+        box-shadow: 0 0 1px #4a90e2;
+    }
+`;
+const Slider = styled_components_browser_esm["b" /* default */].span`
+    position: absolute;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: ${props => props.disabled ? '#e0e0e0' : props.checked ? '#4a90e2' : '#ccc'};
+    transition: 0.3s;
+    border-radius: 24px;
+    opacity: ${props => props.disabled ? 0.6 : 1};
+
+    &:before {
+        position: absolute;
+        content: '';
+        height: 18px;
+        width: 18px;
+        left: ${props => props.checked ? '27px' : '3px'};
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+`;
+// CONCATENATED MODULE: ./src/components/ToggleSwitch/index.tsx
+
+
+
+const ToggleSwitch = _ref => {
+  let {
+    value,
+    onChange,
+    label,
+    description,
+    disabled = false
+  } = _ref;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ToggleSwitch_styles_Container, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+      children: [label && /*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+        disabled: disabled,
+        children: label
+      }), description && /*#__PURE__*/Object(jsx_runtime["jsx"])(Description, {
+        disabled: disabled,
+        children: description
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(SwitchContainer, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Switch, {
+        type: "checkbox",
+        checked: value,
+        onChange: e => !disabled && onChange(e.target.checked),
+        disabled: disabled
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Slider, {
+        checked: value,
+        disabled: disabled
+      })]
+    })]
+  });
+};
+/* harmony default export */ var components_ToggleSwitch = (ToggleSwitch);
+// CONCATENATED MODULE: ./src/components/task/ReferenceTables/TableSettingsPopover.tsx
+
+
+
+
+
+const TableSettingsPopover_PopoverContainer = styled_components_browser_esm["b" /* default */].div`
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 500px;
+    max-width: 90vw;
+`;
+const TableSettingsPopover_Header = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e1e8ed;
+`;
+const TableSettingsPopover_Title = styled_components_browser_esm["b" /* default */].h3`
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #5a6c7d;
+`;
+const TableSettingsPopover_CloseButton = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 1;
+    }
+`;
+const TableSettingsPopover_Body = styled_components_browser_esm["b" /* default */].div`
+    padding: 24px;
+`;
+const PlaceholderText = styled_components_browser_esm["b" /* default */].p`
+    text-align: center;
+    color: #bdc3c7;
+    font-size: 14px;
+    margin: 20px 0;
+`;
+const Footer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #e1e8ed;
+`;
+const Button = styled_components_browser_esm["b" /* default */].button`
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: ${props => props.primary ? 'none' : '1px solid #d1d8dd'};
+    background: ${props => props.primary ? '#4a90e2' : 'white'};
+    color: ${props => props.primary ? 'white' : '#5a6c7d'};
+
+    &:hover {
+        background: ${props => props.primary ? '#357abd' : '#f5f7fa'};
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+`;
+const TableSettingsPopover = _ref => {
+  let {
+    tableName,
+    includeRowCount,
+    countInd = true,
+    onClose,
+    onSave
+  } = _ref;
+  const [localIncludeRowCount, setLocalIncludeRowCount] = Object(react["useState"])(includeRowCount);
+  const handleSave = () => {
+    onSave({
+      includeRowCount: localIncludeRowCount
+    });
+    onClose();
+  };
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableSettingsPopover_PopoverContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TableSettingsPopover_Header, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TableSettingsPopover_Title, {
+        children: ["Table Settings: ", tableName]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TableSettingsPopover_CloseButton, {
+        src: xclose,
+        onClick: onClose
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TableSettingsPopover_Body, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ToggleSwitch, {
+        value: !countInd ? false : localIncludeRowCount,
+        onChange: setLocalIncludeRowCount,
+        label: "Include row count",
+        description: "Disable for large tables to improve task performance",
+        disabled: !countInd
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Footer, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Button, {
+        onClick: onClose,
+        children: "Cancel"
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Button, {
+        primary: true,
+        onClick: handleSave,
+        children: "Save"
+      })]
+    })]
+  });
+};
+/* harmony default export */ var ReferenceTables_TableSettingsPopover = (TableSettingsPopover);
 // CONCATENATED MODULE: ./src/components/task/ReferenceTables/useTable.tsx
 
 
 
 
 
-const useTable_useTable = (deleteRow, toggleModalUpdateVersion, showVersion) => {
+
+
+
+
+const ActionsContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-right: 7px;
+`;
+const useTable_useTable = (deleteRow, toggleModalUpdateVersion, showVersion, onUpdateTableSettings) => {
   const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const [openPopoverId, setOpenPopoverId] = Object(react["useState"])(null);
 
   // const { } = useContext(TaskContext);
 
@@ -5939,15 +8810,50 @@ const useTable_useTable = (deleteRow, toggleModalUpdateVersion, showVersion) => 
       let {
         row
       } = _ref3;
-      return /*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
-        onClick: $event => {
-          $event.stopPropagation();
-          deleteRow(row.original);
-        },
-        src: delete_icon_gray
+      const tableId = row.original.id || `${row.original.interface_name}_${row.original.schema_name}_${row.original.reference_table_name}`;
+      const isOpen = openPopoverId === tableId;
+      return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionsContainer, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
+          isOpen: isOpen,
+          positions: ['bottom', 'left', 'top'],
+          padding: 10,
+          containerStyle: {
+            zIndex: '9999'
+          },
+          onClickOutside: () => setOpenPopoverId(null),
+          content: /*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_TableSettingsPopover, {
+            tableName: row.original.reference_table_name,
+            includeRowCount: row.original.include_row_count !== undefined ? row.original.include_row_count : true,
+            countInd: row.original.count_ind !== undefined ? row.original.count_ind : true,
+            onClose: () => setOpenPopoverId(null),
+            onSave: settings => {
+              if (onUpdateTableSettings) {
+                onUpdateTableSettings(tableId, settings);
+              }
+            }
+          }),
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
+            onClick: $event => {
+              $event.stopPropagation();
+              setOpenPopoverId(isOpen ? null : tableId);
+            },
+            src: settings_icon,
+            width: "16px",
+            style: {
+              cursor: 'pointer'
+            }
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Icon, {
+          onClick: $event => {
+            $event.stopPropagation();
+            deleteRow(row.original);
+          },
+          src: delete_icon_gray,
+          width: "16px"
+        })]
       });
     }
-  }], [columnHelper, deleteRow, showVersion, toggleModalUpdateVersion]);
+  }], [columnHelper, deleteRow, showVersion, toggleModalUpdateVersion, openPopoverId, onUpdateTableSettings]);
   return {
     columns
   };
@@ -5990,10 +8896,12 @@ box-sizing: border-box ;
     position: relative;
     animation: ${styles_animation} 0.2s linear;
     width: 85%;
+    max-height: 90vh;
     background-color: #ffffff;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    overflow: hidden;
 `;
 const HeaderWrapper = styled_components_browser_esm["b" /* default */].div`
     box-sizing: border-box;
@@ -6014,6 +8922,7 @@ const WrapperTop = styled_components_browser_esm["b" /* default */].div`
     box-sizing: border-box;
     width: 100%;
     height: 100px;
+    flex-shrink: 0;
     display: flex;
     justify-content: start;
     align-items: center;
@@ -6023,17 +8932,20 @@ const WrapperTop = styled_components_browser_esm["b" /* default */].div`
 const WrapperBottom = styled_components_browser_esm["b" /* default */].div`
     box-sizing: border-box;
     width: 100%;
-    height: 300px;
+    flex: 1;
+    min-height: 0;
     display: flex;
     justify-content: start;
-    align-items: center;
+    align-items: stretch;
     padding: 20px;
     gap: 10px;
+    overflow: auto;
 `;
 const WrapperFooter = styled_components_browser_esm["b" /* default */].div`
 box-sizing: border-box ;
     width: 100%;
     padding: 0 20px;
+    flex-shrink: 0;
     display: flex;
     align-items: center ;
     justify-content: flex-end;
@@ -6047,7 +8959,7 @@ const styles_Actions = styled_components_browser_esm["b" /* default */].div`
     border-bottom: ${props => props.border ? '1px solid #ccc' : ''};
     padding-bottom: 13px;
 `;
-const styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+const CustomerTypeTable_styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
     font-family: Roboto;
     font-size: 16px;
     font-weight: normal;
@@ -6114,15 +9026,16 @@ const CustomerTypeTable = _ref2 => {
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(WrapperBottom, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
           columns: column,
-          data: data
+          data: data,
+          hidePagination: true
         })
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(WrapperFooter, {
         children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_Actions, {
           border: false,
-          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ActionItem, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(CustomerTypeTable_styles_ActionItem, {
             onClick: () => onClose(),
             children: "Cancel"
-          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ActionItem, {
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(CustomerTypeTable_styles_ActionItem, {
             onClick: onSave,
             children: "Save"
           })]
@@ -6303,7 +9216,613 @@ const useCustomerTable = () => {
   };
 };
 /* harmony default export */ var useCustomerTypeTable = (useCustomerTable);
+// CONCATENATED MODULE: ./src/components/task/TablesAdvanced/styles.ts
+
+const styles_PopoverContainer = styled_components_browser_esm["b" /* default */].div`
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 420px;
+    overflow-y: auto;
+    z-index: 1000;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+`;
+const styles_PopoverHeader = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+`;
+const styles_PopoverTitle = styled_components_browser_esm["b" /* default */].h3`
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+`;
+const TablesAdvanced_styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 1;
+    }
+`;
+const styles_Separator = styled_components_browser_esm["b" /* default */].div`
+    height: 1px;
+    background: #e0e0e0;
+    margin: 0 20px;
+`;
+const styles_PopoverBody = styled_components_browser_esm["b" /* default */].div`
+    padding: 16px 20px;
+`;
+const styles_PopoverActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+`;
+const TablesAdvanced_styles_ActionItem = styled_components_browser_esm["b" /* default */].button`
+    background: none;
+    border: none;
+    color: #1890ff;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    transition: color 0.2s;
+
+    &:hover {
+        color: #40a9ff;
+        text-decoration: underline;
+    }
+`;
+const styles_DatabaseRow = styled_components_browser_esm["b" /* default */].div`
+    margin-bottom: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+`;
+const styles_DatabaseHeader = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f5f5f5;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #ebebeb;
+    }
+`;
+const styles_DatabaseName = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+`;
+const styles_DatabaseConfig = styled_components_browser_esm["b" /* default */].div`
+    padding: 16px;
+    padding-right: 0px;
+    background: white;
+    border-top: 1px solid #e0e0e0;
+`;
+const styles_ConfigRow = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+`;
+const TablesAdvanced_styles_ConfigLabel = styled_components_browser_esm["b" /* default */].label`
+    font-size: 14px;
+    color: #666;
+    min-width: 150px;
+`;
+const styles_ConfigSubLabel = styled_components_browser_esm["b" /* default */].label`
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: normal;
+    color: #999;
+    margin-top: 2px;
+    display: block;
+    position: absolute;
+    bottom: -6px;
+    left: 0px;
+`;
+const TablesAdvanced_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: ${props => props.width || '12px'};
+    height: auto;
+`;
+const styles_FieldWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    width: 220px;
+`;
+const TablesAdvanced_styles_ResetButton = styled_components_browser_esm["b" /* default */].a`
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    min-width: 0px;
+    height: 28px;
+    
+    &:hover {
+        color: #1890ff;
+        background-color: none;
+    }
+    
+    &:focus {
+        outline: none;
+    }
+`;
+const SaveContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: flex-end;
+`;
+// CONCATENATED MODULE: ./src/components/Button/styles.ts
+
+const Button_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    width:  ${props => props.width || '100%'};
+    height: ${props => props.height || '35px'};
+    object-fit: contain;
+    border-radius: 3px;
+    font-family: 'Roboto', sans-serif;
+    background-color: ${props => {
+  if (props.backgroundColor) {
+    return props.backgroundColor;
+  }
+  if (props.type === 'secondary') {
+    return '#fff';
+  }
+  return 'var(--primary-color)';
+}};
+    display: flex;
+    gap: 9px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: ${props => {
+  if (props.danger) {
+    return 'solid 1px #ff6666';
+  }
+  if (props.type === 'secondary') {
+    return 'solid 1px #1483f3';
+  }
+  return '0';
+}};
+`;
+const Button_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: ${props => {
+  if (props.danger) {
+    return '#ff6666';
+  }
+  if (props.type === 'secondary') {
+    return 'var(--primary-color)';
+  }
+  return '#fefefe';
+}}; 
+`;
+const Button_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+`;
+// CONCATENATED MODULE: ./src/components/Button/index.tsx
+
+
+function Button_Button(props) {
+  const {
+    title,
+    onClick,
+    width,
+    height,
+    type,
+    disabled,
+    icon,
+    danger,
+    backgroundColor,
+    children
+  } = props;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Button_styles_Container, {
+    backgroundColor: backgroundColor,
+    onClick: onClick,
+    height: height,
+    width: width,
+    type: type,
+    danger: danger,
+    children: [icon ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Button_styles_Icon, {
+      src: icon
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Button_styles_Title, {
+      type: type,
+      danger: danger,
+      children: children ? children : title
+    })]
+  });
+}
+/* harmony default export */ var components_Button = (Button_Button);
+// CONCATENATED MODULE: ./src/components/task/TablesAdvanced/index.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function TablesAdvanced(props) {
+  const {
+    type,
+    databases,
+    settings,
+    onSettingsChange,
+    children
+  } = props;
+  const [open, setOpen] = Object(react["useState"])(false);
+  const [expandedDatabases, setExpandedDatabases] = Object(react["useState"])([]);
+  const [maxWorkersPerNode, setMaxWorkersPerNode] = Object(react["useState"])(undefined);
+  const [maxWorkersLimit, setMaxWorkersLimit] = Object(react["useState"])(undefined);
+  const [dataCenters, setDataCenters] = Object(react["useState"])([]);
+  const toast = hooks_useToast();
+  // Local state to store pending changes before save
+  const [pendingSettings, setPendingSettings] = Object(react["useState"])(settings);
+
+  // Validation errors state
+  const [validationErrors, setValidationErrors] = Object(react["useState"])({});
+
+  // Sync pending settings when the popover opens or settings prop changes
+  Object(react["useEffect"])(() => {
+    if (open) {
+      setPendingSettings(settings);
+      setValidationErrors({}); // Clear validation errors when opening
+    }
+  }, [open, settings]);
+  Object(react["useEffect"])(() => {
+    const fetchDataCenters = async () => {
+      try {
+        const centers = await apis_task.getDataCenters();
+        setDataCenters(centers || []);
+      } catch (error) {
+        console.error('Failed to fetch data centers:', error);
+        setDataCenters([]);
+      }
+    };
+    const fetchMaxWorkersLimit = async () => {
+      try {
+        const maxWorkers = await apis_task.getGlobalMaxWorkersLimit();
+        setMaxWorkersLimit(maxWorkers);
+      } catch (error) {
+        console.error('Failed to fetch data centers:', error);
+        setDataCenters([]);
+      }
+    };
+    fetchMaxWorkersLimit();
+    fetchDataCenters();
+  }, []);
+  Object(react["useEffect"])(() => {
+    const fetchMaxWorkers = async () => {
+      try {
+        const maxWorkers = await apis_task.getMaxWorkersPerNode();
+        setMaxWorkersPerNode(maxWorkers);
+      } catch (error) {
+        console.error('Failed to fetch max workers per node:', error);
+      }
+    };
+    fetchMaxWorkers();
+  }, []);
+
+  // Create affinity options from data centers
+  const affinityOptions = Object(react["useMemo"])(() => {
+    const dataCenterOptions = [];
+    const logicalAffinityOptions = [];
+    dataCenters.forEach(dc => {
+      if (dc.dc) {
+        dataCenterOptions.push({
+          value: dc.dc,
+          label: `🖥️ ${dc.dc}`
+        });
+      }
+      if (dc.logical_ids) {
+        const logicalIds = dc.logical_ids.split(',').map(id => id.trim()).filter(id => id);
+        logicalIds.forEach(logicalId => {
+          if (!logicalAffinityOptions.find(opt => opt.value === logicalId)) {
+            logicalAffinityOptions.push({
+              value: logicalId,
+              label: `🔗 ${logicalId}`
+            });
+          }
+        });
+      }
+    });
+    const groups = [];
+    if (dataCenterOptions.length > 0) {
+      groups.push({
+        label: 'Data centers',
+        value: 'data-centers-group',
+        options: dataCenterOptions
+      });
+    }
+    if (logicalAffinityOptions.length > 0) {
+      groups.push({
+        label: 'Logical affinities',
+        value: 'logical-affinities-group',
+        options: logicalAffinityOptions
+      });
+    }
+    return groups;
+  }, [dataCenters]);
+
+  // Handler functions for advanced settings
+  const toggleDatabaseExpansion = Object(react["useCallback"])(dbName => {
+    setExpandedDatabases(prev => {
+      if (prev.includes(dbName)) {
+        return prev.filter(name => name !== dbName);
+      } else {
+        return [...prev, dbName];
+      }
+    });
+  }, []);
+  const handleMaxWorkersChange = Object(react["useCallback"])((dbName, value) => {
+    var _validationErrors$dbN;
+    const numValue = parseInt(value, 10);
+    const newSettings = {
+      ...pendingSettings
+    };
+    if (!newSettings[dbName]) {
+      newSettings[dbName] = {};
+    }
+    if (!newSettings[dbName][type]) {
+      newSettings[dbName][type] = {};
+    }
+    newSettings[dbName][type].maxWorkers = isNaN(numValue) ? undefined : Math.max(0, numValue);
+    setPendingSettings(newSettings);
+
+    // Clear validation error for this field when user changes the value
+    if ((_validationErrors$dbN = validationErrors[dbName]) !== null && _validationErrors$dbN !== void 0 && _validationErrors$dbN[type]) {
+      const newErrors = {
+        ...validationErrors
+      };
+      if (newErrors[dbName]) {
+        delete newErrors[dbName][type];
+        if (!newErrors[dbName].source && !newErrors[dbName].target) {
+          delete newErrors[dbName];
+        }
+      }
+      setValidationErrors(newErrors);
+    }
+  }, [pendingSettings, type, validationErrors]);
+  const handleAffinityChange = Object(react["useCallback"])((dbName, selectedOption) => {
+    const newSettings = {
+      ...pendingSettings
+    };
+    if (!newSettings[dbName]) {
+      newSettings[dbName] = {};
+    }
+    if (!newSettings[dbName][type]) {
+      newSettings[dbName][type] = {};
+    }
+
+    // Mark as explicitly changed by user
+    newSettings[dbName][type].affinity = selectedOption ? selectedOption.value : null;
+    newSettings[dbName][type].affinityTouched = true;
+    setPendingSettings(newSettings);
+  }, [pendingSettings, type]);
+  const handleAffinityReset = Object(react["useCallback"])(dbName => {
+    const newSettings = {
+      ...pendingSettings
+    };
+    if (newSettings[dbName] && newSettings[dbName][type]) {
+      newSettings[dbName][type].affinity = null;
+      newSettings[dbName][type].affinityTouched = false;
+    }
+    setPendingSettings(newSettings);
+  }, [pendingSettings, type]);
+  const handleMaxWorkersReset = Object(react["useCallback"])(dbName => {
+    const newSettings = {
+      ...pendingSettings
+    };
+    if (newSettings[dbName] && newSettings[dbName][type]) {
+      delete newSettings[dbName][type].maxWorkers;
+    }
+    setPendingSettings(newSettings);
+  }, [pendingSettings, type]);
+  const resetAllSettings = Object(react["useCallback"])(() => {
+    setPendingSettings({});
+    setExpandedDatabases([]);
+  }, []);
+  const handleSave = Object(react["useCallback"])(() => {
+    // Validate maxWorkers against maxWorkersLimit
+    if (maxWorkersLimit !== undefined) {
+      const errors = {};
+      let maxWorkersError = 0;
+      Object.keys(pendingSettings).forEach(dbName => {
+        var _db$source, _db$target;
+        const db = pendingSettings[dbName];
+
+        // Check source maxWorkers
+        if (((_db$source = db.source) === null || _db$source === void 0 ? void 0 : _db$source.maxWorkers) !== undefined && db.source.maxWorkers > maxWorkersLimit) {
+          var _db$source2;
+          if (!errors[dbName]) errors[dbName] = {};
+          errors[dbName].source = true;
+          maxWorkersError = (_db$source2 = db.source) === null || _db$source2 === void 0 ? void 0 : _db$source2.maxWorkers;
+        }
+
+        // Check target maxWorkers
+        if (((_db$target = db.target) === null || _db$target === void 0 ? void 0 : _db$target.maxWorkers) !== undefined && db.target.maxWorkers > maxWorkersLimit) {
+          var _db$target2;
+          if (!errors[dbName]) errors[dbName] = {};
+          errors[dbName].target = true;
+          maxWorkersError = (_db$target2 = db.target) === null || _db$target2 === void 0 ? void 0 : _db$target2.maxWorkers;
+        }
+      });
+
+      // If there are validation errors, set them and prevent save
+      if (Object.keys(errors).length > 0) {
+        // setValidationErrors(errors);
+        toast.warning(`The requested number of workers (${maxWorkersError}) exceeds the maximum allowed for execution, as defined in the Fabric configuration (${maxWorkersLimit})`);
+        return; // Don't save
+      }
+    }
+
+    // Clear any existing validation errors
+    setValidationErrors({});
+
+    // Save the settings
+    onSettingsChange(pendingSettings);
+    setOpen(false);
+  }, [pendingSettings, onSettingsChange, maxWorkersLimit]);
+
+  // Render popover content
+  const getAdvancedPopoverContent = Object(react["useCallback"])(() => {
+    return /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_PopoverContainer, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_PopoverHeader, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_PopoverTitle, {
+          children: "Advanced settings"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_CloseIcon, {
+          onClick: () => setOpen(false),
+          src: xclose
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Separator, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_PopoverBody, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_PopoverActions, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ActionItem, {
+            onClick: resetAllSettings,
+            children: "Reset all"
+          })
+        }), databases.map(db => {
+          var _pendingSettings$db$n5, _pendingSettings$db$n6, _validationErrors$db$, _ref, _ref2, _pendingSettings$db$n7, _pendingSettings$db$n8, _pendingSettings$db$n9, _db$defaultConfig2, _validationErrors$db$2, _pendingSettings$db$n10, _pendingSettings$db$n11, _pendingSettings$db$n12, _pendingSettings$db$n13, _db$defaultConfig3, _pendingSettings$db$n14, _pendingSettings$db$n15;
+          return /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_DatabaseRow, {
+            children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_DatabaseHeader, {
+              onClick: () => toggleDatabaseExpansion(db.name),
+              children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_DatabaseName, {
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_Icon, {
+                  width: '19px',
+                  src: env_icon
+                }), db.name]
+              }), /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_Icon, {
+                src: expandedDatabases.includes(db.name) ? arrow_up : arrow_down
+              })]
+            }), expandedDatabases.includes(db.name) && /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_DatabaseConfig, {
+              children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_ConfigRow, {
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+                  children: /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ConfigLabel, {
+                    children: "Affinity"
+                  })
+                }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_FieldWrapper, {
+                  children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+                    width: "175px",
+                    small: true,
+                    menuPortalTarget: document.body,
+                    title: "",
+                    isClearable: false,
+                    isMulti: false,
+                    options: affinityOptions,
+                    value: ((_pendingSettings$db$n, _pendingSettings$db$n2, _pendingSettings$db$n3, _pendingSettings$db$n4, _db$defaultConfig) => {
+                      const currentAffinity = (_pendingSettings$db$n = pendingSettings[db.name]) === null || _pendingSettings$db$n === void 0 ? void 0 : (_pendingSettings$db$n2 = _pendingSettings$db$n[type]) === null || _pendingSettings$db$n2 === void 0 ? void 0 : _pendingSettings$db$n2.affinity;
+                      const affinityTouched = (_pendingSettings$db$n3 = pendingSettings[db.name]) === null || _pendingSettings$db$n3 === void 0 ? void 0 : (_pendingSettings$db$n4 = _pendingSettings$db$n3[type]) === null || _pendingSettings$db$n4 === void 0 ? void 0 : _pendingSettings$db$n4.affinityTouched;
+                      const defaultAffinity = (_db$defaultConfig = db.defaultConfig) === null || _db$defaultConfig === void 0 ? void 0 : _db$defaultConfig.affinity;
+                      const affinityToUse = currentAffinity !== null && currentAffinity !== void 0 ? currentAffinity : affinityTouched ? null : defaultAffinity;
+                      if (affinityToUse) {
+                        return affinityOptions.flatMap(group => group.options || []).find(opt => opt.value === affinityToUse);
+                      }
+                      return null;
+                    })(),
+                    onChange: selectedOption => handleAffinityChange(db.name, selectedOption),
+                    placeholder: ""
+                  }), ((_pendingSettings$db$n5 = pendingSettings[db.name]) === null || _pendingSettings$db$n5 === void 0 ? void 0 : (_pendingSettings$db$n6 = _pendingSettings$db$n5[type]) === null || _pendingSettings$db$n6 === void 0 ? void 0 : _pendingSettings$db$n6.affinityTouched) && /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ResetButton, {
+                    type: "button",
+                    onClick: () => handleAffinityReset(db.name),
+                    title: "Reset to environment default",
+                    children: "\u21BB"
+                  })]
+                })]
+              }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_ConfigRow, {
+                children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+                  children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ConfigLabel, {
+                    children: "Max no. of workers"
+                  }), ((_validationErrors$db$ = validationErrors[db.name]) === null || _validationErrors$db$ === void 0 ? void 0 : _validationErrors$db$[type]) && maxWorkersLimit && /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_ConfigSubLabel, {
+                    style: {
+                      color: '#ff4d4f'
+                    },
+                    children: ["Must not exceed ", maxWorkersLimit]
+                  })]
+                }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_FieldWrapper, {
+                  children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+                    title: "",
+                    type: InputTypes.number,
+                    value: (_ref = (_ref2 = (_pendingSettings$db$n7 = (_pendingSettings$db$n8 = pendingSettings[db.name]) === null || _pendingSettings$db$n8 === void 0 ? void 0 : (_pendingSettings$db$n9 = _pendingSettings$db$n8[type]) === null || _pendingSettings$db$n9 === void 0 ? void 0 : _pendingSettings$db$n9.maxWorkers) !== null && _pendingSettings$db$n7 !== void 0 ? _pendingSettings$db$n7 : (_db$defaultConfig2 = db.defaultConfig) === null || _db$defaultConfig2 === void 0 ? void 0 : _db$defaultConfig2.max_number_of_workers) !== null && _ref2 !== void 0 ? _ref2 : maxWorkersPerNode) !== null && _ref !== void 0 ? _ref : '',
+                    onChange: value => handleMaxWorkersChange(db.name, (value === null || value === void 0 ? void 0 : value.toString()) || '0'),
+                    min: 0,
+                    max: maxWorkersPerNode,
+                    width: '175px',
+                    error: (_validationErrors$db$2 = validationErrors[db.name]) !== null && _validationErrors$db$2 !== void 0 && _validationErrors$db$2[type] ? 'Invalid value' : undefined
+                  }), ((_pendingSettings$db$n10 = pendingSettings[db.name]) === null || _pendingSettings$db$n10 === void 0 ? void 0 : (_pendingSettings$db$n11 = _pendingSettings$db$n10[type]) === null || _pendingSettings$db$n11 === void 0 ? void 0 : _pendingSettings$db$n11.maxWorkers) !== undefined && ((_pendingSettings$db$n12 = pendingSettings[db.name]) === null || _pendingSettings$db$n12 === void 0 ? void 0 : (_pendingSettings$db$n13 = _pendingSettings$db$n12[type]) === null || _pendingSettings$db$n13 === void 0 ? void 0 : _pendingSettings$db$n13.maxWorkers) !== ((_db$defaultConfig3 = db.defaultConfig) === null || _db$defaultConfig3 === void 0 ? void 0 : _db$defaultConfig3.max_number_of_workers) && ((_pendingSettings$db$n14 = pendingSettings[db.name]) === null || _pendingSettings$db$n14 === void 0 ? void 0 : (_pendingSettings$db$n15 = _pendingSettings$db$n14[type]) === null || _pendingSettings$db$n15 === void 0 ? void 0 : _pendingSettings$db$n15.maxWorkers) !== maxWorkersPerNode && /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvanced_styles_ResetButton, {
+                    type: "button",
+                    onClick: () => handleMaxWorkersReset(db.name),
+                    title: "Reset to environment default",
+                    children: "\u21BB"
+                  })]
+                })]
+              })]
+            })]
+          }, db.name);
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SaveContainer, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Save",
+            onClick: handleSave,
+            width: "100px",
+            height: "36px"
+          })
+        })]
+      })]
+    });
+  }, [databases, expandedDatabases, pendingSettings, maxWorkersPerNode, affinityOptions, toggleDatabaseExpansion, handleMaxWorkersChange, handleAffinityChange, handleAffinityReset, handleMaxWorkersReset, resetAllSettings, handleSave]);
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popover["Popover"], {
+    containerStyle: {
+      zIndex: '100'
+    },
+    reposition: false,
+    padding: 0,
+    align: "start",
+    isOpen: open,
+    positions: ['right'],
+    content: getAdvancedPopoverContent(),
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      onClick: () => setOpen(!open),
+      children: children
+    })
+  });
+}
+/* harmony default export */ var task_TablesAdvanced = (TablesAdvanced);
 // CONCATENATED MODULE: ./src/components/task/ReferenceTables/index.tsx
+
 
 
 
@@ -6331,36 +9850,70 @@ function ReferenceTables(props) {
     //BE or tables
     be_name,
     source_environment_name,
+    source_environment_id,
     fetchPolicy,
     tableList,
     sync_mode,
-    selected_logical_units_names
+    selected_logical_units_names,
+    tables_use_split_api
   } = taskData;
   const showVersion = Object(react["useMemo"])(() => fetchPolicy === 'load_snapshot' || fetchPolicy === 'available_data', [fetchPolicy]);
   const [tablesData, setTablesData] = Object(react["useState"])([]);
   const [loading, setLoading] = Object(react["useState"])(false);
   const [filter, setFilter] = Object(react["useState"])('');
+  const [interfaceConfigs, setInterfaceConfigs] = Object(react["useState"])({});
   Object(react["useEffect"])(() => {
     async function fetchData() {
       try {
-        if (!source_environment_name) {
+        if (!source_environment_name || !source_environment_id) {
           return;
         }
-        let data = await apis_task.getTableByBeAndEnv(source_environment_name || '', be_name);
+        let data = await apis_task.getEnvInterfaceList(source_environment_name, source_environment_id);
+
+        // Store configs
+        const configs = {};
+        data.forEach(item => {
+          configs[item.interfaceName] = item.config;
+        });
+        setInterfaceConfigs(configs);
+        setTablesData(data.map(item => {
+          return {
+            env_name: item.interfaceName,
+            opened: false,
+            openedTables: true,
+            schemas: {}
+          };
+        }));
+      } catch (err) {
+        // use hook toast
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    async function fetchDataBE() {
+      try {
+        if (!source_environment_name || !source_environment_id) {
+          return;
+        }
+        let data = await apis_task.getTableByBeAndEnv(source_environment_name || '', source_environment_id, be_name);
+        // Store configs
+        const configs = {};
         const transformedEnvs = data.map((item, index) => {
           // Extract database name and tables
-
-          const dbName = Object.keys(item)[0]; // e.g., 'CRM_DB'
+          configs[item.interfaceName] = item.config;
+          const dbName = item.interfaceName; // e.g., 'CRM_DB'
+          // const dbName = Object.keys(item)[0]; // e.g., 'CRM_DB'
 
           const schemas = {};
-          item[dbName].forEach(schema => {
-            const schemaKey = Object.keys(schema)[0];
+          item.schemas.forEach(schema => {
+            const schemaKey = schema.schemaName;
             schemas[schemaKey] = {
               tables: [],
               opened: false,
               selectAll: false
             };
-            const tables = schema[schemaKey].filter(it => (sync_mode === 'OFF' && it.taskExecutionId || sync_mode !== 'OFF') && ((selected_logical_units_names || []).indexOf(it.luName) >= 0 || !be_name)).map(table => {
+            const tables = schema.tables.filter(it => (sync_mode === 'OFF' && it.taskExecutionId || sync_mode !== 'OFF') && ((selected_logical_units_names || []).indexOf(it.luName) >= 0 || !be_name)).map(table => {
               const old = tableList != null ? tableList : [];
               const isFound = old.find(el => el.reference_table_name === table.tableName);
               const isMoved = !!isFound;
@@ -6371,7 +9924,8 @@ function ReferenceTables(props) {
                 schema_name: schemaKey,
                 lu_name: table.luName,
                 selected: false,
-                moved: isMoved
+                moved: isMoved,
+                count_ind: table.countIndicator === 'true'
               };
             });
             schemas[schemaKey].tables = tables;
@@ -6399,6 +9953,7 @@ function ReferenceTables(props) {
           }
           return false;
         });
+        setInterfaceConfigs(configs);
         saveForm({
           tableList: newTableList
         });
@@ -6410,7 +9965,11 @@ function ReferenceTables(props) {
         setLoading(false);
       }
     }
-    fetchData();
+    if (be_name || !tables_use_split_api) {
+      fetchDataBE();
+    } else {
+      fetchData();
+    }
   }, [be_name, source_environment_name, source_type, sync_mode, selected_logical_units_names, showVersion]);
   Object(react["useEffect"])(() => {
     const old = tableList != null ? tableList : [];
@@ -6444,24 +10003,75 @@ function ReferenceTables(props) {
       });
     });
   }, [source_environment_name, tableList]);
+  const getInterfaceSchemaList = Object(react["useCallback"])(async interface_name => {
+    if (be_name || !source_environment_name) {
+      return [];
+    }
+    const found_interface = tablesData.find(it => it.env_name === interface_name);
+    if (!(found_interface !== null && found_interface !== void 0 && found_interface.opened) && Object.keys((found_interface === null || found_interface === void 0 ? void 0 : found_interface.schemas) || {}).length === 0) {
+      const data = await apis_task.getInterfaceSchemaList(source_environment_name, interface_name);
+      return data;
+    }
+    return [];
+  }, [tablesData, be_name, source_environment_name]);
   const toggleBE = Object(react["useCallback"])(BE => {
-    setTablesData(prevData => {
-      const foundBE = prevData.find(it => it.env_name === BE);
-      if (foundBE) {
-        foundBE.opened = !foundBE.opened;
-      }
-      return [...prevData];
+    getInterfaceSchemaList(BE).then(data => {
+      setTablesData(prevData => {
+        const foundBE = prevData.find(it => it.env_name === BE);
+        if (foundBE) {
+          foundBE.opened = !foundBE.opened;
+          if (data.length > 0) {
+            data.forEach(schema => {
+              foundBE.schemas[schema] = {
+                tables: [],
+                opened: false,
+                selectAll: false
+              };
+            });
+          }
+        }
+        return [...prevData];
+      });
     });
-  }, [setTablesData]);
+  }, [setTablesData, getInterfaceSchemaList]);
+  const getSchemaTableList = Object(react["useCallback"])(async (interface_name, schemaKey) => {
+    var _found_interface$sche, _found_interface$sche2;
+    if (be_name || !source_environment_name) {
+      return [];
+    }
+    const found_interface = tablesData.find(it => it.env_name === interface_name);
+    if (!(found_interface !== null && found_interface !== void 0 && (_found_interface$sche = found_interface.schemas[schemaKey]) !== null && _found_interface$sche !== void 0 && _found_interface$sche.opened) && (found_interface === null || found_interface === void 0 ? void 0 : (_found_interface$sche2 = found_interface.schemas[schemaKey]) === null || _found_interface$sche2 === void 0 ? void 0 : _found_interface$sche2.tables.length) === 0) {
+      const data = await apis_task.getSchemaTableList(source_environment_name, interface_name, schemaKey);
+      if (sync_mode === 'OFF') {
+        return data.filter(it => it.task_execution_id);
+      }
+      return data;
+    }
+    return [];
+  }, [tablesData, be_name, source_environment_name, sync_mode]);
   const toggleTables = Object(react["useCallback"])((BE, schemaKey) => {
-    setTablesData(prevData => {
-      const foundBE = prevData.find(it => it.env_name === BE);
-      if (foundBE) {
-        foundBE.schemas[schemaKey].opened = !foundBE.schemas[schemaKey].opened;
-      }
-      return [...prevData];
+    getSchemaTableList(BE, schemaKey).then(data => {
+      setTablesData(prevData => {
+        const foundBE = prevData.find(it => it.env_name === BE);
+        if (foundBE) {
+          foundBE.schemas[schemaKey].opened = !foundBE.schemas[schemaKey].opened;
+          data.forEach(item => {
+            foundBE.schemas[schemaKey].tables.push({
+              name: item.table_name,
+              version_task_execution_id: item.task_execution_id,
+              version_task_name: item.task_name,
+              schema_name: item.schema_name,
+              lu_name: null,
+              selected: false,
+              moved: false,
+              count_ind: item.count_ind === 'true' ? true : false
+            });
+          });
+        }
+        return [...prevData];
+      });
     });
-  }, [setTablesData]);
+  }, [setTablesData, getSchemaTableList]);
   const toggleTable = Object(react["useCallback"])((BE, table_name, schemaKey) => {
     setTablesData(prevData => {
       const foundBE = prevData.find(it => it.env_name === BE);
@@ -6568,7 +10178,8 @@ function ReferenceTables(props) {
             version_task_execution_id: table.version_task_execution_id,
             version_task_name: table.version_task_name,
             schema_name: table.schema_name,
-            lu_name: table.lu_name
+            lu_name: table.lu_name,
+            count_ind: table.count_ind !== undefined ? table.count_ind : true
           });
         });
       });
@@ -6603,40 +10214,99 @@ function ReferenceTables(props) {
     onClickSave,
     current
   } = useCustomerTypeTable();
+  const handleUpdateTableSettings = Object(react["useCallback"])((tableId, settings) => {
+    const updatedTables = tableList === null || tableList === void 0 ? void 0 : tableList.map(table => {
+      // Ensure the table has an id property
+      if (!table.id) {
+        table.id = `${table.interface_name}_${table.schema_name}_${table.reference_table_name}`;
+      }
+      const currentTableId = table.id;
+      if (currentTableId === tableId) {
+        return {
+          ...table,
+          include_row_count: settings.includeRowCount
+        };
+      }
+      return table;
+    });
+    saveForm({
+      tableList: updatedTables
+    });
+  }, [tableList, saveForm]);
   const {
     columns
-  } = ReferenceTables_useTable(deleteRow, OpenModalUpdateVersion, showVersion);
+  } = ReferenceTables_useTable(deleteRow, OpenModalUpdateVersion, showVersion, handleUpdateTableSettings);
 
   /**
    * Toggle the `selected` flag for *every* table in every schema of every env.
    * Passing `true` checks all the check-boxes, passing `false` clears them.
    */
   const toggleTableInterfaces = Object(react["useCallback"])((BE, schemaKey, value) => {
-    setTablesData(prevData => {
-      const foundBE = prevData.find(it => it.env_name === BE);
-      if (foundBE && foundBE.schemas && foundBE.schemas[schemaKey] && foundBE.schemas[schemaKey].tables) {
-        foundBE.schemas[schemaKey].selectAll = value;
-        foundBE.schemas[schemaKey].tables.forEach(table => {
-          if (!table.moved) {
-            table.selected = value || false;
-          }
-        });
-      }
-      return [...prevData];
+    getSchemaTableList(BE, schemaKey).then(data => {
+      setTablesData(prevData => {
+        const foundBE = prevData.find(it => it.env_name === BE);
+        if (foundBE && foundBE.schemas && foundBE.schemas[schemaKey] && foundBE.schemas[schemaKey].tables) {
+          foundBE.schemas[schemaKey].selectAll = value;
+          data.forEach(item => {
+            foundBE.schemas[schemaKey].tables.push({
+              name: item.table_name,
+              version_task_execution_id: item.task_execution_id,
+              version_task_name: item.task_name,
+              schema_name: item.schema_name,
+              lu_name: null,
+              selected: false,
+              moved: false
+            });
+          });
+          foundBE.schemas[schemaKey].tables.forEach(table => {
+            if (!table.moved) {
+              table.selected = value || false;
+            }
+          });
+        }
+        return [...prevData];
+      });
     });
-  }, []);
+  }, [getSchemaTableList]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ReferenceTables_styles_Container, {
-    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReferenceTables_styles_Title, {
-      children: "Tables"
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(ReferenceTables_styles_Title, {
+      children: ["Tables", (tableList || []).length > 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(task_TablesAdvanced, {
+        type: "source",
+        databases: Array.from(new Set((tableList || []).map(table => table.interface_name))).map(name => ({
+          name,
+          defaultConfig: interfaceConfigs[name]
+        })),
+        settings: taskData.advancedReferenceTables || {},
+        onSettingsChange: settings => {
+          // Clean up affinity values that weren't explicitly changed by user
+          const cleanedSettings = {
+            ...settings
+          };
+          Object.keys(cleanedSettings).forEach(interfaceName => {
+            if (cleanedSettings[interfaceName].source && !cleanedSettings[interfaceName].source.affinityTouched) {
+              cleanedSettings[interfaceName].source.affinity = null;
+            }
+          });
+          saveForm({
+            advancedReferenceTables: cleanedSettings
+          });
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(SubTitle, {
+          children: "Advanced"
+        })
+      }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
     }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TablesContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(SourceTablesContainer, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
-          title: '',
-          placeholder: "Type to filter...",
-          width: '100%',
-          value: filter,
-          onChange: setFilter,
-          type: InputTypes.text
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(FilterTableContainer, {
+          title: tables_use_split_api ? "Type to filter the expanded schema" : "Type to filter...",
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: '',
+            placeholder: tables_use_split_api ? "Type to filter the expanded schema" : "Type to filter...",
+            width: '100%',
+            value: filter,
+            onChange: setFilter,
+            type: InputTypes.text
+          })
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SourceTables, {
           children: tablesData.map(env => /*#__PURE__*/Object(jsx_runtime["jsxs"])(react_default.a.Fragment, {
             children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(EnvIconContainer, {
@@ -6697,6 +10367,7 @@ function ReferenceTables(props) {
 
 
 
+
 function DataSourceSettingsForm(props) {
   const {
     taskData,
@@ -6721,9 +10392,12 @@ function DataSourceSettingsForm(props) {
     generateChosenParams,
     dataGenerationParams,
     enable_masking_only,
-    target_env
+    target_env,
+    in_place_masking_ind,
+    source_environment_type
   } = taskData;
   const [maskSensitiveDataLocal, setMaskSensitiveDataLocal] = Object(react["useState"])(mask_sensitive_data || false);
+  const toast = hooks_useToast();
   Object(react["useEffect"])(() => {
     const updateData = {};
     if (!dataSourceType) {
@@ -6834,7 +10508,8 @@ function DataSourceSettingsForm(props) {
       source_environment_id: undefined,
       source_environment_name: '',
       selected_logical_units_names: [],
-      selected_logical_units: []
+      selected_logical_units: [],
+      in_place_masking_ind: false
     };
     if (dataSourceTypeNew === 'data_source_BE') {
       dataSourceType = 'data_source';
@@ -6846,6 +10521,7 @@ function DataSourceSettingsForm(props) {
       updateBE.be_name = undefined;
       updateBE.selection_method = 'TABLES';
       updateBE.tables_selected = false;
+      updateBE.sync_mode = 'FORCE';
       unregister('be_name');
     }
     if (dataSourceTypeNew === 'ai_generated' && target_env === 'ai_training') {
@@ -6861,7 +10537,13 @@ function DataSourceSettingsForm(props) {
       ...updateBE
     });
   }, [saveForm]);
-  const envChangeLocal = Object(react["useCallback"])(item => {
+  const envChangeLocal = Object(react["useCallback"])((item, onInit) => {
+    if (onInit) {
+      saveForm({
+        source_environment_type: item && item.environment_type || undefined
+      });
+      return;
+    }
     const sync_mode = item && item.environment_sync_mode || 'ON';
     const syncModeData = {};
     if (sync_mode === 'OFF') {
@@ -6876,13 +10558,18 @@ function DataSourceSettingsForm(props) {
       syncModeData.tableList = [];
     } else if (dataSourceType === 'data_source' && source_type === 'tables') {
       syncModeData.version_ind = true;
+      if (syncModeData.sync_mode = 'ON') {
+        syncModeData.sync_mode = 'FORCE';
+      }
     }
     saveForm({
       source_environment_id: item && item.environment_id || undefined,
       source_environment_name: item && item.environment_name || undefined,
+      source_environment_type: item && item.environment_type || undefined,
       synthetic_indicator: item && item.synthetic_indicator || false,
       mask_sensitive_data: item && item.mask_sensitive_data || false,
       environment_sync_mode: item && item.environment_sync_mode || 'ON',
+      in_place_masking_ind: false,
       ...syncModeData
     });
   }, [saveForm, dataSourceType, source_type]);
@@ -7034,7 +10721,7 @@ function DataSourceSettingsForm(props) {
               environment_id: source_environment_id,
               onChange: envChangeLocal,
               isMandatory: false
-            }), source_environment_id ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(MaskDataContainer, {
+            }), source_environment_id && (in_place_masking_ind && maskSensitiveDataLocal || !in_place_masking_ind) ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(MaskDataContainer, {
               children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(DataSourceSettings_styles_Icon, {
                 src: pii_icon
               }), maskSensitiveDataLocal ? 'Sensitive data is masked' : 'Data is not masked']
@@ -7052,7 +10739,26 @@ function DataSourceSettingsForm(props) {
                 },
                 value: tables_selected
               })
-            }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
+            }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+                name: 'in_place_masking_ind',
+                disabled: sync_mode === 'OFF' && version_ind,
+                title: 'In-place masking',
+                onChange: value => {
+                  if (source_environment_type !== 'BOTH') {
+                    toast.warning("The selected environment does not support in-place masking. Select an environment defined as ‘Both’ (source and target) to create an in-place masking task.");
+                    return;
+                  }
+                  if (!maskSensitiveDataLocal && value) {
+                    toast.warning('PII will be masked even though this environment is not marked as sensitive.');
+                  }
+                  saveForm({
+                    in_place_masking_ind: value
+                  });
+                },
+                value: sync_mode === 'OFF' && version_ind ? false : in_place_masking_ind
+              })
+            })]
           }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
         }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
       }), tables_selected && source_environment_id ? /*#__PURE__*/Object(jsx_runtime["jsx"])(task_ReferenceTables, {}) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
@@ -7786,6 +11492,7 @@ const SelectDataVerioning_useTable_useTable = (selected_version_task_exe_id, sav
     columnsDef.forEach(col => {
       columnsResult.push({
         ...columnHelper.accessor(col.column, {
+          id: col.name,
           header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
             children: col.name
           }),
@@ -8367,7 +12074,7 @@ const RuleContainer = styled_components_browser_esm["b" /* default */].div`
     width: 100%;
     position: relative;
 `;
-const ActionsContainer = styled_components_browser_esm["b" /* default */].div`
+const styles_ActionsContainer = styled_components_browser_esm["b" /* default */].div`
     display: flex;
     gap: 10px;
     margin-bottom: 13px;
@@ -8399,93 +12106,6 @@ const styles_IconContainer = styled_components_browser_esm["b" /* default */].di
     top: 15px;
 `;
 const QueryBuilder_styles_Icon = styled_components_browser_esm["b" /* default */].img``;
-// CONCATENATED MODULE: ./src/components/Button/styles.ts
-
-const Button_styles_Container = styled_components_browser_esm["b" /* default */].div`
-    width:  ${props => props.width || '100%'};
-    height: ${props => props.height || '35px'};
-    object-fit: contain;
-    border-radius: 3px;
-    background-color: ${props => {
-  if (props.backgroundColor) {
-    return props.backgroundColor;
-  }
-  if (props.type === 'secondary') {
-    return '#fff';
-  }
-  return 'var(--primary-color)';
-}};
-    display: flex;
-    gap: 9px;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border: ${props => {
-  if (props.danger) {
-    return 'solid 1px #ff6666';
-  }
-  if (props.type === 'secondary') {
-    return 'solid 1px #1483f3';
-  }
-  return '0';
-}};
-`;
-const Button_styles_Title = styled_components_browser_esm["b" /* default */].div`
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    font-family: Roboto;
-    font-size: 15px;
-    font-weight: bolder;
-    font-stretch: normal;
-    font-style: normal;
-    letter-spacing: normal;
-    text-align: center;
-    color: ${props => {
-  if (props.danger) {
-    return '#ff6666';
-  }
-  if (props.type === 'secondary') {
-    return 'var(--primary-color)';
-  }
-  return '#fefefe';
-}}; 
-`;
-const Button_styles_Icon = styled_components_browser_esm["b" /* default */].img`
-`;
-// CONCATENATED MODULE: ./src/components/Button/index.tsx
-
-
-function Button(props) {
-  const {
-    title,
-    onClick,
-    width,
-    height,
-    type,
-    disabled,
-    icon,
-    danger,
-    backgroundColor,
-    children
-  } = props;
-  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Button_styles_Container, {
-    backgroundColor: backgroundColor,
-    onClick: onClick,
-    height: height,
-    width: width,
-    type: type,
-    danger: danger,
-    children: [icon ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Button_styles_Icon, {
-      src: icon
-    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Button_styles_Title, {
-      type: type,
-      danger: danger,
-      children: children ? children : title
-    })]
-  });
-}
-/* harmony default export */ var components_Button = (Button);
 // CONCATENATED MODULE: ./src/components/QueryBuilder/useConstants.tsx
 
 const useConstants = () => {
@@ -8930,7 +12550,7 @@ function QueryBuilder(props) {
     }
   }, [removeGroup]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(QueryBuilder_styles_Container, {
-    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionsContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_ActionsContainer, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
         title: 'Add condition',
         type: 'secondary',
@@ -9097,7 +12717,7 @@ const computeQuery = (group, parametersList, type, resultValues, filter_types, i
       }
     } else {
       let data;
-      if (!group.rules[i].data && group.rules[i].data !== '' && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
+      if (!group.rules[i].data && group.rules[i].data !== '' && group.rules[i].data !== 0 && group.rules[i].condition !== 'IS NULL' && group.rules[i].condition !== 'IS NOT NULL') {
         return '';
       }
       if (group.rules[i].type === 'real') {
@@ -9154,7 +12774,7 @@ const getSelectionParamValue = (filter, parametersList, isCoupling, type) => {
         if (!rule.data || rule.data.length === 0) {
           return false;
         }
-      } else if (!rule.data && rule.data !== "") {
+      } else if (rule.data !== "" && rule.data === undefined) {
         return false;
       }
       validStatement = true;
@@ -9260,7 +12880,7 @@ const TaskMainWidget_styles_Title = styled_components_browser_esm["b" /* default
 }}
 
 `;
-const SubTitle = styled_components_browser_esm["b" /* default */].div`
+const styles_SubTitle = styled_components_browser_esm["b" /* default */].div`
   font-family: Roboto;
   font-size: 15px;
   font-weight: normal;
@@ -9758,7 +13378,7 @@ function SourceAndEnv(props) {
           color: colors.titleColor,
           children: title ? title : placeHolder
         }), title ? /*#__PURE__*/Object(jsx_runtime["jsx"])(SubTitleWrapper, {
-          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(SubTitle, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_SubTitle, {
             color: colors.subTitleColor,
             children: title ? '' : ''
           })
@@ -10026,7 +13646,7 @@ function TestDataStore(props) {
 const FilterWrapper = styled_components_browser_esm["d" /* styled */].div`
 cursor: pointer;
 `;
-const EntityIconWrapper = Object(styled_components_browser_esm["d" /* styled */])(SubTitle)`
+const EntityIconWrapper = Object(styled_components_browser_esm["d" /* styled */])(styles_SubTitle)`
    position: absolute;
    left: 0;
    right: 0;
@@ -10071,7 +13691,7 @@ const FilterIconWrapper = styled_components_browser_esm["d" /* styled */].div`
   return "";
 }} 2s infinite;
 `;
-const SubsetTitle = Object(styled_components_browser_esm["d" /* styled */])(SubTitle)`
+const SubsetTitle = Object(styled_components_browser_esm["d" /* styled */])(styles_SubTitle)`
    position: absolute;
    left: 0;
    right: 0;
@@ -10526,6 +14146,9 @@ function Parameters(props) {
       }
       const sourceStatus = statusesFuncMap['dataSourceStatus'](taskData);
       let env_name = (sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name) || '';
+      if (!env_name) {
+        return;
+      }
       let data = await apis_task.getParameters(be_id, env_name);
       const result = [];
       Object.keys(data).forEach(key => {
@@ -11357,7 +14980,7 @@ const usePeriods = (saveForm, version_ind, dataSourceType, source_type, retentio
       }
       periodTypes.unshift({
         name: PeriodUnitType.Do_Not_Retain,
-        units: -1,
+        units: 0,
         label: 'Do not retain',
         value: 'Do Not Retain'
       });
@@ -11667,8 +15290,7 @@ function TestDataStoreForm(props) {
     periodTypes,
     synthetic_type,
     source_type,
-    userRole,
-    sourceUserRole
+    in_place_masking_ind
   } = taskData;
   const onDataVersioningchange = Object(react["useCallback"])(value => {
     saveForm({
@@ -11680,7 +15302,7 @@ function TestDataStoreForm(props) {
       children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
         name: "data_versioning",
         title: "Create data snapshot (version)",
-        value: version_ind && !(sync_mode === 'OFF' && dataSourceType === 'data_source'),
+        value: !in_place_masking_ind && version_ind && !(sync_mode === 'OFF' && dataSourceType === 'data_source'),
         onChange: onDataVersioningchange,
         disabled:
         // !(systemUserRole?.type === 'admin' || 
@@ -11691,11 +15313,11 @@ function TestDataStoreForm(props) {
         sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || dataSourceType === 'data_source' && source_type === 'tables' || retention_period_type === 'Do Not Retain'
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(RetentionPeriodContainer, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Periods, {
-          disabled: sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data',
+          disabled: sync_mode === 'OFF' && dataSourceType === 'data_source' || dataSourceType !== 'data_source' && synthetic_type === 'generated_data' || in_place_masking_ind,
           title: 'Retention period',
           mandatory: true,
-          period_type: retention_period_type,
-          period_value: retention_period_value,
+          period_type: in_place_masking_ind ? 'Do Not Retain' : retention_period_type,
+          period_value: in_place_masking_ind ? 0 : retention_period_value,
           maxPeriod: maxRetentionPeriod,
           periodsData: periodTypes,
           onChange: saveForm
@@ -11763,13 +15385,26 @@ const useWidgetStatus = (taskData, trigger, isValid, handleSubmit, failedComp) =
     return StatusEnum.enabled;
   };
   const getTestDataStoreStatus = taskData => {
-    if (taskData.sync_mode === 'OFF' && taskData.dataSourceType === 'data_source') {
+    const {
+      sync_mode,
+      version_ind,
+      dataSourceType,
+      source_environment_id,
+      environment_id,
+      in_place_masking_ind,
+      retention_period_type,
+      retention_period_value
+    } = taskData;
+    if (in_place_masking_ind && !(sync_mode === 'OFF' && version_ind)) {
+      return StatusEnum.disabled;
+    }
+    if (sync_mode === 'OFF' && dataSourceType === 'data_source') {
       return StatusEnum.completed;
     }
-    if (taskData.source_environment_id || taskData.environment_id || taskData.dataSourceType === 'synthetic' || taskData.dataSourceType === 'ai_generated') {
-      if (['Do Not Delete', 'Do Not Retain'].indexOf(taskData.retention_period_type || '') >= 0) {
+    if (source_environment_id || environment_id || dataSourceType === 'synthetic' || dataSourceType === 'ai_generated') {
+      if (['Do Not Delete', 'Do Not Retain'].indexOf(retention_period_type || '') >= 0) {
         return StatusEnum.completed;
-      } else if ((taskData.retention_period_value || 0) > 0) {
+      } else if ((retention_period_value || 0) > 0) {
         return StatusEnum.completed;
       }
     }
@@ -11780,9 +15415,10 @@ const useWidgetStatus = (taskData, trigger, isValid, handleSubmit, failedComp) =
       sync_mode,
       version_ind,
       dataSourceType,
-      source_type
+      source_type,
+      in_place_masking_ind
     } = taskData;
-    if (sync_mode !== 'OFF' && version_ind && !(dataSourceType === 'data_source' && source_type === 'tables')) {
+    if (sync_mode !== 'OFF' && version_ind && !(dataSourceType === 'data_source' && source_type === 'tables') || in_place_masking_ind && !(taskData.sync_mode === 'OFF' && taskData.version_ind)) {
       return StatusEnum.disabled;
     }
     if (failedComp === 'target') {
@@ -11842,7 +15478,7 @@ const useWidgetStatus = (taskData, trigger, isValid, handleSubmit, failedComp) =
     return StatusEnum.disabled;
   };
   const subsetPosition = taskData => {
-    if (taskData.dataSourceType !== 'data_source' && taskData.synthetic_type === 'new_data') {
+    if (taskData.dataSourceType !== 'data_source' && taskData.synthetic_type === 'new_data' || taskData.dataSourceType == 'data_source' && taskData.source_type === 'tables' && !(taskData.sync_mode === 'OFF' && taskData.version_ind) && taskData.in_place_masking_ind) {
       return SubsetPossition.undefined;
     }
     if (taskData.dataSourceType === 'data_source' && taskData.sync_mode === 'OFF' || taskData.dataSourceType !== 'data_source' && taskData.synthetic_type === 'generated_data' || taskData.reserve_ind && !taskData.load_entity || taskData.delete_before_load && !taskData.load_entity) {
@@ -11881,9 +15517,10 @@ const useWidgetStatus = (taskData, trigger, isValid, handleSubmit, failedComp) =
   };
   const isSourceConnectionEnabled = taskData => {
     const sourceStatus = getSourceStatus(taskData);
+    const testDataStoreStatus = getTestDataStoreStatus(taskData);
     const subsetStatusValue = subsetStatus(taskData);
     const subsetPositionValue = subsetPosition(taskData);
-    if (subsetPositionValue === SubsetPossition.target) {
+    if (subsetPositionValue === SubsetPossition.target || testDataStoreStatus == StatusEnum.disabled) {
       return false;
     }
     if (sourceStatus === StatusEnum.disabled) {
@@ -12074,6 +15711,7 @@ const Target_styles_Container = styled_components_browser_esm["b" /* default */]
 const EnvironmentContainer = styled_components_browser_esm["b" /* default */].div`
     display: ${props => props.hide ? 'none' : 'block'};
     margin-top: 12px;
+    position: relative;
 `;
 const TaskActionContainer = styled_components_browser_esm["b" /* default */].div`
     margin-top: 10px;
@@ -12098,6 +15736,9 @@ const Target_styles_Title = styled_components_browser_esm["b" /* default */].div
     color: #2e2e2e;
     padding-bottom: 15px;
     border-bottom: ${props => props.widthBorder ? '1px solid #ccc' : ''};
+    display: flex;
+    align-items: center;
+    gap: 15px;
 `;
 const Section = styled_components_browser_esm["b" /* default */].div`
     margin-top: 30px;
@@ -12170,7 +15811,24 @@ const EntityCloneComment = styled_components_browser_esm["b" /* default */].span
     text-align: left;
     color: #666;
 `;
+const Target_styles_SubTitle = styled_components_browser_esm["b" /* default */].div`
+
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+const TablesAdvancedContainer = styled_components_browser_esm["b" /* default */].div`
+    z-index: 1;
+`;
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Target/index.tsx
+
 
 
 
@@ -12222,10 +15880,33 @@ function TargetForm(props) {
     userRole,
     deleteWarning,
     source_environment_id,
-    reserve_only_task
+    reserve_only_task,
+    tableList,
+    environment_name
   } = taskData;
   const toast = hooks_useToast();
   const [disableAI, setDisableAI] = Object(react["useState"])(false);
+  const [interfaceConfigs, setInterfaceConfigs] = Object(react["useState"])({});
+  Object(react["useEffect"])(() => {
+    async function fetchData() {
+      try {
+        if (!environment_name || !environment_id) {
+          return;
+        }
+        let data = await apis_task.getEnvInterfaceList(environment_name, environment_id);
+        // Store configs
+        const configs = {};
+        data.forEach(item => {
+          configs[item.interfaceName] = item.config;
+        });
+        setInterfaceConfigs(configs);
+      } catch (err) {
+        // use hook toast
+        console.log(err);
+      }
+    }
+    fetchData();
+  }, [environment_id]);
   Object(react["useEffect"])(() => {
     async function fetchData() {
       try {
@@ -12429,9 +16110,37 @@ function TargetForm(props) {
           children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskActionContainer, {
             children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Target_styles_Title, {
               widthBorder: true,
-              children: ["Actions to perform", /*#__PURE__*/Object(jsx_runtime["jsx"])(Target_styles_MadatoryAsterisk, {
-                children: "*"
-              })]
+              children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("span", {
+                children: ["Actions to perform", /*#__PURE__*/Object(jsx_runtime["jsx"])(Target_styles_MadatoryAsterisk, {
+                  children: "*"
+                })]
+              }), (tableList || []).length > 0 ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TablesAdvancedContainer, {
+                children: /*#__PURE__*/Object(jsx_runtime["jsx"])(task_TablesAdvanced, {
+                  type: "target",
+                  databases: Array.from(new Set((tableList || []).map(table => table.interface_name))).map(name => ({
+                    name,
+                    defaultConfig: interfaceConfigs[name]
+                  })),
+                  settings: taskData.advancedReferenceTables || {},
+                  onSettingsChange: settings => {
+                    // Clean up affinity values that weren't explicitly changed by user
+                    const cleanedSettings = {
+                      ...settings
+                    };
+                    Object.keys(cleanedSettings).forEach(interfaceName => {
+                      if (cleanedSettings[interfaceName].target && !cleanedSettings[interfaceName].target.affinityTouched) {
+                        cleanedSettings[interfaceName].target.affinity = null;
+                      }
+                    });
+                    saveForm({
+                      advancedReferenceTables: cleanedSettings
+                    });
+                  },
+                  children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Target_styles_SubTitle, {
+                    children: "Advanced"
+                  })
+                })
+              }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {})]
             }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Target_styles_Actions, {
               children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionContainer, {
                 children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
@@ -12573,7 +16282,7 @@ const ButtonContainer = styled_components_browser_esm["b" /* default */].div`
 const Advanced_styles_Icon = styled_components_browser_esm["b" /* default */].img`
     cursor: pointer;
 `;
-const styles_ResetButton = styled_components_browser_esm["b" /* default */].div`
+const Advanced_styles_ResetButton = styled_components_browser_esm["b" /* default */].div`
     z-index: 1;
     position: absolute;
     right: 0px;
@@ -12637,7 +16346,7 @@ const TimeNote = styled_components_browser_esm["b" /* default */].div`
     font-size: 14px;
 `;
 // EXTERNAL MODULE: ./node_modules/angular/index.js
-var node_modules_angular = __webpack_require__(63);
+var node_modules_angular = __webpack_require__(70);
 var angular_default = /*#__PURE__*/__webpack_require__.n(node_modules_angular);
 
 // CONCATENATED MODULE: ./src/components/AngularJSWrapper/index.tsx
@@ -12914,7 +16623,7 @@ const styles_ButtonContainer = styled_components_browser_esm["b" /* default */].
 // CONCATENATED MODULE: ./src/containers/Task/Froms/Advanced/TaskVariablesModal/styles.ts
 
 const TaskVariablesModal_styles_Container = styled_components_browser_esm["b" /* default */].div`
-    width: 324px;
+    width: 500px;
     position: relative;
     z-index: 100;
     overflow-y: auto;
@@ -12952,7 +16661,7 @@ const ItemsContainer = styled_components_browser_esm["b" /* default */].div`
 const TaskVariablesModal_styles_Seprator = styled_components_browser_esm["b" /* default */].div`
     border: solid 1px #ccc;
 `;
-const styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
+const TaskVariablesModal_styles_CloseIcon = styled_components_browser_esm["b" /* default */].img`
     position: absolute;
     right: 0px;
     top: 5px;
@@ -13006,6 +16715,7 @@ function TaskVariablesModal(props) {
   const [variableLUList, setVariableLUList] = Object(react["useState"])([]);
   const [showError, setShowError] = Object(react["useState"])(false);
   const [variableValue, setVariableValue] = Object(react["useState"])();
+  const [setAsEmpty, setSetAsEmpty] = Object(react["useState"])(false);
   Object(react["useEffect"])(() => {
     async function fetchTaskVariables() {
       try {
@@ -13072,6 +16782,10 @@ function TaskVariablesModal(props) {
             if (foundLU) {
               setChosenLu(foundLU);
               setVariableValue(variableData.global_value);
+              // Initialize checkbox state based on whether value is null
+              if (variableData.global_value === null) {
+                setSetAsEmpty(true);
+              }
             }
           }
         }
@@ -13105,22 +16819,32 @@ function TaskVariablesModal(props) {
     setShowError(false);
     setVariableValue(value);
   }, [setVariableValue, setShowError]);
+  const setAsEmptyChange = Object(react["useCallback"])(value => {
+    setShowError(false);
+    setSetAsEmpty(value || false);
+    if (value) {
+      // When checkbox is checked, clear the variable value
+      setVariableValue('');
+    }
+  }, [setSetAsEmpty, setVariableValue, setShowError]);
   const saveGlobal = Object(react["useCallback"])(() => {
-    if (!chosenVariable || !chosenLu || !variableValue) {
+    // Validation: check required fields
+    // If setAsEmpty is checked, variableValue is not required
+    if (!chosenVariable || !chosenLu || !setAsEmpty && !variableValue) {
       setShowError(true);
       return;
     }
     addGlobal({
       global_name: chosenVariable.value,
-      global_value: variableValue,
+      global_value: setAsEmpty ? null : variableValue,
       lu_name: chosenLu.value,
       edit: variableData ? true : false
     });
     setOpen(false);
-  }, [setShowError, chosenVariable, chosenLu, variableValue, addGlobal, setOpen, variableData]);
+  }, [setShowError, chosenVariable, chosenLu, variableValue, setAsEmpty, addGlobal, setOpen, variableData]);
   return /*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskVariablesModal_styles_Container, {
     children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TaskVariablesModal_styles_Title, {
-      children: ["Task variables", /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_CloseIcon, {
+      children: ["Task variables", /*#__PURE__*/Object(jsx_runtime["jsx"])(TaskVariablesModal_styles_CloseIcon, {
         onClick: () => setOpen(false),
         src: xclose
       })]
@@ -13146,11 +16870,12 @@ function TaskVariablesModal(props) {
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
           name: "variable_value",
           title: 'Variable value',
-          mandatory: true,
+          mandatory: false,
           value: variableValue,
           onChange: varaiableValueChange,
           type: InputTypes.text,
-          placeholder: ""
+          placeholder: "",
+          disabled: setAsEmpty
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_ErrorContainer, {
         children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_FieldError, {
@@ -13972,7 +17697,7 @@ function AdvancedForm(props) {
   }, [selectedTab, saveForm, postExecutionProcessOptions, preExecutionProcessOptions]);
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_styles_Wrapper, {
     children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Advanced_styles_Container, {
-      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_ResetButton, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Advanced_styles_ResetButton, {
         onClick: onReset,
         children: ["Clear form", /*#__PURE__*/Object(jsx_runtime["jsx"])(Advanced_styles_Icon, {
           src: revert_icon
@@ -14111,6 +17836,25 @@ const uniqueByField = (data, field) => {
     return array.findIndex(it => it[field] === item[field]) === index;
   });
 };
+const trimFormData = formData => {
+  if (!formData || typeof formData !== 'object' || Array.isArray(formData)) {
+    return formData;
+  }
+  const trimmed = {};
+  for (const key in formData) {
+    if (Object.prototype.hasOwnProperty.call(formData, key)) {
+      const value = formData[key];
+      if (typeof value === 'string') {
+        trimmed[key] = value.trim().replace(/\s+/g, ' ');
+      } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+        trimmed[key] = trimFormData(value);
+      } else {
+        trimmed[key] = value;
+      }
+    }
+  }
+  return trimmed;
+};
 // CONCATENATED MODULE: ./src/containers/Task/Main/useLogicalUnits.ts
 
 
@@ -14121,27 +17865,36 @@ const useLogicalUnits = (initFinished, saveForm, initTask, dataSourceType, sourc
   const [sourceLogicalUnits, setSourceLogicalUnits] = Object(react["useState"])([]);
   const [targetLogicalUnits, setTargetLogicalUnits] = Object(react["useState"])([]);
   const [allLogicalUnits, setAllLogicalUnits] = Object(react["useState"])([]);
-  const getLogicalUnits = Object(react["useCallback"])(async (be_id, setter, environment_id) => {
+  const getLogicalUnits = Object(react["useCallback"])(async (be_id, setter, environment_id, type) => {
     try {
+      if (!initFinished) {
+        return;
+      }
       const data = await apis_task.getLogicalUnits(be_id, environment_id);
       data.forEach(item => {
         item.value = item.lu_id;
         item.label = item.lu_name;
+        if (type === 'source') {
+          item.source_env_max_number_of_workers = item.env_max_number_of_workers;
+          item.source_env_affinity = item.env_affinity;
+        } else {
+          item.target_env_max_number_of_workers = item.env_max_number_of_workers;
+          item.target_env_affinity = item.env_affinity;
+        }
       });
       setter(data);
     } catch (err) {
       // use hook toast
       console.error(err);
     }
-  }, []);
+  }, [initFinished]);
   Object(react["useEffect"])(() => {
-    console.log('getLogicalUnits');
     if (!initFinished) {
       return;
     }
     if (be_id) {
       if (be_type === 'source' || source_environment_id) {
-        getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id);
+        getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id, 'source');
       }
     }
   }, [source_environment_id, initFinished, dataSourceType, be_type]);
@@ -14151,7 +17904,7 @@ const useLogicalUnits = (initFinished, saveForm, initTask, dataSourceType, sourc
     }
     if (be_id) {
       if (be_type === 'target' || environment_id) {
-        getLogicalUnits(be_id, setTargetLogicalUnits, environment_id);
+        getLogicalUnits(be_id, setTargetLogicalUnits, environment_id, 'target');
       }
     }
   }, [environment_id, initFinished, dataSourceType, be_type]);
@@ -14163,9 +17916,9 @@ const useLogicalUnits = (initFinished, saveForm, initTask, dataSourceType, sourc
       setTargetLogicalUnits([]);
       setSourceLogicalUnits([]);
       if (be_type === 'source') {
-        getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id);
+        getLogicalUnits(be_id, setSourceLogicalUnits, source_environment_id, 'source');
       } else if (be_type === 'target') {
-        getLogicalUnits(be_id, setTargetLogicalUnits, environment_id);
+        getLogicalUnits(be_id, setTargetLogicalUnits, environment_id, 'target');
       }
     }
   }, [be_id]);
@@ -14175,6 +17928,21 @@ const useLogicalUnits = (initFinished, saveForm, initTask, dataSourceType, sourc
       const sourceResult = sourceLogicalUnits.findIndex(sourceItem => sourceItem.lu_id === it.lu_id) >= 0;
       const targeResult = targetLogicalUnits.findIndex(targetItem => targetItem.lu_id === it.lu_id) >= 0;
       return (sourceResult || sourceLogicalUnits.length === 0) && (targeResult || targetLogicalUnits.length === 0);
+    });
+    allLus.forEach(lu => {
+      if (lu.source_env_affinity !== undefined) {
+        const target_lu = (targetLogicalUnits || []).find(it => it.lu_id === lu.lu_id);
+        if (target_lu) {
+          lu.target_env_affinity = target_lu.target_env_affinity;
+          lu.target_env_max_number_of_workers = target_lu.target_env_max_number_of_workers;
+        }
+      } else {
+        const source_lu = (sourceLogicalUnits || []).find(it => it.lu_id === lu.lu_id);
+        if (source_lu) {
+          lu.source_env_affinity = source_lu.source_env_affinity;
+          lu.source_env_max_number_of_workers = source_lu.source_env_max_number_of_workers;
+        }
+      }
     });
     setAllLogicalUnits(allLus);
     const removedLus = (selected_logical_units_names || []).filter(it => allLus.findIndex(it2 => it2.lu_name === it) < 0);
@@ -14203,7 +17971,7 @@ const useLogicalUnits = (initFinished, saveForm, initTask, dataSourceType, sourc
 
 
 
-const defaultValues = ['task_title', 'be_id', 'task_id', 'be_name', 'environment_id', 'environment_name', 'replace_sequences', 'scheduler', 'scheduling_end_date', 'source_environment_id', 'source_environment_name', 'selection_method', 'version_ind', 'sync_mode', 'selection_param_value', 'num_of_entities', 'reserve_note', 'parameters', 'filterout_reserved', 'retention_period_type', 'retention_period_value', 'selected_version_task_name', 'selected_version_task_exe_id', 'delete_before_load', 'reserve_ind', 'clone_ind', 'load_entity', 'task_description', 'reserve_retention_period_type', 'reserve_retention_period_value', 'globals', 'tableList', 'custom_logic_lu_name', 'selected_subset_task_exe_id', 'task_status', 'task_created_by', 'owners', 'task_execution_status', 'execution_mode', 'taskGroupIds', 'evaluation_ind'];
+const defaultValues = ['task_title', 'be_id', 'task_id', 'be_name', 'environment_id', 'environment_name', 'replace_sequences', 'scheduler', 'scheduling_end_date', 'source_environment_id', 'source_environment_name', 'selection_method', 'version_ind', 'sync_mode', 'selection_param_value', 'num_of_entities', 'reserve_note', 'parameters', 'filterout_reserved', 'retention_period_type', 'retention_period_value', 'selected_version_task_name', 'selected_version_task_exe_id', 'delete_before_load', 'reserve_ind', 'clone_ind', 'load_entity', 'task_description', 'reserve_retention_period_type', 'reserve_retention_period_value', 'globals', 'tableList', 'custom_logic_lu_name', 'selected_subset_task_exe_id', 'task_status', 'task_created_by', 'owners', 'task_execution_status', 'execution_mode', 'taskGroupIds', 'evaluation_ind', 'in_place_masking_ind'];
 const fieldsMapper = {
   'source_env_name': 'source_environment_name'
 };
@@ -14262,7 +18030,8 @@ const convertTaskData = (apiData, copy) => {
     task_globals: false,
     dataGenerationParams: {},
     generateChosenParams: [],
-    evaluation_ind: false
+    evaluation_ind: false,
+    advancedReferenceTables: {}
   };
   if (!apiData) {
     return taskData;
@@ -14349,6 +18118,7 @@ const convertTaskData = (apiData, copy) => {
   }
   if (copy && taskData.task_title) {
     taskData.task_title = taskData.task_title + ' Copy';
+    // taskData.task_id = undefined;
   }
   if (apiData.filterout_reserved === 'NA' || !apiData.filterout_reserved) {
     taskData.filterout_reserved = 'OTHERS';
@@ -14441,18 +18211,63 @@ const updateTaskType = (taskData, data) => {
 };
 const prepareDataForSave = (taskData, logicalUnits, copy) => {
   const data = {};
-  const fieldsToCopy = ['task_id', 'be_id', 'postExecutionProcesses', 'preExecutionProcesses', 'environment_id', 'environment_name', 'source_environment_id', 'scheduler', 'num_of_entities', 'selection_method', 'selection_param_value', 'task_title', 'parameters', 'scheduling_end_date', 'version_ind', 'retention_period_value', 'retention_period_type', 'reserve_retention_period_type', 'reserve_retention_period_value', 'reserve_ind', 'load_entity', 'clone_ind', 'delete_before_load', 'reserve_note', 'selected_version_task_name', 'selected_version_datetime', 'selected_version_task_exe_id', 'filterout_reserved', 'mask_sensitive_data', 'replace_sequences', 'task_description', 'sync_mode', 'globals', 'reference', 'selected_ref_version_task_name', 'selected_ref_version_task_exe_id', 'selected_ref_version_datetime', 'task_globals', 'selected_subset_task_exe_id', 'custom_logic_lu_name', 'execution_mode', 'taskGroupIds', 'evaluation_ind'];
+  const fieldsToCopy = ['task_id', 'be_id', 'postExecutionProcesses', 'preExecutionProcesses', 'environment_id', 'environment_name', 'source_environment_id', 'scheduler', 'num_of_entities', 'selection_method', 'selection_param_value', 'task_title', 'parameters', 'scheduling_end_date', 'version_ind', 'retention_period_value', 'retention_period_type', 'reserve_retention_period_type', 'reserve_retention_period_value', 'reserve_ind', 'load_entity', 'clone_ind', 'delete_before_load', 'reserve_note', 'selected_version_task_name', 'selected_version_datetime', 'selected_version_task_exe_id', 'filterout_reserved', 'mask_sensitive_data', 'replace_sequences', 'task_description', 'sync_mode', 'globals', 'reference', 'selected_ref_version_task_name', 'selected_ref_version_task_exe_id', 'selected_ref_version_datetime', 'task_globals', 'selected_subset_task_exe_id', 'custom_logic_lu_name', 'execution_mode', 'taskGroupIds', 'evaluation_ind', 'in_place_masking_ind'];
   fieldsToCopy.forEach(key => {
     data[key] = taskData[key];
   });
   if (taskData.tables_selected) {
-    data.tableList = taskData.tableList;
+    var _taskData$tableList;
+    data.tableList = [];
+    (_taskData$tableList = taskData.tableList) === null || _taskData$tableList === void 0 ? void 0 : _taskData$tableList.map(it => {
+      var _taskData$advancedRef;
+      const new_item = {
+        ...it
+      };
+      new_item.count_ind = new_item.include_row_count !== undefined ? new_item.include_row_count : new_item.count_ind || false;
+      if ((_taskData$advancedRef = taskData.advancedReferenceTables) !== null && _taskData$advancedRef !== void 0 && _taskData$advancedRef[new_item.interface_name]) {
+        var _taskData$advancedRef2, _taskData$advancedRef7;
+        if ((_taskData$advancedRef2 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef2 !== void 0 && _taskData$advancedRef2[new_item.interface_name].source) {
+          var _taskData$advancedRef3, _taskData$advancedRef5;
+          if ((_taskData$advancedRef3 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef3 !== void 0 && _taskData$advancedRef3[new_item.interface_name].source.affinity) {
+            var _taskData$advancedRef4;
+            new_item.source_affinity = (_taskData$advancedRef4 = taskData.advancedReferenceTables) === null || _taskData$advancedRef4 === void 0 ? void 0 : _taskData$advancedRef4[new_item.interface_name].source.affinity;
+          }
+          if ((_taskData$advancedRef5 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef5 !== void 0 && _taskData$advancedRef5[new_item.interface_name].source.maxWorkers) {
+            var _taskData$advancedRef6;
+            new_item.source_max_no_of_workers = (_taskData$advancedRef6 = taskData.advancedReferenceTables) === null || _taskData$advancedRef6 === void 0 ? void 0 : _taskData$advancedRef6[new_item.interface_name].source.maxWorkers;
+          }
+        }
+        if ((_taskData$advancedRef7 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef7 !== void 0 && _taskData$advancedRef7[new_item.interface_name].target) {
+          var _taskData$advancedRef8, _taskData$advancedRef10;
+          if ((_taskData$advancedRef8 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef8 !== void 0 && _taskData$advancedRef8[new_item.interface_name].target.affinity) {
+            var _taskData$advancedRef9;
+            new_item.target_affinity = (_taskData$advancedRef9 = taskData.advancedReferenceTables) === null || _taskData$advancedRef9 === void 0 ? void 0 : _taskData$advancedRef9[new_item.interface_name].target.affinity;
+          }
+          if ((_taskData$advancedRef10 = taskData.advancedReferenceTables) !== null && _taskData$advancedRef10 !== void 0 && _taskData$advancedRef10[new_item.interface_name].target.maxWorkers) {
+            var _taskData$advancedRef11;
+            new_item.target_max_no_of_workers = (_taskData$advancedRef11 = taskData.advancedReferenceTables) === null || _taskData$advancedRef11 === void 0 ? void 0 : _taskData$advancedRef11[new_item.interface_name].target.maxWorkers;
+          }
+        }
+      }
+      data.tableList.push(new_item);
+    });
   }
   if (taskData.clone_ind) {
     data.num_of_entities = taskData.num_of_clones;
   }
   data.generateParams = taskData.dataGenerationParams;
   updateTaskType(taskData, data);
+  if (taskData.tables_selected && data.task_type === 'EXTRACT') {
+    data.delete_before_load = false;
+  }
+  if (taskData.dataSourceType == 'data_source' && taskData.source_type === 'tables' && taskData.sync_mode === 'OFF' && taskData.version_ind) {
+    data.in_place_masking_ind = false;
+  }
+  if (data.in_place_masking_ind) {
+    data.task_type = 'LOAD';
+    data.retention_period_type = 'Do Not Retain';
+    data.retention_period_value = 0;
+  }
   if (data.globals && data.globals.length > 0) {
     data.task_globals = true;
   } else {
@@ -14462,16 +18277,41 @@ const prepareDataForSave = (taskData, logicalUnits, copy) => {
   if (data.task_type !== 'RESERVE' && data.task_type !== 'DELETE') {
     data.source_env_name = taskData.source_environment_name;
   }
+  if (taskData.in_place_masking_ind) {
+    data.retention_period_type = 'Do Not Retain';
+    data.retention_period_value = 0;
+  }
   const selectedLogicalUnits = logicalUnits.filter(it => ((taskData === null || taskData === void 0 ? void 0 : taskData.selected_logical_units) || []).indexOf(it.lu_id) >= 0);
-  data.logicalUnits = selectedLogicalUnits === null || selectedLogicalUnits === void 0 ? void 0 : selectedLogicalUnits.map(it => ({
-    lu_name: it.lu_name,
-    lu_id: it.lu_id
-  }));
+  data.logicalUnits = selectedLogicalUnits === null || selectedLogicalUnits === void 0 ? void 0 : selectedLogicalUnits.map(it => {
+    var _taskData$advancedLog, _advancedLU$source, _advancedLU$target, _advancedLU$source2, _advancedLU$target2;
+    // Flatten all logicalUnits arrays from advancedLogicalUnits
+    const allAdvancedLUs = ((_taskData$advancedLog = taskData.advancedLogicalUnits) === null || _taskData$advancedLog === void 0 ? void 0 : _taskData$advancedLog.flatMap(item => item.logicalUnits || [])) || [];
+
+    // Find the matching logical unit
+    const advancedLU = allAdvancedLUs.find(alu => alu.lu_id === it.lu_id);
+    return {
+      lu_name: it.lu_name,
+      lu_id: it.lu_id,
+      source_max_no_of_workers: advancedLU === null || advancedLU === void 0 ? void 0 : (_advancedLU$source = advancedLU.source) === null || _advancedLU$source === void 0 ? void 0 : _advancedLU$source.maxWorkers,
+      target_max_no_of_workers: advancedLU === null || advancedLU === void 0 ? void 0 : (_advancedLU$target = advancedLU.target) === null || _advancedLU$target === void 0 ? void 0 : _advancedLU$target.maxWorkers,
+      source_affinity: advancedLU === null || advancedLU === void 0 ? void 0 : (_advancedLU$source2 = advancedLU.source) === null || _advancedLU$source2 === void 0 ? void 0 : _advancedLU$source2.affinity,
+      target_affinity: advancedLU === null || advancedLU === void 0 ? void 0 : (_advancedLU$target2 = advancedLU.target) === null || _advancedLU$target2 === void 0 ? void 0 : _advancedLU$target2.affinity
+    };
+  });
   if ((taskData.clone_ind || taskData.replace_sequences) && !taskData.load_entity || taskData.target_env === 'ai_training' || !taskData.environment_id || !(taskData.sync_mode === 'OFF' && taskData.version_ind) && taskData.selection_method === 'ALL') {
     data.filterout_reserved = 'NA';
   }
   if (taskData.maxToCopy === 9007199254740992 && !taskData.num_of_entities) {
     data.num_of_entities = -1;
+  }
+  if (taskData.sync_mode === 'OFF' && taskData.version_ind && taskData.dataSourceType === 'data_source' && taskData.source_type === 'tables') {
+    data.in_place_masking_ind = false;
+  }
+  if (data.in_place_masking_ind) {
+    data.mask_sensitive_data = true;
+  }
+  if (data.copy) {
+    data.task_id = undefined;
   }
   return data;
 };
@@ -14490,16 +18330,20 @@ const getSourceInfo = taskData => {
   const isTables = getIfTables(taskData);
   if (taskData.dataSourceType === 'data_source') {
     if (taskData.source_environment_id) {
-      if (taskData.version_ind) {
+      if (taskData.version_ind && taskData.sync_mode === 'OFF') {
         if (isTables) {
-          result.push('Get pre-created data snapshot for the entities and the tables.');
+          result.push('Select a pre-created table snapshot (version) to load.');
         } else {
           result.push('Get a pre-created data snapshot for the entities.');
         }
       } else if (isTables === 'be_tables') {
         result.push('Get entities\' and tables\' data.');
       } else if (isTables === 'tables') {
-        result.push('Get tables\' data.');
+        if (taskData.in_place_masking_ind) {
+          result.push('In-place masking');
+        } else {
+          result.push('Get table data.');
+        }
       } else {
         result.push('Get entities\' data.');
       }
@@ -14775,8 +18619,6 @@ const TaskTitleButton = styled_components_browser_esm["b" /* default */].span`
 const TaskActions_styles_Icon = styled_components_browser_esm["b" /* default */].img`
     width: 25px;
 `;
-// CONCATENATED MODULE: ./src/images/settings-icon.svg
-/* harmony default export */ var settings_icon = ("js/dist/c91068a2c13098ab1c04ec54f77536a9.svg");
 // CONCATENATED MODULE: ./src/images/save-icon.svg
 /* harmony default export */ var save_icon = ("js/dist/a5e1a483f3b25d0de3786b1759104171.svg");
 // CONCATENATED MODULE: ./src/images/save-exe-icon.svg
@@ -15074,11 +18916,20 @@ const useInit = (saveForm, taskData) => {
         });
       } catch (err) {}
     }
+    async function fetchTablesAPIMode() {
+      try {
+        const result = await apis_task.getTablesAPIMode();
+        saveForm({
+          tables_use_split_api: result === "true"
+        });
+      } catch (err) {}
+    }
     fetchEnableParamsLUName();
     fetchEnableAdvancedSystemsForTesters();
+    fetchTablesAPIMode();
   }, []);
   const [fetchCounter, setFetchCounter] = Object(react["useState"])(8);
-  const [finished, setFinished] = Object(react["useState"])(true);
+  const [finished, setFinished] = Object(react["useState"])(false);
   Object(react["useEffect"])(() => {
     async function fetchEnableParamWidth() {
       try {
@@ -15158,13 +19009,38 @@ const useInit = (saveForm, taskData) => {
           setFetchCounter(prevCount => prevCount - 1);
           return;
         }
-        const data = await apis_task.getTaskTables(task_id);
+        const data = await apis_task.getTaskTables(task_id, taskData.be_id === -1 ? 'tables' : 'be');
+        const tableList = data.map(it => ({
+          ...it,
+          filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
+          reference_table_name: it.ref_table_name,
+          include_row_count: it.count_ind,
+          count_ind: it.org_count_ind === 'true'
+        }));
+        const advancedReferenceTables = {};
+        tableList.forEach(it => {
+          if (!advancedReferenceTables[it.interface_name]) {
+            advancedReferenceTables[it.interface_name] = {
+              source: {},
+              target: {}
+            };
+          }
+          if (it.source_affinity) {
+            advancedReferenceTables[it.interface_name].source.affinity = it.source_affinity;
+          }
+          if (it.target_affinity) {
+            advancedReferenceTables[it.interface_name].target.affinity = it.target_affinity;
+          }
+          if (it.source_max_no_of_workers) {
+            advancedReferenceTables[it.interface_name].source.maxWorkers = it.source_max_no_of_workers;
+          }
+          if (it.target_max_no_of_workers) {
+            advancedReferenceTables[it.interface_name].target.maxWorkers = it.target_max_no_of_workers;
+          }
+        });
         saveForm({
-          tableList: data.map(it => ({
-            ...it,
-            filter_parameters: it.filter_parameters ? it.filter_parameters.split("<#>") : it.filter_parameters,
-            reference_table_name: it.ref_table_name
-          }))
+          tableList,
+          advancedReferenceTables
         });
         setFetchCounter(prevCount => prevCount - 1);
       } catch (err) {}
@@ -15186,13 +19062,49 @@ const useInit = (saveForm, taskData) => {
     }
     async function fetchLogicalUntis() {
       try {
-        const selectedData = await apis_task.getTaskLogicalUnits(taskData.task_id || 0);
+        // Get task-specific logical units with worker/affinity settings
+        const taskLogicalUnits = await apis_task.getTaskLogicalUnits(taskData.task_id || 0);
+
+        // Get all logical units with system information
+        const allLogicalUnits = await apis_task.getLogicalUnits(taskData.be_id || 0, taskData.source_environment_id);
+
+        // Merge the data and group by system
+        const systemGroups = {};
+        taskLogicalUnits.forEach(taskLU => {
+          // Find the corresponding LU with system info
+          const luWithSystem = allLogicalUnits.find(lu => lu.lu_id === taskLU.lu_id);
+          const system = (luWithSystem === null || luWithSystem === void 0 ? void 0 : luWithSystem.product_name) || 'Unknown';
+          if (!systemGroups[system]) {
+            systemGroups[system] = [];
+          }
+          systemGroups[system].push({
+            lu_id: taskLU.lu_id,
+            lu_name: taskLU.lu_name,
+            source: {
+              maxWorkers: taskLU.source_max_no_of_workers,
+              affinity: taskLU.source_affinity
+            },
+            target: {
+              maxWorkers: taskLU.target_max_no_of_workers,
+              affinity: taskLU.target_affinity
+            }
+          });
+        });
+
+        // Convert to advancedLogicalUnits format
+        const advancedLogicalUnits = Object.keys(systemGroups).map(system => ({
+          system,
+          logicalUnits: systemGroups[system]
+        }));
         saveForm({
-          selected_logical_units: selectedData.map(it => it.lu_id),
-          selected_logical_units_names: selectedData.map(it => it.lu_name)
+          selected_logical_units: taskLogicalUnits.map(it => it.lu_id),
+          selected_logical_units_names: taskLogicalUnits.map(it => it.lu_name),
+          advancedLogicalUnits: advancedLogicalUnits
         });
         setFetchCounter(prevCount => prevCount - 1);
-      } catch (err) {}
+      } catch (err) {
+        console.error(err);
+      }
     }
     fetchTaskPostExecutionProcess();
     fetchTaskPreExecutionProcess();
@@ -15264,11 +19176,11 @@ const useGenerationParams = (saveForm, dataSourceType, task_id, selected_logical
 };
 /* harmony default export */ var Main_useGenerationParams = (useGenerationParams);
 // EXTERNAL MODULE: ./node_modules/sweetalert2/dist/sweetalert2.all.js
-var sweetalert2_all = __webpack_require__(56);
+var sweetalert2_all = __webpack_require__(64);
 var sweetalert2_all_default = /*#__PURE__*/__webpack_require__.n(sweetalert2_all);
 
 // EXTERNAL MODULE: ./node_modules/sweetalert2-react-content/dist/sweetalert2-react-content.umd.js
-var sweetalert2_react_content_umd = __webpack_require__(57);
+var sweetalert2_react_content_umd = __webpack_require__(65);
 var sweetalert2_react_content_umd_default = /*#__PURE__*/__webpack_require__.n(sweetalert2_react_content_umd);
 
 // CONCATENATED MODULE: ./src/containers/Task/Main/useExecutionMode.ts
@@ -15480,6 +19392,8 @@ function TaskMain(props) {
         source_environment_name: '',
         mask_sensitive_data: false,
         selected_training_name: '',
+        in_place_masking_ind: false,
+        version_ind: false,
         selected_training_id: null,
         tables_selected: false,
         environment_id: taskData.be_type === 'source' ? undefined : taskData.environment_id,
@@ -15636,7 +19550,7 @@ function TaskMain(props) {
     const subsetPosition = statusesFuncMap['subsetPosition'](taskData);
     const subsetStatus = statusesFuncMap['subsetStatus'](taskData);
     const testDataStoreStatus = statusesFuncMap['testDataStoreStatus'](taskData);
-    if (source !== StatusEnum.completed && source !== StatusEnum.disabled || target === StatusEnum.blink || target === StatusEnum.partial || testDataStoreStatus !== StatusEnum.completed || subsetPosition !== SubsetPossition.undefined && subsetStatus !== StatusEnum.completed || !taskData.task_title) {
+    if (source !== StatusEnum.completed && source !== StatusEnum.disabled || target === StatusEnum.blink || target === StatusEnum.partial || testDataStoreStatus !== StatusEnum.completed && testDataStoreStatus !== StatusEnum.disabled || subsetPosition !== SubsetPossition.undefined && subsetStatus !== StatusEnum.completed || !taskData.task_title) {
       return false;
     }
     if ((taskData.maxToCopy || 9007199254740992) < (taskData.num_of_entities || 0)) {
@@ -16475,10 +20389,10 @@ function TaskSelection(props) {
 }
 /* harmony default export */ var TaskTemplates_TaskSelection = (TaskSelection);
 // EXTERNAL MODULE: ./node_modules/lucide-react/dist/esm/icons/users.js
-var users = __webpack_require__(327);
+var icons_users = __webpack_require__(337);
 
 // EXTERNAL MODULE: ./node_modules/lucide-react/dist/esm/icons/user.js
-var user = __webpack_require__(328);
+var user = __webpack_require__(338);
 
 // CONCATENATED MODULE: ./src/components/TaskGroupTabs/styles.ts
 
@@ -16520,7 +20434,7 @@ const TabLabel = styled_components_browser_esm["b" /* default */].span`
 
 const TaskGroupTabs_tabs = [{
   label: "All groups",
-  icon: users["a" /* default */],
+  icon: icons_users["a" /* default */],
   value: 'allTaskGroups'
 }, {
   label: "Created by me",
@@ -17070,10 +20984,27 @@ function MoveTaskGroup(props) {
 /* harmony default export */ var moveTaskGroup = (MoveTaskGroup);
 // CONCATENATED MODULE: ./src/components/Popup/styles.ts
 
+const overlayStyles = `
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+`;
 const Overlay = styled_components_browser_esm["b" /* default */].div`
+  position: fixed;
+  ${overlayStyles}
+`;
+const OverlayFullPage = styled_components_browser_esm["b" /* default */].div`
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+`;
+const CenterInParent = styled_components_browser_esm["b" /* default */].div`
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17096,10 +21027,24 @@ function Popup(_ref) {
     isOpen,
     onClose,
     children,
-    width
+    width,
+    anchorToParent
   } = _ref;
   if (!isOpen) return null;
-  console.log(width);
+  if (anchorToParent) {
+    return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(OverlayFullPage, {
+        onClick: onClose
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(CenterInParent, {
+        onClick: onClose,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupContainer, {
+          width: width,
+          onClick: e => e.stopPropagation(),
+          children: children
+        })
+      })]
+    });
+  }
   return /*#__PURE__*/Object(jsx_runtime["jsx"])(Overlay, {
     onClick: onClose,
     children: /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupContainer, {
@@ -17181,7 +21126,7 @@ const FieldRow = styled_components_browser_esm["b" /* default */].div`
   align-items: center;
   justify-content: space-between;
 `;
-const Label = styled_components_browser_esm["b" /* default */].label`
+const styles_Label = styled_components_browser_esm["b" /* default */].label`
   font-family: Roboto;
   font-size: 16px;
   font-weight: normal;
@@ -17213,7 +21158,7 @@ const AdvancedDivider = styled_components_browser_esm["b" /* default */].div`
   margin: 20px 0;
     margin-left: 30px;
 `;
-const Footer = styled_components_browser_esm["b" /* default */].div`
+const styles_Footer = styled_components_browser_esm["b" /* default */].div`
   display: flex;
   justify-content: flex-end;
 `;
@@ -17326,7 +21271,7 @@ const AdvancedSearch = _ref => {
       })
     }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(SearchBar_styles_Body, {
       children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Label, {
           children: "Keywords"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
           name: "text",
@@ -17347,7 +21292,7 @@ const AdvancedSearch = _ref => {
           }
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Label, {
           children: "Task type"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
           name: "taskTypesStr",
@@ -17369,7 +21314,7 @@ const AdvancedSearch = _ref => {
           }
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Label, {
           children: "Environment"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
           name: "environmentId",
@@ -17391,7 +21336,7 @@ const AdvancedSearch = _ref => {
           }
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Label, {
           children: "Creator"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
           name: "creator",
@@ -17412,7 +21357,7 @@ const AdvancedSearch = _ref => {
           }
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Label, {
           children: "Scheduling"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
           name: "isScheduled",
@@ -17433,7 +21378,7 @@ const AdvancedSearch = _ref => {
           }
         })]
       }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldRow, {
-        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Label, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Label, {
           children: "Processed data"
         }), /*#__PURE__*/Object(jsx_runtime["jsx"])(index_esm["a" /* Controller */], {
           name: "dataType",
@@ -17454,7 +21399,7 @@ const AdvancedSearch = _ref => {
           }
         })]
       })]
-    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedDivider, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Footer, {
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(AdvancedDivider, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_Footer, {
       children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
         title: "Search",
         onClick: handleSubmit(onSubmit),
@@ -17969,7 +21914,11957 @@ function TaskTemplates(props) {
   });
 }
 /* harmony default export */ var containers_TaskTemplates = (TaskTemplates);
+// CONCATENATED MODULE: ./src/components/TableHeader/styles.ts
+
+const TableHeader_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 30px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    color: #1483f3;
+`;
+const TableHeader_styles_Header = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`;
+const styles_HeaderWrapper = styled_components_browser_esm["b" /* default */].div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  height: ${_ref => {
+  let {
+    height
+  } = _ref;
+  return height ? '120px' : 'auto';
+}};
+`;
+const styles_HeaderActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+`;
+const TableControls = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+`;
+const styles_SearchInput = styled_components_browser_esm["b" /* default */].input`
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+`;
+const TableHeader_styles_Select = styled_components_browser_esm["b" /* default */].select`
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 10px;
+    margin-right: 10px;
+`;
+const Div = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    display: flex;
+    align-items: center;
+`;
+// CONCATENATED MODULE: ./src/styles/global.ts
+
+const Card = styled_components_browser_esm["b" /* default */].div`
+    background: white;
+    border: 1px solid #ebebeb;
+    padding: 22px;
+    font-size: 14px;
+    border-radius: 9px;
+    user-select: auto;
+    font-family: 'roboto', sans-serif;
+`;
+const global_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 30px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    color: #1483f3;
+        white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 95%;
+`;
+const global_Header = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`;
+const global_CloseButton = styled_components_browser_esm["b" /* default */].button`
+    background: transparent;
+    border: none;
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    filter: alpha(opacity=50);
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+    font-weight: bolder;
+    &:hover {
+        opacity: 1;
+    }
+`;
+const Hr = styled_components_browser_esm["b" /* default */].hr`
+    margin: 15px 0px;
+    border: 1px solid #eaeaea;
+    color: #eaeaea;
+    width: 100%;
+`;
+const PopupLabel = styled_components_browser_esm["b" /* default */].label`
+    font-family: Roboto;
+    font-size: 14px;
+    color: #333;
+`;
+const PopupInput = styled_components_browser_esm["b" /* default */].input`
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Roboto;
+`;
+const PopupActionsWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    margin-top:5px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 13px;
+`;
+// CONCATENATED MODULE: ./src/components/TableHeader/index.tsx
+
+
+
+
+const TableHeader_TableHeader = _ref => {
+  let {
+    title,
+    pageSize,
+    onPageSizeChange,
+    searchTerm,
+    onSearchChange,
+    actions
+  } = _ref;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_HeaderWrapper, {
+    height: !!title,
+    children: [title ? /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(TableHeader_styles_Header, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(TableHeader_styles_Title, {
+          children: title
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_HeaderActions, {
+          children: actions
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {})]
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(react["Fragment"], {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableControls, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Div, {
+        children: ["Show", /*#__PURE__*/Object(jsx_runtime["jsxs"])(TableHeader_styles_Select, {
+          value: pageSize,
+          onChange: e => onPageSizeChange(Number(e.target.value)),
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("option", {
+            value: 10,
+            children: "10"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("option", {
+            value: 25,
+            children: "25"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("option", {
+            value: 50,
+            children: "50"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("option", {
+            value: 100,
+            children: "100"
+          })]
+        }), "entries"]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_SearchInput, {
+        placeholder: "Search...",
+        value: searchTerm,
+        onChange: e => onSearchChange(e.target.value)
+      })]
+    })]
+  });
+};
+/* harmony default export */ var components_TableHeader = (TableHeader_TableHeader);
+// CONCATENATED MODULE: ./src/apis/tables.ts
+
+
+const tables_runningRequests = {};
+const tables_toastr = getService('toastr');
+const tables_fetchData = async (path, body, method) => {
+  const response = await window.k2api.invokeFabricWebService(path, body, method);
+  if (response.isError) {
+    throw new Error(response.message);
+  }
+  if (response.errorCode === 'FAILED') {
+    tables_toastr === null || tables_toastr === void 0 ? void 0 : tables_toastr.error(response.message);
+    throw new Error(response.message);
+  } else if (response.errorCode === 'WARNING') {
+    tables_toastr === null || tables_toastr === void 0 ? void 0 : tables_toastr.warning(response.message);
+  }
+  return response.result;
+};
+const tables_invokeFabricWebService = async (path, body, method, force) => {
+  if (false) {}
+  if (window.k2api && window.k2api.invokeFabricWebService) {
+    if (force) {
+      return tables_fetchData(path, body, method);
+    }
+    if (tables_runningRequests[path]) {
+      clearTimeout(tables_runningRequests[path]);
+    }
+    return new Promise((resolve, reject) => {
+      tables_runningRequests[path] = setTimeout(async () => {
+        try {
+          const data = await tables_fetchData(path, body, method);
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      }, 100);
+    });
+  }
+  throw new Error('window.k2api is not defined');
+};
+const tables_getDataCenters = () => tables_invokeFabricWebService(`dataCenters`, {}, "GET");
+const getPermissionGroups = () => tables_invokeFabricWebService(`wsGetPermissionGroupMappings`, {}, "GET");
+const deletePermissionGroupMappingionGroups = obj => tables_invokeFabricWebService(`wsDeletePermissionGroupMapping`, obj, "DELETE");
+const getSystems = () => tables_invokeFabricWebService(`products`, {}, "GET");
+const getReservedEntities = () => tables_invokeFabricWebService(`getReservedEntities`, {}, "GET");
+const getFabricRolesforUser = () => tables_invokeFabricWebService(`wsGetFabricRoles`, {}, "GET");
+const attachRoleToPermissionGroup = obj => tables_invokeFabricWebService(`wsAddPermissionGroupMapping`, obj, "POST");
+const updatePermissionGroup = obj => tables_invokeFabricWebService(`wsUpdatePermissionGroupMapping`, obj, "PUT");
+const releaseReservedEntities = obj => tables_invokeFabricWebService(`release/listOfEntities`, obj, "POST");
+const updateReservationPeriod = (obj, newEndDate) => tables_invokeFabricWebService(`extend`, {
+  ...obj,
+  newEndDate
+}, "POST");
+const addReservedEntityNote = (obj, newNote) => tables_invokeFabricWebService(`addNote`, {
+  ...obj,
+  newNote
+}, "POST");
+const addLogicalUnit = (obj, id, product_id, product_name) => tables_invokeFabricWebService(`businessentity/${id}/logicalunits`, {
+  logicalUnits: obj,
+  be_id: id,
+  product_id: product_id,
+  product_name: product_name
+}, "PUT");
+const addNewProduct = obj => tables_invokeFabricWebService(`product`, obj, "POST");
+const upddateProduct = obj => tables_invokeFabricWebService(`product/${obj.product_id}`, obj, "PUT");
+const deleteProduct = prodId => tables_invokeFabricWebService(`product/${prodId}`, {}, "DELETE");
+const getLogicalUnit = productId => tables_invokeFabricWebService(`product/${productId}/logicalunits`, {}, "GET");
+const getlogicalunitswithoutproduct = () => tables_invokeFabricWebService(`logicalunitswithoutproduct`, {}, "GET");
+const deleteLogicalUnit = (luId, beId, obj) => tables_invokeFabricWebService(`businessentity/${beId}/logicalunit/${luId}`, {
+  logicalUnit: obj
+}, "PUT");
+const getProductEnvCount = productId => tables_invokeFabricWebService(`product/${productId}/envcount`, {}, "GET");
+const deleteEnvProduct = (envId, envName, productId) => tables_invokeFabricWebService(`environment/${envId}/envname/${envName}/product/${productId}`, {}, "DELETE");
+const getInterfaces = () => tables_invokeFabricWebService(`interfaces`, {}, "GET");
+const tablesDataAPIs = {
+  getDataCenters: tables_getDataCenters,
+  getPermissionGroups,
+  getSystems,
+  getReservedEntities,
+  getFabricRolesforUser,
+  attachRoleToPermissionGroup,
+  releaseReservedEntities,
+  updateReservationPeriod,
+  addReservedEntityNote,
+  getLogicalUnit,
+  addLogicalUnit,
+  getlogicalunitswithoutproduct,
+  deleteLogicalUnit,
+  addNewProduct,
+  upddateProduct,
+  deletePermissionGroupMappingionGroups,
+  updatePermissionGroup,
+  getProductEnvCount,
+  deleteProduct,
+  deleteEnvProduct,
+  getInterfaces
+};
+/* harmony default export */ var tables = (tablesDataAPIs);
+// CONCATENATED MODULE: ./src/containers/DataCenters/index.tsx
+
+
+
+
+
+
+
+const DataCenters = () => {
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const response = await tables.getDataCenters();
+        setData(response);
+      } catch (error) {
+        console.error('Error fetching data centers:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+  const filteredData = Object(react["useMemo"])(() => {
+    const search = searchTerm === null || searchTerm === void 0 ? void 0 : searchTerm.toString().toLowerCase().trim();
+    if (!search) return data;
+    return data.filter(item => Object.values(item).some(value => (value !== null && value !== void 0 ? value : '').toString().toLowerCase().trim().includes(search)));
+  }, [data, searchTerm]);
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const columns = [columnHelper.accessor('dc', {
+    id: 'dc',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Name"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      const normalize = v => v ? String(v).toLowerCase().trim() : '';
+      const trimmedFilter = String(filterValue).toLowerCase().trim();
+      return normalize(value).includes(trimmedFilter);
+    }
+  }), columnHelper.accessor('effective_ip', {
+    id: 'effective_ip',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "IP Address"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      const normalize = v => v ? String(v).toLowerCase().trim() : '';
+      const trimmedFilter = String(filterValue).toLowerCase().trim();
+      return normalize(value).includes(trimmedFilter);
+    }
+  }), columnHelper.accessor('node_id', {
+    id: 'node_id',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Node Id"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      const normalize = v => v ? String(v).toLowerCase().trim() : '';
+      const trimmedFilter = String(filterValue).toLowerCase().trim();
+      return normalize(value).includes(trimmedFilter);
+    }
+  }), columnHelper.accessor('notes', {
+    id: 'notes',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Description"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      const normalize = v => v ? String(v).toLowerCase().trim() : '';
+      const trimmedFilter = String(filterValue).toLowerCase().trim();
+      return normalize(value).includes(trimmedFilter);
+    }
+  }), columnHelper.accessor('status', {
+    id: 'status',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Status"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      const normalize = v => v ? String(v).toLowerCase().trim() : '';
+      const trimmedFilter = String(filterValue).toLowerCase().trim();
+      return normalize(value).includes(trimmedFilter);
+    }
+  })];
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+      title: "Data Centers",
+      pageSize: pageSize,
+      onPageSizeChange: setPageSize,
+      searchTerm: searchTerm,
+      onSearchChange: setSearchTerm
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+      columns: columns,
+      data: filteredData,
+      pageSize: pageSize
+    })]
+  });
+};
+/* harmony default export */ var containers_DataCenters = (DataCenters);
+// CONCATENATED MODULE: ./src/containers/PermissionGroups/styles.ts
+
+const PermissionGroups_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 30px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    color: #1483f3;
+`;
+const PermissionGroups_styles_Header = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`;
+const styles_Hr = styled_components_browser_esm["b" /* default */].hr`
+    margin: 15px 0px;
+    border: 1px solid #eaeaea;
+    color: #eaeaea;
+    width: 100%;
+`;
+const styles_FormContainer = styled_components_browser_esm["b" /* default */].div`
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+`;
+const FormRow = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+const PermissionGroups_styles_ButtonContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 20px;
+`;
+// CONCATENATED MODULE: ./src/components/ConfirmationPopup/index.tsx
+
+
+
+
+const ConfirmationPopup = _ref => {
+  let {
+    isOpen,
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    confirmText = 'Yes',
+    cancelText = 'No'
+  } = _ref;
+  if (!isOpen) return null;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+        children: title
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupLabel, {
+      children: message
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+        onClick: onCancel,
+        type: "secondary",
+        title: cancelText,
+        width: "90px"
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+        onClick: onConfirm,
+        type: "primary",
+        title: confirmText,
+        width: "90px"
+      })]
+    })]
+  });
+};
+/* harmony default export */ var components_ConfirmationPopup = (ConfirmationPopup);
+// CONCATENATED MODULE: ./src/containers/PermissionGroups/Form.tsx
+
+
+
+
+
+
+
+
+
+
+
+const Form_toastr = getService('toastr');
+const Form_Form = _ref => {
+  let {
+    setShowPopup,
+    editingItem,
+    onSave,
+    allPermissionGroups = []
+  } = _ref;
+  const [formData, setFormData] = Object(react["useState"])({
+    permissionGroup: '',
+    role: '',
+    description: ''
+  });
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [roles, setRoles] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(false);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [oldPermissionGroup, setOldPermissionGroup] = Object(react["useState"])('');
+  const [permissionGroupCanBeChanged, setPermissionGroupCanBeChanged] = Object(react["useState"])(true);
+  const [showChangePermissionGroupConfirm, setShowChangePermissionGroupConfirm] = Object(react["useState"])(false);
+  const permissionGroupOptions = [{
+    label: 'Admin',
+    value: 'admin'
+  }, {
+    label: 'Owner',
+    value: 'owner'
+  }, {
+    label: 'Tester',
+    value: 'tester'
+  }];
+  Object(react["useEffect"])(() => {
+    const fetchRoles = async () => {
+      setLoading(true);
+      try {
+        const response = await tables.getFabricRolesforUser();
+        if (response) {
+          const attachedRoles = allPermissionGroups.map(pg => pg.fabric_role).filter(role => !editingItem || role !== editingItem.fabric_role);
+          const availableRoles = response.filter(role => !attachedRoles.includes(role)).map(role => ({
+            label: role,
+            value: role
+          }));
+          setRoles(availableRoles);
+        }
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+        Form_toastr === null || Form_toastr === void 0 ? void 0 : Form_toastr.error((error === null || error === void 0 ? void 0 : error.message) || 'Error fetching roles');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRoles();
+  }, [editingItem, allPermissionGroups]);
+  Object(react["useEffect"])(() => {
+    if (editingItem) {
+      setFormData({
+        permissionGroup: editingItem.permission_group,
+        role: editingItem.fabric_role,
+        description: editingItem.description
+      });
+      setOldPermissionGroup(editingItem.permission_group);
+      const adminCount = allPermissionGroups.filter(pg => pg.permission_group === 'admin').length;
+      const canBeChanged = !(editingItem.permission_group === 'admin' && adminCount === 1);
+      setPermissionGroupCanBeChanged(canBeChanged);
+    } else {
+      setFormData({
+        permissionGroup: '',
+        role: '',
+        description: ''
+      });
+      setOldPermissionGroup('');
+      setPermissionGroupCanBeChanged(true);
+    }
+    setIsSubmitted(false);
+    setErrors({});
+  }, [editingItem, allPermissionGroups]);
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    }
+  };
+  const performSave = async () => {
+    try {
+      !editingItem ? await tables.attachRoleToPermissionGroup({
+        permission_group: formData.permissionGroup,
+        role: formData.role,
+        description: formData.description || ''
+      }) : await tables.updatePermissionGroup({
+        permission_group: formData.permissionGroup,
+        old_role: editingItem.fabric_role,
+        new_role: formData.role,
+        description: formData.description || ''
+      });
+      Form_toastr === null || Form_toastr === void 0 ? void 0 : Form_toastr.success(editingItem ? 'Updated Mapping Fabric Role and Permission Group Successfully' : 'Successfully Added new Mapping');
+      setIsSubmitted(false);
+      setShowPopup(false);
+      if (onSave) {
+        onSave();
+      }
+    } catch (error) {
+      console.error('Error saving permission group:', error);
+      const errorMessage = (error === null || error === void 0 ? void 0 : error.message) || 'Failed to save permission group';
+      Form_toastr === null || Form_toastr === void 0 ? void 0 : Form_toastr.error(errorMessage);
+      setIsSubmitted(false);
+    }
+  };
+  const handleSave = async () => {
+    setIsSubmitted(true);
+    const formValidation = {};
+    if (!formData.permissionGroup) {
+      formValidation.permissionGroup = 'Permission Group is required';
+    }
+    if (!formData.role) {
+      formValidation.role = 'Role is required';
+    }
+    setErrors(formValidation);
+    if (formValidation.permissionGroup || formValidation.role) {
+      return;
+    }
+    if (editingItem && !permissionGroupCanBeChanged && formData.permissionGroup !== 'admin') {
+      Form_toastr === null || Form_toastr === void 0 ? void 0 : Form_toastr.warning('The TDM must not allow a change of the permission group type from Admin to tester/owner if there is no additional admin role');
+      setIsSubmitted(false);
+      return;
+    }
+    if (editingItem && oldPermissionGroup !== formData.permissionGroup) {
+      setShowChangePermissionGroupConfirm(true);
+      setIsSubmitted(false);
+      return;
+    }
+    await performSave();
+  };
+  const handleClose = () => {
+    setIsSubmitted(false);
+    setErrors({});
+    setShowPopup(false);
+  };
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+        children: "Map a Role to a Permission Group"
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_FormContainer, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(FormRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+          title: "Permission Group",
+          mandatory: true,
+          options: permissionGroupOptions,
+          value: formData.permissionGroup ? {
+            label: formData.permissionGroup,
+            value: formData.permissionGroup
+          } : null,
+          onChange: selectedOption => handleInputChange('permissionGroup', (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.value) || ''),
+          placeholder: "Select Permission Group",
+          width: "300px",
+          isSubmitted: isSubmitted,
+          error: errors.permissionGroup
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(FormRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+          title: "Role",
+          mandatory: true,
+          options: roles,
+          value: formData.role ? {
+            label: formData.role,
+            value: formData.role
+          } : null,
+          onChange: selectedOption => handleInputChange('role', (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.value) || ''),
+          placeholder: "Select Role",
+          width: "300px",
+          loading: loading,
+          isSubmitted: isSubmitted,
+          error: errors.role
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(FormRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Description",
+          type: InputTypes.text,
+          value: formData.description,
+          onChange: value => handleInputChange('description', value),
+          placeholder: "Enter description",
+          width: "300px"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          onClick: handleClose,
+          type: "secondary",
+          title: "Cancel",
+          width: "90px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          onClick: handleSave,
+          type: "primary",
+          title: "Save",
+          width: "90px"
+        })]
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showChangePermissionGroupConfirm,
+      onClose: () => setShowChangePermissionGroupConfirm(false),
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+        isOpen: showChangePermissionGroupConfirm,
+        title: "Change Permission Group",
+        message: `The users of ${editingItem === null || editingItem === void 0 ? void 0 : editingItem.fabric_role} will be removed from their environments and will no longer be owners of TDM environments. Are you sure you want to change the permissions group?`,
+        onConfirm: async () => {
+          setShowChangePermissionGroupConfirm(false);
+          setIsSubmitted(true);
+          await performSave();
+        },
+        onCancel: () => setShowChangePermissionGroupConfirm(false),
+        confirmText: "Yes",
+        cancelText: "No"
+      })
+    })]
+  });
+};
+/* harmony default export */ var PermissionGroups_Form = (Form_Form);
+// CONCATENATED MODULE: ./src/components/AddButton/styles.ts
+
+const blue = '#1483f3';
+const hoverBlue = '#0d6efd';
+const activeBlue = '#0a58ca';
+const orange = '#f0832b';
+const CircleButton = styled_components_browser_esm["b" /* default */].button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+  color: ${blue};
+  border: 1px solid ${blue};
+  border-radius: 50%;
+  cursor: ${_ref => {
+  let {
+    disabled
+  } = _ref;
+  return disabled ? 'not-allowed' : 'pointer';
+}};
+  opacity: ${_ref2 => {
+  let {
+    disabled
+  } = _ref2;
+  return disabled ? 0.6 : 1;
+}};
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  ${_ref3 => {
+  let {
+    disabled
+  } = _ref3;
+  return !disabled && styled_components_browser_esm["a" /* css */]`
+      &:hover {
+        background-color: ${orange};
+        color: #fff;
+      }
+
+      &:active {
+        background-color: ${orange};
+        color: #fff;
+      }
+    `;
+}}
+`;
+const PlusIcon = styled_components_browser_esm["b" /* default */].div`
+  font-size: 22px;
+  font-weight: 900;
+  text-shadow:
+    1px 0 currentColor,
+    0 1px currentColor,
+    1px 1px currentColor;
+  user-select: none;
+  font-family: auto;
+`;
+const TooltipBody = styled_components_browser_esm["b" /* default */].div`
+  max-width: 200px;
+  padding: 3px 8px;
+  color: #fff;
+  text-align: center;
+  background-color: #2f4050;
+  border-radius: 4px;
+  margin-right: 2px;
+  font-size: 12px;
+  font-family: 'Roboto', sans-serif;
+`;
+const RectButton = styled_components_browser_esm["b" /* default */].button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: ${blue};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: ${_ref4 => {
+  let {
+    disabled
+  } = _ref4;
+  return disabled ? 'not-allowed' : 'pointer';
+}};
+  opacity: ${_ref5 => {
+  let {
+    disabled
+  } = _ref5;
+  return disabled ? 0.6 : 1;
+}};
+  transition: background-color 0.2s ease;
+
+  ${_ref6 => {
+  let {
+    disabled
+  } = _ref6;
+  return !disabled && styled_components_browser_esm["a" /* css */]`
+      &:hover {
+        background-color: ${hoverBlue};
+      }
+
+      &:active {
+        background-color: ${activeBlue};
+      }
+    `;
+}}
+`;
+const RectIcon = styled_components_browser_esm["b" /* default */].img`
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(1);
+`;
+// CONCATENATED MODULE: ./src/components/AddButton/index.tsx
+
+
+
+
+
+const AddButton = _ref => {
+  let {
+    onClick,
+    disabled = false,
+    title = '',
+    tootlipText = ''
+  } = _ref;
+  if (title) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TooltipPopover, {
+      position: "left",
+      align: "center",
+      body: tootlipText ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TooltipBody, {
+        children: tootlipText
+      }) : null,
+      children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(RectButton, {
+        onClick: onClick,
+        disabled: disabled,
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          children: title
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(RectIcon, {
+          src: plus,
+          alt: "Add"
+        })]
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_TooltipPopover, {
+    position: "left",
+    align: "center",
+    body: tootlipText ? /*#__PURE__*/Object(jsx_runtime["jsx"])(TooltipBody, {
+      children: tootlipText
+    }) : null,
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(CircleButton, {
+      onClick: onClick,
+      disabled: disabled,
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(PlusIcon, {
+        children: "+"
+      })
+    })
+  });
+};
+/* harmony default export */ var components_AddButton = (AddButton);
+// CONCATENATED MODULE: ./src/components/ActionButtons/styles.ts
+
+const ActionButtons_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+`;
+const ActionButtons_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+    height: 16px;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    transition: opacity 0.2s ease;
+    
+    &:hover {
+        opacity: ${props => props.disabled ? 0.5 : 0.7};
+    }
+`;
+// CONCATENATED MODULE: ./src/images/edit-icon.svg
+/* harmony default export */ var edit_icon = ("js/dist/ec7ba4e556817170a3f4d5d484c76a5c.svg");
+// CONCATENATED MODULE: ./src/images/delete-icon.svg
+/* harmony default export */ var delete_icon = ("js/dist/e4d0ede33d26c3b8c480d513ae3075de.svg");
+// CONCATENATED MODULE: ./src/components/ActionButtons/index.tsx
+
+
+
+
+
+const ActionButtons = _ref => {
+  let {
+    onEdit,
+    onDelete,
+    disabled = false,
+    deleteTitle = 'Delete',
+    editTitle = 'Edit'
+  } = _ref;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionButtons_styles_Container, {
+    children: [onEdit ? /*#__PURE__*/Object(jsx_runtime["jsx"])(ActionButtons_styles_Icon, {
+      src: edit_icon,
+      alt: "Edit",
+      onClick: onEdit,
+      disabled: disabled,
+      title: editTitle
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(react["Fragment"], {}), onDelete ? /*#__PURE__*/Object(jsx_runtime["jsx"])(ActionButtons_styles_Icon, {
+      src: delete_icon,
+      alt: "Delete",
+      onClick: onDelete,
+      disabled: disabled,
+      title: deleteTitle
+    }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(react["Fragment"], {})]
+  });
+};
+/* harmony default export */ var components_ActionButtons = (ActionButtons);
+// CONCATENATED MODULE: ./src/hooks/usePermissions.ts
+
+
+const ROLE_IDS = {
+  admin: 0,
+  owner: 1,
+  tester: 2
+};
+const usePermissions = () => {
+  const authService = getService('AuthService');
+  const userRole = (authService === null || authService === void 0 ? void 0 : authService.getRole()) || null;
+  const isAdmin = Object(react["useMemo"])(() => {
+    return  true || false;
+  }, [userRole]);
+  const isOwner = Object(react["useMemo"])(() => {
+    return (userRole === null || userRole === void 0 ? void 0 : userRole.id) === ROLE_IDS.owner;
+  }, [userRole]);
+  const isTester = Object(react["useMemo"])(() => {
+    return (userRole === null || userRole === void 0 ? void 0 : userRole.id) === ROLE_IDS.tester;
+  }, [userRole]);
+  const canPerformAction = Object(react["useMemo"])(() => {
+    return requiredRole => {
+      return true;
+    };
+  }, [userRole]);
+  const getUserId = Object(react["useMemo"])(() => {
+    return () => authService === null || authService === void 0 ? void 0 : authService.getUserId();
+  }, [authService]);
+  const isFluxMode = Object(react["useMemo"])(() => {
+    return () => (authService === null || authService === void 0 ? void 0 : authService.isFluxMode()) || false;
+  }, [authService]);
+  const authorizedToEdit = Object(react["useMemo"])(() => {
+    return role => {
+      var _authService$authoriz;
+      return authService === null || authService === void 0 ? void 0 : (_authService$authoriz = authService.authorizedToEdit) === null || _authService$authoriz === void 0 ? void 0 : _authService$authoriz.call(authService, role);
+    };
+  }, [authService]);
+  return {
+    userRole,
+    isAdmin,
+    isOwner,
+    isTester,
+    canPerformAction,
+    getUserId,
+    isFluxMode,
+    authorizedToEdit
+  };
+};
+// CONCATENATED MODULE: ./src/containers/PermissionGroups/index.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const PermissionGroups_toastr = getService('toastr');
+const PermissionGroups = () => {
+  const {
+    canPerformAction
+  } = usePermissions();
+  const canEdit = canPerformAction(0); // role="0" - admin only
+
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  const [showPopup, setShowPopup] = Object(react["useState"])(false);
+  const [editingItem, setEditingItem] = Object(react["useState"])(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [itemToDelete, setItemToDelete] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const response = await tables.getPermissionGroups();
+        setData(response);
+      } catch (error) {
+        console.error('Error fetching permission groups:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+  const filteredData = Object(react["useMemo"])(() => {
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const onClosePopup = Object(react["useCallback"])(() => {
+    setShowPopup(false);
+  }, []);
+  const onAddClick = Object(react["useCallback"])(() => {
+    setEditingItem(null);
+    setShowPopup(true);
+  }, []);
+  const onEditClick = Object(react["useCallback"])(item => {
+    setEditingItem(item);
+    setShowPopup(true);
+  }, []);
+  const onDeleteClick = Object(react["useCallback"])(item => {
+    setItemToDelete(item);
+    setShowDeleteConfirm(true);
+  }, []);
+  const columns = Object(react["useMemo"])(() => {
+    const cols = [];
+    if (canEdit) {
+      cols.push(columnHelper.display({
+        id: 'actions',
+        header: "",
+        cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ActionButtons, {
+          onEdit: () => onEditClick(info.row.original),
+          onDelete: () => onDeleteClick(info.row.original),
+          deleteTitle: "Delete Permission Group Mapping",
+          editTitle: "Edit Permission Group Mapping"
+        })
+      }));
+    }
+    return [...cols, columnHelper.accessor('permission_group', {
+      id: 'permission_group',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Permission Group"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: false
+    }), columnHelper.accessor('fabric_role', {
+      id: 'fabric_role',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Fabric Role"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: false
+    }), columnHelper.accessor('description', {
+      id: 'description',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Description"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: false
+    }), columnHelper.accessor('creation_date', {
+      id: 'creation_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Creation Date"
+      }),
+      cell: info => {
+        const date = new Date(info.getValue());
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          children: date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) + ', ' + date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        });
+      },
+      enableColumnFilter: false
+    }), columnHelper.accessor('created_by', {
+      id: 'created_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Created By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: false
+    }), columnHelper.accessor('update_date', {
+      id: 'update_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Last Update Date"
+      }),
+      cell: info => {
+        const date = new Date(info.getValue());
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          children: date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) + ', ' + date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        });
+      },
+      enableColumnFilter: false
+    }), columnHelper.accessor('updated_by', {
+      id: 'updated_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Updated By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: false
+    })];
+  }, [columnHelper, onEditClick, onDeleteClick, canEdit]);
+  const defaultSorting = Object(react["useMemo"])(() => [{
+    id: 'created_by',
+    desc: false
+  }], []);
+  const handleDeleteConfirm = Object(react["useCallback"])(async () => {
+    if (itemToDelete) {
+      try {
+        await tables.deletePermissionGroupMappingionGroups({
+          role: itemToDelete.fabric_role
+        });
+        const updatedData = await tables.getPermissionGroups();
+        setData(updatedData);
+        setShowDeleteConfirm(false);
+        setItemToDelete(null);
+      } catch (error) {
+        const errorMessage = (error === null || error === void 0 ? void 0 : error.message) || 'Error deleting item';
+        console.error(errorMessage);
+      }
+    }
+  }, [itemToDelete]);
+  const handleDeleteCancel = Object(react["useCallback"])(() => {
+    setShowDeleteConfirm(false);
+    setItemToDelete(null);
+  }, []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(react["Fragment"], {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+        title: "Permission Groups Mapping",
+        pageSize: pageSize,
+        onPageSizeChange: setPageSize,
+        searchTerm: searchTerm,
+        onSearchChange: setSearchTerm,
+        actions: canEdit ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+          onClick: onAddClick,
+          tootlipText: "Add Permission Group"
+        }) : undefined
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+        columns: columns,
+        data: filteredData,
+        pageSize: pageSize,
+        initialSorting: defaultSorting
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '525px',
+      isOpen: showPopup,
+      onClose: onClosePopup,
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(PermissionGroups_Form, {
+        setShowPopup: setShowPopup,
+        editingItem: editingItem,
+        allPermissionGroups: data,
+        onSave: () => {
+          const fetchData = async () => {
+            try {
+              const response = await tables.getPermissionGroups();
+              setData(response);
+            } catch (error) {
+              console.error('Error fetching permission groups:', error);
+            }
+          };
+          fetchData();
+        }
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showDeleteConfirm,
+      onClose: handleDeleteCancel,
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+        isOpen: showDeleteConfirm,
+        title: "Delete Permission Group",
+        message: (() => {
+          if (!itemToDelete) return '';
+          const role = itemToDelete.fabric_role;
+          const permissionGroup = itemToDelete.permission_group;
+          if (permissionGroup === 'tester') {
+            return `The users of ${role} will be removed from their environments and will no longer be able to create or execute TDM tasks. Their reserved entities need to be released. Are you sure you want to delete the permissions group?`;
+          } else if (permissionGroup === 'admin') {
+            return `The users of ${role} will no longer be authorized as TDM admin users and their reserved entities need to be released. Are you sure you want to delete the permission group?`;
+          } else {
+            return `The users of ${role} will be removed from their environments and will no longer be owners of TDM environments and their reserved entities need to be released. Are you sure you want to delete the permissions group?`;
+          }
+        })(),
+        onConfirm: handleDeleteConfirm,
+        onCancel: handleDeleteCancel,
+        confirmText: "Yes",
+        cancelText: "No"
+      })
+    })]
+  });
+};
+/* harmony default export */ var containers_PermissionGroups = (PermissionGroups);
+// CONCATENATED MODULE: ./src/containers/ReservedEntities/styles.ts
+
+const ActionsWrapper = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 224px;
+    margin-bottom: 8px;
+    padding-left: 9px;
+`;
+const ReservedEntities_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: 12px;
+    height: 12px;
+    filter: brightness(0) invert(1);
+    transition: transform 0.2s ease;
+`;
+const ReservedEntities_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    margin-top: 4px;
+`;
+const styles_MenuItem = styled_components_browser_esm["b" /* default */].div`
+    padding: 12px 16px;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    font-family: Roboto;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    
+    &:last-child {
+        border-bottom: none;
+    }
+    
+    &:hover {
+        background-color: ${props => props.disabled ? 'transparent' : '#f8f9fa'};
+    }
+`;
+
+// Popups
+const styles_PopupContainer = styled_components_browser_esm["b" /* default */].div`
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 420px;
+`;
+const PopupTitle = styled_components_browser_esm["b" /* default */].h3`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+`;
+const PopupText = styled_components_browser_esm["b" /* default */].p`
+    font-family: Roboto;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+`;
+const PopupField = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+const styles_PopupLabel = styled_components_browser_esm["b" /* default */].label`
+    font-family: Roboto;
+    font-size: 14px;
+    color: #333;
+`;
+const styles_PopupInput = styled_components_browser_esm["b" /* default */].input`
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Roboto;
+`;
+const PopupTextArea = styled_components_browser_esm["b" /* default */].textarea`
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+      resize: none;
+    font-family: Roboto;
+     margin-right: 3px;
+`;
+const PopupActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+`;
+const PopupButton = styled_components_browser_esm["b" /* default */].button`
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 500;
+    ${props => props.variant === 'primary' ? `background-color: #1483f3; color: #fff; &:hover { background-color: #0d6efd; }` : props.variant === 'danger' ? `background-color: #dc3545; color: #fff; &:hover { background-color: #c82333; }` : `background-color: #6c757d; color: #fff; &:hover { background-color: #5a6268; }`}
+`;
+const ReservedEntities_styles_Title = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 30px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    color: #1483f3;
+`;
+const ReservedEntities_styles_Header = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`;
+const ReservedEntities_styles_Hr = styled_components_browser_esm["b" /* default */].hr`
+    margin: 15px 0px;
+    border: 1px solid #eaeaea;
+    color: #eaeaea;
+    width: 100%;
+`;
+const ReservedEntities_styles_ActionItem = styled_components_browser_esm["b" /* default */].div`
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1483f3;
+    cursor: pointer;
+`;
+// CONCATENATED MODULE: ./src/containers/ReservedEntities/ContextMenu.tsx
+
+
+
+const ContextMenu = _ref => {
+  let {
+    isOpen,
+    onClose,
+    onReleaseEntity,
+    onUpdateReservationPeriod,
+    onAddNote,
+    disabled = false
+  } = _ref;
+  if (!isOpen) return null;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ReservedEntities_styles_Container, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_MenuItem, {
+      onClick: onReleaseEntity,
+      disabled: disabled,
+      children: "Release Entity"
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_MenuItem, {
+      onClick: onUpdateReservationPeriod,
+      disabled: disabled,
+      children: "Update Reservation Period"
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_MenuItem, {
+      onClick: onAddNote,
+      disabled: disabled,
+      children: "Add a note"
+    })]
+  });
+};
+/* harmony default export */ var ReservedEntities_ContextMenu = (ContextMenu);
+// CONCATENATED MODULE: ./src/containers/ReservedEntities/Actions.tsx
+
+
+
+
+
+const Actions_Actions = _ref => {
+  let {
+    onReleaseEntity,
+    onUpdateReservationPeriod,
+    onAddNote,
+    disabled = false,
+    selectedCount = 0,
+    handleSelectAll,
+    selectAll
+  } = _ref;
+  const [isOpen, setIsOpen] = Object(react["useState"])(false);
+  const containerRef = Object(react["useRef"])(null);
+  Object(react["useEffect"])(() => {
+    const handleClickOutside = event => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  const handleToggle = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
+  };
+  const handleReleaseEntity = () => {
+    onReleaseEntity();
+    setIsOpen(false);
+  };
+  const handleUpdateReservationPeriod = () => {
+    onUpdateReservationPeriod();
+    setIsOpen(false);
+  };
+  const handleAddNote = () => {
+    onAddNote();
+    setIsOpen(false);
+  };
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionsWrapper, {
+    ref: containerRef,
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+      value: selectAll,
+      onChange: handleSelectAll,
+      title: "",
+      name: "selectAll",
+      disabled: disabled
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])("button", {
+      style: {
+        fontSize: '20px',
+        background: 'none',
+        color: disabled ? '#ccc' : '#000',
+        border: 'none',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        paddingTop: '4px',
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? 'none' : 'auto'
+      },
+      onClick: handleToggle,
+      disabled: disabled,
+      children: "\u22EE"
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_ContextMenu, {
+      isOpen: isOpen,
+      onClose: () => setIsOpen(false),
+      onReleaseEntity: handleReleaseEntity,
+      onUpdateReservationPeriod: handleUpdateReservationPeriod,
+      onAddNote: handleAddNote,
+      disabled: disabled || selectedCount === 0
+    })]
+  });
+};
+/* harmony default export */ var ReservedEntities_Actions = (Actions_Actions);
+// CONCATENATED MODULE: ./src/containers/ReservedEntities/ReleasePopup.tsx
+
+
+
+
+
+
+const ReleasePopup = _ref => {
+  let {
+    isOpen,
+    onClose,
+    onConfirm,
+    count
+  } = _ref;
+  if (!isOpen) return null;
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    width: '500px',
+    isOpen: isOpen,
+    onClose: onClose,
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Are you sure you want to release these entities?"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupText, {
+        children: "The entities will be deleted from the reserved entity list."
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: 'Cancel',
+          type: 'secondary',
+          width: '80px',
+          onClick: onClose
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: 'Release',
+          type: 'secondary',
+          width: '80px',
+          onClick: onConfirm
+        })]
+      })]
+    })
+  });
+};
+/* harmony default export */ var ReservedEntities_ReleasePopup = (ReleasePopup);
+// CONCATENATED MODULE: ./src/containers/ReservedEntities/UpdatePeriodPopup.tsx
+
+
+
+
+
+
+const UpdatePeriodPopup = _ref => {
+  let {
+    isOpen,
+    onClose,
+    onConfirm
+  } = _ref;
+  const [dateTime, setDateTime] = Object(react["useState"])('');
+  if (!isOpen) return null;
+  const today = new Date().toISOString().split("T")[0];
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    width: '500px',
+    isOpen: isOpen,
+    onClose: onClose,
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_styles_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_styles_Title, {
+          children: "Update Reservation Period"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_styles_Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_PopupLabel, {
+        children: "End By: "
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_PopupInput, {
+        type: "date",
+        min: today,
+        value: dateTime,
+        onChange: e => setDateTime(e.target.value)
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: 'Cancel',
+          type: 'secondary',
+          width: '80px',
+          onClick: onClose
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: 'Update',
+          type: 'secondary',
+          width: '80px',
+          onClick: () => onConfirm(dateTime)
+        })]
+      })]
+    })
+  });
+};
+/* harmony default export */ var ReservedEntities_UpdatePeriodPopup = (UpdatePeriodPopup);
+// CONCATENATED MODULE: ./src/containers/ReservedEntities/AddNotePopup.tsx
+
+
+
+
+
+
+const AddNotePopup = _ref => {
+  let {
+    isOpen,
+    onClose,
+    onConfirm
+  } = _ref;
+  const [note, setNote] = Object(react["useState"])('');
+  if (!isOpen) return null;
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    width: '500px',
+    isOpen: isOpen,
+    onClose: onClose,
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Add a note"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupTextArea, {
+        cols: 60,
+        rows: 5,
+        value: note,
+        onChange: e => setNote(e.target.value)
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: 'Cancel',
+          type: 'secondary',
+          width: '80px',
+          onClick: onClose
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: 'ADD',
+          type: 'secondary',
+          width: '80px',
+          onClick: () => onConfirm(note)
+        })]
+      })]
+    })
+  });
+};
+/* harmony default export */ var ReservedEntities_AddNotePopup = (AddNotePopup);
+// CONCATENATED MODULE: ./src/containers/ReservedEntities/index.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+const ReservedEntities_toastr = getService('toastr');
+const ReservedEntities = () => {
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  const [selectedRows, setSelectedRows] = Object(react["useState"])(new Set());
+  const [selectAll, setSelectAll] = Object(react["useState"])(false);
+  const [showRelease, setShowRelease] = Object(react["useState"])(false);
+  const [showUpdatePeriod, setShowUpdatePeriod] = Object(react["useState"])(false);
+  const [showAddNote, setShowAddNote] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const response = await tables.getReservedEntities();
+        setData(response);
+      } catch (error) {
+        console.error('Error fetching Reserved Entities:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+  const buildDateWithStaticTime = Object(react["useCallback"])(date => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const staticTime = '235900';
+    return `${year}${month}${day}${staticTime}`;
+  }, []);
+  const filteredData = Object(react["useMemo"])(() => {
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  const filterOptions = Object(react["useMemo"])(() => {
+    const environmentNames = Array.from(new Set(data.map(item => item.environment_name).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const beNames = Array.from(new Set(data.map(item => item.be_name).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const reserveOwners = Array.from(new Set(data.map(item => item.reserve_owner).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const taskTitles = Array.from(new Set(data.map(item => item.task_title).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const taskExecutionIds = Array.from(new Set(data.map(item => item.task_execution_id).filter(Boolean))).sort((a, b) => a - b).map(v => ({
+      label: v.toString(),
+      value: v.toString()
+    }));
+    return {
+      environment_name: environmentNames,
+      be_name: beNames,
+      reserve_owner: reserveOwners,
+      task_title: taskTitles,
+      task_execution_id: taskExecutionIds
+    };
+  }, [data]);
+
+  // Handle individual row selection
+  const handleRowSelect = Object(react["useCallback"])((rowData, checked) => {
+    setSelectedRows(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(rowData);
+      } else {
+        const rowToRemove = Array.from(newSet).find(row => row.target_entity_id === rowData.target_entity_id && row.task_execution_id === rowData.task_execution_id);
+        if (rowToRemove) {
+          newSet.delete(rowToRemove);
+        }
+      }
+      return newSet;
+    });
+  }, []);
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const columns = Object(react["useMemo"])(() => [columnHelper.display({
+    id: 'select',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '16px'
+      }
+    }),
+    cell: info => {
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_checkbox, {
+        value: Array.from(selectedRows).some(selectedRow => selectedRow.target_entity_id === info.row.original.target_entity_id && selectedRow.task_execution_id === info.row.original.task_execution_id),
+        onChange: checked => handleRowSelect(info.row.original, checked),
+        title: "",
+        name: "select",
+        disabled: !info.row.original.allow_edit
+      });
+    }
+  }), columnHelper.accessor('target_entity_id', {
+    id: 'target_entity_id',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Target Entity ID"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+      const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+      return trimmedValue.includes(trimmedFilterValue);
+    }
+  }), columnHelper.accessor('environment_name', {
+    id: 'environment_name',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Environment Name"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'select',
+      filterOptions: filterOptions.environment_name
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      return row.getValue(columnId) === filterValue;
+    }
+  }), columnHelper.accessor('task_title', {
+    id: 'task_title',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Task Name"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'select',
+      filterOptions: filterOptions.task_title
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      return row.getValue(columnId) === filterValue;
+    }
+  }), columnHelper.accessor('task_execution_id', {
+    id: 'task_execution_id',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Task Execution ID"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'select',
+      filterOptions: filterOptions.task_execution_id
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      return value ? value.toString() === filterValue : false;
+    }
+  }), columnHelper.accessor('be_name', {
+    id: 'be_name',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Business Entity"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'select',
+      filterOptions: filterOptions.be_name
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      return row.getValue(columnId) === filterValue;
+    }
+  }), columnHelper.accessor('reserve_owner', {
+    id: 'reserve_owner',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Reservation Owner"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'select',
+      filterOptions: filterOptions.reserve_owner
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      return row.getValue(columnId) === filterValue;
+    }
+  }), columnHelper.accessor('reserve_date', {
+    id: 'reserve_date',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Reservation Date"
+    }),
+    cell: info => {
+      const date = new Date(info.getValue());
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: date.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }) + ', ' + date.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      });
+    },
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const raw = row.getValue(columnId);
+      let display = raw || '';
+      const asDate = new Date(raw);
+      if (raw && !isNaN(asDate.getTime())) {
+        display = asDate.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }) + ', ' + asDate.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+      const normalize = v => v ? String(v).toLowerCase().trim() : '';
+      const trimmedFilter = String(filterValue).toLowerCase().trim();
+      return normalize(display).includes(trimmedFilter);
+    }
+  }), columnHelper.accessor('expiration_date', {
+    id: 'expiration_date',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Expiration Date"
+    }),
+    cell: info => {
+      const date = new Date(info.getValue());
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: date.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }) + ', ' + date.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      });
+    },
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const raw = row.getValue(columnId);
+      let display = raw || '';
+      const asDate = new Date(raw);
+      if (raw && !isNaN(asDate.getTime())) {
+        display = asDate.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }) + ', ' + asDate.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+      const normalize = v => v ? String(v).toLowerCase().trim() : '';
+      const trimmedFilter = String(filterValue).toLowerCase().trim();
+      return normalize(display).includes(trimmedFilter);
+    }
+  }), columnHelper.accessor('reserve_notes', {
+    id: 'reserve_notes',
+    header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: "Notes"
+    }),
+    cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+      children: info.getValue()
+    }),
+    enableColumnFilter: true,
+    meta: {
+      type: 'string'
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      const value = row.getValue(columnId);
+      const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+      const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+      return trimmedValue.includes(trimmedFilterValue);
+    }
+  })], [columnHelper, filterOptions.environment_name, filterOptions.task_title, filterOptions.task_execution_id, filterOptions.be_name, filterOptions.reserve_owner, selectedRows, handleRowSelect]);
+  const handleSelectAll = Object(react["useCallback"])(checked => {
+    setSelectAll(checked);
+    if (checked) {
+      const editableRows = new Set(filteredData.filter(row => row.allow_edit));
+      setSelectedRows(editableRows);
+    } else {
+      setSelectedRows(new Set());
+    }
+  }, [filteredData]);
+  Object(react["useEffect"])(() => {
+    const editableRows = filteredData.filter(item => item.allow_edit);
+    const allSelected = editableRows.length > 0 && editableRows.every(item => Array.from(selectedRows).some(selectedRow => selectedRow.target_entity_id === item.target_entity_id && selectedRow.task_execution_id === item.task_execution_id));
+    setSelectAll(allSelected);
+  }, [selectedRows, filteredData]);
+  const handleReleaseEntity = Object(react["useCallback"])(() => {
+    const selectedItems = Array.from(selectedRows);
+    if (selectedItems.length === 0) return;
+    setShowRelease(true);
+  }, [selectedRows]);
+  const handleUpdateReservationPeriod = Object(react["useCallback"])(() => {
+    const selectedItems = Array.from(selectedRows);
+    if (selectedItems.length === 0) return;
+    setShowUpdatePeriod(true);
+  }, [selectedRows]);
+  const handleAddNote = Object(react["useCallback"])(() => {
+    const selectedItems = Array.from(selectedRows);
+    if (selectedItems.length === 0) return;
+    setShowAddNote(true);
+  }, [selectedRows]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      children: "Loading..."
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+      title: "Reserved Entities",
+      pageSize: pageSize,
+      onPageSizeChange: setPageSize,
+      searchTerm: searchTerm,
+      onSearchChange: setSearchTerm
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+      columns: columns,
+      data: filteredData,
+      pageSize: pageSize,
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_Actions, {
+        onReleaseEntity: handleReleaseEntity,
+        onUpdateReservationPeriod: handleUpdateReservationPeriod,
+        onAddNote: handleAddNote,
+        selectedCount: selectedRows.size,
+        handleSelectAll: handleSelectAll,
+        selectAll: selectAll,
+        disabled: filteredData.length === 0 || !filteredData.some(row => row.allow_edit)
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_ReleasePopup, {
+      isOpen: showRelease,
+      onClose: () => setShowRelease(false),
+      count: selectedRows.size,
+      onConfirm: async () => {
+        try {
+          const selectedEntities = Array.from(selectedRows).map(row => {
+            return {
+              target_entity_id: row.target_entity_id,
+              environment_name: row.environment_name,
+              be_name: row.be_name
+            };
+          });
+          await tables.releaseReservedEntities({
+            listOfEntities: selectedEntities
+          });
+          ReservedEntities_toastr === null || ReservedEntities_toastr === void 0 ? void 0 : ReservedEntities_toastr.success(`Released ${selectedRows.size} entities successfully!`);
+          setShowRelease(false);
+          setSelectedRows(new Set());
+          const response = await tables.getReservedEntities();
+          setData(response);
+        } catch (e) {
+          ReservedEntities_toastr === null || ReservedEntities_toastr === void 0 ? void 0 : ReservedEntities_toastr.error('Failed to release entities');
+        }
+      }
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_UpdatePeriodPopup, {
+      isOpen: showUpdatePeriod,
+      onClose: () => setShowUpdatePeriod(false),
+      onConfirm: async date => {
+        let dateTime = buildDateWithStaticTime(new Date(date));
+        try {
+          const selectedEntities = Array.from(selectedRows).map(row => {
+            return {
+              target_entity_id: row.target_entity_id,
+              environment_name: row.environment_name,
+              be_name: row.be_name
+            };
+          });
+          await tables.updateReservationPeriod({
+            listOfEntities: selectedEntities
+          }, dateTime);
+          setSelectedRows(new Set());
+          ReservedEntities_toastr === null || ReservedEntities_toastr === void 0 ? void 0 : ReservedEntities_toastr.success('Reservation period updated');
+          setShowUpdatePeriod(false);
+          const response = await tables.getReservedEntities();
+          setData(response);
+        } catch (e) {
+          ReservedEntities_toastr === null || ReservedEntities_toastr === void 0 ? void 0 : ReservedEntities_toastr.error('Failed to update reservation period');
+        }
+      }
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ReservedEntities_AddNotePopup, {
+      isOpen: showAddNote,
+      onClose: () => setShowAddNote(false),
+      onConfirm: async note => {
+        try {
+          const selectedEntities = Array.from(selectedRows).map(row => {
+            return {
+              target_entity_id: row.target_entity_id,
+              environment_name: row.environment_name,
+              be_name: row.be_name
+            };
+          });
+          await tables.addReservedEntityNote({
+            listOfEntities: selectedEntities
+          }, note);
+          ReservedEntities_toastr === null || ReservedEntities_toastr === void 0 ? void 0 : ReservedEntities_toastr.success('Note added');
+          setSelectedRows(new Set());
+          setShowAddNote(false);
+          const response = await tables.getReservedEntities();
+          setData(response);
+        } catch (e) {
+          ReservedEntities_toastr === null || ReservedEntities_toastr === void 0 ? void 0 : ReservedEntities_toastr.error('Failed to add note');
+        }
+      }
+    })]
+  });
+};
+/* harmony default export */ var containers_ReservedEntities = (ReservedEntities);
+// CONCATENATED MODULE: ./src/contexts/SystemContext.tsx
+
+
+const SystemContext = /*#__PURE__*/Object(react["createContext"])(undefined);
+const SystemProvider = _ref => {
+  let {
+    children
+  } = _ref;
+  const [selectedSystem, setSelectedSystem] = Object(react["useState"])(null);
+  const [currentPage, setCurrentPage] = Object(react["useState"])('systems');
+  const [existedSystems, setExistedSystems] = Object(react["useState"])([]);
+  const clearSelectedSystem = () => {
+    setSelectedSystem(null);
+  };
+  const value = {
+    selectedSystem,
+    setSelectedSystem,
+    clearSelectedSystem,
+    currentPage,
+    setCurrentPage,
+    existedSystems,
+    setExistedSystems
+  };
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemContext.Provider, {
+    value: value,
+    children: children
+  });
+};
+const useSystemContext = () => {
+  const context = Object(react["useContext"])(SystemContext);
+  if (context === undefined) {
+    throw new Error('useSystemContext must be used within a SystemProvider');
+  }
+  return context;
+};
+/* harmony default export */ var contexts_SystemContext = (SystemContext);
+// CONCATENATED MODULE: ./src/containers/Systems/styles.ts
+
+const styles_ActionsWrapper = styled_components_browser_esm["b" /* default */].div`
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 224px;
+    margin-bottom: 8px;
+    padding-left: 9px;
+`;
+const Systems_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: 12px;
+    height: 12px;
+    filter: brightness(0) invert(1);
+    transition: transform 0.2s ease;
+`;
+const DeleteIcon = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+    height: 16px;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    transition: opacity 0.2s ease;
+    
+    &:hover {
+        opacity: ${props => props.disabled ? 0.5 : 0.7};
+    }
+`;
+const Systems_styles_Container = styled_components_browser_esm["b" /* default */].div`
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    margin-top: 4px;
+`;
+const Systems_styles_MenuItem = styled_components_browser_esm["b" /* default */].div`
+    padding: 12px 16px;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    font-family: Roboto;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background-color: ${props => props.disabled ? 'transparent' : '#f8f9fa'};
+    }
+`;
+
+// Popups
+const Systems_styles_PopupContainer = styled_components_browser_esm["b" /* default */].div`
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 420px;
+`;
+const styles_PopupTitle = styled_components_browser_esm["b" /* default */].h3`
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+`;
+const styles_PopupText = styled_components_browser_esm["b" /* default */].p`
+    font-family: Roboto;
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+`;
+const styles_PopupField = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+const Systems_styles_PopupLabel = styled_components_browser_esm["b" /* default */].label`
+    font-family: Roboto;
+    font-size: 14px;
+    color: #333;
+`;
+const Systems_styles_PopupInput = styled_components_browser_esm["b" /* default */].input`
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Roboto;
+`;
+const styles_PopupTextArea = styled_components_browser_esm["b" /* default */].textarea`
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    font-family: Roboto;
+    margin-right: 3px;
+`;
+const styles_PopupActions = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+`;
+const styles_PopupButton = styled_components_browser_esm["b" /* default */].button`
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 500;
+    ${props => props.variant === 'primary' ? `background-color: #1483f3; color: #fff; &:hover { background-color: #0d6efd; }` : props.variant === 'danger' ? `background-color: #dc3545; color: #fff; &:hover { background-color: #c82333; }` : `background-color: #6c757d; color: #fff; &:hover { background-color: #5a6268; }`}
+`;
+const EditSystemPageWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;    
+`;
+// CONCATENATED MODULE: ./src/components/AddVersionPopup/index.tsx
+
+
+
+
+
+
+const AddVersionPopup = _ref => {
+  let {
+    isOpen,
+    onClose,
+    onAdd,
+    existingVersions = []
+  } = _ref;
+  const [versionToAdd, setVersionToAdd] = Object(react["useState"])('');
+  const [error, setError] = Object(react["useState"])('');
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    if (!isOpen) {
+      setVersionToAdd('');
+      setError('');
+      setIsSubmitted(false);
+    }
+  }, [isOpen]);
+  const handleAdd = Object(react["useCallback"])(() => {
+    setIsSubmitted(true);
+    const value = (versionToAdd || '').trim();
+    if (!value) return;
+    const exists = (existingVersions || []).some(v => v.value.toLowerCase() === value.toLowerCase());
+    if (exists) {
+      setError('Version exist, Please type in new version');
+      return;
+    }
+    onAdd(value);
+    setVersionToAdd('');
+    setError('');
+    setIsSubmitted(false);
+  }, [versionToAdd, existingVersions, onAdd]);
+  const handleCancel = Object(react["useCallback"])(() => {
+    setVersionToAdd('');
+    setError('');
+    setIsSubmitted(false);
+    onClose();
+  }, [onClose]);
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    width: '450px',
+    isOpen: isOpen,
+    onClose: handleCancel,
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Add version"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          padding: '10px 20px'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: 'Please type in new version:',
+          type: InputTypes.text,
+          value: versionToAdd,
+          onChange: v => setVersionToAdd(v),
+          placeholder: 'Enter version',
+          width: '100%',
+          error: error,
+          isSubmitted: isSubmitted
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          onClick: handleCancel,
+          type: "secondary",
+          title: "Cancel",
+          width: "90px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          onClick: handleAdd,
+          type: "primary",
+          title: "Add",
+          width: "90px"
+        })]
+      })]
+    })
+  });
+};
+/* harmony default export */ var components_AddVersionPopup = (AddVersionPopup);
+// CONCATENATED MODULE: ./src/containers/Systems/AddSystem.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const AddSystem_toastr = getService('toastr');
+function getInitialFormData(systemData) {
+  var _systemData$product_i, _systemData$product_n, _systemData$product_v, _systemData$product_d;
+  return {
+    product_id: (_systemData$product_i = systemData === null || systemData === void 0 ? void 0 : systemData.product_id) !== null && _systemData$product_i !== void 0 ? _systemData$product_i : '',
+    product_name: (_systemData$product_n = systemData === null || systemData === void 0 ? void 0 : systemData.product_name) !== null && _systemData$product_n !== void 0 ? _systemData$product_n : '',
+    product_vendor: (_systemData$product_v = systemData === null || systemData === void 0 ? void 0 : systemData.product_vendor) !== null && _systemData$product_v !== void 0 ? _systemData$product_v : '',
+    product_description: (_systemData$product_d = systemData === null || systemData === void 0 ? void 0 : systemData.product_description) !== null && _systemData$product_d !== void 0 ? _systemData$product_d : '',
+    product_versions: systemData !== null && systemData !== void 0 && systemData.product_versions ? systemData.product_versions.split(',').map(v => ({
+      label: v.trim(),
+      value: v.trim()
+    })) : [],
+    related_interfaces: systemData !== null && systemData !== void 0 && systemData.related_interfaces ? systemData.related_interfaces.map(v => ({
+      label: v.trim(),
+      value: v.trim()
+    })) : []
+  };
+}
+const AddSystem = _ref => {
+  let {
+    systemData,
+    readOnly
+  } = _ref;
+  const {
+    canPerformAction
+  } = usePermissions();
+  const canEdit = canPerformAction(0);
+  const [formData, setFormData] = Object(react["useState"])(() => getInitialFormData(systemData));
+  const {
+    setSelectedSystem,
+    setCurrentPage,
+    existedSystems
+  } = useSystemContext();
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [hasActiveEnvironment, setHasActiveEnvironment] = Object(react["useState"])([]);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [interfaces, setInterfaces] = Object(react["useState"])([]);
+  const [errors, setErrors] = Object(react["useState"])({
+    product_name: "",
+    product_versions: ""
+  });
+  Object(react["useEffect"])(() => {
+    async function fetchData() {
+      const data = await tables.getInterfaces();
+      setInterfaces((data || []).map(it => ({
+        label: it,
+        value: it
+      })));
+    }
+    fetchData();
+  }, []);
+  Object(react["useEffect"])(() => {
+    const fethEnvCont = async () => {
+      const data = await tables.getProductEnvCount(systemData === null || systemData === void 0 ? void 0 : systemData.product_id);
+      setHasActiveEnvironment(data || []);
+    };
+    if (systemData !== null && systemData !== void 0 && systemData.product_id) {
+      fethEnvCont();
+    }
+  }, [systemData]);
+  Object(react["useEffect"])(() => {
+    setFormData(getInitialFormData(systemData));
+  }, [systemData]);
+  const [versionOptions, setVersionOptions] = Object(react["useState"])([]);
+  const [isAddVersionOpen, setIsAddVersionOpen] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    setVersionOptions(prev => {
+      const merged = [...prev];
+      formData.product_versions.forEach(v => {
+        if (!merged.find(m => m.value === v.value)) merged.push(v);
+      });
+      return merged;
+    });
+  }, [formData.product_versions]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+  const handleVersionsChange = Object(react["useCallback"])(selectedVersions => {
+    const arr = Array.isArray(selectedVersions) ? selectedVersions : selectedVersions ? [selectedVersions] : [];
+    setFormData(prev => ({
+      ...prev,
+      product_versions: arr
+    }));
+  }, []);
+  const initAddVersionPopup = Object(react["useCallback"])(() => {
+    setIsAddVersionOpen(true);
+  }, []);
+  const handleVersionAdded = Object(react["useCallback"])(value => {
+    const newVersion = {
+      label: value,
+      value
+    };
+    setFormData(prev => ({
+      ...prev,
+      product_versions: [...prev.product_versions, newVersion]
+    }));
+    setVersionOptions(prev => prev.find(p => p.value === value) ? prev : [...prev, newVersion]);
+    setIsAddVersionOpen(false);
+  }, []);
+  const cancelAddVersion = Object(react["useCallback"])(() => {
+    setIsAddVersionOpen(false);
+  }, []);
+  const handleRelatedInterfacesChange = Object(react["useCallback"])(selectedInterfaces => {
+    setFormData(prev => ({
+      ...prev,
+      related_interfaces: selectedInterfaces || []
+    }));
+  }, []);
+  const handleSave = Object(react["useCallback"])(async () => {
+    try {
+      var _formData$product_nam;
+      setIsSubmitted(true);
+      const trimmedFormData = {
+        ...formData,
+        product_name: (_formData$product_nam = formData.product_name) === null || _formData$product_nam === void 0 ? void 0 : _formData$product_nam.trim()
+      };
+      const versionsString = trimmedFormData.product_versions.map(v => v.label.trim()).join(',');
+      const relatedInterfacesString = trimmedFormData.related_interfaces.map(v => v.label.trim());
+      const formValidation = {
+        product_name: "",
+        product_versions: ""
+      };
+      if (!trimmedFormData.product_name) {
+        formValidation.product_name = "Product name is required";
+      }
+      if (!trimmedFormData.product_versions || trimmedFormData.product_versions.length === 0) {
+        formValidation.product_versions = "Please choose at least one version";
+      }
+      setErrors(formValidation);
+      if (formValidation.product_name || formValidation.product_versions) {
+        return;
+      }
+      if (systemData) {
+        await tables.upddateProduct({
+          ...trimmedFormData,
+          product_versions: versionsString,
+          related_interfaces: relatedInterfacesString,
+          product_id: Number(trimmedFormData.product_id)
+        });
+        setCurrentPage('systems');
+        setTimeout(() => {
+          setSelectedSystem(null);
+        }, 100);
+        AddSystem_toastr.success("System # " + trimmedFormData.product_name, "Updated Successfully");
+        setIsSubmitted(false);
+      } else {
+        if (existedSystems !== null && existedSystems !== void 0 && existedSystems.find(p => p.product_name.trim() === trimmedFormData.product_name && p.product_status === 'Active')) {
+          AddSystem_toastr.error("System # " + trimmedFormData.product_name + " Already Exists");
+          return;
+        }
+        const resp = await tables.addNewProduct({
+          ...trimmedFormData,
+          product_versions: versionsString,
+          related_interfaces: relatedInterfacesString
+        });
+        if (resp && !resp.isError) {
+          setCurrentPage('edit');
+          AddSystem_toastr.success("System # " + trimmedFormData.product_name, "Created Successfully");
+          setIsSubmitted(false);
+          setTimeout(() => {
+            setSelectedSystem({
+              ...trimmedFormData,
+              product_versions: versionsString,
+              related_interfaces: relatedInterfacesString,
+              product_id: resp.id,
+              product_last_updated_by: '',
+              product_last_updated_date: '',
+              product_created_by: '',
+              product_status: '',
+              product_creation_date: ''
+            });
+          }, 100);
+        } else {
+          AddSystem_toastr.error("System # " + trimmedFormData.product_name, "Unable to Create : " + ((resp === null || resp === void 0 ? void 0 : resp.message) || 'Unknown error'));
+        }
+      }
+    } catch (e) {
+      AddSystem_toastr.error("System # " + formData.product_name, "Unable to Create : " + ((e === null || e === void 0 ? void 0 : e.message) || 'Unknown error'));
+    }
+  }, [systemData, formData, setSelectedSystem, setCurrentPage, existedSystems]);
+  const onDeleteClick = Object(react["useCallback"])(() => {
+    setShowDeleteConfirm(true);
+  }, []);
+  const handleDeleteConfirm = Object(react["useCallback"])(async () => {
+    if (systemData) {
+      try {
+        await tables.deleteProduct(systemData.product_id);
+        AddSystem_toastr.success("System # " + systemData.product_id, "Deleted Successfully");
+        setCurrentPage('systems');
+      } catch (error) {
+        AddSystem_toastr.error("System # " + systemData.product_id, "failed to delete" + (error !== null && error !== void 0 && error.message ? " : " + error.message : ""));
+      } finally {
+        setShowDeleteConfirm(false);
+      }
+    }
+  }, [setCurrentPage, systemData]);
+  const handleDeleteCancel = Object(react["useCallback"])(() => {
+    setShowDeleteConfirm(false);
+  }, []);
+  const deleteMessage = Object(react["useMemo"])(() => {
+    if (hasActiveEnvironment && hasActiveEnvironment.length > 0) {
+      return 'System ' + (systemData === null || systemData === void 0 ? void 0 : systemData.product_name) + ' is attached to testing environments. If you remove this system,  system will be removed from environments. Tasks for this Systems will be also deleted. Are you sure you want to delete it ?';
+    }
+    return 'Are you sure you want to delete System ?';
+  }, [hasActiveEnvironment, systemData]);
+  const disabled = readOnly || !!systemData;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+        children: systemData ? readOnly ? 'System' : 'Edit System' : 'Add System'
+      }), systemData && canEdit && !readOnly && /*#__PURE__*/Object(jsx_runtime["jsx"])(DeleteIcon, {
+        src: delete_icon_gray,
+        alt: "Delete",
+        onClick: onDeleteClick,
+        title: "Delete System"
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '20px'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+        title: "Name",
+        type: InputTypes.text,
+        value: formData.product_name,
+        onChange: value => handleInputChange('product_name', value),
+        placeholder: "Enter system name",
+        mandatory: true,
+        disabled: disabled,
+        isSubmitted: isSubmitted,
+        error: errors["product_name"]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+        title: "Description",
+        type: InputTypes.text,
+        value: formData.product_description,
+        onChange: value => handleInputChange('product_description', value),
+        placeholder: "Enter system description",
+        disabled: readOnly
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+        title: "Vendor",
+        type: InputTypes.text,
+        value: formData.product_vendor,
+        onChange: value => handleInputChange('product_vendor', value),
+        placeholder: "Enter vendor name",
+        disabled: readOnly
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'row'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+          title: "Versions",
+          options: versionOptions,
+          value: formData.product_versions.length > 0 ? formData.product_versions : null,
+          onChange: handleVersionsChange,
+          placeholder: "Select existing versions or use '+' to add new ones",
+          isMulti: formData.product_versions.length > 0,
+          enableSelectAll: false,
+          width: "100%",
+          mandatory: true,
+          isSubmitted: isSubmitted,
+          error: errors["product_versions"],
+          disabled: readOnly
+        }), !readOnly && /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+            style: {
+              display: 'flex',
+              height: '38px',
+              alignSelf: 'end',
+              paddingLeft: '1px',
+              marginBottom: '3px'
+            },
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])("button", {
+              title: "Add version",
+              type: "button",
+              className: "btn k2-primary-btn",
+              onClick: initAddVersionPopup,
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])("i", {
+                className: "fa fa-plus"
+              })
+            })
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddVersionPopup, {
+            isOpen: isAddVersionOpen,
+            onClose: cancelAddVersion,
+            onAdd: handleVersionAdded,
+            existingVersions: [...versionOptions, ...formData.product_versions]
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+        title: "Related interfaces",
+        options: interfaces,
+        value: formData.related_interfaces,
+        onChange: handleRelatedInterfacesChange,
+        placeholder: "Select related interfaces",
+        isMulti: true,
+        enableSelectAll: false,
+        width: "100%",
+        disabled: readOnly
+      })]
+    }), !readOnly && /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupActionsWrapper, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+        title: systemData ? 'Save Changes' : 'Create',
+        onClick: handleSave,
+        type: "primary",
+        width: systemData ? '130px' : '68px'
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showDeleteConfirm,
+      onClose: handleDeleteCancel,
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+        isOpen: showDeleteConfirm,
+        title: "Delete",
+        message: deleteMessage,
+        onConfirm: handleDeleteConfirm,
+        onCancel: handleDeleteCancel,
+        confirmText: "Yes",
+        cancelText: "No"
+      })
+    })]
+  });
+};
+/* harmony default export */ var Systems_AddSystem = (AddSystem);
+// CONCATENATED MODULE: ./src/containers/Systems/index.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+const Systems_BreadCrumbsService = getService('BreadCrumbsService');
+const Systems = () => {
+  const {
+    canPerformAction
+  } = usePermissions();
+  const canEdit = canPerformAction(0);
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  const [showAddSystem, setShowAddSystem] = Object(react["useState"])(false);
+  const {
+    setSelectedSystem,
+    setCurrentPage,
+    setExistedSystems
+  } = useSystemContext();
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const response = await tables.getSystems();
+        setData(response);
+        setExistedSystems(response);
+      } catch (error) {
+        console.error('Error fetching system :', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [setExistedSystems]);
+  const filteredData = Object(react["useMemo"])(() => {
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  const filterOptions = Object(react["useMemo"])(() => {
+    const status = Array.from(new Set(data.map(item => item.product_status).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const createdBy = Array.from(new Set(data.map(item => item.product_created_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const updatedBy = Array.from(new Set(data.map(item => item.product_last_updated_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    return {
+      product_created_by: createdBy,
+      product_last_updated_by: updatedBy,
+      product_status: status
+    };
+  }, [data]);
+  const handleSystemClick = Object(react["useCallback"])(system => {
+    setSelectedSystem(system);
+    setCurrentPage('edit');
+  }, [setCurrentPage, setSelectedSystem]);
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    return [columnHelper.accessor('product_name', {
+      id: 'product_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          cursor: 'pointer',
+          color: '#1483f3',
+          textDecoration: 'underline'
+        },
+        onClick: () => handleSystemClick(info.row.original),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const normalize = v => v ? String(v).toLowerCase().trim() : '';
+        const trimmedFilter = String(filterValue).toLowerCase().trim();
+        return normalize(value).includes(trimmedFilter);
+      }
+    }), columnHelper.accessor('product_vendor', {
+      id: 'product_vendor',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "System Vendor"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue() || '',
+        children: info.getValue() || ''
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const normalize = v => v ? String(v).toLowerCase().trim() : '';
+        const trimmedFilter = String(filterValue).toLowerCase().trim();
+        return normalize(value).includes(trimmedFilter);
+      }
+    }), columnHelper.accessor('product_versions', {
+      id: 'product_versions',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "System Versions"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue(),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const normalize = v => v ? String(v).toLowerCase().trim() : '';
+        const trimmedFilter = String(filterValue).toLowerCase().trim();
+        return normalize(value).includes(trimmedFilter);
+      }
+    }), columnHelper.accessor('product_creation_date', {
+      id: 'product_creation_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Creation Date"
+      }),
+      cell: info => {
+        const date = new Date(info.getValue());
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          children: date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) + ', ' + date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const raw = row.getValue(columnId);
+        let display = raw || '';
+        const asDate = new Date(raw);
+        if (raw && !isNaN(asDate.getTime())) {
+          display = asDate.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) + ', ' + asDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        }
+        const normalize = v => v ? String(v).toLowerCase().trim() : '';
+        const trimmedFilter = String(filterValue).toLowerCase().trim();
+        return normalize(display).includes(trimmedFilter);
+      }
+    }), columnHelper.accessor('product_created_by', {
+      id: 'product_created_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Created By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue(),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.product_created_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    }), columnHelper.accessor('product_last_updated_date', {
+      id: 'product_last_updated_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Last Update Date"
+      }),
+      cell: info => {
+        const date = new Date(info.getValue());
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          children: date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) + ', ' + date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const raw = row.getValue(columnId);
+        let display = raw || '';
+        const asDate = new Date(raw);
+        if (raw && !isNaN(asDate.getTime())) {
+          display = asDate.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) + ', ' + asDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        }
+        const normalize = v => v ? String(v).toLowerCase().trim() : '';
+        const trimmedFilter = String(filterValue).toLowerCase().trim();
+        return normalize(display).includes(trimmedFilter);
+      }
+    }), columnHelper.accessor('product_last_updated_by', {
+      id: 'product_last_updated_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Updated By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue(),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.product_last_updated_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    }), columnHelper.accessor('product_status', {
+      id: 'product_status',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          marginTop: "0px 10px"
+        },
+        children: "Status"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.product_status
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    })];
+  }, [filterOptions, handleSystemClick]);
+  const defaultSorting = Object(react["useMemo"])(() => [{
+    id: 'product_status',
+    desc: false
+  }], []);
+  const defaultColumnFilters = Object(react["useMemo"])(() => [{
+    id: 'product_status',
+    value: 'Active'
+  }], []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  const onAddClick = () => {
+    setShowAddSystem(true);
+    setCurrentPage('add');
+  };
+  const handleCloseAddSystem = () => {
+    setShowAddSystem(false);
+  };
+  const handleSaveSystem = systemData => {
+    setShowAddSystem(false);
+  };
+  if (showAddSystem) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Systems_AddSystem, {
+      onClose: handleCloseAddSystem,
+      onSave: handleSaveSystem
+    });
+  }
+  if (loading) {
+    return null;
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+      title: "Systems",
+      pageSize: pageSize,
+      onPageSizeChange: setPageSize,
+      searchTerm: searchTerm,
+      onSearchChange: setSearchTerm,
+      actions: canEdit ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+        onClick: onAddClick,
+        title: "Add System"
+      }) : undefined
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+      columns: columns,
+      data: filteredData,
+      pageSize: pageSize,
+      initialSorting: defaultSorting,
+      initialColumnFilters: defaultColumnFilters
+    })]
+  });
+};
+/* harmony default export */ var containers_Systems = (Systems);
+// CONCATENATED MODULE: ./src/containers/LogicalUnit/AddLogicalUnitPopup.tsx
+
+
+
+
+
+
+
+const AddLogicalUnitPopup_toastr = getService('toastr');
+const AddLogicalUnitPopup = _ref => {
+  let {
+    isOpen,
+    onClose,
+    onSave,
+    systemData
+  } = _ref;
+  const [businessEntities, setBusinessEntities] = Object(react["useState"])([]);
+  const [logicalUnitOptions, setLogicalUnitOptions] = Object(react["useState"])([]);
+  const [selectedBE, setSelectedBE] = Object(react["useState"])(null);
+  const [logicalUnitName, setLogicalUnitName] = Object(react["useState"])([]);
+  const originlogicalUnitNameRef = Object(react["useRef"])(null);
+  Object(react["useEffect"])(() => {
+    if (selectedBE) {
+      var _originlogicalUnitNam;
+      const filteredOptions = ((_originlogicalUnitNam = originlogicalUnitNameRef.current) === null || _originlogicalUnitNam === void 0 ? void 0 : _originlogicalUnitNam.filter(it => it.bsOption === selectedBE.value)) || [];
+      setLogicalUnitOptions(filteredOptions);
+    } else {
+      setLogicalUnitOptions(originlogicalUnitNameRef.current || []);
+    }
+    setLogicalUnitName([]);
+  }, [selectedBE]);
+  Object(react["useEffect"])(() => {
+    const fetchBEs = async () => {
+      try {
+        const bes = await tables.getlogicalunitswithoutproduct();
+        if (!bes || bes !== null && bes !== void 0 && bes.isError) {
+          AddLogicalUnitPopup_toastr === null || AddLogicalUnitPopup_toastr === void 0 ? void 0 : AddLogicalUnitPopup_toastr.error((bes === null || bes === void 0 ? void 0 : bes.message) || 'Failed to get business entities');
+        } else {
+          const uniqueBes = Array.from(new Map((bes || []).map(it => [it.be_id, it])).values());
+          const besOptions = uniqueBes.map(it => ({
+            label: it.be_name,
+            value: String(it.be_id),
+            be_id: parseInt(it.be_id),
+            ...it
+          }));
+          originlogicalUnitNameRef.current = (bes || []).map(it => ({
+            label: it.lu_name,
+            value: it.lu_id,
+            bsOption: String(it.be_id),
+            be_id: parseInt(it.be_id),
+            ...it
+          }));
+          setLogicalUnitOptions(originlogicalUnitNameRef.current || []);
+          setBusinessEntities(besOptions);
+        }
+      } catch (e) {
+        AddLogicalUnitPopup_toastr === null || AddLogicalUnitPopup_toastr === void 0 ? void 0 : AddLogicalUnitPopup_toastr.error(e || 'Failed to get business entities');
+      }
+    };
+    if (isOpen) {
+      fetchBEs();
+    }
+  }, [isOpen]);
+  const handleSave = async () => {
+    if (!logicalUnitName || !(logicalUnitName !== null && logicalUnitName !== void 0 && logicalUnitName.length)) return;
+    try {
+      await tables.addLogicalUnit(logicalUnitName, Number(logicalUnitName === null || logicalUnitName === void 0 ? void 0 : logicalUnitName[0].value), Number(systemData === null || systemData === void 0 ? void 0 : systemData.product_id), (systemData === null || systemData === void 0 ? void 0 : systemData.product_name) || "");
+      onSave();
+    } catch (e) {
+      console.error('Error adding logical unit', e);
+    } finally {
+      onClose();
+    }
+  };
+  const handleClose = () => {
+    setSelectedBE(null);
+    setLogicalUnitName([]);
+    setBusinessEntities([]);
+    onClose();
+  };
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+        children: "Add Logical Unit"
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(global_CloseButton, {
+        onClick: handleClose,
+        children: "X"
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+        title: "Business Entities",
+        options: businessEntities,
+        value: selectedBE,
+        onChange: setSelectedBE,
+        placeholder: "Select an Option",
+        isClearable: true,
+        disabled: !(businessEntities !== null && businessEntities !== void 0 && businessEntities.length)
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+        title: "Logical Unit Name",
+        options: logicalUnitOptions,
+        value: logicalUnitName,
+        onChange: setLogicalUnitName,
+        placeholder: "Select Some Options",
+        isClearable: true,
+        isMulti: true,
+        disabled: !(logicalUnitOptions !== null && logicalUnitOptions !== void 0 && logicalUnitOptions.length)
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupActionsWrapper, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "ADD",
+          onClick: handleSave,
+          type: "secondary",
+          width: "50px"
+        })
+      })]
+    })]
+  });
+};
+/* harmony default export */ var LogicalUnit_AddLogicalUnitPopup = (AddLogicalUnitPopup);
+// CONCATENATED MODULE: ./src/containers/LogicalUnit/DeleteConfirmationPopup.tsx
+
+
+
+
+const DeleteConfirmationPopup = _ref => {
+  let {
+    onClose,
+    onConfirm,
+    message = "Are you sure you want to delete this Logical Unit?"
+  } = _ref;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+        children: "Confirm Delete"
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(global_CloseButton, {
+        onClick: onClose,
+        children: "X"
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(PopupLabel, {
+        children: message
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "No",
+          onClick: onClose,
+          type: "secondary",
+          width: "80px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Yes",
+          onClick: onConfirm,
+          type: "primary",
+          width: "100px"
+        })]
+      })]
+    })]
+  });
+};
+/* harmony default export */ var LogicalUnit_DeleteConfirmationPopup = (DeleteConfirmationPopup);
+// CONCATENATED MODULE: ./src/containers/LogicalUnit/index.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const LogicalUnit_toastr = getService('toastr');
+const LogicalUnit = _ref => {
+  let {
+    systemData,
+    readOnly
+  } = _ref;
+  const {
+    canPerformAction
+  } = usePermissions();
+  const canEdit = canPerformAction(0) && !readOnly;
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  const [showPopup, setShowPopup] = Object(react["useState"])(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [itemToDelete, setItemToDelete] = Object(react["useState"])(null);
+  const [hasActiveEnvironment, setHasActiveEnvironment] = Object(react["useState"])([]);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const response = await tables.getLogicalUnit(systemData === null || systemData === void 0 ? void 0 : systemData.product_id);
+        setData(response || []);
+      } catch (error) {
+        LogicalUnit_toastr.error("System # " + (systemData === null || systemData === void 0 ? void 0 : systemData.product_name), "failed to get Logical Units");
+      } finally {
+        setLoading(false);
+      }
+    };
+    const fetchEnvCount = async () => {
+      try {
+        const envData = await tables.getProductEnvCount(systemData === null || systemData === void 0 ? void 0 : systemData.product_id);
+        setHasActiveEnvironment(envData || []);
+      } catch (error) {
+        LogicalUnit_toastr.error("System # " + (systemData === null || systemData === void 0 ? void 0 : systemData.product_name), "failed to get Env Count");
+      }
+    };
+    if (systemData !== null && systemData !== void 0 && systemData.product_id) {
+      fetchData();
+      fetchEnvCount();
+    }
+  }, [systemData === null || systemData === void 0 ? void 0 : systemData.product_id, systemData === null || systemData === void 0 ? void 0 : systemData.product_name]);
+  const filteredData = Object(react["useMemo"])(() => {
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  const onDeleteClick = Object(react["useCallback"])(item => {
+    setItemToDelete(item);
+    setShowDeleteConfirm(true);
+  }, []);
+  const handleDeleteConfirm = Object(react["useCallback"])(async () => {
+    if (!itemToDelete) return;
+    try {
+      itemToDelete.product_id = -1;
+      await tables.deleteLogicalUnit(itemToDelete === null || itemToDelete === void 0 ? void 0 : itemToDelete.lu_id, itemToDelete.be_id, itemToDelete);
+      const refreshed = await tables.getLogicalUnit(systemData === null || systemData === void 0 ? void 0 : systemData.product_id);
+      const newData = refreshed || [];
+      setData(newData);
+      if (newData.length === 0 && hasActiveEnvironment.length > 0) {
+        for (const env of hasActiveEnvironment) {
+          try {
+            await tables.deleteEnvProduct(env.environment_id, env.environment_name, systemData === null || systemData === void 0 ? void 0 : systemData.product_id);
+          } catch (e) {}
+        }
+      }
+    } catch (error) {
+      LogicalUnit_toastr.error("Logical Unit " + itemToDelete.lu_name, "Failed to delete : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+    } finally {
+      setShowDeleteConfirm(false);
+      setItemToDelete(null);
+    }
+  }, [itemToDelete, systemData === null || systemData === void 0 ? void 0 : systemData.product_id, hasActiveEnvironment]);
+  const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+  const columns = Object(react["useMemo"])(() => {
+    const cols = [];
+    if (canEdit) {
+      cols.push(columnHelper.display({
+        id: 'actions',
+        header: "",
+        cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ActionButtons, {
+          onDelete: () => onDeleteClick(info.row.original),
+          deleteTitle: "Remove Logical Unit"
+        })
+      }));
+    }
+    return [...cols, columnHelper.accessor('lu_name', {
+      id: 'lu_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      })
+    }), columnHelper.accessor('lu_description', {
+      id: 'lu_description',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Description"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      })
+    }), columnHelper.accessor('lu_parent_name', {
+      id: 'lu_parent_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Parent LU"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      })
+    }), columnHelper.accessor('be_name', {
+      id: 'be_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Business Entity"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || '-'
+      })
+    })];
+  }, [canEdit, columnHelper, onDeleteClick]);
+  const onAddClick = Object(react["useCallback"])(() => {
+    setShowPopup(true);
+  }, []);
+  const handleAddSave = Object(react["useCallback"])(async () => {
+    try {
+      const refreshed = await tables.getLogicalUnit(systemData === null || systemData === void 0 ? void 0 : systemData.product_id);
+      setData(refreshed || []);
+    } catch (e) {
+      console.error('Error refreshing logical units', e);
+    }
+  }, [systemData === null || systemData === void 0 ? void 0 : systemData.product_id]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(react["Fragment"], {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+        title: "Logical Units",
+        pageSize: pageSize,
+        onPageSizeChange: setPageSize,
+        searchTerm: searchTerm,
+        onSearchChange: setSearchTerm,
+        actions: canEdit ? /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+          onClick: onAddClick,
+          title: "Add Logical Unit",
+          tootlipText: "Add Logical Unit"
+        }) : undefined
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+        columns: columns,
+        data: filteredData,
+        pageSize: pageSize
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '500px',
+      isOpen: showPopup,
+      onClose: () => setShowPopup(false),
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(LogicalUnit_AddLogicalUnitPopup, {
+        isOpen: showPopup,
+        onClose: () => setShowPopup(false),
+        onSave: handleAddSave,
+        systemData: systemData
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showDeleteConfirm,
+      onClose: () => setShowDeleteConfirm(false),
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(LogicalUnit_DeleteConfirmationPopup, {
+        isOpen: showDeleteConfirm,
+        onClose: () => setShowDeleteConfirm(false),
+        onConfirm: handleDeleteConfirm,
+        message: (() => {
+          if (!itemToDelete) return "Are you sure you want to delete this Logical Unit?";
+          if (hasActiveEnvironment.length > 0) {
+            if (data.length === 1) {
+              return 'Logical Unit ' + itemToDelete.lu_name + ' is attached to testing environments. If you remove this Logical Unit, system may be removed from environments. Tasks for this system may be also deleted. Are you sure you want to delete it ?';
+            } else {
+              return 'Logical Unit ' + itemToDelete.lu_name + ' is attached to testing environments. Are you sure you want to delete it ?';
+            }
+          }
+          return "Are you sure you want to delete this Logical Unit?";
+        })()
+      })
+    })]
+  });
+};
+/* harmony default export */ var containers_LogicalUnit = (LogicalUnit);
+// CONCATENATED MODULE: ./src/containers/Systems/EditSystemPage.tsx
+
+
+
+
+
+
+const EditSystemPage = _ref => {
+  let {
+    readOnly,
+    onBack,
+    initialSystemData
+  } = _ref;
+  const {
+    selectedSystem,
+    setSelectedSystem,
+    setCurrentPage
+  } = useSystemContext();
+  Object(react["useEffect"])(() => {
+    if (initialSystemData) {
+      setSelectedSystem(initialSystemData);
+      setCurrentPage('edit');
+    }
+  }, [initialSystemData, setSelectedSystem, setCurrentPage]);
+  const systemToShow = initialSystemData || selectedSystem;
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(EditSystemPageWrapper, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Systems_AddSystem, {
+      systemData: systemToShow,
+      readOnly: readOnly
+    }), systemToShow && /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_LogicalUnit, {
+      systemData: systemToShow,
+      readOnly: readOnly
+    })]
+  });
+};
+/* harmony default export */ var Systems_EditSystemPage = (EditSystemPage);
+// CONCATENATED MODULE: ./src/containers/Systems/SystemManager.tsx
+
+
+
+
+
+
+
+const SystemManagerContent = () => {
+  const {
+    currentPage,
+    setCurrentPage,
+    selectedSystem
+  } = useSystemContext();
+  react_default.a.useEffect(() => {
+    const BreadCrumbsService = getService('BreadCrumbsService');
+    if (!BreadCrumbsService) return;
+    switch (currentPage) {
+      case 'edit':
+        if (!selectedSystem) return;
+        BreadCrumbsService.breadCrumbChange(1);
+        BreadCrumbsService.push({
+          product_name: selectedSystem.product_name
+        }, `System # ${selectedSystem.product_name}`, function () {});
+        break;
+      case 'add':
+        BreadCrumbsService.breadCrumbChange(1);
+        BreadCrumbsService.push({}, 'Add System', function () {});
+        break;
+      case 'systems':
+        if (selectedSystem) return;
+        BreadCrumbsService.breadCrumbChange(0);
+        BreadCrumbsService.push({}, 'PRODUCTS', function () {
+          setCurrentPage('systems');
+        });
+        break;
+    }
+  }, [currentPage, setCurrentPage, selectedSystem]);
+  switch (currentPage) {
+    case 'edit':
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])(Systems_EditSystemPage, {});
+    case 'add':
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])(Systems_AddSystem, {});
+    case 'systems':
+    default:
+      return /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_Systems, {});
+  }
+};
+const SystemManager = () => {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemProvider, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemManagerContent, {})
+  });
+};
+/* harmony default export */ var Systems_SystemManager = (SystemManager);
+// CONCATENATED MODULE: ./src/apis/envExample.ts
+const envExampleAPIs = {
+  environments: {
+    result: [{
+      allow_write: true,
+      environment_point_of_contact_phone1: null,
+      environment_id: 2,
+      environment_created_by: 'admin',
+      user_name: null,
+      environment_last_updated_date: '2025-12-22 16:18:30.302359',
+      environment_last_updated_by: 'admin',
+      environment_status: 'Active',
+      allow_read: true,
+      owners: [],
+      environment_type: 'Both',
+      mask_sensitive_data: false,
+      sync_mode: 'ON',
+      environment_description: 'This is the Target environment.',
+      environment_point_of_contact_first_name: null,
+      environment_point_of_contact_last_name: null,
+      environment_point_of_contact_email: null,
+      environment_creation_date: '2025-12-22 16:18:30.302359',
+      environment_point_of_contact_phone2: null,
+      environment_name: 'UAT'
+    }, {
+      allow_write: false,
+      environment_point_of_contact_phone1: null,
+      environment_id: -1,
+      environment_created_by: 'admin',
+      user_name: null,
+      environment_last_updated_date: '2026-01-10 09:38:04.925',
+      environment_last_updated_by: 'saeed.namih@k2view.com.k2v',
+      environment_status: 'Active',
+      allow_read: true,
+      owners: [],
+      environment_type: 'Source',
+      mask_sensitive_data: false,
+      sync_mode: 'FORCE',
+      environment_description: 'This is the synthetic environment.',
+      environment_point_of_contact_first_name: 'sdasdssa',
+      environment_point_of_contact_last_name: null,
+      environment_point_of_contact_email: null,
+      environment_creation_date: '2025-12-22 16:18:06.660121',
+      environment_point_of_contact_phone2: null,
+      environment_name: 'Synthetic'
+    }, {
+      allow_write: true,
+      environment_point_of_contact_phone1: null,
+      environment_id: -2,
+      environment_created_by: 'admin',
+      user_name: null,
+      environment_last_updated_date: '2026-01-10 09:38:12.498',
+      environment_last_updated_by: 'saeed.namih@k2view.com.k2v',
+      environment_status: 'Active',
+      allow_read: true,
+      owners: [],
+      environment_type: 'Both',
+      mask_sensitive_data: false,
+      sync_mode: 'OFF',
+      environment_description: 'This is the AI Generationa and Training environment.',
+      environment_point_of_contact_first_name: 'dsadsdsdsadsa',
+      environment_point_of_contact_last_name: null,
+      environment_point_of_contact_email: null,
+      environment_creation_date: '2025-12-22 16:18:06.660121',
+      environment_point_of_contact_phone2: null,
+      environment_name: 'AI'
+    }, {
+      allow_write: false,
+      environment_point_of_contact_phone1: null,
+      environment_id: 1,
+      environment_created_by: 'admin',
+      user_name: null,
+      environment_last_updated_date: '2025-12-22 16:18:30.302359',
+      environment_last_updated_by: 'admin',
+      environment_status: 'Active',
+      allow_read: true,
+      owners: [],
+      environment_type: 'Source',
+      mask_sensitive_data: true,
+      sync_mode: 'ON',
+      environment_description: 'This is the Source environment.',
+      environment_point_of_contact_first_name: null,
+      environment_point_of_contact_last_name: null,
+      environment_point_of_contact_email: null,
+      environment_creation_date: '2025-12-22 16:18:30.302359',
+      environment_point_of_contact_phone2: null,
+      environment_name: 'Production'
+    }],
+    errorCode: 'SUCCESS',
+    message: null
+  },
+  wsGetAllEnvs: {
+    result: ['AI', 'Production', 'Synthetic', 'UAT', 'saeed10', 'test1', 'tsest2'],
+    errorCode: 'SUCCESS',
+    message: null
+  },
+  wsGetFabricRoles: {
+    result: [],
+    errorCode: 'SUCCESS',
+    message: null
+  },
+  wsGetUsersByPermissionGroup: {
+    result: [],
+    errorCode: 'SUCCESS',
+    message: null
+  },
+  'environment/-2/owners': {
+    result: [],
+    errorCode: 'SUCCESS',
+    message: null
+  },
+  "environment/-2/summary/Month": {
+    "result": {
+      "numberOfTesters": {
+        "numberoftesters": 0
+      },
+      "processedEntities": {
+        "sum": 27
+      },
+      "taskExecutionStatus": {
+        "running": 0,
+        "paused": 0,
+        "stopped": 0,
+        "pending": 0,
+        "failed": 5,
+        "completed": 27
+      },
+      "numberOfALLTesters": {
+        "value": 0
+      },
+      "numberOfGroups": {
+        "numberofgroups": 0
+      },
+      "Environment": 2,
+      "tasks": {
+        "active": 5,
+        "onhold": 0
+      },
+      "Interval": "Month"
+    },
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "environment/-2/roles": {
+    "result": [{
+      "role_expiration_date": null,
+      "allow_write": true,
+      "role_last_updated_by": "admin",
+      "allowed_delete_before_load": false,
+      "environment_id": -2,
+      "allowed_number_of_entities_to_read": 1000,
+      "allowed_replace_sequences": false,
+      "allowed_random_entity_selection": false,
+      "role_created_by": "admin",
+      "allowed_creation_of_synthetic_data": false,
+      "allow_read": true,
+      "allowed_refresh_reference_data": false,
+      "role_creation_date": "2025-12-22 16:18:06.660121",
+      "role_description": "Role for AI Environment",
+      "role_name": "AI",
+      "allowed_task_scheduling": false,
+      "allowed_request_of_fresh_data": false,
+      "role_id": -2,
+      "allowed_number_of_reserved_entities": 1000,
+      "role_status": "Active",
+      "allowed_entity_versioning": false,
+      "role_last_updated_date": "2025-12-22 16:18:06.660121",
+      "allowed_test_conn_failure": false,
+      "allowed_number_of_entities_to_copy": 1000
+    }, {
+      "role_expiration_date": null,
+      "allow_write": true,
+      "role_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "allowed_delete_before_load": true,
+      "environment_id": -2,
+      "allowed_number_of_entities_to_read": 4,
+      "allowed_replace_sequences": false,
+      "allowed_random_entity_selection": true,
+      "role_created_by": "saeed.namih@k2view.com.k2v",
+      "allowed_creation_of_synthetic_data": false,
+      "allow_read": true,
+      "allowed_refresh_reference_data": true,
+      "role_creation_date": "2026-01-12 14:42:00.231",
+      "role_description": "5",
+      "role_name": "5",
+      "allowed_task_scheduling": false,
+      "allowed_request_of_fresh_data": true,
+      "role_id": 9,
+      "allowed_number_of_reserved_entities": 4,
+      "role_status": "Active",
+      "allowed_entity_versioning": false,
+      "role_last_updated_date": "2026-01-12 14:42:00.231",
+      "allowed_test_conn_failure": true,
+      "allowed_number_of_entities_to_copy": 4
+    }, {
+      "role_expiration_date": null,
+      "allow_write": true,
+      "role_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "allowed_delete_before_load": true,
+      "environment_id": -2,
+      "allowed_number_of_entities_to_read": -1,
+      "allowed_replace_sequences": false,
+      "allowed_random_entity_selection": false,
+      "role_created_by": "saeed.namih@k2view.com.k2v",
+      "allowed_creation_of_synthetic_data": true,
+      "allow_read": true,
+      "allowed_refresh_reference_data": false,
+      "role_creation_date": "2026-01-12 14:42:24.508",
+      "role_description": "test1",
+      "role_name": "test1",
+      "allowed_task_scheduling": false,
+      "allowed_request_of_fresh_data": false,
+      "role_id": 10,
+      "allowed_number_of_reserved_entities": 12,
+      "role_status": "Active",
+      "allowed_entity_versioning": false,
+      "role_last_updated_date": "2026-01-12 14:42:24.508",
+      "allowed_test_conn_failure": true,
+      "allowed_number_of_entities_to_copy": -1
+    }, {
+      "role_expiration_date": null,
+      "allow_write": true,
+      "role_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "allowed_delete_before_load": false,
+      "environment_id": -2,
+      "allowed_number_of_entities_to_read": 444,
+      "allowed_replace_sequences": true,
+      "allowed_random_entity_selection": true,
+      "role_created_by": "saeed.namih@k2view.com.k2v",
+      "allowed_creation_of_synthetic_data": false,
+      "allow_read": true,
+      "allowed_refresh_reference_data": false,
+      "role_creation_date": "2026-01-12 14:43:09.879",
+      "role_description": "oooooooooooooooooooooooooooooooo",
+      "role_name": "ao",
+      "allowed_task_scheduling": true,
+      "allowed_request_of_fresh_data": false,
+      "role_id": 11,
+      "allowed_number_of_reserved_entities": 4,
+      "role_status": "Active",
+      "allowed_entity_versioning": true,
+      "role_last_updated_date": "2026-01-12 14:43:09.879",
+      "allowed_test_conn_failure": true,
+      "allowed_number_of_entities_to_copy": 444
+    }, {
+      "role_expiration_date": null,
+      "allow_write": true,
+      "role_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "allowed_delete_before_load": true,
+      "environment_id": -2,
+      "allowed_number_of_entities_to_read": -435142848,
+      "allowed_replace_sequences": true,
+      "allowed_random_entity_selection": true,
+      "role_created_by": "saeed.namih@k2view.com.k2v",
+      "allowed_creation_of_synthetic_data": false,
+      "allow_read": true,
+      "allowed_refresh_reference_data": true,
+      "role_creation_date": "2026-01-12 14:43:38.064",
+      "role_description": "saeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeed",
+      "role_name": "saeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeedsaeed",
+      "allowed_task_scheduling": true,
+      "allowed_request_of_fresh_data": true,
+      "role_id": 12,
+      "allowed_number_of_reserved_entities": 1,
+      "role_status": "Active",
+      "allowed_entity_versioning": true,
+      "role_last_updated_date": "2026-01-12 14:43:38.064",
+      "allowed_test_conn_failure": true,
+      "allowed_number_of_entities_to_copy": 1333333333
+    }, {
+      "role_expiration_date": "2026-01-12 14:43:50.092",
+      "allow_write": true,
+      "role_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "allowed_delete_before_load": false,
+      "environment_id": -2,
+      "allowed_number_of_entities_to_read": 6,
+      "allowed_replace_sequences": false,
+      "allowed_random_entity_selection": false,
+      "role_created_by": "saeed.namih@k2view.com.k2v",
+      "allowed_creation_of_synthetic_data": false,
+      "allow_read": true,
+      "allowed_refresh_reference_data": false,
+      "role_creation_date": "2026-01-12 14:41:45.937",
+      "role_description": "2",
+      "role_name": "6",
+      "allowed_task_scheduling": false,
+      "allowed_request_of_fresh_data": false,
+      "role_id": 8,
+      "allowed_number_of_reserved_entities": 6,
+      "role_status": "Inactive",
+      "allowed_entity_versioning": false,
+      "role_last_updated_date": "2026-01-12 14:42:37.992",
+      "allowed_test_conn_failure": false,
+      "allowed_number_of_entities_to_copy": 6
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "environment/-2/products": {
+    "result": [{
+      "environment_product_id": 7,
+      "product_version": "AI",
+      "environment_id": -2,
+      "product_vendor": "",
+      "product_last_updated_date": "2026-01-04 14:39:59.907",
+      "max_number_of_workers": null,
+      "product_created_by": "admin",
+      "product_status": "Active",
+      "creation_date": "2025-12-22 16:18:30.302359",
+      "created_by": "admin",
+      "product_name": "CRM",
+      "product_versions": "AI",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "enable_product": true,
+      "last_updated_by": "admin",
+      "taskcount": 6,
+      "data_center_name": "",
+      "product_id": 1,
+      "product_creation_date": "2025-12-22 16:18:30.302359",
+      "last_updated_date": "2025-12-22 16:18:30.302359",
+      "product_description": "CRM Application",
+      "status": "Active"
+    }, {
+      "environment_product_id": 9,
+      "product_version": "AI",
+      "environment_id": -2,
+      "product_vendor": "ssas",
+      "product_last_updated_date": "2026-01-04 14:46:15.146",
+      "max_number_of_workers": 8,
+      "product_created_by": "saeed.namih@k2view.com.k2v",
+      "product_status": "Active",
+      "creation_date": "2026-01-12 15:02:48.063",
+      "created_by": "saeed.namih@k2view.com.k2v",
+      "product_name": "wasasas",
+      "product_versions": "AI",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "enable_product": true,
+      "last_updated_by": "saeed.namih@k2view.com.k2v",
+      "taskcount": 0,
+      "data_center_name": "LOCAL_DC",
+      "product_id": 9,
+      "product_creation_date": "2026-01-04 12:58:17.174",
+      "last_updated_date": "2026-01-12 15:02:48.063",
+      "product_description": "sasas",
+      "status": "Active"
+    }, {
+      "environment_product_id": 10,
+      "product_version": "AI",
+      "environment_id": -2,
+      "product_vendor": "",
+      "product_last_updated_date": "2026-01-12 15:04:08.826",
+      "max_number_of_workers": 2,
+      "product_created_by": "saeed.namih@k2view.com.k2v",
+      "product_status": "Active",
+      "creation_date": "2026-01-12 15:04:27.404",
+      "created_by": "saeed.namih@k2view.com.k2v",
+      "product_name": "crn2",
+      "product_versions": "AI",
+      "product_last_updated_by": "saeed.namih@k2view.com.k2v",
+      "enable_product": true,
+      "last_updated_by": "saeed.namih@k2view.com.k2v",
+      "taskcount": 0,
+      "data_center_name": "LOCAL_DC",
+      "product_id": 33,
+      "product_creation_date": "2026-01-12 15:03:53.982",
+      "last_updated_date": "2026-01-12 15:04:27.404",
+      "product_description": "222",
+      "status": "Active"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "product/-2/loadAvailableSystems": {
+    "result": [{
+      "product_versions": "AI",
+      "product_id": 1,
+      "related_interfaces": "{}",
+      "lus": 2,
+      "product_name": "CRM"
+    }, {
+      "product_versions": "AI",
+      "product_id": 2,
+      "related_interfaces": "{}",
+      "lus": 1,
+      "product_name": "Billing"
+    }, {
+      "product_versions": "AI",
+      "product_id": 20,
+      "related_interfaces": "{ORDERS_DB,TAR_COLLECTION_DB,CRM_DB}",
+      "lus": 0,
+      "product_name": "saeed33333"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "dataCenters": {
+    "result": [{
+      "notes": "local node",
+      "effective_ip": "10.176.1.4",
+      "node_id": "tdm-react-5-k2view",
+      "dc": "LOCAL_DC111",
+      "logical_ids": "",
+      "status": "ALIVE"
+    }, {
+      "notes": "local node2",
+      "effective_ip": "10.176.1.4",
+      "node_id": "tdm-react-5-k2view",
+      "dc": "LOCAL_DC22",
+      "logical_ids": "",
+      "status": "ALIVE"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "getMaxWorkersPerNode": {
+    "result": 8,
+    "errorCode": "SUCCESS",
+    "message": ""
+  },
+  "environment/getAllGlobals": {
+    "result": [{
+      "globalName": "DEVELOPMENT_PRODUCT_VERSION",
+      "Description": "",
+      "luList": [{
+        "luName": "ALL",
+        "defaultValue": "DEV"
+      }]
+    }, {
+      "globalName": "PRODUCTION_PRODUCT_VERSION",
+      "Description": "",
+      "luList": [{
+        "luName": "ALL",
+        "defaultValue": "PROD"
+      }]
+    }, {
+      "globalName": "TDM_SUPPRESS_TEST_CONNECTION",
+      "Description": "",
+      "luList": [{
+        "luName": "ALL",
+        "defaultValue": "false"
+      }]
+    }, {
+      "globalName": "UPDATE_MDB_EXPORTED_SCHEMA",
+      "Description": "",
+      "luList": [{
+        "luName": "ALL",
+        "defaultValue": "false"
+      }]
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  },
+  "environment/-2/globals": {
+    "result": [{
+      "global_name": "DEVELOPMENT_PRODUCT_VERSION",
+      "environment_id": 15,
+      "lu_name": "ALL",
+      "updated_by": "saeed.namih@k2view.com.k2v",
+      "global_value": "DEV",
+      "update_date": "2026-02-01 15:52:01.423"
+    }],
+    "errorCode": "SUCCESS",
+    "message": null
+  }
+};
+// CONCATENATED MODULE: ./src/apis/businessEntities.ts
+
+
+const businessEntities_runningRequests = {};
+const businessEntities_toastr = getService('toastr');
+const businessEntities_fetchData = async (path, body, method) => {
+  const response = await window.k2api.invokeFabricWebService(path, body, method);
+  if (response.isError) {
+    throw new Error(response.message);
+  }
+  if (response.errorCode === 'FAILED') {
+    businessEntities_toastr === null || businessEntities_toastr === void 0 ? void 0 : businessEntities_toastr.error(response.message);
+    throw new Error(response.message);
+  } else if (response.errorCode === 'WARNING') {
+    businessEntities_toastr === null || businessEntities_toastr === void 0 ? void 0 : businessEntities_toastr.warning(response.message);
+  }
+  return response.result;
+};
+const businessEntities_invokeFabricWebService = async (path, body, method, force) => {
+  if (false) { var _envExampleAPIs$path; }
+  if (window.k2api && window.k2api.invokeFabricWebService) {
+    if (force) {
+      return businessEntities_fetchData(path, body, method);
+    }
+    if (businessEntities_runningRequests[path]) {
+      clearTimeout(businessEntities_runningRequests[path]);
+    }
+    return new Promise((resolve, reject) => {
+      businessEntities_runningRequests[path] = setTimeout(async () => {
+        try {
+          const data = await businessEntities_fetchData(path, body, method);
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      }, 100);
+    });
+  }
+  throw new Error('window.k2api is not defined');
+};
+const getBusinessEntities = () => businessEntities_invokeFabricWebService(`businessentities`, {}, "GET");
+const createBusinessEntity = obj => businessEntities_invokeFabricWebService(`businessentity`, obj, "POST");
+const updateBusinessEntity = (beId, obj) => businessEntities_invokeFabricWebService(`businessentity/${beId}`, obj, "PUT");
+const deleteBusinessEntity = beId => businessEntities_invokeFabricWebService(`businessentity/${beId}`, {}, "DELETE");
+const getBEProductCount = beId => businessEntities_invokeFabricWebService(`businessentity/${beId}/productCount`, {}, "GET");
+const getBELogicalUnits = beId => businessEntities_invokeFabricWebService(`businessentity/${beId}/logicalunits`, {}, "GET");
+const postLogicalUnits = (beId, beName, data) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/logicalunits`, data, "POST");
+const putLogicalUnit = (beId, luId, data) => businessEntities_invokeFabricWebService(`businessentity/${beId}/logicalunit/${luId}`, {
+  logicalUnit: data
+}, "PUT");
+const businessEntities_deleteLogicalUnit = (beId, beName, luId, luName) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/logicalunit/${luId}/luname/${luName}`, {}, "DELETE");
+const getBEPostExecutionProcess = beId => businessEntities_invokeFabricWebService(`businessentity/${beId}/postexecutionprocess`, {}, "GET");
+const getBEPreExecutionProcess = beId => businessEntities_invokeFabricWebService(`businessentity/${beId}/preexecutionprocess`, {}, "GET");
+const deletePostExecutionProcess = (beId, beName, processId, processName) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/postexecutionprocess/${processId}/${processName}`, {}, "DELETE");
+const deletePreExecutionProcess = (beId, beName, processId, processName) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/preexecutionprocess/${processId}/${processName}`, {}, "DELETE");
+const deleteTaskForBE = beId => businessEntities_invokeFabricWebService(`businessentity/${beId}/task`, {}, "DELETE");
+const businessEntities_getLogicalUnits = () => businessEntities_invokeFabricWebService(`logicalunits`, {}, "GET");
+const getExecutionProcesses = mode => businessEntities_invokeFabricWebService(`${mode}executionprocesses`, {}, "GET");
+const addPostExecutionProcess = (beId, beName, data) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/postexecutionprocess`, data, "POST");
+const addPreExecutionProcess = (beId, beName, data) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/preexecutionprocess`, data, "POST");
+const updatePostExecutionProcess = (beId, beName, data) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/postexecutionprocess/${data.process_id}`, data, "PUT");
+const updatePreExecutionProcess = (beId, beName, data) => businessEntities_invokeFabricWebService(`businessentity/${beId}/bename/${beName}/preexecutionprocess/${data.process_id}`, data, "PUT");
+const businessEntitiesAPIs = {
+  getBusinessEntities,
+  createBusinessEntity,
+  updateBusinessEntity,
+  deleteBusinessEntity,
+  getBEProductCount,
+  getBELogicalUnits,
+  postLogicalUnits,
+  putLogicalUnit,
+  deleteLogicalUnit: businessEntities_deleteLogicalUnit,
+  getBEPostExecutionProcess,
+  getBEPreExecutionProcess,
+  deletePostExecutionProcess,
+  deletePreExecutionProcess,
+  deleteTaskForBE,
+  getLogicalUnits: businessEntities_getLogicalUnits,
+  getExecutionProcesses,
+  addPostExecutionProcess,
+  addPreExecutionProcess,
+  updatePostExecutionProcess,
+  updatePreExecutionProcess
+};
+/* harmony default export */ var apis_businessEntities = (businessEntitiesAPIs);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/BusinessEntitiesTable.tsx
+
+
+
+
+
+
+
+
+const BusinessEntitiesTable = _ref => {
+  let {
+    onOpenBusinessEntity,
+    onOpenNewBusinessEntity
+  } = _ref;
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apis_businessEntities.getBusinessEntities();
+        const sortedData = [...response].sort((a, b) => {
+          const dateA = new Date(a.be_creation_date).getTime();
+          const dateB = new Date(b.be_creation_date).getTime();
+          return dateB - dateA;
+        });
+        setData(sortedData);
+      } catch (error) {
+        console.error('Error fetching business entities:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+  const filteredData = Object(react["useMemo"])(() => {
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  const filterOptions = Object(react["useMemo"])(() => {
+    const createdBy = Array.from(new Set(data.map(item => item.be_created_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const updatedBy = Array.from(new Set(data.map(item => item.be_last_updated_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const executionModes = Array.from(new Set(data.map(item => item.execution_mode).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    return {
+      be_created_by: createdBy,
+      be_last_updated_by: updatedBy,
+      be_status: [{
+        label: 'Active',
+        value: 'Active'
+      }, {
+        label: 'Inactive',
+        value: 'Inactive'
+      }],
+      execution_mode: executionModes
+    };
+  }, [data]);
+  const handleBusinessEntityClick = Object(react["useCallback"])(businessEntity => {
+    onOpenBusinessEntity(businessEntity);
+  }, [onOpenBusinessEntity]);
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }) + ', ' + date.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    return [columnHelper.accessor('be_name', {
+      id: 'be_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          cursor: 'pointer',
+          color: '#1483f3',
+          textDecoration: 'underline'
+        },
+        onClick: () => handleBusinessEntityClick(info.row.original),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('be_description', {
+      id: 'be_description',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Description"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue() || '',
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('execution_mode', {
+      id: 'execution_mode',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Execution mode"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string',
+        filterOptions: filterOptions.execution_mode
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('be_creation_date', {
+      id: 'be_creation_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Creation Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate(info.getValue())
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('be_created_by', {
+      id: 'be_created_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Created By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue(),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.be_created_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    }), columnHelper.accessor('be_last_updated_date', {
+      id: 'be_last_updated_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Last Update Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate(info.getValue())
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('be_last_updated_by', {
+      id: 'be_last_updated_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Updated By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue(),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.be_last_updated_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    }), columnHelper.accessor('be_status', {
+      id: 'be_status',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Status"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.be_status
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    })];
+  }, [filterOptions, handleBusinessEntityClick]);
+  const defaultSorting = Object(react["useMemo"])(() => [{
+    id: 'be_status',
+    desc: false
+  }], []);
+  const defaultColumnFilters = Object(react["useMemo"])(() => [{
+    id: 'be_status',
+    value: 'Active'
+  }], []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+      title: "Business Entities",
+      pageSize: pageSize,
+      onPageSizeChange: setPageSize,
+      searchTerm: searchTerm,
+      onSearchChange: setSearchTerm,
+      actions: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+        onClick: onOpenNewBusinessEntity,
+        title: "New Business Entity"
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+      columns: columns,
+      data: filteredData,
+      pageSize: pageSize,
+      initialSorting: defaultSorting,
+      initialColumnFilters: defaultColumnFilters
+    })]
+  });
+};
+/* harmony default export */ var BusinessEntities_BusinessEntitiesTable = (BusinessEntitiesTable);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/AddBusinessEntity.tsx
+
+
+
+
+
+
+
+
+const AddBusinessEntity_toastr = getService('toastr');
+const AddBusinessEntity = _ref => {
+  let {
+    onSave
+  } = _ref;
+  const [formData, setFormData] = Object(react["useState"])({
+    be_name: '',
+    be_description: '',
+    execution_mode: 'HORIZONTAL'
+  });
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({
+    be_name: ""
+  });
+  const [existingBusinessEntities, setExistingBusinessEntities] = Object(react["useState"])([]);
+  Object(react["useEffect"])(() => {
+    const fetchBusinessEntities = async () => {
+      try {
+        const data = await apis_businessEntities.getBusinessEntities();
+        setExistingBusinessEntities(data || []);
+      } catch (error) {
+        console.error('Error fetching business entities:', error);
+      }
+    };
+    fetchBusinessEntities();
+  }, []);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+  const handleExecutionModeChange = Object(react["useCallback"])(mode => {
+    setFormData(prev => ({
+      ...prev,
+      execution_mode: mode
+    }));
+  }, []);
+  const handleSave = Object(react["useCallback"])(async () => {
+    try {
+      setIsSubmitted(true);
+      const formValidation = {
+        be_name: ""
+      };
+      if (!formData.be_name || formData.be_name.trim() === '') {
+        formValidation.be_name = "Business Entity name is required";
+      }
+      setErrors(formValidation);
+      if (formValidation.be_name) {
+        return;
+      }
+      const trimmedFormData = trimFormData(formData);
+      if (existingBusinessEntities.find(be => be.be_name === trimmedFormData.be_name && be.be_status === 'Active')) {
+        AddBusinessEntity_toastr.error("Business Entity # " + trimmedFormData.be_name + " Already Exists");
+        return;
+      }
+      const resp = await apis_businessEntities.createBusinessEntity(trimmedFormData);
+      if (resp && !resp.isError) {
+        AddBusinessEntity_toastr.success("Business Entity # " + trimmedFormData.be_name, "Created Successfully");
+        setIsSubmitted(false);
+        if (onSave) {
+          onSave({
+            ...trimmedFormData,
+            be_id: resp.id || resp.be_id,
+            be_status: 'Active',
+            be_creation_date: new Date().toISOString(),
+            be_created_by: '',
+            be_last_updated_date: new Date().toISOString(),
+            be_last_updated_by: ''
+          });
+        }
+      } else {
+        AddBusinessEntity_toastr.error("Business Entity # " + trimmedFormData.be_name, "Unable to Create : " + ((resp === null || resp === void 0 ? void 0 : resp.message) || 'Unknown error'));
+      }
+    } catch (e) {
+      AddBusinessEntity_toastr.error("Business Entity # " + formData.be_name, "Unable to Create : " + ((e === null || e === void 0 ? void 0 : e.message) || 'Unknown error'));
+    }
+  }, [formData, onSave, existingBusinessEntities]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+        children: "New Business Entity"
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        width: "50%"
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+        title: "Name",
+        type: InputTypes.text,
+        value: formData.be_name,
+        onChange: value => handleInputChange('be_name', value),
+        placeholder: "Enter business entity name",
+        mandatory: true,
+        isSubmitted: isSubmitted,
+        error: errors["be_name"]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+        title: "Description",
+        type: InputTypes.text,
+        value: formData.be_description,
+        onChange: value => handleInputChange('be_description', value),
+        placeholder: "Enter business entity description"
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("label", {
+            style: {
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+              type: "radio",
+              name: "executionModeRadio",
+              value: "HORIZONTAL",
+              checked: formData.execution_mode === 'HORIZONTAL',
+              onChange: () => handleExecutionModeChange('HORIZONTAL'),
+              style: {
+                marginRight: '8px'
+              }
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+              title: "Executes Logical Unit (LU) by LU, processing all entities for each LU",
+              children: "Horizontal execution"
+            })]
+          }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("label", {
+            style: {
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+              type: "radio",
+              name: "executionModeRadio",
+              value: "VERTICAL",
+              checked: formData.execution_mode === 'VERTICAL',
+              onChange: () => handleExecutionModeChange('VERTICAL'),
+              style: {
+                marginRight: '8px'
+              }
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+              title: "Executes entire hierarchy for each entity ID",
+              children: "Vertical execution"
+            })]
+          })]
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupActionsWrapper, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Create",
+          onClick: handleSave,
+          type: "primary",
+          width: "68px"
+        })
+      })]
+    })]
+  });
+};
+/* harmony default export */ var BusinessEntities_AddBusinessEntity = (AddBusinessEntity);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/styles.ts
+
+const styles_DeleteIcon = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+    height: 16px;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    transition: opacity 0.2s ease;
+    
+    &:hover {
+        opacity: ${props => props.disabled ? 0.5 : 0.7};
+    }
+`;
+const styles_TabContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    border-bottom: 1px solid #eaeaea;
+    background-color: white;
+`;
+const styles_Tab = styled_components_browser_esm["b" /* default */].button`
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    border-bottom: ${props => props.active ? '2px solid #1483f3' : '2px solid transparent'};
+    color: ${props => props.active ? '#1483f3' : '#666'};
+    font-size: 14px;
+    font-weight: ${props => props.active ? 500 : 400};
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        color: #1483f3;
+        background-color: ${props => props.active ? 'transparent' : '#f8f9fa'};
+    }
+`;
+const TabContent = styled_components_browser_esm["b" /* default */].div`
+    padding: 15px;
+`;
+const BusinessEntities_styles_ActionsWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: space-around;
+    max-width: 100px;
+    gap: 8px;
+`;
+const ActionIcon = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    
+    &:hover {
+        opacity: 1;
+    }
+`;
+const BusinessEntities_styles_Icon = styled_components_browser_esm["b" /* default */].img`
+    width: 22px;
+    height: 22px;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    transition: opacity 0.2s ease;
+    margin-bottom: 4px;
+    &:hover {
+        opacity: ${props => props.disabled ? 0.5 : 0.7};
+    }
+`;
+const ActionWrapper = styled_components_browser_esm["b" /* default */].div`
+    padding: 0px;
+    height:${props => props.isFirst ? "65px" : "38px"};
+    display: flex;
+    flex-direction: row;
+    width: 72px;
+    align-items: end;
+    justify-content: space-between;
+        padding-bottom: 3px;
+`;
+const PlusWrapper = styled_components_browser_esm["b" /* default */].div`
+    height: 38px;
+    display: flex;
+    flex-direction: row;
+    width: 50px;
+    align-items: center;
+    justify-content: space-between;
+`;
+const LoadingWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: center;
+    align-items: center;        
+    `;
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/EditLogicalUnitPopup.tsx
+
+
+
+
+
+
+
+
+
+const EditLogicalUnitPopup_toastr = getService('toastr');
+const EditLogicalUnitPopup = _ref => {
+  let {
+    businessEntity,
+    logicalUnit,
+    existingLogicalUnits,
+    onClose,
+    onSave
+  } = _ref;
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [availableParentLUs, setAvailableParentLUs] = Object(react["useState"])([]);
+  const [formData, setFormData] = Object(react["useState"])({
+    lu_description: logicalUnit.lu_description || '',
+    lu_parent_name: logicalUnit.lu_parent_name || ''
+  });
+  const [error, setError] = Object(react["useState"])(null);
+  const parentLUOptions = Object(react["useMemo"])(() => {
+    const options = availableParentLUs.map(lu => ({
+      label: lu.lu_name,
+      value: lu.lu_name
+    }));
+    return [{
+      label: 'None',
+      value: ''
+    }, ...options];
+  }, [availableParentLUs]);
+  const selectedParentLUOption = Object(react["useMemo"])(() => {
+    if (!formData.lu_parent_name) {
+      return {
+        label: 'None',
+        value: ''
+      };
+    }
+    return parentLUOptions.find(opt => opt.value === formData.lu_parent_name) || {
+      label: 'None',
+      value: ''
+    };
+  }, [formData.lu_parent_name, parentLUOptions]);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const allLogicalUnits = await apis_businessEntities.getLogicalUnits();
+        const foundLu = allLogicalUnits.find(lu => lu.lu_name === logicalUnit.lu_name);
+        if (foundLu && foundLu.lu_parents) {
+          const validParents = existingLogicalUnits.filter(lu => lu.lu_id !== logicalUnit.lu_id).filter(lu => foundLu.lu_parents.includes(lu.lu_name)).map(lu => ({
+            lu_id: lu.lu_id,
+            lu_name: lu.lu_name
+          }));
+          setAvailableParentLUs(validParents);
+        } else {
+          setAvailableParentLUs(existingLogicalUnits.filter(lu => lu.lu_id !== logicalUnit.lu_id).map(lu => ({
+            lu_id: lu.lu_id,
+            lu_name: lu.lu_name
+          })));
+        }
+      } catch (error) {
+        console.error('Error fetching logical units:', error);
+        EditLogicalUnitPopup_toastr.error('Failed to load parent logical units');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [logicalUnit, existingLogicalUnits]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    try {
+      setError(null);
+      let lu_parent_id = undefined;
+      if (formData.lu_parent_name) {
+        const parentLu = availableParentLUs.find(lu => lu.lu_name === formData.lu_parent_name);
+        if (parentLu) {
+          lu_parent_id = parentLu.lu_id;
+        }
+      }
+      const updateData = {
+        lu_id: logicalUnit.lu_id,
+        lu_name: logicalUnit.lu_name,
+        lu_description: formData.lu_description || undefined,
+        lu_parent_id: lu_parent_id,
+        lu_parent_name: formData.lu_parent_name || undefined
+      };
+      if (!formData.lu_parent_name) {
+        delete updateData.lu_parent_id;
+        delete updateData.lu_parent_name;
+      }
+      await apis_businessEntities.putLogicalUnit(businessEntity.be_id, logicalUnit.lu_id, updateData);
+      EditLogicalUnitPopup_toastr.success("Logical unit updated successfully");
+      onSave();
+    } catch (error) {
+      const errorMessage = (error === null || error === void 0 ? void 0 : error.message) || 'Unknown error';
+      setError(`Failed to update Logical Unit [${errorMessage}]`);
+      EditLogicalUnitPopup_toastr.error(`Failed to update Logical Unit [${errorMessage}]`);
+    }
+  }, [formData, logicalUnit, businessEntity, availableParentLUs, onSave]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      isOpen: true,
+      onClose: onClose,
+      width: "500px",
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          className: "k2-loader"
+        })
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    isOpen: true,
+    onClose: onClose,
+    width: "500px",
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Update Logical Unit"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(global_CloseButton, {
+          onClick: onClose,
+          children: "X"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          padding: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Logical Unit Name",
+            type: InputTypes.text,
+            value: logicalUnit.lu_name,
+            onChange: () => {},
+            disabled: true,
+            width: "100%"
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Logical Unit Description",
+            type: InputTypes.text,
+            value: formData.lu_description,
+            onChange: value => setFormData(prev => ({
+              ...prev,
+              lu_description: value
+            })),
+            placeholder: "Enter description",
+            width: "100%"
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Logical Unit Parent",
+            options: parentLUOptions,
+            value: selectedParentLUOption,
+            onChange: option => setFormData(prev => ({
+              ...prev,
+              lu_parent_name: (option === null || option === void 0 ? void 0 : option.value) || ''
+            })),
+            placeholder: "Select Parent LU",
+            isClearable: true,
+            width: "100%"
+          })
+        }), error && /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px',
+            padding: '10px',
+            backgroundColor: '#f8d7da',
+            color: '#721c24',
+            borderRadius: '4px',
+            border: '1px solid #f5c6cb'
+          },
+          children: error
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupActionsWrapper, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Update",
+          onClick: handleSave,
+          type: "primary",
+          width: "150px"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var BusinessEntities_EditLogicalUnitPopup = (EditLogicalUnitPopup);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/LogicalUnitsTab.tsx
+
+
+
+
+
+
+
+
+
+
+
+const LogicalUnitsTab_toastr = getService('toastr');
+const LogicalUnitsTab = _ref => {
+  let {
+    businessEntity,
+    disableChange,
+    onDataChange
+  } = _ref;
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [showEditPopup, setShowEditPopup] = Object(react["useState"])(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [selectedLogicalUnit, setSelectedLogicalUnit] = Object(react["useState"])(null);
+  const [editingLogicalUnit, setEditingLogicalUnit] = Object(react["useState"])(null);
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const fetchLogicalUnits = Object(react["useCallback"])(async () => {
+    try {
+      const response = await apis_businessEntities.getBELogicalUnits(businessEntity.be_id);
+      const logicalUnits = response || [];
+      setData(logicalUnits);
+      if (onDataChange) {
+        onDataChange(logicalUnits);
+      }
+    } catch (error) {
+      console.error('Error fetching logical units:', error);
+      LogicalUnitsTab_toastr.error("Business entity # " + businessEntity.be_name, "Failed to get Logical Units");
+    } finally {
+      setLoading(false);
+    }
+  }, [businessEntity, onDataChange]);
+  Object(react["useEffect"])(() => {
+    fetchLogicalUnits();
+  }, [fetchLogicalUnits]);
+  const handleDelete = Object(react["useCallback"])(async lu => {
+    try {
+      const allLogicalUnits = await apis_businessEntities.getLogicalUnits();
+      let childLU = allLogicalUnits.find(item => item.lu_parent_id === lu.lu_id);
+      if (!childLU) {
+        childLU = data.find(item => item.lu_parent_id === lu.lu_id);
+      }
+      if (childLU) {
+        LogicalUnitsTab_toastr.error(`The ${lu.lu_name} is set as a parent LU in the Business Entity. Before deleting the ${lu.lu_name}, please set an alternative parent LU for its child LUs.`);
+      } else {
+        await apis_businessEntities.deleteLogicalUnit(businessEntity.be_id, businessEntity.be_name, lu.lu_id, lu.lu_name);
+        LogicalUnitsTab_toastr.success("Logical Unit deleted successfully");
+        if (data.length === 1) {
+          await apis_businessEntities.deleteTaskForBE(businessEntity.be_id);
+        }
+        fetchLogicalUnits();
+      }
+    } catch (error) {
+      // toastr.error("Logical Unit " + lu.lu_name, "Failed to delete : " + (error?.message || 'Unknown error'));
+    } finally {
+      setShowDeleteConfirm(false);
+      setSelectedLogicalUnit(null);
+    }
+  }, [businessEntity, data, fetchLogicalUnits]);
+  const handleEditClick = Object(react["useCallback"])(lu => {
+    setEditingLogicalUnit(lu);
+    setShowEditPopup(true);
+  }, []);
+  const handleDeleteClick = Object(react["useCallback"])(async lu => {
+    try {
+      const allLogicalUnits = await apis_businessEntities.getLogicalUnits();
+      let childLU = allLogicalUnits.find(item => item.lu_parent_id === lu.lu_id);
+      if (!childLU) {
+        childLU = data.find(item => item.lu_parent_id === lu.lu_id);
+      }
+      if (childLU) {
+        LogicalUnitsTab_toastr.error('The CRM is set as the ' + childLU.lu_name + '’s parent LU in the Business Entity.Before deleting the CRM, please set an alternative parent LU.');
+        return;
+      }
+      setSelectedLogicalUnit(lu);
+      setShowDeleteConfirm(true);
+    } catch (error) {
+      setSelectedLogicalUnit(lu);
+      setShowDeleteConfirm(true);
+    }
+  }, [data]);
+  const filterOptions = Object(react["useMemo"])(() => {
+    const parentLUs = Array.from(new Set(data.map(item => item.lu_parent_name).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const systemNames = Array.from(new Set(data.map(item => item.product_name).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    return {
+      lu_parent_name: parentLUs,
+      product_name: systemNames
+    };
+  }, [data]);
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    const cols = [];
+    if (!disableChange) {
+      cols.push(columnHelper.display({
+        id: 'actions',
+        header: "",
+        cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ActionButtons, {
+          onEdit: () => handleEditClick(info.row.original),
+          onDelete: () => handleDeleteClick(info.row.original),
+          deleteTitle: "Delete Logical Unit",
+          editTitle: "Edit Logical Unit"
+        })
+      }));
+    }
+    cols.push(columnHelper.accessor('lu_name', {
+      id: 'lu_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('lu_description', {
+      id: 'lu_description',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Description"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue() || '',
+        children: info.getValue() || ''
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('lu_parent_name', {
+      id: 'lu_parent_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Parent LU"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || ''
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.lu_parent_name
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    }), columnHelper.accessor('product_name', {
+      id: 'product_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "System Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || ''
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.product_name
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    }));
+    return cols;
+  }, [disableChange, handleEditClick, handleDeleteClick, filterOptions]);
+  const filteredData = Object(react["useMemo"])(() => {
+    if (!searchTerm) return data;
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+      title: "",
+      pageSize: pageSize,
+      onPageSizeChange: setPageSize,
+      searchTerm: searchTerm,
+      onSearchChange: setSearchTerm
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+      columns: columns,
+      data: filteredData,
+      pageSize: pageSize
+    }), showEditPopup && editingLogicalUnit && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_EditLogicalUnitPopup, {
+      businessEntity: businessEntity,
+      logicalUnit: editingLogicalUnit,
+      existingLogicalUnits: data,
+      onClose: () => {
+        setShowEditPopup(false);
+        setEditingLogicalUnit(null);
+      },
+      onSave: () => {
+        setShowEditPopup(false);
+        setEditingLogicalUnit(null);
+        fetchLogicalUnits();
+      }
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showDeleteConfirm,
+      onClose: () => {
+        setShowDeleteConfirm(false);
+        setSelectedLogicalUnit(null);
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+        isOpen: showDeleteConfirm,
+        title: "Delete Logical Unit",
+        message: `Deleting the ${selectedLogicalUnit === null || selectedLogicalUnit === void 0 ? void 0 : selectedLogicalUnit.lu_name} Logical Unit (LU) from the Business Entity will remove the LU from the related Systems. Any active tasks containing the ${selectedLogicalUnit === null || selectedLogicalUnit === void 0 ? void 0 : selectedLogicalUnit.lu_name} LU will be deleted as well. Are you sure you want to delete this LU?`,
+        onConfirm: () => selectedLogicalUnit && handleDelete(selectedLogicalUnit),
+        onCancel: () => {
+          setShowDeleteConfirm(false);
+          setSelectedLogicalUnit(null);
+        },
+        confirmText: "Yes",
+        cancelText: "No"
+      })
+    })]
+  });
+};
+/* harmony default export */ var BusinessEntities_LogicalUnitsTab = (LogicalUnitsTab);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/ExecutionProcessPopup.tsx
+
+
+
+
+
+
+
+
+
+
+const ExecutionProcessPopup_toastr = getService('toastr');
+const ExecutionProcessPopup = _ref => {
+  let {
+    businessEntity,
+    mode,
+    existingProcesses,
+    process,
+    onClose,
+    onSave
+  } = _ref;
+  const [processNames, setProcessNames] = Object(react["useState"])([]);
+  const [formData, setFormData] = Object(react["useState"])({
+    process_name: (process === null || process === void 0 ? void 0 : process.process_name) || '',
+    execution_order: (process === null || process === void 0 ? void 0 : process.execution_order) || "",
+    process_description: (process === null || process === void 0 ? void 0 : process.process_description) || ''
+  });
+  const processNameOptions = Object(react["useMemo"])(() => {
+    return processNames.map(name => ({
+      label: name,
+      value: name
+    }));
+  }, [processNames]);
+  const selectedProcessName = Object(react["useMemo"])(() => {
+    if (!formData.process_name) return null;
+    return processNameOptions.find(opt => opt.value === formData.process_name) || null;
+  }, [formData.process_name, processNameOptions]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({
+    process_name: "",
+    execution_order: ""
+  });
+  Object(react["useEffect"])(() => {
+    const fetchProcessNames = async () => {
+      try {
+        const response = await apis_businessEntities.getExecutionProcesses(mode);
+        const allProcessNames = Object.keys(response || {});
+        const beProcessesResponse = mode === 'post' ? await apis_businessEntities.getBEPostExecutionProcess(businessEntity.be_id) : await apis_businessEntities.getBEPreExecutionProcess(businessEntity.be_id);
+        const currentBeProcesses = Array.isArray(beProcessesResponse) ? beProcessesResponse : beProcessesResponse || [];
+        const availableNames = allProcessNames.filter(name => {
+          if (process && process.process_name === name) {
+            return true;
+          }
+          return !currentBeProcesses.some(p => p.process_name === name);
+        });
+        setProcessNames(availableNames);
+        if (process && !availableNames.includes(process.process_name)) {
+          setProcessNames([...availableNames, process.process_name]);
+        }
+      } catch (error) {
+        console.error('Error fetching process names:', error);
+        if (process) {
+          setProcessNames([process.process_name]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProcessNames();
+  }, [mode, businessEntity.be_id, process]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    setIsSubmitted(true);
+    const formValidation = {
+      process_name: "",
+      execution_order: ""
+    };
+    if (!formData.process_name) {
+      formValidation.process_name = "Process name is required";
+    }
+    if (!formData.execution_order) {
+      formValidation.execution_order = "Execution order is required";
+    }
+    setErrors(formValidation);
+    if (formValidation.process_name || formValidation.execution_order) {
+      return;
+    }
+    try {
+      const dataToSend = {
+        process_id: process === null || process === void 0 ? void 0 : process.process_id,
+        process_name: formData.process_name,
+        execution_order: formData.execution_order,
+        process_description: formData.process_description || undefined,
+        be_id: businessEntity.be_id
+      };
+      let response;
+      if (process) {
+        if (mode === 'pre') {
+          response = await apis_businessEntities.updatePreExecutionProcess(businessEntity.be_id, businessEntity.be_name, dataToSend);
+        } else {
+          response = await apis_businessEntities.updatePostExecutionProcess(businessEntity.be_id, businessEntity.be_name, dataToSend);
+        }
+      } else {
+        // Add new
+        if (mode === 'pre') {
+          response = await apis_businessEntities.addPreExecutionProcess(businessEntity.be_id, businessEntity.be_name, dataToSend);
+        } else {
+          response = await apis_businessEntities.addPostExecutionProcess(businessEntity.be_id, businessEntity.be_name, dataToSend);
+        }
+      }
+      ExecutionProcessPopup_toastr.success(`${mode === 'pre' ? 'Pre' : 'Post'} Execution Process ${process ? 'updated' : 'added'} successfully`);
+      setIsSubmitted(false);
+      onSave();
+    } catch (error) {
+      setIsSubmitted(false);
+    }
+  }, [formData, process, mode, businessEntity, onSave]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      isOpen: true,
+      onClose: onClose,
+      width: "600px",
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(LoadingWrapper, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+            className: "k2-loader"
+          })
+        })
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    isOpen: true,
+    onClose: onClose,
+    width: "600px",
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Title, {
+          children: [mode === 'post' ? 'Post' : 'Pre', " Execution Process"]
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(global_CloseButton, {
+          onClick: onClose,
+          children: "X"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          padding: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Process Name",
+            options: processNameOptions,
+            value: selectedProcessName,
+            onChange: option => setFormData(prev => ({
+              ...prev,
+              process_name: (option === null || option === void 0 ? void 0 : option.value) || ''
+            })),
+            placeholder: "Select Process Name",
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.process_name,
+            width: "100%"
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Execution Order",
+            type: InputTypes.number,
+            value: formData.execution_order.toString(),
+            onChange: value => setFormData(prev => ({
+              ...prev,
+              execution_order: parseInt(value) || ""
+            })),
+            placeholder: "Enter execution order",
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.execution_order,
+            min: 1
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Description",
+            type: InputTypes.text,
+            value: formData.process_description,
+            onChange: value => setFormData(prev => ({
+              ...prev,
+              process_description: value
+            })),
+            placeholder: "Enter description"
+          })
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupActionsWrapper, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: process ? `Update ${mode === 'post' ? 'Post' : 'Pre'} Execution Process` : `Add ${mode === 'post' ? 'Post' : 'Pre'} Execution Process`,
+          onClick: handleSave,
+          type: "primary",
+          width: "230px"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var BusinessEntities_ExecutionProcessPopup = (ExecutionProcessPopup);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/ExecutionProcessesTab.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+const ExecutionProcessesTab_toastr = getService('toastr');
+const ExecutionProcessesTab = _ref => {
+  let {
+    businessEntity,
+    disableChange,
+    mode,
+    onDataChange
+  } = _ref;
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [showAddEditPopup, setShowAddEditPopup] = Object(react["useState"])(false);
+  const [selectedProcess, setSelectedProcess] = Object(react["useState"])(null);
+  const [editingProcess, setEditingProcess] = Object(react["useState"])(null);
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const fetchProcesses = Object(react["useCallback"])(async () => {
+    try {
+      const response = mode === 'pre' ? await apis_businessEntities.getBEPreExecutionProcess(businessEntity.be_id) : await apis_businessEntities.getBEPostExecutionProcess(businessEntity.be_id);
+      setData(response || []);
+    } catch (error) {
+      console.error(`Error fetching ${mode} execution processes:`, error);
+      ExecutionProcessesTab_toastr.error("Business entity # " + businessEntity.be_name, `Failed to get ${mode === 'pre' ? 'Pre' : 'Post'} Execution Processes`);
+    } finally {
+      setLoading(false);
+    }
+  }, [businessEntity, mode]);
+  Object(react["useEffect"])(() => {
+    fetchProcesses();
+  }, [fetchProcesses]);
+  const handleDelete = Object(react["useCallback"])(async process => {
+    try {
+      if (mode === 'pre') {
+        await apis_businessEntities.deletePreExecutionProcess(businessEntity.be_id, businessEntity.be_name, process.process_id, process.process_name);
+      } else {
+        await apis_businessEntities.deletePostExecutionProcess(businessEntity.be_id, businessEntity.be_name, process.process_id, process.process_name);
+      }
+      ExecutionProcessesTab_toastr.success("Process deleted successfully");
+      fetchProcesses();
+    } catch (error) {
+      ExecutionProcessesTab_toastr.error("Process " + process.process_name, "Failed to delete : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+    } finally {
+      setShowDeleteConfirm(false);
+      setSelectedProcess(null);
+    }
+  }, [businessEntity, mode, fetchProcesses]);
+  const handleEditClick = Object(react["useCallback"])(process => {
+    setEditingProcess(process);
+    setShowAddEditPopup(true);
+  }, []);
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    const cols = [];
+    if (!disableChange) {
+      cols.push(columnHelper.display({
+        id: 'actions',
+        header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {}),
+        cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_styles_ActionsWrapper, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ActionButtons, {
+            onEdit: () => handleEditClick(info.row.original),
+            onDelete: () => {
+              setSelectedProcess(info.row.original);
+              setShowDeleteConfirm(true);
+            },
+            deleteTitle: `Delete ${mode === 'pre' ? 'Pre' : 'Post'} Execution Process`,
+            editTitle: `Edit ${mode === 'pre' ? 'Pre' : 'Post'} Execution Process`
+          })
+        })
+      }));
+    }
+    cols.push(columnHelper.accessor('process_name', {
+      id: 'process_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Process Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('execution_order', {
+      id: 'execution_order',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Execution Order"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('process_description', {
+      id: 'process_description',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Description"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue() || '',
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }));
+    return cols;
+  }, [disableChange, mode, handleEditClick]);
+  const filteredData = Object(react["useMemo"])(() => {
+    if (!searchTerm) return data;
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+      title: "",
+      pageSize: pageSize,
+      onPageSizeChange: setPageSize,
+      searchTerm: searchTerm,
+      onSearchChange: setSearchTerm
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+      columns: columns,
+      data: filteredData,
+      pageSize: pageSize
+    }), showAddEditPopup && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_ExecutionProcessPopup, {
+      businessEntity: businessEntity,
+      mode: mode,
+      existingProcesses: data,
+      process: editingProcess,
+      onClose: () => {
+        setShowAddEditPopup(false);
+        setEditingProcess(null);
+      },
+      onSave: () => {
+        setShowAddEditPopup(false);
+        setEditingProcess(null);
+        fetchProcesses();
+      }
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showDeleteConfirm,
+      onClose: () => {
+        setShowDeleteConfirm(false);
+        setSelectedProcess(null);
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+        isOpen: showDeleteConfirm,
+        title: "Delete Process",
+        message: "This process will be removed from the related tasks. Are you sure?",
+        onConfirm: () => selectedProcess && handleDelete(selectedProcess),
+        onCancel: () => {
+          setShowDeleteConfirm(false);
+          setSelectedProcess(null);
+        },
+        confirmText: "Yes",
+        cancelText: "No"
+      })
+    })]
+  });
+};
+/* harmony default export */ var BusinessEntities_ExecutionProcessesTab = (ExecutionProcessesTab);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/AddLogicalUnitPopup.tsx
+
+
+
+
+
+
+
+
+
+
+
+const BusinessEntities_AddLogicalUnitPopup_toastr = getService('toastr');
+const AddLogicalUnitPopup_AddLogicalUnitPopup = _ref => {
+  let {
+    businessEntity,
+    existingLogicalUnits,
+    onClose,
+    onSave
+  } = _ref;
+  const [logicalUnits, setLogicalUnits] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [chooseOption, setChooseOption] = Object(react["useState"])('custom');
+  const [selectedLUs, setSelectedLUs] = Object(react["useState"])([{}]);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [parentError, setParentError] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    const fetchLogicalUnits = async () => {
+      try {
+        const response = await apis_businessEntities.getLogicalUnits();
+        const availableLUs = (response || []).filter(lu => !existingLogicalUnits.some(existing => existing.lu_name === lu.lu_name));
+        setLogicalUnits(availableLUs.map(lu => ({
+          logical_unit: lu.lu_name,
+          lu_parents: lu.lu_parents || []
+        })));
+      } catch (error) {
+        console.error('Error fetching logical units:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogicalUnits();
+  }, [existingLogicalUnits]);
+  const logicalUnitOptions = Object(react["useMemo"])(() => {
+    return logicalUnits.map(lu => ({
+      label: lu.logical_unit,
+      value: lu.logical_unit,
+      lu_parents: lu.lu_parents
+    }));
+  }, [logicalUnits]);
+  const handleAddLU = Object(react["useCallback"])(() => {
+    if (selectedLUs.length < logicalUnits.length) {
+      setSelectedLUs(prev => [...prev, {}]);
+    }
+  }, [selectedLUs.length, logicalUnits.length]);
+  const handleRemoveLU = Object(react["useCallback"])(index => {
+    setSelectedLUs(prev => prev.filter((_, i) => i !== index));
+    // Clear error for removed row and reindex remaining errors
+    setErrors(prev => {
+      const newErrors = {};
+      Object.keys(prev).forEach(key => {
+        const keyNum = parseInt(key);
+        if (keyNum < index) {
+          newErrors[keyNum] = prev[keyNum];
+        } else if (keyNum > index) {
+          newErrors[keyNum - 1] = prev[keyNum];
+        }
+      });
+      return newErrors;
+    });
+  }, []);
+  const handleSave = Object(react["useCallback"])(async () => {
+    setIsSubmitted(true);
+    try {
+      let newLogicalUnits = null;
+      if (chooseOption === 'all') {
+        if (logicalUnits.length === 0) {
+          BusinessEntities_AddLogicalUnitPopup_toastr.error('There are no Logical Units to add');
+          setIsSubmitted(false);
+          return;
+        }
+        newLogicalUnits = logicalUnits.map(lu => ({
+          lu_name: lu.logical_unit,
+          lu_description: lu.logical_unit
+        }));
+      } else {
+        const validationErrors = {};
+        selectedLUs.forEach((lu, index) => {
+          if (!lu.lu_name) {
+            validationErrors[index] = 'Logical Unit is required';
+          }
+        });
+        if (Object.keys(validationErrors).length > 0) {
+          setErrors(validationErrors);
+          return;
+        }
+        setErrors({});
+
+        // Validate parent LUs
+        let parentCheck = true;
+        const parentErrors = [];
+        for (const lu of selectedLUs) {
+          if (lu.lu_parent) {
+            const parentFound = selectedLUs.find(s => {
+              var _s$lu_name;
+              return ((_s$lu_name = s.lu_name) === null || _s$lu_name === void 0 ? void 0 : _s$lu_name.logical_unit) === lu.lu_parent;
+            });
+            if (!parentFound) {
+              const parentFound2 = existingLogicalUnits.find(ex => ex.lu_name === lu.lu_parent);
+              if (!parentFound2) {
+                parentCheck = false;
+                parentErrors.push(lu.lu_parent);
+              }
+            }
+          }
+        }
+        if (!parentCheck) {
+          const errorMsg = `The ${parentErrors.join(', ')} parent LU is missing from the Business Entity (BE). Add the ${parentErrors.join(', ')} to the BE or set an alternative parent LU.`;
+          setParentError(errorMsg);
+          setIsSubmitted(false);
+          return;
+        }
+        setParentError(null);
+        newLogicalUnits = selectedLUs.filter(lu => lu.lu_name).map(lu => {
+          const result = {
+            lu_name: lu.lu_name.logical_unit || lu.lu_name,
+            lu_description: lu.lu_description || ''
+          };
+          if (lu.lu_parent && lu.lu_parent.trim()) {
+            result.lu_parent = {
+              logical_unit: lu.lu_parent
+            };
+          }
+          return result;
+        });
+      }
+      await apis_businessEntities.postLogicalUnits(businessEntity.be_id, businessEntity.be_name, {
+        logicalUnits: newLogicalUnits
+      });
+      BusinessEntities_AddLogicalUnitPopup_toastr.success("Logical units added successfully");
+      setIsSubmitted(false);
+      onSave();
+    } catch (error) {
+      setIsSubmitted(false);
+      setParentError('Failed to Add Logical Units [' + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error') + ']');
+    }
+  }, [chooseOption, logicalUnits, selectedLUs, existingLogicalUnits, businessEntity, onSave]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      isOpen: true,
+      onClose: onClose,
+      width: "800px",
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          className: "k2-loader"
+        })
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    isOpen: true,
+    onClose: onClose,
+    width: "800px",
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Add Logical Units"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(global_CloseButton, {
+          onClick: onClose,
+          children: "X"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("label", {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '10px',
+            cursor: 'pointer'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+            type: "radio",
+            name: "beLU",
+            value: "all",
+            checked: chooseOption === 'all',
+            onChange: () => setChooseOption('all'),
+            style: {
+              marginRight: '8px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+            children: "All Logical Units"
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("label", {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'pointer'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+            type: "radio",
+            name: "beLU",
+            value: "custom",
+            checked: chooseOption === 'custom',
+            onChange: () => setChooseOption('custom'),
+            style: {
+              marginRight: '8px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+            children: "Select:"
+          })]
+        })]
+      }), chooseOption === 'all' && /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: logicalUnits.map((lu, index) => /*#__PURE__*/Object(jsx_runtime["jsxs"])("span", {
+          children: [lu.logical_unit, index < logicalUnits.length - 1 && ', ']
+        }, index))
+      }), chooseOption === 'custom' && /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: selectedLUs.map((lu, index) => {
+          const availableLUOptions = logicalUnitOptions.filter(opt => !selectedLUs.some((s, i) => {
+            var _s$lu_name2;
+            return i !== index && ((_s$lu_name2 = s.lu_name) === null || _s$lu_name2 === void 0 ? void 0 : _s$lu_name2.logical_unit) === opt.value;
+          }));
+          const selectedLUOption = lu.lu_name ? logicalUnitOptions.find(opt => {
+            var _lu$lu_name;
+            return opt.value === (typeof lu.lu_name === 'string' ? lu.lu_name : (_lu$lu_name = lu.lu_name) === null || _lu$lu_name === void 0 ? void 0 : _lu$lu_name.logical_unit);
+          }) : null;
+          const canAddMoreRows = selectedLUs.length < logicalUnits.length;
+          const validParentNames = lu.lu_name && typeof lu.lu_name === 'object' && lu.lu_name.lu_parents ? lu.lu_name.lu_parents : [];
+          const currentLUName = lu.lu_name && typeof lu.lu_name === 'object' ? lu.lu_name.logical_unit : typeof lu.lu_name === 'string' ? lu.lu_name : '';
+          const availableParents = validParentNames.filter(parentName => {
+            if (currentLUName === parentName) {
+              return false;
+            }
+            const inExisting = existingLogicalUnits.some(ex => ex.lu_name === parentName);
+            if (inExisting) {
+              return true;
+            }
+            const inSelected = selectedLUs.some((s, i) => {
+              if (i === index) return false;
+              const sLUName = s.lu_name && typeof s.lu_name === 'object' ? s.lu_name.logical_unit : typeof s.lu_name === 'string' ? s.lu_name : '';
+              return sLUName === parentName;
+            });
+            if (inSelected) {
+              return true;
+            }
+            const inAvailable = logicalUnits.some(l => l.logical_unit === parentName);
+            return inAvailable;
+          });
+          const parentOptions = availableParents.map(name => ({
+            label: name,
+            value: name
+          }));
+          const selectedParentOption = lu.lu_parent ? parentOptions.find(opt => opt.value === lu.lu_parent) : null;
+          return /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              display: 'flex',
+              gap: '10px',
+              marginBottom: '15px',
+              alignItems: 'flex-start'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+              style: {
+                flex: 1
+              },
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+                title: index === 0 ? "Logical Unit" : "",
+                mandatory: true,
+                options: availableLUOptions,
+                value: selectedLUOption,
+                onChange: option => {
+                  const selected = option ? logicalUnits.find(l => l.logical_unit === option.value) : null;
+                  setSelectedLUs(prev => prev.map((item, i) => {
+                    if (i === index) {
+                      let newParent = '';
+                      if (selected && item.lu_parent) {
+                        const validParents = selected.lu_parents || [];
+                        if (validParents.includes(item.lu_parent)) {
+                          newParent = item.lu_parent;
+                        }
+                      }
+                      return {
+                        ...item,
+                        lu_name: selected,
+                        lu_parent: newParent
+                      };
+                    }
+                    return item;
+                  }));
+                  if (errors[index]) {
+                    setErrors(prev => {
+                      const newErrors = {
+                        ...prev
+                      };
+                      delete newErrors[index];
+                      return newErrors;
+                    });
+                  }
+                  if (parentError) {
+                    setParentError(null);
+                  }
+                },
+                placeholder: "Select Logical Unit",
+                isClearable: true,
+                width: "100%",
+                error: errors[index],
+                isSubmitted: isSubmitted
+              })
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+              style: {
+                flex: 1,
+                height: '38px'
+              },
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+                title: index === 0 ? "Logical Unit Description" : "",
+                type: InputTypes.text,
+                value: lu.lu_description || '',
+                onChange: value => {
+                  setSelectedLUs(prev => prev.map((item, i) => i === index ? {
+                    ...item,
+                    lu_description: value
+                  } : item));
+                },
+                placeholder: "Description",
+                width: "100%"
+              })
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+              style: {
+                flex: 1
+              },
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+                title: index === 0 ? "Parent Logical Unit" : "",
+                options: parentOptions,
+                value: selectedParentOption,
+                onChange: option => {
+                  setSelectedLUs(prev => prev.map((item, i) => i === index ? {
+                    ...item,
+                    lu_parent: (option === null || option === void 0 ? void 0 : option.value) || ''
+                  } : item));
+                  // Clear parent error when user changes parent selection
+                  if (parentError) {
+                    setParentError(null);
+                  }
+                },
+                placeholder: "Select Parent LU",
+                disabled: !lu.lu_name,
+                isClearable: true,
+                width: "100%"
+              })
+            }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(ActionWrapper, {
+              isFirst: index === 0,
+              children: [selectedLUs.length > 1 && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_styles_Icon, {
+                src: delete_icon,
+                alt: "Delete",
+                onClick: () => handleRemoveLU(index),
+                title: "Delete"
+              }), index === selectedLUs.length - 1 && canAddMoreRows && /*#__PURE__*/Object(jsx_runtime["jsx"])("button", {
+                className: "k2-secondary-icon-btn",
+                onClick: handleAddLU,
+                style: {
+                  fontWeight: "bolder",
+                  cursor: 'pointer',
+                  padding: '0px'
+                },
+                children: "+"
+              })]
+            })]
+          }, index);
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          width: '100%',
+          gap: ' 22px'
+        },
+        children: [parentError && /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            padding: '10px',
+            backgroundColor: '#f8d7da',
+            color: '#721c24',
+            borderRadius: '4px',
+            border: '1px solid #f5c6cb',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: "90%",
+            gap: "16px"
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+            children: parentError
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("button", {
+            onClick: () => setParentError(null),
+            style: {
+              background: 'none',
+              border: 'none',
+              color: '#721c24',
+              fontSize: '18px',
+              cursor: 'pointer',
+              padding: '0 5px'
+            },
+            children: "\xD7"
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupActionsWrapper, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Add Logical Units",
+            onClick: handleSave,
+            type: "primary",
+            width: "150px"
+          })
+        })]
+      })]
+    })
+  });
+};
+/* harmony default export */ var BusinessEntities_AddLogicalUnitPopup = (AddLogicalUnitPopup_AddLogicalUnitPopup);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/BusinessEntityDetail.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const BusinessEntityDetail_toastr = getService('toastr');
+const BusinessEntityDetail = _ref => {
+  let {
+    businessEntity,
+    onBack
+  } = _ref;
+  const [formData, setFormData] = Object(react["useState"])(businessEntity);
+  const [activeTab, setActiveTab] = Object(react["useState"])('logicalUnits');
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [productCount, setProductCount] = Object(react["useState"])(0);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [disableChange, setDisableChange] = Object(react["useState"])(false);
+  const [showAddEditPopup, setShowAddEditPopup] = Object(react["useState"])(false);
+  const [editingProcess, setEditingProcess] = Object(react["useState"])(null);
+  const [executionProcessesData, setExecutionProcessesData] = Object(react["useState"])([]);
+  const [refreshKey, setRefreshKey] = Object(react["useState"])(0);
+  const [showAddLogicalUnitPopup, setShowAddLogicalUnitPopup] = Object(react["useState"])(false);
+  const [logicalUnitsData, setLogicalUnitsData] = Object(react["useState"])([]);
+  const [logicalUnitsRefreshKey, setLogicalUnitsRefreshKey] = Object(react["useState"])(0);
+  Object(react["useEffect"])(() => {
+    setFormData(businessEntity);
+    setDisableChange(businessEntity.be_status === 'Inactive');
+    const fetchProductCount = async () => {
+      try {
+        const count = await apis_businessEntities.getBEProductCount(businessEntity.be_id);
+        setProductCount(count || 0);
+      } catch (error) {
+        console.error('Error fetching product count:', error);
+      }
+    };
+    fetchProductCount();
+  }, [businessEntity]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+  const handleExecutionModeChange = Object(react["useCallback"])(mode => {
+    setFormData(prev => ({
+      ...prev,
+      execution_mode: mode
+    }));
+  }, []);
+  const handleSave = Object(react["useCallback"])(async () => {
+    try {
+      setIsSubmitted(true);
+      const trimmedFormData = trimFormData(formData);
+      await apis_businessEntities.updateBusinessEntity(businessEntity.be_id, trimmedFormData);
+      BusinessEntityDetail_toastr.success("Business Entity # " + formData.be_name, "Updated Successfully");
+      setTimeout(() => {
+        onBack();
+      }, 400);
+    } catch (error) {
+      BusinessEntityDetail_toastr.error("Business Entity # " + formData.be_name, "failed to Update : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+    } finally {
+      setIsSubmitted(false);
+    }
+  }, [formData, businessEntity.be_id, onBack]);
+  const handleDelete = Object(react["useCallback"])(async () => {
+    try {
+      await apis_businessEntities.deleteBusinessEntity(businessEntity.be_id);
+      BusinessEntityDetail_toastr.success("Business Entity # " + businessEntity.be_name, "deleted Successfully");
+      setTimeout(() => {
+        onBack();
+      }, 400);
+    } catch (error) {
+      BusinessEntityDetail_toastr.error("Business Entity # " + businessEntity.be_name, "failed to delete");
+    } finally {
+      setShowDeleteConfirm(false);
+    }
+  }, [businessEntity, onBack]);
+  const deleteMessage = Object(react["useMemo"])(() => {
+    if (productCount > 0) {
+      return `Business Entity  ${businessEntity.be_name} is attached to active systems and tasks. Are you sure you want to delete it ?`;
+    }
+    return 'Are you sure you want to delete Business Entity?';
+  }, [productCount, businessEntity.be_name]);
+  const tabs = [{
+    id: 'logicalUnits',
+    label: 'Logical Units',
+    icon: 'fa-user'
+  }, {
+    id: 'preExecution',
+    label: 'Pre Execution Processes',
+    icon: 'fa-briefcase'
+  }, {
+    id: 'postExecution',
+    label: 'Post Execution Processes',
+    icon: 'fa-briefcase'
+  }];
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: '100%'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Title, {
+            title: formData.be_name,
+            children: ["Business Entity ", formData.be_name]
+          }), formData.be_status === 'Inactive' && /*#__PURE__*/Object(jsx_runtime["jsx"])("h5", {
+            style: {
+              paddingLeft: '1em',
+              fontWeight: 300,
+              margin: 0
+            },
+            children: "Inactive"
+          })]
+        }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_DeleteIcon, {
+          src: delete_icon_gray,
+          alt: "Delete",
+          onClick: () => setShowDeleteConfirm(true),
+          title: "Remove Business Entity"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          display: 'flex',
+          flexDirection: "column",
+          gap: '20px',
+          width: "50%"
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Name",
+          type: InputTypes.text,
+          value: formData.be_name,
+          onChange: value => handleInputChange('be_name', value),
+          placeholder: "Enter business entity name",
+          mandatory: true,
+          disabled: true,
+          isSubmitted: isSubmitted
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Description",
+          type: InputTypes.text,
+          value: formData.be_description || '',
+          onChange: value => handleInputChange('be_description', value),
+          placeholder: "Enter business entity description",
+          disabled: disableChange
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+            style: {
+              marginBottom: '10px',
+              fontSize: '14px',
+              fontWeight: 500
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("label", {
+              style: {
+                display: 'flex',
+                alignItems: 'center',
+                cursor: disableChange ? 'not-allowed' : 'pointer'
+              },
+              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+                type: "radio",
+                name: "executionModeRadio",
+                value: "HORIZONTAL",
+                checked: formData.execution_mode === 'HORIZONTAL',
+                onChange: () => handleExecutionModeChange('HORIZONTAL'),
+                disabled: disableChange,
+                style: {
+                  marginRight: '8px'
+                }
+              }), /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+                title: "Executes Logical Unit (LU) by LU, processing all entities for each LU",
+                children: "Horizontal execution"
+              })]
+            }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("label", {
+              style: {
+                display: 'flex',
+                alignItems: 'center',
+                cursor: disableChange ? 'not-allowed' : 'pointer'
+              },
+              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+                type: "radio",
+                name: "executionModeRadio",
+                value: "VERTICAL",
+                checked: formData.execution_mode === 'VERTICAL',
+                onChange: () => handleExecutionModeChange('VERTICAL'),
+                disabled: disableChange,
+                style: {
+                  marginRight: '8px'
+                }
+              }), /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+                title: "Executes entire hierarchy for each entity ID",
+                children: "Vertical execution"
+              })]
+            })]
+          })]
+        }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            display: 'flex',
+            justifyContent: 'flex-end'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Save Changes",
+            onClick: handleSave,
+            type: "primary",
+            width: "130px"
+          })
+        })]
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      style: {
+        marginTop: '25px'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          backgroundColor: 'white'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_TabContainer, {
+            children: tabs.map(tab => /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_Tab, {
+              active: activeTab === tab.id,
+              onClick: () => setActiveTab(tab.id),
+              children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("i", {
+                className: `fa ${tab.icon}`,
+                style: {
+                  marginRight: '8px'
+                }
+              }), tab.label]
+            }, tab.id))
+          }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              paddingRight: '15px'
+            },
+            children: [activeTab === 'logicalUnits' && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+              onClick: () => setShowAddLogicalUnitPopup(true),
+              title: "Add Logical Unit",
+              tootlipText: "Add Logical Unit"
+            }), (activeTab === 'preExecution' || activeTab === 'postExecution') && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+              onClick: () => {
+                setEditingProcess(null);
+                setShowAddEditPopup(true);
+              },
+              title: `Add ${activeTab === 'preExecution' ? 'Pre' : 'Post'} Execution processes`,
+              tootlipText: `Attach ${activeTab === 'preExecution' ? 'Pre' : 'Post'} Execution processes`
+            })]
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {
+          style: {
+            margin: '0px'
+          }
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(TabContent, {
+          children: [activeTab === 'logicalUnits' && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_LogicalUnitsTab, {
+            businessEntity: formData,
+            disableChange: disableChange,
+            onDataChange: setLogicalUnitsData
+          }, `logicalUnits-${logicalUnitsRefreshKey}`), activeTab === 'preExecution' && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_ExecutionProcessesTab, {
+            businessEntity: formData,
+            disableChange: disableChange,
+            mode: "pre",
+            onDataChange: setExecutionProcessesData
+          }, `pre-${refreshKey}`), activeTab === 'postExecution' && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_ExecutionProcessesTab, {
+            businessEntity: formData,
+            disableChange: disableChange,
+            mode: "post",
+            onDataChange: setExecutionProcessesData
+          }, `post-${refreshKey}`)]
+        })]
+      })
+    }), showAddLogicalUnitPopup && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_AddLogicalUnitPopup, {
+      businessEntity: formData,
+      existingLogicalUnits: logicalUnitsData,
+      onClose: () => setShowAddLogicalUnitPopup(false),
+      onSave: () => {
+        setShowAddLogicalUnitPopup(false);
+        setLogicalUnitsRefreshKey(prev => prev + 1);
+      }
+    }), showAddEditPopup && (activeTab === 'preExecution' || activeTab === 'postExecution') && /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_ExecutionProcessPopup, {
+      businessEntity: formData,
+      mode: activeTab === 'preExecution' ? 'pre' : 'post',
+      existingProcesses: executionProcessesData,
+      process: editingProcess,
+      onClose: () => {
+        setShowAddEditPopup(false);
+        setEditingProcess(null);
+      },
+      onSave: () => {
+        setShowAddEditPopup(false);
+        setEditingProcess(null);
+        // Force refresh of the tab data
+        setRefreshKey(prev => prev + 1);
+      }
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showDeleteConfirm,
+      onClose: () => setShowDeleteConfirm(false),
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+        isOpen: showDeleteConfirm,
+        title: "Delete",
+        message: deleteMessage,
+        onConfirm: handleDelete,
+        onCancel: () => setShowDeleteConfirm(false),
+        confirmText: "Yes",
+        cancelText: "No"
+      })
+    })]
+  });
+};
+/* harmony default export */ var BusinessEntities_BusinessEntityDetail = (BusinessEntityDetail);
+// CONCATENATED MODULE: ./src/containers/BusinessEntities/index.tsx
+
+
+
+
+
+
+const BusinessEntities = () => {
+  const [pageDisplay, setPageDisplay] = Object(react["useState"])('table');
+  const [selectedBusinessEntity, setSelectedBusinessEntity] = Object(react["useState"])(null);
+  const beNameRef = Object(react["useRef"])(null);
+  const handleOpenBusinessEntity = businessEntity => {
+    setSelectedBusinessEntity(businessEntity);
+    beNameRef.current = businessEntity.be_name;
+    setPageDisplay('edit');
+  };
+  const handleOpenNewBusinessEntity = () => {
+    setSelectedBusinessEntity(null);
+    beNameRef.current = null;
+    setPageDisplay('add');
+  };
+  const handleBackToTable = () => {
+    setPageDisplay('table');
+    setSelectedBusinessEntity(null);
+    beNameRef.current = null;
+  };
+  Object(react["useEffect"])(() => {
+    const BreadCrumbsService = getService('BreadCrumbsService');
+    if (!BreadCrumbsService) return;
+    switch (pageDisplay) {
+      case 'add':
+        BreadCrumbsService.breadCrumbChange(1);
+        BreadCrumbsService.push({}, 'New Business Entity', function () {});
+        break;
+      case 'edit':
+        BreadCrumbsService.breadCrumbChange(1);
+        BreadCrumbsService.push({
+          be_name: (beNameRef === null || beNameRef === void 0 ? void 0 : beNameRef.current) || ''
+        }, `Business Entity # ${(beNameRef === null || beNameRef === void 0 ? void 0 : beNameRef.current) || ''}`, function () {});
+        break;
+      case 'table':
+      default:
+        BreadCrumbsService.breadCrumbChange(0);
+        BreadCrumbsService.push({}, 'Business Entities', function () {
+          setPageDisplay('table');
+        });
+        break;
+    }
+  }, [pageDisplay, setPageDisplay, beNameRef]);
+  if (pageDisplay === 'add') {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_AddBusinessEntity, {
+      onSave: be => {
+        handleOpenBusinessEntity(be);
+      }
+    });
+  }
+  if (pageDisplay === 'edit' && selectedBusinessEntity) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_BusinessEntityDetail, {
+      businessEntity: selectedBusinessEntity,
+      onBack: handleBackToTable
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(BusinessEntities_BusinessEntitiesTable, {
+    onOpenBusinessEntity: handleOpenBusinessEntity,
+    onOpenNewBusinessEntity: handleOpenNewBusinessEntity
+  });
+};
+/* harmony default export */ var containers_BusinessEntities = (BusinessEntities);
+// CONCATENATED MODULE: ./src/apis/environments.ts
+
+
+const environments_runningRequests = {};
+const environments_toastr = getService('toastr');
+const environments_fetchData = async (path, body, method) => {
+  const response = await window.k2api.invokeFabricWebService(path, body, method);
+  if (response.isError) {
+    throw new Error(response.message);
+  }
+  if (response.errorCode === 'FAILED') {
+    environments_toastr === null || environments_toastr === void 0 ? void 0 : environments_toastr.error(response.message);
+    throw new Error(response.message);
+  } else if (response.errorCode === 'WARNING') {
+    environments_toastr === null || environments_toastr === void 0 ? void 0 : environments_toastr.warning(response.message);
+  }
+  return response.result;
+};
+const environments_invokeFabricWebService = async (path, body, method, force) => {
+  if (false) { var _envExampleAPIs$path; }
+  if (window.k2api && window.k2api.invokeFabricWebService) {
+    if (force) {
+      return environments_fetchData(path, body, method);
+    }
+    if (environments_runningRequests[path]) {
+      clearTimeout(environments_runningRequests[path]);
+    }
+    return new Promise((resolve, reject) => {
+      environments_runningRequests[path] = setTimeout(async () => {
+        try {
+          const data = await environments_fetchData(path, body, method);
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      }, 100);
+    });
+  }
+  throw new Error('window.k2api is not defined');
+};
+const environments_getEnvironments = () => environments_invokeFabricWebService(`environments`, {}, "GET");
+const environments_getDataCenters = () => environments_invokeFabricWebService(`dataCenters`, {}, "GET");
+const getEnvironment = id => environments_invokeFabricWebService(`environment/${id}`, {}, "GET");
+const getEnvTaskCount = envId => environments_invokeFabricWebService(`environment/${envId}/taskCount`, {}, "GET");
+const addEnvironment = data => environments_invokeFabricWebService(`environment`, data, "POST");
+const updateEnvironment = (environmentId, data) => environments_invokeFabricWebService(`environment/${environmentId}`, data, "PUT");
+const deleteEnvironment = (environmentID, environmentName) => environments_invokeFabricWebService(`environment/${environmentID}/envname/${environmentName}`, {}, "DELETE");
+const environments_getEnvironmentOwners = environmentID => environments_invokeFabricWebService(`environment/${environmentID}/owners`, {}, "GET");
+const getEnvironmentRoles = environmentID => environments_invokeFabricWebService(`environment/${environmentID}/roles`, {}, "GET");
+const getEnvironmentRoleTesters = (environmentID, roleID) => environments_invokeFabricWebService(`environment/${environmentID}/role/${roleID}/users`, {}, "GET");
+const getEnvironmentSummary = envId => environments_invokeFabricWebService(`environment/${envId}/summary/Month`, {}, "GET");
+const getAllEnvs = () => environments_invokeFabricWebService(`wsGetAllEnvs`, {}, "GET");
+const environments_getMaxWorkersPerNode = () => environments_invokeFabricWebService(`getMaxWorkersPerNode`, {}, "GET");
+const getUsersByPermissionGroups = permissionGroup => environments_invokeFabricWebService(`wsGetUsersByPermissionGroup`, {
+  permissionGroup
+}, "GET");
+const getFabricRoles = permissionGroupList => environments_invokeFabricWebService(`wsGetFabricRoles`, {
+  permissionGroupList
+}, "GET");
+const getEnvProducts = environmentId => environments_invokeFabricWebService(`environment/${environmentId}/products`, {}, "GET");
+const getProductsWithLUs = environmentId => environments_invokeFabricWebService(`product/${environmentId}/loadAvailableSystems`, {}, "GET");
+const getEnvGlobals = environmentId => environments_invokeFabricWebService(`environment/${environmentId}/globals`, {}, "GET");
+const getAllGlobals = lus => environments_invokeFabricWebService(`environment/getAllGlobals`, lus !== null && lus !== void 0 ? lus : {}, "GET");
+const postEnvGlobal = (envId, envName, data) => environments_invokeFabricWebService(`environment/${envId}/envname/${envName}/global`, data, "POST");
+const putEnvGlobal = (envId, envName, data) => environments_invokeFabricWebService(`environment/${envId}/envname/${envName}/global`, data, "PUT");
+const deleteEnvGlobal = (envId, envName, globalName, luName) => environments_invokeFabricWebService(`environment/${envId}/envname/${envName}/luname/${luName}/global/${globalName}`, {}, "DELETE");
+const postEnvironmentRole = (environmentId, environmentName, data) => environments_invokeFabricWebService(`environment/${environmentId}/envname/${environmentName}/role`, data, "POST");
+const getTesters = environmentId => environments_invokeFabricWebService(`environment/${environmentId}/testers`, {}, "GET");
+const postEnvironmentRoleTesters = (environmentId, environmentName, roleId, roleName, testers) => environments_invokeFabricWebService(`environment/${environmentId}/envname/${environmentName}/role/${roleId}/rolename/${roleName}/users`, {
+  users: testers
+}, "POST");
+const updateEnvironmentRole = (environmentId, environmentName, roleId, data) => environments_invokeFabricWebService(`environment/${environmentId}/envname/${environmentName}/role/${roleId}`, data, "PUT");
+const deleteEnvironmentRole = (environmentId, environmentName, roleId, roleName) => environments_invokeFabricWebService(`environment/${environmentId}/envname/${environmentName}/role/${roleId}/rolename/${roleName}`, {}, "DELETE");
+const postEnvProduct = (environmentId, environmentName, data) => environments_invokeFabricWebService(`environment/${environmentId}/envname/${environmentName}/product`, data, "POST");
+const putEnvProduct = (environmentId, environmentName, data) => environments_invokeFabricWebService(`environment/${environmentId}/envname/${environmentName}/product`, data, "PUT");
+const getProductLogicalUnits = productId => environments_invokeFabricWebService(`product/${productId}/logicalunits`, {}, "GET");
+const environments_deleteEnvProduct = (environmentId, environmentName, productId) => environments_invokeFabricWebService(`environment/${environmentId}/envname/${environmentName}/product/${productId}`, {}, "DELETE");
+const toggleEnvProduct = (enabled, environmentId, productId, envProductId, environmentName) => environments_invokeFabricWebService(`product/${environmentId}/${productId}/${enabled ? 'EnableEnvironmentProduct' : 'DisableEnvironmentProduct'}`, {
+  envId: environmentId,
+  productId: productId,
+  envProdcutID: envProductId,
+  envName: environmentName
+}, "POST");
+const environmentsAPIs = {
+  getEnvironments: environments_getEnvironments,
+  getEnvironment,
+  getEnvTaskCount,
+  addEnvironment,
+  updateEnvironment,
+  deleteEnvironment,
+  getEnvironmentOwners: environments_getEnvironmentOwners,
+  getEnvironmentRoles,
+  getEnvironmentRoleTesters,
+  getEnvironmentSummary,
+  getAllEnvs,
+  getMaxWorkersPerNode: environments_getMaxWorkersPerNode,
+  getUsersByPermissionGroups,
+  getFabricRoles,
+  getEnvProducts,
+  getProductsWithLUs,
+  getEnvGlobals,
+  getAllGlobals,
+  postEnvGlobal,
+  putEnvGlobal,
+  deleteEnvGlobal,
+  postEnvironmentRole,
+  getTesters,
+  postEnvironmentRoleTesters,
+  updateEnvironmentRole,
+  deleteEnvironmentRole,
+  postEnvProduct,
+  putEnvProduct,
+  getProductLogicalUnits,
+  deleteEnvProduct: environments_deleteEnvProduct,
+  toggleEnvProduct,
+  getDataCenters: environments_getDataCenters
+};
+/* harmony default export */ var apis_environments = (environmentsAPIs);
+// CONCATENATED MODULE: ./src/containers/Environments/EnvironmentsTable.tsx
+
+
+
+
+
+
+
+
+const EnvironmentsTable = _ref => {
+  let {
+    onOpenEnvironment,
+    onOpenNewEnvironment
+  } = _ref;
+  const [data, setData] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [searchTerm, setSearchTerm] = Object(react["useState"])('');
+  const [pageSize, setPageSize] = Object(react["useState"])(10);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apis_environments.getEnvironments();
+        const sortedData = [...response].sort((a, b) => {
+          const dateA = new Date(a.environment_last_updated_date || 0).getTime();
+          const dateB = new Date(b.environment_last_updated_date || 0).getTime();
+          return dateB - dateA;
+        });
+        setData(sortedData);
+      } catch (error) {
+        console.error('Error fetching environments:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+  const filteredData = Object(react["useMemo"])(() => {
+    return data.filter(item => Object.values(item).some(value => value === null || value === void 0 ? void 0 : value.toString().toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [data, searchTerm]);
+  const filterOptions = Object(react["useMemo"])(() => {
+    const createdBy = Array.from(new Set(data.map(item => item.environment_created_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const updatedBy = Array.from(new Set(data.map(item => item.environment_last_updated_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    return {
+      environment_type: [{
+        label: 'Source',
+        value: 'Source'
+      }, {
+        label: 'Target',
+        value: 'Target'
+      }, {
+        label: 'Both',
+        value: 'Both'
+      }],
+      environment_created_by: createdBy,
+      environment_last_updated_by: updatedBy,
+      environment_status: [{
+        label: 'Active',
+        value: 'Active'
+      }, {
+        label: 'Inactive',
+        value: 'Inactive'
+      }]
+    };
+  }, [data]);
+  const handleEnvironmentClick = Object(react["useCallback"])(environment => {
+    onOpenEnvironment(environment, data);
+  }, [onOpenEnvironment, data]);
+  const formatDate = dateString => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }) + ', ' + date.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  const formatOwners = owners => {
+    if (!owners) return '';
+    if (typeof owners === 'string') return owners;
+    if (Array.isArray(owners)) {
+      return owners.map(o => o.user_id || o.username || o).join(', ');
+    }
+    return '';
+  };
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    return [columnHelper.accessor('environment_name', {
+      id: 'environment_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          cursor: 'pointer',
+          color: '#1483f3'
+        },
+        onClick: () => handleEnvironmentClick(info.row.original),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('environment_type', {
+      id: 'environment_type',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Environment Type"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          cursor: 'pointer',
+          color: '#1483f3'
+        },
+        onClick: () => handleEnvironmentClick(info.row.original),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.environment_type
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    }), columnHelper.accessor('environment_point_of_contact_first_name', {
+      id: 'environment_point_of_contact_first_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Contact First Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('environment_point_of_contact_last_name', {
+      id: 'environment_point_of_contact_last_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Contact Last Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('environment_point_of_contact_email', {
+      id: 'environment_point_of_contact_email',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Contact Email"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('owners', {
+      id: 'owners',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Owners"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: formatOwners(info.getValue()),
+        children: formatOwners(info.getValue()) || ''
+      }),
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('environment_creation_date', {
+      id: 'environment_creation_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Creation Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate((info === null || info === void 0 ? void 0 : info.getValue()) || "")
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('environment_created_by', {
+      id: 'environment_created_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Created By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue(),
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.environment_created_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    }), columnHelper.accessor('environment_last_updated_date', {
+      id: 'environment_last_updated_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Last Update Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate((info === null || info === void 0 ? void 0 : info.getValue()) || "")
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('environment_last_updated_by', {
+      id: 'environment_last_updated_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Updated By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue(),
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.environment_last_updated_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    }), columnHelper.accessor('environment_status', {
+      id: 'environment_status',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Status"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.environment_status
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    })];
+  }, [filterOptions, handleEnvironmentClick]);
+  const defaultSorting = Object(react["useMemo"])(() => [{
+    id: 'environment_status',
+    desc: true
+  }], []);
+  const defaultColumnFilters = Object(react["useMemo"])(() => [{
+    id: 'environment_status',
+    value: 'Active'
+  }], []);
+  const handleOpenNewEnvironment = Object(react["useCallback"])(() => {
+    onOpenNewEnvironment(data);
+  }, [onOpenNewEnvironment, data]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_TableHeader, {
+      title: "Environments",
+      pageSize: pageSize,
+      onPageSizeChange: setPageSize,
+      searchTerm: searchTerm,
+      onSearchChange: setSearchTerm,
+      actions: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+        onClick: handleOpenNewEnvironment,
+        title: "New Environment"
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+      columns: columns,
+      data: filteredData,
+      pageSize: pageSize,
+      initialSorting: defaultSorting,
+      initialColumnFilters: defaultColumnFilters
+    })]
+  });
+};
+/* harmony default export */ var Environments_EnvironmentsTable = (EnvironmentsTable);
+// CONCATENATED MODULE: ./src/components/UserSettings/styles.ts
+
+const FieldContainer = styled_components_browser_esm["b" /* default */].div`
+    padding: 24px 0px;
+    border-bottom: 1px solid #ccc;
+`;
+const OptionButton = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: center;
+
+    input {
+        margin-left: 15px;
+    }
+`;
+const OptionButtonLabel = styled_components_browser_esm["b" /* default */].label`
+    font-size: 16px;
+    color: #ff0185;
+`;
+// CONCATENATED MODULE: ./src/components/UserSettings/index.tsx
+
+
+
+
+
+
+
+
+const UserSettings = _ref => {
+  let {
+    isOpen,
+    users,
+    groups,
+    selectedUsers,
+    enableAllUsers = false,
+    onClose,
+    onSave
+  } = _ref;
+  const [selectedUser, setSelectedUser] = Object(react["useState"])(null);
+  const [customUser, setCustomUser] = Object(react["useState"])('');
+  const [userGroup, setUserGroup] = Object(react["useState"])(null);
+  const [allUsers, setAllUsers] = Object(react["useState"])(false);
+
+  // Filter users that are not already selected
+  const availableUsers = users.filter(user => {
+    return !selectedUsers.find(selected => selected.user_id === user.user_id) && user.user_id !== '-1' && !user.group && user.user_type !== 'GROUP';
+  });
+
+  // Filter groups that are not already selected
+  const availableGroups = groups.filter(group => {
+    return !selectedUsers.find(selected => selected.user_id === group);
+  });
+  Object(react["useEffect"])(() => {
+    if (!isOpen) {
+      setSelectedUser(null);
+      setCustomUser('');
+      setUserGroup(null);
+      setAllUsers(false);
+    } else {
+      // Check if "All Users" is already selected
+      if (enableAllUsers && selectedUsers.find(u => u.user_id === '-1')) {
+        setAllUsers(true);
+      }
+    }
+  }, [isOpen, enableAllUsers, selectedUsers]);
+  const handleAdd = Object(react["useCallback"])(() => {
+    onSave(selectedUser, customUser || null, userGroup, allUsers);
+    setSelectedUser(null);
+    setCustomUser('');
+    setUserGroup(null);
+    setAllUsers(false);
+  }, [selectedUser, customUser, userGroup, allUsers, onSave]);
+  const handleCancel = Object(react["useCallback"])(() => {
+    setSelectedUser(null);
+    setCustomUser('');
+    setUserGroup(null);
+    setAllUsers(false);
+    onClose();
+  }, [onClose]);
+  const userOptions = availableUsers.map(user => ({
+    label: user.username || user.user_id || user.displayName || '',
+    value: user
+  }));
+  const groupOptions = availableGroups.map(group => ({
+    label: group,
+    value: group
+  }));
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+    width: "352px",
+    isOpen: isOpen,
+    onClose: handleCancel,
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "User Settings"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(global_CloseButton, {
+          onClick: handleCancel,
+          children: "X"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          padding: '0px 30px'
+        },
+        children: [enableAllUsers && /*#__PURE__*/Object(jsx_runtime["jsx"])(FieldContainer, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(OptionButton, {
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(OptionButtonLabel, {
+              children: "All Users"
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+              id: "add_environment_environments_owners_all_users",
+              type: "checkbox",
+              checked: allUsers,
+              onChange: e => setAllUsers(e.target.checked)
+            })]
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FieldContainer, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+            style: {
+              marginBottom: '16px'
+            },
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+              title: "User ID",
+              options: userOptions,
+              value: selectedUser ? userOptions.find(opt => opt.value.user_id === selectedUser.user_id) : null,
+              onChange: option => {
+                setSelectedUser((option === null || option === void 0 ? void 0 : option.value) || null);
+                if (option !== null && option !== void 0 && option.value) {
+                  setCustomUser('');
+                }
+              },
+              placeholder: "Select user",
+              isClearable: true,
+              width: "100%"
+            })
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "",
+            type: InputTypes.text,
+            value: customUser,
+            onChange: value => setCustomUser(value),
+            placeholder: "Type a user ID",
+            width: "100%",
+            disabled: !!selectedUser
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(FieldContainer, {
+          style: {
+            borderBottom: 0,
+            paddingBottom: '24px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Fabric Role",
+            options: groupOptions,
+            value: userGroup ? groupOptions.find(opt => opt.value === userGroup) : null,
+            onChange: option => setUserGroup((option === null || option === void 0 ? void 0 : option.value) || null),
+            placeholder: "Select fabric role",
+            isClearable: true,
+            width: "100%"
+          })
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          onClick: handleCancel,
+          type: "secondary",
+          title: "CANCEL",
+          width: "90px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          onClick: handleAdd,
+          type: "primary",
+          title: "ADD",
+          width: "90px"
+        })]
+      })]
+    })
+  });
+};
+/* harmony default export */ var components_UserSettings = (UserSettings);
+// CONCATENATED MODULE: ./src/containers/Environments/styles.ts
+
+const Environments_styles_DeleteIcon = styled_components_browser_esm["b" /* default */].img`
+    width: 16px;
+    height: 16px;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    transition: opacity 0.2s ease;
+    margin-left: 10px;
+    
+    &:hover {
+        opacity: ${props => props.disabled ? 0.5 : 0.7};
+    }
+`;
+const OwnersSelectWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    position: relative;
+`;
+const styles_FormRow = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    flex-direction: column;
+`;
+const PlusButton = styled_components_browser_esm["b" /* default */].div`
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 27px;
+`;
+const Environments_styles_FormContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    
+    @media (max-width: 1200px) {
+        flex-direction: column;
+        gap: 15px;
+    }
+`;
+const FormColumn = styled_components_browser_esm["b" /* default */].div`
+    flex: 1;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+`;
+const FormRowTwoColumns = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 20px;
+    
+    > div {
+        flex: 1;
+    }
+    
+    @media (max-width: 1200px) {
+        flex-direction: column;
+        gap: 15px;
+    }
+`;
+const RightColumnWrapper = styled_components_browser_esm["b" /* default */].div`
+    flex: 1;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-left: 1px solid #eaeaea;
+    padding-left: 40px;
+    
+    @media (max-width: 1200px) {
+        border-left: none;
+        padding-left: 0;
+            border-left:none;
+    }
+`;
+const EnvironmentDetailContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    width:100%;
+`;
+const EnvironmentFormWrapper = styled_components_browser_esm["b" /* default */].div`
+    width:calc(60% - 30px);
+    @media (max-width: 768px) {
+      width:100%;
+    }
+`;
+const EnvironmentSummaryWrapper = styled_components_browser_esm["b" /* default */].div`
+    width:40%;
+    @media (max-width: 768px) {
+        width:100%;
+    }
+`;
+const Environments_styles_TabContainer = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    border-bottom: 1px solid #eaeaea;
+    background-color: white;
+`;
+const Environments_styles_Tab = styled_components_browser_esm["b" /* default */].button`
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    border-bottom: ${props => props.active ? '2px solid #1483f3' : '2px solid transparent'};
+    color: ${props => props.active ? '#1483f3' : '#666'};
+    font-size: 16px;
+    font-weight: ${props => props.active ? 500 : 400};
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        color: #1483f3;
+        background-color: ${props => props.active ? 'transparent' : '#f8f9fa'};
+    }
+`;
+const styles_TabContent = styled_components_browser_esm["b" /* default */].div`
+    padding: 15px;
+`;
+// CONCATENATED MODULE: ./src/containers/Environments/EnvironmentForm.tsx
+
+
+
+
+
+
+
+const EnvironmentForm = _ref => {
+  var _syncModes$find;
+  let {
+    formData,
+    envType,
+    allOwners,
+    userGroups,
+    onInputChange,
+    onEnvTypeChange,
+    onSaveUsersAndGroups,
+    disabled = false,
+    errors = {},
+    isSubmitted = false,
+    nameFieldType = 'select',
+    nameFieldOptions = [],
+    nameFieldValue = '',
+    nameFieldDisabled = false,
+    nameFieldMandatory = false,
+    showButton = true,
+    buttonTitle = 'Create',
+    onButtonClick,
+    buttonId = 'add_environment_environments_owners'
+  } = _ref;
+  const [isUserSettingsOpen, setIsUserSettingsOpen] = Object(react["useState"])(false);
+  const envTypes = ['Both', 'Source', 'Target'];
+  const syncModes = [{
+    text: 'Do not Sync',
+    value: 'OFF'
+  }, {
+    text: 'Always Sync',
+    value: 'FORCE'
+  }];
+  const ownerOptions = Object(react["useMemo"])(() => {
+    return allOwners.map(owner => ({
+      label: owner.username || owner.user_id || owner.displayName || '',
+      value: owner
+    }));
+  }, [allOwners]);
+  ;
+  const selectedOwners = Object(react["useMemo"])(() => {
+    return ownerOptions.filter(owner => formData.owners.findIndex(owner2 => {
+      var _owner$value;
+      return (owner2 === null || owner2 === void 0 ? void 0 : owner2.user_id) === (owner === null || owner === void 0 ? void 0 : (_owner$value = owner.value) === null || _owner$value === void 0 ? void 0 : _owner$value.user_id);
+    }) >= 0);
+  }, [formData.owners, allOwners]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Environments_styles_FormContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(FormColumn, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_FormRow, {
+        children: nameFieldType === 'select' ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+          title: "Name",
+          mandatory: nameFieldMandatory,
+          options: nameFieldOptions,
+          value: nameFieldValue ? {
+            label: nameFieldValue,
+            value: nameFieldValue
+          } : null,
+          onChange: option => onInputChange('environment_name', (option === null || option === void 0 ? void 0 : option.value) || ''),
+          placeholder: "Select environment name",
+          isClearable: false,
+          width: "100%",
+          error: errors.environment_name,
+          isSubmitted: isSubmitted,
+          disabled: nameFieldDisabled
+        }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Environment Name",
+          type: InputTypes.text,
+          value: nameFieldValue,
+          onChange: () => {},
+          placeholder: "Environment name",
+          width: "100%",
+          disabled: nameFieldDisabled
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_FormRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Description",
+          type: InputTypes.text,
+          value: formData.environment_description || '',
+          onChange: value => onInputChange('environment_description', value),
+          placeholder: "Enter description",
+          width: "100%",
+          disabled: disabled
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_FormRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(OwnersSelectWrapper, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Environment Owners",
+            options: ownerOptions,
+            value: selectedOwners,
+            onChange: options => {
+              const selected = Array.isArray(options) ? options : options ? [options] : [];
+              onInputChange('owners', selected.map(opt => opt.value));
+            },
+            placeholder: "Select owners",
+            isMulti: true,
+            isClearable: true,
+            width: "100%",
+            disabled: disabled
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(PlusButton, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])("button", {
+              title: "Add Owner",
+              type: "button",
+              id: buttonId,
+              className: "btn k2-primary-btn",
+              onClick: () => setIsUserSettingsOpen(!isUserSettingsOpen),
+              disabled: disabled,
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])("i", {
+                className: "fa fa-plus"
+              })
+            })
+          }), isUserSettingsOpen && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_UserSettings, {
+            isOpen: isUserSettingsOpen,
+            users: allOwners,
+            groups: userGroups,
+            selectedUsers: formData.owners || [],
+            enableAllUsers: false,
+            onClose: () => setIsUserSettingsOpen(false),
+            onSave: (user, userCustom, userGroup, allUsers) => {
+              onSaveUsersAndGroups(user, userCustom, userGroup, allUsers);
+              setIsUserSettingsOpen(false);
+            }
+          })]
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_FormRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+          title: "Environment Type",
+          mandatory: nameFieldMandatory,
+          options: envTypes.map(type => ({
+            label: type,
+            value: type
+          })),
+          value: envType ? {
+            label: envType,
+            value: envType
+          } : null,
+          onChange: option => {
+            const newType = option === null || option === void 0 ? void 0 : option.value;
+            onEnvTypeChange(newType);
+          },
+          placeholder: "Select environment type",
+          isClearable: false,
+          width: "100%",
+          error: errors.environment_type,
+          isSubmitted: isSubmitted,
+          disabled: disabled
+        })
+      }), (envType === 'Source' || envType === 'Both') && /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(styles_FormRow, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Override Sync Mode",
+            options: syncModes.map(mode => ({
+              label: mode.text,
+              value: mode.value
+            })),
+            value: formData.sync_mode ? {
+              label: ((_syncModes$find = syncModes.find(m => m.value === formData.sync_mode)) === null || _syncModes$find === void 0 ? void 0 : _syncModes$find.text) || '',
+              value: formData.sync_mode
+            } : null,
+            onChange: option => onInputChange('sync_mode', (option === null || option === void 0 ? void 0 : option.value) || ''),
+            placeholder: "Select sync mode",
+            isClearable: true,
+            width: "100%",
+            disabled: disabled
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_FormRow, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              display: 'flex',
+              alignItems: 'center'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+              type: "checkbox",
+              id: buttonId.replace('_owners', '_mask_sensitive_data'),
+              checked: formData.mask_sensitive_data || false,
+              onChange: e => onInputChange('mask_sensitive_data', e.target.checked),
+              disabled: disabled,
+              style: {
+                marginRight: '8px'
+              }
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+              htmlFor: buttonId.replace('_owners', '_mask_sensitive_data'),
+              style: {
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                margin: 0
+              },
+              children: "Mask Sensitive Data"
+            })]
+          })
+        })]
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(RightColumnWrapper, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(FormRowTwoColumns, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Contact First Name",
+            type: InputTypes.text,
+            value: formData.environment_point_of_contact_first_name || '',
+            onChange: value => onInputChange('environment_point_of_contact_first_name', value),
+            placeholder: "Enter Contact First Name",
+            width: "100%",
+            disabled: disabled
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Contact Last Name",
+            type: InputTypes.text,
+            value: formData.environment_point_of_contact_last_name || '',
+            onChange: value => onInputChange('environment_point_of_contact_last_name', value),
+            placeholder: "Enter Contact Last Name",
+            width: "100%",
+            disabled: disabled
+          })
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_FormRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Contact Email",
+          type: InputTypes.text,
+          value: formData.environment_point_of_contact_email || '',
+          onChange: value => onInputChange('environment_point_of_contact_email', value),
+          placeholder: "Enter Contact Email",
+          width: "100%",
+          disabled: disabled
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(FormRowTwoColumns, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Contact Phone 1",
+            type: InputTypes.text,
+            value: formData.environment_point_of_contact_phone1 || '',
+            onChange: value => onInputChange('environment_point_of_contact_phone1', value),
+            placeholder: "Enter Contact Phone 1",
+            width: "100%",
+            disabled: disabled
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            title: "Contact Phone 2",
+            type: InputTypes.text,
+            value: formData.environment_point_of_contact_phone2 || '',
+            onChange: value => onInputChange('environment_point_of_contact_phone2', value),
+            placeholder: "Enter Contact Phone 2",
+            width: "100%",
+            disabled: disabled
+          })
+        })]
+      }), showButton && onButtonClick && /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          marginTop: '23px',
+          display: 'flex',
+          justifyContent: 'flex-end'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: buttonTitle,
+          onClick: onButtonClick,
+          type: "primary",
+          width: "150px"
+        })
+      })]
+    })]
+  });
+};
+/* harmony default export */ var Environments_EnvironmentForm = (EnvironmentForm);
+// CONCATENATED MODULE: ./src/containers/Environments/NewEnvironment.tsx
+
+
+
+
+
+
+const NewEnvironment_toastr = getService('toastr');
+const NewEnvironment = _ref => {
+  let {
+    environments,
+    onBack,
+    onEnvironmentCreated
+  } = _ref;
+  const [formData, setFormData] = Object(react["useState"])({
+    environment_name: '',
+    environment_description: '',
+    environment_point_of_contact_first_name: '',
+    environment_point_of_contact_last_name: '',
+    environment_point_of_contact_email: '',
+    environment_point_of_contact_phone1: '',
+    environment_point_of_contact_phone2: '',
+    allow_write: true,
+    allow_read: false,
+    mask_sensitive_data: true,
+    sync_mode: '',
+    owners: []
+  });
+  const [envType, setEnvType] = Object(react["useState"])('Target');
+  const [availableSourceEnvironments, setAvailableSourceEnvironments] = Object(react["useState"])([]);
+  const [allOwners, setAllOwners] = Object(react["useState"])([]);
+  const [userGroups, setUserGroups] = Object(react["useState"])([]);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const envTypes = ['Both', 'Source', 'Target'];
+  const syncModes = [{
+    text: 'Do not Sync',
+    value: 'OFF'
+  }, {
+    text: 'Always Sync',
+    value: 'FORCE'
+  }];
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const allEnvs = await apis_environments.getAllEnvs();
+        const available = allEnvs.filter(env => {
+          return !environments.find(e => e.environment_name === env && e.environment_status === 'Active');
+        });
+        setAvailableSourceEnvironments(available);
+        const ownersResponse = await apis_environments.getUsersByPermissionGroups('owner');
+        const owners = (ownersResponse || []).map(item => {
+          if (!item.user_type) {
+            item.user_type = 'ID';
+          }
+          return item;
+        });
+        setAllOwners(owners);
+        const rolesResponse = await apis_environments.getFabricRoles('owner');
+        setUserGroups(rolesResponse || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, [environments]);
+  const handleEnvTypeChange = Object(react["useCallback"])(newType => {
+    setEnvType(newType);
+    if (newType.toLowerCase() === 'target') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: true,
+        allow_read: false
+      }));
+    } else if (newType.toLowerCase() === 'source') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: false,
+        allow_read: true
+      }));
+    } else if (newType.toLowerCase() === 'both') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: true,
+        allow_read: true,
+        mask_sensitive_data: false
+      }));
+    }
+  }, []);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = {
+          ...prev
+        };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  }, [errors]);
+  const handleSaveUsersAndGroups = Object(react["useCallback"])((user, userCustom, userGroup, allUsers) => {
+    if (allUsers && !formData.owners.find(o => o.user_id === '-1')) {
+      const allUsersObj = {
+        user_id: '-1',
+        username: 'All Users',
+        displayName: 'All Users',
+        uid: '-1',
+        user_type: 'ID'
+      };
+      handleInputChange('owners', [...formData.owners, allUsersObj]);
+    } else if (!allUsers && formData.owners.find(o => o.user_id === '-1')) {
+      handleInputChange('owners', formData.owners.filter(o => o.user_id !== '-1'));
+    }
+    if (user) {
+      const newUser = {
+        ...user,
+        user_type: 'ID'
+      };
+      if (!formData.owners.find(o => o.user_id === newUser.user_id)) {
+        handleInputChange('owners', [...formData.owners, newUser]);
+      }
+    }
+    if (userCustom) {
+      const customUser = {
+        user_id: userCustom,
+        user_name: userCustom,
+        username: userCustom,
+        user_type: 'ID'
+      };
+      if (!formData.owners.find(o => o.user_id === userCustom)) {
+        handleInputChange('owners', [...formData.owners, customUser]);
+        if (!allOwners.find(o => o.user_id === userCustom)) {
+          setAllOwners(prev => [...prev, customUser]);
+        }
+      }
+    }
+    if (userGroup) {
+      const groupUser = {
+        user_id: userGroup,
+        user_name: userGroup,
+        username: userGroup,
+        user_type: 'GROUP',
+        group: true
+      };
+      if (!formData.owners.find(o => o.user_id === userGroup)) {
+        handleInputChange('owners', [...formData.owners, groupUser]);
+        if (!allOwners.find(o => o.user_id === userGroup)) {
+          setAllOwners(prev => [...prev, groupUser]);
+        }
+      }
+    }
+  }, [formData.owners, allOwners, handleInputChange]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    setIsSubmitted(true);
+    const newErrors = {};
+    if (!formData.environment_name || formData.environment_name.trim() === '') {
+      newErrors.environment_name = 'Environment name is required';
+    }
+    if (!formData.allow_write && !formData.allow_read) {
+      newErrors.environment_type = 'Environment must be Target or Source Environment';
+    }
+    if (environments.find(e => e.environment_name === formData.environment_name && e.environment_status === 'Active')) {
+      newErrors.environment_name = `Environment # ${formData.environment_name} Already Exists`;
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+    try {
+      const response = await apis_environments.addEnvironment(formData);
+      const createdEnv = await apis_environments.getEnvironment(response.id);
+      NewEnvironment_toastr.success(`Environment # ${formData.environment_name}`, "Created Successfully");
+      setIsSubmitted(false);
+      setTimeout(() => {
+        onEnvironmentCreated(createdEnv[0] || createdEnv);
+      }, 300);
+      setIsSubmitted(false);
+    } catch (error) {
+      setIsSubmitted(false);
+    }
+  }, [formData, environments, onEnvironmentCreated]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+        children: "New Environment"
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_EnvironmentForm, {
+      formData: formData,
+      envType: envType,
+      allOwners: allOwners,
+      userGroups: userGroups,
+      onInputChange: handleInputChange,
+      onEnvTypeChange: handleEnvTypeChange,
+      onSaveUsersAndGroups: handleSaveUsersAndGroups,
+      disabled: false,
+      errors: errors,
+      isSubmitted: isSubmitted,
+      nameFieldType: "select",
+      nameFieldOptions: availableSourceEnvironments.map(env => ({
+        label: env,
+        value: env
+      })),
+      nameFieldValue: formData.environment_name || '',
+      nameFieldMandatory: true,
+      showButton: true,
+      buttonTitle: "Create",
+      onButtonClick: handleSave,
+      buttonId: "add_environment_environments_owners"
+    })]
+  });
+};
+/* harmony default export */ var Environments_NewEnvironment = (NewEnvironment);
+// EXTERNAL MODULE: ./node_modules/chart.js/dist/chart.js + 2 modules
+var chart = __webpack_require__(23);
+
+// EXTERNAL MODULE: ./node_modules/react-chartjs-2/dist/index.js
+var dist = __webpack_require__(237);
+
+// CONCATENATED MODULE: ./src/containers/Environments/components/Summary/styles.ts
+
+const SummaryCard = styled_components_browser_esm["b" /* default */].div`
+    background: white;
+    border: 1px solid #e7eaec;
+    border-radius: 4px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+const SummaryCardTitle = styled_components_browser_esm["b" /* default */].div`
+    border-bottom: 1px solid #e7eaec;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+
+    h5 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+`;
+const SummaryCardContent = styled_components_browser_esm["b" /* default */].div`
+    padding: 10px 0;
+`;
+const SummaryRow = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    gap: 20px;
+
+    @media (max-width: 1200px) {
+        flex-direction: column;
+    }
+`;
+const SummaryValue = styled_components_browser_esm["b" /* default */].h1`
+    font-size: 32px;
+    font-weight: 300;
+    margin: 0;
+    color: #333;
+    line-height: 1.2;
+    color: var(--primary-color);
+`;
+const SummaryLabel = styled_components_browser_esm["b" /* default */].div`
+    font-size: 12px;
+    font-weight: 600;
+    color: black;
+    margin-top: 5px;
+`;
+const ChartContainer = styled_components_browser_esm["b" /* default */].div`
+    padding: 10px 0;
+    min-height: 200px;
+    height: 140px;
+    position: relative;
+`;
+const LastMonthLabel = styled_components_browser_esm["b" /* default */].span`
+    float: right;
+    padding: 4px 8px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 3px;
+    font-size: 12px;
+`;
+const styles_LoadingWrapper = styled_components_browser_esm["b" /* default */].div`
+    display: flex;
+    justify-content: center;
+    align-items: center;        
+    `;
+// CONCATENATED MODULE: ./src/containers/Environments/components/Summary/EnvironmentSummary.tsx
+
+
+
+
+
+
+
+chart["e" /* Chart */].register(chart["d" /* CategoryScale */], chart["i" /* LinearScale */], chart["b" /* BarElement */], chart["n" /* Title */], chart["o" /* Tooltip */], chart["g" /* Legend */]);
+const EnvironmentSummary = _ref => {
+  let {
+    environmentId,
+    refreshKey
+  } = _ref;
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [summaryData, setSummaryData] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    const fetchSummary = async () => {
+      try {
+        setLoading(true);
+        const response = await apis_environments.getEnvironmentSummary(environmentId);
+        if (response) {
+          var _data$processedEntiti, _data$processedEntiti2, _data$tasks, _data$tasks2, _data$tasks3, _data$numberOfTesters, _data$numberOfALLTest, _data$numberOfGroups, _data$taskExecutionSt, _data$taskExecutionSt2, _data$taskExecutionSt3, _data$taskExecutionSt4, _data$taskExecutionSt5, _data$taskExecutionSt6;
+          const data = response;
+          const normalizedData = {
+            processedEntities: {
+              sum: ((_data$processedEntiti = data.processedEntities) === null || _data$processedEntiti === void 0 ? void 0 : _data$processedEntiti.sum) || ((_data$processedEntiti2 = data.processedEntities) === null || _data$processedEntiti2 === void 0 ? void 0 : _data$processedEntiti2.processedentities) || 0
+            },
+            tasks: {
+              active: parseInt(((_data$tasks = data.tasks) === null || _data$tasks === void 0 ? void 0 : _data$tasks.active) || 0),
+              onHold: parseInt(((_data$tasks2 = data.tasks) === null || _data$tasks2 === void 0 ? void 0 : _data$tasks2.onHold) || ((_data$tasks3 = data.tasks) === null || _data$tasks3 === void 0 ? void 0 : _data$tasks3.onhold) || 0)
+            },
+            numberOfTesters: {
+              numberoftesters: ((_data$numberOfTesters = data.numberOfTesters) === null || _data$numberOfTesters === void 0 ? void 0 : _data$numberOfTesters.numberoftesters) || 0
+            },
+            numberOfALLTesters: {
+              value: parseInt(((_data$numberOfALLTest = data.numberOfALLTesters) === null || _data$numberOfALLTest === void 0 ? void 0 : _data$numberOfALLTest.value) || 0)
+            },
+            numberOfGroups: {
+              numberofgroups: ((_data$numberOfGroups = data.numberOfGroups) === null || _data$numberOfGroups === void 0 ? void 0 : _data$numberOfGroups.numberofgroups) || 0
+            },
+            taskExecutionStatus: {
+              failed: ((_data$taskExecutionSt = data.taskExecutionStatus) === null || _data$taskExecutionSt === void 0 ? void 0 : _data$taskExecutionSt.failed) || 0,
+              pending: ((_data$taskExecutionSt2 = data.taskExecutionStatus) === null || _data$taskExecutionSt2 === void 0 ? void 0 : _data$taskExecutionSt2.pending) || 0,
+              paused: ((_data$taskExecutionSt3 = data.taskExecutionStatus) === null || _data$taskExecutionSt3 === void 0 ? void 0 : _data$taskExecutionSt3.paused) || 0,
+              stopped: ((_data$taskExecutionSt4 = data.taskExecutionStatus) === null || _data$taskExecutionSt4 === void 0 ? void 0 : _data$taskExecutionSt4.stopped) || 0,
+              running: ((_data$taskExecutionSt5 = data.taskExecutionStatus) === null || _data$taskExecutionSt5 === void 0 ? void 0 : _data$taskExecutionSt5.running) || 0,
+              completed: ((_data$taskExecutionSt6 = data.taskExecutionStatus) === null || _data$taskExecutionSt6 === void 0 ? void 0 : _data$taskExecutionSt6.completed) || 0
+            }
+          };
+          setSummaryData(normalizedData);
+        }
+      } catch (error) {
+        console.error('Error fetching environment summary:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (environmentId) {
+      fetchSummary();
+    }
+  }, [environmentId, refreshKey]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Environment Summary"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          padding: '20px',
+          textAlign: 'center'
+        },
+        children: "Loading..."
+      })]
+    });
+  }
+  if (!summaryData) {
+    return /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Environment Summary"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          padding: '20px',
+          textAlign: 'center'
+        },
+        children: "No summary data available"
+      })]
+    });
+  }
+  const chartLabels = ['Failed', 'Pending', 'Paused', 'Stopped', 'Running', 'Completed'];
+  const chartDataValues = [summaryData.taskExecutionStatus.failed, summaryData.taskExecutionStatus.pending, summaryData.taskExecutionStatus.paused, summaryData.taskExecutionStatus.stopped, summaryData.taskExecutionStatus.running, summaryData.taskExecutionStatus.completed];
+  const chartData = {
+    labels: chartLabels,
+    datasets: [{
+      label: 'Execution status',
+      data: chartDataValues,
+      backgroundColor: 'rgba(26, 179, 148, 0.5)',
+      borderColor: 'rgba(26, 179, 148, 0.8)',
+      borderWidth: 1
+    }]
+  };
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          precision: 0
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        enabled: true
+      }
+    }
+  };
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+    style: {
+      padding: '0px 20px'
+    },
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Environment Summary"
+        })
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+      style: {
+        paddingTop: '20px'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryRow, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(SummaryCard, {
+          style: {
+            width: '100%'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(SummaryCardTitle, {
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(LastMonthLabel, {
+              children: "Last Month"
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("h5", {
+              style: {
+                margin: 0
+              },
+              children: "Processed Entities"
+            })]
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryCardContent, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryValue, {
+              children: summaryData.processedEntities.sum || 0
+            })
+          })]
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(SummaryRow, {
+        style: {
+          marginTop: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(SummaryCard, {
+          style: {
+            flex: '2'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryCardTitle, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])("h5", {
+              style: {
+                margin: 0
+              },
+              children: "Tasks"
+            })
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryCardContent, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+              style: {
+                display: 'flex',
+                gap: '20px'
+              },
+              children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+                style: {
+                  flex: 1
+                },
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryValue, {
+                  children: summaryData.tasks.active
+                }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryLabel, {
+                  children: "Active"
+                })]
+              }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+                style: {
+                  flex: 1
+                },
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryValue, {
+                  children: summaryData.tasks.onHold
+                }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryLabel, {
+                  children: "On hold"
+                })]
+              })]
+            })
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(SummaryCard, {
+          style: {
+            flex: '1'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryCardTitle, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])("h5", {
+              style: {
+                margin: 0
+              },
+              children: "Users"
+            })
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryCardContent, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+              style: {
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              },
+              children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryValue, {
+                  children: summaryData.numberOfALLTesters.value > 0 ? 'ALL' : summaryData.numberOfTesters.numberoftesters
+                }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryLabel, {
+                  children: "IDs"
+                })]
+              }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryValue, {
+                  children: summaryData.numberOfGroups.numberofgroups || 0
+                }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryLabel, {
+                  children: "Groups"
+                })]
+              })]
+            })
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryRow, {
+        style: {
+          marginTop: '20px'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(SummaryCard, {
+          style: {
+            width: '100%'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(SummaryCardTitle, {
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(LastMonthLabel, {
+              children: "Last Month"
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("h5", {
+              style: {
+                margin: 0
+              },
+              children: "Execution Status"
+            })]
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(SummaryCardContent, {
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(ChartContainer, {
+              children: /*#__PURE__*/Object(jsx_runtime["jsx"])(dist["a" /* Bar */], {
+                data: chartData,
+                options: chartOptions,
+                height: 140
+              })
+            })
+          })]
+        })
+      })]
+    })]
+  });
+};
+/* harmony default export */ var Summary_EnvironmentSummary = (EnvironmentSummary);
+// CONCATENATED MODULE: ./src/containers/Environments/components/Roles/PermissionSetsTable.tsx
+
+
+
+
+
+
+const PermissionSetsTable_toastr = getService('toastr');
+const PermissionSetsTable = _ref => {
+  let {
+    environmentId,
+    onOpenRole,
+    isOwner,
+    refreshKey
+  } = _ref;
+  const [roles, setRoles] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    const fetchRoles = async () => {
+      try {
+        setLoading(true);
+        const response = await apis_environments.getEnvironmentRoles(environmentId);
+        if (response && Array.isArray(response)) {
+          const sortedRoles = [...response].sort((a, b) => {
+            const dateA = a.role_creation_date ? new Date(a.role_creation_date).getTime() : 0;
+            const dateB = b.role_creation_date ? new Date(b.role_creation_date).getTime() : 0;
+            return dateB - dateA;
+          });
+          setRoles(sortedRoles);
+        } else {
+          setRoles([]);
+        }
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+        PermissionSetsTable_toastr === null || PermissionSetsTable_toastr === void 0 ? void 0 : PermissionSetsTable_toastr.error(`Environment # ${environmentId}`, "Failed to load permission sets");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (environmentId) {
+      setTimeout(() => {
+        fetchRoles();
+      }, 500);
+    }
+  }, [environmentId, refreshKey]);
+  const formatDate = dateString => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  const filterOptions = Object(react["useMemo"])(() => {
+    const createdBy = Array.from(new Set(roles.map(item => item.role_created_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const updatedBy = Array.from(new Set(roles.map(item => item.role_last_updated_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    return {
+      role_created_by: createdBy,
+      role_last_updated_by: updatedBy,
+      role_status: [{
+        label: 'Active',
+        value: 'Active'
+      }, {
+        label: 'Inactive',
+        value: 'Inactive'
+      }]
+    };
+  }, [roles]);
+  const handleRoleClick = Object(react["useCallback"])(role => {
+    onOpenRole(role);
+  }, [onOpenRole]);
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    return [columnHelper.accessor('role_name', {
+      id: 'role_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          cursor: 'pointer',
+          color: '#1483f3'
+        },
+        onClick: () => handleRoleClick(info.row.original),
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('role_description', {
+      id: 'role_description',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Description"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue() || '',
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('role_creation_date', {
+      id: 'role_creation_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Creation Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate(info.getValue())
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('role_created_by', {
+      id: 'role_created_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Created By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue() || '',
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.role_created_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    }), columnHelper.accessor('role_last_updated_date', {
+      id: 'role_last_updated_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Last Update Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate(info.getValue())
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('role_last_updated_by', {
+      id: 'role_last_updated_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Updated By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        title: info.getValue() || '',
+        children: info.getValue() || '-'
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.role_last_updated_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    }), columnHelper.accessor('role_status', {
+      id: 'role_status',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Status"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue()
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.role_status
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) === filterValue;
+      }
+    })];
+  }, [handleRoleClick, filterOptions]);
+  const defaultSorting = Object(react["useMemo"])(() => [{
+    id: 'role_status',
+    desc: false
+  }], []);
+  const defaultColumnFilters = Object(react["useMemo"])(() => [{
+    id: 'role_status',
+    value: 'Active'
+  }], []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+    columns: columns,
+    data: roles,
+    pageSize: 10000,
+    initialSorting: defaultSorting,
+    initialColumnFilters: defaultColumnFilters,
+    hidePagination: true
+  });
+};
+/* harmony default export */ var Roles_PermissionSetsTable = (PermissionSetsTable);
+// CONCATENATED MODULE: ./src/components/Toggle/styles.ts
+
+const ToggleContainer = styled_components_browser_esm["b" /* default */].label`
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    margin: 0;
+`;
+const ToggleInput = styled_components_browser_esm["b" /* default */].input`
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + span {
+        background-color: #007AFF;
+    }
+
+    &:checked:disabled + span {
+        background-color: #999;
+    }
+
+    &:checked + span:before {
+        transform: translateX(24px);
+    }
+
+    &:disabled + span {
+        cursor: not-allowed;
+        background-color: #ccc;
+    }
+`;
+const ToggleSlider = styled_components_browser_esm["b" /* default */].span`
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: gray;
+    transition: 0.4s;
+    border-radius: 34px;
+
+    &:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+    }
+`;
+// CONCATENATED MODULE: ./src/components/Toggle/index.tsx
+
+
+
+const Toggle = _ref => {
+  let {
+    checked,
+    onChange,
+    disabled = false,
+    id
+  } = _ref;
+  const handleChange = Object(react["useCallback"])(event => {
+    if (!disabled) {
+      onChange(event.target.checked);
+    }
+  }, [onChange, disabled]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(ToggleContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(ToggleInput, {
+      type: "checkbox",
+      id: id,
+      checked: checked,
+      onChange: handleChange,
+      disabled: disabled
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(ToggleSlider, {})]
+  });
+};
+/* harmony default export */ var components_Toggle = (Toggle);
+// CONCATENATED MODULE: ./src/containers/Environments/components/Product/ProductsTable.tsx
+
+
+
+
+
+
+
+const ProductsTable_toastr = getService('toastr');
+const ProductsTable = _ref => {
+  let {
+    environmentId,
+    environmentName,
+    onOpenProduct,
+    isOwner,
+    refreshKey
+  } = _ref;
+  const [products, setProducts] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  Object(react["useEffect"])(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await apis_environments.getEnvProducts(environmentId);
+        if (response && Array.isArray(response)) {
+          setProducts(response);
+        } else {
+          setProducts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        ProductsTable_toastr === null || ProductsTable_toastr === void 0 ? void 0 : ProductsTable_toastr.error(`Environment # ${environmentId}`, "Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (environmentId) {
+      fetchProducts();
+    }
+  }, [environmentId, refreshKey]);
+  const filterOptions = Object(react["useMemo"])(() => {
+    const dataCenters = Array.from(new Set(products.map(item => item.data_center_name).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const createdBy = Array.from(new Set(products.map(item => item.created_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const updatedBy = Array.from(new Set(products.map(item => item.last_updated_by).filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    const statuses = Array.from(new Set(products.map(item => item.status || 'Active').filter(Boolean))).sort().map(v => ({
+      label: v,
+      value: v
+    }));
+    return {
+      data_center_name: dataCenters,
+      created_by: createdBy,
+      last_updated_by: updatedBy,
+      status: statuses
+    };
+  }, [products]);
+  const formatDate = dateString => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateString;
+    }
+  };
+  const handleToggleProduct = Object(react["useCallback"])(async product => {
+    if (!product.environment_product_id) {
+      ProductsTable_toastr === null || ProductsTable_toastr === void 0 ? void 0 : ProductsTable_toastr.error(`System # ${product.product_name}`, "Unable to toggle: missing environment product ID");
+      return;
+    }
+    const newEnabled = !product.enable_product;
+    try {
+      await apis_environments.toggleEnvProduct(newEnabled, environmentId, product.product_id, product.environment_product_id, environmentName);
+      setProducts(prev => prev.map(p => p.product_id === product.product_id && p.environment_id === environmentId ? {
+        ...p,
+        enable_product: newEnabled
+      } : p));
+    } catch (error) {
+      ProductsTable_toastr === null || ProductsTable_toastr === void 0 ? void 0 : ProductsTable_toastr.error(`System # ${product.product_name}`, "Unable to Enable/Disable : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+    }
+  }, [environmentId, environmentName]);
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    return [columnHelper.accessor('enable_product', {
+      id: 'select',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "On/Off"
+      }),
+      cell: info => {
+        var _product$enable_produ;
+        const product = info.row.original;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Toggle, {
+          checked: (_product$enable_produ = product.enable_product) !== null && _product$enable_produ !== void 0 ? _product$enable_produ : true,
+          onChange: () => handleToggleProduct(product),
+          disabled: !isOwner,
+          id: `toggle-product-${product.product_id}`
+        });
+      },
+      enableSorting: false,
+      enableColumnFilter: false
+    }), columnHelper.accessor('product_name', {
+      id: 'product_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => {
+        var _product$enable_produ2;
+        const product = info.row.original;
+        const isEnabled = (_product$enable_produ2 = product.enable_product) !== null && _product$enable_produ2 !== void 0 ? _product$enable_produ2 : true;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          style: {
+            cursor: isEnabled ? 'pointer' : 'default',
+            color: isEnabled ? '#1483f3' : '#ccc',
+            textDecoration: isEnabled ? 'underline' : 'none'
+          },
+          onClick: () => isEnabled && onOpenProduct(product),
+          children: info.getValue()
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('data_center_name', {
+      id: 'data_center_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Affinity"
+      }),
+      cell: info => {
+        var _product$enable_produ3;
+        const product = info.row.original;
+        const isEnabled = (_product$enable_produ3 = product.enable_product) !== null && _product$enable_produ3 !== void 0 ? _product$enable_produ3 : true;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          style: {
+            color: isEnabled ? 'inherit' : '#ccc'
+          },
+          children: info.getValue() || '-'
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.data_center_name
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    }), columnHelper.accessor('product_version', {
+      id: 'product_version',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Version"
+      }),
+      cell: info => {
+        var _product$enable_produ4;
+        const product = info.row.original;
+        const isEnabled = (_product$enable_produ4 = product.enable_product) !== null && _product$enable_produ4 !== void 0 ? _product$enable_produ4 : true;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          style: {
+            color: isEnabled ? 'inherit' : '#ccc'
+          },
+          children: info.getValue() || '-'
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? String(value).trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('created_by', {
+      id: 'created_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Created By"
+      }),
+      cell: info => {
+        var _product$enable_produ5;
+        const product = info.row.original;
+        const isEnabled = (_product$enable_produ5 = product.enable_product) !== null && _product$enable_produ5 !== void 0 ? _product$enable_produ5 : true;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          style: {
+            color: isEnabled ? 'inherit' : '#ccc'
+          },
+          children: info.getValue() || '-'
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.created_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    }), columnHelper.accessor('creation_date', {
+      id: 'creation_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Creation Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate(info.getValue())
+      }),
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = formatDate(row.getValue(columnId));
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? value.trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('last_updated_by', {
+      id: 'last_updated_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Updated By"
+      }),
+      cell: info => {
+        var _product$enable_produ6;
+        const product = info.row.original;
+        const isEnabled = (_product$enable_produ6 = product.enable_product) !== null && _product$enable_produ6 !== void 0 ? _product$enable_produ6 : true;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          style: {
+            color: isEnabled ? 'inherit' : '#ccc'
+          },
+          children: info.getValue() || '-'
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.last_updated_by
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId);
+        const trimmedFilterValue = String(filterValue).trim();
+        const trimmedRowValue = rowValue ? String(rowValue).trim() : '';
+        return trimmedRowValue === trimmedFilterValue;
+      }
+    }), columnHelper.accessor('last_updated_date', {
+      id: 'last_updated_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Update Date"
+      }),
+      cell: info => {
+        var _product$enable_produ7;
+        const product = info.row.original;
+        const isEnabled = (_product$enable_produ7 = product.enable_product) !== null && _product$enable_produ7 !== void 0 ? _product$enable_produ7 : true;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          style: {
+            color: isEnabled ? 'inherit' : '#ccc'
+          },
+          children: formatDate(info.getValue())
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'string'
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const value = formatDate(row.getValue(columnId));
+        const trimmedFilterValue = String(filterValue).trim().toLowerCase();
+        const trimmedValue = value ? value.trim().toLowerCase() : '';
+        return trimmedValue.includes(trimmedFilterValue);
+      }
+    }), columnHelper.accessor('status', {
+      id: 'status',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Status"
+      }),
+      cell: info => {
+        var _product$enable_produ8;
+        const product = info.row.original;
+        const isEnabled = (_product$enable_produ8 = product.enable_product) !== null && _product$enable_produ8 !== void 0 ? _product$enable_produ8 : true;
+        return /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+          style: {
+            color: isEnabled ? 'inherit' : '#ccc'
+          },
+          children: info.getValue() || 'Active'
+        });
+      },
+      enableColumnFilter: true,
+      meta: {
+        type: 'select',
+        filterOptions: filterOptions.status
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const rowValue = row.getValue(columnId) || 'Active';
+        return String(rowValue) === String(filterValue);
+      }
+    })];
+  }, [onOpenProduct, filterOptions, handleToggleProduct, isOwner]);
+  const defaultColumnFilters = Object(react["useMemo"])(() => [{
+    id: 'status',
+    value: 'Active'
+  }], []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+    columns: columns,
+    data: products,
+    pageSize: 10000,
+    initialSorting: [{
+      id: 'status',
+      desc: false
+    }],
+    initialColumnFilters: defaultColumnFilters,
+    hidePagination: true
+  });
+};
+/* harmony default export */ var Product_ProductsTable = (ProductsTable);
+// CONCATENATED MODULE: ./src/containers/Environments/components/EnvironmentVariable/EnvironmentVariablesTable.tsx
+
+
+
+
+
+
+const EnvironmentVariablesTable_toastr = getService('toastr');
+const EnvironmentVariablesTable = _ref => {
+  let {
+    environmentId,
+    onOpenGlobal,
+    isOwner,
+    refreshKey
+  } = _ref;
+  const [globals, setGlobals] = Object(react["useState"])([]);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  Object(react["useEffect"])(() => {
+    const fetchGlobals = async () => {
+      try {
+        setLoading(true);
+        const response = await apis_environments.getEnvGlobals(environmentId);
+        if (response && Array.isArray(response)) {
+          setGlobals(response);
+        } else {
+          setGlobals([]);
+        }
+      } catch (error) {
+        console.error('Error fetching globals:', error);
+        EnvironmentVariablesTable_toastr === null || EnvironmentVariablesTable_toastr === void 0 ? void 0 : EnvironmentVariablesTable_toastr.error(`Environment # ${environmentId}`, "Failed to load environment variables");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (environmentId) {
+      fetchGlobals();
+    }
+  }, [environmentId, refreshKey]);
+  const formatDate = dateString => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  const columns = Object(react["useMemo"])(() => {
+    const columnHelper = Object(lib_index_esm["a" /* createColumnHelper */])();
+    return [columnHelper.accessor('global_name', {
+      id: 'global_name',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Name"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        style: {
+          cursor: 'pointer',
+          color: '#1483f3',
+          textDecoration: 'underline'
+        },
+        onClick: () => onOpenGlobal(info.row.original),
+        children: info.getValue()
+      })
+    }), columnHelper.accessor('global_value', {
+      id: 'global_value',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Value"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || '-'
+      })
+    }), columnHelper.accessor('update_date', {
+      id: 'update_date',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Last Update Date"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: formatDate(info.getValue())
+      })
+    }), columnHelper.accessor('updated_by', {
+      id: 'updated_by',
+      header: () => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: "Updated By"
+      }),
+      cell: info => /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+        children: info.getValue() || '-'
+      })
+    })];
+  }, [onOpenGlobal]);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Table, {
+    columns: columns,
+    data: globals,
+    pageSize: 10000,
+    initialSorting: [{
+      id: 'update_date',
+      desc: true
+    }],
+    hidePagination: true
+  });
+};
+/* harmony default export */ var EnvironmentVariable_EnvironmentVariablesTable = (EnvironmentVariablesTable);
+// CONCATENATED MODULE: ./src/containers/Environments/components/Roles/RoleForm.tsx
+
+
+
+
+
+
+
+const RoleForm = _ref => {
+  var _formData$allowed_num, _formData$allowed_num2;
+  let {
+    environment,
+    formData,
+    testers,
+    allTesters,
+    testerFabricRoles,
+    disableChange,
+    nameDisabled = false,
+    nameMandatory,
+    nameError,
+    entitiesToReadError,
+    entitiesToCopyError,
+    reservedEntitiesError,
+    isSubmitted,
+    onInputChange,
+    onCheckboxChange,
+    onNumberChange,
+    onSaveUsersAndGroupsTester,
+    onOpenUserSettings,
+    isUserSettingsOpen,
+    onCloseUserSettings,
+    onTesterChange
+  } = _ref;
+  const {
+    isFluxMode: checkFluxMode
+  } = usePermissions();
+  const [isFluxMode, setIsFluxMode] = Object(react["useState"])(false);
+  const [envType, setEnvType] = Object(react["useState"])('Target');
+  Object(react["useEffect"])(() => {
+    setIsFluxMode(checkFluxMode());
+    if (!environment.allow_write && environment.allow_read) {
+      setEnvType('Source');
+    } else if (environment.allow_write && !environment.allow_read) {
+      setEnvType('Target');
+    } else if (environment.allow_write && environment.allow_read) {
+      setEnvType('Both');
+    }
+  }, [environment, checkFluxMode]);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+      style: {
+        padding: '20px'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Name",
+          type: InputTypes.text,
+          value: formData.role_name,
+          onChange: nameDisabled ? () => {} : value => onInputChange('role_name', value),
+          placeholder: "Enter role name",
+          disabled: nameDisabled,
+          mandatory: nameMandatory,
+          isSubmitted: isSubmitted,
+          error: nameError
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "Description",
+          type: InputTypes.text,
+          value: formData.role_description,
+          onChange: value => onInputChange('role_description', value),
+          placeholder: "Enter role description",
+          disabled: disableChange
+        })
+      }), environment.allow_read && /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            alignItems: 'flex-start',
+            marginBottom: '10px'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+            id: "environment_role_allow_read",
+            type: "checkbox",
+            checked: formData.allow_read,
+            onChange: e => onCheckboxChange('allow_read', e.target.checked),
+            disabled: disableChange || formData.allow_read && !formData.allow_write,
+            style: {
+              marginRight: '8px',
+              marginTop: '4px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+            style: {
+              cursor: disableChange ? 'not-allowed' : 'pointer'
+            },
+            children: "Read permissions"
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            marginLeft: '28px',
+            opacity: formData.allow_read ? 1 : 0.6
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              marginBottom: '10px'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+              id: "environment_role_allow_read_unlimited",
+              type: "checkbox",
+              checked: formData.read_unlimited_entities,
+              onChange: e => onCheckboxChange('read_unlimited_entities', e.target.checked),
+              disabled: disableChange || !formData.allow_read,
+              style: {
+                marginRight: '8px'
+              }
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+              style: {
+                cursor: disableChange || !formData.allow_read ? 'not-allowed' : 'pointer'
+              },
+              children: "Unlimited entities"
+            })]
+          }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              marginBottom: '10px'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+              style: {
+                display: 'block',
+                marginBottom: '5px'
+              },
+              children: "Maximum number of entities"
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+              title: "",
+              type: InputTypes.number,
+              value: formData.read_unlimited_entities ? '' : ((_formData$allowed_num = formData.allowed_number_of_entities_to_read) !== null && _formData$allowed_num !== void 0 ? _formData$allowed_num : 0).toString(),
+              onChange: value => onNumberChange('allowed_number_of_entities_to_read', value != null ? String(value) : '0'),
+              placeholder: "Enter number",
+              disabled: disableChange || formData.read_unlimited_entities || !formData.allow_read,
+              min: 0,
+              error: entitiesToReadError,
+              isSubmitted: isSubmitted
+            })]
+          })]
+        })]
+      }), environment.allow_write && /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            alignItems: 'flex-start',
+            marginBottom: '10px'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+            id: "environment_role_allow_write",
+            type: "checkbox",
+            checked: formData.allow_write,
+            onChange: e => onCheckboxChange('allow_write', e.target.checked),
+            disabled: disableChange || !formData.allow_read && formData.allow_write,
+            style: {
+              marginRight: '8px',
+              marginTop: '4px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+            style: {
+              cursor: disableChange ? 'not-allowed' : 'pointer'
+            },
+            children: "Write permissions"
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            marginLeft: '28px',
+            opacity: formData.allow_write ? 1 : 0.6
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              marginBottom: '10px'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+              id: "environment_role_allow_write_unlimited",
+              type: "checkbox",
+              checked: formData.write_unlimited_entities,
+              onChange: e => onCheckboxChange('write_unlimited_entities', e.target.checked),
+              disabled: disableChange || !formData.allow_write,
+              style: {
+                marginRight: '8px'
+              }
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+              style: {
+                cursor: disableChange || !formData.allow_write ? 'not-allowed' : 'pointer'
+              },
+              children: "Unlimited entities"
+            })]
+          }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              marginBottom: '10px'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+              style: {
+                display: 'block',
+                marginBottom: '5px'
+              },
+              children: "Maximum number of entities"
+            }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+              title: "",
+              type: InputTypes.number,
+              value: formData.write_unlimited_entities ? '' : ((_formData$allowed_num2 = formData.allowed_number_of_entities_to_copy) !== null && _formData$allowed_num2 !== void 0 ? _formData$allowed_num2 : 0).toString(),
+              onChange: value => onNumberChange('allowed_number_of_entities_to_copy', value != null ? String(value) : '0'),
+              placeholder: "Enter number",
+              disabled: disableChange || formData.write_unlimited_entities || !formData.allow_write,
+              min: 0,
+              error: entitiesToCopyError,
+              isSubmitted: isSubmitted
+            })]
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            display: 'block',
+            marginBottom: '10px'
+          },
+          children: "Testers"
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            gap: '10px'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "",
+            options: allTesters.map(t => ({
+              label: t.username || t.user_id,
+              value: t.user_id
+            })),
+            value: testers.map(t => ({
+              label: t.username || t.user_id,
+              value: t.user_id
+            })),
+            onChange: selected => {
+              if (onTesterChange && !disableChange) {
+                const selectedTesters = selected ? selected.map(item => {
+                  const tester = allTesters.find(t => t.user_id === item.value);
+                  return tester || {
+                    user_id: item.value,
+                    username: item.label,
+                    user_type: 'ID'
+                  };
+                }) : [];
+                onTesterChange(selectedTesters);
+              }
+            },
+            placeholder: "Select testers",
+            isMulti: true,
+            width: "100%",
+            disabled: disableChange
+          }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Add Tester",
+            onClick: onOpenUserSettings,
+            type: "primary",
+            width: "120px"
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+          id: "environment_role_ignore_test_connection",
+          type: "checkbox",
+          checked: formData.allowed_test_conn_failure,
+          onChange: e => onCheckboxChange('allowed_test_conn_failure', e.target.checked),
+          disabled: disableChange,
+          style: {
+            marginRight: '8px'
+          }
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            cursor: disableChange ? 'not-allowed' : 'pointer'
+          },
+          children: "Enable task execution upon failure"
+        })]
+      }), formData.allow_write && /*#__PURE__*/Object(jsx_runtime["jsxs"])(jsx_runtime["Fragment"], {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            marginBottom: '15px'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+            id: "environment_role_delete_before_load",
+            type: "checkbox",
+            checked: formData.allowed_delete_before_load,
+            onChange: e => onCheckboxChange('allowed_delete_before_load', e.target.checked),
+            disabled: disableChange,
+            style: {
+              marginRight: '8px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+            style: {
+              cursor: disableChange ? 'not-allowed' : 'pointer'
+            },
+            children: "Delete before load"
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            marginBottom: '15px'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+            id: "environment_role_entity_clone",
+            type: "checkbox",
+            checked: formData.allowed_creation_of_synthetic_data,
+            onChange: e => onCheckboxChange('allowed_creation_of_synthetic_data', e.target.checked),
+            disabled: disableChange,
+            style: {
+              marginRight: '8px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+            style: {
+              cursor: disableChange ? 'not-allowed' : 'pointer'
+            },
+            children: "Entity clone"
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            marginBottom: '15px'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+            id: "environment_role_replace_sequences",
+            type: "checkbox",
+            checked: formData.allowed_replace_sequences,
+            onChange: e => onCheckboxChange('allowed_replace_sequences', e.target.checked),
+            disabled: disableChange,
+            style: {
+              marginRight: '8px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+            style: {
+              cursor: disableChange ? 'not-allowed' : 'pointer'
+            },
+            children: "Replace sequences"
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '15px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+          id: "environment_role_random_selection",
+          type: "checkbox",
+          checked: formData.allowed_random_entity_selection,
+          onChange: e => onCheckboxChange('allowed_random_entity_selection', e.target.checked),
+          disabled: disableChange,
+          style: {
+            marginRight: '8px'
+          }
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            cursor: disableChange ? 'not-allowed' : 'pointer'
+          },
+          children: "Random entity selection"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '15px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+          id: "environment_role_request_fresh_data",
+          type: "checkbox",
+          checked: formData.allowed_request_of_fresh_data,
+          onChange: e => onCheckboxChange('allowed_request_of_fresh_data', e.target.checked),
+          disabled: disableChange,
+          style: {
+            marginRight: '8px'
+          }
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            cursor: disableChange ? 'not-allowed' : 'pointer'
+          },
+          children: "Request of fresh data"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '15px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+          id: "environment_role_refresh_reference_data",
+          type: "checkbox",
+          checked: formData.allowed_refresh_reference_data,
+          onChange: e => onCheckboxChange('allowed_refresh_reference_data', e.target.checked),
+          disabled: disableChange,
+          style: {
+            marginRight: '8px'
+          }
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            cursor: disableChange ? 'not-allowed' : 'pointer'
+          },
+          children: "Refresh reference data"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '15px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+          id: "environment_role_task_scheduling",
+          type: "checkbox",
+          checked: formData.allowed_task_scheduling,
+          onChange: e => onCheckboxChange('allowed_task_scheduling', e.target.checked),
+          disabled: disableChange,
+          style: {
+            marginRight: '8px'
+          }
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            cursor: disableChange ? 'not-allowed' : 'pointer'
+          },
+          children: "Task scheduling"
+        })]
+      }), isFluxMode && /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '15px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("input", {
+          id: "environment_role_data_versioning",
+          type: "checkbox",
+          checked: formData.allowed_entity_versioning,
+          onChange: e => onCheckboxChange('allowed_entity_versioning', e.target.checked),
+          disabled: disableChange,
+          style: {
+            marginRight: '8px'
+          }
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            cursor: disableChange ? 'not-allowed' : 'pointer'
+          },
+          children: "Data versioning"
+        })]
+      }), isFluxMode && envType !== 'Source' && /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          marginBottom: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("label", {
+          style: {
+            display: 'block',
+            marginBottom: '5px'
+          },
+          children: "Max number of reserved entities on env"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+          title: "",
+          type: InputTypes.number,
+          value: formData.allowed_number_of_reserved_entities.toString(),
+          onChange: value => onNumberChange('allowed_number_of_reserved_entities', value),
+          placeholder: "Enter number",
+          disabled: disableChange,
+          min: 0,
+          error: reservedEntitiesError,
+          isSubmitted: isSubmitted
+        })]
+      })]
+    }), isUserSettingsOpen && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_UserSettings, {
+      isOpen: isUserSettingsOpen,
+      users: allTesters,
+      groups: testerFabricRoles,
+      selectedUsers: testers.concat(Array.isArray(environment.owners) ? environment.owners : []),
+      enableAllUsers: true,
+      onClose: onCloseUserSettings,
+      onSave: onSaveUsersAndGroupsTester
+    })]
+  });
+};
+/* harmony default export */ var Roles_RoleForm = (RoleForm);
+// CONCATENATED MODULE: ./src/containers/Environments/components/Roles/NewRole.tsx
+
+
+
+
+
+
+
+
+
+
+
+const NewRole_toastr = getService('toastr');
+const NewRole = _ref => {
+  let {
+    environment,
+    existingRoles,
+    onClose,
+    onSave
+  } = _ref;
+  const {
+    isFluxMode
+  } = usePermissions();
+  const [formData, setFormData] = Object(react["useState"])({
+    role_name: '',
+    role_description: '',
+    allow_read: environment.allow_read || false,
+    allow_write: environment.allow_write || false,
+    allowed_test_conn_failure: false,
+    allowed_delete_before_load: false,
+    allowed_creation_of_synthetic_data: false,
+    allowed_random_entity_selection: false,
+    allowed_request_of_fresh_data: false,
+    allowed_refresh_reference_data: false,
+    allowed_task_scheduling: false,
+    allowed_replace_sequences: false,
+    allowed_entity_versioning: false,
+    allowed_number_of_reserved_entities: 0,
+    allowed_number_of_entities_to_copy: 0,
+    allowed_number_of_entities_to_read: 0,
+    read_unlimited_entities: false,
+    write_unlimited_entities: false
+  });
+  const [testers, setTesters] = Object(react["useState"])([]);
+  const [allTesters, setAllTesters] = Object(react["useState"])([]);
+  const [testerFabricRoles, setTesterFabricRoles] = Object(react["useState"])([]);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [showCloseConfirm, setShowCloseConfirm] = Object(react["useState"])(false);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [isUserSettingsOpen, setIsUserSettingsOpen] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    const fetchTesters = async () => {
+      try {
+        const [testersResponse, fabricRolesResponse] = await Promise.all([apis_environments.getTesters(environment.environment_id), apis_environments.getFabricRoles('tester')]);
+        if (testersResponse) {
+          const mappedTesters = (testersResponse || []).map(tester => ({
+            ...tester,
+            user_type: tester.user_type || 'ID'
+          }));
+          const owners = Array.isArray(environment.owners) ? environment.owners : [];
+          const filteredTesters = mappedTesters.filter(tester => !owners.find(o => o.user_id === tester.user_id));
+          setAllTesters(filteredTesters);
+        }
+        if (fabricRolesResponse) {
+          const ownerFabricRoles = await apis_environments.getFabricRoles('owner');
+          const owners = Array.isArray(environment.owners) ? environment.owners : [];
+          const testerRoles = (fabricRolesResponse || []).concat((ownerFabricRoles || []).filter(role => !owners.some(o => o.user_id === role && o.user_type === 'GROUP')));
+          setTesterFabricRoles(testerRoles);
+        }
+      } catch (error) {
+        console.error('Error fetching testers:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTesters();
+  }, [environment]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    setErrors(prev => {
+      const next = {
+        ...prev
+      };
+      delete next[field];
+      return next;
+    });
+  }, []);
+  const handleCheckboxChange = Object(react["useCallback"])((field, checked) => {
+    if (field === 'allow_read') {
+      setFormData(prev => ({
+        ...prev,
+        allow_read: checked
+        // allow_write: checked ? prev.allow_write : false,
+      }));
+    } else if (field === 'allow_write') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: checked
+        // allow_read: checked ? true : prev.allow_read, // If checking write, check read
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [field]: checked
+      }));
+    }
+  }, []);
+  const handleNumberChange = Object(react["useCallback"])((field, value) => {
+    const numValue = value === '' ? 0 : parseInt(value) || 0;
+    setFormData(prev => ({
+      ...prev,
+      [field]: numValue
+    }));
+    setErrors(prev => {
+      const next = {
+        ...prev
+      };
+      delete next[field];
+      return next;
+    });
+  }, []);
+  const handleSaveUsersAndGroupsTester = Object(react["useCallback"])((user, userCustom, userGroup, allUsers) => {
+    if (allUsers && !testers.find(t => t.user_id === '-1')) {
+      const allUsersObj = {
+        user_id: '-1',
+        username: 'All Users',
+        displayName: 'All Users',
+        uid: '-1',
+        user_type: 'ID'
+      };
+      setTesters(prev => [...prev, allUsersObj]);
+    } else if (!allUsers && testers.find(t => t.user_id === '-1')) {
+      setTesters(prev => prev.filter(t => t.user_id !== '-1'));
+    }
+    if (user) {
+      const newUser = {
+        ...user,
+        user_type: 'ID'
+      };
+      if (!testers.find(t => t.user_id === newUser.user_id)) {
+        setTesters(prev => [...prev, newUser]);
+      }
+    }
+    if (userCustom) {
+      const customUser = {
+        user_id: userCustom,
+        user_name: userCustom,
+        username: userCustom,
+        user_type: 'ID'
+      };
+      if (!testers.find(t => t.user_id === userCustom)) {
+        setTesters(prev => [...prev, customUser]);
+        if (!allTesters.find(t => t.user_id === userCustom)) {
+          setAllTesters(prev => [...prev, customUser]);
+        }
+      }
+    }
+    if (userGroup) {
+      const groupUser = {
+        user_id: userGroup,
+        user_name: userGroup,
+        username: userGroup,
+        user_type: 'GROUP',
+        group: true
+      };
+      if (!testers.find(t => t.user_id === userGroup)) {
+        setTesters(prev => [...prev, groupUser]);
+        if (!allTesters.find(t => t.user_id === userGroup)) {
+          setAllTesters(prev => [...prev, groupUser]);
+        }
+      }
+    }
+    setIsUserSettingsOpen(false);
+  }, [testers, allTesters]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    setIsSubmitted(true);
+    const validationErrors = {};
+    let found = false;
+    if (!formData.role_name || !String(formData.role_name).trim()) {
+      validationErrors.role_name = 'Role name is required';
+    } else if (existingRoles.some(r => r.role_name === formData.role_name.trim() && r.role_status === 'Active')) {
+      validationErrors.role_name = `Role # ${formData.role_name} Already Exists`;
+    }
+    if (formData.allow_read && !formData.read_unlimited_entities) {
+      const readNum = Number(formData.allowed_number_of_entities_to_read);
+      if (isNaN(readNum) || readNum < 1) {
+        validationErrors.allowed_number_of_entities_to_read = 'Maximum number of entities must be at least 1';
+        found = true;
+      }
+    }
+    if (formData.allow_write && !formData.write_unlimited_entities && !found) {
+      const copyNum = Number(formData.allowed_number_of_entities_to_copy);
+      if (isNaN(copyNum) || copyNum <= 0) {
+        if (isFluxMode()) {
+          const reservedNum = Number(formData.allowed_number_of_reserved_entities);
+          if (isNaN(reservedNum) || reservedNum <= 0) {
+            validationErrors.allowed_number_of_entities_to_copy = 'Maximum number of entities must be at least 1';
+            validationErrors.allowed_number_of_reserved_entities = 'Maximum number of entities must be at least 1';
+            found = true;
+          }
+        } else {
+          validationErrors.allowed_number_of_entities_to_copy = 'Maximum number of entities must be at least 1';
+          found = true;
+        }
+      }
+    }
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+    try {
+      var _response$id, _response$result;
+      const roleData = {
+        ...formData,
+        allowed_number_of_entities_to_read: formData.read_unlimited_entities ? -1 : formData.allowed_number_of_entities_to_read,
+        allowed_number_of_entities_to_copy: formData.write_unlimited_entities ? -1 : formData.allowed_number_of_entities_to_copy
+      };
+      delete roleData.read_unlimited_entities;
+      delete roleData.write_unlimited_entities;
+      const response = await apis_environments.postEnvironmentRole(environment.environment_id, environment.environment_name, roleData);
+      const newRoleId = (_response$id = response === null || response === void 0 ? void 0 : response.id) !== null && _response$id !== void 0 ? _response$id : response === null || response === void 0 ? void 0 : (_response$result = response.result) === null || _response$result === void 0 ? void 0 : _response$result.id;
+      NewRole_toastr.success(`Role # ${formData.role_name}`, "Created Successfully");
+      if (testers.length > 0) {
+        try {
+          await apis_environments.postEnvironmentRoleTesters(environment.environment_id, environment.environment_name, newRoleId, formData.role_name, testers);
+          NewRole_toastr.success(`Role Users # ${formData.role_name}`, "Updated Successfully");
+        } catch (error) {
+          console.error(`Role Users # ${formData.role_name}`, "Failed to Update : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+        }
+      }
+      onSave();
+    } catch (error) {
+      console.error(`Role # ${formData.role_name}`, "Unable to Create : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+      setIsSubmitted(false);
+    }
+  }, [formData, testers, environment, isFluxMode, existingRoles, onSave]);
+  const handleClose = Object(react["useCallback"])(() => {
+    setShowCloseConfirm(true);
+  }, []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(styles_LoadingWrapper, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          className: "k2-loader"
+        })
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      style: {
+        position: 'relative'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "New Permission Set"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Roles_RoleForm, {
+        environment: environment,
+        formData: formData,
+        testers: testers,
+        allTesters: allTesters,
+        testerFabricRoles: testerFabricRoles,
+        disableChange: false,
+        nameDisabled: false,
+        nameMandatory: true,
+        nameError: errors.role_name,
+        entitiesToReadError: errors.allowed_number_of_entities_to_read,
+        entitiesToCopyError: errors.allowed_number_of_entities_to_copy,
+        reservedEntitiesError: errors.allowed_number_of_reserved_entities,
+        isSubmitted: isSubmitted,
+        onInputChange: handleInputChange,
+        onCheckboxChange: handleCheckboxChange,
+        onNumberChange: handleNumberChange,
+        onSaveUsersAndGroupsTester: handleSaveUsersAndGroupsTester,
+        onOpenUserSettings: () => setIsUserSettingsOpen(true),
+        isUserSettingsOpen: isUserSettingsOpen,
+        onCloseUserSettings: () => setIsUserSettingsOpen(false),
+        onTesterChange: selectedTesters => setTesters(selectedTesters)
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Add",
+          onClick: handleSave,
+          type: "primary",
+          width: "100px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Close",
+          onClick: handleClose,
+          type: "secondary",
+          width: "100px"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showCloseConfirm,
+        onClose: () => setShowCloseConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showCloseConfirm,
+          title: "Close Role Editor",
+          message: "Are you sure you want to close?",
+          onConfirm: () => {
+            setShowCloseConfirm(false);
+            onClose();
+          },
+          onCancel: () => setShowCloseConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var Roles_NewRole = (NewRole);
+// CONCATENATED MODULE: ./src/containers/Environments/components/Roles/RoleDetail.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+const RoleDetail_toastr = getService('toastr');
+const RoleDetail = _ref => {
+  let {
+    environment,
+    role,
+    onClose,
+    onSave,
+    onDelete
+  } = _ref;
+  const {
+    isAdmin,
+    getUserId,
+    authorizedToEdit,
+    isFluxMode
+  } = usePermissions();
+  const [formData, setFormData] = Object(react["useState"])({
+    role_name: '',
+    role_description: '',
+    allow_read: false,
+    allow_write: false,
+    allowed_test_conn_failure: false,
+    allowed_delete_before_load: false,
+    allowed_creation_of_synthetic_data: false,
+    allowed_random_entity_selection: false,
+    allowed_request_of_fresh_data: false,
+    allowed_refresh_reference_data: false,
+    allowed_task_scheduling: false,
+    allowed_replace_sequences: false,
+    allowed_entity_versioning: false,
+    allowed_number_of_reserved_entities: 0,
+    allowed_number_of_entities_to_copy: 0,
+    allowed_number_of_entities_to_read: 0,
+    read_unlimited_entities: false,
+    write_unlimited_entities: false
+  });
+  const [testers, setTesters] = Object(react["useState"])([]);
+  const [initialTesters, setInitialTesters] = Object(react["useState"])([]);
+  const [allTesters, setAllTesters] = Object(react["useState"])([]);
+  const [testerFabricRoles, setTesterFabricRoles] = Object(react["useState"])([]);
+  const [showCloseConfirm, setShowCloseConfirm] = Object(react["useState"])(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [isUserSettingsOpen, setIsUserSettingsOpen] = Object(react["useState"])(false);
+  const [disableChange, setDisableChange] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({});
+  Object(react["useEffect"])(() => {
+    const fetchRoleData = async () => {
+      try {
+        const roleData = {
+          ...role
+        };
+        if (roleData.allowed_number_of_entities_to_read === -1) {
+          roleData.read_unlimited_entities = true;
+        }
+        if (roleData.allowed_number_of_entities_to_copy === -1) {
+          roleData.write_unlimited_entities = true;
+        }
+        setFormData({
+          role_name: roleData.role_name || '',
+          role_description: roleData.role_description || '',
+          allow_read: roleData.allow_read || false,
+          allow_write: roleData.allow_write || false,
+          allowed_test_conn_failure: roleData.allowed_test_conn_failure || false,
+          allowed_delete_before_load: roleData.allowed_delete_before_load || false,
+          allowed_creation_of_synthetic_data: roleData.allowed_creation_of_synthetic_data || false,
+          allowed_random_entity_selection: roleData.allowed_random_entity_selection || false,
+          allowed_request_of_fresh_data: roleData.allowed_request_of_fresh_data || false,
+          allowed_refresh_reference_data: roleData.allowed_refresh_reference_data || false,
+          allowed_task_scheduling: roleData.allowed_task_scheduling || false,
+          allowed_replace_sequences: roleData.allowed_replace_sequences || false,
+          allowed_entity_versioning: roleData.allowed_entity_versioning || false,
+          allowed_number_of_reserved_entities: roleData.allowed_number_of_reserved_entities || 0,
+          allowed_number_of_entities_to_copy: roleData.allowed_number_of_entities_to_copy || 0,
+          allowed_number_of_entities_to_read: roleData.allowed_number_of_entities_to_read || 0,
+          read_unlimited_entities: roleData.read_unlimited_entities || false,
+          write_unlimited_entities: roleData.write_unlimited_entities || false
+        });
+        const userId = getUserId();
+        const owners = Array.isArray(environment.owners) ? environment.owners : [];
+        const userIsOwner = isAdmin || owners.some(o => o.user_id === userId);
+        setDisableChange(roleData.role_status === 'Inactive' || !authorizedToEdit(1) || !userIsOwner);
+        const [testersResponse, fabricRolesResponse] = await Promise.all([apis_environments.getEnvironmentRoleTesters(environment.environment_id, roleData.role_id), apis_environments.getFabricRoles('tester')]);
+        if (testersResponse) {
+          const mappedTesters = (testersResponse || []).map(tester => ({
+            ...tester,
+            user_type: tester.user_type || 'ID'
+          }));
+          setTesters(mappedTesters);
+          setInitialTesters(mappedTesters.map(t => ({
+            ...t
+          })));
+        }
+        const allTestersResponse = await apis_environments.getTesters(environment.environment_id);
+        if (allTestersResponse) {
+          const mappedAllTesters = (allTestersResponse || []).map(tester => ({
+            ...tester,
+            user_type: tester.user_type || 'ID'
+          }));
+          const owners = Array.isArray(environment.owners) ? environment.owners : [];
+          const filteredTesters = mappedAllTesters.filter(tester => !owners.find(o => o.user_id === tester.user_id));
+          const currentRoleTesters = testersResponse ? (testersResponse || []).map(tester => ({
+            ...tester,
+            user_type: tester.user_type || 'ID'
+          })) : [];
+          const combinedTesters = [...filteredTesters];
+          currentRoleTesters.forEach(tester => {
+            if (!combinedTesters.find(t => t.user_id === tester.user_id)) {
+              combinedTesters.push(tester);
+            }
+          });
+          setAllTesters(combinedTesters);
+        }
+        if (fabricRolesResponse) {
+          const ownerFabricRoles = await apis_environments.getFabricRoles('owner');
+          const owners = Array.isArray(environment.owners) ? environment.owners : [];
+          const testerRoles = (fabricRolesResponse || []).concat((ownerFabricRoles || []).filter(role => !owners.some(o => o.user_id === role && o.user_type === 'GROUP')));
+          setTesterFabricRoles(testerRoles);
+        }
+      } catch (error) {
+        console.error('Error fetching role data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (role && role.role_id) {
+      fetchRoleData();
+    }
+  }, [role, environment, getUserId, isAdmin, authorizedToEdit]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+  const handleCheckboxChange = Object(react["useCallback"])((field, checked) => {
+    if (field === 'allow_read') {
+      setFormData(prev => ({
+        ...prev,
+        allow_read: checked,
+        allow_write: checked ? prev.allow_write : false
+      }));
+    } else if (field === 'allow_write') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: checked,
+        allow_read: checked ? true : prev.allow_read
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [field]: checked
+      }));
+    }
+  }, []);
+  const handleNumberChange = Object(react["useCallback"])((field, value) => {
+    const numValue = value === '' ? 0 : parseInt(value) || 0;
+    setFormData(prev => ({
+      ...prev,
+      [field]: numValue
+    }));
+    setErrors(prev => {
+      const next = {
+        ...prev
+      };
+      delete next[field];
+      return next;
+    });
+  }, []);
+  const handleSaveUsersAndGroupsTester = Object(react["useCallback"])((user, userCustom, userGroup, allUsers) => {
+    if (allUsers && !testers.find(t => t.user_id === '-1')) {
+      const allUsersObj = {
+        user_id: '-1',
+        username: 'All Users',
+        displayName: 'All Users',
+        uid: '-1',
+        user_type: 'ID'
+      };
+      setTesters(prev => [...prev, allUsersObj]);
+    } else if (!allUsers && testers.find(t => t.user_id === '-1')) {
+      setTesters(prev => prev.filter(t => t.user_id !== '-1'));
+    }
+    if (user) {
+      const newUser = {
+        ...user,
+        user_type: 'ID'
+      };
+      if (!testers.find(t => t.user_id === newUser.user_id)) {
+        setTesters(prev => [...prev, newUser]);
+      }
+    }
+    if (userCustom) {
+      const customUser = {
+        user_id: userCustom,
+        user_name: userCustom,
+        username: userCustom,
+        user_type: 'ID'
+      };
+      if (!testers.find(t => t.user_id === userCustom)) {
+        setTesters(prev => [...prev, customUser]);
+        if (!allTesters.find(t => t.user_id === userCustom)) {
+          setAllTesters(prev => [...prev, customUser]);
+        }
+      }
+    }
+    if (userGroup) {
+      const groupUser = {
+        user_id: userGroup,
+        user_name: userGroup,
+        username: userGroup,
+        user_type: 'GROUP',
+        group: true
+      };
+      if (!testers.find(t => t.user_id === userGroup)) {
+        setTesters(prev => [...prev, groupUser]);
+        if (!allTesters.find(t => t.user_id === userGroup)) {
+          setAllTesters(prev => [...prev, groupUser]);
+        }
+      }
+    }
+    setIsUserSettingsOpen(false);
+  }, [testers, allTesters]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    const validationErrors = {};
+    let found = false;
+    if (formData.allow_read && !formData.read_unlimited_entities) {
+      const readNum = Number(formData.allowed_number_of_entities_to_read);
+      if (isNaN(readNum) || readNum < 1) {
+        validationErrors.allowed_number_of_entities_to_read = 'Maximum number of entities must be at least 1';
+      }
+      found = true;
+    }
+    if (formData.allow_write && !formData.write_unlimited_entities && !found) {
+      const copyNum = Number(formData.allowed_number_of_entities_to_copy);
+      if (isNaN(copyNum) || copyNum <= 0) {
+        validationErrors.allowed_number_of_entities_to_copy = 'Maximum number of entities must be at least 1';
+        found = true;
+      }
+    }
+    if (isFluxMode() && !found) {
+      const reservedNum = Number(formData.allowed_number_of_reserved_entities);
+      if (isNaN(reservedNum) || reservedNum <= 0) {
+        validationErrors.allowed_number_of_reserved_entities = 'Max number of reserved entities must be at least 1';
+      }
+    }
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+    try {
+      var _role$role_expiration;
+      const testerIds = testers.map(t => t.user_id);
+      const initialTesterIds = initialTesters.map(t => t.user_id);
+      const showWarningMessage = initialTesterIds.some(id => !testerIds.includes(id));
+      try {
+        await apis_environments.postEnvironmentRoleTesters(environment.environment_id, environment.environment_name, role.role_id, formData.role_name, testers);
+        if (showWarningMessage) {
+          RoleDetail_toastr.warning('The entities of the removed users need to be released from the environment.');
+        }
+        RoleDetail_toastr.success(`Role Users # ${formData.role_name}`, "Updated Successfully");
+      } catch (error) {
+        RoleDetail_toastr.error(`Role Users # ${formData.role_name}`, "Failed to Update : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+        return;
+      }
+      const roleData = {
+        ...formData,
+        role_id: role.role_id,
+        allowed_number_of_entities_to_read: formData.read_unlimited_entities ? -1 : formData.allowed_number_of_entities_to_read,
+        allowed_number_of_entities_to_copy: formData.write_unlimited_entities ? -1 : formData.allowed_number_of_entities_to_copy,
+        environment_id: environment.environment_id,
+        role_expiration_date: (_role$role_expiration = role.role_expiration_date) !== null && _role$role_expiration !== void 0 ? _role$role_expiration : null,
+        role_created_by: role.role_created_by,
+        role_creation_date: role.role_creation_date,
+        role_last_updated_by: role.role_last_updated_by,
+        role_last_updated_date: role.role_last_updated_date,
+        role_status: role.role_status
+      };
+      delete roleData.read_unlimited_entities;
+      delete roleData.write_unlimited_entities;
+      await apis_environments.updateEnvironmentRole(environment.environment_id, environment.environment_name, role.role_id, roleData);
+      RoleDetail_toastr.success(`Role # ${formData.role_name}`, "Updated Successfully");
+      onSave();
+    } catch (error) {
+      RoleDetail_toastr.error(`Role # ${formData.role_name}`, "Failed to Update : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+    }
+  }, [formData, testers, initialTesters, role, environment, onSave]);
+  const handleDelete = Object(react["useCallback"])(async () => {
+    try {
+      await apis_environments.deleteEnvironmentRole(environment.environment_id, environment.environment_name, role.role_id, role.role_name);
+      RoleDetail_toastr.success(`Role # ${role.role_name}`, "Deleted Successfully");
+      RoleDetail_toastr.warning('The entities of the removed users need to be released from the environment.');
+      setShowDeleteConfirm(false);
+      onDelete();
+    } catch (error) {
+      RoleDetail_toastr.error(`Role # ${role.role_name}`, "Failed to Delete : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+      setShowDeleteConfirm(false);
+    }
+  }, [role, environment, onDelete]);
+  const handleClose = Object(react["useCallback"])(() => {
+    setShowCloseConfirm(true);
+  }, []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        className: "k2-loader"
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      style: {
+        position: 'relative'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: '100%'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Title, {
+            children: [formData.role_name, role.role_status === 'Inactive' && /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+              style: {
+                paddingLeft: '1em',
+                fontWeight: 300,
+                fontSize: '0.7em'
+              },
+              children: "Inactive"
+            })]
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_styles_DeleteIcon, {
+            src: delete_icon_gray,
+            alt: "Delete",
+            onClick: () => setShowDeleteConfirm(true),
+            title: "Delete Permission Setting"
+          })]
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Roles_RoleForm, {
+        environment: environment,
+        formData: formData,
+        testers: testers,
+        allTesters: allTesters,
+        testerFabricRoles: testerFabricRoles,
+        disableChange: disableChange,
+        nameDisabled: true,
+        entitiesToReadError: errors.allowed_number_of_entities_to_read,
+        entitiesToCopyError: errors.allowed_number_of_entities_to_copy,
+        reservedEntitiesError: errors.allowed_number_of_reserved_entities,
+        onInputChange: handleInputChange,
+        onCheckboxChange: handleCheckboxChange,
+        onNumberChange: handleNumberChange,
+        onSaveUsersAndGroupsTester: handleSaveUsersAndGroupsTester,
+        onOpenUserSettings: () => setIsUserSettingsOpen(true),
+        isUserSettingsOpen: isUserSettingsOpen,
+        onCloseUserSettings: () => setIsUserSettingsOpen(false),
+        onTesterChange: selectedTesters => setTesters(selectedTesters)
+      }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Save Changes",
+          onClick: handleSave,
+          type: "primary",
+          width: "130px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Close",
+          onClick: handleClose,
+          type: "secondary",
+          width: "100px"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showCloseConfirm,
+        onClose: () => setShowCloseConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showCloseConfirm,
+          title: "Close Role Editor",
+          message: "Are you sure you want to close?",
+          onConfirm: () => {
+            setShowCloseConfirm(false);
+            onClose();
+          },
+          onCancel: () => setShowCloseConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showDeleteConfirm,
+        onClose: () => setShowDeleteConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showDeleteConfirm,
+          title: "Delete Permission Setting",
+          message: "Are you sure you want to Delete Permission Setting?",
+          onConfirm: handleDelete,
+          onCancel: () => setShowDeleteConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var Roles_RoleDetail = (RoleDetail);
+// CONCATENATED MODULE: ./src/containers/Environments/components/Product/NewProduct.tsx
+
+
+
+
+
+
+
+
+
+
+const NewProduct_toastr = getService('toastr');
+const NewProduct = _ref => {
+  var _affinityOptions$find;
+  let {
+    environment,
+    existingProducts,
+    onClose,
+    onSave
+  } = _ref;
+  const [formData, setFormData] = Object(react["useState"])({
+    product_id: '',
+    product_name: '',
+    data_center_name: '',
+    product_version: '',
+    max_number_of_workers: ''
+  });
+  const [availableProducts, setAvailableProducts] = Object(react["useState"])([]);
+  const [dataCenters, setDataCenters] = Object(react["useState"])([]);
+  const [productVersions, setProductVersions] = Object(react["useState"])([]);
+  const [maxWorkersPerNode, setMaxWorkersPerNode] = Object(react["useState"])(1);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [showCloseConfirm, setShowCloseConfirm] = Object(react["useState"])(false);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [productLusCount, setProductLusCount] = Object(react["useState"])(null);
+  const [logicalUnitsForProduct, setLogicalUnitsForProduct] = Object(react["useState"])(null);
+  const [addProductWarning, setAddProductWarning] = Object(react["useState"])(null);
+  const [showAddConfirm, setShowAddConfirm] = Object(react["useState"])(false);
+  const [showNoLUsConfirm, setShowNoLUsConfirm] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const [allProductsResponse, envProductsResponse, dataCentersResponse, maxWorkersResponse] = await Promise.all([apis_environments.getProductsWithLUs(environment.environment_id), apis_environments.getEnvProducts(environment.environment_id), apis_environments.getDataCenters(), apis_environments.getMaxWorkersPerNode()]);
+        const allProducts = allProductsResponse || [];
+        const envProducts = envProductsResponse || [];
+        const filtered = allProducts.filter(p => {
+          if (p.product_status === 'Inactive') return false;
+          const alreadyInEnv = envProducts.some(ep => ep.product_id === p.product_id && ep.status === 'Active');
+          return !alreadyInEnv;
+        });
+        setAvailableProducts(filtered);
+        if (dataCentersResponse) {
+          const alive = (dataCentersResponse || []).filter(dc => dc.status === 'ALIVE');
+          setDataCenters(alive);
+        }
+        if (maxWorkersResponse) {
+          const maxWorkers = Number(maxWorkersResponse) || 1;
+          setMaxWorkersPerNode(maxWorkers);
+          setFormData(prev => ({
+            ...prev,
+            max_number_of_workers: maxWorkers
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        NewProduct_toastr === null || NewProduct_toastr === void 0 ? void 0 : NewProduct_toastr.error(`Environment # ${environment.environment_id}`, 'Failed to get new systems');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [environment.environment_id]);
+  Object(react["useEffect"])(() => {
+    if (formData.product_id) {
+      const selectedProduct = availableProducts.find(p => p.product_id === Number(formData.product_id));
+      if (selectedProduct) {
+        setFormData(prev => ({
+          ...prev,
+          product_name: selectedProduct.product_name
+        }));
+        const versions = selectedProduct.product_versions ? selectedProduct.product_versions.split(',').map(v => v.trim()).filter(Boolean) : [];
+        setProductVersions(versions.map(v => ({
+          label: v,
+          value: v
+        })));
+        if (typeof selectedProduct.lus === 'number') {
+          setProductLusCount(selectedProduct.lus);
+          setLogicalUnitsForProduct(null);
+        } else {
+          apis_environments.getProductLogicalUnits(selectedProduct.product_id).then(lusList => {
+            const list = Array.isArray(lusList) ? lusList : [];
+            setLogicalUnitsForProduct(list);
+            setProductLusCount(list.length);
+          }).catch(() => {
+            setLogicalUnitsForProduct(null);
+            setProductLusCount(0);
+          });
+        }
+      }
+    } else {
+      setProductVersions([]);
+      setProductLusCount(null);
+      setLogicalUnitsForProduct(null);
+      setAddProductWarning(null);
+    }
+  }, [formData.product_id, availableProducts]);
+  Object(react["useEffect"])(() => {
+    if (!(logicalUnitsForProduct !== null && logicalUnitsForProduct !== void 0 && logicalUnitsForProduct.length) || !formData.data_center_name || !dataCenters.length) {
+      setAddProductWarning(null);
+      return;
+    }
+    const selectedDc = formData.data_center_name;
+    const dataCenter = dataCenters.find(dc => selectedDc === dc.dc || selectedDc === `🖥️ ${dc.dc}` || selectedDc === dc.data_center_name);
+    if (!dataCenter) {
+      setAddProductWarning(null);
+      return;
+    }
+    const dcValue = dataCenter.dc || dataCenter.data_center_name || selectedDc.replace(/^🖥️\s*/, '');
+    for (let i = 0; i < logicalUnitsForProduct.length; i++) {
+      const lu = logicalUnitsForProduct[i];
+      if (lu.lu_dc_name && lu.lu_dc_name !== '' && lu.lu_dc_name !== dcValue) {
+        setAddProductWarning({
+          dc_name: dcValue,
+          lu_name: lu.lu_name || '',
+          lu_dc_name: lu.lu_dc_name || ''
+        });
+        return;
+      }
+    }
+    setAddProductWarning(null);
+  }, [formData.data_center_name, logicalUnitsForProduct, dataCenters]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = {
+          ...prev
+        };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  }, [errors]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    setIsSubmitted(true);
+    const newErrors = {};
+    if (!formData.product_id) {
+      newErrors.product_id = 'Product is required';
+    }
+    if (productVersions.length > 0 && !formData.product_version) {
+      newErrors.product_version = 'Product version is required';
+    }
+
+    // const maxWorkersNum = Number(formData.max_number_of_workers);
+    // if (formData.max_number_of_workers === '' || formData.max_number_of_workers === undefined || formData.max_number_of_workers === null) {
+    //     newErrors.max_number_of_workers = 'Maximum number of workers is required';
+    // } else if (isNaN(maxWorkersNum) || maxWorkersNum < 1) {
+    //     newErrors.max_number_of_workers = 'Must be at least 1';
+    // } else if (maxWorkersNum > maxWorkersPerNode) {
+    //     newErrors.max_number_of_workers = `Maximum number of workers cannot exceed ${maxWorkersPerNode}`;
+    // }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+    try {
+      const productData = {
+        product_id: Number(formData.product_id),
+        data_center_name: formData.data_center_name,
+        product_version: formData.product_version,
+        max_number_of_workers: Number(formData.max_number_of_workers),
+        lu: productLusCount
+      };
+      await apis_environments.postEnvProduct(environment.environment_id, environment.environment_name, productData);
+      NewProduct_toastr.success(`System # ${formData.product_name}`, "Created Successfully");
+      setIsSubmitted(false);
+      setShowAddConfirm(false);
+      setTimeout(() => {
+        onSave();
+      }, 300);
+    } catch (error) {
+      setIsSubmitted(false);
+    }
+  }, [formData, environment, onSave, productVersions, productLusCount]);
+  const handleClose = Object(react["useCallback"])(() => {
+    setShowCloseConfirm(true);
+  }, []);
+  const affinityOptions = react_default.a.useMemo(() => {
+    const dataCenterOptions = [];
+    const logicalIdsSeen = new Set();
+    (dataCenters || []).forEach(dc => {
+      if (dc.dc) {
+        dataCenterOptions.push({
+          value: dc.dc,
+          label: '🖥️ ' + dc.dc
+        });
+      }
+      if (dc.logical_ids) {
+        dc.logical_ids.split(',').forEach(logicalId => {
+          const id = logicalId.trim();
+          if (id && !logicalIdsSeen.has(id)) {
+            logicalIdsSeen.add(id);
+            dataCenterOptions.push({
+              value: id,
+              label: '🔗 ' + id
+            });
+          }
+        });
+      }
+    });
+    return dataCenterOptions;
+  }, [dataCenters]);
+  const selectedAffinityOption = formData.data_center_name ? (_affinityOptions$find = affinityOptions.find(o => o.value === formData.data_center_name || o.label === formData.data_center_name)) !== null && _affinityOptions$find !== void 0 ? _affinityOptions$find : {
+    label: formData.data_center_name,
+    value: formData.data_center_name
+  } : null;
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          padding: '20px',
+          textAlign: 'center'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          className: "k2-loader"
+        })
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      style: {
+        position: 'relative'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "Add System"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          padding: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "System Name",
+            options: availableProducts.map(p => ({
+              label: p.product_name,
+              value: p.product_id.toString()
+            })),
+            value: formData.product_id ? {
+              label: formData.product_name,
+              value: formData.product_id.toString()
+            } : null,
+            onChange: selected => {
+              if (selected) {
+                handleInputChange('product_id', selected.value);
+              } else {
+                handleInputChange('product_id', '');
+              }
+            },
+            placeholder: "Select product",
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.product_id
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Affinity",
+            options: affinityOptions,
+            value: selectedAffinityOption,
+            onChange: selected => {
+              handleInputChange('data_center_name', selected ? selected.value : '');
+            },
+            placeholder: "Select affinity",
+            isSubmitted: isSubmitted,
+            isClearable: true
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+            title: "Maximum number of workers to allocate per node when executing tasks on this system.",
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+              title: "Max num of workers",
+              type: InputTypes.number,
+              value: formData.max_number_of_workers,
+              onChange: value => {
+                const numValue = typeof value === 'number' ? value : parseInt(String(value), 10);
+                if (!isNaN(numValue) && numValue >= 1) {
+                  handleInputChange('max_number_of_workers', numValue);
+                } else {
+                  handleInputChange('max_number_of_workers', '');
+                }
+              },
+              placeholder: "Enter maximum number of workers"
+              // mandatory={true}
+              ,
+              isSubmitted: isSubmitted
+              // error={errors.max_number_of_workers}
+              ,
+              min: 1,
+              max: maxWorkersPerNode
+            })
+          })
+        }), productVersions.length > 0 && /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "System version",
+            options: productVersions,
+            value: formData.product_version ? {
+              label: formData.product_version,
+              value: formData.product_version
+            } : null,
+            onChange: selected => {
+              if (selected) {
+                handleInputChange('product_version', selected.value);
+              } else {
+                handleInputChange('product_version', '');
+              }
+            },
+            placeholder: "Select version",
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.product_version
+          })
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Add",
+          onClick: () => {
+            if (addProductWarning) {
+              setShowAddConfirm(true);
+            } else if (formData.product_id && productLusCount === 0) {
+              setShowNoLUsConfirm(true);
+            } else {
+              handleSave();
+            }
+          },
+          type: "primary",
+          width: "100px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Close",
+          onClick: handleClose,
+          type: "secondary",
+          width: "100px"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showAddConfirm,
+        onClose: () => setShowAddConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showAddConfirm,
+          title: "Data Center Mismatch",
+          message: addProductWarning ? `DC ${addProductWarning.dc_name} is not equal to the DC name of logical unit ${addProductWarning.lu_name}: ${addProductWarning.lu_dc_name}. Are you sure?` : '',
+          onConfirm: () => {
+            setShowAddConfirm(false);
+            handleSave();
+          },
+          onCancel: () => setShowAddConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showNoLUsConfirm,
+        onClose: () => setShowNoLUsConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showNoLUsConfirm,
+          title: "Add System",
+          message: "The selected system does not contain any Logical Units (LUs). Are you sure you want to continue ?",
+          onConfirm: () => {
+            setShowNoLUsConfirm(false);
+            handleSave();
+          },
+          onCancel: () => setShowNoLUsConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showCloseConfirm,
+        onClose: () => setShowCloseConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showCloseConfirm,
+          title: "Close System Editor",
+          message: "Are you sure you want to close?",
+          onConfirm: () => {
+            setShowCloseConfirm(false);
+            onClose();
+          },
+          onCancel: () => setShowCloseConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var Product_NewProduct = (NewProduct);
+// CONCATENATED MODULE: ./src/containers/Environments/components/Product/ProductDetail.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const ProductDetail_toastr = getService('toastr');
+const ProductDetail = _ref => {
+  var _product$max_number_o, _affinityOptions$find;
+  let {
+    environment,
+    product,
+    onClose,
+    onSave,
+    onDelete,
+    onOpenProduct
+  } = _ref;
+  const {
+    isAdmin,
+    getUserId,
+    authorizedToEdit
+  } = usePermissions();
+  const getInitialDataCenterName = dcName => {
+    if (!dcName) return '';
+    if (Array.isArray(dcName)) return dcName[0] && String(dcName[0]).trim() || '';
+    if (typeof dcName === 'string') {
+      const first = dcName.split(',')[0];
+      return first ? first.trim() : '';
+    }
+    return String(dcName);
+  };
+  const [formData, setFormData] = Object(react["useState"])({
+    product_id: (product === null || product === void 0 ? void 0 : product.product_id) || 0,
+    product_name: (product === null || product === void 0 ? void 0 : product.product_name) || '',
+    data_center_name: getInitialDataCenterName(product === null || product === void 0 ? void 0 : product.data_center_name),
+    product_version: (product === null || product === void 0 ? void 0 : product.product_version) || '',
+    max_number_of_workers: (_product$max_number_o = product === null || product === void 0 ? void 0 : product.max_number_of_workers) !== null && _product$max_number_o !== void 0 ? _product$max_number_o : ''
+  });
+  const [dataCenters, setDataCenters] = Object(react["useState"])([]);
+  const [productVersions, setProductVersions] = Object(react["useState"])([]);
+  const [maxWorkersPerNode, setMaxWorkersPerNode] = Object(react["useState"])(1);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [showCloseConfirm, setShowCloseConfirm] = Object(react["useState"])(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  const [disableChange, setDisableChange] = Object(react["useState"])(false);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const userId = getUserId();
+        const owners = Array.isArray(environment.owners) ? environment.owners : [];
+        const userIsOwner = isAdmin || owners.some(o => o.user_id === userId);
+        setDisableChange((product === null || product === void 0 ? void 0 : product.status) === 'Inactive' || !authorizedToEdit(1) || !userIsOwner);
+        const [dataCentersResponse, maxWorkersResponse] = await Promise.all([tables.getDataCenters(), apis_environments.getMaxWorkersPerNode()]);
+        if (dataCentersResponse) {
+          const alive = (dataCentersResponse || []).filter(dc => dc.status === 'ALIVE');
+          setDataCenters(alive);
+        }
+        if (maxWorkersResponse) {
+          const maxWorkers = Number(maxWorkersResponse) || 1;
+          setMaxWorkersPerNode(maxWorkers);
+        }
+        if (product !== null && product !== void 0 && product.product_versions) {
+          const versions = product.product_versions.split(',').map(v => v.trim()).filter(Boolean);
+          setProductVersions(versions.map(v => ({
+            label: v,
+            value: v
+          })));
+        }
+        setFormData(prev => {
+          var _product$max_number_o2;
+          return {
+            ...prev,
+            product_id: (product === null || product === void 0 ? void 0 : product.product_id) || 0,
+            product_name: (product === null || product === void 0 ? void 0 : product.product_name) || '',
+            data_center_name: getInitialDataCenterName(product === null || product === void 0 ? void 0 : product.data_center_name),
+            product_version: (product === null || product === void 0 ? void 0 : product.product_version) || '',
+            max_number_of_workers: (_product$max_number_o2 = product === null || product === void 0 ? void 0 : product.max_number_of_workers) !== null && _product$max_number_o2 !== void 0 ? _product$max_number_o2 : ''
+          };
+        });
+      } catch (error) {
+        console.error('Error fetching product data:', error);
+        ProductDetail_toastr === null || ProductDetail_toastr === void 0 ? void 0 : ProductDetail_toastr.error(`System # ${product === null || product === void 0 ? void 0 : product.product_name}`, 'Failed to get product data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (product) {
+      fetchData();
+    }
+  }, [product, environment, isAdmin, getUserId, authorizedToEdit]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = {
+          ...prev
+        };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  }, [errors]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    setIsSubmitted(true);
+    const newErrors = {};
+    if (!formData.product_version) {
+      newErrors.product_version = 'Product version is required';
+    }
+
+    // const maxWorkersNum = Number(formData.max_number_of_workers);
+    // if (formData.max_number_of_workers === '' || formData.max_number_of_workers === undefined || formData.max_number_of_workers === null) {
+    //     newErrors.max_number_of_workers = 'Maximum number of workers is required';
+    // } else if (isNaN(maxWorkersNum) || maxWorkersNum < 1) {
+    //     newErrors.max_number_of_workers = 'Must be at least 1';
+    // } else if (maxWorkersNum > maxWorkersPerNode) {
+    //     newErrors.max_number_of_workers = `Maximum number of workers cannot exceed ${maxWorkersPerNode}`;
+    // }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+    try {
+      const productData = {
+        ...product,
+        data_center_name: formData.data_center_name,
+        product_version: formData.product_version,
+        max_number_of_workers: Number(formData.max_number_of_workers)
+      };
+      await apis_environments.putEnvProduct(environment.environment_id, environment.environment_name, productData);
+      ProductDetail_toastr === null || ProductDetail_toastr === void 0 ? void 0 : ProductDetail_toastr.success(`System # ${formData.product_name}`, "Updated Successfully");
+      setIsSubmitted(false);
+      setTimeout(() => {
+        onSave();
+      }, 300);
+    } catch (error) {
+      setIsSubmitted(false);
+    }
+  }, [formData, product, environment, onSave]);
+  const handleDelete = Object(react["useCallback"])(async () => {
+    try {
+      await apis_environments.deleteEnvProduct(environment.environment_id, environment.environment_name, formData.product_id);
+      ProductDetail_toastr === null || ProductDetail_toastr === void 0 ? void 0 : ProductDetail_toastr.success(`System # ${formData.product_name}`, "Deleted Successfully");
+      setShowDeleteConfirm(false);
+      setTimeout(() => {
+        onDelete();
+      }, 300);
+    } catch (error) {
+      ProductDetail_toastr === null || ProductDetail_toastr === void 0 ? void 0 : ProductDetail_toastr.error(`System # ${formData.product_name}`, "Failed to Delete : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+      setShowDeleteConfirm(false);
+    }
+  }, [formData.product_name, formData.product_id, environment, onDelete]);
+  const handleClose = Object(react["useCallback"])(() => {
+    setShowCloseConfirm(true);
+  }, []);
+  const affinityOptions = Object(react["useMemo"])(() => {
+    const options = [];
+    const logicalIdsSeen = new Set();
+    (dataCenters || []).forEach(dc => {
+      if (dc.dc) {
+        options.push({
+          value: dc.dc,
+          label: '🖥️ ' + dc.dc
+        });
+      }
+      if (dc.logical_ids) {
+        dc.logical_ids.split(',').forEach(logicalId => {
+          const id = logicalId.trim();
+          if (id && !logicalIdsSeen.has(id)) {
+            logicalIdsSeen.add(id);
+            options.push({
+              value: id,
+              label: '🔗 ' + id
+            });
+          }
+        });
+      }
+    });
+    return options;
+  }, [dataCenters]);
+  const selectedAffinityOption = formData.data_center_name ? (_affinityOptions$find = affinityOptions.find(o => o.value === formData.data_center_name || o.label === formData.data_center_name)) !== null && _affinityOptions$find !== void 0 ? _affinityOptions$find : {
+    label: formData.data_center_name,
+    value: formData.data_center_name
+  } : null;
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          padding: '20px',
+          textAlign: 'center'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          className: "k2-loader"
+        })
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      style: {
+        position: 'relative'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: '100%'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Title, {
+            children: ["System ", onOpenProduct ? /*#__PURE__*/Object(jsx_runtime["jsx"])("a", {
+              onClick: () => {
+                onOpenProduct({
+                  product_id: product === null || product === void 0 ? void 0 : product.product_id,
+                  product_name: product === null || product === void 0 ? void 0 : product.product_name,
+                  product_status: product === null || product === void 0 ? void 0 : product.product_status,
+                  product_vendor: product === null || product === void 0 ? void 0 : product.product_vendor,
+                  product_versions: product === null || product === void 0 ? void 0 : product.product_versions,
+                  product_description: product === null || product === void 0 ? void 0 : product.product_description
+                });
+              },
+              title: "Open product page",
+              children: formData.product_name
+            }) : /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+              style: {
+                fontSize: '14px'
+              },
+              children: formData.product_name
+            }), (product === null || product === void 0 ? void 0 : product.status) === 'Inactive' && /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+              style: {
+                paddingLeft: '1em',
+                fontWeight: 300,
+                fontSize: '0.7em'
+              },
+              children: "Inactive"
+            })]
+          }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_styles_DeleteIcon, {
+            src: delete_icon_gray,
+            alt: "Delete",
+            onClick: () => setShowDeleteConfirm(true),
+            title: "Delete System"
+          })]
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          padding: '0px 20px 20px 20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Affinity",
+            options: affinityOptions,
+            value: selectedAffinityOption,
+            onChange: selected => {
+              handleInputChange('data_center_name', selected ? selected.value : '');
+            },
+            placeholder: "Select affinity",
+            disabled: disableChange,
+            isSubmitted: isSubmitted,
+            isClearable: true
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+            title: "Maximum number of workers to allocate per node when executing tasks on this system.",
+            children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+              title: "Max num of workers",
+              type: InputTypes.number,
+              value: formData.max_number_of_workers,
+              onChange: value => {
+                const numValue = typeof value === 'number' ? value : parseInt(String(value), 10);
+                if (!isNaN(numValue) && numValue >= 1) {
+                  handleInputChange('max_number_of_workers', numValue);
+                } else {
+                  handleInputChange('max_number_of_workers', '');
+                }
+              },
+              placeholder: "Enter maximum number of workers",
+              isSubmitted: isSubmitted,
+              min: 1,
+              max: maxWorkersPerNode,
+              disabled: disableChange
+            })
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "System version",
+            options: productVersions,
+            value: formData.product_version ? {
+              label: formData.product_version,
+              value: formData.product_version
+            } : null,
+            onChange: selected => {
+              if (selected) {
+                handleInputChange('product_version', selected.value);
+              } else {
+                handleInputChange('product_version', '');
+              }
+            },
+            placeholder: "Select version",
+            disabled: disableChange,
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.product_version
+          })
+        })]
+      }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Save Changes",
+          onClick: handleSave,
+          type: "primary",
+          width: "130px"
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+          title: "Close",
+          onClick: handleClose,
+          type: "secondary",
+          width: "100px"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showCloseConfirm,
+        onClose: () => setShowCloseConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showCloseConfirm,
+          title: "Close System Editor",
+          message: "Are you sure you want to close?",
+          onConfirm: () => {
+            setShowCloseConfirm(false);
+            onClose();
+          },
+          onCancel: () => setShowCloseConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: '400px',
+        isOpen: showDeleteConfirm,
+        onClose: () => setShowDeleteConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showDeleteConfirm,
+          title: "Delete System",
+          message: `Are you sure you want to delete System # ${formData.product_name}?`,
+          onConfirm: handleDelete,
+          onCancel: () => setShowDeleteConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var Product_ProductDetail = (ProductDetail);
+// CONCATENATED MODULE: ./src/containers/Environments/components/EnvironmentVariable/NewEnvironmentVariable.tsx
+
+
+
+
+
+
+
+
+
+
+const NewEnvironmentVariable_toastr = getService('toastr');
+function normalizeAllGlobalsResponse(raw) {
+  const arr = Array.isArray(raw) ? raw : raw !== null && raw !== void 0 && raw.result && Array.isArray(raw.result) ? raw.result : [];
+  return arr.map(g => {
+    var _ref, _g$globalName, _ref2, _g$luList;
+    return {
+      globalName: (_ref = (_g$globalName = g.globalName) !== null && _g$globalName !== void 0 ? _g$globalName : g.global_name) !== null && _ref !== void 0 ? _ref : '',
+      luList: ((_ref2 = (_g$luList = g.luList) !== null && _g$luList !== void 0 ? _g$luList : g.lu_list) !== null && _ref2 !== void 0 ? _ref2 : []).map(lu => {
+        var _ref3, _lu$luName, _ref4, _lu$defaultValue;
+        return {
+          luName: (_ref3 = (_lu$luName = lu.luName) !== null && _lu$luName !== void 0 ? _lu$luName : lu.lu_name) !== null && _ref3 !== void 0 ? _ref3 : '',
+          defaultValue: (_ref4 = (_lu$defaultValue = lu.defaultValue) !== null && _lu$defaultValue !== void 0 ? _lu$defaultValue : lu.default_value) !== null && _ref4 !== void 0 ? _ref4 : ''
+        };
+      })
+    };
+  }).filter(g => g.globalName);
+}
+const NewEnvironmentVariable = _ref5 => {
+  let {
+    environment,
+    onClose,
+    onSave
+  } = _ref5;
+  const [formData, setFormData] = Object(react["useState"])({
+    global_name: '',
+    luName: '',
+    global_value: ''
+  });
+  const [setAsNull, setSetAsNull] = Object(react["useState"])(false);
+  const [availableGlobals, setAvailableGlobals] = Object(react["useState"])([]);
+  const [globalLogicalUnits, setGlobalLogicalUnits] = Object(react["useState"])([]);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [showCloseConfirm, setShowCloseConfirm] = Object(react["useState"])(false);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  Object(react["useEffect"])(() => {
+    const fetchData = async () => {
+      try {
+        const [allGlobalsRaw, existingResponse] = await Promise.all([apis_environments.getAllGlobals(null), apis_environments.getEnvGlobals(environment.environment_id)]);
+        const envGlobals = normalizeAllGlobalsResponse(allGlobalsRaw);
+        const existingGlobals = existingResponse || [];
+        const filtered = envGlobals.filter(g => existingGlobals.findIndex(eg => eg.global_name === g.globalName) < 0);
+        setAvailableGlobals(filtered);
+        setGlobalLogicalUnits([]);
+        setFormData({
+          global_name: '',
+          luName: '',
+          global_value: ''
+        });
+      } catch (error) {
+        console.error('Error fetching globals:', error);
+        NewEnvironmentVariable_toastr === null || NewEnvironmentVariable_toastr === void 0 ? void 0 : NewEnvironmentVariable_toastr.error(`Environment # ${environment.environment_id}`, 'Failed to get environment variables');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [environment.environment_id]);
+  Object(react["useEffect"])(() => {
+    if (!formData.global_name) {
+      setGlobalLogicalUnits([]);
+      setFormData(prev => ({
+        ...prev,
+        luName: '',
+        global_value: ''
+      }));
+      return;
+    }
+    const chosenGlobal = availableGlobals.find(g => g.globalName === formData.global_name);
+    if (chosenGlobal) {
+      setGlobalLogicalUnits(chosenGlobal.luList || []);
+      setFormData(prev => ({
+        ...prev,
+        luName: '',
+        global_value: ''
+      }));
+    } else {
+      setGlobalLogicalUnits([]);
+    }
+  }, [formData.global_name, availableGlobals]);
+  const handleVariableNameChange = Object(react["useCallback"])(selected => {
+    if (selected) {
+      setFormData(prev => ({
+        ...prev,
+        global_name: selected.value,
+        luName: '',
+        global_value: ''
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        global_name: '',
+        luName: '',
+        global_value: ''
+      }));
+    }
+    if (errors.global_name) {
+      setErrors(prev => ({
+        ...prev,
+        global_name: ''
+      }));
+    }
+  }, [errors.global_name]);
+  const handleLogicalUnitChange = Object(react["useCallback"])(selected => {
+    if (selected) {
+      var _chosenLu$defaultValu;
+      const chosenLu = globalLogicalUnits.find(lu => lu.luName === selected.value);
+      const defaultValue = (_chosenLu$defaultValu = chosenLu === null || chosenLu === void 0 ? void 0 : chosenLu.defaultValue) !== null && _chosenLu$defaultValu !== void 0 ? _chosenLu$defaultValu : '';
+      setFormData(prev => ({
+        ...prev,
+        luName: selected.value,
+        global_value: defaultValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        luName: '',
+        global_value: ''
+      }));
+    }
+    if (errors.luName) {
+      setErrors(prev => ({
+        ...prev,
+        luName: ''
+      }));
+    }
+  }, [globalLogicalUnits, errors.luName]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+  const handleSave = Object(react["useCallback"])(async () => {
+    var _formData$global_name, _formData$luName;
+    setIsSubmitted(true);
+    const newErrors = {};
+    if (!((_formData$global_name = formData.global_name) !== null && _formData$global_name !== void 0 && _formData$global_name.trim())) newErrors.global_name = 'Variable Name is required';
+    if (!((_formData$luName = formData.luName) !== null && _formData$luName !== void 0 && _formData$luName.trim())) newErrors.luName = 'Logical Unit is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    try {
+      var _formData$global_valu, _environment_last_upd;
+      const existingResponse = await apis_environments.getEnvGlobals(environment.environment_id);
+      const existingGlobals = existingResponse || [];
+      const alreadyExists = existingGlobals.some(g => g.global_name === formData.global_name);
+      if (alreadyExists) {
+        NewEnvironmentVariable_toastr === null || NewEnvironmentVariable_toastr === void 0 ? void 0 : NewEnvironmentVariable_toastr.error(`Global # ${formData.global_name}`, 'Already Exists');
+        setIsSubmitted(false);
+        return;
+      }
+      const payload = {
+        global_name: formData.global_name,
+        lu_name: formData.luName,
+        global_value: setAsNull ? null : (_formData$global_valu = formData.global_value) !== null && _formData$global_valu !== void 0 ? _formData$global_valu : '',
+        update_date: new Date().toUTCString(),
+        updated_by: (_environment_last_upd = environment.environment_last_updated_by) !== null && _environment_last_upd !== void 0 ? _environment_last_upd : ''
+      };
+      await apis_environments.postEnvGlobal(environment.environment_id, environment.environment_name, payload);
+      NewEnvironmentVariable_toastr === null || NewEnvironmentVariable_toastr === void 0 ? void 0 : NewEnvironmentVariable_toastr.success(`Global # ${formData.global_name}`, 'Created Successfully');
+      setIsSubmitted(false);
+      onSave();
+    } catch (error) {
+      NewEnvironmentVariable_toastr === null || NewEnvironmentVariable_toastr === void 0 ? void 0 : NewEnvironmentVariable_toastr.error('Unable to Create', (error === null || error === void 0 ? void 0 : error.message) || 'Unknown error');
+      setIsSubmitted(false);
+    }
+  }, [formData, setAsNull, environment, onSave]);
+  const handleClose = Object(react["useCallback"])(() => setShowCloseConfirm(true), []);
+  const handleCloseConfirm = Object(react["useCallback"])(() => {
+    setShowCloseConfirm(false);
+    onClose();
+  }, [onClose]);
+  const handleCloseCancel = Object(react["useCallback"])(() => setShowCloseConfirm(false), []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          padding: '20px',
+          textAlign: 'center'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          className: "k2-loader"
+        })
+      })
+    });
+  }
+  const variableOptions = availableGlobals.map(g => ({
+    label: g.globalName,
+    value: g.globalName
+  }));
+  const luOptions = globalLogicalUnits.map(lu => ({
+    label: lu.luName,
+    value: lu.luName
+  }));
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      style: {
+        position: 'relative'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(global_Header, {
+        title: "New Environment Variable",
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(global_Title, {
+          children: "New Environment Variable"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          padding: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Variable Name",
+            options: variableOptions,
+            value: formData.global_name ? {
+              label: formData.global_name,
+              value: formData.global_name
+            } : null,
+            onChange: handleVariableNameChange,
+            placeholder: "Select variable",
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.global_name
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Logical Unit",
+            options: luOptions,
+            value: formData.luName ? {
+              label: formData.luName,
+              value: formData.luName
+            } : null,
+            onChange: handleLogicalUnitChange,
+            placeholder: "Select logical unit",
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.luName
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            type: InputTypes.text,
+            title: "Variable Value",
+            value: setAsNull ? '' : formData.global_value,
+            onChange: value => handleInputChange('global_value', value),
+            placeholder: setAsNull ? '' : 'Variable value',
+            disabled: setAsNull
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Close",
+            onClick: handleClose,
+            type: "secondary",
+            width: "100px"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Add",
+            onClick: handleSave,
+            type: "primary",
+            width: "100px"
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: "400px",
+        isOpen: showCloseConfirm,
+        onClose: handleCloseCancel,
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showCloseConfirm,
+          title: "Close",
+          message: "Are you sure you want to close?",
+          onConfirm: handleCloseConfirm,
+          onCancel: handleCloseCancel,
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var EnvironmentVariable_NewEnvironmentVariable = (NewEnvironmentVariable);
+// CONCATENATED MODULE: ./src/containers/Environments/components/EnvironmentVariable/EnvironmentVariableDetail.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+const EnvironmentVariableDetail_toastr = getService('toastr');
+const EnvironmentVariableDetail = _ref => {
+  var _initialGlobal$global, _initialGlobal$lu_nam, _initialGlobal$global2;
+  let {
+    environment,
+    globalData: initialGlobal,
+    onClose,
+    onSave,
+    onDelete,
+    disableChange = false
+  } = _ref;
+  const [formData, setFormData] = Object(react["useState"])({
+    global_name: (_initialGlobal$global = initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.global_name) !== null && _initialGlobal$global !== void 0 ? _initialGlobal$global : '',
+    luName: (_initialGlobal$lu_nam = initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.lu_name) !== null && _initialGlobal$lu_nam !== void 0 ? _initialGlobal$lu_nam : '',
+    global_value: (_initialGlobal$global2 = initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.global_value) !== null && _initialGlobal$global2 !== void 0 ? _initialGlobal$global2 : ''
+  });
+  const [setAsNull, setSetAsNull] = Object(react["useState"])(() => {
+    const v = initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.global_value;
+    return v === null;
+  });
+  const [globalLogicalUnits, setGlobalLogicalUnits] = Object(react["useState"])([]);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [showCloseConfirm, setShowCloseConfirm] = Object(react["useState"])(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [loading, setLoading] = Object(react["useState"])(true);
+  Object(react["useEffect"])(() => {
+    var _initialGlobal$global3, _initialGlobal$lu_nam2;
+    const v = initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.global_value;
+    setFormData({
+      global_name: (_initialGlobal$global3 = initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.global_name) !== null && _initialGlobal$global3 !== void 0 ? _initialGlobal$global3 : '',
+      luName: (_initialGlobal$lu_nam2 = initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.lu_name) !== null && _initialGlobal$lu_nam2 !== void 0 ? _initialGlobal$lu_nam2 : '',
+      global_value: v !== null && v !== void 0 ? v : ''
+    });
+    setSetAsNull(v === null);
+  }, [initialGlobal]);
+  Object(react["useEffect"])(() => {
+    const fetchLuList = async () => {
+      if (!(initialGlobal !== null && initialGlobal !== void 0 && initialGlobal.global_name)) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const allGlobalsRaw = await apis_environments.getAllGlobals(null);
+        const list = normalizeAllGlobalsResponse(allGlobalsRaw);
+        const chosen = list.find(g => g.globalName === initialGlobal.global_name);
+        if (chosen !== null && chosen !== void 0 && chosen.luList) {
+          setGlobalLogicalUnits(chosen.luList);
+        } else {
+          setGlobalLogicalUnits([]);
+        }
+      } catch (error) {
+        console.error('Error fetching globals:', error);
+        setGlobalLogicalUnits([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLuList();
+  }, [initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.global_name]);
+  const handleLogicalUnitChange = Object(react["useCallback"])(selected => {
+    if (selected) {
+      var _chosenLu$defaultValu;
+      const chosenLu = globalLogicalUnits.find(lu => lu.luName === selected.value);
+      const defaultValue = (_chosenLu$defaultValu = chosenLu === null || chosenLu === void 0 ? void 0 : chosenLu.defaultValue) !== null && _chosenLu$defaultValu !== void 0 ? _chosenLu$defaultValu : '';
+      setFormData(prev => ({
+        ...prev,
+        luName: selected.value,
+        global_value: defaultValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        luName: '',
+        global_value: ''
+      }));
+    }
+    if (errors.luName) {
+      setErrors(prev => ({
+        ...prev,
+        luName: ''
+      }));
+    }
+  }, [globalLogicalUnits, errors.luName]);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+  const handleSave = Object(react["useCallback"])(async () => {
+    var _formData$global_name, _formData$luName;
+    setIsSubmitted(true);
+    const newErrors = {};
+    if (!((_formData$global_name = formData.global_name) !== null && _formData$global_name !== void 0 && _formData$global_name.trim())) newErrors.global_name = 'Variable Name is required';
+    if (!((_formData$luName = formData.luName) !== null && _formData$luName !== void 0 && _formData$luName.trim())) newErrors.luName = 'Logical Unit is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    try {
+      var _formData$global_valu;
+      const payload = {
+        global_name: formData.global_name,
+        lu_name: formData.luName,
+        global_value: setAsNull ? null : (_formData$global_valu = formData.global_value) !== null && _formData$global_valu !== void 0 ? _formData$global_valu : ''
+      };
+      await apis_environments.putEnvGlobal(environment.environment_id, environment.environment_name, payload);
+      EnvironmentVariableDetail_toastr === null || EnvironmentVariableDetail_toastr === void 0 ? void 0 : EnvironmentVariableDetail_toastr.success(`Global # ${formData.global_name}`, 'Updated Successfully');
+      setIsSubmitted(false);
+      onSave();
+    } catch (error) {
+      EnvironmentVariableDetail_toastr === null || EnvironmentVariableDetail_toastr === void 0 ? void 0 : EnvironmentVariableDetail_toastr.error(`Global # ${formData.global_name}`, 'failed to update: ' + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+      setIsSubmitted(false);
+    }
+  }, [formData, setAsNull, environment, onSave]);
+  const handleDelete = Object(react["useCallback"])(async () => {
+    try {
+      await apis_environments.deleteEnvGlobal(environment.environment_id, environment.environment_name, formData.global_name, formData.luName);
+      EnvironmentVariableDetail_toastr === null || EnvironmentVariableDetail_toastr === void 0 ? void 0 : EnvironmentVariableDetail_toastr.success(`Global # ${formData.global_name}`, 'deleted Successfully');
+      setShowDeleteConfirm(false);
+      onDelete();
+    } catch (error) {
+      EnvironmentVariableDetail_toastr === null || EnvironmentVariableDetail_toastr === void 0 ? void 0 : EnvironmentVariableDetail_toastr.error(`Global # ${formData.global_name}`, 'failed to delete: ' + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+      setShowDeleteConfirm(false);
+    }
+  }, [formData, environment, onDelete]);
+  const handleClose = Object(react["useCallback"])(() => setShowCloseConfirm(true), []);
+  const handleCloseConfirm = Object(react["useCallback"])(() => {
+    setShowCloseConfirm(false);
+    onClose();
+  }, [onClose]);
+  const handleCloseCancel = Object(react["useCallback"])(() => setShowCloseConfirm(false), []);
+  if (loading) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+        style: {
+          padding: '20px',
+          textAlign: 'center'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          className: "k2-loader"
+        })
+      })
+    });
+  }
+  const variableNameOptions = formData.global_name ? [{
+    label: formData.global_name,
+    value: formData.global_name
+  }] : [];
+  const luOptions = globalLogicalUnits.map(lu => ({
+    label: lu.luName,
+    value: lu.luName
+  }));
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(jsx_runtime["Fragment"], {
+    children: /*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+      style: {
+        position: 'relative'
+      },
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Title, {
+          title: formData.global_name,
+          children: ["Environment Variable ", formData.global_name, (initialGlobal === null || initialGlobal === void 0 ? void 0 : initialGlobal.status) === 'Inactive' && /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+            style: {
+              paddingLeft: '1em',
+              fontWeight: 300,
+              fontSize: '0.7em'
+            },
+            children: "Inactive"
+          })]
+        }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_styles_DeleteIcon, {
+          src: delete_icon_gray,
+          alt: "Delete",
+          onClick: () => setShowDeleteConfirm(true),
+          title: "Delete Global"
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+        style: {
+          padding: '20px'
+        },
+        children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Variable Name",
+            options: variableNameOptions,
+            value: formData.global_name ? {
+              label: formData.global_name,
+              value: formData.global_name
+            } : null,
+            onChange: () => {},
+            placeholder: "Variable name",
+            mandatory: true,
+            disabled: true
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Select, {
+            title: "Logical Unit",
+            options: luOptions,
+            value: formData.luName ? {
+              label: formData.luName,
+              value: formData.luName
+            } : null,
+            onChange: handleLogicalUnitChange,
+            placeholder: "Select logical unit",
+            mandatory: true,
+            isSubmitted: isSubmitted,
+            error: errors.luName,
+            disabled: disableChange
+          })
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])("div", {
+          style: {
+            marginBottom: '20px'
+          },
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Input, {
+            type: InputTypes.text,
+            title: "Variable Value",
+            value: setAsNull ? '' : formData.global_value,
+            onChange: value => handleInputChange('global_value', value),
+            placeholder: setAsNull ? '' : 'Variable value',
+            disabled: disableChange || setAsNull
+          })
+        }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsxs"])(PopupActionsWrapper, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Close",
+            onClick: handleClose,
+            type: "secondary",
+            width: "100px"
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Save Changes",
+            onClick: handleSave,
+            type: "primary",
+            width: "140px"
+          })]
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: "410px",
+        isOpen: showCloseConfirm,
+        onClose: handleCloseCancel,
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showCloseConfirm,
+          title: "Close",
+          message: "Are you sure you want to close?",
+          onConfirm: handleCloseConfirm,
+          onCancel: handleCloseCancel,
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+        width: "410px",
+        isOpen: showDeleteConfirm,
+        onClose: () => setShowDeleteConfirm(false),
+        anchorToParent: true,
+        children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+          isOpen: showDeleteConfirm,
+          title: "Delete Global",
+          message: "Are you sure you want to Delete Global?",
+          onConfirm: handleDelete,
+          onCancel: () => setShowDeleteConfirm(false),
+          confirmText: "Yes",
+          cancelText: "No"
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ var EnvironmentVariable_EnvironmentVariableDetail = (EnvironmentVariableDetail);
+// CONCATENATED MODULE: ./src/containers/Environments/EnvironmentDetail.tsx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const EnvironmentDetail_toastr = getService('toastr');
+const EnvironmentDetail_AuthService = getService('AuthService');
+const EnvironmentDetail = _ref => {
+  let {
+    environment: initialEnvironment,
+    environments,
+    onBack,
+    onOpenProduct
+  } = _ref;
+  const [environment, setEnvironment] = Object(react["useState"])(initialEnvironment);
+  const [formData, setFormData] = Object(react["useState"])({});
+  const [envType, setEnvType] = Object(react["useState"])('Target');
+  const [allOwners, setAllOwners] = Object(react["useState"])([]);
+  const [userGroups, setUserGroups] = Object(react["useState"])([]);
+  const {
+    isAdmin
+  } = usePermissions();
+  const [isOwner, setIsOwner] = Object(react["useState"])(false);
+  const [disableChange, setDisableChange] = Object(react["useState"])(false);
+  const [isSubmitted, setIsSubmitted] = Object(react["useState"])(false);
+  const [errors, setErrors] = Object(react["useState"])({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = Object(react["useState"])(false);
+  const [activeTab, setActiveTab] = Object(react["useState"])('permissionSets');
+  const [showNewRole, setShowNewRole] = Object(react["useState"])(false);
+  const [selectedRole, setSelectedRole] = Object(react["useState"])(null);
+  const [existingRoles, setExistingRoles] = Object(react["useState"])([]);
+  const [showNewProduct, setShowNewProduct] = Object(react["useState"])(false);
+  const [selectedProduct, setSelectedProduct] = Object(react["useState"])(null);
+  const [existingProducts, setExistingProducts] = Object(react["useState"])([]);
+  const [showNewEnvironmentVariable, setShowNewEnvironmentVariable] = Object(react["useState"])(false);
+  const [selectedEnvironmentVariable, setSelectedEnvironmentVariable] = Object(react["useState"])(null);
+  const [detailRefreshKey, setDetailRefreshKey] = Object(react["useState"])(0);
+  const [tasksCount, setTasksCount] = Object(react["useState"])(null);
+  Object(react["useEffect"])(() => {
+    const fetchOwnersData = async () => {
+      try {
+        const [ownersResponse, allOwnersResponse, rolesResponse, rolesData] = await Promise.all([apis_environments.getEnvironmentOwners(environment.environment_id), apis_environments.getUsersByPermissionGroups('owner'), apis_environments.getFabricRoles('owner'), apis_environments.getEnvironmentRoles(environment.environment_id)]);
+        const owners = ownersResponse || [];
+        setEnvironment(prev => ({
+          ...prev,
+          owners
+        }));
+        const allOwnersList = (allOwnersResponse || []).map(item => ({
+          ...item,
+          user_type: item.user_type || 'ID'
+        }));
+        owners.forEach(owner => {
+          if (!allOwnersList.find(o => o.user_id === owner.user_id)) {
+            allOwnersList.push({
+              user_id: owner.user_id,
+              username: owner.user_id,
+              displayName: owner.user_id,
+              uid: owner.user_id,
+              user_type: owner.user_type || 'ID'
+            });
+          }
+        });
+        setAllOwners(allOwnersList);
+        setUserGroups(rolesResponse || []);
+        setExistingRoles(rolesData || []);
+        const productsData = await apis_environments.getEnvProducts(environment.environment_id);
+        setExistingProducts(productsData || []);
+        try {
+          const count = await apis_environments.getEnvTaskCount(environment.environment_id);
+          setTasksCount(typeof count === 'number' ? count : count !== null && count !== void 0 ? count : null);
+        } catch {
+          setTasksCount(1);
+        }
+        const userId = EnvironmentDetail_AuthService === null || EnvironmentDetail_AuthService === void 0 ? void 0 : EnvironmentDetail_AuthService.getUserId();
+        const userIsOwner = isAdmin || owners.some(o => o.user_id === userId) || (rolesResponse === null || rolesResponse === void 0 ? void 0 : rolesResponse.some(role => owners.some(o => o.user_id === role && o.user_type === 'GROUP')));
+        setIsOwner(userIsOwner);
+      } catch (error) {
+        console.error('Error fetching environment data:', error);
+      }
+    };
+    if (environment.environment_id) {
+      fetchOwnersData();
+    }
+  }, [environment.environment_id, isAdmin]);
+  Object(react["useEffect"])(() => {
+    if (!environment.allow_write && environment.allow_read) {
+      setEnvType('Source');
+    } else if (environment.allow_write && !environment.allow_read) {
+      setEnvType('Target');
+    } else if (environment.allow_write && environment.allow_read) {
+      setEnvType('Both');
+    }
+  }, [environment.allow_write, environment.allow_read]);
+  Object(react["useEffect"])(() => {
+    var _environment$allow_wr, _environment$allow_re, _environment$mask_sen;
+    if (!environment.environment_id) {
+      return;
+    }
+    const currentOwners = Array.isArray(environment.owners) ? environment.owners : [];
+    setDisableChange(environment.environment_status === 'Inactive' || !isOwner);
+    const syncMode = String(environment.sync_mode || '') === 'ON' ? '' : environment.sync_mode || '';
+    setFormData({
+      environment_name: environment.environment_name || '',
+      environment_description: environment.environment_description || '',
+      environment_point_of_contact_first_name: environment.environment_point_of_contact_first_name || '',
+      environment_point_of_contact_last_name: environment.environment_point_of_contact_last_name || '',
+      environment_point_of_contact_email: environment.environment_point_of_contact_email || '',
+      environment_point_of_contact_phone1: environment.environment_point_of_contact_phone1 || '',
+      environment_point_of_contact_phone2: environment.environment_point_of_contact_phone2 || '',
+      allow_write: (_environment$allow_wr = environment.allow_write) !== null && _environment$allow_wr !== void 0 ? _environment$allow_wr : false,
+      allow_read: (_environment$allow_re = environment.allow_read) !== null && _environment$allow_re !== void 0 ? _environment$allow_re : false,
+      sync_mode: syncMode,
+      mask_sensitive_data: (_environment$mask_sen = environment.mask_sensitive_data) !== null && _environment$mask_sen !== void 0 ? _environment$mask_sen : true,
+      owners: currentOwners
+    });
+  }, [environment, isOwner]);
+  const handleEnvTypeChange = Object(react["useCallback"])(newType => {
+    setEnvType(newType);
+    if (newType.toLowerCase() === 'target') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: true,
+        allow_read: false
+      }));
+    } else if (newType.toLowerCase() === 'source') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: false,
+        allow_read: true
+      }));
+    } else if (newType.toLowerCase() === 'both') {
+      setFormData(prev => ({
+        ...prev,
+        allow_write: true,
+        allow_read: true,
+        mask_sensitive_data: false
+      }));
+    }
+  }, []);
+  const handleInputChange = Object(react["useCallback"])((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+  const handleSaveUsersAndGroups = Object(react["useCallback"])((user, userCustom, userGroup, allUsers) => {
+    if (allUsers && !formData.owners.find(o => o.user_id === '-1')) {
+      const allUsersObj = {
+        user_id: '-1',
+        username: 'All Users',
+        displayName: 'All Users',
+        uid: '-1',
+        user_type: 'ID'
+      };
+      handleInputChange('owners', [...formData.owners, allUsersObj]);
+    } else if (!allUsers && formData.owners.find(o => o.user_id === '-1')) {
+      handleInputChange('owners', formData.owners.filter(o => o.user_id !== '-1'));
+    }
+    if (user) {
+      const newUser = {
+        ...user,
+        user_type: 'ID'
+      };
+      if (!formData.owners.find(o => o.user_id === newUser.user_id)) {
+        handleInputChange('owners', [...formData.owners, newUser]);
+      }
+    }
+    if (userCustom) {
+      const customUser = {
+        user_id: userCustom,
+        user_name: userCustom,
+        username: userCustom,
+        user_type: 'ID'
+      };
+      if (!formData.owners.find(o => o.user_id === userCustom)) {
+        handleInputChange('owners', [...formData.owners, customUser]);
+        if (!allOwners.find(o => o.user_id === userCustom)) {
+          setAllOwners(prev => [...prev, customUser]);
+        }
+      }
+    }
+    if (userGroup) {
+      const groupUser = {
+        user_id: userGroup,
+        user_name: userGroup,
+        username: userGroup,
+        user_type: 'GROUP',
+        group: true
+      };
+      if (!formData.owners.find(o => o.user_id === userGroup)) {
+        handleInputChange('owners', [...formData.owners, groupUser]);
+        if (!allOwners.find(o => o.user_id === userGroup)) {
+          setAllOwners(prev => [...prev, groupUser]);
+        }
+      }
+    }
+  }, [formData.owners, allOwners, handleInputChange]);
+  const handleSave = Object(react["useCallback"])(async () => {
+    setIsSubmitted(true);
+    try {
+      const updateData = {
+        ...formData,
+        allow_write: formData.allow_write !== undefined ? formData.allow_write : environment.allow_write,
+        allow_read: formData.allow_read !== undefined ? formData.allow_read : environment.allow_read
+      };
+      await apis_environments.updateEnvironment(environment.environment_id, updateData);
+      EnvironmentDetail_toastr.success(`Environment # ${environment.environment_name}`, "Updated Successfully");
+      const updatedEnv = await apis_environments.getEnvironment(environment.environment_id);
+      if (updatedEnv && updatedEnv[0]) {
+        updatedEnv[0].owners = formData.owners;
+      }
+      setEnvironment(updatedEnv[0] || updatedEnv);
+    } catch (error) {
+      EnvironmentDetail_toastr.error(`Environment # ${environment.environment_name}`, "Unable to Update : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+    } finally {
+      setIsSubmitted(false);
+    }
+  }, [formData, environment]);
+  const handleTabChange = Object(react["useCallback"])(tab => {
+    setActiveTab(tab);
+    setShowNewRole(false);
+    setSelectedRole(null);
+    setShowNewProduct(false);
+    setSelectedProduct(null);
+    setShowNewEnvironmentVariable(false);
+    setSelectedEnvironmentVariable(null);
+  }, []);
+  const handleDeleteClick = Object(react["useCallback"])(() => {
+    setShowDeleteConfirm(true);
+  }, []);
+  const handleDeleteConfirm = Object(react["useCallback"])(async () => {
+    try {
+      await apis_environments.deleteEnvironment(environment.environment_id, environment.environment_name);
+      EnvironmentDetail_toastr.success(`Environment # ${environment.environment_name}`, "Deleted Successfully");
+      setShowDeleteConfirm(false);
+      onBack();
+    } catch (error) {
+      EnvironmentDetail_toastr.error(`Environment # ${environment.environment_name}`, "Unable to Delete : " + ((error === null || error === void 0 ? void 0 : error.message) || 'Unknown error'));
+      setShowDeleteConfirm(false);
+    }
+  }, [environment, onBack]);
+  const handleDeleteCancel = Object(react["useCallback"])(() => {
+    setShowDeleteConfirm(false);
+  }, []);
+  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(EnvironmentDetailContainer, {
+    children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(EnvironmentFormWrapper, {
+      children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Card, {
+        children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Header, {
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(global_Title, {
+            title: environment.environment_name,
+            children: ["Environment ", environment.environment_name, environment.environment_status === 'Inactive' && /*#__PURE__*/Object(jsx_runtime["jsx"])("span", {
+              style: {
+                paddingLeft: '1em',
+                fontWeight: 300,
+                fontSize: '0.7em'
+              },
+              children: "Inactive"
+            })]
+          }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_styles_DeleteIcon, {
+            src: delete_icon_gray,
+            alt: "Delete",
+            onClick: handleDeleteClick,
+            title: "Delete Environment"
+          })]
+        }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {}), /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_EnvironmentForm, {
+          formData: formData,
+          envType: envType,
+          allOwners: allOwners,
+          userGroups: userGroups,
+          onInputChange: handleInputChange,
+          onEnvTypeChange: handleEnvTypeChange,
+          onSaveUsersAndGroups: handleSaveUsersAndGroups,
+          disabled: disableChange,
+          errors: errors,
+          isSubmitted: isSubmitted,
+          nameFieldType: "input",
+          nameFieldValue: environment.environment_name,
+          nameFieldDisabled: true,
+          showButton: false,
+          buttonId: "edit_environment_environments_owners"
+        }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsx"])(PopupActionsWrapper, {
+          children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_Button, {
+            title: "Save Changes",
+            onClick: handleSave,
+            type: "primary",
+            width: "150px"
+          })
+        })]
+      }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Card, {
+        style: {
+          marginTop: '25px'
+        },
+        children: /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+          style: {
+            backgroundColor: 'white'
+          },
+          children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+            style: {
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            },
+            children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Environments_styles_TabContainer, {
+              children: [/*#__PURE__*/Object(jsx_runtime["jsxs"])(Environments_styles_Tab, {
+                active: activeTab === 'permissionSets',
+                onClick: () => handleTabChange('permissionSets'),
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("i", {
+                  className: "fa fa-user",
+                  style: {
+                    marginRight: '8px'
+                  }
+                }), "Permission Sets"]
+              }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Environments_styles_Tab, {
+                active: activeTab === 'systems',
+                onClick: () => handleTabChange('systems'),
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("i", {
+                  className: "fa fa-briefcase",
+                  style: {
+                    marginRight: '8px'
+                  }
+                }), "Systems"]
+              }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(Environments_styles_Tab, {
+                active: activeTab === 'environmentVariables',
+                onClick: () => handleTabChange('environmentVariables'),
+                children: [/*#__PURE__*/Object(jsx_runtime["jsx"])("i", {
+                  className: "fa fa-list",
+                  style: {
+                    marginRight: '8px'
+                  }
+                }), "Environment Variables"]
+              })]
+            }), !disableChange && /*#__PURE__*/Object(jsx_runtime["jsxs"])("div", {
+              style: {
+                paddingRight: '15px'
+              },
+              children: [activeTab === 'permissionSets' && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+                onClick: () => {
+                  setShowNewRole(true);
+                },
+                title: "New Permission Set",
+                tootlipText: "Add Permission Set"
+              }), activeTab === 'systems' && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+                onClick: () => {
+                  setShowNewProduct(true);
+                  setSelectedProduct(null);
+                },
+                title: "Add System",
+                tootlipText: "Add System"
+              }), activeTab === 'environmentVariables' && /*#__PURE__*/Object(jsx_runtime["jsx"])(components_AddButton, {
+                onClick: () => {
+                  setShowNewEnvironmentVariable(true);
+                  setSelectedEnvironmentVariable(null);
+                },
+                title: "Set Environment Variable",
+                tootlipText: "Set Environment Variable"
+              })]
+            })]
+          }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Hr, {
+            style: {
+              margin: '0px'
+            }
+          }), /*#__PURE__*/Object(jsx_runtime["jsxs"])(styles_TabContent, {
+            children: [activeTab === 'permissionSets' && /*#__PURE__*/Object(jsx_runtime["jsx"])(Roles_PermissionSetsTable, {
+              environmentId: environment.environment_id,
+              onOpenRole: role => {
+                setSelectedRole(role);
+                setShowNewRole(false);
+              },
+              isOwner: isOwner,
+              refreshKey: detailRefreshKey
+            }), activeTab === 'systems' && /*#__PURE__*/Object(jsx_runtime["jsx"])(Product_ProductsTable, {
+              environmentId: environment.environment_id,
+              environmentName: environment.environment_name,
+              onOpenProduct: product => {
+                setSelectedProduct(product);
+                setShowNewProduct(false);
+              },
+              refreshKey: detailRefreshKey,
+              isOwner: isOwner
+            }), activeTab === 'environmentVariables' && /*#__PURE__*/Object(jsx_runtime["jsx"])(EnvironmentVariable_EnvironmentVariablesTable, {
+              environmentId: environment.environment_id,
+              onOpenGlobal: global => {
+                setSelectedEnvironmentVariable(global);
+                setShowNewEnvironmentVariable(false);
+              },
+              isOwner: isOwner,
+              refreshKey: detailRefreshKey
+            })]
+          })]
+        })
+      })]
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(EnvironmentSummaryWrapper, {
+      children: showNewRole ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Roles_NewRole, {
+        environment: environment,
+        existingRoles: existingRoles,
+        onClose: () => {
+          setShowNewRole(false);
+          setSelectedRole(null);
+        },
+        onSave: () => {
+          setShowNewRole(false);
+          setSelectedRole(null);
+          apis_environments.getEnvironmentRoles(environment.environment_id).then(roles => {
+            setExistingRoles(roles || []);
+          });
+          setDetailRefreshKey(k => k + 1);
+        }
+      }) : selectedRole ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Roles_RoleDetail, {
+        environment: environment,
+        role: selectedRole,
+        onClose: () => {
+          setSelectedRole(null);
+          setShowNewRole(false);
+        },
+        onSave: () => {
+          setSelectedRole(null);
+          setShowNewRole(false);
+          apis_environments.getEnvironmentRoles(environment.environment_id).then(roles => {
+            setExistingRoles(roles || []);
+          });
+          setDetailRefreshKey(k => k + 1);
+        },
+        onDelete: () => {
+          setSelectedRole(null);
+          setShowNewRole(false);
+          apis_environments.getEnvironmentRoles(environment.environment_id).then(roles => {
+            setExistingRoles(roles || []);
+          });
+          setDetailRefreshKey(k => k + 1);
+        }
+      }) : showNewProduct ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Product_NewProduct, {
+        environment: environment,
+        existingProducts: existingProducts,
+        onClose: () => {
+          setShowNewProduct(false);
+          setSelectedProduct(null);
+        },
+        onSave: () => {
+          setShowNewProduct(false);
+          setSelectedProduct(null);
+          apis_environments.getEnvProducts(environment.environment_id).then(products => {
+            setExistingProducts(products || []);
+          });
+          setDetailRefreshKey(k => k + 1);
+        }
+      }) : selectedProduct ? /*#__PURE__*/Object(jsx_runtime["jsx"])(Product_ProductDetail, {
+        environment: environment,
+        product: selectedProduct,
+        onClose: () => {
+          setSelectedProduct(null);
+          setShowNewProduct(false);
+        },
+        onSave: () => {
+          setSelectedProduct(null);
+          setShowNewProduct(false);
+          apis_environments.getEnvProducts(environment.environment_id).then(products => {
+            setExistingProducts(products || []);
+          });
+          setDetailRefreshKey(k => k + 1);
+        },
+        onDelete: () => {
+          setSelectedProduct(null);
+          setShowNewProduct(false);
+          apis_environments.getEnvProducts(environment.environment_id).then(products => {
+            setExistingProducts(products || []);
+          });
+          setDetailRefreshKey(k => k + 1);
+        },
+        onOpenProduct: onOpenProduct
+      }) : showNewEnvironmentVariable ? /*#__PURE__*/Object(jsx_runtime["jsx"])(EnvironmentVariable_NewEnvironmentVariable, {
+        environment: environment,
+        onClose: () => {
+          setShowNewEnvironmentVariable(false);
+          setSelectedEnvironmentVariable(null);
+        },
+        onSave: () => {
+          setShowNewEnvironmentVariable(false);
+          setSelectedEnvironmentVariable(null);
+          setDetailRefreshKey(k => k + 1);
+        }
+      }) : selectedEnvironmentVariable ? /*#__PURE__*/Object(jsx_runtime["jsx"])(EnvironmentVariable_EnvironmentVariableDetail, {
+        environment: environment,
+        globalData: selectedEnvironmentVariable,
+        onClose: () => {
+          setSelectedEnvironmentVariable(null);
+          setShowNewEnvironmentVariable(false);
+        },
+        onSave: () => {
+          setSelectedEnvironmentVariable(null);
+          setShowNewEnvironmentVariable(false);
+          setDetailRefreshKey(k => k + 1);
+        },
+        onDelete: () => {
+          setSelectedEnvironmentVariable(null);
+          setShowNewEnvironmentVariable(false);
+          setDetailRefreshKey(k => k + 1);
+        },
+        disableChange: !isOwner
+      }) : /*#__PURE__*/Object(jsx_runtime["jsx"])(Summary_EnvironmentSummary, {
+        environmentId: environment.environment_id,
+        refreshKey: detailRefreshKey
+      })
+    }), /*#__PURE__*/Object(jsx_runtime["jsx"])(Popup, {
+      width: '400px',
+      isOpen: showDeleteConfirm,
+      onClose: handleDeleteCancel,
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(components_ConfirmationPopup, {
+        isOpen: showDeleteConfirm,
+        title: "Delete Environment",
+        message: tasksCount ? `Environment is attached to Active tasks. Active tasks may be set to Inactive. Are you sure you want to delete Environment # ${environment.environment_name}?` : `Are you sure you want to delete Environment # ${environment.environment_name}?`,
+        onConfirm: handleDeleteConfirm,
+        onCancel: handleDeleteCancel,
+        confirmText: "Yes",
+        cancelText: "No"
+      })
+    })]
+  });
+};
+/* harmony default export */ var Environments_EnvironmentDetail = (EnvironmentDetail);
+// CONCATENATED MODULE: ./src/containers/Environments/index.tsx
+
+
+
+
+
+
+
+
+const Environments = () => {
+  const [pageDisplay, setPageDisplay] = Object(react["useState"])('table');
+  const [selectedEnvironment, setSelectedEnvironment] = Object(react["useState"])(null);
+  const [environments, setEnvironments] = Object(react["useState"])([]);
+  const [selectedProductForView, setSelectedProductForView] = Object(react["useState"])(null);
+  const envNameRef = Object(react["useRef"])(null);
+  const productNameRef = Object(react["useRef"])(null);
+  const handleOpenEnvironment = (environment, environmentsList) => {
+    setSelectedEnvironment(environment);
+    envNameRef.current = environment.environment_name;
+    setEnvironments(environmentsList);
+    setPageDisplay('detail');
+  };
+  const handleOpenNewEnvironment = environmentsList => {
+    setSelectedEnvironment(null);
+    envNameRef.current = null;
+    setEnvironments(environmentsList);
+    setPageDisplay('new');
+  };
+  const handleBackToTable = () => {
+    setPageDisplay('table');
+    setSelectedEnvironment(null);
+    envNameRef.current = null;
+  };
+  const handleOpenProduct = productData => {
+    var _productData$product_;
+    productNameRef.current = (_productData$product_ = productData === null || productData === void 0 ? void 0 : productData.product_name) !== null && _productData$product_ !== void 0 ? _productData$product_ : null;
+    setSelectedProductForView(productData);
+    setPageDisplay('product');
+  };
+  const handleBackFromProductView = () => {
+    productNameRef.current = null;
+    setPageDisplay('detail');
+    setSelectedProductForView(null);
+  };
+  Object(react["useEffect"])(() => {
+    const BreadCrumbsService = getService('BreadCrumbsService');
+    if (!BreadCrumbsService) return;
+    switch (pageDisplay) {
+      case 'new':
+        BreadCrumbsService.breadCrumbChange(1);
+        BreadCrumbsService.push({}, 'NEW_ENVIRONMENT', function () {
+          setPageDisplay('table');
+        });
+        break;
+      case 'detail':
+        if (!(envNameRef !== null && envNameRef !== void 0 && envNameRef.current)) return;
+        BreadCrumbsService.breadCrumbChange(1);
+        BreadCrumbsService.push({
+          environment_name: (envNameRef === null || envNameRef === void 0 ? void 0 : envNameRef.current) || ''
+        }, `Environment # ${(envNameRef === null || envNameRef === void 0 ? void 0 : envNameRef.current) || ''}`, function () {
+          setPageDisplay('table');
+        });
+        break;
+      case 'product':
+        if (!productNameRef.current) return;
+        if (!envNameRef.current) return;
+        BreadCrumbsService.breadCrumbChange(1);
+        BreadCrumbsService.push({
+          environment_name: envNameRef.current
+        }, `Environment # ${envNameRef.current}`, function () {
+          handleBackFromProductView();
+        });
+        BreadCrumbsService.push({
+          product_name: productNameRef.current
+        }, `System # ${productNameRef.current}`, function () {});
+        break;
+      case 'table':
+      default:
+        BreadCrumbsService.breadCrumbChange(0);
+        BreadCrumbsService.push({}, 'ENVIRONMENTS', function () {
+          setPageDisplay('table');
+        });
+        break;
+    }
+  }, [pageDisplay, envNameRef]);
+  if (pageDisplay === 'new') {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_NewEnvironment, {
+      environments: environments,
+      onBack: handleBackToTable,
+      onEnvironmentCreated: environment => {
+        handleOpenEnvironment(environment, environments);
+      }
+    });
+  }
+  if (pageDisplay === 'detail' && selectedEnvironment) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_EnvironmentDetail, {
+      environment: selectedEnvironment,
+      environments: environments,
+      onBack: handleBackToTable,
+      onOpenProduct: handleOpenProduct
+    });
+  }
+  if (pageDisplay === 'product' && selectedProductForView) {
+    return /*#__PURE__*/Object(jsx_runtime["jsx"])(SystemProvider, {
+      children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Systems_EditSystemPage, {
+        initialSystemData: selectedProductForView,
+        readOnly: true,
+        onBack: handleBackFromProductView
+      })
+    });
+  }
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(Environments_EnvironmentsTable, {
+    onOpenEnvironment: handleOpenEnvironment,
+    onOpenNewEnvironment: handleOpenNewEnvironment
+  });
+};
+/* harmony default export */ var containers_Environments = (Environments);
 // CONCATENATED MODULE: ./src/utils/ExportToNg.jsx
+
+
+
+
+
+
 
 
 
@@ -17988,10 +33883,10 @@ angular.module("react-connector"), {
   content: '='
 });
 const TaskTemplatesComp = props => {
-  return /*#__PURE__*/Object(jsx_runtime["jsxs"])(react_default.a.StrictMode, {
-    children: [/*#__PURE__*/Object(jsx_runtime["jsx"])(containers_TaskTemplates, {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_TaskTemplates, {
       content: props.content
-    }), ";"]
+    })
   });
 };
 react_to_angular(TaskTemplatesComp, "reactTaskTemplates",
@@ -17999,6 +33894,54 @@ react_to_angular(TaskTemplatesComp, "reactTaskTemplates",
 angular.module("react-connector"), {
   content: '='
 });
+const DataCentersComp = () => {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_DataCenters, {})
+  });
+};
+react_to_angular(DataCentersComp, "reactDataCenters",
+// eslint-disable-next-line no-undef
+angular.module("react-connector"), {});
+const SystemsComp = () => {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(Systems_SystemManager, {})
+  });
+};
+react_to_angular(SystemsComp, "reactSystems",
+// eslint-disable-next-line no-undef
+angular.module("react-connector"), {});
+const PermissonsGroupsComp = () => {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_PermissionGroups, {})
+  });
+};
+react_to_angular(PermissonsGroupsComp, "reactPermissonsGroup",
+// eslint-disable-next-line no-undef
+angular.module("react-connector"), {});
+const BusinessEntitiesComp = () => {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_BusinessEntities, {})
+  });
+};
+react_to_angular(BusinessEntitiesComp, "reactBusinessEntities",
+// eslint-disable-next-line no-undef
+angular.module("react-connector"), {});
+const ReservedEntitiesComp = () => {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_ReservedEntities, {})
+  });
+};
+react_to_angular(ReservedEntitiesComp, "reactReservedEntitites",
+// eslint-disable-next-line no-undef
+angular.module("react-connector"), {});
+const EnvironmentsComp = () => {
+  return /*#__PURE__*/Object(jsx_runtime["jsx"])(react_default.a.StrictMode, {
+    children: /*#__PURE__*/Object(jsx_runtime["jsx"])(containers_Environments, {})
+  });
+};
+react_to_angular(EnvironmentsComp, "reactEnvironments",
+// eslint-disable-next-line no-undef
+angular.module("react-connector"), {});
 
 /***/ })
 

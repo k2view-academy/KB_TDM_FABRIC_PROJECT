@@ -1,0 +1,315 @@
+tags: LoadFlows
+stages:
+  Description:
+    remark: This flow loads table from Sqlite DB to Target DB
+    transactional: false
+  Get Fields:
+    transactional: false
+    actors:
+      Get Table Details:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableLevelDetails
+          ref_instance_id:
+            external: refInstanceId
+            schema: string
+            mandatory: false
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Data From Sqlite:
+    transactional: false
+    dependsOn: Get Fields
+    actors:
+      Table Saved in Sqlite?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Get Table Details/result/retention
+            schema: integer
+          b:
+            const: 0
+            schema: integer
+      Error Handler For Fabric Data:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Get Data From Fabric:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetDataFromFabric
+          innerFlowClose:
+            const: false
+          tableFilter:
+            link: Get Table Details/result/table_filter
+            schema: string
+            mandatory: false
+          taskExeId:
+            link: Get Table Details/result/task_execution_id
+            schema: integer
+            mandatory: false
+          tableId:
+            link: Get Table Details/result/ref_table_id
+            schema: integer
+            mandatory: false
+          tableName:
+            link: Get Table Details/result/ref_table_name
+            schema: string
+            mandatory: false
+          filterParameters:
+            link: Get Table Details/result/filter_parameters
+            schema: string
+            mandatory: false
+          totalNumberOfRecords:
+            link: Get Table Details/result/number_of_records_to_process
+            schema: integer
+            mandatory: false
+          versionTaskExeID:
+            link: Get Table Details/result/version_execution_id
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Data From Source DB:
+    else: true
+    transactional: false
+    dependsOn: Get Fields
+    actors:
+      Error Handler For Source Data:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Get Source Data:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetSourceData
+          innerFlowClose:
+            const: false
+          sourceInterface:
+            link: Get Table Details/result/interface_name
+            schema: string
+            mandatory: false
+          sourceSchema:
+            link: Get Table Details/result/schema_name
+            schema: string
+            mandatory: false
+          tableName:
+            link: Get Table Details/result/ref_table_name
+            schema: string
+            mandatory: false
+          tableFilter:
+            link: Get Table Details/result/table_filter
+            schema: string
+            mandatory: false
+          filterParameters:
+            link: Get Table Details/result/filter_parameters
+            schema: string
+            mandatory: false
+          tableId:
+            link: Get Table Details/result/ref_table_id
+            schema: integer
+            mandatory: false
+          taskExeId:
+            link: Get Table Details/result/task_execution_id
+            schema: integer
+            mandatory: false
+          filterParametersInfo:
+            link: Get Table Details/result/filter_fields
+            schema: any
+            mandatory: false
+          filterGUI:
+            link: Get Table Details/result/gui_filter
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Load Data To Target:
+    transactional: false
+    actors:
+      Error Handler For Load Data:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Load To Target:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadDataToTarget
+          targetInterface:
+            link: Get Table Details/result/target_interface
+            schema: string
+            mandatory: false
+          targetSchema:
+            link: Get Table Details/result/target_schema
+            schema: string
+            mandatory: false
+          targetTable:
+            link: Get Table Details/result/target_table_name
+            schema: string
+            mandatory: false
+          inputRecords:
+            link:
+            - Get Data From Fabric/result
+            - Get Source Data/result
+            schema: '#ref'
+            mandatory: false
+          taskExeId:
+            external: taskExeId
+            schema: integer
+            mandatory: false
+          sourceTableName:
+            link: Get Table Details/result/ref_table_name
+            schema: string
+            mandatory: false
+          sourceInterfaceName:
+            link: Get Table Details/result/interface_name
+            schema: string
+            mandatory: false
+          sourceSchemaName:
+            link: Get Table Details/result/schema_name
+            schema: string
+            mandatory: false
+          tableId:
+            link: Get Table Details/result/ref_table_id
+            schema: integer
+            mandatory: false
+          catalogSchema:
+            link: Get Table Details/result/catalog_schema_name
+            schema: string
+            mandatory: false
+schemas:
+  Get Table Details.out.result:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      ref_table_id:
+        type: integer
+      ref_table_name:
+        type: string
+      source_env:
+        type: string
+      task_type:
+        type: string
+      selection_method:
+        type: string
+      interface_name:
+        type: string
+      schema_name:
+        type: string
+      task_execution_id:
+        type: integer
+      task_id:
+        type: integer
+      filter_type:
+        type: string
+      table_filter:
+        type: string
+      gui_filter:
+        type: string
+      filter_parameters:
+        type: string
+      filter_fields:
+        type: array
+        items:
+          type: object
+          properties:
+            field_name:
+              type: string
+            field_type:
+              type: string
+            field_value:
+              type: string
+      retention_period_type:
+        type: string
+      retention_period_value:
+        type: integer
+      target_interface:
+        type: string
+      target_schema:
+        type: string
+      target_table_name:
+        type: string
+      number_of_records_to_process:
+        type: integer
+      version_task_execution_id:
+        type: integer
+      retention:
+        type: integer
+      catalog_schema_name:
+        type: string
+      version_execution_id:
+        type: integer
+  Get Data From Fabric.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        case_id:
+          type: integer
+        note_id:
+          type: integer
+        note_date:
+          type: string
+        note_text:
+          type: string
+  Get Source Data.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string
+  Load To Target.in.inputRecords:
+    type: array
+    items: {
+      }

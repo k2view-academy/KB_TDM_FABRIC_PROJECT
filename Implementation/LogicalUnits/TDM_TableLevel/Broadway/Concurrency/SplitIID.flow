@@ -1,0 +1,93 @@
+tags: Concurrency
+stages:
+  Get Separator:
+    actors:
+      Get IID Separator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TABLE_LEVEL_SEPARATOR
+            default: false
+      IID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: IID
+        out:
+          value:
+            schema: string
+  Split IID:
+    actors:
+      Split:
+        parent: Split
+        in:
+          delimiter:
+            const: null
+            link: Get IID Separator/result
+          string:
+            link: IID/value
+  Result:
+    actors:
+      JavaScript:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                function buildExecutionObject(arr) {
+                  return {
+                    environment: arr[0],
+                    interface: arr[1],
+                    schema: arr[2],
+                    table: arr[3],
+                    execution_id: arr[4],
+                    partition_no: arr[5]
+                  };
+                }
+                const arr = [...input];
+                const obj = buildExecutionObject(arr);
+                obj;
+              script: |-
+                function buildExecutionObject(arr) {
+                  return {
+                    environment: arr[0],
+                    interface: arr[1],
+                    schema: arr[2],
+                    table: arr[3],
+                    execution_id: arr[4],
+                    partition_no: arr[5]
+                  };
+                }
+
+                var arr = [].concat(input);
+                var obj = buildExecutionObject(arr);
+                obj;
+          input:
+            link: Split/strings
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: '#ref'
+schemas:
+  JavaScript.in.input:
+    type: array
+    items:
+      type: string
+  JavaScript.out.result:
+    type: object
+    properties:
+      environment:
+        type: string
+      interface:
+        type: string
+      schema:
+        type: string
+      table:
+        type: string
+      execution_id:
+        type: string
+      partition_no:
+        type: string

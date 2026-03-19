@@ -32,7 +32,11 @@ stages:
             external: interface
             schema: string
             editor:
-              id: com.k2view.mTableKey
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
             mandatory: false
           tableName:
             external: table

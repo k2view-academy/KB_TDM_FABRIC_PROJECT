@@ -24,6 +24,12 @@ stages:
           interfaceName:
             external: TARGET_INTERFACE
             schema: string
+            editor:
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+              id: com.k2view.interface
             mandatory: false
           useFabric:
             external: useFabric

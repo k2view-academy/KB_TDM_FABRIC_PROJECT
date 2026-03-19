@@ -39,7 +39,7 @@ stages:
           a:
             link: DbFetchField/result
     split: '--------------------'
-  Doesn't Exists:
+  Doesn't Exists, Create:
     else: true
     dependsOn: Check If Schema Exists
     actors:
@@ -73,7 +73,7 @@ stages:
             schema: string
     split: '--------------------'
   Do Nothing:
-    dependsOn: Doesn't Exists
+    dependsOn: Doesn't Exists, Create
   Update Schema:
     dependsOn: Check Global
     actors:

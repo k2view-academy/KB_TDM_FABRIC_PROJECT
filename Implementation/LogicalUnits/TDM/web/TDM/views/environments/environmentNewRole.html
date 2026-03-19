@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="form-group option-button" style="flex-direction: column;align-items: flex-start;">
                                     <label>Maximum number of entities</label>
-                                    <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1" 
+                                    <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="0"
                                         ng-disabled="environmentCtrl.disableChangeRole || environmentCtrl.roleData.write_unlimited_entities || !environmentCtrl.roleData.allow_write"
                                         ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_copy === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_copy" 
                                         ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_copy"
@@ -187,7 +187,7 @@
                                 id="environment_new_role_entity_clone"
                                 ng-model="environmentCtrl.roleData.allowed_creation_of_synthetic_data" />
                             <label class="option-button-label">
-                                Entity Clone
+                                Entity clone
                             </label>
                         </div>
                     </div>
@@ -242,14 +242,14 @@
                             <input type="checkbox" id="environment_new_role_data_versioning"    
                                 ng-model="environmentCtrl.roleData.allowed_entity_versioning" />
                             <label class="option-button-label">
-                                Data Versioning
+                                Data versioning
                             </label>
                         </div>
                     </div>
                     <div class="form-group col-lg-12 permissionsLabelsNew" ng-if="environmentCtrl.envType !== 'Source' && environmentCtrl.isFluxMode">
                         <div class="option-button" style="flex-direction: column;justify-content: flex-start;align-items: flex-start;">
                             <label class="option-button-label">
-                                Max Number of Reserved Entities On Env
+                                Max number of reserved entities on env
                             </label>
                             <input style="width: 100%" type="number" class="form-control1"  id="environment_new_role_reserve_entities"
                                 min="{{!environmentCtrl.roleData.allowed_number_of_entities_to_copy && environmentCtrl.envType === 'Target' ? 1 : 0}}"

@@ -1,0 +1,69 @@
+tags: Concurrency
+stages:
+  Get Table Fields:
+    actors:
+      Get List of Table's Fields:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableFields
+          dbInterfaceName:
+            external: sourceInterface
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: sourceSchema
+            schema: string
+            mandatory: false
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Return Statement:
+    transactional: false
+    actors:
+      Prepare SqliteTable & Inseet Command:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PrepareSqliteTable
+          TableColums:
+            link: Get List of Table's Fields/result
+            schema: '#ref'
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          SqliteInsertStatement:
+            external: SqliteInsertStatement
+            schema: string
+schemas:
+  Get List of Table's Fields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Prepare SqliteTable & Inseet Command.in.TableColums:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string

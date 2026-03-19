@@ -32,9 +32,6 @@ stages:
       Empty String:
         parent: EqualsIgnoreCase
         in:
-          b:
-            const: ''
-            schema: string
           a:
             link: tdm_general_parameters/result/param_value
       'Null':
@@ -146,21 +143,6 @@ stages:
         out:
           result:
             schema: number
-      date_trunc:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: SELECT date_trunc('day', NOW()- interval ' ${@retentionPeriod}
-              MONTH' )
-          retentionPeriod:
-            link: tdm_general_parameters/result/param_value
-            schema: '#ref'
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
     split: '--------------------'
   Do Nothing:
     transactional: false
@@ -219,20 +201,8 @@ stages:
   'Do Nothing ':
     transactional: false
     dependsOn: 'Do Nothing                 '
-  Special Case:
+  Clean Tables:
     dependsOn: 'True'
-    actors:
-      Param:
-        parent: Const
-        in:
-          value:
-            const: null
-            link:
-              path: date_trunc/result/date_trunc
-              iterate: First
-        out:
-          value:
-            schema: date
     split: '--------------------'
   'Do Nothing                    ':
     transactional: false
@@ -241,9 +211,91 @@ stages:
   'Do Nothing  ':
     transactional: false
     dependsOn: 'Do Nothing '
-  Execute Statement:
+  'Default Retention ':
+    dependsOn: Clean Tables
+    actors:
+      IsNull:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Sorted Data/value/OVERRIDE_CLEANUP_RETENTION_PERIOD
+              iterate: Iterate
+      date_trunc:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT date_trunc('day', NOW()- interval ' ${@retentionPeriod}
+              MONTH' )
+          retentionPeriod:
+            link: tdm_general_parameters/result/param_value
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Override Retention:
+    else: true
+    dependsOn: Clean Tables
+    actors:
+      date_trunc override:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT date_trunc('day', NOW()- interval ' ${@retentionPeriod}
+              MONTH' )
+          retentionPeriod:
+            link:
+              path: Sorted Data/value/OVERRIDE_CLEANUP_RETENTION_PERIOD
+              iterate: Iterate
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Nothing             ':
+    transactional: false
+    dependsOn: 'Do Nothing                    '
+    split: '--------------------'
+  'Do Nothing     ':
+    transactional: false
+    dependsOn: 'Do Nothing  '
+  Stage 7:
+    dependsOn:
+    - Override Retention
+    - 'Default Retention '
+    actors:
+      Param:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - path: date_trunc/result/date_trunc
+              iterate: First
+            - path: date_trunc override/result/date_trunc
+              iterate: First
+        out:
+          value:
+            schema: date
+    split: '--------------------'
+  'Do Nothing         ':
+    transactional: false
+    dependsOn: 'Do Nothing             '
+    split: '--------------------'
+  'Do Nothing       ':
+    transactional: false
+    dependsOn: 'Do Nothing     '
+  Stage 5:
     last: 1
-    dependsOn: Special Case
+    dependsOn: Stage 7
     actors:
       'ErrorHandler   ':
         parent: ErrorHandler
@@ -280,12 +332,12 @@ stages:
   'Do Nothing                     ':
     last: 1
     transactional: false
-    dependsOn: 'Do Nothing                    '
+    dependsOn: 'Do Nothing         '
     split: '--------------------'
   'Do Nothing   ':
     last: 1
     transactional: false
-    dependsOn: 'Do Nothing  '
+    dependsOn: 'Do Nothing       '
   CustomLogic Cleanup Tasks:
     actors:
       CustomLogicCleanUp:
@@ -324,6 +376,8 @@ schemas:
           type: string
         SEQ:
           type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
   Mtable Data.out.array:
     type: array
     items:
@@ -341,6 +395,8 @@ schemas:
           type: string
         SEQ:
           type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
   Sort.in.input:
     type: array
     items:
@@ -358,17 +414,6 @@ schemas:
           type: string
         SEQ:
           type: string
-  date_trunc.in.retentionPeriod:
-    type: array
-    items:
-      type: string
-  date_trunc.out.result:
-    type: array
-    items:
-      type: object
-      properties:
-        date_trunc:
-          type: date
   Sorted Data.out.value:
     type: array
     items:
@@ -386,6 +431,30 @@ schemas:
           type: string
         SEQ:
           type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  date_trunc.in.retentionPeriod:
+    type: array
+    items:
+      type: string
+  date_trunc.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        date_trunc:
+          type: date
+  date_trunc override.in.retentionPeriod:
+    type: array
+    items:
+      type: string
+  date_trunc override.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        date_trunc:
+          type: date
   CustomLogicCleanUp.in.truncate_date:
     type: object
     properties:

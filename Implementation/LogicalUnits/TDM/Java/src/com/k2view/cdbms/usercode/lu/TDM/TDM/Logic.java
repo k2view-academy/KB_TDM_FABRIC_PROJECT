@@ -362,7 +362,6 @@ public class Logic extends UserCode {
 		
 									} // end of if the task has reference tables
 								}//if (refSummaryStats != null)
-
 								//log.info("fnCheckMigrateAndUpdateTDMDB - finished updating TASK_EXECUTION_ENTITIES");
 								if(processID>0){
 									total=null;
@@ -372,7 +371,6 @@ public class Logic extends UserCode {
 									num_of_copied_ref_tables=null;
 									num_of_failed_ref_tables=null;
 								}
-
                                 if("completed".equalsIgnoreCase(status) && processID==-2 && "pre".equalsIgnoreCase(processType)){
 									Map num = fnUpdateAIProcess(taskExecutionID,"-2");
 									total= "" + num.get("total");
@@ -482,7 +480,7 @@ public class Logic extends UserCode {
 							fabric().execute("get TDM." + taskExecutionId);
 							db(TDM).execute("update " + TDMDB_SCHEMA + ".task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
 		                           // TDM 8.1 - in case of Custom Logic, drop the entity list table if exists
-		                           if ("C".equalsIgnoreCase(selectionMethod) && !"stopped".equalsIgnoreCase(executionStatus)) {
+		                           if (("C".equalsIgnoreCase(selectionMethod) || "GENERATE".equalsIgnoreCase(selectionMethod)) && !"stopped".equalsIgnoreCase(executionStatus)) {
 		                              String dropSql = "DROP TABLE IF EXISTS " + TDMDB_SCHEMA + ".entity_list_" + taskExecutionId;
 		                              db(TDM).execute(dropSql);
 		                          }
@@ -628,6 +626,8 @@ public class Logic extends UserCode {
 		String executionStatus = "completed";
 		String startExecTime = "";
 		String endExecTime = "";
+		String startExecTimeBe = "";
+		String endExecTimeBe = "";
 		Long totProcessedRootEnt = 0L;
 		Long totCopiedRootEnt = 0L;
 		Long totFailedRootEnt = 0L;
@@ -713,7 +713,8 @@ public class Logic extends UserCode {
 
 		startExecTime = "" + db(TDM).fetch("select min(start_execution_time) from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
 		endExecTime = "" + db(TDM).fetch("select max(end_execution_time) from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
-
+		startExecTimeBe = "" + db(TDM).fetch("select min(entity_start_time) from " + TDMDB_SCHEMA + ".task_execution_entities where task_execution_id = ? and id_type = 'ENTITY' ",taskExecId).firstValue();
+		endExecTimeBe = "" + db(TDM).fetch("select max(entity_end_time) from " + TDMDB_SCHEMA + ".task_execution_entities where task_execution_id = ? and id_type = 'ENTITY' ",taskExecId).firstValue();
         versionExeID = "" + db(TDM).fetch("select version_task_execution_id from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
         subsetExeID = "" + db(TDM).fetch("select subset_task_execution_id from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
 		expDate = "" + db(TDM).fetch("select max(expiration_date) from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ? ",taskExecId).firstValue();
@@ -726,7 +727,7 @@ public class Logic extends UserCode {
 				"tot_num_of_processed_ref_tables = ?, tot_num_of_copied_ref_tables = ?, tot_num_of_failed_ref_tables = ?, " +
 				"tot_num_of_processed_post_executions = ?, tot_num_of_succeeded_post_executions = ?, tot_num_of_failed_post_executions = ? ," +	
                 "tot_num_of_processed_pre_executions = ?, tot_num_of_succeeded_pre_executions = ?, tot_num_of_failed_pre_executions = ?," +
-                "subset_task_execution_id = ?,update_date = ?";
+                "subset_task_execution_id = ?, update_date = ?";
 
 		ArrayList<Object> paramList = new ArrayList<>();
 		paramList.add(executionStatus);
@@ -760,6 +761,14 @@ public class Logic extends UserCode {
 		if (!"null".equals(expDate) && !"".equals(expDate)) {
 			sqlUpdateTaskSummaryTable += ", expiration_date = ?";
 			paramList.add(expDate);
+        }
+		if (!"null".equals(startExecTimeBe) && !"".equals(startExecTimeBe)) {
+			sqlUpdateTaskSummaryTable += ", start_be_execution = ?";
+			paramList.add(startExecTimeBe);
+        }
+		if (!"null".equals(endExecTimeBe) && !"".equals(endExecTimeBe)) {
+			sqlUpdateTaskSummaryTable += ", end_be_execution = ?";
+			paramList.add(endExecTimeBe);
         }
 		sqlUpdateTaskSummaryTable += " where task_execution_id = ?";
 		paramList.add(taskExecId);
@@ -900,7 +909,7 @@ public class Logic extends UserCode {
 		return originalStatus.toString().toLowerCase();
 	}
 	@out(name = "result", type = Map.class, desc = "")
-	public static Map<String,String> getCommandForAll(String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, String closeSeparator,String versionExeID,String dcName, Long luId, String sessionGlobals, String taskTitle) throws Exception {
+	public static Map<String,String> getCommandForAll(String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, String closeSeparator,String versionExeID, Long luId, String sessionGlobals, String taskTitle, String sourceMaxWorkers, String sourceAffinity) throws Exception {
 		String modified_sql = "";
 		String interface_name = null;
 		String sql = null;
@@ -1034,31 +1043,26 @@ public class Logic extends UserCode {
 			//modified_sql = getCommandForAllCL(luName, externalTableFlow, taskExecutionId, luId, dcName);
 			Long numberOfEntities = -1L;
 			Map<String,String> BFCmdAndInterface = getCustomLogicBatch(luName, externalTableFlow, taskExecutionId, luId, 
-					dcName, numberOfEntities, "", sessionGlobals, false, taskTitle);
+					numberOfEntities, "", sessionGlobals, false, taskTitle, sourceMaxWorkers, sourceAffinity);
 			modified_sql = BFCmdAndInterface.get("batchQuery");
 			interface_name = BFCmdAndInterface.get("batchInterface");
 			batchStrings.put("mode","external_flow");
 		}
-		
-		String affinityClause = !Util.isEmpty(dcName) ? " AFFINITY='" + dcName + "'" : "";
-
-		String batchCommand = "BATCH " + luName + " from " + interface_name +
-				" using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH" +
-				affinityClause + " ASYNC=true" + " BATCH_ID_PREFIX ='" + taskTitle + "'";
-		
-		batchStrings.put("batchCommand", batchCommand);
+				
 		batchStrings.put("usingClause", modified_sql);
 		batchStrings.put("interface",interface_name);
 		return batchStrings;
 	}
 
 	@out(name = "result", type = Map.class, desc = "")
-	public static Map<String,String> getCustomLogicBatch(String luName, String customLogicFlow, String taskExecutionId, Long luId, 
-        String dcName, Long entitiesLimit, String flowParams, String sessionGlobals, Boolean cloneInd, String taskTitle) throws Exception {
+	public static Map<String, String> getCustomLogicBatch(String luName, String customLogicFlow, String taskExecutionId,
+			Long luId,
+			Long entitiesLimit, String flowParams, String sessionGlobals, Boolean cloneInd, String taskTitle,
+			String sourceMaxWorkers, String sourceAffinity) throws Exception {
 		String batchQuery = "";
 		String batchInterface = TDM;
 		Map<String, String> result = new HashMap<>();
-        Map<String, List<Map <String, Object>>> clFlowParamJson=null;
+		Map<String, List<Map<String, Object>>> clFlowParamJson = null;
 		
 		// TDM 8.1 - Check if the flow is direct flow that does not require Table
 		Boolean directFlow = Boolean.parseBoolean((String) fabric().fetch("broadway " + luName + ".CheckIfCustomFlowIsDirect LU_NAME = '" + luName +
@@ -1112,9 +1116,10 @@ public class Logic extends UserCode {
 			String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable taskExecutionId = " + taskExecutionId;
 			//log.info("createEntityListTab: " + createEntityListTab);
 			fabric().execute(createEntityListTab);
-			
-			String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
-			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+									
+			String affinity = getAffinityString(sourceAffinity);
+			String maxNumOfWorkers = findMaxNumOfWorkers(sourceMaxWorkers);
+			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
 			//log.info("Custom Logic batchCommand: " + batchCommand);
 			
 			String broadwayCommand = "broadway " + luName + "."  +  customLogicFlow +  " iid=?," + fabricCommandParams;
@@ -1140,15 +1145,18 @@ public class Logic extends UserCode {
 		return result;
 	}
 
-    public static Map<String,String> getEntityListByBF(String luName, String broadwayCommand, String taskExecutionId,Long luId, 
-    String dcName, Long entitiesLimit,  Boolean cloneInd, String taskTitle) throws Exception {
-        Map<String, String> result = new HashMap<>();
+   	public static Map<String, String> getEntityListByBF(String luName, String broadwayCommand, String taskExecutionId,
+			Long luId, Long entitiesLimit, Boolean cloneInd, String taskTitle, String sourceMaxWorkers,
+			String sourceAffinity)
+			throws Exception {
+		Map<String, String> result = new HashMap<>();
         String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable taskExecutionId = " + taskExecutionId;
 			//log.info("createEntityListTab: " + createEntityListTab);
 			fabric().execute(createEntityListTab);
-			
-			String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
-			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'";
+									
+			String affinity = getAffinityString(sourceAffinity);
+			String maxNumOfWorkers = findMaxNumOfWorkers(sourceMaxWorkers);                    
+			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;
 			//log.info("Custom Logic batchCommand: " + batchCommand);
 		
 			//log.info("Custom Logic broadwayCommand: " + broadwayCommand);

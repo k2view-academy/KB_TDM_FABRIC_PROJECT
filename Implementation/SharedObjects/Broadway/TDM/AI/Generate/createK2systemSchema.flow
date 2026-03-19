@@ -60,7 +60,9 @@ stages:
               \ creation_time timestamp without time zone NOT NULL,\r\n    last_update_time\
               \ timestamp without time zone,\r\n    FOREIGN KEY (task_execution_id,\
               \ task_type) REFERENCES ${k2systemName}.task_executions (id, task_type)\r\
-              \n);"
+              \n);\r\n\r\nCREATE SEQUENCE IF NOT EXISTS ${k2systemName}.ai_instance_id_seq\r\
+              \n    INCREMENT 1\r\n    START 1\r\n    MINVALUE 1\r\n    MAXVALUE 9223372036854775807\r\
+              \n    CACHE 1;\r\n"
           k2systemName:
             link: Getk2SystemSchemaName1/result
             schema: string
