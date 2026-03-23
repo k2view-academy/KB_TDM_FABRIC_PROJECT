@@ -36,7 +36,7 @@ public class SharedGlobals {
 	public static String TDM_REF_UPD_SIZE = "1000";
 
     @category("TDM")
-	public static final String TDMDB_SCHEMA = "k2tdm_${ClusterID}";
+	public static final String TDMDB_SCHEMA = "public";
 
     @category("TDM")
 	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
