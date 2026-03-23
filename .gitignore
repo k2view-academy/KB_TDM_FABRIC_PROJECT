@@ -22,3 +22,5 @@ FabricHome
 LocalDeploy
 LocalDeployWeb
 *.DS_Store
+.studioWeb/deployLuStatus.json
+Environments.k2fabEnv_encrypted.xml
