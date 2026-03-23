@@ -1,1 +1,1 @@
-interface_name,interface_type,schema_name,table_name,extract_flow,table_order,delete_flow,load_flow
+interface_name,interface_type,schema_name,table_name,count_indicator,record_count_flow,table_order,extract_flow,delete_flow,load_flow,partition_count_source,partition_records_flow,partition_flow_inputs,inplace_masking_update_flow,commit_size

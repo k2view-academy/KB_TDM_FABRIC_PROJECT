@@ -1,4 +1,4 @@
-interface_name,suppress_indicator,truncate_indicator,count_indicator,count_flow
+interface_name,suppress_indicator,truncate_indicator,order_flow,no_schema
 TDM,true,,,
 POSTGRESQL_ADMIN,true,,,
 AI_DB,true,,,
