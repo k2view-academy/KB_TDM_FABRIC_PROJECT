@@ -10,12 +10,6 @@ Billing,VIP_STATUS,"Select distinct VIP_STATUS
 From Billing.SUBSCRIBER",
 Billing,SUBSCRIBER_TYPE,"Select distinct SUBSCRIBER.SUBSCRIBER_TYPE
  From Billing.SUBSCRIBER",
-Collection,COLLECTION_STATUS,"Select distinct COLLECTION.COLLECTION_STATUS
-From Collection.COLLECTION",
-Orders,ORDER_TYPE,"Select distinct ORDERS.ORDER_TYPE
-From Orders.ORDERS",
-Orders,ORDER_STATUS,"Select distinct ORDERS.ORDER_STATUS
-From Orders.ORDERS",
 Customer,CITY,Select address.city From Customer.address,
 Customer,LINE_NUMBER,"Select CONTRACT.ASSOCIATED_LINE
 From Customer.CONTRACT",
