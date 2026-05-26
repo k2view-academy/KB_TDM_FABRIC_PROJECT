@@ -41,7 +41,7 @@ stages:
           interface:
             const: fabric
           sql:
-            const: select distinct {{#each TARGET_TABLE_PKS~}}{{{getPKFieldWithoutSingleQoute this}}}{{#if @last}}{{^}},{{/if}}{{/each}} from {{LU_NAME}}.{{{DELETE_TABLE}}}
+            const: select distinct {{#each TARGET_TABLE_PKS~}}{{{getPKFieldWithoutSingleQoute this}}}{{#if @last}}{{^}},{{/if}}{{/each~}} from {{LU_NAME}}.{{{DELETE_TABLE}}}
         out:
           result:
             schema: '#ref'
@@ -74,14 +74,14 @@ stages:
             const:
             {{#each TARGET_TABLE_PKS~}}
             - {{{this}}}
-            {{/each}}
-          {{#each TARGET_TABLE_PKS}}
+            {{/each~}}
+          {{#each TARGET_TABLE_PKS~}}
           {{{this}}}:
             link: 
               path: Get Table Data/result/{{getPKFieldWithoutQoutes this}}
               iterate: Iterate
             schema: any
-          {{/each}}
+          {{/each~}}
           params:
             link:
               path: Get Table Data/result
@@ -95,4 +95,4 @@ schemas:
         {{#each TARGET_TABLE_PKS~}}
         {{getPKFieldWithoutQoutes this}}:
           type: any
-        {{/each}}
+        {{/each~}}

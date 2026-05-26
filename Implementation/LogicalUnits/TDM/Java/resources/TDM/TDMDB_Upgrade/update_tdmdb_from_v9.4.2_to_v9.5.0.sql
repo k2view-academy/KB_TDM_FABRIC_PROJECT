@@ -92,7 +92,6 @@ ALTER TABLE ${@schema}.task_ref_tables ADD COLUMN IF NOT EXISTS count_ind boolea
 ALTER TABLE ${@schema}.task_ref_exe_stats ADD COLUMN IF NOT EXISTS number_of_partitions bigint default 1;
 ALTER TABLE ${@schema}.task_ref_exe_stats ADD COLUMN IF NOT EXISTS number_of_failed_records bigint;
 
-
 CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_partition
 (
   task_id bigint NOT NULL, 
@@ -112,6 +111,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_partition
   CONSTRAINT task_ref_partition_pkey PRIMARY KEY (task_execution_id,task_ref_table_id,partition_no) 
 );
 
+
 UPDATE ${@schema}.task_ref_exe_stats s
 SET number_of_partitions = -1
 WHERE NOT EXISTS (
@@ -119,6 +119,7 @@ WHERE NOT EXISTS (
     FROM ${@schema}.task_ref_partition p
     WHERE p.task_execution_id = s.task_execution_id
 );
+
 
 -- task_ref_exe_stats
 DROP INDEX IF EXISTS ${@schema}.task_ref_exe_stats_IX1;

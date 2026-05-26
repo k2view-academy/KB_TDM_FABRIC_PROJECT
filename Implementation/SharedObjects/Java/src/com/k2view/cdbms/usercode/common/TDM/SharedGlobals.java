@@ -48,7 +48,7 @@ public class SharedGlobals {
 	public static final String TDM_BATCH_LIMIT = "-1";
 
     @category("TDM")
-	public static final String TDM_SEQ_REPORT = "true";
+	public static String TDM_SEQ_REPORT = "true";
 
     @desc("Indicates whether to run add TDM statitics")
 	@category("TDM")
@@ -91,6 +91,22 @@ public class SharedGlobals {
 
     @category("TDM")
 	public static String CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA = "true";
+
+    @desc ("When All - All tables are reported to the stats table, When Diff - Only Tables with Differences are reported, When None - No tables are reported.")
+	@category("TDM")
+	public static String STATISTICS_REPORT_FLAG = "ALL";
+
+    @desc("Used to suppress File System Interfaces in Table Level")
+	@category("TDM")
+	public static final String SUPPRESS_TABLE_LEVEL_SUPPRESS_FILE_SYSTEMS = "true";
+
+    @desc("Used to allow running sync in Fabric Studio with masking")
+	@category("TDM_DEBUG")
+	public static String enable_masking = "false";
+
+    @desc("Used to allow running sync in Fabric Studio with sequence replacement")
+	@category("TDM_DEBUG")
+	public static String enable_sequences = "false";
 
 
 }

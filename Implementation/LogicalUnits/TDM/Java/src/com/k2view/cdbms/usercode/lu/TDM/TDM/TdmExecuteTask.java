@@ -481,7 +481,8 @@ public class TdmExecuteTask {
                 entityInclusionOverride = getEntityInclusion(taskProperties);
             } else { //the task execution has several root LUs, and if the entity inclusion was already populated for the previous root LU it will be reused
                 entityInclusionOverride = entityInclusion;
-                reserveInd = false;
+                //Reservation should be checked for all Root LUs
+                //reserveInd = false;
 
             }
         } else {// the parent id is populated- handle the child luID
@@ -659,9 +660,9 @@ public class TdmExecuteTask {
 
                 //TDM9.5 - Set deleteBeforeLoad to true for None TABLES task
                 if (!"extract".equals(taskType)) {
-                    selectionMethod = "true";
+                    deleteBeforeLoad = "true";
                 } else {
-                    selectionMethod = "false";
+                    deleteBeforeLoad = "false";
                 }
 
                 //TDM 9.0 - HF1, check if the Table Level already ran or not
@@ -734,40 +735,7 @@ public class TdmExecuteTask {
         }
         return instanceList;
     }
-
-    private static String getCLBroadwayCmd(String luName, String clFlowName, Map<String, Object> taskProperties) {
-        //String luName = LU_NAME.get(taskProperties);
-        Long entitiesLimit = 0L;
-        if (NUM_OF_ENTITIES.get(taskProperties) instanceof Long) {
-            entitiesLimit = NUM_OF_ENTITIES.get(taskProperties);
-        } else {
-            entitiesLimit = Long.valueOf(NUM_OF_ENTITIES.get(taskProperties));
-        }
-        //String clFlowName = SELECTION_PARAM_VALUE.get(taskProperties);
-        String clFlowParams = PARAMETERS.get(taskProperties);
-
-        clFlowParams = clFlowParams.replaceAll("\\\\n", "").replaceAll("\\\\t", "");
-        //log.info("clFlowParams after replace: " + clFlowParams);
-        // Replace gson with K2view Json
-        //Gson gson = new Gson();
-        //Type mapType = new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType();
-        //Map<String, List<Map <String, Object>>> clFlowParamJson = gson.fromJson(clFlowParams, mapType);
-        Map<String, List<Map<String, Object>>> clFlowParamJson = "".equals(clFlowParams) ? Collections.emptyMap() : Json.get().fromJson(clFlowParams);
-
-        String fabricCommandParams = " LU_NAME='" + luName + "', NUM_OF_ENTITIES=" + entitiesLimit;
-        if (!(clFlowParamJson==null || clFlowParamJson.isEmpty())) {
-            List<Map<String, Object>> clFlowParamList = clFlowParamJson.get("inputs");
-            for (Map<String, Object> clFlowParamMap : clFlowParamList) {
-                String paramValue = "" + clFlowParamMap.get("value");
-                fabricCommandParams += ", " + clFlowParamMap.get("name") + "=\"" + paramValue + "\"";
-                //fabricCommandParams += ", " + clFlowParamMap.get("name") + "=" + paramValue;
-            }
-        }
-
-        return fabricCommandParams;
-
-    }
-
+   
     private static Map<String, String> executeGenerateSubset(Map<String, Object> taskProperties) throws Exception {
         Map<String, String> ExecutionInfo = new LinkedHashMap<>();
         setGlobalsForTask("ai_generated", taskProperties);
@@ -782,7 +750,7 @@ public class TdmExecuteTask {
         String loadIndicator= "" + LOAD_ENTITY.get(taskProperties);
         String beID= "" + BE_ID.get(taskProperties);
         String taskTitle = "" + TASK_TITLE.get(taskProperties);
-        String maxNumOfWorkers = findMaxNumOfWorkers(SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties));
+        String maxNumOfWorkers = findMaxNumOfWorkers(SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties).toString());
 
         String broadwayCommand = "broadway TDM.ImportDataSubset " + "luName = '" + luName + "'" +
                 ", dcName='" + sourceAffinity + "'" +
@@ -1430,6 +1398,9 @@ public class TdmExecuteTask {
 
         globals.put("PARAMS_COUPLING", PARAMS_COUPLING.get(taskProperties));
 
+        globals.put("TDM_SEQ_REPORT", ENABLE_SEQUENCE_REPORT.get(taskProperties));
+        globals.put("STATISTICS_REPORT_FLAG", STATISTICS_REPORT_FLAG.get(taskProperties));
+
         globals.putAll(args);
 
         Util.rte(() -> db(TDM).fetch(globalsQuery, params).forEach(res -> Util.rte(() -> globals.put(res.resultSet().getString("global_name"), res.resultSet().getString("global_value")))));
@@ -1646,6 +1617,8 @@ public class TdmExecuteTask {
 
         //log.info("syncInstanceForCloning - srcDC: " + srcDC + ", luName: " + luName + ", taskExeId: " + taskExeId);
 
+        setEnableSeqFlag(luName);
+        
         String getCmd = "get " + luName + ".? WITH PARALLEL=false STOP_ON_ERROR=true";
 
         if (srcDC != null && !Util.isEmpty(srcDC) && !srcDC.equals("null")) {
@@ -1699,6 +1672,16 @@ public class TdmExecuteTask {
         }
     }
 
+    private static void setEnableSeqFlag(String luName) throws SQLException{
+        Boolean useCatalog = "true".equals(getGlobal("TDM_USING_CATALOG_SEQUENCES", luName).toLowerCase()) ? true : false;
+        Boolean replaceSeqAtSync = "true".equals(getGlobal("REPLACE_SEQ_BY_LUI_SYNC", luName).toLowerCase()) ? true : false;
+        if (useCatalog && replaceSeqAtSync) {
+            fabric().execute("set enable_sequences = true");
+        } else {
+            fabric().execute("set enable_sequences = false");
+        }
+    }
+    
     private static String getGeneratedcData(String selectionMethod) {
         return selectionMethod.equals("GEN") ? "true" : "false";
     }
@@ -1758,6 +1741,7 @@ public class TdmExecuteTask {
             taskProperties.put("task_id", taskId);
             taskProperties.put("be_id", row.get("be_id"));
             taskProperties.put("environment_id", row.get("environment_id"));
+            taskProperties.put("source_environment_id", row.get("source_environment_id"));
             taskProperties.put("creation_date", row.get("creation_date"));
             // get LU properties
             Db.Row luProperties = getLuProperties((Long) taskProperties.get("lu_id"));
@@ -1767,9 +1751,11 @@ public class TdmExecuteTask {
             log.error("Can't get task properties for task_execution_id=" + row.get("task_execution_id"), e);
         }
 
+        Boolean cloneInd = CLONE_IND.get(taskProperties);
+
         // TDM 9.2 - If the task is reserve only, clone or Generate then it cannot be Vertical.
-        String executionMode = fnGetTaskExecutionMode(EXECUTION_MODE.get(taskProperties), TASK_TYPE.get(taskProperties), 
-            BE_ID.get(taskProperties), CLONE_IND.get(taskProperties));
+        String executionMode = fnGetTaskExecutionMode(EXECUTION_MODE.get(taskProperties), TASK_TYPE.get(taskProperties),
+                BE_ID.get(taskProperties), cloneInd);
         if (!executionMode.equalsIgnoreCase(EXECUTION_MODE.get(taskProperties))) {
             taskProperties.put("execution_mode", executionMode);
         }
@@ -1798,37 +1784,63 @@ public class TdmExecuteTask {
                     break;
             }
         }));
-        //TDM 7.2 - Get task execution override attributes and use them to override the task's attributes
-        Map<String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs((Long) row.get("task_id"), (Long) row.get("task_execution_id"));
+        // TDM 7.2 - Get task execution override attributes and use them to override the
+        // task's attributes
+        Map<String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs((Long) row.get("task_id"),
+                (Long) row.get("task_execution_id"));
         Object overrideValue = new Object();
-        String attrName = "";
+        String attrName = "";        
+        boolean hasEntityList = taskOverrideAttrs.containsKey(OverrideParamKey.ENTITY_LIST.name());
         try {
-            for (String attr  : taskOverrideAttrs.keySet()) {
-                boolean entityListFlag = false;
+            for (String attr : taskOverrideAttrs.keySet()) {
 
-                if (!"task_globals".equalsIgnoreCase(attr)) {
+                if ("task_globals".equalsIgnoreCase(attr)) {
+                    continue;
+                }
+                try {
+                    OverrideParamKey key = OverrideParamKey.valueOf(attr);
+
                     overrideValue = taskOverrideAttrs.get(attr);
-                    //log.info("getTaskProperties - attrName: " + attrName + ", overrideValue: " + overrideValue);
+                    // log.info("getTaskProperties - attrName: " + attrName + ", overrideValue: " +
+                    // overrideValue);
                     attrName = attr.toLowerCase();
-                    switch (attrName) {
-                        case "selection_method":
+                    switch (key) {
+                        case OverrideParamKey.BE_ID:
                             taskProperties.put(attrName, overrideValue);
                             break;
-                        case "entity_list":
-                            taskProperties.put("selection_param_value", overrideValue);
-                            int numberOfEntities = String.valueOf(overrideValue).split(",", -1).length;
-                            taskProperties.put("num_of_entities", numberOfEntities);
-                            entityListFlag = true;
+                        case OverrideParamKey.SELECTION_METHOD:
+                            taskProperties.put(attrName, overrideValue);
                             break;
-                        case "no_of_entities":
-                            if (!entityListFlag) {
+                        case OverrideParamKey.ENTITY_LIST:
+                            taskProperties.put("selection_param_value", overrideValue);
+                            if (!cloneInd) {
+                                int numberOfEntities = String.valueOf(overrideValue).split(",", -1).length;
+                                taskProperties.put("num_of_entities", numberOfEntities);
+                            }                           
+                            break;
+                        case OverrideParamKey.CUSTOM_LOGIC_FLOW:
+                            taskProperties.put("selection_param_value", overrideValue);
+                            break;
+                        case OverrideParamKey.CUSTOM_LOGIC_LU_NAME:
+                            taskProperties.put("custom_logic_lu_name", overrideValue);
+                            break;
+                        case OverrideParamKey.BP_QUERY:
+                            taskProperties.put("selection_param_value", overrideValue);
+                            break;
+                        case OverrideParamKey.PARAMETERS:
+                            taskProperties.put("parameters", overrideValue);
+                            break;
+                        case OverrideParamKey.NO_OF_ENTITIES:
+                            if (!hasEntityList || cloneInd) {
                                 taskProperties.put("num_of_entities", overrideValue);
                             }
                             break;
-                        case "source_environment_name":
+                        case OverrideParamKey.SOURCE_ENVIRONMENT_NAME:
                             taskProperties.put(attrName, overrideValue);
                             Db.Row envData = db(TDM).fetch("select environment_id, mask_sensitive_data from " +
-                                    TDMDB_SCHEMA + ".environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstRow();
+                                    TDMDB_SCHEMA
+                                    + ".environments where environment_name = ? and lower(environment_status) = 'active'",
+                                    overrideValue).firstRow();
                             String srcEnvId = "" + envData.get("environment_id");
                             String maskSenData = "" + envData.get("mask_sensitive_data");
                             taskProperties.put("source_environment_id", srcEnvId);
@@ -1837,37 +1849,45 @@ public class TdmExecuteTask {
                             }
 
                             break;
-                        case "target_environment_name":
+                        case OverrideParamKey.TARGET_ENVIRONMENT_NAME:
                             taskProperties.put(attrName, overrideValue);
-                            String tarEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+                            String tarEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA
+                                    + ".environments where environment_name = ? and lower(environment_status) = 'active'",
+                                    overrideValue).firstValue();
                             taskProperties.put("environment_id", tarEnvId);
                             break;
                         // TDM 7.4 - 16-Jan-22 - Add support for overriding DataFlux parameters
-                        case "selected_version_task_exe_id":
+                        case OverrideParamKey.SELECTED_VERSION_TASK_EXE_ID:
                             taskProperties.put(attrName, overrideValue);
                             break;
-                        case "dataflux_retention_params":
+                        case OverrideParamKey.DATAFLUX_RETENTION_PARAMS:
                             Map rentionPeriodInfo = (Map) overrideValue;
                             taskProperties.put("retention_period_type", "" + rentionPeriodInfo.get("units"));
                             taskProperties.put("retention_period_value", "" + rentionPeriodInfo.get("value"));
                             break;
-                        case "reserve_ind":
+                        case OverrideParamKey.RESERVE_IND:
                             taskProperties.put("reserve_ind", overrideValue);
                             break;
-                        case "reserve_retention_params":
+                        case OverrideParamKey.RESERVE_RETENTION_PARAMS:
                             Map reserveRentionPeriodInfo = (Map) overrideValue;
-                            taskProperties.put("reserve_retention_period_type", "" + reserveRentionPeriodInfo.get("units"));
-                            taskProperties.put("reserve_retention_period_value", "" + reserveRentionPeriodInfo.get("value"));
+                            taskProperties.put("reserve_retention_period_type",
+                                    "" + reserveRentionPeriodInfo.get("units"));
+                            taskProperties.put("reserve_retention_period_value",
+                                    "" + reserveRentionPeriodInfo.get("value"));
                             break;
                         // TDM 7.4 - End of Change
                         default:
                             taskProperties.put(attrName, overrideValue);
                             break;
                     }
+                } catch (IllegalArgumentException e) {
+                    log.error("Invalid override attribute name: " + attr, e);
                 }
+
             }
         } catch (SQLException e) {
-            log.error("Failed to retrieve override value for attribute: " + attrName + ", value: " + String.valueOf(overrideValue), e);
+            log.error("Failed to retrieve override value for attribute: " + attrName + ", value: "
+                    + String.valueOf(overrideValue), e);
         }
 
         return taskProperties;
@@ -2123,7 +2143,9 @@ public class TdmExecuteTask {
         TABLE_DEFAULT_DISTRIBUTION_MAX("3"),
         PARAMS_COUPLING(false),
         EXECUTION_MODE("HORIZONTAL"),
-        IN_PLACE_MASKING_IND("false");
+        IN_PLACE_MASKING_IND("false"),
+        ENABLE_SEQUENCE_REPORT("true"),
+        STATISTICS_REPORT_FLAG("ALL");
         private Object def;
 
         TASK_PROPERTIES(Object def) {

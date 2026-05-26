@@ -8,53 +8,58 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 
 public class SharedGlobals {
 
-	@desc("Maximum values of combo box input object")
+	@desc("Maximum number of distinct values that enables displaying a business parameter as a dropdown in the task window. Default is 100. Above this limit, the parameter is still selectable but requires manual value entry.")
 	@category("TDM")
 	public static String COMBO_MAX_COUNT = "100";
 
-	@desc("The TTL for masking cache")
+	@desc("Specifies the time to live (TTL), in seconds, for the records in the masking cache table.")
 	@category("TDM")
 	public static String MASKING_CACHE_TTL = "2592000";
 
-	@desc("The maximum number of entities to be returned to be displayed in list of entities")
+	@desc("Maximum number of entities shown in the TDM self-service entity list when viewing task results.")
 	@category("TDM")
 	public static final String MAX_NUMBER_OF_ENTITIES_IN_LIST = "100";
 
-	@desc("Each Instance can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Hours, Days, Weeks, or Years")
+	@desc("Setting a TTL for a task execution in the TDM LU (each execuion is a separatre LUI). This feature is supported when storing the LUIs in Cassandra. Possible values: Minutes, Hours, Days, Weeks, or Years.")
 	@category("TDM")
 	public static String TDM_LU_RETENTION_PERIOD_TYPE = "Days";
 
-	@desc("The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE. Populate this global with zero or empty value to avoid setting a TTL on the TDM LUIs.")
+	@desc("Setting a TTL for a task execution in the TDM LU (each execuion is a separatre LUI). This feature is supported when storing the LUIs in Cassandra. This Global sets the TTL value.")
 	@category("TDM")
 	public static String TDM_LU_RETENTION_PERIOD_VALUE = "10";
 
-	@desc("The max number of retrieved entities from TDM_RESERVED_ENTITIES, if set to zero then no limit")
+	@desc("Maximum number of entities shown in the Reserved Entities TDM self-service window. If set to zero, then the window displays all reserved entities.")
 	@category("TDM")
 	public static String GET_RESERVED_ENTITIES_LIMIT = "0";
 
 	@category("TDM")
 	public static String TDM_REF_UPD_SIZE = "1000";
 
+	@desc("Name of the TDM database schema. Default value is public. Fabric must be restarted after updating this Global value.")
 	@category("TDM")
 	public static final String TDMDB_SCHEMA = "public";
 
+	@desc("Defines the maximum number of entities included in the TDM execution report.")
 	@category("TDM")
 	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
 
+	@desc ("Prefix for target tables in the LU. The target LU tables store target keys to support deletion of entities from the target. Default value is TAR_.")
 	@category("TDM")
 	public static final String TDM_DELETE_TABLES_PREFIX = "TAR_";
 
+	@desc ("Limits the number of entities for which TDM execution retrieves the execution status from the batch_details command. Default value is -1, which means all entities are retrieved.")
 	@category("TDM")
 	public static final String TDM_BATCH_LIMIT = "-1";
 
+	@desc ("When set to true (the default), task execution populates the TDM_SEQ_MAPPING table and adds the Replace Sequence Summary Report to the execution report.")
 	@category("TDM")
-	public static final String TDM_SEQ_REPORT = "true";
+	public static String TDM_SEQ_REPORT = "true";
 
-	@desc("Indicates whether to run add TDM statitics")
+	@desc("Indicates whether to run TDM JMX statitics flow.")
 	@category("TDM")
 	public static final String TDM_POPULATE_JMX_STATS = "false";
 
-	@desc("The interface to be used for storing the cache of Masking")
+	@desc("Interface for masking cache storage.")
 	@category("TDM")
 	public static String SEQ_CACHE_INTERFACE = "TDM";
 
@@ -62,34 +67,60 @@ public class SharedGlobals {
 	@category("TDM")
 	public static final String TDM_PARAMETERS_SEPARATOR = "<#>";
 
+	@desc("AI DB interface.")
 	@category("AI")
 	public static final String AI_DB_INTERFACE = "AI_DB";
 
+	@desc("AI dummy environment. This environment must be defined in Fabric and the TDM self-service.")
 	@category("AI")
 	public static final String AI_ENVIRONMENT = "AI";
 
+	@desc("Dummy environment name for rule-based data generation.")
 	@category("RULE_BASED")
 	public static String SYNTHETIC_ENVIRONMENT = "Synthetic";
 
+	@desc("Indicates whether the TDM deploy flow should create the AI K2System tables if they do not exist. Default is false. Set to true to enable AI-based data generation.")
 	@category("TDM")
 	public static final String CREATE_AI_K2SYSTEM_DB = "false";
 
+	@desc("By default, the task execution API validates (tests) connections before starting execution. Set this Global to true to disable this validation. It can be configured at either the TDM environment or task level.")
 	@category("TDM")
 	public static String TDM_SUPPRESS_TEST_CONNECTION = "false";
 
+	@desc("Indicates whether to include the full parent-child entity hierarchy in the TDM LU during task execution. Set to false to exclude the hierarchy and prevent duplicate records when child entities have multiple parent relationships.")
 	@category("TDM")
 	public static final String POP_FULL_LU_HIERARCHY_IN_TDM_LU = "true";
 
+	@desc("This Global relates to the param coupling mode of business parameters and indicates whether to update the LU schema exported to the TDM database during task execution. It can be configured at either the TDM environment or task level.")
 	@category("TDM")
 	public static String UPDATE_MDB_EXPORTED_SCHEMA = "false";
 
+	@desc("Indicates whether to replace sequences (IDs) in Fabric when synchronizing an LU instance. Default is false. Set to true to replace sequences during LU instance synchronization.")
 	@category("TDM")
 	public static String REPLACE_SEQ_BY_LUI_SYNC = "false";
 
+	@desc("Sets the default sequence handling behavior of TDM. Set this Global to true to enable catalog-based mode, or false to use non-catalog mode. This Global can be applied to an LU to control its behavior.")
 	@category("TDM")
 	public static String TDM_USING_CATALOG_SEQUENCES = "false";
 
+	@desc("This Global relates to the param coupling mode of business parameters and indicates whether to create the FKs in the LU schema exported to the TDM database.")
 	@category("TDM")
 	public static String CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA = "true";
+
+	@desc ("When All - All tables are reported to the stats table, When Diff - Only Tables with Differences are reported, When None - No tables are reported.")
+	@category("TDM")
+	public static String STATISTICS_REPORT_FLAG = "ALL";
+
+	@desc("Used to suppress File System Interfaces in Table Level")
+	@category("TDM")
+	public static final String SUPPRESS_TABLE_LEVEL_SUPPRESS_FILE_SYSTEMS = "true";
+
+	@desc("Used to allow running sync in Fabric Studio with masking")
+	@category("TDM_DEBUG")
+	public static String enable_masking = "false";
+
+	@desc("Used to allow running sync in Fabric Studio with sequence replacement")
+	@category("TDM_DEBUG")
+	public static String enable_sequences = "false";
 
 }

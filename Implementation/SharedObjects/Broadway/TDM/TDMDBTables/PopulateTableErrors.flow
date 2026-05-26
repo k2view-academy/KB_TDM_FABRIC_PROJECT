@@ -96,6 +96,15 @@ stages:
         out:
           result:
             schema: '#ref'
+      Limit Error Message:
+        parent: Substring
+        in:
+          begin:
+            const: 0
+          end:
+            const: 1000
+          string:
+            link: Get the Error Fields/message
   Format the actor's parameters:
     actors:
       If No Target Entity ID Set to Source Entity ID:
@@ -115,8 +124,6 @@ stages:
       Build string from input parameters:
         parent: CsvBuilder
         in:
-          header:
-            const: false
           maps:
             link: Remove none ASC Characters/result
       getTDMDBSchema:
@@ -178,7 +185,7 @@ stages:
             link: Format Error Code/string
             schema: string
           error_message:
-            link: Get the Error Fields/message
+            link: Limit Error Message/string
             schema: string
           creation_date:
             link: Format the current date to load it /string

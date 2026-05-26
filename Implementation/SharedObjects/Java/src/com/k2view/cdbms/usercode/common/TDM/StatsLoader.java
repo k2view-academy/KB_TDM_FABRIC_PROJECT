@@ -42,6 +42,12 @@ public class StatsLoader implements Actor {
         if (fabricSession == null) {
             fabricSession = context.ioProvider().createSession("fabric");
         }
+        
+        String statisticsFlag = getQueryFirstResult("set STATISTICS_REPORT_FLAG;", "value", "ALL");
+
+        if ("none".equalsIgnoreCase(statisticsFlag)){
+            return;
+        }
 
         String executionId = getQueryFirstResult("set TDM_TASK_EXE_ID;", "value", "NO_EXECUTION_ID");
         String entityIid = getQueryFirstResult("set IID;", "value", "NO_IID");
@@ -89,7 +95,7 @@ public class StatsLoader implements Actor {
         IoSession session = context.ioProvider().createSession(input.string("interface"));
         IoCommand.Statement statement = session.prepareStatement(QUERY_INSERT);
         try {
-            if (stats.isEmpty() && tableName != null) {
+            if (stats.isEmpty() && tableName != null && "all".equalsIgnoreCase(statisticsFlag)) {
                 try {
                     statement.execute(
                         executionId,
@@ -123,7 +129,8 @@ public class StatsLoader implements Actor {
                         } else if (suppressedErrorCount > 0) {
                             results = "FAIL";
                         }
-                        statement.execute(
+                        if ("all".equalsIgnoreCase(statisticsFlag) || !"ok".equalsIgnoreCase(results) ) {
+                            statement.execute(
                                 executionId,
                                 luName,
                                 entityIid,
@@ -138,7 +145,8 @@ public class StatsLoader implements Actor {
                                 diff,
                                 suppressedErrorCount,
                                 results
-                        );
+                            );
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException("Can't update stats for the table " + table + ".", e);
                     }

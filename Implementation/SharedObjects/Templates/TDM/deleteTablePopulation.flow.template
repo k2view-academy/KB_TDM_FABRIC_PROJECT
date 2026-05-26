@@ -8,7 +8,8 @@ stages:
           {{#each PARENT_TABLE_DATA~}}
           {{getInputFieldName this}}:
             external: {{getInputFieldName this}}
-            schema: any {{#if @last}} {{else}} , {{/if}}{{/each}}
+            schema: any {{#if @last}} {{else}} , {{/if}}
+          {{/each}}
       SyncDeleteMode:
         parent: SyncDeleteMode
         in:
@@ -29,7 +30,7 @@ stages:
           interface:
             const: {{TARGET_INTERFACE}}
           sql:
-            const: Select {{#each Columns~}} {{{getDelelePopColumnName this}}} {{#if @last}} {{else}} , {{/if}} {{/each}} From {{{TARGET_SCHEMA}}}.{{{OriginalTableName}}}
+            const: Select {{#each Columns~}} {{{getDelelePopColumnName this}}} {{#if @last}} {{else}} , {{/if}} {{/each~}} From {{{TARGET_SCHEMA}}}.{{{OriginalTableName}}}
           parent_rows:
             link: PopulationArgs/parent_rows
         out:
@@ -54,17 +55,16 @@ stages:
           fields:
             const:
             {{#each Columns~}}
-			      - {{{getDeleleColumnName this}}}
+            - {{{getDeleleColumnName this}}}
             {{/each}}
           dialect:
             const: sqlite
           {{#each Columns~}}
           {{{getDeleleColumnName this}}}:
-            schema: any
-            {{#if (fieldWithQoutesInd this)}}
+            schema: any{{#if (fieldWithQoutesInd this)}}
             link:
               path: Query/result/{{getDeleleColumnWithoutQoutes this}}{{/if}}
-          {{/each}}
+          {{/each~}}
           params:
             link:
               path: Query/result
@@ -78,4 +78,4 @@ schemas:
       {{#each Columns~}}
       {{{getDeleleColumnWithoutQoutes this}}}:
         type: {{{getDeleleColumnType this}}}
-      {{/each}}
+      {{/each~}}

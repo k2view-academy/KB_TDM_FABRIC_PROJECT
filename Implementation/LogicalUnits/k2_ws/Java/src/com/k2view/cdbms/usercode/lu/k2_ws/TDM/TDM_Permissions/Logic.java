@@ -21,8 +21,8 @@ public class Logic extends WebServiceUserCode{
 	private static final String SELECT_FABRIC_ROLES = "select fabric_role from " + TDMDB_SCHEMA + ".permission_groups_mapping where permission_group=?";
 	private static final String SELECT_PERMISSION_GROUP_MAPPINGS = "select * from " + TDMDB_SCHEMA + ".permission_groups_mapping";
 	private static final String SELECT_PERMISSION_GROUP_BY_ROLE = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=?";
-	private static final String INSERT_PERMISSION_GROUP_MAPPINGS = "insert into " + TDMDB_SCHEMA + ".permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date) values (?, ?, ?, ?, ?, NOW(), NOW())";
-	private static final String UPDATE_PERMISSION_GROUP_MAPPINGS = "update " + TDMDB_SCHEMA + ".permission_groups_mapping set description=?, fabric_role=?, permission_group=?, updated_by=?, update_date=NOW() where fabric_role=?";
+	private static final String INSERT_PERMISSION_GROUP_MAPPINGS = "insert into " + TDMDB_SCHEMA + ".permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date, can_create_tasks) values (?, ?, ?, ?, ?, NOW(), NOW(), ?)";
+	private static final String UPDATE_PERMISSION_GROUP_MAPPINGS = "update " + TDMDB_SCHEMA + ".permission_groups_mapping set description=?, fabric_role=?, permission_group=?, updated_by=?, update_date=NOW(), can_create_tasks=? where fabric_role=?";
 	private static final String DELETE_PERMISSION_GROUP_MAPPINGS = "delete from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=? RETURNING permission_group";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	private static final Map<String, Integer> PERMISSION_GROUPS = new HashMap() {{
@@ -136,12 +136,12 @@ public class Logic extends WebServiceUserCode{
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsAddPermissionGroupMapping(String description, @param(description="Fabric role") String role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
+	public static Object wsAddPermissionGroupMapping(boolean can_create_tasks, String description, @param(description="Fabric role") String role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		try {
 			String userName = sessionUser().name();
-			db(TDM).execute(INSERT_PERMISSION_GROUP_MAPPINGS, description, role, permission_group, userName, userName);
+			db(TDM).execute(INSERT_PERMISSION_GROUP_MAPPINGS, description, role, permission_group, userName, userName, can_create_tasks);
 			String activityDesc = "Role '" + role + "' was mapped to permission group '" + permissionGroup + "'.";
 			fnInsertActivity("create", "Permission Groups", activityDesc);
 			return wrapWebServiceResults("SUCCESS", null, null);
@@ -157,7 +157,7 @@ public class Logic extends WebServiceUserCode{
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdatePermissionGroupMapping(String description, String old_role, String new_role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
+	public static Object wsUpdatePermissionGroupMapping(String description, String old_role, String new_role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group, boolean can_create_tasks) throws Exception {
 		String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
 		if (!"admin".equals(sessionUserPermissionGroup)) {
 			return wrapWebServiceResults("FAILED", admin_pg_access_denied_msg, null);
@@ -166,7 +166,7 @@ public class Logic extends WebServiceUserCode{
 		try {
 			String userName = sessionUser().name(); //assigned to updated by
 			String OldMappingPG = (String)db(TDM).fetch("select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=(?)",old_role).firstValue();
-			db(TDM).execute(UPDATE_PERMISSION_GROUP_MAPPINGS, description, new_role, permission_group, userName, old_role);
+			db(TDM).execute(UPDATE_PERMISSION_GROUP_MAPPINGS, description, new_role, permission_group, userName,can_create_tasks, old_role);
 			String activityDesc = "Role '" + old_role + "' was updated to '" + new_role +
                       "' and mapped to permission group '" + permission_group + "'.";
 			fnInsertActivity("update", "Permission Groups", activityDesc);

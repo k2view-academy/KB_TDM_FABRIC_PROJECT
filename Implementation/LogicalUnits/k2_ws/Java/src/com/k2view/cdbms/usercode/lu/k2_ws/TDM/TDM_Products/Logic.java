@@ -26,6 +26,7 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsOwner;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getAllSuppressedInterfaces;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsOwner;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 @SuppressWarnings({"DefaultAnnotationParam"})
@@ -894,7 +895,7 @@ public class Logic extends WebServiceUserCode {
 				if(!fnIsOwner(envId.toString())) 	
 					return wrapWebServiceResults("FAILED", "You are not the owner of this environment and therefore are not allowed to disable its products.", null);
 			}
-		}		
+		}
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";

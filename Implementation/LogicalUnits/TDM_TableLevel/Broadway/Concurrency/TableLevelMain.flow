@@ -82,6 +82,8 @@ stages:
           value:
             const: ALL_TABLES
             default: false
+      Get Start Time:
+        parent: Now
   Prepare Order of Tables:
     actors:
       'Delete Error Handler  ':
@@ -138,6 +140,11 @@ stages:
           value:
             const: 'false'
             link: inPlaceMasking/value
+      Format Start Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Start Time/date
   In Case of InPlace Masking Set to the masking flag:
     dependsOn: Prepare Order of Tables
     actors:
@@ -173,6 +180,16 @@ stages:
             const: 1
           a:
             link: Prepare Tables' Order/result
+      Set Start Processing Time:
+        parent: FabricSet
+        in:
+          key:
+            const: IID_START_DATETIME
+            default: false
+          value:
+            const: null
+            link: Format Start Time/string
+            default: false
   Load Tables Data To Cache:
     actors:
       Table Error Handler No Fields Or No Key Fields:

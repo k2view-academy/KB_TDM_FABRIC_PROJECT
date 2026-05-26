@@ -337,15 +337,13 @@ public class SharedLogic {
             List<Map<String, Object>> tableDefinitions2 = MtableLookup(mtableName, lookupInputs,
                     MTable.Feature.caseInsensitive);
 
-            if (tableDefinitions2 != null && !tableDefinitions2.isEmpty()) {
-                String dynamicSchema = tableDefinitions2.get(0).get("schema_name") != null
-                        ? tableDefinitions2.get(0).get("schema_name").toString()
-                        : "";
-                if (dynamicSchema.startsWith("@")) {
-                    dynamicSchema = dynamicSchema.replaceAll("@", "");
-                    if (dynamicSchema.equals(schemaName)) {
-                        tableDefinitions = tableDefinitions2;
-                    }
+            Map<String, Object> matched = findMatchedEntry(tableDefinitions2, schemaName, luName);
+            if (matched != null) {
+                Object v = matched.get("count_indicator");
+                if (v != null && !v.toString().trim().isEmpty()) {
+                    return v;
+                } else {
+                    return "true";
                 }
             }
             if (!"".equals(schemaName)) {
@@ -380,7 +378,22 @@ public class SharedLogic {
 
         return null;
     }
-    
+
+    public static Map<String, Object> findMatchedEntry(List<Map<String, Object>> entries, String schemaName,
+            String luName) {
+        if (entries == null || entries.isEmpty())
+            return null;
+        for (Map<String, Object> entry : entries) {
+            Object schemaObj = entry.get("schema_name");
+            String entrySchema = schemaObj != null ? schemaObj.toString() : "";
+            if (entrySchema.startsWith("@")) {
+                String globalName = entrySchema.replaceAll("@", "");
+                if (schemaName.equals(getGlobal(globalName, luName))) {
+                    return entry;
+                }
+            }
+        }
+        return null;
+    }
+
 }
-
-

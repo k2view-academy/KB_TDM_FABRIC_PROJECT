@@ -115,14 +115,10 @@ public class Logic extends UserCode {
                 lookupInputs.remove("schema_name");
                 List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
                 //List<Map<String, Object>> tableDefinitions2 =  fnGetInterfaceInfo(lookupInputs, interfaceName);
-                if (tableDefinitions2 != null && tableDefinitions2.size() > 0) {
-                    String dynamicSchema = tableDefinitions2.get(0).get("schema_name") != null ? tableDefinitions2.get(0).get("schema_name").toString() : "";
-                    if (dynamicSchema.startsWith("@")) {
-                        dynamicSchema = dynamicSchema.replaceAll("@", "");
-                        if (dynamicSchema.equals(schemaName)) {
-                            tableDefinitions = tableDefinitions2;
-                        }
-                    }   
+                Map<String, Object>  matchEntry = findMatchedEntry(tableDefinitions2, schemaName, getLuType().luName);
+                if (matchEntry != null) {
+                    tableDefinitions = new ArrayList<>();
+                    tableDefinitions.add(matchEntry );
                 }
                 if (!"".equals(schemaName)) {
                     lookupInputs.put("schema_name", schemaName);
@@ -265,19 +261,19 @@ public class Logic extends UserCode {
                 //List<Map<String, Object>> tableDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
                 List<Map<String, Object>> tableDefinitions = fnGetInterfaceInfo("TableLevelDefinitions",lookupInputs, interfaceName);
                 if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
-                    //TDM 9.3.1 - Check if the schema is dynamic
-                    if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
-                        lookupInputs.put("schema_name", null);
-                        //List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
-                        List<Map<String, Object>> tableDefinitions2 = fnGetInterfaceInfo("TableLevelDefinitions",lookupInputs, interfaceName);
-                        if (tableDefinitions2 != null && tableDefinitions2.size() > 0) {
-                            String dynamicSchema = tableDefinitions2.get(0).get("schema_name").toString();
-                            if (dynamicSchema.startsWith("@")) {
-                                dynamicSchema = dynamicSchema.replaceAll("@", "");
-                                if (dynamicSchema.equals(schemaName)) {
-                                    tableDefinitions = tableDefinitions2;
-                                }
-                            }   
+                    // TDM 9.3.1 - Check if the schema is dynamic
+                    if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {                        
+                        lookupInputs.remove("schema_name");
+                        // List<Map<String, Object>> tableDefinitions2 =
+                        // MtableLookup("TableLevelDefinitions",lookupInputs,
+                        // MTable.Feature.caseInsensitive);
+                        List<Map<String, Object>> tableDefinitions2 = fnGetInterfaceInfo("TableLevelDefinitions",
+                                lookupInputs, interfaceName);
+                        Map<String, Object> matchEntry = findMatchedEntry(tableDefinitions2, schemaName,
+                                getLuType().luName);
+                        if (matchEntry != null) {
+                            tableDefinitions = new ArrayList<>();
+                            tableDefinitions.add(matchEntry);
                         }
                     }
                 }
@@ -344,48 +340,47 @@ public class Logic extends UserCode {
                 lookupInputs.put("reference_table_name",tableName);
                 List<Map<String, Object>> tableInfo =  MtableLookup("RefList",lookupInputs, MTable.Feature.caseInsensitive);
                 if (tableInfo != null && tableInfo.size() > 0) {
-                    if (tableInfo.get(0).get("target_ref_table_name") != null && !"".equals(tableInfo.get(0).get("target_ref_table_name").toString())) {
+                    if (tableInfo.get(0).get("target_ref_table_name") != null
+                            && !"".equals(tableInfo.get(0).get("target_ref_table_name").toString())) {
                         targetTableName = tableInfo.get(0).get("target_ref_table_name").toString();
                     }
-    
-                    if (tableInfo.get(0).get("target_interface_name") != null && !"".equals(tableInfo.get(0).get("target_interface_name").toString())) {
+
+                    if (tableInfo.get(0).get("target_interface_name") != null
+                            && !"".equals(tableInfo.get(0).get("target_interface_name").toString())) {
                         targetInterfaceName = tableInfo.get(0).get("target_interface_name").toString();
                     }
-    
-                    if (tableInfo.get(0).get("target_schema_name") != null && !"".equals(tableInfo.get(0).get("target_schema_name").toString())) {
+
+                    if (tableInfo.get(0).get("target_schema_name") != null
+                            && !"".equals(tableInfo.get(0).get("target_schema_name").toString())) {
                         targetSchemaName = tableInfo.get(0).get("target_schema_name").toString();
-                        
+
                     }
                 } else {
                     lookupInputs.remove("schema_name");
-                    tableInfo =  MtableLookup("RefList",lookupInputs, MTable.Feature.caseInsensitive);
+                    tableInfo = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
                     if (tableInfo != null && tableInfo.size() > 0) {
-                        String sourceSchemaName = tableInfo.get(0).get("schema_name").toString();
-                        if (sourceSchemaName.startsWith("@")) {
-                            sourceSchemaName = sourceSchemaName.replaceAll("@", "");
-                            if (schemaName.equals(getGlobal(sourceSchemaName))) {
-                                schemaName = getGlobal(sourceSchemaName);
-                                if (tableInfo.get(0).get("target_ref_table_name") != null && !"".equals(tableInfo.get(0).get("target_ref_table_name").toString())) {
-                                    targetTableName = tableInfo.get(0).get("target_ref_table_name").toString();
-                                }
-                
-                                if (tableInfo.get(0).get("target_interface_name") != null && !"".equals(tableInfo.get(0).get("target_interface_name").toString())) {
-                                    targetInterfaceName = tableInfo.get(0).get("target_interface_name").toString();
-                                }
-                
-                                if (tableInfo.get(0).get("target_schema_name") != null && !"".equals(tableInfo.get(0).get("target_schema_name").toString())) {
-                                    targetSchemaName = tableInfo.get(0).get("target_schema_name").toString();
-                                    if (targetSchemaName.startsWith("@")) {
-                                        targetSchemaName = targetSchemaName.replaceAll("@", "");
-                                        targetSchemaName = getGlobal(targetSchemaName);
-                                    }
-                                    
+                        Map<String, Object> matchedEntry = findMatchedEntry(tableInfo, schemaName, luName);
+                        if (matchedEntry != null) {
+                            if (matchedEntry.get("target_ref_table_name") != null
+                                    && !"".equals(matchedEntry.get("target_ref_table_name").toString())) {
+                                targetTableName = matchedEntry.get("target_ref_table_name").toString();
+                            }
+                            if (matchedEntry.get("target_interface_name") != null
+                                    && !"".equals(matchedEntry.get("target_interface_name").toString())) {
+                                targetInterfaceName = matchedEntry.get("target_interface_name").toString();
+                            }
+                            if (matchedEntry.get("target_schema_name") != null
+                                    && !"".equals(matchedEntry.get("target_schema_name").toString())) {
+                                targetSchemaName = matchedEntry.get("target_schema_name").toString();
+                                if (targetSchemaName.startsWith("@")) {
+                                    targetSchemaName = targetSchemaName.replaceAll("@", "");
+                                    targetSchemaName = getGlobal(targetSchemaName, luName);
                                 }
                             }
                         }
                     }
                 }
-    
+
                 String key = interfaceName + "<#>" + schemaName;
                 Map<String, Object> interfaceSchemaEntry = interfaceSChemaList.get(key);
                 if (interfaceSchemaEntry != null) {
@@ -680,13 +675,12 @@ public class Logic extends UserCode {
             // Dynamic Schema (@) Check
             if ((tableRecs == null || tableRecs.isEmpty()) && !"".equals(schemaName)) {
                 inputs.remove("schema_name");
-                List<Map<String, Object>> dyn = MtableLookup(mtableName, inputs, MTable.Feature.caseInsensitive);
-                if (dyn != null && !dyn.isEmpty()) {
-                    String ds = dyn.get(0).get("schema_name") != null ? dyn.get(0).get("schema_name").toString() : "";
-                    if (ds.startsWith("@") && ds.replaceAll("@", "").equals(schemaName)) {
-                        tableRecs = dyn;
-                    }
-                }
+                List<Map<String, Object>> entries = MtableLookup(mtableName, inputs, MTable.Feature.caseInsensitive);
+                Map<String, Object>  matchEntry = findMatchedEntry(entries, schemaName, getLuType().luName);
+                if (matchEntry != null) {
+                    tableRecs = new ArrayList<>();
+                    tableRecs.add(matchEntry );
+                }               
             }
             levels.put(0, tableRecs);
 
@@ -763,20 +757,11 @@ public class Logic extends UserCode {
                 List<Map<String, Object>> tableDefinitions2 = MtableLookup(MTABLE_NAME, lookupInputs,
                         MTable.Feature.caseInsensitive);
 
-                if (tableDefinitions2 != null && tableDefinitions2.size() > 0) {
-                    String dynamicSchema = tableDefinitions2.get(0).get("schema_name") != null
-                            ? tableDefinitions2.get(0).get("schema_name").toString()
-                            : "";
-
-                    if (dynamicSchema.startsWith("@")) {
-                        dynamicSchema = dynamicSchema.replaceAll("@", "");
-
-                        // If the global placeholder matches the input schema
-                        if (dynamicSchema.equals(schemaName)) {
-                            tableDefinitions = tableDefinitions2; // Use dynamic record
-                            tableExists = true;
-                        }
-                    }
+                Map<String, Object> matchEntry = findMatchedEntry(tableDefinitions2, schemaName, getLuType().luName);
+                if (matchEntry != null) {
+                    tableDefinitions = new ArrayList<>();
+                    tableDefinitions.add(matchEntry);
+                    tableExists = true;
                 }
             }
 
@@ -926,22 +911,10 @@ public class Logic extends UserCode {
                 List<Map<String, Object>> refListNoSchema = MtableLookup("RefList", lookupInputs,
                         MTable.Feature.caseInsensitive);
 
-                if (refListNoSchema != null) {
-                    for (Map<String, Object> row : refListNoSchema) {
-                        Object srcSchemaObj = row.get("schema_name");
-                        String dynamicSchema = (srcSchemaObj != null) ? srcSchemaObj.toString() : "";
-
-                        if (dynamicSchema.startsWith("@")) {
-                            // Apply the requested replaceAll logic
-                            dynamicSchema = dynamicSchema.replaceAll("@", "");
-                            String resolvedSchema = getGlobal(dynamicSchema);
-
-                            if (schemaName.equals(resolvedSchema)) {
-                                updateTargetInfoMap(targetInfo, row);
-                                return targetInfo;
-                            }
-                        }
-                    }
+                Map<String, Object> matched = findMatchedEntry(refListNoSchema, schemaName, luName);
+                if (matched != null) {
+                    updateTargetInfoMap(targetInfo, matched);
+                    return targetInfo;
                 }
             }
 
@@ -952,6 +925,7 @@ public class Logic extends UserCode {
 
             return targetInfo;
         }
+
 
         private static void updateTargetInfoMap(Map<String, Object> targetMap, Map<String, Object> refRow) {
             Object tarTable = refRow.get("target_ref_table_name");
@@ -969,7 +943,7 @@ public class Logic extends UserCode {
                 String schemaStr = tarSchema.toString();
                 if (schemaStr.startsWith("@")) {
                     String gVar = schemaStr.replaceAll("@", "");
-                    schemaStr = getGlobal(gVar);
+                    schemaStr = getGlobal(gVar,getLuType().luName);
                 }
                 targetMap.put("target_schema_name", schemaStr);
             }

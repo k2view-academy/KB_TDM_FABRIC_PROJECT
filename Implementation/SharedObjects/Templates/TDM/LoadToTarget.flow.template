@@ -34,7 +34,7 @@
                                 ],
                                 "outputs": []
                             }
-						},{{/if}}{{~#each this}}
+						},{{/if}}{{~#each this~}}
                         {
                             "name": "load_{{this}}",
                             "actorType": {
@@ -47,7 +47,7 @@
                                 ],
                                 "outputs": []
                             }
-                        },{{~/each}}
+                        },{{~/each~}}
                         {
                             "name": "Get Entity Status {{indexPlus @index}}",
                             "actorType": {
@@ -65,7 +65,7 @@
                     ]
                 }
             ]
-        },{{/each}}
+        },{{/each~}}
         {
             "stages": [
                 {
@@ -77,7 +77,7 @@
             ]
         }
     ],
-    "connections": [{{#each Tables}}{{#if @index}}
+    "connections": [{{#each Tables~}}{{#if @index}}
 		{
             "leftPort": {
                 "actor": "Get Entity Status {{@index}}",
@@ -87,6 +87,6 @@
                 "actor": "Check if Entity has not failed {{@index}}",
                 "name": "a"
             }
-        }{{#neq @index Size}},{{/neq}}{{/if}}{{/each}}
+        }{{#neq @index Size}},{{/neq}}{{/if}}{{/each~}}
 	]
 }

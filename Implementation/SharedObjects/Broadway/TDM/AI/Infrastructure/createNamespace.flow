@@ -1,0 +1,65 @@
+tags: Medoid,TDM
+stages:
+  Get Input:
+    actors:
+      namespace:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: namespace
+            schema: string
+        out:
+          value:
+            schema: string
+  Format Payload:
+    actors:
+      StringFormat:
+        parent: StringFormat
+        height: 182
+        in:
+          format:
+            const: "apiVersion: v1\r\nkind: Namespace\r\nmetadata:\r\n  name: ${namespace}"
+          namespace:
+            link: namespace/value
+            schema: string
+            mandatory: false
+  Apply:
+    actors:
+      applyRequest:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: applyRequest
+          namespace:
+            const: ''
+            schema: string
+            mandatory: false
+          kind:
+            schema: string
+            mandatory: false
+          api:
+            const: api/v1
+            schema: string
+            mandatory: false
+          payload:
+            link: StringFormat/string
+            schema: string
+            mandatory: false
+          method:
+            const: POST
+            schema: string
+            editor:
+              options:
+              - ''
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              id: com.k2view.dropdown
+            mandatory: false
+  Stage 4: {
+    }
+  Stage 5: {
+    }

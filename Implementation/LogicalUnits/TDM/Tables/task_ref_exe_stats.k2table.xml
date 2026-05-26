@@ -26,7 +26,7 @@
   </IndexesList>
   <EnrichmentList>
   </EnrichmentList>
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" deleteMode="">
     <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
   <TriggersList>

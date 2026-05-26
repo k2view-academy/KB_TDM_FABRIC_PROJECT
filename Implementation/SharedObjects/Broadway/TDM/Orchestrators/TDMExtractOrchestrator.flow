@@ -240,6 +240,11 @@ stages:
             external: luName
             schema: any
             mandatory: false
+      Format Current Time:
+        parent: DateFormat
+        in:
+          date:
+            link: Get Time After Get/date
   'Is Params Coupling ':
     dependsOn: 'Populate Statistic Report '
     actors:
@@ -276,11 +281,14 @@ stages:
   Populate Tables:
     transactional: true
     actors:
-      Format Current Time:
-        parent: DateFormat
+      Set End Time of Get Command:
+        parent: FabricSet
         in:
-          date:
-            link: Get Time After Get/date
+          key:
+            const: IID_AFTER_GET_DATETIME
+            default: false
+          value:
+            link: Format Current Time/string
       Handle Task Execution Entities:
         parent: InnerFlow
         in:
@@ -342,14 +350,6 @@ stages:
     dependsOn: Get Execution Mode
   End:
     actors:
-      Set End Time of Get Command:
-        parent: FabricSet
-        in:
-          key:
-            const: IID_AFTER_GET_DATETIME
-            default: false
-          value:
-            link: Format Current Time/string
       Print Finish Note:
         parent: Logger
         in:

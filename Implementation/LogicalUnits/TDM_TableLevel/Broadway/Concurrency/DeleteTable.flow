@@ -305,7 +305,7 @@ stages:
               actions:
                 suppress: false
                 log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
           tableName:
@@ -314,7 +314,15 @@ stages:
             mandatory: false
           refTableID:
             link: Get Ref Table ID/result
-            schema: any
+            schema: integer
+            mandatory: false
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
             mandatory: false
       Delete Table By DBCommand:
         parent: InnerFlow
@@ -357,7 +365,7 @@ stages:
               actions:
                 suppress: false
                 log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
           tableName:
@@ -366,7 +374,15 @@ stages:
             mandatory: false
           refTableID:
             link: Get Ref Table ID/result
-            schema: any
+            schema: integer
+            mandatory: false
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
             mandatory: false
       Run Delete Flow:
         parent: InnerFlow

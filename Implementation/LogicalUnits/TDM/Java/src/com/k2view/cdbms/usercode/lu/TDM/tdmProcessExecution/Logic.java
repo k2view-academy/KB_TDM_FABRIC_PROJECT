@@ -50,7 +50,7 @@ public class Logic extends UserCode {
         //log.info("tdmProcessExecution Starting");
         String executionId = "";
 
-        String executionsSql = "Select t.process_id , t.process_name, t.execution_order, t.process_type, t.parameters from " +
+        String executionsSql = "Select t.process_id , t.process_name, t.execution_order, t.process_type, t.parameters, l.be_id from " +
             TDMDB_SCHEMA + ".tasks_exe_process t, " + TDMDB_SCHEMA + ".task_execution_list l " +
             "where l.task_execution_id = ? and l.process_id = t.process_id and upper(l.execution_status) = 'PENDING' " +
             "and l.task_id = t.task_id and t.process_type = ? and t.status='Active' " +
@@ -80,6 +80,7 @@ public class Logic extends UserCode {
             Integer executionOrder = Util.rte(() -> resultSet.getInt("execution_order"));
             String processID = Util.rte(() -> resultSet.getString("process_id"));
             String flowParams = Util.rte(() -> resultSet.getString("parameters"));
+            Integer beId = Util.rte(() -> resultSet.getInt("be_id"));
             String luName = null;
 
             Map<String, Object> flowParamJson=null;
@@ -99,17 +100,7 @@ public class Logic extends UserCode {
                     if("".equals(paramValue)){
                         paramValue=null;
                     }
-                   
-                    /*try {
-
-                        String paramValueJson = Json.get().toJson(paramValue.toString());
-                        paramValue = paramValueJson.substring( 1, paramValueJson.length() - 1 );
-                        
-                        
-                    } catch (JSONException  e) {
-
-                    }*/
-                    //String valueStr = fabric().fetch("broadway TDM.CheckIfJsonAndRetun paramValue=?", paramValue).firstValue().toString();
+                    
                     fabricCommandParams += ", " + flowParamMap.get("name") + "=\"" + paramValue + "\"";
                 }
             }
@@ -149,17 +140,22 @@ public class Logic extends UserCode {
                     AIprocessExecution(executionInfo, taskExecutionID, processID,luID);
                 }else {
                     log.info("************* set task execution list to running for process id " + processID + " *************");
-                    List<Map<String, Object>> ProcessList = MtableLookup("PostAndPreExecutionProcess", ProcessInputs, MTable.Feature.caseInsensitive);
-                    for (Map<String, Object> t : ProcessList) {
-                        Object luNameObj = t.get("Lu_name");
-                        if (luNameObj != null) {
-                            luName = luNameObj.toString();
+                    if (beId != -1) {
+                        List<Map<String, Object>> ProcessList = MtableLookup("PostAndPreExecutionProcess", ProcessInputs, MTable.Feature.caseInsensitive);
+                        for (Map<String, Object> t : ProcessList) {
+                            Object luNameObj = t.get("Lu_name");
+                            if (luNameObj != null) {
+                                luName = luNameObj.toString();
+                            }
                         }
-                    }
 
-                    if ((luName == null || luName.isEmpty()) && ProcessList.size() > 0) {
-                        luName = "TDM";
-                    }                    
+                        if ((luName == null || luName.isEmpty()) && ProcessList.size() > 0) {
+                            luName = "TDM";
+                        }
+                    } else {
+                        luName = "TDM_TableLevel";
+                    }
+                    
                     String maxNumOfWorkers = findMinWorkers(sourceMaxWorkers, targetMaxWorkers);
                     String broadwayCommand = "broadway " + luName + "." + processName + " iid=?," + fabricCommandParams;
                     String batch = "BATCH " + luName + ".('" + taskExecutionID + "_" + processID + "')" + " fabric_command=? with async=true" + " BATCH_ID_PREFIX ='" + taskTitle +"'" + maxNumOfWorkers;

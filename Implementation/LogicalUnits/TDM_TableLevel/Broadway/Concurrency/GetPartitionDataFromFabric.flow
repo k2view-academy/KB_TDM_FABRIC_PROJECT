@@ -1,5 +1,23 @@
-tags: Concurrency
+tags: LoadFlows,Partition,Concurrency
 stages:
+  Stage 1:
+    transactional: false
+    actors:
+      Handle Special Chars in Table Name:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var result = tableName.replace(/^"|"$/g, '');
+              result = '\"__t_' + result + '\"';
+              result;
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   'Build Statements   ':
     transactional: false
     actors:
@@ -7,18 +25,18 @@ stages:
         parent: StringFormat
         in:
           format:
-            const: /*sqlite*/ select * from TDM_TableLevel.__t_${tableName}
+            const: /*sqlite*/ select * from TDM_TableLevel.${tableName}
           tableName:
-            external: tableName
+            link: Handle Special Chars in Table Name/result
             schema: string
             mandatory: false
-      Build Select Statement1:
+      Build Count Statement:
         parent: StringFormat
         in:
           format:
-            const: /*sqlite*/ select count(*) from TDM_TableLevel.__t_${tableName}
+            const: /*sqlite*/ select count(*) from TDM_TableLevel.${tableName}
           tableName:
-            external: tableName
+            link: Handle Special Chars in Table Name/result
             schema: string
             mandatory: false
       filterIndicator:
@@ -77,7 +95,7 @@ stages:
           flowName:
             const: BuildTableFilter
           selectClause:
-            link: Build Select Statement1/string
+            link: Build Count Statement/string
             schema: string
             mandatory: false
           tableFilter:
@@ -114,7 +132,7 @@ stages:
         in:
           value:
             const: null
-            link: Build Select Statement1/string
+            link: Build Count Statement/string
             schema: string
         out:
           value:

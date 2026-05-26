@@ -1,0 +1,81 @@
+tags: TDM
+stages:
+  Get ID:
+    actors:
+      Execution ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: GenerationID
+        out:
+          value:
+            schema: string
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+      AI_DB:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      Get k2system Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  Add Path:
+    actors:
+      ${path}/Implemntation/Evaluation:
+        parent: StringFormat
+        in:
+          format:
+            const: ${path}/project-resources/AI_SDG/Generation/${ID}
+          path:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+          ID:
+            link: Execution ID/value
+            schema: string
+            mandatory: false
+  Get Result:
+    actors:
+      LuFunction1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetArtifactsFiles
+          taskExeID:
+            link: Execution ID/value
+            schema: any
+            mandatory: false
+            createdBy: functionName
+          savedFilePath:
+            link: ${path}%2FImplemntation%2FEvaluation/string
+            schema: any
+            mandatory: false
+            createdBy: functionName
+          AI_Interface:
+            link: AI_DB/result
+            schema: any
+            mandatory: false
+            createdBy: functionName
+          k2systemSchema:
+            link: Get k2system Schema Name/result
+            schema: any
+            mandatory: false
+            createdBy: functionName
+          taskType:
+            const: GENERATION
+            schema: string
+            mandatory: false
+            createdBy: functionName

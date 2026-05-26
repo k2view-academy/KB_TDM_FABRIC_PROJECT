@@ -2,13 +2,12 @@ tags: TDM
 stages:
   Get TDMDB_SCHEMA:
     actors:
-      Get TDMDB_SCHEMA variable:
+      TDMDB_SCHEMA:
         parent: FabricSetRead
         in:
           key:
-            const: TDMDB_SCHEMA
-            default: false
-  Get Cluster:
+            const: TDM.TDMDB_SCHEMA
+  'Check value ':
     actors:
       Get Cluster ID:
         parent: DbFetchField
@@ -22,7 +21,7 @@ stages:
             schema: string
   Result:
     actors:
-      Set Schema Name:
+      Replace:
         parent: Replace
         in:
           search:
@@ -31,7 +30,7 @@ stages:
             const: null
             link: Get Cluster ID/result
           string:
-            link: Get TDMDB_SCHEMA variable/result
+            link: TDMDB_SCHEMA/result
         out:
           string:
             external: schema

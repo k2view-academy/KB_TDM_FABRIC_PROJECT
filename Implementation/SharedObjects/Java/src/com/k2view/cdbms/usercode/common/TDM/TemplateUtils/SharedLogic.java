@@ -1107,12 +1107,12 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			} else {
 				throw new Exception("A child document table without a main Document table, " + tableName);
 			}
-			
+
 			for (Object key : rel.keySet()) {
-				for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
-					String parentTableName = key.toString();
-					return getDocumentMain(luName, parentTableName);
-				}
+ 			   List<LudbRelationInfo> list = (List<LudbRelationInfo>) rel.get(key);
+    			if (list != null && !list.isEmpty()) {
+        			return getDocumentMain(luName, key.toString());
+    			}
 			}
 		}
 		

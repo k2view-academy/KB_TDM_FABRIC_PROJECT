@@ -3,6 +3,8 @@ package com.k2view.cdbms.usercode.lu.TDM;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.OverrideParamKey;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.StartTask;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 
@@ -12,13 +14,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnStartTask;
+
 
 public class TdmTaskScheduler {
     public static final Log log = Log.a(TdmTaskScheduler.class);
@@ -61,7 +64,7 @@ public class TdmTaskScheduler {
             if(executionTime.isMatch(now) || (timeToNextExecution.toMinutes() == 0 && timeToNextExecution.getSeconds() <= 10)){
                 //log.info(" ----------------- calling wsStartTask ----------------- ");
                 try {
-                    Object responseObj = fnStartTask(taskID, true, null, null, null, null, null, null, null, null, null, null);
+                    Object responseObj = StartTask.perform(taskID, true, new HashMap<OverrideParamKey, Object>());
                 
                     if (responseObj instanceof Map) {
                         @SuppressWarnings("unchecked")

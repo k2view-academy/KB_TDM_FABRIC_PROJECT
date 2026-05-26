@@ -58,6 +58,7 @@ stages:
                 cut_off_threshold_for_eq: 90
                 cut_off_threshold_for_less_than: 50
                 cut_off_threshold_for_sub: 90
+                cut_off_threshold_for_offset_scale: 95
                 dense_1_to_n_threshold: 3
                 identification_joined_max_na_ratio: 0.8
                 identification_max_na_ratio: 0.5
@@ -163,6 +164,7 @@ stages:
                   "cut_off_threshold_for_less_than": 50,
                   "cut_off_threshold_for_corr": 50,
                   "cut_off_threshold_for_sub": 90,
+                  "cut_off_threshold_for_offset_scale": 95,
                   "sig_level": 0.01,
                   "correlation_strength": "strong",
                   "logical_relations_root_table_sampling": null,
@@ -391,11 +393,11 @@ stages:
             const: null
             link: AI_ENVIRONMENT/result
             default: false
-      Getk2SystemSchemaName:
+      getk2SystemSchemaName:
         parent: InnerFlow
         in:
           flowName:
-            const: Getk2SystemSchemaName
+            const: getk2SystemSchemaName
         out:
           result:
             schema: string
@@ -488,7 +490,7 @@ stages:
             schema: string
             mandatory: false
           K2SCHEMA_NAME:
-            link: Getk2SystemSchemaName/result
+            link: getk2SystemSchemaName/result
             schema: string
             mandatory: false
   End:

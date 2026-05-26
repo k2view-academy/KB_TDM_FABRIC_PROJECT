@@ -21,7 +21,7 @@
                                 "outputs": []
                             }
                         {{#if @last}} } {{else}} }, {{/if}}
-						{{/each}}
+						{{/each~}}
 						{{/if}}
                     ]
                 }
@@ -52,7 +52,7 @@
                                 "outputs": []
                             }
                         {{#if @last}} } {{else}} }, {{/if}}
-						{{/each}}
+						{{/each~}}
 						{{/if}}
                     ]
                 }
@@ -102,7 +102,7 @@
             },
             "arrayPosition": {{@index}}
         },
-        {{/each}}
+        {{/each~}}
 		{{/if}}
         {
             "leftPort": {

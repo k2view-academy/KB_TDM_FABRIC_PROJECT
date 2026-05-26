@@ -2,6 +2,13 @@ tags: TDM
 stages:
   Stage 1:
     actors:
+      Field Given?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            external: fieldName
+            schema: string
       PK Field Upper Case:
         parent: Uppercase
         in:

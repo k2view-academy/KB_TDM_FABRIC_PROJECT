@@ -100,14 +100,6 @@ stages:
             schema: string
   Format the actor's parameters:
     actors:
-      Build string from input parameters:
-        parent: CsvBuilder
-        height: 79
-        in:
-          header:
-            const: false
-          maps:
-            link: Get the Error Fields/inputs
       Format the current date:
         parent: DateFormat
         in:
@@ -136,11 +128,40 @@ stages:
         out:
           schema:
             schema: string
+      Set SOURCE_ENTITY_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            link: Build IID/iid
+      Limit Error Message:
+        parent: Substring
+        in:
+          begin:
+            const: 0
+          end:
+            const: 1000
+          string:
+            link: Get the Error Fields/message
   Load Data to Detailed Error table:
     actors:
       Error Handler for reporting to TDM Error Table:
         parent: ErrorHandler
         error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Load Data To Error Table:
         parent: DbLoad
         in:
@@ -196,7 +217,7 @@ stages:
             link: Get the Error Fields/errorCode
             schema: string
           error_message:
-            link: Get the Error Fields/message
+            link: Limit Error Message/string
             schema: string
           creation_date:
             link: Format the current date/string
@@ -212,7 +233,6 @@ stages:
             schema: string
           actor_parameters:
             const: ''
-            link: Build string from input parameters/csv
             schema: string
             default: true
       Set Entity Status to Failed:
@@ -270,7 +290,7 @@ stages:
             link: Get Task Exec ID/result
             schema: string
           errorMsg:
-            link: Get the Error Fields/message
+            link: Limit Error Message/string
             schema: string
           userName:
             link: Get Executor Name/result
@@ -312,7 +332,7 @@ stages:
             link: Get Task Exec ID/result
             schema: string
           errorMsg:
-            link: Get the Error Fields/message
+            link: Limit Error Message/string
             schema: string
           userName:
             link: Get Executor Name/result

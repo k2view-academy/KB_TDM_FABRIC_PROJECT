@@ -52,7 +52,7 @@
                                                 "{{getParentFieldName this}}": {
                                                     "type": "any"
                                                 {{#if @last}} } {{else}} }, {{/if}}
-												{{/each}}
+												{{/each~}}
 												{{/if}}
                                             }
 										}
@@ -82,6 +82,25 @@
                                     {
                                         "name": "key",
                                         "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Sequences Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
                                         "isDefault": false
                                     },
                                     {
@@ -126,7 +145,7 @@
                                 ]
                             }
 						{{#if @last}} } {{else}} }, {{/if}}
-						{{/each}}
+						{{/each~}}
 						{{#if TABLE_SEQ_DATA}},{{/if}}
 						{{/if}}
 						
@@ -235,7 +254,7 @@
                                 ]
 							}
                         {{#if @last}} } {{else}} }, {{/if}}
-						{{/each}}
+						{{/each~}}
 
 						{{/if}}
                     ]
@@ -279,7 +298,7 @@
                                 ]
                             }
 						{{#if @last}} } {{else}} }, {{/if}}
-						{{/each}}
+						{{/each~}}
 						{{#if TABLE_SEQ_DATA}},{{/if}}
 						{{/if}}
 						
@@ -313,7 +332,7 @@
                                 ]
                             }
                         {{#if @last}} } {{else}} }, {{/if}}
-						{{/each}}
+						{{/each~}}
 
 						{{/if}}
                     ]
@@ -344,7 +363,7 @@
                                                 "{{getChildFieldName this}}": {
                                                     "type": "string"
                                                 {{#if @last}} } {{else}} }, {{/if}}
-												{{/each}}
+												{{/each~}}
 												{{#if TABLE_SEQ_DATA}},{{/if}}
 												{{/if}}
 						
@@ -354,7 +373,7 @@
                                                 "{{getFieldName this}}": {
                                                     "type": "string"
                                                 {{#if @last}} } {{else}} }, {{/if}}
-												{{/each}}
+												{{/each~}}
 
 												{{/if}}
                                             }
@@ -553,6 +572,25 @@
                             }
                         },
                         {
+                            "name": "Set Sequences Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Merge Maps of all Fields",
                             "actorType": {
                                 "parentType": "MapMerge",
@@ -607,7 +645,7 @@
             },
             "arrayPosition": {{@index}}
         {{#if @last}} } {{else}} }, {{/if}}
-		{{/each}}
+		{{/each~}}
         {{/if}}
         {{#if TABLE_SEQ_DATA}}
 		{{#if TABLE_PARENT_FIELDS}}
@@ -655,7 +693,7 @@
             },
             "arrayPosition": {{indexPlusLength @index TABLE_PARENT_FIELDS.length}}
         {{#if @last}} } {{else}} }, {{/if}}
-		{{/each}}
+		{{/each~}}
         {{/if}}
 
         {{#if TABLE_FIELDS}}
@@ -677,7 +715,7 @@
                 "name": "{{getLUFieldName this}}"
             }
         {{#if @last}} } {{else}} }, {{/if}}
-		{{/each}}
+		{{/each~}}
         {{/if}}
 		 ,
 		{

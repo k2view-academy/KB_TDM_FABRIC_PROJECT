@@ -1,0 +1,234 @@
+tags: Concurrency
+stages:
+  Get Inputs:
+    actors:
+      Now:
+        parent: Now
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Split IID:
+    actors:
+      Format the Current Time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyy-MMM-dd HH:mm:ss.SSS
+          date:
+            link: Now/date
+      Get Table Ref ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Get Task ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: taskId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  Insert Into Partition Table:
+    actors:
+      'Error Handler   ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          partitionNumber:
+            const: '1'
+            schema: string
+            mandatory: false
+          refTableID:
+            link: Get Table Ref ID/result
+            schema: any
+            mandatory: false
+      'Insert task_ref_exe_stats ':
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          command:
+            const: upsert
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_ref_exe_stats
+          fields:
+            const:
+            - task_id
+            - task_execution_id
+            - task_ref_table_id
+            - ref_table_name
+            - batch_id
+            - start_time
+            - execution_status
+            - number_of_partitions
+            - interface_name
+            - schema_name
+            - execution_action
+            - table_order
+          keys:
+            const:
+            - task_id
+            - task_execution_id
+            - task_ref_table_id
+            - execution_action
+          dialect:
+            const: postgres
+          task_id:
+            link: Get Task ID/result
+            schema: any
+            mandatory: false
+            createdBy: table
+          task_execution_id:
+            external: taskExecutionID
+            schema: any
+            mandatory: false
+            createdBy: table
+          task_ref_table_id:
+            link: Get Table Ref ID/result
+            schema: any
+            mandatory: false
+            createdBy: table
+          ref_table_name:
+            external: tableName
+            schema: any
+            mandatory: false
+            createdBy: table
+          start_time:
+            link: Format the Current Time/string
+            schema: any
+            mandatory: false
+            createdBy: table
+          execution_status:
+            const: running
+            schema: string
+            mandatory: false
+            createdBy: table
+          number_of_partitions:
+            const: 1
+            schema: integer
+            mandatory: false
+            createdBy: table
+          interface_name:
+            external: interfaceName
+            schema: any
+            mandatory: false
+            createdBy: table
+          schema_name:
+            external: schemaName
+            schema: any
+            mandatory: false
+            createdBy: table
+          execution_action:
+            const: Delete
+            schema: string
+            mandatory: false
+            createdBy: table
+          table_order:
+            external: tableOrder
+            schema: any
+            mandatory: false
+            createdBy: table
+          batch_id:
+            external: batchID
+            schema: any
+            mandatory: false
+            createdBy: fields
+  Stage 1: {
+    }
+  Stage 2: {
+    }
+  Stage 3: {
+    }
+  Stage 4: {
+    }
+  Stage 5: {
+    }
+  Stage 6: {
+    }

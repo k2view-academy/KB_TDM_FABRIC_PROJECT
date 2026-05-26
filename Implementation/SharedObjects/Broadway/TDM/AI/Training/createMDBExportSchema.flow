@@ -41,11 +41,11 @@ stages:
             external: luName
             schema: string
             mandatory: false
-      Getk2SystemSchemaName:
+      getk2SystemSchemaName:
         parent: InnerFlow
         in:
           flowName:
-            const: Getk2SystemSchemaName
+            const: getk2SystemSchemaName
         out:
           result:
             schema: string
@@ -109,7 +109,7 @@ stages:
             const: select count(id) from ${@k2system}.task_executions where status
               = 'STARTED' OR status = 'IN_PROCESS' OR status = 'NEW'
           k2system:
-            link: Getk2SystemSchemaName/result
+            link: getk2SystemSchemaName/result
             schema: string
             mandatory: false
         out:

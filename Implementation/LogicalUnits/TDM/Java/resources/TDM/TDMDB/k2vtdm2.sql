@@ -110,3 +110,27 @@ CREATE SEQUENCE IF NOT EXISTS ${@schema}.tasks_task_execution_id_seq
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 50;
+
+ -- TDM 10
+  CREATE SEQUENCE IF NOT EXISTS ${@schema}.task_group_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+  -- TDM 10
+  CREATE SEQUENCE IF NOT EXISTS ${@schema}.permission_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+  -- TDM 10 - task notes
+  CREATE SEQUENCE IF NOT EXISTS ${@schema}.task_notes_note_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
