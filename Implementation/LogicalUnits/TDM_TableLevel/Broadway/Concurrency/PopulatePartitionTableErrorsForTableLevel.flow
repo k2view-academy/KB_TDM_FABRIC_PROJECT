@@ -1,4 +1,4 @@
-tags: Partition,Concurrency
+tags: Concurrency
 stages:
   Get Inputs:
     actors:
@@ -53,13 +53,6 @@ stages:
             schema: integer
   'Prepare the Data   ':
     actors:
-      Build string from input parameters:
-        parent: CsvBuilder
-        in:
-          header:
-            const: false
-          maps:
-            link: Get the Error Fields/inputs
       Format the current date:
         parent: DateFormat
         in:
@@ -251,12 +244,14 @@ stages:
         out:
           value:
             schema: string
-      StringPadding:
-        parent: StringPadding
+      Limit Error Message:
+        parent: Substring
         in:
-          length:
-            const: 100
-          input:
+          begin:
+            const: 0
+          end:
+            const: 1000
+          string:
             link: Get the Error Fields/message
   Partition Is Found:
     dependsOn: Merge
@@ -374,7 +369,7 @@ stages:
             link: Get the Error Fields/errorCode
             schema: string
           error_message:
-            link: StringPadding/string
+            link: Limit Error Message/string
             schema: string
           creation_date:
             link: Format the current date/string
@@ -390,7 +385,6 @@ stages:
             schema: string
           actor_parameters:
             const: ''
-            link: Build string from input parameters/csv
             schema: string
             default: true
       Set Entity Status to Failed:
@@ -446,7 +440,7 @@ stages:
             - ' Where clause for partition number/string'
             - Task Ref Partition  /value
           params:
-            link: StringPadding/string
+            link: Limit Error Message/string
       'Update task_exe_ref_stats  ':
         parent: DbCommand
         in:
@@ -458,7 +452,7 @@ stages:
             - ' Where clause for exe table: StringFormat/string'
             - Task Ref Exe Stats/value
           params:
-            link: StringPadding/string
+            link: Limit Error Message/string
   Update Table Entity:
     actors:
       Error Handler for reporting to TDM Error Table11:
@@ -501,15 +495,50 @@ schemas:
   Get the Error Fields.out.inputs:
     type: object
     properties:
-      interface:
+      flowName:
         type: string
-      luType:
-        type: string
-      parallel:
+      innerFlowClose:
         type: boolean
-      stop_on_error:
-        type: boolean
-      syncMode:
+      sourceInterfaceName:
         type: string
-      iid:
+      sourceTableName:
+        type: string
+      sourceSchemaName:
+        type: string
+      catalogSchema:
+        type: string
+      taskExeId:
+        type: string
+      partitionNumber:
+        type: string
+      targetInterface:
+        type: string
+      targetSchema:
+        type: string
+      targetTable:
+        type: string
+      customLoadFlow:
+        type: string
+      inputRecords:
+        type: array
+        items:
+          type: object
+          properties:
+            age:
+              type: integer
+            customer_id:
+              type: integer
+            driver_type:
+              type: string
+            email:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            ssn:
+              type: string
+      refTableID:
+        type: integer
+      commitSize:
         type: string

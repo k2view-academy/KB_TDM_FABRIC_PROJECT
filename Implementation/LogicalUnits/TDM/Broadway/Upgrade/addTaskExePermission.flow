@@ -1,0 +1,232 @@
+description: |-
+  user should choose the permitted users:
+  can be ALL\Me\My group
+tags: Upgrade
+stages:
+  Init:
+    actors:
+      Task Executer:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: task executer
+            editor:
+              id: com.k2view.dropdown
+              options:
+              - ALL
+              - Me
+              - My group
+        out:
+          value:
+            schema: string
+      Now:
+        parent: Now
+  Get TDMDB Schema:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Format the Current Time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyy-MMM-dd HH:mm:ss.SSS
+          date:
+            link: Now/date
+  Delete all table entries:
+    actors:
+      Delete Existing Records:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: DELETE FROM ${@schema}.task_exe_permissions
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+  Get all tasks ids:
+    actors:
+      TDM_PARAMETERS_SEPARATOR:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_PARAMETERS_SEPARATOR
+      Get Tsasks IDs:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select distinct task_id,task_created_by,split_part(task_created_by, '##', 1) as createdByUser
+              ,split_part(task_created_by, '##', 2) as createdByRoles from ${@schema}.tasks
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  ALL:
+    dependsOn: Get all tasks ids
+    actors:
+      'Equals ':
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: ALL
+            schema: string
+          a:
+            link: Task Executer/value
+      insert ALL:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_exe_permissions
+          fields:
+            const:
+            - task_id
+            - permitted_user
+            - user_type
+            - creation_date
+            - created_by
+          dialect:
+            const: postgres
+          task_id:
+            link:
+              path: Get Tsasks IDs/result/task_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          permitted_user:
+            const: ALL
+            schema: string
+            mandatory: false
+          creation_date:
+            link: Format the Current Time/string
+            schema: date
+            mandatory: false
+          created_by:
+            const: system
+            schema: string
+            mandatory: false
+          user_type:
+            const: ID
+            schema: string
+            mandatory: false
+            createdBy: fields
+    split: '--------------------'
+  Me:
+    else: true
+    dependsOn: Get all tasks ids
+    actors:
+      'Equals  ':
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: Me
+            schema: string
+          a:
+            link: Task Executer/value
+      insert Me:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          schema:
+            const: null
+            link: getTDMDBSchema/schema
+          table:
+            const: task_exe_permissions
+          fields:
+            const:
+            - task_id
+            - permitted_user
+            - user_type
+            - creation_date
+            - created_by
+          dialect:
+            const: postgres
+          task_id:
+            link:
+              path: Get Tsasks IDs/result/task_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          permitted_user:
+            link:
+              path: Get Tsasks IDs/result/createdbyuser
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          creation_date:
+            link: Format the Current Time/string
+            schema: date
+            mandatory: false
+          created_by:
+            const: system
+            schema: string
+            mandatory: false
+          user_type:
+            const: ID
+            schema: string
+            mandatory: false
+            createdBy: fields
+    split: '--------------------'
+  My group:
+    else: true
+    dependsOn: Get all tasks ids
+    actors:
+      insert My group:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              INSERT INTO ${@schema}.task_exe_permissions (task_id, permitted_user,user_type, creation_date, created_by)
+              SELECT t.task_id,
+                     unnest(string_to_array(split_part(t.task_created_by, '##', 2), '${@separator}')) AS permitted_user,
+                     'GROUP' AS user_type,
+                     NOW() AS creation_date,
+                     'system' AS created_by
+              FROM ${@schema}.tasks t
+              WHERE split_part(t.task_created_by, '##', 2) <> ''
+              ON CONFLICT (task_id, permitted_user) DO NOTHING
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          separator:
+            link: TDM_PARAMETERS_SEPARATOR/result
+            schema: string
+            mandatory: false
+schemas:
+  Get Tsasks IDs.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_id:
+          type: integer
+        task_created_by:
+          type: string
+        createdbyuser:
+          type: string
+        createdbyroles:
+          type: string

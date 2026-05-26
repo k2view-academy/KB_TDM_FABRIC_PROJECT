@@ -312,12 +312,12 @@ public class Logic extends WebServiceUserCode {
 			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
 					Produce.JSON }, elevatedPermission = false)
 	@resultMetaData(mediaType = Produce.JSON, example = """
-						{
+									{
 			  "result": 5,
 			  "errorCode": "SUCCESS",
 			  "message": ""
 			}
-						""")
+									""")
 	public static Object wsGetMaxWorkersPerNode() throws Exception {
 		try {
 			// 1. Get the base limit from the new helper function
@@ -360,7 +360,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			                        """)
 	public static Object wsGetGlobalMaxWorkersLimit() throws Exception {
-		try {
+		try {			
 			int globalLimit = getGlobalMaxWorkersLimit();
 
 			return wrapWebServiceResults("SUCCESS", "", globalLimit);

@@ -1,1 +1,0 @@
-function permissionGroupsCtrl($scope,BreadCrumbsService){this.pageDisplay="permissionGroupsTable",BreadCrumbsService.breadCrumbChange(0),BreadCrumbsService.push({},"PERMISSION_GROUPS",(function(){}))}angular.module("TDM-FE").controller("permissionGroupsCtrl",permissionGroupsCtrl);

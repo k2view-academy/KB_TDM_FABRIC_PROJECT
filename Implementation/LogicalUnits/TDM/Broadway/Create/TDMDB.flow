@@ -144,7 +144,7 @@ stages:
               ) AS schema_name;
           schemaName:
             link: getTDMDBSchemaName1/schema
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:

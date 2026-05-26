@@ -1,7 +1,25 @@
 tags: TDM
 stages:
+  Get Statistics Report Flag:
+    actors:
+      Get STATISTICS_REPORT_FLAG:
+        parent: FabricSetRead
+        in:
+          key:
+            const: STATISTICS_REPORT_FLAG
+            default: false
   'Select From k2_objects_info  ':
     actors:
+      Report Statistics?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          a:
+            link: Get STATISTICS_REPORT_FLAG/result
+            schema: string
+          b:
+            const: ALL
+            schema: string
       luName k2_objects_info:
         parent: DbCommand
         in:

@@ -391,8 +391,8 @@ stages:
             const: |-
               update ${@TDMDB_SCHEMA}.task_ref_partition
                set execution_status= CASE
-                      WHEN ${number_of_processed_records} > 0 AND ${number_of_processed_records} - ${number_of_failed_records} > 0 THEN 'completed'
-                      ELSE 'failed' END,
+                      WHEN ${number_of_failed_records} > 0 THEN 'failed'
+                      ELSE 'completed' END,
                   number_of_processed_records=${number_of_processed_records},
                   number_of_failed_records = ${number_of_failed_records}, end_time=NOW(),
                   number_of_records_to_process = case

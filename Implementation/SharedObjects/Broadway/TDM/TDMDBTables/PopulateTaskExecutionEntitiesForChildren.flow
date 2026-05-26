@@ -57,15 +57,14 @@ stages:
             const: TDM
           sql:
             const: |-
-              select child.lu_name from ${@TDMDB_SCHEMA}.task_execution_list l, ${@TDMDB_SCHEMA}.tasks_logical_units parent, ${@TDMDB_SCHEMA}.tasks_logical_units child
-              where l.task_execution_id = ${taskExecutionId} and parent.lu_name = ${parentLuName} and child.lu_name = ${childLuName}
-              and parent.lu_id = l.parent_lu_id and child.lu_id = l.lu_id and l.task_id = parent.task_id and l.task_id = child.task_id
+              select plu.lu_name
+              from ${@TDMDB_SCHEMA}.task_execution_list l, ${@TDMDB_SCHEMA}.product_logical_units plu
+              where l.task_execution_id = ${taskExecutionId}
+              and plu.lu_parent_id = l.parent_lu_id
+              and plu.product_id = l.product_id
+              and plu.lu_name = ${childLuName}
           taskExecutionId:
             external: taskExecutionId
-            schema: string
-            mandatory: false
-          parentLuName:
-            external: parentLuName
             schema: string
             mandatory: false
           childLuName:
@@ -76,7 +75,7 @@ stages:
             mandatory: false
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
           params:
             link: Get Queries Of Child LUs/result/child_lu

@@ -88,15 +88,6 @@ stages:
         out:
           FILE_FOUND:
             schema: boolean
-      fieldsToHandle:
-        parent: ConstStrings
-        in:
-          strings:
-            const:
-            - COMBO_MAX_COUNT
-            - MASKING_CACHE_TTL
-            - TDM_REF_UPD_SIZE
-            - SEQ_CACHE_INTERFACE
   Stage 4:
     actors:
       file exist?:
@@ -125,7 +116,7 @@ stages:
             mandatory: false
             createdBy: functionName
           fieldsToModify:
-            link: fieldsToHandle/strings
+            external: fieldsToModify
             schema: any
             mandatory: false
             createdBy: functionName

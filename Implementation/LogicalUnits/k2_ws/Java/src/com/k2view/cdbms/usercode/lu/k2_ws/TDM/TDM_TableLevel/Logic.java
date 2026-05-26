@@ -16,6 +16,7 @@ import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
 import com.k2view.fabric.api.endpoint.Endpoint.webService;
 import com.k2view.fabric.common.Json;
 import com.k2view.cdbms.interfaces.FabricInterface;
+import com.k2view.cdbms.interfaces.FileSystemInterface;
 import com.k2view.cdbms.lut.InterfacesManager;
 import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.mtable.MTable;
@@ -671,6 +672,13 @@ public class Logic extends WebServiceUserCode {
     private static List<Map<String, Object>> getInterfaceTables(String dbInterfaceName, String interfaceType, String envName) throws Exception {
 		List<Map<String, Object>> result = new ArrayList<>();
 
+        if ("true".equalsIgnoreCase(getGlobal(SUPPRESS_TABLE_LEVEL_SUPPRESS_FILE_SYSTEMS))) {
+            FabricInterface iface = InterfacesManager.getInstance().getInterface(dbInterfaceName);
+            if (iface instanceof FileSystemInterface) {
+                return result;
+            }
+        }
+
         Map<String,Object> interfaceInput = new HashMap<>();
         interfaceInput.put("dataPlatform", dbInterfaceName);
 
@@ -916,7 +924,12 @@ public class Logic extends WebServiceUserCode {
 
             for (FabricInterface iface : interfaces) {
                 String interfaceName = iface.getName();
-
+                if ("true".equalsIgnoreCase(SUPPRESS_TABLE_LEVEL_SUPPRESS_FILE_SYSTEMS)) {
+                    if (iface instanceof FileSystemInterface) {
+                       continue;
+                    }
+                }
+        
                 if (iface.getActiveMode()
                         && (!suppressed.contains(interfaceName) || withCatalog.contains(interfaceName))) {
                     Map<String, Object> item = new LinkedHashMap<>();

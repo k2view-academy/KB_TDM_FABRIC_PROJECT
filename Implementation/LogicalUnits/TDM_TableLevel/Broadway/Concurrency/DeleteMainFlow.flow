@@ -1,4 +1,4 @@
-tags: Concurrency
+tags: Partition,Concurrency
 stages:
   Loop From Last to First:
     actors:
@@ -114,12 +114,6 @@ stages:
         in:
           elements:
             link: Aggregate IIDs/array
-      Reset List Of IIDs:
-        parent: ResetActors
-        in:
-          actorId:
-            const:
-            - Aggregate IIDs
   Get details before batch:
     actors:
       get task title:
@@ -346,17 +340,98 @@ stages:
             mandatory: false
           maxWorkersStr:
             link: GetAffinityAndMaxWorker1/maxWorkers
-            schema: any
+            schema: string
             mandatory: false
           affinityStr:
             link: GetAffinityAndMaxWorker1/affinity
-            schema: any
+            schema: string
             mandatory: false
         out:
           result:
             schema: '#ref'
-  Aggregate Batch IDs:
+  Get Running IID:
+    actors:
+      Get IIDS:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Aggregate IIDs/array
+        out:
+          value:
+            schema: '#ref'
+      Reset List Of IIDs:
+        parent: ResetActors
+        in:
+          actorId:
+            const:
+            - Aggregate IIDs
+  Split IIDS:
+    actors:
+      SplitIID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SplitIID
+          IID:
+            link:
+              path: Get IIDS/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+  'Insert to ref exe stats  ':
     last: 1
+    actors:
+      InsertIntoTaskRefExe1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: InsertIntoTaskRefExe
+          interfaceName:
+            link:
+              path: SplitIID/result/interface
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: SplitIID/result/schema
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link:
+              path: SplitIID/result/table
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionID:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableOrder:
+            link:
+              path: For Loop For Deleting Tables/i
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          batchID:
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: flowName
+  'Aggregate Batch IDs  ':
     actors:
       List Of Batch IIDs:
         parent: ArrayBuilder
@@ -391,6 +466,37 @@ stages:
             link:
               path: Batch IDs to Wait For/value
               iterate: Iterate
+      UpdateTaskRefExe:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateTaskRefExe
+          taskExeID:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
   Clear Order's Batch IDs:
     actors:
       Reset List Of Batch IDs:
@@ -449,6 +555,25 @@ schemas:
           type: string
         Notes:
           type: string
+  Get IIDS.out.value:
+    type: array
+    items:
+      type: string
+  SplitIID.out.result:
+    type: object
+    properties:
+      environment:
+        type: string
+      interface:
+        type: string
+      schema:
+        type: string
+      table:
+        type: string
+      execution_id:
+        type: string
+      partition_no:
+        type: string
   List Of Batch IIDs.out.array:
     type: array
     items:

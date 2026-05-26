@@ -1,0 +1,50 @@
+tags: Concurrency
+stages:
+  Update Progress:
+    actors:
+      Update task_ref_partition:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_partition
+               set number_of_processed_records=${number_of_processed_records}, number_of_failed_records = ${number_of_failed_records}
+              where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
+               AND partition_no=${partition_no}
+          TDMDB_SCHEMA:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            external: task_ref_table_id
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          partition_no:
+            external: partition_no
+            schema: string
+            mandatory: false
+            createdBy: sql
+          number_of_processed_records:
+            external: number_of_processed_records
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          number_of_failed_records:
+            external: number_of_failed_records
+            schema: integer
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            external: result
+          affected:
+            external: affected

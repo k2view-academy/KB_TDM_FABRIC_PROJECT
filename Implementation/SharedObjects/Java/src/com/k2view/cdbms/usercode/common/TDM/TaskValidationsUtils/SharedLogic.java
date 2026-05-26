@@ -4,6 +4,8 @@
 
 package com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.k2view.cdbms.lut.DbInterface;
 import com.k2view.cdbms.lut.InterfacesManager;
 import com.k2view.cdbms.lut.LUType;
@@ -14,6 +16,7 @@ import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.Json;
 import org.json.JSONObject;
 
 import java.lang.reflect.Executable;
@@ -38,7 +41,9 @@ import static com.k2view.cdbms.shared.user.UserCode.isFirstSync;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
+import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Tasks.Logic.wsGetCustomLogicParam;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
+
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
@@ -101,7 +106,7 @@ public class SharedLogic {
 
     public static List<String> fnValidateProductForEnv(String env_id, String env_name, Long task_id) throws Exception {
         List<String> inactiveProducts = new ArrayList<>();
-        if("null".equalsIgnoreCase(env_name)){
+        if (Util.isEmpty(env_name) || "null".equalsIgnoreCase(env_name)) {
             return inactiveProducts;
         }
         String query = "SELECT p.product_name " +
@@ -145,6 +150,63 @@ public class SharedLogic {
             throw new RuntimeException(e);
         }
     }
+
+    public static List<String> fnValidateProductForEnv(String env_id, String env_name, List<String> luIds) throws Exception {
+        List<String> inactiveProducts = new ArrayList<>();
+        if (Util.isEmpty(env_name) || "null".equalsIgnoreCase(env_name) || luIds == null || luIds.isEmpty()) {
+            return inactiveProducts;
+        }
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < luIds.size(); i++) {
+            if (i > 0) placeholders.append(", ");
+            placeholders.append("?");
+        }
+        String query = "SELECT DISTINCT p.product_name " +
+                       "FROM " + TDMDB_SCHEMA + ".environments e " +
+                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".products p ON p.product_id = ep.product_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON p.product_id = pu.product_id " +
+                       "WHERE e.environment_status = ? " +
+                       "AND e.environment_id = ? " +
+                       "AND e.environment_name = ? " +
+                       "AND p.product_status = ? " +
+                       "AND pu.lu_id IN (" + placeholders + ") " +
+                       "AND ep.enable_product = ?";
+        List<Object> params = new ArrayList<>();
+        params.add("Active");
+        params.add(env_id);
+        params.add(env_name);
+        params.add("Active");
+        params.addAll(luIds);
+        params.add(false);
+        try {
+            Db.Rows results = db(TDM).fetch(query, params.toArray());
+            for (Db.Row row : results) {
+                inactiveProducts.add(row.get("product_name").toString());
+            }
+            return inactiveProducts;
+        } catch (Exception e) {
+            log.error("Error in fnValidateProductForEnv (luIds): " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String fnValidateProductForTask(String env_id, String env_name, String task_type, String sync_mode, String env_type, List<String> luIds) throws Exception {
+        String product_name = "";
+        try {
+            if (("SOURCE".equalsIgnoreCase(env_type) && !"OFF".equalsIgnoreCase(sync_mode)) && !"RESERVE".equalsIgnoreCase(task_type) ||
+                ("TARGET".equalsIgnoreCase(env_type) && ("LOAD".equalsIgnoreCase(task_type) || "DELETE".equalsIgnoreCase(task_type)))) {
+                List<String> inactive_products = fnValidateProductForEnv(env_id, env_name, luIds);
+                if (!inactive_products.isEmpty()) {
+                    product_name = String.join(", ", inactive_products);
+                }
+            }
+            return product_name;
+        } catch (Exception e) {
+            log.error("Error in fnValidateProductForTask (luIds): " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
     
     public static Map<String, String> fnValidateSourceEnvForTask(Map<String, Object> be_lus, Integer refCount, String selection_method,
                                                                  String sync_mode, Boolean version_ind, String task_type,
@@ -176,8 +238,8 @@ public class SharedLogic {
         ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
         //log.info("fnValidateSourceEnvForTask - role_id: " + role_id);
 
-        //check if system are diabled in the source environment 
-        String inactive_source_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"SOURCE",task_id);
+        //check if system are diabled in the source environment
+        String inactive_source_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"SOURCE",lusList);
         if(!"".equalsIgnoreCase(inactive_source_products)){
             errorMessages.put("systems", "The task cannot be executed. The following systems are currently disabled in " + env_name + ": " + inactive_source_products);
 
@@ -278,8 +340,8 @@ public class SharedLogic {
         if (role_id.equalsIgnoreCase("0") && Long.valueOf(env_id) < 0){
             errorMessages.put("permissionSet", "The user does not have the required permissions to execute synthetic data generation tasks on the target environment '" + env_name +"'.");
         }
-        //check if system are diabled in the target environment 
-        String inactive_target_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"TARGET",task_id);
+        //check if system are diabled in the target environment
+        String inactive_target_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"TARGET",lusList);
 
         if(!"".equalsIgnoreCase(inactive_target_products)){
             errorMessages.put("systems", "The task cannot be executed. The following systems are currently disabled in " + env_name + ": " + inactive_target_products);
@@ -486,6 +548,133 @@ public class SharedLogic {
         return result;
     }
 
+    public static String validateEnvironmentsAndBusinessEntity(Long be_id, Long environment_id,
+            Long source_environment_id, String editable_params, List<Map<String, Object>> preExecutionProcesses,
+            List<Map<String, Object>> postExecutionProcesses, String task_type) {
+
+        JsonObject jsonObject = JsonParser.parseString(editable_params).getAsJsonObject();
+
+        // Check if BE is mandatory based on override settings
+        boolean isBeEditable = jsonObject.getAsJsonObject("business_entity").get("is_editable").getAsBoolean();
+        if (be_id == null && !isBeEditable) {
+            return "Business entity is mandatory.";
+        }
+
+        if (be_id == null && !preExecutionProcesses.isEmpty()) {
+            return "Pre execution Processes must be empty.";
+        }
+
+        if (be_id == null && !postExecutionProcesses.isEmpty()) {
+            return "Post execution Processes must be empty.";
+        }
+
+        if (be_id != null && isBeEditable) {
+            return "Business entity cannot be override.";
+        }
+
+        // Check if target environment is mandatory based on override settings
+        boolean isTargetEnvEditable = jsonObject.getAsJsonObject("target_environment").get("is_editable")
+                .getAsBoolean();
+        if (environment_id == null && !isTargetEnvEditable && !"EXTRACT".equals(task_type) && !"GENERATE".equals(task_type)) {
+            return "Environment is mandatory.";
+        }
+
+        // Check if source environment is mandatory based on override settings
+        boolean isSourceEnvEditable = jsonObject.getAsJsonObject("source_environment").get("is_editable")
+                .getAsBoolean();
+        if (source_environment_id == null && !isSourceEnvEditable && !"DELETE".equalsIgnoreCase(task_type)
+                && !"RESERVE".equalsIgnoreCase(task_type)) {
+            return "Source environment is mandatory.";
+        }
+
+        return "";
+    }
+
+    public static String validateParams(String selection_method,
+            String params, String custom_logic_lu_name, String selection_param_value) {
+
+        if (selection_method.equalsIgnoreCase("C")) {
+            Map<String, Object> inputs;
+            
+            try {
+                 inputs = convertInputListToMap(params);
+            } catch (Exception e) {                
+                return "Invalid input parameter format: " + e.getMessage();
+            }
+            List<String> errors = new ArrayList<>();
+            try {
+                List<Map<String, Object>> paramDefinitions = (List<Map<String, Object>>) ((Map<String, Object>)wsGetCustomLogicParam(custom_logic_lu_name, selection_param_value)).get("result");
+                for (Map<String, Object> paramDef : paramDefinitions) {
+                    // Check if mandatory (Use safe casting/default value)
+                    Boolean isMandatory = (Boolean) paramDef.getOrDefault("mandatory", false);
+        
+                    if (isMandatory != null && isMandatory) {
+                        String paramName = null;
+                        Object editorObj = paramDef.get("editor");
+                        
+                        if (editorObj instanceof Map) {
+                            Map<?, ?> editorMap = (Map<?, ?>) editorObj;
+                            Object nameObj = editorMap.get("name");
+                            if (nameObj instanceof String) {
+                                paramName = (String) nameObj;
+                            }
+                        }
+                        
+                        if (paramName == null || paramName.isEmpty()) {
+                            errors.add("Internal error: Mandatory parameter definition is missing a 'name'.");
+                            continue;
+                        }
+        
+                        // Check for presence and emptiness in runtime inputs
+                        if (inputs.containsKey(paramName) && isValueEmpty(inputs.get(paramName))) {
+                            errors.add("Mandatory field '" + paramName + "' is missing or empty. (is_editable=false)");
+                        }
+                    }
+                }
+                if (!errors.isEmpty()) {
+                    // Join all validation errors into a single message
+                    return String.join("; ", errors);
+                }
+
+            } catch (Exception e) {
+                return e.getMessage();
+            }
+        }
+
+        return "";
+    }
+
+    private static Map<String, Object> convertInputListToMap(String paramsJson) throws Exception {
+
+        Map<String, Object> parsedJson = Json.get().fromJson(paramsJson);
+
+        List<Map<String, Object>> inputList = (List<Map<String, Object>>) parsedJson.get("inputs");
+
+        if (inputList == null) {
+            throw new Exception("Input JSON must contain an 'inputs' array.");
+        }
+
+        Map<String, Object> inputsForValidation = new HashMap<>();
+        for (Map<String, Object> item : inputList) {
+            String name = (String) item.get("name");
+            Object value = item.get("value");
+            Boolean isEditable = (Boolean) item.getOrDefault("is_editable", false);
+            if (name != null && !isEditable) {
+                inputsForValidation.put(name, value);
+            }
+        }
+        return inputsForValidation;
+    }
+
+    private static boolean isValueEmpty(Object value) {
+        if (value == null)
+            return true;
+        if (value instanceof String) {
+            return ((String) value).trim().isEmpty();
+        }
+        return false;
+    }
+
     public static String fnValidateOverrideSyncMode(Long envID, String sourceEnvName, String syncMode) throws Exception {
         String msg ="";
     
@@ -503,6 +692,18 @@ public class SharedLogic {
             }
         }
     
+        return msg;
+    }
+
+    public static String fnValidateExtractNoRetention(String task_type, String selection_method,
+            String retention_period_type) {
+        String msg = "";
+
+        if ("EXTRACT".equalsIgnoreCase(task_type) && "TABLES".equals(selection_method)
+                && "Do Not Retain".equalsIgnoreCase(retention_period_type)) {
+            msg = "Table level extract only task with no retention is not allowed.";
+        }
+
         return msg;
     }
     
@@ -579,40 +780,38 @@ public class SharedLogic {
     public static String validateMaxWorkers(List<Map<String, Object>> tables) {
         return performWorkerValidation(tables, "interface_name");
     }
-
+    
     public static String validateLUMaxWorkers(List<Map<String, Object>> lus) {
         return performWorkerValidation(lus, "lu_name");
     }
-
+    
     /**
      * Common logic to check source/target worker limits.
-     * 
-     * @param items       The list of maps to validate.
-     * @param identityKey The key used to identify the record in error messages
-     *                    (e.g., "interface_name" or "lu_name").
+     * @param items The list of maps to validate.
+     * @param identityKey The key used to identify the record in error messages (e.g., "interface_name" or "lu_name").
      */
     private static String performWorkerValidation(List<Map<String, Object>> items, String identityKey) {
         int maxLimit;
-
+    
         try {
             maxLimit = getGlobalMaxWorkersLimit();
         } catch (Exception e) {
             return "Error: Could not retrieve the global max workers limit from configuration.";
         }
-
+    
         for (Map<String, Object> item : items) {
             // Fetch the specific identifier for this item (LU name or Interface name)
             String displayName = String.valueOf(item.getOrDefault(identityKey, "Unknown " + identityKey));
-
+    
             String[] workerFields = { "source_max_no_of_workers", "target_max_no_of_workers" };
-
+    
             for (String field : workerFields) {
                 Object value = item.get(field);
-
+    
                 if (value != null) {
                     try {
                         int requestedWorkers = Integer.parseInt(value.toString());
-
+    
                         if (requestedWorkers > maxLimit) {
                             return String.format(
                                     "Validation failed: for %s [%s]: %s (%d) exceeds the maximum allowed for execution, as defined in the Fabric configuration (%d).",
@@ -624,8 +823,8 @@ public class SharedLogic {
                 }
             }
         }
-
+    
         return "";
     }
-    
+
 }

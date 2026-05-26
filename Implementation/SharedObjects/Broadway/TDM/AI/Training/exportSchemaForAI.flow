@@ -1,0 +1,124 @@
+tags: TDM
+stages:
+  'Get Inputs ':
+    actors:
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      trainingExcludedTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingExcludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      trainingIncludedTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingIncludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+  Create Schema Without Included:
+    dependsOn: 'Get Inputs '
+    actors:
+      Included List:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: trainingIncludedTables1/tables
+      ErrorHandler 2:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      MDB_EXPORT LuName1:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: |
+              MDB_EXPORT ${luName} WITH INTERFACE_NAME=${interfaceName} EXCLUDED_TABLES=${excludedTables} FK='true' PHYSICAL_FK='true'
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          interfaceName:
+            link: AI_DB_ENTITIES/result
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Create Schema With Included:
+    else: true
+    dependsOn: 'Get Inputs '
+    actors:
+      ErrorHandler 3:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      MDB_EXPORT LuName:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: |
+              MDB_EXPORT ${luName} WITH INTERFACE_NAME=${interfaceName} INCLUDED_TABLES=${includedTables} EXCLUDED_TABLES=${excludedTables} FK='true' PHYSICAL_FK='true'
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          interfaceName:
+            link: AI_DB_ENTITIES/result
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+          includedTables:
+            link: trainingIncludedTables1/tables
+            schema: string
+            mandatory: false

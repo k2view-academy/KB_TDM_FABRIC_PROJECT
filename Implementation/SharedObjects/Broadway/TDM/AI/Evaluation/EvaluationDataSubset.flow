@@ -142,11 +142,11 @@ stages:
             mandatory: false
   Execute Generate Task:
     actors:
-      kubeCreateEvaluationTaskGPU1:
+      createGpuEvaluationTask1:
         parent: InnerFlow
         in:
           flowName:
-            const: kubeCreateEvaluationTaskGPU
+            const: createGpuEvaluationTask
           namespace:
             link: getNamespaceName1/string
             schema: string
@@ -234,12 +234,13 @@ stages:
     dependsOn: 'Do Nothing '
   Evaluation Result:
     actors:
-      returnEvaluationResult:
+      saveEvaluationArtifacts1:
         parent: InnerFlow
         in:
           flowName:
-            const: returnEvaluationResult
+            const: saveEvaluationArtifacts
           EvaluationID:
-            link: TDM_TASK_EXE_ID/result
+            link: generationTaskId/value
             schema: any
             mandatory: false
+            createdBy: flowName

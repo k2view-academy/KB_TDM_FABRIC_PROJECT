@@ -1,4 +1,4 @@
-tags: Concurrency
+tags: Partition
 stages:
   'Check if to Update  ':
     actors:

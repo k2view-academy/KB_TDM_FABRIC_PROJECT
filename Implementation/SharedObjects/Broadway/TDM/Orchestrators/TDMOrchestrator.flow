@@ -120,7 +120,7 @@ stages:
         parent: FabricSetRead
         in:
           key:
-            const: TDM_DELETE_BEFORE_LOAD
+            const: TDM.TDM_DELETE_BEFORE_LOAD
             default: false
   Delete Before Load If Required:
     remark: Delete Flow to delete all the Entity data from Target
@@ -167,7 +167,7 @@ stages:
         parent: FabricSetRead
         in:
           key:
-            const: TDM_INSERT_TO_TARGET
+            const: TDM.TDM_INSERT_TO_TARGET
             default: false
   Load Tables If Required:
     remark: |-

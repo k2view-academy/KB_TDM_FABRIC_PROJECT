@@ -596,7 +596,7 @@ stages:
             schema: '#ref'
             mandatory: false
             createdBy: sql
-      Update task_ref_partition1:
+      Update task_ref_exe:
         parent: DbCommand
         in:
           interface:
@@ -604,28 +604,45 @@ stages:
           sql:
             const: |-
               update ${@TDMDB_SCHEMA}.task_ref_exe_stats
-               set job_uid=${batch_id}
-               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
+               set batch_id=${batch_id}, table_order = ${table_order}, interface_name=${interface_name}, schema_name = ${schema_name}
+               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id} AND execution_action='Extract & Load';
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: string
-            mandatory: false
-            createdBy: sql
-          task_execution_id:
-            external: taskExeID
-            schema: string
-            mandatory: false
-            createdBy: sql
-          task_ref_table_id:
-            link: Get Table Ref ID/result
-            schema: string
+            schema: any
             mandatory: false
             createdBy: sql
           batch_id:
             link:
               path: Batch /result/Batch id
               iterate: First
-            schema: string
+            schema: any
+            mandatory: false
+            createdBy: sql
+          table_order:
+            link:
+              path: Loop On Tables/i
+              iterate: Iterate
+            schema: any
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExeID
+            schema: any
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            link: Get Table Ref ID/result
+            schema: any
+            mandatory: false
+            createdBy: sql
+          interface_name:
+            link: SplitIID/result/interface
+            schema: any
+            mandatory: false
+            createdBy: sql
+          schema_name:
+            link: SplitIID/result/schema
+            schema: any
             mandatory: false
             createdBy: sql
   'Get Batch IDs  ':

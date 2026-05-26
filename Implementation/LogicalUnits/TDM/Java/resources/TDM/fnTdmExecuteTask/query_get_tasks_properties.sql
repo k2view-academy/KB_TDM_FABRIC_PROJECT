@@ -24,9 +24,10 @@ SELECT task_title,
        parameters,
        reserve_note,
        filterout_reserved,
-       CAST(mask_sensitive_data as varchar(10)) as mask_sensitive_data,
        clone_ind,
        t.execution_mode,
-       in_place_masking_ind
+       in_place_masking_ind,
+       enable_sequence_report,
+       statistics_report_flag
 FROM   ${@TDMDB_SCHEMA}.TASKS t
 WHERE  task_id = ?

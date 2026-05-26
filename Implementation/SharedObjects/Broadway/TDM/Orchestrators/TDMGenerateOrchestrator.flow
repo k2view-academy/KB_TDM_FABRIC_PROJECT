@@ -2,18 +2,6 @@ tags: TDM
 stages:
   Start:
     actors:
-      Split IID:
-        parent: SplitIIDAndCloneNumber_Actor
-        in:
-          iid:
-            external: iid
-        out:
-          cloneNo:
-            schema: string
-          UID:
-            schema: string
-          versionExeID:
-            schema: string
       Print Inputs to Log:
         parent: Logger
         in:
@@ -37,6 +25,8 @@ stages:
             external: syncMode
             schema: string
             mandatory: false
+      Get Start Time:
+        parent: Now
       Set LU_TYPE:
         parent: FabricSet
         in:
@@ -50,6 +40,18 @@ stages:
               id: com.k2view.logicalUnit
               addEmptyEntry: true
             default: false
+      Split IID:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            external: iid
+        out:
+          cloneNo:
+            schema: string
+          UID:
+            schema: string
+          versionExeID:
+            schema: string
       Set INPUT_IID:
         parent: FabricSet
         in:
@@ -60,8 +62,6 @@ stages:
             const: null
             external: iid
             default: false
-      Get Start Time:
-        parent: Now
   Set Session Variables:
     actors:
       Set TARGET_ENTITY_ID:
@@ -157,6 +157,17 @@ stages:
             default: false
           value:
             link: Format Start Time/string
+      Get Instance:
+        parent: FabricGet
+        in:
+          luType:
+            const: null
+            external: luName
+          syncMode:
+            const: null
+            external: syncMode
+          iid:
+            external: iid
       isParamCoupling:
         parent: Const
         in:
@@ -172,17 +183,6 @@ stages:
         out:
           value:
             schema: string
-      Get Instance:
-        parent: FabricGet
-        in:
-          luType:
-            const: null
-            external: luName
-          syncMode:
-            const: null
-            external: syncMode
-          iid:
-            external: iid
   'Is Params Coupling ':
     dependsOn: 'Get Instance '
     actors:

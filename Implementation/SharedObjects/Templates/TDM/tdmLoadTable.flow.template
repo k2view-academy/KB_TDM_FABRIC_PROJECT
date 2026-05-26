@@ -131,17 +131,19 @@ stages:
             const: {{{TARGET_TABLE}}}
           fields:
             const:
-            {{#each TARGET_TABLE_COLUMNS~}}
+            {{#each TARGET_TABLE_COLUMNS}}
             - {{{this}}}
-            {{/each}}
+            {{/each~}}
           keys:
             const:
-             {{#each TARGET_TABLE_PKS~}}
-            - {{{this}}}{{/each}}
+            {{#each TARGET_TABLE_PKS}}
+            - {{{this}}}
+            {{/each}}
           {{#each TARGET_TABLE_COLUMNS}}
           {{{this}}}:
             {{#if (pkfieldWithQoutesInd this)}}link: Handle Mask And Sequential Fields/result/{{getPKFieldWithoutQoutes this}}{{/if}}
-            schema: any{{/each}}
+            schema: any
+          {{/each}}
           params:
             link: Handle Mask And Sequential Fields/result
   Post Record Loading:
@@ -167,18 +169,21 @@ schemas:
     items:
       type: object
       properties:
-        {{#each LU_TABLE_COLUMNS}}
+        {{#each LU_TABLE_COLUMNS~}}
         {{this}}:
-           type: Any{{/each}}
+           type: Any
+        {{/each~}}
   Handle Mask And Sequential Fields.in.row:
     type: object
     properties:
-       {{#each LU_TABLE_COLUMNS}}
+      {{#each LU_TABLE_COLUMNS}}
         {{this}}:
-           type: Any{{/each}}
+          type: Any
+      {{/each}}
   Handle Mask And Sequential Fields.out.result:
     type: object
     properties:
-       {{#each LU_TABLE_COLUMNS}}
+      {{#each LU_TABLE_COLUMNS}}
         {{this}}:
-           type: Any{{/each}}
+           type: Any
+      {{/each}}

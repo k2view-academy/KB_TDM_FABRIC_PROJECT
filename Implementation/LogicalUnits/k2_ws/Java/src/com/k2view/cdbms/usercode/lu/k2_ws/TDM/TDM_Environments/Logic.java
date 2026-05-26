@@ -78,6 +78,7 @@ public class Logic extends WebServiceUserCode {
 			"SEQ_CACHE_INTERFACE",
 			"TDM_POPULATE_JMX_STATS",
 			"TDM_SEQ_REPORT",
+			"STATISTICS_REPORT_FLAG",
 			"TDM_BATCH_LIMIT",
 			"TDM_DELETE_TABLES_PREFIX",
 			"TDM_SUMMARY_REPORT_LIMIT",
@@ -340,18 +341,7 @@ public class Logic extends WebServiceUserCode {
 				message="The sent owners list was ignored, you need administrative permissions to add or remove owners.";
 			}
 
-            // TDM 8.1 - In case the mask_sensitive_data is set to true, and existing tasks already using this enviroment as source 
-            // set the same field at the tasks tables for relatd tasks to true
-		
-            if (mask_sensitive_data == true) {
-                String taksSql = "UPDATE " + schema + ".TASKS SET mask_sensitive_data = true where source_environment_id = ?";
-                db(TDM).execute(taksSql, envId);
-            } else {
-				String taksSql = "UPDATE " + schema + ".TASKS SET mask_sensitive_data = false where source_environment_id = ?";
-                db(TDM).execute(taksSql, envId);
-			}
 			errorCode = "SUCCESS";
-		
 		
 		} catch (Exception e) {
 			errorCode = "FAILED";
@@ -1924,7 +1914,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateEnvironmentGlobal(@param(required=true) String envName, @param(required=true) Long envId, String luName, String environment_id, String global_name, String global_value) throws Exception {
+	public static Object wsUpdateEnvironmentGlobal(@param(required=true) String envName, @param(required=true) Long envId, String lu_name, String global_name, String global_value) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
@@ -1942,8 +1932,8 @@ public class Logic extends WebServiceUserCode {
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
-			if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
-				global_name = luName + "." + global_name;
+			if (lu_name != null && !"".equals(lu_name) && !"ALL".equals(lu_name)) {
+				global_name = lu_name + "." + global_name;
 			}
 			
 			String updateQuery= "UPDATE " + schema + ".tdm_env_globals SET " +
@@ -1958,7 +1948,7 @@ public class Logic extends WebServiceUserCode {
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
-			db(TDM).execute(updateQuery, environment_id, global_name, global_value, now, username, environment_id,global_name);
+			db(TDM).execute(updateQuery, envId, global_name, global_value, now, username, envId,global_name);
 		
 			String activityDesc = "Global : " + global_name + " of environment " + envName + " was updated";
 			try {
