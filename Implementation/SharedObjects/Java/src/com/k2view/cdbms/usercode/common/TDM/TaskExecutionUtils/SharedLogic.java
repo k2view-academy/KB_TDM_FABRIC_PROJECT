@@ -7,6 +7,7 @@ package com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.mtable.MTable;
 import com.k2view.fabric.common.Json;
 import org.json.JSONObject;
 
@@ -26,6 +27,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.fnTdmRefer
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.validateLUMaxWorkers;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isPermittedUserForStopResume;
 
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
@@ -302,12 +304,13 @@ public class SharedLogic {
 		Db.Rows batchIdList = null;
 		//log.info("fnStopTaskExecution - task_execution_id: " + task_execution_id);
         try {
+			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to stop task execution", null);
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
             String sql = "select fabric_execution_id, execution_status, l.task_type " +
             "from " + schema + ".task_execution_list l  where task_execution_id = ? " +
             "and (fabric_execution_id is not null) and UPPER(execution_status) IN " +
             "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED')" ;
-            //log.info("AAAA - sql: " + sql);
+
             batchIdList = db(TDM).fetch(sql, task_execution_id);
 
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
@@ -385,8 +388,8 @@ public class SharedLogic {
                     .format(Instant.now());
 
             String query = "INSERT INTO " + schema + 
-                    ".task_ref_exe_stats (task_id,task_execution_id,task_ref_table_id, ref_table_name, update_date, execution_status, number_of_processed_records) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    ".task_ref_exe_stats (task_id,task_execution_id,task_ref_table_id, ref_table_name, update_date, execution_status, number_of_processed_records,execution_action) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             db(TDM).execute(query,
                     task_id,
                     taskExecutionId,
@@ -394,7 +397,8 @@ public class SharedLogic {
                     ref.get("ref_table_name"),
                     now,
                     "pending",
-                    0);
+                    0,
+					"Extract & Load");
         }
 
     }
@@ -458,6 +462,7 @@ public class SharedLogic {
         Boolean success_ind = true;
         Db.Rows batchIdList = null;
         try {
+			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to resume task execution", null);
             //log.info("fnResumeTaskExecution - Starting");
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
             batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, selection_method, l.task_type from " + 
@@ -511,7 +516,7 @@ public class SharedLogic {
     }
 
 
-	public static void fnStartTaskExecutions(List<Map<String, Object>> taskExecutions, Long taskExecutionId, String srcEnvName, Long tarEnvId, Long srcEnvId, String executionNote) throws Exception {
+	public static void fnStartTaskExecutions(List<Map<String, Object>> taskExecutions, Long taskExecutionId, String beId, String srcEnvName, Long tarEnvId, Long srcEnvId, String executionNote, String tarEnvName, String execUserName, String execUserRole) throws Exception {
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
@@ -520,10 +525,10 @@ public class SharedLogic {
             Long selected_ref_version_id = Long.parseLong("" +entry.get("selected_ref_version_task_exe_id")) ; 
             Long selected_version_id = Long.parseLong("" +entry.get("selected_version_task_exe_id")) ; 
             String query = "INSERT INTO " + schema + ".task_execution_list " +
-                    "(task_id, task_execution_id, creation_date, be_id, environment_id, product_id, product_version, lu_id, " +
+                    "(task_id, task_execution_id, creation_date, be_id, environment_id,env_name, product_id, product_version, lu_id, " +
                     "execution_status,parent_lu_id,source_env_name, task_executed_by, task_type, version_task_execution_id, " +
 					"subset_task_execution_id, source_environment_id, process_id, execution_note, source_max_no_of_workers, target_max_no_of_workers, source_affinity, target_affinity) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             if ("true".equalsIgnoreCase( "" + entry.get("version_ind"))) {
                 if (selected_version_id != 0) {
                     version_task_execution_id = selected_version_id;
@@ -533,16 +538,20 @@ public class SharedLogic {
                     version_task_execution_id = taskExecutionId;
                 }
             }         
-            String username = sessionUser().name();
-                        Set<String> tmpRoles = new HashSet<>();
-            for (String role : sessionUser().roles()) {
-                if (!"Everybody".equalsIgnoreCase(role)) {
-                    tmpRoles.add(role);
-				}
+            String username = (execUserName != null && !execUserName.isEmpty()) ? execUserName : sessionUser().name();
+            Set<String> tmpRoles = new HashSet<>();
+            if (execUserRole != null && !execUserRole.isEmpty()) {
+                tmpRoles.add(execUserRole);
+            } else {
+                for (String role : sessionUser().roles()) {
+                    if (!"Everybody".equalsIgnoreCase(role)) {
+                        tmpRoles.add(role);
+                    }
+                }
             }
-            
+
 			if ("".equals(username)) {
-				String userRoles = String.join(TDM_PARAMETERS_SEPARATOR, sessionUser().roles());
+				String userRoles = String.join(TDM_PARAMETERS_SEPARATOR, tmpRoles);
                 if (!fnIsAdminByRole(userRoles)) {
                     throw new RuntimeException("Executing With Token Without Admin Privileges");
                 }
@@ -560,8 +569,9 @@ public class SharedLogic {
                     entry.get("task_id"),
                     taskExecutionId,
                     now,
-                    entry.get("be_id"),
+					beId != null ? beId : entry.get("be_id"),                  
                     tarEnvId != null ? tarEnvId : entry.get("environment_id"),
+					tarEnvName != null ? tarEnvName : entry.get("env_name"),
                     includeProductInfo ? entry.get("product_id") : null,
                     includeProductInfo ? entry.get("product_version") : null,
                     entry.get("lu_id"),                    
@@ -677,53 +687,6 @@ public class SharedLogic {
 		return wrapWebServiceResults("SUCCESS", null, fnBatchStatistics(i_batchId, i_runMode));
 	}
 
-
-	public static Object fnExtractRefStats(String i_taskExecutionId, String i_runMode) throws Exception {
-		Object rs = null;
-
-        if (i_runMode.equals("S")) {
-
-            //log.info("call to fnGetReferenceSummaryData");
-            Map<String, Object> refSummaryStatsBuf = fnGetReferenceSummaryData(i_taskExecutionId);
-
-            // Convert the dates to strings
-            refSummaryStatsBuf.forEach((key, value) -> {
-                String minStartDate = "";
-                String maxEndDate = "";
-                Map<String, Object> refSummaryStats = (HashMap) value;
-
-                if (refSummaryStats.get("minStartExecutionDate") != null)
-                    minStartDate = refSummaryStats.get("minStartExecutionDate").toString();
-
-                if (refSummaryStats.get("maxEndExecutionDate") != null)
-                    maxEndDate = refSummaryStats.get("maxEndExecutionDate").toString();
-
-                refSummaryStats.put("minStartExecutionDate", minStartDate);
-                refSummaryStats.put("maxEndExecutionDate", maxEndDate);
-
-                //log.info("after calling fnGetReferenceSummaryData");
-            });
-            rs = refSummaryStatsBuf;
-        } else if (i_runMode.equals("D")) {
-            rs = fnGetReferenceDetailedData(i_taskExecutionId);
-        }
-
-        // convert iterable to serializable object
-        if (rs instanceof Db.Rows) {
-            ArrayList<Map> rows = new ArrayList<>();
-            ((Db.Rows) rs).forEach(row -> {
-                HashMap copy = new HashMap();
-                copy.putAll(row);
-                rows.add(copy);
-            });
-            rs = rows;
-        }
-
-        return wrapWebServiceResults("SUCCESS", null, rs);
-    }
-
-
-
 	public static int getAllowedEntitySize(Integer entityListSize, Integer numberOfRequestedEntites) {
 		int allowedEntitySize = -1;
         if (entityListSize > 0) {
@@ -758,6 +721,7 @@ public class SharedLogic {
         for (int i = 0; i < lu_list_arr.length; i++) {
             lu_list_for_qry += "'" + lu_list_arr[i].trim() + "',";
         }
+		
         // remove last ,
         lu_list_for_qry = lu_list_for_qry.substring(0, lu_list_for_qry.length() - 1);
 
@@ -784,49 +748,6 @@ public class SharedLogic {
         return wrapWebServiceResults("SUCCESS", null, entity_mig_status);
     }
 
-
-	public static Boolean fnTestTaskInterfaces(Long task_id, Boolean forced, Long srcEnvId, Long tarEnvId) throws Exception {
-		if (task_id != null && forced == true) return true;
-        if (tarEnvId != null) {
-		    fnTestEnvTargetInterfaces(task_id, tarEnvId, forced);
-        }
-		fnTestEnvSourceInterfaces(task_id, srcEnvId);
-		return true;
-	}
-
-
-	public static Boolean fnTestEnvTargetInterfaces(Long taskId, Long tarEnvId, Boolean forced) throws Exception {
-		String envName = null;
-        Db.Row taskRec = db(TDM).fetch("select task_type, selection_method, source_env_name as environment_name from " +
-            TDMDB_SCHEMA + ".tasks where task_id = ?", taskId).firstRow();
-        
-        if (taskRec.get("task_type").equals("EXTRACT")) return true;
-
-        if ("TABLES".equals(taskRec.get("selection_method"))) {
-            envName = taskRec.get("environment_name").toString();
-        } else {
-
-            List<Map<String, Object>> taskData;
-		    try {
-            
-			    taskData = fnGetTaskEnvData(taskId, tarEnvId, false);
-                envName = taskData.get(0).get("environment_name") != null ? taskData.get(0).get("environment_name").toString() : null;
-		    } catch (Exception e) {
-			    throw new Exception("Failed to get Task data for target env");
-		    }
-        }
-		
-
-		try {
-			return fnTestInterfacesForEnvProduct(envName);
-		} catch (Exception e) {
-			if (e.getMessage().indexOf("interfaceFailed;") == 0) {
-				throw new Exception("The test connection of " + e.getMessage().substring(16) + " failed. Please check the connection details of target environment: " + envName);
-			} else throw new Exception("Failed to test target env interfaces");
-		}
-	}
-
-
 	public static Boolean fnTestInterfacesForEnvProduct(String source) throws Exception {
 		Map<String, String> data;
 		try {
@@ -848,7 +769,7 @@ public class SharedLogic {
 
 
 	private static List<Map<String, Object>> fnGetTaskEnvData(Long task_id, Long envId, Boolean source) throws Exception {
-        log.info("fnGetTaskEnvData - task_id: " + task_id + ", env_id: " + envId +  ", source: " + source);
+        //log.info("fnGetTaskEnvData - task_id: " + task_id + ", env_id: " + envId +  ", source: " + source);
 		String sql = "SELECT environments.environment_name, * FROM " + schema + ".tasks " +
 				"INNER JOIN " + schema + ".tasks_logical_units " +
 				"ON (tasks.task_id = tasks_logical_units.task_id) " +
@@ -884,166 +805,6 @@ public class SharedLogic {
 		return result;
 	}
 
-
-	public static Boolean fnTestEnvSourceInterfaces(Long task_id, Long srcEnvId) throws Exception {
-        String envName = null;
-        Long envId = null;
-
-        Db.Row taskRec = db(TDM).fetch("select selection_method, source_environment_id as environment_id, source_env_name as environment_name from " +
-            TDMDB_SCHEMA + ".tasks where task_id = ?", task_id).firstRow();
-
-        if ("TABLES".equals(taskRec.get("selection_method"))) {
-            envName = taskRec.get("environment_name").toString();
-            envId = (Long) taskRec.get("environment_id");
-            try {
-                fnTestInterfacesForEnvProduct(envName);
-            } catch (Exception e) {
-                if (e.getMessage().indexOf("interfaceFailed;") == 0) {
-                    String errMessage = "The test connection of " + e.getMessage().substring(16) + " failed. Please check the connection details of source environment " + envName;
-                    //if (taskData.get("task_type").toString().equals("EXTRACT"))  throw new Exception(errMessage);
-                    try {
-                        return fnTestTaskEnvGlobals(task_id, envId);
-                    } catch (Exception exc) {
-                        throw new Exception(errMessage);
-                    }
-                }
-            }
-        } else {
-		    List<Map<String, Object>> taskData = null;
-            log.info("fnTestEnvSourceInterfaces");
-		    try {
-			    taskData = fnGetTaskEnvData(task_id, srcEnvId, true);
-		    } catch (Exception e) {
-			    throw new Exception("Failed to get task source env data");
-		    }
-
-            if (taskData != null) {
-                for (int i = 0; i < taskData.size(); i++) {
-                    try {
-                        fnTestInterfacesForEnvProduct(taskData.get(i).get("environment_name").toString());
-                    } catch (Exception e) {
-                        if (e.getMessage().indexOf("interfaceFailed;") == 0) {
-                            String errMessage = "The test connection of " + e.getMessage().substring(16) + " failed. Please check the connection details of source environment " + taskData.get(0).get("environment_name");
-                            //if (taskData.get("task_type").toString().equals("EXTRACT"))  throw new Exception(errMessage);
-                            try {
-                                return fnTestTaskEnvGlobals(task_id, (Long) taskData.get(0).get("environment_id"));
-                            } catch (Exception exc) {
-                                throw new Exception(errMessage);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-		return true;
-	}
-
-
-	public static Boolean fnTestTaskEnvGlobals(Long task_id, Long environment_id) throws Exception {
-		Map<String, Object> data = null;
-		try {
-			data = fnGetTaskEnvGlobals(task_id, environment_id);
-		} catch (Exception e) {
-			throw new Exception("Failed to get globals for task");
-		}
-		if (data == null) throw new Exception("tdm_set_sync_off doesn't exist in task/env globals");
-
-		Map<String, Object> tdmSetGlobalTask = null;
-		for (Map<String, Object> global : (List<Map<String, Object>>) data.get("globals")) {
-			if (global.get("global_name") != null && ((String) global.get("global_name")).equals("tdm_set_sync_off")) {
-				tdmSetGlobalTask = global;
-				break;
-			}
-		}
-
-		if (tdmSetGlobalTask != null) {
-			if (tdmSetGlobalTask.get("global_value") != null && ((String) tdmSetGlobalTask.get("global_value")).equals("true")) {
-				return true;
-			} else {
-				throw new Exception("tdm_set_sync_off is not true in task globals");
-			}
-		}
-
-
-		Map<String, Object> tdmSetGlobalEnv = null;
-		for (Map<String, Object> global : (List<Map<String, Object>>) data.get("env_globals")) {
-			if (global.get("global_name") != null && ((String) global.get("global_name")).equals("tdm_set_sync_off")) {
-				tdmSetGlobalEnv = global;
-				break;
-			}
-		}
-
-		if (tdmSetGlobalEnv != null) {
-			if (tdmSetGlobalEnv.get("global_value") != null && ((String) tdmSetGlobalEnv.get("global_value")).equals("true")) {
-				return true;
-			} else {
-				throw new Exception("tdm_set_sync_off is not true in env globals");
-			}
-		}
-
-		throw new Exception("tdm_set_sync_off doesn't exist in task/env globals");
-	}
-
-
-	public static Map<String, Object> fnGetTaskEnvGlobals(Long task_id, Long env_id) throws Exception {
-		Map<String, Object> ans = new HashMap<>();
-
-		String query = "SELECT * FROM " + schema + ".task_globals " +
-				"WHERE task_globals.task_id = " + task_id;
-		Db.Rows rows = db(TDM).fetch(query);
-
-		List<Map<String, Object>> result = new ArrayList<>();
-		List<String> columnNames = rows.getColumnNames();
-		for (Db.Row row : rows) {
-			ResultSet resultSet = row.resultSet();
-			Map<String, Object> rowMap = new HashMap<>();
-			for (String columnName : columnNames) {
-				rowMap.put(columnName, resultSet.getObject(columnName));
-			}
-			result.add(rowMap);
-		}
-		
-		if (rows != null) {
-				rows.close();
-		}
-
-		for (Map<String, Object> global : result) {
-			global.put("global_name", ((String) global.get("global_name")).toLowerCase());
-			global.put("global_value", ((String) global.get("global_value")).toLowerCase());
-		}
-
-		ans.put("globals", result);
-
-		query = "SELECT * FROM " + schema + ".tdm_env_globals " +
-				"WHERE tdm_env_globals.environment_id = " + env_id;
-
-		Db.Rows envGlobalsrows = db(TDM).fetch(query);
-
-		List<Map<String, Object>> envResult = new ArrayList<>();
-		columnNames = envGlobalsrows.getColumnNames();
-		for (Db.Row row : envGlobalsrows) {
-			ResultSet resultSet = row.resultSet();
-			Map<String, Object> rowMap = new HashMap<>();
-			for (String columnName : columnNames) {
-				rowMap.put(columnName, resultSet.getObject(columnName));
-			}
-			envResult.add(rowMap);
-		}
-		
-		if (envGlobalsrows != null) {
-			envGlobalsrows.close();
-		}
-
-		for (Map<String, Object> global : envResult) {
-			global.put("global_name", ((String) global.get("global_name")).toLowerCase());
-			global.put("global_value", ((String) global.get("global_value")).toLowerCase());
-		}
-
-		ans.put("env_globals", envResult);
-		return ans;
-	}
-
-
 	public static Object fnIsTaskRunning(Long taskId) throws Exception {
 		String sql = "SELECT count(*) FROM " + schema + ".task_execution_list " +
 				"WHERE task_id = " + taskId + " AND " +
@@ -1071,7 +832,6 @@ public class SharedLogic {
 		}
 	}
     public static Boolean fnValidateBELogicalUnits(Long be_id, List<Map<String, Object>> logicalUnits) throws Exception {
-
 		if (logicalUnits.size() == 0)
 		{
 			return false;
@@ -1111,10 +871,23 @@ public class SharedLogic {
         return valid;
     }
 
-	public static List<Map<String, Object>> fnGetActiveTaskForActivation(Long taskId, String selectionMethod) throws Exception {
+	public static List<Map<String, Object>> fnGetActiveTaskForActivation(Long taskId, String selectionMethod,
+			List<Map<String, Object>> logicalUnits, Long tarEnvId) throws Exception {
 		Long lu_id = null;
-        String clientQuery = "";
-        if (!"TABLES".equals(selectionMethod)) {
+		String clientQuery = "";
+
+		if ("TABLES".equals(selectionMethod) || (logicalUnits != null && !logicalUnits.isEmpty())) {
+			clientQuery = "SELECT *, " +
+					"(SELECT COUNT(*) FROM " + schema
+					+ ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id) AS refcount, '-1' AS lu_id, " +
+					"null AS source_max_workers_per_node, " +
+					"null AS target_max_workers_per_node, " +
+					"null AS final_source_affinity, " +
+					"null AS final_target_affinity, " +
+					"null AS override_fields " +
+					"FROM " + schema + ".tasks " +
+					"WHERE tasks.task_id = ?";
+		} else {
 			clientQuery = "SELECT *, " +
 					"(SELECT COUNT(*) FROM " + schema
 					+ ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id) AS refcount, " +
@@ -1132,8 +905,9 @@ public class SharedLogic {
 					+
 					"COALESCE(tasks_logical_units.target_affinity, " +
 					"(SELECT ep_target.data_center_name FROM " + schema + ".environment_products ep_target " +
-					"WHERE ep_target.product_id = product_logical_units.product_id AND ep_target.environment_id = tasks.environment_id AND ep_target.status = 'Active')) AS final_target_affinity "
+					"WHERE ep_target.product_id = product_logical_units.product_id AND ep_target.environment_id = tasks.environment_id AND ep_target.status = 'Active')) AS final_target_affinity, "
 					+
+					"tasks_logical_units.override_fields " +
 					"FROM " + schema + ".tasks " +
 					"INNER JOIN " + schema + ".tasks_logical_units " +
 					"ON (tasks.task_id = tasks_logical_units.task_id) " +
@@ -1145,19 +919,10 @@ public class SharedLogic {
 					"AND (environment_products.environment_id = tasks.environment_id " +
 					"OR (tasks.environment_id IS NULL " +
 					"AND environment_products.environment_id = tasks.source_environment_id ))) " +
-					"WHERE tasks.task_id = ?";					
-		} else {
-			clientQuery = "SELECT *, " +
-					"(SELECT COUNT(*) FROM " + schema
-					+ ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id) AS refcount, '-1' AS lu_id, " +
-					"null AS source_max_workers_per_node, " +
-					"null AS target_max_workers_per_node, " +
-					"null AS final_source_affinity, " +
-                    "null AS final_target_affinity " +
-					"FROM " + schema + ".tasks " +
 					"WHERE tasks.task_id = ?";
 		}
-		log.info(clientQuery);
+
+		//log.info(clientQuery);
 		Db.Rows rows = db(TDM).fetch(clientQuery, taskId);
 
 		List<Map<String, Object>> executions = new ArrayList<>();
@@ -1167,62 +932,128 @@ public class SharedLogic {
 			Map<String, Object> execution = new HashMap<>();
 			for (String columnName : columnNames) {
 				execution.put(columnName, resultSet.getObject(columnName));
-				if(columnName.equals("lu_id")){
-					lu_id=Long.valueOf("" + resultSet.getObject(columnName));
+				if (columnName.equals("lu_id")) {
+					lu_id = Long.valueOf("" + resultSet.getObject(columnName));
 				}
 			}
 			execution.put("process_id", 0);
 			executions.add(execution);
 		}
-		
+
 		if (rows != null) {
 			rows.close();
 		}
 
-		try {
-			List<Map<String, Object>> data = fnGetTaskPostExecutionProcesses(taskId);
-			Map<String, Object> execution = new HashMap(executions.get(0));
-            Set<String> subsetProcesses = new HashSet<String>(Arrays.asList("Training Data Subset", "Exporting Data Subset", "Generating Data Subset", "Importing Data Subset"));
-            for (Map<String, Object> item : data) {
-                Map<String, Object> newItem = new HashMap<String, Object>(execution);
-				if (subsetProcesses.contains(item.get("process_name"))){
-					newItem.put("lu_id", lu_id);
-				}else{
-					newItem.put("lu_id", 0);
+		if (logicalUnits != null && !logicalUnits.isEmpty()) {
+			Map<String, Object> baseExecution = new HashMap<>(executions.get(0));
+			executions.clear();
+			for (Map<String, Object> lu : logicalUnits) {
+				Map<String, Object> luExecution = new HashMap<>(baseExecution);
+				luExecution.put("lu_id", lu.get("lu_id"));
+				luExecution.put("lu_name", lu.get("lu_name"));
+				luExecution.put("lu_parent_id", lu.get("lu_parent_id"));
+				
+				String query = """
+						SELECT
+							ep.product_id as product_id,
+							ep.product_version as product_version,
+							ep.data_center_name as data_center_name,
+							ep.max_number_of_workers as max_number_of_workers
+						FROM
+							%s.environment_products AS ep
+						INNER JOIN
+							%s.product_logical_units AS plu
+							ON ep.product_id = plu.product_id
+						WHERE
+							plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active';
+						""".formatted(schema, schema);
 
+				Long envIDToUse = tarEnvId != null ? tarEnvId : (Long) luExecution.get("environment_id");
+				Db.Row tgtRow = db(TDM).fetch(query, luExecution.get("lu_id"), envIDToUse).firstRow();
+				if (tgtRow == null) continue; // LU not present in override target env — skip
+				luExecution.put("product_id", tgtRow.get("product_id"));
+				luExecution.put("product_version", tgtRow.get("product_version"));
+				luExecution.put("data_center_name", tgtRow.get("data_center_name"));
+				
+				Long srcEnvId = (Long) luExecution.get("source_environment_id");
+				Db.Row srcRow = null;
+				if (srcEnvId != null) {
+					String srcQuery = """
+							SELECT ep.max_number_of_workers, ep.data_center_name
+							FROM %s.environment_products AS ep
+							INNER JOIN %s.product_logical_units AS plu ON ep.product_id = plu.product_id
+							WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active';
+							""".formatted(schema, schema);
+					srcRow = db(TDM).fetch(srcQuery, lu.get("lu_id"), srcEnvId).firstRow();
 				}
-				newItem.put("process_id", item.get("process_id"));
-				newItem.put("process_name", item.get("process_name"));
-				newItem.put("execution_order", item.get("execution_order"));
-                newItem.put("lu_name", null);
-				executions.add(newItem);
+
+				// COALESCE: LU override value -> env-product default (mirrors the non-override
+				// COALESCE query)
+				luExecution.put("source_max_workers_per_node",
+						lu.get("source_max_no_of_workers") != null ? lu.get("source_max_no_of_workers")
+								: (srcRow != null ? srcRow.get("max_number_of_workers") : null));
+				luExecution.put("target_max_workers_per_node",
+						lu.get("target_max_no_of_workers") != null ? lu.get("target_max_no_of_workers")
+								: (tgtRow != null ? tgtRow.get("max_number_of_workers") : null));
+				luExecution.put("final_source_affinity",
+						lu.get("source_affinity") != null ? lu.get("source_affinity")
+								: (srcRow != null ? srcRow.get("data_center_name") : null));
+				luExecution.put("final_target_affinity",
+						lu.get("target_affinity") != null ? lu.get("target_affinity")
+								: (tgtRow != null ? tgtRow.get("data_center_name") : null));
+				luExecution.put("override_fields", lu.get("override_fields"));
+
+				executions.add(luExecution);
 			}
-			execution.put("product_id", 0);
-			execution.put("product_version", 0);
-		} catch (Exception e) {
-			log.error(e.getMessage());
+		} else {
+			try {
+				List<Map<String, Object>> data = fnGetTaskPostExecutionProcesses(taskId);
+				Map<String, Object> execution = new HashMap(executions.get(0));
+				Set<String> subsetProcesses = new HashSet<String>(Arrays.asList("Training Data Subset",
+						"Exporting Data Subset", "Generating Data Subset", "Importing Data Subset"));
+				for (Map<String, Object> item : data) {
+					Map<String, Object> newItem = new HashMap<String, Object>(execution);
+					if (subsetProcesses.contains(item.get("process_name"))) {
+						newItem.put("lu_id", lu_id);
+					} else {
+						newItem.put("lu_id", 0);
+
+					}
+					newItem.put("process_id", item.get("process_id"));
+					newItem.put("process_name", item.get("process_name"));
+					newItem.put("execution_order", item.get("execution_order"));
+					newItem.put("lu_name", null);
+					executions.add(newItem);
+				}
+				execution.put("product_id", 0);
+				execution.put("product_version", 0);
+
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
 		}
-        
+
 		return executions;
 	}
 
 
-	public static void fnCreateSummaryRecord(Map<String, Object> taskExecution, Long taskExecutionId, String srcEnvName, Long tarEnvId, Long srcEnvId) throws Exception {
+	public static void fnCreateSummaryRecord(Map<String, Object> taskExecution, Long taskExecutionId, String beID,
+			String srcEnvName, Long tarEnvId, Long srcEnvId, String tarEnvName, String execUserName, String execUserRole) throws Exception {
 		Map<String, Object> entry = taskExecution;
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 
-		String username = sessionUser().name();
+		String username = (execUserName != null && !execUserName.isEmpty()) ? execUserName : sessionUser().name();
         Long version_task_execution_id = 0L ;
         Long selected_ref_version_id = Long.parseLong("" +entry.get("selected_ref_version_task_exe_id")) ; 
         Long selected_version_id = Long.parseLong("" +entry.get("selected_version_task_exe_id")) ; 
 
 		String query = "INSERT INTO " + schema + ".task_execution_summary " +
-			"(task_execution_id, task_id, task_type, creation_date, be_id, environment_id, execution_status, start_execution_time, end_execution_time," +
+			"(task_execution_id, task_id, task_type, creation_date, be_id, environment_id, env_name, execution_status, start_execution_time, end_execution_time," +
 			" tot_num_of_processed_root_entities, tot_num_of_copied_root_entities, tot_num_of_failed_root_entities, tot_num_of_processed_ref_tables, tot_num_of_copied_ref_tables," +
 			" tot_num_of_failed_ref_tables, source_env_name, source_environment_id, task_executed_by, version_task_execution_id, subset_task_execution_id, expiration_date, update_date, permission_group, fabric_roles) " +
-			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         if ("true".equalsIgnoreCase( "" + entry.get("version_ind"))) {
             if (selected_version_id != 0) {
@@ -1235,22 +1066,29 @@ public class SharedLogic {
         }  
 
         Set<String> tmpRoles = new HashSet<>();
-        for (String role : sessionUser().roles()) {
-            if (!"Everybody".equalsIgnoreCase(role)) {
-                tmpRoles.add(role);
-			}
-        }  
-		 
-		String fabricRoles = new StringBuilder().append(String.join(TDM_PARAMETERS_SEPARATOR, tmpRoles)).toString(); 
-		String permessionGroup = fnGetUserPermissionGroup(username);
+        if (execUserRole != null && !execUserRole.isEmpty()) {
+            tmpRoles.add(execUserRole);
+        } else {
+            for (String role : sessionUser().roles()) {
+                if (!"Everybody".equalsIgnoreCase(role)) {
+                    tmpRoles.add(role);
+                }
+            }
+        }
+
+		String fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, tmpRoles);
+		String permessionGroup = (execUserRole != null && !execUserRole.isEmpty())
+				? fnGetPermissionGroupByRoles(fabricRoles)
+				: fnGetUserPermissionGroup(username);
 		
 		db(TDM).execute(query,
 				taskExecutionId,
 				entry.get("task_id"),
 				entry.get("task_type"),
-				now,
-				entry.get("be_id"),
+				now,				
+				beID != null ? beID : entry.get("be_id"),
 				tarEnvId != null ? tarEnvId : entry.get("environment_id"),
+				tarEnvName != null ? tarEnvName : entry.get("env_name"),
 				"pending",
 				entry.get("start_execution_time"),
 				entry.get("end_execution_time"),
@@ -1295,41 +1133,49 @@ public class SharedLogic {
 			            
 			for (Map<String, Object> logicalUnit : logicalUnits) {				
 				db(TDM).execute("INSERT INTO " + schema
-						+ ".tasks_logical_units (task_id, lu_id, lu_name, source_max_no_of_workers, target_max_no_of_workers, source_affinity, target_affinity) VALUES ( ?, ?, ?, ?, ?, ?, ?)",
+						+ ".tasks_logical_units (task_id, lu_id, lu_name, source_max_no_of_workers, target_max_no_of_workers, source_affinity, target_affinity, override_fields) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
 						taskId,
 						logicalUnit.get("lu_id"),
 						logicalUnit.get("lu_name"),
 						logicalUnit.get("source_max_no_of_workers"),
 						logicalUnit.get("target_max_no_of_workers"),
 						logicalUnit.get("source_affinity"),
-						logicalUnit.get("target_affinity"));
+						logicalUnit.get("target_affinity"),
+						logicalUnit.get("override_fields"));
 			}
 		}
 	}
 
 
-	public static void fnSaveRefTablestoTask(Long taskId, List<Map<String, Object>> tableList) throws SQLException{
+	public static void fnSaveRefTablestoTask(Long taskId, List<Map<String, Object>> tableList, boolean inplaceMasking) throws SQLException{
 		//try {
             //log.info("fnSaveRefTablestoTask - tableList: " + tableList);
 			for (Map<String, Object> ref : tableList) {
                 String filterParamsStr = null;
                 List<Object> filterParams = new ArrayList<>();
-                if ( ref.get("filter_parameters") != null) {
-                    //filterParams = ref.get("filter_parameters").toString();
-                    Object obj = ref.get("filter_parameters");
-                    if (obj.getClass().isArray()) {
-                        filterParams = Arrays.asList((Object[])obj);
-                    } else if (obj instanceof Collection) {
-                        filterParams = new ArrayList<>((Collection<?>)obj);
-                    }
-                    filterParamsStr = filterParams.stream().map(Object::toString)
-                    .collect(Collectors.joining(TDM_PARAMETERS_SEPARATOR));
-                }
-
 				String filterFieldsStr = null;
-				if ( ref.get("filter_fields") != null) {
-					Object obj = ref.get("filter_fields");
-					filterFieldsStr = obj.toString();
+				String tableName = ref.get("reference_table_name") != null ? ref.get("reference_table_name").toString()
+								: ref.get("ref_table_name").toString();
+				
+				tableName = fnCheckSpecialChars(tableName) ? "\"" + tableName + "\"" : tableName;
+
+				if (!inplaceMasking) {
+					if ( ref.get("filter_parameters") != null) {
+						//filterParams = ref.get("filter_parameters").toString();
+						Object obj = ref.get("filter_parameters");
+						if (obj.getClass().isArray()) {
+							filterParams = Arrays.asList((Object[])obj);
+						} else if (obj instanceof Collection) {
+							filterParams = new ArrayList<>((Collection<?>)obj);
+						}
+						filterParamsStr = filterParams.stream().map(Object::toString)
+						.collect(Collectors.joining(TDM_PARAMETERS_SEPARATOR));
+					}
+
+					if ( ref.get("filter_fields") != null) {
+						Object obj = ref.get("filter_fields");
+						filterFieldsStr = obj.toString();
+					}
 				}
 						
 				String sql = "INSERT INTO " + schema + ".task_ref_tables " +
@@ -1340,21 +1186,20 @@ public class SharedLogic {
 						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				db(TDM).execute(sql,
 						taskId,
-						ref.get("reference_table_name") != null ? ref.get("reference_table_name")
-								: ref.get("ref_table_name"),
+						tableName,
 						ref.get("lu_name") != null ? ref.get("lu_name") : "TDM_TableLevel",
 						ref.get("schema_name"),
 						ref.get("interface_name"),
 						DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 								.withZone(ZoneOffset.UTC)
 								.format(Instant.now()),
-						ref.get("table_filter"),
-						ref.get("filter_type"),
+						inplaceMasking ? null : ref.get("table_filter"),
+						inplaceMasking ? null : ref.get("filter_type"),
 						ref.get("target_table_prefix"),
 						ref.get("target_table_suffix"),
 						ref.get("version_task_execution_id"),
 						ref.get("version_task_name"),
-						ref.get("gui_filter"),
+						inplaceMasking ? null : ref.get("gui_filter"),
 						filterParamsStr,
 						filterFieldsStr,
 						ref.get("source_max_no_of_workers"),
@@ -1809,8 +1654,8 @@ public class SharedLogic {
 		fabric().fetch("test_connection active=true;").forEach(i -> {
 			String type = "" + i.get("type");
 			String iface = "" + i.get("interface");
-	
-			if (!"custom".equalsIgnoreCase(type) && !"AI_Execution".equalsIgnoreCase(iface)) {
+			//only for demo disable the check for AI interface DONT NOT COMMIT TO LIB 
+			if (!"AI_Execution".equalsIgnoreCase(iface)) {
 				connResMap.put(iface, "" + i.get("passed"));
 			}
 		});
@@ -1907,8 +1752,16 @@ public class SharedLogic {
 	}
 
 
-	public static void fnSaveTaskOverrideParameters(Long taskId, Map<String, Object> overrideParameters, Long taskExecutionId) throws Exception {
-		String sql = "INSERT INTO " + schema + ".task_execution_override_attrs (task_id,override_parameters,task_execution_id) VALUES (?,?,?)";
+	public static void fnSaveTaskOverrideParameters(Long taskId, Map<String, Object> overrideParameters,
+			Long taskExecutionId, boolean createdByAi) throws Exception {
+		// Upsert: INSERT for new executions, UPDATE (draft=false) when promoting a draft
+		// that was pre-allocated with the same task_execution_id.
+		String sql = "INSERT INTO " + schema + ".task_execution_override_attrs " +
+				"(task_id, override_parameters, task_execution_id, created_by_ai, draft) VALUES (?, ?, ?, ?, false) " +
+				"ON CONFLICT (task_execution_id, task_id) DO UPDATE SET " +
+				"override_parameters = EXCLUDED.override_parameters, " +
+				"created_by_ai = EXCLUDED.created_by_ai, " +
+				"draft = false";
 		try {
 			if (overrideParameters.containsKey("TASK_GLOBALS")) {
 				Map<String, Object> overrideGlobals = Json.get().fromJson(overrideParameters.get("TASK_GLOBALS").toString());
@@ -1917,7 +1770,7 @@ public class SharedLogic {
 			throw new Exception("Invalid Task Globals : " + e.getMessage());
 		}
 		String params_str = new JSONObject(overrideParameters).toString();
-		db(TDM).execute(sql, taskId, params_str, taskExecutionId);
+		db(TDM).execute(sql, taskId, params_str, taskExecutionId, createdByAi);
 	}
 
 
@@ -1934,15 +1787,11 @@ public class SharedLogic {
 		String entities_list_for_qry = "";
 		//ArrayList<String> releasedEntitiesList = entitiesList;
 		
-		for (int i = 0; i < entitiesList.size(); i++) {
-			entities_list_for_qry += "'" + entitiesList.get(i).trim() + "',";
-		}
-		// remove last ,
-		entities_list_for_qry = entities_list_for_qry.substring(0, entities_list_for_qry.length() - 1);
+		entities_list_for_qry = String.join(TDM_PARAMETERS_SEPARATOR, entitiesList);
 		
 		//log.info("fnValidateReservedEntities - beID: " + beID + ", envID: " + envID);
 		String baseQuery = "SELECT * FROM " + schema + ".TDM_RESERVED_ENTITIES WHERE " +
-				"be_id = ? AND env_id = ? AND entity_id IN (" + entities_list_for_qry + ") " +
+				"be_id = ? AND env_id = ? AND entity_id = ANY(string_to_array(?, ?)) " +
 				"AND CURRENT_TIMESTAMP >= start_datetime " +
                         "AND (end_datetime IS NULL OR CURRENT_TIMESTAMP < end_datetime)";
 		
@@ -1951,13 +1800,14 @@ public class SharedLogic {
         try {
             if ("OTHERS".equalsIgnoreCase(filterout_reserved)) {
 				query = baseQuery + " AND reserve_owner != ?";
-				reservedEntities = db(TDM).fetch(query, beID, envID, userName);
+				reservedEntities = db(TDM).fetch(query, beID, envID, entities_list_for_qry, TDM_PARAMETERS_SEPARATOR, userName);
             } else {
 				query = baseQuery;
-				reservedEntities = db(TDM).fetch(query, beID, envID);
+				reservedEntities = db(TDM).fetch(query, beID, envID, entities_list_for_qry, TDM_PARAMETERS_SEPARATOR);
             }		
-		//log.info("-------- query: " + query);
-					for (Db.Row row : reservedEntities) {
+			
+			//log.info("-------- query: " + query);
+			for (Db.Row row : reservedEntities) {
 				String entityID = "" + row.get("entity_id");
 				String owner = "" + row.get("reserve_owner");
 				//remove entity from released Entities as it is not reserved
@@ -2001,7 +1851,6 @@ public class SharedLogic {
 
    	// TDM 8.0 New function to populate the tdm_generate_task_field_mappings table.
 	public static void createTaskGEnerateParams(Long taskId, HashMap<String, Object> params) throws Exception {
-		String luName = getLuType().luName;
 
 		JSONObject JSONObject = new JSONObject(params);
 		for (String paramName : params.keySet()) {
@@ -2012,13 +1861,6 @@ public class SharedLogic {
 				String type = "" + paramValue.get("type");
 				Long order = (Long) paramValue.get("order");
 				if (value != null) {
-					// if (paramValue.has("default")) {
-					// Object defaultVal = paramValue.get("default");
-					// if(value.toString().equals(defaultVal.toString())) {
-					// continue;
-					// }
-					// }
-
 					String sql = "INSERT INTO " + schema + ".tdm_generate_task_field_mappings"
 							+ " values (?, ?, ?, ?, ?)";
 					db(TDM).execute(sql, taskId, paramName, type, value.toString(), order);
@@ -2074,26 +1916,47 @@ public class SharedLogic {
 	
 	
 
-public static List<HashMap<String, Object>> fnGetExecutionProcesses (Long be_id, String process_type) throws SQLException {
+public static List<HashMap<String, Object>> fnGetExecutionProcesses (Long be_id, String process_type) throws Exception {
         try {
-            String sql = "SELECT * FROM " + schema + ".TDM_BE_EXE_PROCESS  WHERE process_type= '" + process_type + "' AND be_id = " + be_id;
-            Db.Rows rows = db(TDM).fetch(sql);
+			List<HashMap<String, Object>> result = new ArrayList<>();
+			if (be_id != -1) {
+				String sql = "SELECT * FROM " + schema + ".TDM_BE_EXE_PROCESS  WHERE process_type= '" + process_type + "' AND be_id = " + be_id;
+				Db.Rows rows = db(TDM).fetch(sql);
 
-            List<HashMap<String, Object>> result = new ArrayList<>();
-            HashMap<String, Object> process;
-            for (Db.Row row : rows) {
-                process = new HashMap<>();
-                process.put("process_id", Long.parseLong(row.get("process_id").toString()));
-                process.put("process_name", row.get("process_name"));
-                process.put("process_description", row.get("process_description"));
-                process.put("be_id", row.get("be_id") != null ? Long.parseLong(row.get("be_id").toString()) : null);
-                process.put("execution_order", row.get("execution_order") != null ? Long.parseLong(row.get("execution_order").toString()) : null);
-                process.put("process_type", row.get("process_type"));
-                result.add(process);
-            }
-            if (rows != null) {
-                rows.close();
-            }
+				
+				HashMap<String, Object> process;
+				for (Db.Row row : rows) {
+					process = new HashMap<>();
+					process.put("process_id", Long.parseLong(row.get("process_id").toString()));
+					process.put("process_name", row.get("process_name"));
+					process.put("process_description", row.get("process_description"));
+					process.put("be_id", row.get("be_id") != null ? Long.parseLong(row.get("be_id").toString()) : null);
+					process.put("execution_order", row.get("execution_order") != null ? Long.parseLong(row.get("execution_order").toString()) : null);
+					process.put("process_type", row.get("process_type"));
+					result.add(process);
+				}
+				if (rows != null) {
+					rows.close();
+				}
+			} else {
+				Map<String, Object> processInputs = new HashMap<>();
+				processInputs.put("Process_type", process_type);
+
+				HashMap<String, Object> process;
+				List<Map<String, Object>> ProcessList = MtableLookup("TableLevelPostAndPreExecutionProcess", processInputs, MTable.Feature.caseInsensitive);
+				for (Map<String, Object> processRec : ProcessList) {
+					process = new HashMap<>();
+					Long processId = (Long)Util.rte(() -> db(TDM).fetch("select nextval('exe_process_id_seq'::regclass)").firstValue());
+					process.put("process_id", processId);
+					process.put("process_name", processRec.get("Process_name"));
+					process.put("process_description", null);
+					process.put("be_id", null);
+					process.put("execution_order", processRec.get("Execution_order"));
+					process.put("process_type", process_type);
+					result.add(process);
+				}  
+			}
+
             return result;
         } catch (SQLException e) {
             log.error(e.getMessage());

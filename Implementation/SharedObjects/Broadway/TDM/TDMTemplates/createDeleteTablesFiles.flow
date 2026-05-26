@@ -46,7 +46,25 @@ stages:
         out:
           PROJECT_FOLDER:
             schema: string
-      Get Template:
+      Get Template of Table's XML:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTemplate
+          TEMPLATE_TYPE:
+            const: delete_table_xml_template
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          INTERFACE_TYPE:
+            external: INTERFACE_TYPE
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Get Template of Table's Population:
         parent: InnerFlow
         in:
           flowName:
@@ -73,7 +91,7 @@ stages:
             const: null
             link: Get Project Directory/PROJECT_FOLDER
           path:
-            const: SharedObjects/Templates/TDM/deleteTable.k2table.xml.template
+            link: Get Template of Table's XML/result
       Read Template of Table Population:
         parent: FileRead
         in:
@@ -81,7 +99,7 @@ stages:
             const: null
             link: Get Project Directory/PROJECT_FOLDER
           path:
-            link: Get Template/result
+            link: Get Template of Table's Population/result
   Create Flow:
     actors:
       flow folder:

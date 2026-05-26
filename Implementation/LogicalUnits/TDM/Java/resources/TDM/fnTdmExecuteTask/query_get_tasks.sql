@@ -4,6 +4,7 @@ SELECT DISTINCT
   , tt.task_type
   , tt.creation_date
   , tt.environment_id
+  , tt.source_environment_id
   , 0 AS parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
@@ -54,6 +55,7 @@ SELECT DISTINCT
   , tt.task_type
   , tt.creation_date
   , tt.environment_id
+  , tt.source_environment_id
   , 0 AS parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
@@ -114,6 +116,7 @@ SELECT DISTINCT
   , tt.task_type
   , tt.creation_date
   , tt.environment_id
+  , tt.source_environment_id
   , tt.parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
@@ -164,6 +167,7 @@ SELECT DISTINCT
   , tt.task_type
   , tt.creation_date
   , tt.environment_id
+  , tt.source_environment_id
   , 0 as parent_lu_id
   , tt.lu_id
   , tt.task_execution_id

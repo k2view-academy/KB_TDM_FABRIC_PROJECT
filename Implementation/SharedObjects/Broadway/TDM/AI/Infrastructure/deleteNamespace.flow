@@ -1,0 +1,87 @@
+tags: Medoid,TDM
+stages:
+  Get Input:
+    actors:
+      Namespace:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: namespace
+  Create Content:
+    actors:
+      MapCreate:
+        parent: MapCreate
+        in:
+          Content-Type:
+            const: application/yaml
+            schema: string
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+  Formt Parh:
+    actors:
+      format:
+        parent: StringFormat
+        in:
+          format:
+            const: /${api}/namespaces/${namespace}/${kind}
+          namespace:
+            link:
+              path: Namespace/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          kind:
+            schema: string
+            mandatory: false
+          api:
+            const: api/v1
+            schema: string
+            mandatory: false
+  Apply request:
+    actors:
+      apply:
+        parent: Http
+        in:
+          interface:
+            const: AI_Execution
+          path:
+            const: null
+            link: format/string
+          method:
+            const: DELETE
+          headers:
+            const: null
+            link: MapCreate/map
+          noCertificateCheck:
+            const: true
+        out:
+          header:
+            schema: '#ref'
+schemas:
+  MapCreate.out.map:
+    type: object
+    properties:
+      Content-Type:
+        type: string
+  apply.out.header:
+    type: object
+    properties:
+      Transfer-Encoding:
+        type: string
+      X-Kubernetes-Pf-Flowschema-Uid:
+        type: string
+      Cache-Control:
+        type: string
+      Audit-Id:
+        type: string
+      X-Kubernetes-Pf-Prioritylevel-Uid:
+        type: string
+      Content-Type:
+        type: string
+      Content-Length:
+        type: integer
+      Date:
+        type: date

@@ -10,3 +10,4 @@ role_base_template,tdmCreateGenerateDataPop.pop.flow.template
 sequence_table_template,table_sequences.flow.template
 delete_table_population_template,deleteTablePopulation.flow.template
 delete_document_template,tdmDeleteDocument.flow.template
+delete_table_xml_template,deleteTable.k2table.xml.template

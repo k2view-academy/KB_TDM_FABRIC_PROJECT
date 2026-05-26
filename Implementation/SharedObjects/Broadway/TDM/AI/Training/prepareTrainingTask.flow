@@ -115,11 +115,11 @@ stages:
             mandatory: false
   MDB EXPORT Schema:
     actors:
-      Getk2SystemSchemaName:
+      getk2SystemSchemaName:
         parent: InnerFlow
         in:
           flowName:
-            const: Getk2SystemSchemaName
+            const: getk2SystemSchemaName
         out:
           result:
             schema: string
@@ -161,7 +161,7 @@ stages:
             schema: string
             mandatory: false
           K2SCHEMA_NAME:
-            link: Getk2SystemSchemaName/result
+            link: getk2SystemSchemaName/result
             schema: any
             mandatory: false
   DC Name Is Empty:
@@ -332,21 +332,34 @@ stages:
             schema: '#ref'
   Get the IID:
     actors:
-      IID Format:
-        parent: StringFormat
+      SplitIIDAndCloneNumber_Actor1:
+        parent: SplitIIDAndCloneNumber_Actor
         in:
-          format:
-            const: ${IID}_${executionID}
-          IID:
+          iid:
             link:
               path: Get the TDM_EID'S/result/iid
               iterate: Iterate
-            schema: string
-            mandatory: false
+  'Build Format ':
+    actors:
+      Target IID:
+        parent: StringFormat
+        in:
+          format:
+            const: '{"env": "${env}", "iid": "${iid}", "exec_id": ${executionID}}'
           executionID:
             link: taskExecutionID/value
             schema: string
             mandatory: false
+          env:
+            link: SplitIIDAndCloneNumber_Actor1/envName
+            schema: any
+            mandatory: false
+            createdBy: format
+          iid:
+            link: SplitIIDAndCloneNumber_Actor1/instanceID
+            schema: any
+            mandatory: false
+            createdBy: format
   Entity List:
     actors:
       List:
@@ -354,7 +367,7 @@ stages:
         in:
           input:
             link:
-              path: IID Format/string
+              path: Target IID/string
               pos: 0
         out:
           array:

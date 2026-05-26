@@ -92,11 +92,11 @@ public class Logic extends UserCode {
 	public static void fnCheckMigrateAndUpdateTDMDB() throws Exception {
 		// TDM 5.1- fix the query- check the task_type instead of the fabric_execution_id, since a reference only task does not have the fabric_execution_id (= migrate id)
 		String selectFromTaskExecutionListSql = "Select tel.fabric_execution_id, tel.task_id, tel.lu_id, " +
-                "tlu.lu_name, tel.task_type, tel.process_id, tpost.process_name, tpost.process_type, " + 
+                "plu.lu_name, tel.task_type, tel.source_env_name, tel.process_id, tpost.process_name, tpost.process_type, " + 
                 "tel.task_execution_id, tel.parent_lu_id, t.execution_mode, tel.be_id, t.clone_ind " +
                 "from " + TDMDB_SCHEMA + ".task_execution_list tel " +
                 "left join " + TDMDB_SCHEMA + ".tasks t on tel.task_id = t.task_id " +
-				"left join " + TDMDB_SCHEMA + ".tasks_logical_units tlu on tel.task_id = tlu.task_id And tel.lu_id = tlu.lu_id " +
+				"left join " + TDMDB_SCHEMA + ".product_logical_units plu on tel.lu_id = plu.lu_id " +
 				"left join " + TDMDB_SCHEMA + ".tasks_exe_process tpost On tel.task_id = tpost.task_id " +
 				"and tel.process_id = tpost.process_id Where Lower(tel.execution_status) = 'running'";
 		
@@ -132,6 +132,7 @@ public class Logic extends UserCode {
                 String failed="0";
                 String copied="0";
 				String luName = "";
+				String srcEnv = "";
 				String taskType = "";
                 String processType = "";
 
@@ -158,6 +159,7 @@ public class Logic extends UserCode {
 					processID = (Long) row.get("process_id");
                     processType = "" + row.get("process_type");
 					luName = "" + row.get("lu_name");
+					srcEnv = "" + row.get("source_env_name");
 					// TDM 7.0 - Since the this job also handles Load tasks, get the task_type
 					taskType = "" + row.get("task_type");
 					//log.info("Procssing LU_NAME: " + luName + ", Migrate ID: " + batchID);
@@ -175,9 +177,8 @@ public class Logic extends UserCode {
 					//but check the reference status instead
 		
 					//String selectionMethod = "" + db(TDM).fetch("Select selection_method from " + TASKS + " where task_id=?", taskID).firstValue();
-                    Db.Row taskRec = db(TDM).fetch("Select selection_method, source_env_name from " + TASKS + " where task_id=?", taskID).firstRow();
+                    Db.Row taskRec = db(TDM).fetch("Select selection_method from " + TASKS + " where task_id=?", taskID).firstRow();
                     String selectionMethod = taskRec.get("selection_method").toString();
-                    String srcEnv = taskRec.get("source_env_name").toString();
 
 					Integer totNoOfRefTables = 0;
 					// TDM 5.1- add the update of the reference tables fields
@@ -273,6 +274,12 @@ public class Logic extends UserCode {
 									status = FAILED;
 								}
 								total = "" + batchStats.get("Total");
+								if ("".equals(total) || "UNKNOWN".equalsIgnoreCase(total)){
+									total = "0";
+								}
+								if (total.startsWith(">")) {
+									total = total.substring(1);
+								}
 								failed = "" + batchStats.get("Failed");
 								
 								// TDM 7.5 - if the total is zero for a root LU, then set the status of the task to failed
@@ -505,7 +512,7 @@ public class Logic extends UserCode {
 			}
 		}catch(Exception e)
 		{
-			log.error("Failed to sync TDM LU for execution id: " + taskExecutionId + ". Error message: " + e.getMessage(),e);
+			log.error("Failed to clean redis for load task execution id: " + taskExecutionId + ". Error message: " + e.getMessage(),e);
 			throw e;
 			
 		} finally {

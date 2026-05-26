@@ -1,0 +1,98 @@
+tags: Upgrade
+stages:
+  Remove Final from Seq Report Global:
+    actors:
+      UpgradeSeqReportGlobal1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeSeqReportGlobal
+  Handle Globals:
+    actors:
+      UpgradeGlobals:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeGlobals
+  Add display order for CSV's files:
+    actors:
+      UpgradeParamsAddDisplayOrder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeParamsAddDisplayOrder
+          mtable:
+            const: LuParams
+            schema: string
+            editor:
+              id: com.k2view.mTable
+            mandatory: false
+          columns:
+            const:
+            - lu_name
+            - column_name
+            - sql
+            - description
+            - display_order
+            schema: '#ref'
+            editor:
+              id: com.k2view.strings
+            mandatory: false
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParams.csv
+            schema: string
+            mandatory: false
+      UpgradeParamsAddDisplayOrder1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeParamsAddDisplayOrder
+          mtable:
+            const: LuParamsMapping
+            schema: string
+            editor:
+              id: com.k2view.mTable
+            mandatory: false
+          columns:
+            const:
+            - lu_name
+            - param_name
+            - lu_table
+            - lu_table_field
+            - description
+            - display_order
+            schema: '#ref'
+            editor:
+              id: com.k2view.strings
+            mandatory: false
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParamsMapping.csv
+            schema: string
+            mandatory: false
+  add task exe_permissions:
+    actors:
+      addTaskExePermission1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: addTaskExePermission
+          task executer:
+            const: ALL
+            schema: any
+            editor:
+              options:
+              - ALL
+              - Me
+              - My group
+              id: com.k2view.dropdown
+            mandatory: false
+            createdBy: flowName
+schemas:
+  UpgradeParamsAddDisplayOrder.in.columns:
+    type: array
+    items:
+      type: string
+  UpgradeParamsAddDisplayOrder1.in.columns:
+    type: array
+    items:
+      type: string

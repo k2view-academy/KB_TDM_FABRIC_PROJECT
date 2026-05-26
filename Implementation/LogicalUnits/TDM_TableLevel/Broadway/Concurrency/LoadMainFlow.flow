@@ -622,7 +622,7 @@ stages:
                   MAX(end_time)   AS end_time,
                   CASE
                     WHEN BOOL_AND(number_of_records_to_process = -1) THEN -1
-                    WHEN SUM(COALESCE(number_of_records_to_process, 0)) > 0 THEN SUM(COALESCE(number_of_records_to_process, 0)) END AS number_of_records_to_process,
+                    WHEN SUM(COALESCE(number_of_records_to_process, 0)) >= 0 THEN SUM(COALESCE(number_of_records_to_process, 0)) END AS number_of_records_to_process,
                   SUM(COALESCE(number_of_processed_records, 0))   AS number_of_processed_records,
                   CASE
                     WHEN SUM(COALESCE(number_of_failed_records, 0)) > 0 THEN  SUM(COALESCE(number_of_failed_records, 0))

@@ -1,3 +1,4 @@
+tags: Concurrency
 stages:
   Get Fields and Set Env:
     actors:
@@ -116,29 +117,46 @@ stages:
           actorId:
             const:
             - Binding Variable
-  Build Create/Insert Statements:
+  Special Chars:
     actors:
-      Build Delete Statement:
-        parent: StringFormat
+      Handle Special Chars in Table Name:
+        parent: JavaScript
         in:
-          format:
-            const: /*sqlite*/ DELETE FROM TDM_TableLevel.__t_${tableName}
+          script:
+            const: |-
+              var result = tableName.replace(/^"|"$/g, '');
+              result = '\"__t_' + result + '\"';
+              result;
           tableName:
             external: tableName
             schema: string
             mandatory: false
+        out:
+          result:
+            schema: string
+  Build Create/Insert Statements:
+    actors:
       Build Create Statement:
         parent: StringFormat
         in:
           format:
-            const: "/*sqlite*/CREATE TABLE IF NOT EXISTS TDM_TableLevel.__t_${tableName}\
+            const: "/*sqlite*/CREATE TABLE IF NOT EXISTS TDM_TableLevel.${tableName}\
               \ (\r\n${colmns})"
           colmns:
             link: Add Field to Create Statement/string
             schema: string
             mandatory: false
           tableName:
-            external: tableName
+            link: Handle Special Chars in Table Name/result
+            schema: string
+            mandatory: false
+      Build Delete Statement:
+        parent: StringFormat
+        in:
+          format:
+            const: /*sqlite*/ DELETE FROM TDM_TableLevel.${tableName}
+          tableName:
+            link: Handle Special Chars in Table Name/result
             schema: string
             mandatory: false
   Create Table:
@@ -167,7 +185,7 @@ stages:
         parent: StringFormat
         in:
           format:
-            const: /*sqlite*/ insert into TDM_TableLevel.__t_${tableName} (${columns})
+            const: /*sqlite*/ insert into TDM_TableLevel.${tableName} (${columns})
               values(${values})
           values:
             link: Add ? to Insert Statement/string
@@ -178,7 +196,7 @@ stages:
             schema: string
             mandatory: false
           tableName:
-            external: tableName
+            link: Handle Special Chars in Table Name/result
             schema: string
             mandatory: false
         out:

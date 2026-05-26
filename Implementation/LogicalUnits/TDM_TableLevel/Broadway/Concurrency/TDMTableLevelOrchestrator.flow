@@ -153,7 +153,7 @@ stages:
         out:
           result:
             schema: '#ref'
-      getTDMDBSchema:
+      Get TDMDB Schema:
         parent: InnerFlow
         in:
           flowName:
@@ -191,7 +191,7 @@ stages:
               start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
               updated_by = ${userName}
               where task_execution_id = ${taskExeId}
-              and ref_table_name = ${tableName}
+              and task_ref_table_id = ${tableRefId}
           userName:
             link: Get Executor Name/result
             schema: string
@@ -200,14 +200,17 @@ stages:
             link: SplitIID/result/execution_id
             schema: string
             mandatory: false
-          tableName:
-            link: SplitIID/result/table
-            schema: string
-            mandatory: false
           TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+            link:
+            - path: GetTableInformation/result/TaskRefTables/task_ref_table_id
+              iterate: First
+            - Get TDMDB Schema/schema
             schema: string
             mandatory: false
+          tableRefId:
+            schema: integer
+            mandatory: false
+            createdBy: sql
       Set Start Processing Time:
         parent: FabricSet
         in:
@@ -218,7 +221,7 @@ stages:
             const: null
             link: Format Start Time/string
             default: false
-      GetSchemaForCatalog1:
+      Get Schema For Catalog:
         parent: InnerFlow
         in:
           flowName:
@@ -299,7 +302,7 @@ stages:
                where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
                AND partition_no=${partition_no}
           TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
             createdBy: sql
@@ -343,7 +346,7 @@ stages:
                where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
                AND partition_no=${partition_no}
           TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
             createdBy: sql
@@ -441,7 +444,7 @@ stages:
             createdBy: flowName
           catalogSchema:
             link:
-              path: GetSchemaForCatalog1/result
+              path: Get Schema For Catalog/result
               iterate: First
             schema: string
             editor:
@@ -589,7 +592,7 @@ stages:
             createdBy: flowName
           catalogSchema:
             link:
-              path: GetSchemaForCatalog1/result
+              path: Get Schema For Catalog/result
               iterate: First
             schema: string
             mandatory: false

@@ -142,8 +142,6 @@ stages:
             - RESERVE_RETENTION_PERIOD_VALUE
             - BE_ID
             - TASK_TYPE
-            - enable_sequences
-            - enable_masking
             - BUILD_TDMDB
   Stage 4:
     actors:
@@ -164,15 +162,15 @@ stages:
             const: mergeJavaFiles
           oldFilePath:
             link: oldSharedGlobal/string
-            schema: any
+            schema: string
             mandatory: false
           newFilePath:
             link: newSharedGlobal/string
-            schema: any
+            schema: string
             mandatory: false
           outputFilePath:
             link: oldSharedGlobal/string
-            schema: any
+            schema: string
             mandatory: false
           className:
             const: SharedGlobals
@@ -180,5 +178,10 @@ stages:
             mandatory: false
           ignoreFieldsArray:
             link: fieldsToIgnore/strings
-            schema: any
+            schema: '#ref'
             mandatory: false
+schemas:
+  mergeFiles.in.ignoreFieldsArray:
+    type: array
+    items:
+      type: string

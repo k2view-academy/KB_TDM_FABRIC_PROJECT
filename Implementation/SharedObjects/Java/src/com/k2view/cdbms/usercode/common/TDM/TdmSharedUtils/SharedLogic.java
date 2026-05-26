@@ -24,14 +24,13 @@ import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipInputStream;
-import java.io.ByteArrayInputStream;
 import java.util.zip.ZipEntry;
-import java.io.ByteArrayInputStream;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
@@ -44,7 +43,6 @@ import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.get
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.toSqliteType;
-
 import static java.lang.Math.min;
 
 import java.io.File;
@@ -58,12 +56,10 @@ public class SharedLogic {
     }};
     private static final String TDM = "TDM";
     private static final String TABLES = "TABLES";
-    private static final String TASK_EXECUTION_LIST = TDMDB_SCHEMA + ".task_execution_list";
-    private static final String TASK_REF_TABLES = TDMDB_SCHEMA + ".TASK_REF_TABLES";
     private static final String PRODUCT_LOGICAL_UNITS = TDMDB_SCHEMA + ".product_logical_units";
     private static final String TASK_REF_EXE_STATS = TDMDB_SCHEMA + ".TASK_REF_EXE_STATS";
     private static final String TASKS_LOGICAL_UNITS = TDMDB_SCHEMA + ".tasks_logical_units";
-    private static final String TDM_REFERENCE = "fnTdmReference";
+
     private static final String PENDING = "pending";
     private static final String RUNNING = "running";
     private static final String WAITING = "waiting";
@@ -86,7 +82,28 @@ public class SharedLogic {
 	public static Map<String, List<Map<String, Object>>> allTables = new HashMap<>();
 	private static HashMap<String, String> luShortMap = new HashMap<>();
     private static HashMap<String, String> tdmSeparators = new HashMap<>();
-  
+
+	public enum OverrideParamKey {
+		BE_ID,
+		LOGICAL_UNITS,
+		SOURCE_ENVIRONMENT_NAME,
+		TARGET_ENVIRONMENT_NAME,
+		SELECTION_METHOD,
+		ENTITY_LIST,
+		CUSTOM_LOGIC_FLOW,
+		CUSTOM_LOGIC_LU_NAME,
+		BP_QUERY,
+		PARAMETERS,
+		GENERATE_DATA_PARAMS,
+		NO_OF_ENTITIES,
+		TASK_GLOBALS,
+		RESERVE_IND,
+		SELECTED_VERSION_TASK_EXE_ID,
+		DATAFLUX_RETENTION_PARAMS,
+		RESERVE_RETENTION_PARAMS,
+		EXECUTION_NOTE
+	}
+
     public static Object fnBatchStatistics(String i_batchId, String i_runMode) throws Exception {
         Object response;
         switch (i_runMode) {
@@ -1315,436 +1332,7 @@ public class SharedLogic {
                 rs1.close();
         }
     }
-
-
-	@out(name = "result", type = Object.class, desc = "")
-	public static Object fnStartTask(Long taskId, Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, Integer numberOfEntities, Long dataVersionExecId, Map<String,String> dataVersionRetentionPeriod, Boolean reserveInd, Map<String,String> reserveRetention, String executionNote) throws Exception {
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
-		String errorCode;
-		
-		boolean sourceEnvValidation = false;
-		boolean targetEnvValidation = false;
-		boolean srcEnvFound = false;
-		boolean trgEnvFound = false;
-		
-		LUType luType = LUType.getTypeByName("TDM");
-				
-		List<LudbJobs.LudbJob> jobList = luType.ludbUserJobs;
-		String downJobsList = "";
-		
-		Map<String, String> jobDownError = new HashMap<>();
-		
-		for (LudbJobs.LudbJob job : jobList) {
-			String executionMode = Util.rte(() -> "" + job.executionMode);
-			String activeInd = Util.rte(() -> "" + job.active);
-			String functionName = Util.rte(() -> "" + job.functionName);
-			String uid = Util.rte(() -> "" + job.uid);
-			String affinity = Util.rte(() -> "" + job.affinity);
-			if ("null".equals(affinity)) {
-				affinity = "";
-			}
-			
-			String jobStatus = "";
-			if ("true".equalsIgnoreCase(activeInd) && "automatically".equalsIgnoreCase(executionMode)) {
-		
-				Db.Row jobDetails = fabric().fetch("jobstatus user_job 'TDM." + 
-						functionName + "' WITH UID='" + uid + "'").firstRow();
-				jobStatus = "" + jobDetails.get("Status");
-				//log.info("Job Status: " + jobStatus);
-				
-				if (!"IN_PROCESS".equalsIgnoreCase(jobStatus) && !"SCHEDULED".equalsIgnoreCase(jobStatus) && !"WAITING".equalsIgnoreCase(jobStatus)) {
-					if ("tdmExecuteTask".equalsIgnoreCase(functionName) || "fnCheckMigrateAndUpdateTDMDB".equalsIgnoreCase(functionName)) {
-						String errMsg = "" + jobDetails.get("Notes");
-						UserCode.log.error("Job " + functionName + " is down, cannot run task. The Error Messge: " + errMsg);
-						String jobDownMsg = "Job " + functionName + " is down, cannot run task!";
-						jobDownError.put(functionName, jobDownMsg);
-						if ("".equals(downJobsList)) {
-							downJobsList = functionName;
-						} else {
-							downJobsList += ", " + functionName;
-						}
-					} else {
-		                      UserCode.log.warn("Job " + functionName + " is down, and it is an automatic job, please check why it is down");
-					}
-				}
-							
-			}
-		}
-		if (jobDownError.size() > 0) {
-			return wrapWebServiceResults("FAILED", "Mandatory Job(s): " + downJobsList + " Down!", jobDownError);
-		}
-		
-		//Map<String, Object> taskData;
-		Db.Rows taskRows;
-		try {
-			//taskData = ((List<Map<String, Object>>) ((Map<String, Object>) wsGetTasks(taskId.toString())).get("result")).get(0);
-			
-			taskRows = (fnGetTasks(taskId.toString(),"Active"));
-			
-		} catch(Exception e) {
-			throw new Exception("Task is not found");
-		}
-		for (Db.Row taskRow : taskRows) {
-			ResultSet taskData = taskRow.resultSet();
-			if(!fnIsTaskActive(taskId)) throw new Exception("Task is not active");
-			String taskType = "" + taskData.getString("task_type");
-            String createdBy = taskData.getString("task_created_by");
-			String userName="";
-			Boolean deleteBeforeLoad = taskData.getBoolean("delete_before_load");
-			Boolean insertToTarget = taskData.getBoolean("load_entity");
-            Boolean cloneInd = taskData.getBoolean("clone_ind");
-			Boolean entityListInd = false;
-			Integer entityListSize = 0;
-			Boolean versionInd = taskData.getBoolean("version_ind");
-			if (entitieslist != null) {
-				entityListSize = (entitieslist.split(",")).length;
-				entityListInd = true;
-			} else if (taskData.getString("selection_param_value") != null && "L".equalsIgnoreCase(taskData.getString("selection_method"))) {
-				String[] entityList = ((String) taskData.getString("selection_param_value")).split(",");
-				entityListSize = entityList.length;
-			}
-			//log.info("Entity list is given?: " + entityListInd);
-			Map<String,Object> overrideParams=new HashMap<>();
-			String selectionMethodOrig = "" + taskData.getString("selection_method");
-			String selectionMethod = selectionMethodOrig;
-            
-			if (entitieslist!=null) {
-				selectionMethod = "L";
-			}
-			
-			if (sourceEnvironmentName!=null) overrideParams.put("SOURCE_ENVIRONMENT_NAME",sourceEnvironmentName);
-			if (targetEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
-			if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
-			if (!selectionMethod.equals(selectionMethodOrig)) overrideParams.put("SELECTION_METHOD",selectionMethod);
-			// If entity_list is given, then ignore the given no_of_entities unless in case of cloning
-			if (numberOfEntities!=null && (!entityListInd  || cloneInd)) {
-				//log.info("setting the number of entities to: " + numberOfEntities);
-				overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
-			}
-			if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
-			
-			if(overrideParams.get("ENTITY_LIST")!=null){
-				String[] entityList=((String)overrideParams.get("ENTITY_LIST")).split(",");
-				Arrays.sort(entityList);
-				overrideParams.put("ENTITY_LIST",String.join(",",entityList));
-			}
-			
-			//TDM 7.4 - Support override for reserved entities
-			if(reserveInd!=null){
-				overrideParams.put("RESERVE_IND", reserveInd);
-			}
-			else{
-				reserveInd = taskData.getBoolean("reserve_ind");
-			}
-			
-			if (!fnValidateParallelExecutions(taskId, overrideParams)) {
-				throw new Exception("Task already running");
-			}
-			
-			List<String> taskLogicalUnitsIds=new ArrayList<>();
-			
-			Db.Rows rows = db(TDM).fetch("SELECT lu_id FROM " + TDMDB_SCHEMA + ".tasks_logical_units WHERE task_id = ?", taskId);
-			for (Db.Row row : rows) {
-				taskLogicalUnitsIds.add("" + row.get("lu_id"));
-			}
-			
-			if (rows != null) {
-				rows.close();
-			}
-			Map<String,Object> be_lus=new HashMap<>();
-			be_lus.put("be_id",taskData.getString("be_id"));
-			be_lus.put("LU List",taskLogicalUnitsIds);
-			//log.info("selectionMethod: " + selectionMethod);
-			//String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.getString("source_env_name");
-			String sourceEnvName = (sourceEnvironmentName != null && !sourceEnvironmentName .trim().isEmpty()) ? sourceEnvironmentName : taskData.getString("source_env_name");
-			
-			if (dataVersionExecId!=null) {
-				Map<String, String> validateVersionID = fnValidateVersionExecIdAndGetDetails(dataVersionExecId, be_lus, sourceEnvName);
-				if (validateVersionID.get("errorMessage") == null) {
-					overrideParams.put("SELECTED_VERSION_TASK_EXE_ID", dataVersionExecId);
-				} else {
-					return wrapWebServiceResults("FAILED", "versioningtask", validateVersionID.get("errorMessage"));
-				}
-			}
-			Integer numberOfRequestedEntities = 0;
-			if (numberOfEntities != null) {
-				if (entityListInd && !cloneInd && numberOfEntities != entityListSize) {
-					numberOfRequestedEntities = entityListSize;
-					message = "The number of entities for execution is set based on the entity list";
-					overrideParams.put("NO_OF_ENTITIES",numberOfRequestedEntities);
-				} else {
-					numberOfRequestedEntities = numberOfEntities;
-					entityListSize = numberOfEntities;
-				}
-			} else {
-				if (entityListInd && !cloneInd) {
-					numberOfRequestedEntities = entityListSize;
-				} else {
-					numberOfRequestedEntities =  (taskData.getInt("num_of_entities"));
-				}
-			}
-			if (cloneInd && numberOfRequestedEntities > 0) {
-				entityListSize = numberOfRequestedEntities;
-			}
-			
-			// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
-			String targetExeEnvName = (targetEnvironmentName != null &&  !targetEnvironmentName .trim().isEmpty())? targetEnvironmentName : taskData.getString("environment_name");
-		
-			Map<String, String> validateMessages ;
-			if (dataVersionRetentionPeriod!=null) {
-				validateMessages = fnValidateRetentionPeriodParams(dataVersionRetentionPeriod,
-						"retention", targetExeEnvName,versionInd,createdBy);
-				if (validateMessages != null && !validateMessages.isEmpty()) {
-					return wrapWebServiceResults("FAILED", "RetentionPeriod", validateMessages.get("retention"));
-				}
-				overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
-			} else{
-                if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
-			        Map<String, String> dataRetentionPeriod = new HashMap<>();
-                    dataRetentionPeriod.put("units", taskData.getString("retention_period_type"));
-                    dataRetentionPeriod.put("value", String.valueOf(taskData.getLong("retention_period_value")));
-                    validateMessages = fnValidateRetentionPeriodParams(dataRetentionPeriod,
-                            "retention", targetExeEnvName, versionInd,createdBy);
-                    if (validateMessages != null && !validateMessages.isEmpty()) {
-                        return wrapWebServiceResults("FAILED", "RetentionPeriod", validateMessages.get("retention"));
-                    }
-                }
-			}
-			if(reserveInd) {
-				if (reserveRetention != null) {
-					validateMessages = fnValidateRetentionPeriodParams(reserveRetention,
-							"reserve", targetExeEnvName, false,createdBy);
-					if (validateMessages != null && !validateMessages.isEmpty()) {
-						return wrapWebServiceResults("FAILED", "ReservationPeriod", validateMessages.get("reservation"));
-					}
-					overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
-				} else {
-					Map<String, String> dataReservePeriod = new HashMap<>();
-					dataReservePeriod.put("units", taskData.getString("reserve_retention_period_type"));
-					dataReservePeriod.put("value", String.valueOf(taskData.getLong("reserve_retention_period_value")));
-					validateMessages = fnValidateRetentionPeriodParams(dataReservePeriod,
-							"reserve", targetExeEnvName, false,createdBy);
-					if (validateMessages != null && !validateMessages.isEmpty()) {
-						return wrapWebServiceResults("FAILED", "ReservationPeriod", validateMessages.get("reservation"));
-					}
-				}
-			}
-			List<Map<String,Object>> sourceRolesList = new ArrayList<>();
-			List<Map<String,Object>> targetRolesList = new ArrayList<>();
-		    List<Map<String,Object>> rolesList;
-            
-		    if ("TDM.tdmTaskScheduler".equalsIgnoreCase(sessionUser().name())) {
-				userName=createdBy;
-		        rolesList = fnGetUserEnvs(createdBy);
-		    }else{
-		        rolesList = fnGetUserEnvs("");
-		    }
-			
-			//UserCode.log.info("------- Size: " + rolesList.size());
-			for (Map<String, Object> envType : rolesList) {
-				if (envType.get("source environments") != null) {
-					sourceRolesList = (List<Map<String, Object>>) (envType.get("source environments"));
-				}
-				if (envType.get("target environments") != null) {
-					targetRolesList = (List<Map<String, Object>>) (envType.get("target environments"));
-				}
-			}
-			//UserCode.log.info("------- Size of sourceRolesList: " + sourceRolesList.size());
-			//UserCode.log.info("------- Size of targetRolesList: " + targetRolesList.size());
-			
-			List<Map<String, String>> validationsErrorMessagesByRole = new ArrayList<>();
-			Long validateReadNumber = -1L;
-			Long validateReserveNumber=-1L;
-			Long validateWriteNumber=-1L;
-			Long validateNumber =-1L;
-			String permission = "";
-
-            //UserCode.log.info("fnStartTask - taskType: " + taskType + ", deleteBeforeLoad: " + deleteBeforeLoad + ", insertToTarget: " + insertToTarget);
-			if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
-				if (sourceRolesList == null || sourceRolesList.isEmpty()) {
-					throw new Exception("Environment does not exist or user has no read permission on this environment");
-				}
-				for (Map<String, Object> role : sourceRolesList) {
-					//Check if the current role is related to input environment, and not to other environment
-					if (sourceEnvName.equals(role.get("environment_name"))) {
-						srcEnvFound = true;
-						String roleID=role.get("role_id").toString();
-						int allowedEntitySize = getAllowedEntitySize(entityListSize, numberOfRequestedEntities);
-						if ("tester".equalsIgnoreCase(fnGetUserPermissionGroup(userName))) { // extract || generate
-							validateReadNumber = (long) fnValidateNumberOfReadEntities(roleID, sourceEnvName);
-							permission = "read" ;
-						}
-						Map<String, String> sourceValidationsErrorMessages = fnValidateSourceEnvForTask(be_lus, taskData.getInt("refcount"),
-								selectionMethod,
-								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role,taskId,validateReadNumber);
-						//log.info("validateNumber: " + validateNumber);
-		
-						if (validateReadNumber!=-1 && (allowedEntitySize > validateReadNumber)) {
-							sourceValidationsErrorMessages.put("Number of entity", "The number of entities exceeds the number of entities in the " + permission + " permission");
-						} else if (sourceValidationsErrorMessages.isEmpty()) {
-							if ("extract".equalsIgnoreCase(taskType) && (numberOfEntities!=null || entityListInd)) {
-								overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
-							}
-							sourceEnvValidation = true;
-							break;
-						}
-		
-						validationsErrorMessagesByRole.add(sourceValidationsErrorMessages);
-					}
-				}
-			} else {// No Source validation
-				sourceEnvValidation = true;
-			}
-		
-			if("load".equalsIgnoreCase(taskType) || "reserve".equalsIgnoreCase(taskType)) {
-		
-				if(targetRolesList == null || targetRolesList.isEmpty()) {
-					throw new Exception("Environment does not exist or user has no write permission on this environment");
-				}
-		
-				for (Map<String, Object> role : targetRolesList) {
-					if (targetExeEnvName.equals(role.get("environment_name"))) {
-						trgEnvFound = true;
-						Map<String, String> targetValidationsErrorMessages=new HashMap<>();
-		
-						int allowedEntitySize = getAllowedEntitySize(entityListSize, numberOfRequestedEntities);
-		
-						if ("tester".equalsIgnoreCase(fnGetUserPermissionGroup(userName))) {
-							validateReserveNumber = (long) fnValidateNumberOfReserveEntities(role.get("role_id").toString(), targetExeEnvName);
-							validateWriteNumber = (long) fnValidateNumberOfCopyEntities(role.get("role_id").toString(), targetExeEnvName);
-							if ("load".equalsIgnoreCase(taskType)) {
-								if (reserveInd!=null && reserveInd) { //load+reserve || load+extract+reserve ||  load+extract+reserve+delete
-									Long reserved = fnGetReservedEntitiesNumber("" + role.get("environment_id"), "" + be_lus.get("be_id"),sessionUser().name());
-									validateNumber =  min(validateReadNumber,min((validateReserveNumber-reserved),validateWriteNumber));
-									permission = "read write reserve";
-		
-								} else if(!insertToTarget && deleteBeforeLoad) {
-									validateNumber=validateWriteNumber;// delete only
-									permission="write";
-								}else { // load only || load + delete || load + extract || load+extract+delete
-									validateNumber=min(validateWriteNumber, validateReadNumber);
-									permission="read write";
-								}
-							}else { //reserve only
-								Long reserved = fnGetReservedEntitiesNumber("" + role.get("environment_id"), "" + be_lus.get("be_id"),sessionUser().name());
-								validateNumber=validateReserveNumber-reserved;
-								permission="reserve";
-							}
-						}
-						targetValidationsErrorMessages = fnValidateTargetEnvForTask(be_lus, taskData.getInt("refcount"),
-								selectionMethod,
-								taskData.getBoolean("version_ind"),
-								taskData.getBoolean("replace_sequences"), taskData.getBoolean("delete_before_load"), taskType,
-								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role, cloneInd,taskData.getString("sync_mode"),taskId,validateNumber);
-						//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
-						if (validateNumber != -1 && (allowedEntitySize>validateNumber)) {
-							targetValidationsErrorMessages.put("Number of entity", "The number of entities exceeds the number of entities in the "+ permission+ " permission");
-						} else if ( targetValidationsErrorMessages.isEmpty()) {
-							if (numberOfEntities!=null || entityListInd) {
-								overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
-							}
-							targetEnvValidation = true;
-							break;
-						}
-						validationsErrorMessagesByRole.add(targetValidationsErrorMessages);
-					}
-				}
-				
-			} else{
-				//In case of Extract task, there are not target Env validations
-				targetEnvValidation = true;
-			}
-			//UserCode.log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation + ", srcEnvFound: " + srcEnvFound);
-			if (!sourceEnvValidation && !srcEnvFound) {
-				Map<String, String> sourceValidationsErrorMessages=new HashMap<>();
-				sourceValidationsErrorMessages.put("SourceEnvironment", "No Source Environment was found For User");
-				validationsErrorMessagesByRole.add(sourceValidationsErrorMessages);
-			}
-			
-			if (!targetEnvValidation && !trgEnvFound) {
-				Map<String, String> targetValidationsErrorMessages=new HashMap<>();
-				targetValidationsErrorMessages.put("TargetEnvironment", "No Target Environment was found For User");
-				validationsErrorMessagesByRole.add(targetValidationsErrorMessages);
-			}
-		
-			if (!targetEnvValidation || !sourceEnvValidation) {
-				Object error= validationsErrorMessagesByRole.get(validationsErrorMessagesByRole.size()-1);
-				return wrapWebServiceResults("FAILED", "validation failure", error);
-			}
-            
-			//try {
-				String envIdByName_sql= "select environment_id from " + TDMDB_SCHEMA + ".environments where environment_name=(?) and environment_status = 'Active'";
-                Long overridenSrcEnvId=(Long)db(TDM).fetch(envIdByName_sql,sourceEnvName).firstValue();
-				Long overridenTarEnvId=(Long)db(TDM).fetch(envIdByName_sql,targetExeEnvName).firstValue();
-                try {
-				    if ("false".equalsIgnoreCase(getGlobal("TDM_SUPPRESS_TEST_CONNECTION"))) {
-				    fnTestTaskInterfaces(taskId,forced,overridenSrcEnvId,overridenTarEnvId);
-                    }
-                } catch (Exception e) {
-                    return wrapWebServiceResults("WARNING", "Test Connection Failed", e.getMessage());
-                }
-                String msg =fnValidateOverrideSyncMode(overridenSrcEnvId,sourceEnvName,taskData.getString("sync_mode"));
-                if(!"".equalsIgnoreCase(msg)){
-                    return wrapWebServiceResults("FAILED", "validation failure", msg);
-                }
-				List<Map<String,Object>> taskExecutions = fnGetActiveTaskForActivation(taskId, selectionMethod);
-				if (taskExecutions == null || taskExecutions.size() == 0) {
-					throw new Exception("Failed to execute Task");
-				}
-			
-				Long taskExecutionId = (Long) fnGetNextTaskExecution(taskId);
-				if ((taskExecutions.get(0).get("selection_method") != null && (Long) taskExecutions.get(0).get("refcount") != null) && taskExecutions.get(0).get("selection_method").toString().equals(TABLES) ||
-						(Long) taskExecutions.get(0).get("refcount") > 0) {
-					fnSaveRefExeTablestoTask((Long) taskExecutions.get(0).get("task_id"), taskExecutionId);
-				}
-			
-				fnStartTaskExecutions(taskExecutions,taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
-						overridenTarEnvId!=null?overridenTarEnvId:null,
-						overridenSrcEnvId!=null?overridenSrcEnvId:null,
-						executionNote);
-			
-				if(!overrideParams.isEmpty()){
-					try{
-						fnSaveTaskOverrideParameters(taskId,overrideParams,taskExecutionId);
-					}catch(Exception e){
-						throw new Exception ("A problem occurs when trying to save override parameters: " + e.getMessage());
-					}
-				}
-                
-				fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
-						overridenTarEnvId!=null?overridenTarEnvId:null,
-						overridenSrcEnvId!=null?overridenSrcEnvId:null);
-			
-				try {
-					String activityDesc = "Execution of task '" + taskData.getString("task_title") + "' has started.";
-					fnInsertActivity("execute", "Tasks", activityDesc);
-				} catch(Exception e){
-		            UserCode.log.error(e.getMessage());
-				}
-			
-			
-				Map<String,Object> map=new HashMap<>();
-				map.put("taskExecutionId",taskExecutionId);
-				response.put("result",map);
-				errorCode="SUCCESS";
-			//} catch(Exception e){
-			//	message=e.getMessage();
-		    //          UserCode.log.error(message);
-			//	errorCode="FAILED";
-			//}
-				
-			response.put("errorCode",errorCode);
-			response.put("message", message);
-			break;
-		}
-		
-		if (taskRows != null) {
-			taskRows.close();
-		}
-		return response;
-	}
-
+	
 	@desc("Get the tables of give LU without TDM Tables add to LU for TDM mechanisms")
 	@out(name = "result", type = List.class, desc = "")
 	public static List<String> getLuTablesList(String luName) throws Exception {
@@ -1819,6 +1407,7 @@ public class SharedLogic {
 
     public static List<HashMap<String, String>> fnGetTableFields(String dbInterfaceName, String schemaName, String tableName, String catalogSchema) throws Exception {
 
+		tableName = tableName.replaceAll("^\"|\"$", "");
 		Map<String,Object> interfaceInput = new HashMap<>();
         interfaceInput.put("dataPlatform", dbInterfaceName);
         interfaceInput.put("schema", catalogSchema);
@@ -1850,7 +1439,7 @@ public class SharedLogic {
 
 		String columnName = columns.getString("COLUMN_NAME");
 		
-		if (fnCheckFieldName(columnName)) {
+		if (fnCheckSpecialChars(columnName)) {
 			columnName = "\"" + columnName + "\"";
 		}
 		map.put("column_name", columnName);
@@ -1891,7 +1480,7 @@ public class SharedLogic {
 		}
 
 		if (addField) {
-			if (fnCheckFieldName(fieldName)) {
+			if (fnCheckSpecialChars(fieldName)) {
 				fieldName = "\"" + fieldName + "\"";
 			}
 
@@ -1905,18 +1494,18 @@ public class SharedLogic {
 	return result;
 }
 
-	public static boolean fnCheckFieldName(String fieldName) {
-		if (fieldName == null || fieldName.isEmpty()) {
+	public static boolean fnCheckSpecialChars(String input) {
+		if (input == null || input.isEmpty()) {
 			return false;
 		}
 
 		//Check if field name starts with a digit
-		if (fieldName.matches("^[0-9].*")) {
+		if (input.matches("^[0-9].*")) {
 			return true;
 		};
 
 		// Check if the field name includes special characters
-		for (char c : fieldName.toCharArray()) {
+		for (char c : input.toCharArray()) {
 			if (!Character.isLetterOrDigit(c) && c != '_') {
 				return true;
 			}
@@ -2021,45 +1610,94 @@ public class SharedLogic {
 		return executionMode;
 	}
 
-	public static void fnGetEvaluationReport(String evaluationExeID, String savedFilePath,String AI_Interface,String k2systemSchema) throws Exception {
-        
-        try (Connection conn = getConnection(AI_Interface);
-             PreparedStatement query = conn.prepareStatement(
-                 "SELECT evaluation_report FROM " + k2systemSchema + ".task_executions WHERE id = ? AND task_type = 'EVALUATION'")) {
-            
-            query.setString(1, evaluationExeID);
-            
-            try (ResultSet resultSet = query.executeQuery()) {
-                if (resultSet.next()) {
-                    byte[] reportBytes = resultSet.getBytes("evaluation_report");
-                    
-                    try (ZipInputStream zip_file = new ZipInputStream(new ByteArrayInputStream(reportBytes))) {
-                        ZipEntry entry;
-                        while ((entry = zip_file.getNextEntry()) != null) {
-                            File outputFile = new File(savedFilePath, entry.getName());
-                            
-                            outputFile.getParentFile().mkdirs();
-                            
-                            try (FileOutputStream report_file = new FileOutputStream(outputFile)) {
-                                byte[] buffer = new byte[1024];
-                                int len;
-                                while ((len = zip_file.read(buffer)) > 0) {
-                                    report_file.write(buffer, 0, len);
-                                }
-                            }
-                            zip_file.closeEntry();
-                        }
-                    }
-                } else {
-                    UserCode.log.error("No evaluation report found for ID: " + evaluationExeID);
-                }
-            }catch(Exception e){
-				e.printStackTrace();
-				throw new RuntimeException(e.getMessage());
-			}
-        }
-    }
+	public static void fnGetEvaluationReport(String evaluationExeID, String savedFilePath, String AI_Interface, String k2systemSchema) throws Exception {
+		extractZipColumnToFiles(
+			evaluationExeID,
+			savedFilePath,
+			AI_Interface,
+			k2systemSchema,
+			"evaluation_report",
+			"EVALUATION",
+			"No evaluation report found for ID: "
+		);
+	}
 
+	public static void fnGetArtifactsFiles(String taskExeID, String savedFilePath, String AI_Interface, String k2systemSchema, String taskType) throws Exception {
+		extractZipColumnToFiles(
+			taskExeID,
+			savedFilePath,
+			AI_Interface,
+			k2systemSchema,
+			"artifacts",
+			taskType,
+			"No artifacts found for ID: "
+		);
+	}
+		
+	private static void extractZipColumnToFiles(String taskExeID,String savedFilePath,String AI_Interface,String k2systemSchema,String columnName,String taskType,String notFoundMessage) throws Exception {
+
+		String sql = "SELECT " + columnName +
+					" FROM " + k2systemSchema +
+					".task_executions WHERE id = ? AND task_type = ?";
+
+		try (Connection conn = getConnection(AI_Interface);
+			PreparedStatement query = conn.prepareStatement(sql)) {
+
+			query.setString(1, taskExeID);
+			query.setString(2, taskType);
+
+			try (ResultSet resultSet = query.executeQuery()) {
+				if (!resultSet.next()) {
+					UserCode.log.error(notFoundMessage + taskExeID);
+					return;
+				}
+
+				byte[] zipBytes = resultSet.getBytes(columnName);
+				if (zipBytes == null || zipBytes.length == 0) {
+					UserCode.log.error("Column '" + columnName + "' is empty for ID: " + taskExeID);
+					return;
+				}
+
+				unzipToDirectory(zipBytes, savedFilePath);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+
+	private static void unzipToDirectory(byte[] zipBytes, String savedFilePath) throws IOException {
+
+		Path targetDir = Paths.get(savedFilePath);
+
+		try (ZipInputStream zipInputStream =
+				new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+
+			ZipEntry entry;
+
+			while ((entry = zipInputStream.getNextEntry()) != null) {
+
+				Path resolvedPath = targetDir.resolve(entry.getName()).normalize();
+
+				// Prevent Zip Slip
+				if (!resolvedPath.startsWith(targetDir)) {
+					throw new IOException("Bad zip entry: " + entry.getName());
+				}
+
+				if (entry.isDirectory()) {
+					Files.createDirectories(resolvedPath);
+				} else {
+					Files.createDirectories(resolvedPath.getParent());
+					Files.copy(zipInputStream, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
+				}
+
+				zipInputStream.closeEntry();
+			}
+		}
+	}	
+	
 	public static Set<String> getAllSuppressedInterfaces() throws Exception {
 		Set<String> suppressedSet = new HashSet<>();
 
@@ -2338,6 +1976,50 @@ public class SharedLogic {
 		}
 
 		return Integer.parseInt(globalValueObj.toString());
+	}
+
+	public static Object fnGetLogicalUnitsByEnvironmentAndBusinessentity(Long beId, Long envId) throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
+		try {
+			String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " + "INNER JOIN " + TDMDB_SCHEMA
+					+ ".products p " +
+					"ON (lu.product_id = p.product_id) " + "INNER JOIN " + TDMDB_SCHEMA + ".environment_products ep " +
+					"ON (lu.product_id = ep.product_id " + "AND ep.status = \'Active\') " + "WHERE be_id = " + beId +
+					" AND environment_id = " + envId + " AND ep.enable_product=true";
+			Db.Rows rows = db(TDM).fetch(sql);
+			List<HashMap<String, Object>> result = new ArrayList<>();
+
+			HashMap<String, Object> lU;
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				lU = new HashMap<>();
+				lU.put("lu_id", resultSet.getInt("lu_id"));
+				lU.put("lu_parent_name", resultSet.getString("lu_parent_name"));
+				lU.put("lu_parent_id",
+						row.get("lu_parent_id") != null ? Long.parseLong(row.get("lu_parent_id").toString()) : null);
+				lU.put("lu_name", resultSet.getString("lu_name"));
+				lU.put("product_name", resultSet.getString("product_name"));
+				lU.put("env_max_number_of_workers", resultSet.getString("max_number_of_workers"));
+				lU.put("env_affinity", resultSet.getString("data_center_name"));
+				result.add(lU);
+			}
+
+			errorCode = "SUCCESS";
+			response.put("result", result);
+			if (rows != null) {
+				rows.close();
+			}
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			UserCode.log.error(message);
+		}
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
 	}
 
 }

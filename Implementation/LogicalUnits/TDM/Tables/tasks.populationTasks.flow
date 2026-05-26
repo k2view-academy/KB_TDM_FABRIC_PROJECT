@@ -49,7 +49,7 @@ stages:
                 t.task_type,
                 t.task_title As task_name,
                 t.source_env_name As source_env,
-                e.environment_name As target_env,
+                t.env_name As target_env,
                 Case When t.be_id = -1 Then 'NO BE' Else b.be_name End As be_name,
                 Case When t.refresh_reference_data = False Then 'false' Else 'true'
                 End As refresh_reference_data,
@@ -83,15 +83,15 @@ stages:
                 reserve_retention_period_value,
                 Case When t.clone_ind = False Then 'false' Else 'true' End As clone_ind,
                 t.execution_mode,
-                t.be_id
-              From ${@TDMDB_SCHEMA}.tasks t FULL OUTER JOIN ${@TDMDB_SCHEMA}.business_entities b ON (t.be_id = -1 or b.be_id = t.be_id),
-                ${@TDMDB_SCHEMA}.task_execution_list te,
-                ${@TDMDB_SCHEMA}.environments e
-              Where t.task_id = te.task_id And e.environment_id = t.environment_id
-              Order By te.task_execution_id ;
+                te.be_id
+              FROM ${@TDMDB_SCHEMA}.tasks t
+              INNER JOIN ${@TDMDB_SCHEMA}.task_execution_list te ON t.task_id = te.task_id
+              LEFT JOIN ${@TDMDB_SCHEMA}.business_entities b ON b.be_id = t.be_id
+              LEFT JOIN ${@TDMDB_SCHEMA}.environments e ON e.environment_id = t.environment_id
+              ORDER BY te.task_execution_id;
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
-            schema: any
+            schema: string
             mandatory: false
           parent_rows:
             link: PopulationArgs/parent_rows

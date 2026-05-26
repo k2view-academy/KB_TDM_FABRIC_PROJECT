@@ -143,7 +143,7 @@ stages:
         parent: InnerFlow
         in:
           flowName:
-            const: Getk2SystemSchemaName
+            const: getk2SystemSchemaName
         out:
           result:
             schema: string
@@ -174,11 +174,11 @@ stages:
                 suppress: false
                 log: true
                 flowName: PopulateAITablesWithFailed
-      kubeBuildMedoidInfraInit1:
+      prepareInfrastructure1:
         parent: InnerFlow
         in:
           flowName:
-            const: kubeBuildMedoidInfraInit
+            const: prepareInfrastructure
           namespace:
             link: getNamespaceName1/string
             schema: string
@@ -227,11 +227,11 @@ stages:
         in:
           millis:
             const: 10000
-      kubeCreateTrainingTaskGPU1:
+      createGpuTrainingTask1:
         parent: InnerFlow
         in:
           flowName:
-            const: kubeCreateTrainingTaskGPU
+            const: createGpuTrainingTask
           namespace:
             link: getNamespaceName1/string
             schema: string
@@ -310,7 +310,7 @@ stages:
           a:
             link: Check task status/taskStatus
     split: '--------------------'
-  Do Nothing:
+  'Do Nothing    ':
     else: true
     transactional: false
     dependsOn: Check Training Task Status
@@ -333,7 +333,19 @@ stages:
     split: '--------------------'
   'Do Nothing   ':
     transactional: false
-    dependsOn: Do Nothing
+    dependsOn: 'Do Nothing    '
+  Save Artifacts:
+    actors:
+      saveTrainingArtifacts1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: saveTrainingArtifacts
+          TrainingID:
+            link: taskExecutionID/value
+            schema: any
+            mandatory: false
+            createdBy: flowName
 schemas:
   Get Interface Details .out.result:
     type: object

@@ -1,0 +1,365 @@
+tags: Implementation
+stages:
+  Get Inputs:
+    actors:
+      Interface:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interfaceName
+        out:
+          value:
+            schema: string
+      Source Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: sourceSchemaName
+        out:
+          value:
+            schema: string
+      Table Pattern:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tablePattern
+      Catalog Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: catalogSchema
+      Target Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: targetSchemaName
+  Get Tables Of Schema:
+    actors:
+      LuFunction1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTables
+          dbInterfaceName:
+            link: Interface/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Source Schema/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tablePattern:
+            link: Table Pattern/value
+            schema: any
+            mandatory: false
+            createdBy: functionName
+          catalogSchema:
+            link: Catalog Schema/value
+            schema: any
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+      JavaScript2:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.count=0;
+        out:
+          result:
+            schema: integer
+  Stage 6:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              flowArgs.count=flowArgs.count+1;
+              flowArgs.count;
+        out:
+          result:
+            schema: integer
+  Stage 1:
+    actors:
+      MapBuild1:
+        parent: MapBuild
+        in:
+          key:
+            const: lu_name
+            schema: string
+          value:
+            const: TDM_TableLevel
+            schema: string
+        out:
+          map:
+            schema: '#ref'
+      MapBuild2:
+        parent: MapBuild
+        in:
+          key:
+            const: id
+            schema: string
+          value:
+            link: JavaScript1/result
+        out:
+          map:
+            schema: '#ref'
+      MapBuild3:
+        parent: MapBuild
+        in:
+          key:
+            const: reference_table_name
+            schema: string
+          value:
+            link:
+              path: LuFunction1/result/table_name
+              iterate: Iterate
+        out:
+          map:
+            schema: '#ref'
+      MapBuild4:
+        parent: MapBuild
+        in:
+          key:
+            const: interface_name
+            schema: string
+          value:
+            link: Interface/value
+        out:
+          map:
+            schema: '#ref'
+      MapBuild5:
+        parent: MapBuild
+        in:
+          key:
+            const: schema_name
+            schema: string
+          value:
+            link: Source Schema/value
+        out:
+          map:
+            schema: '#ref'
+      MapBuild6:
+        parent: MapBuild
+        in:
+          key:
+            const: target_ref_table_name
+            schema: string
+          value:
+            link:
+              path: LuFunction1/result/table_name
+              iterate: Iterate
+        out:
+          map:
+            schema: '#ref'
+      MapBuild7:
+        parent: MapBuild
+        in:
+          key:
+            const: target_interface_name
+            schema: string
+          value:
+            link: Interface/value
+        out:
+          map:
+            schema: '#ref'
+      MapBuild8:
+        parent: MapBuild
+        in:
+          key:
+            const: target_schema_name
+            schema: string
+          value:
+            link: Target Schema/value
+        out:
+          map:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      MapMerge1:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: MapBuild1/map
+              pos: 0
+            - path: MapBuild2/map
+              pos: 1
+            - path: MapBuild3/map
+              pos: 2
+            - path: MapBuild4/map
+              pos: 3
+            - path: MapBuild5/map
+              pos: 4
+            - path: MapBuild6/map
+              pos: 5
+            - path: MapBuild7/map
+              pos: 6
+            - path: MapBuild8/map
+              pos: 7
+        out:
+          map:
+            schema: '#ref'
+  Stage 5:
+    last: 1
+    actors:
+      ArrayBuilder1:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: MapMerge1/map
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      CsvBuilder1:
+        parent: CsvBuilder
+        in:
+          columns:
+            const:
+            - lu_name
+            - id
+            - reference_table_name
+            - interface_name
+            - schema_name
+            - target_ref_table_name
+            - target_interface_name
+            - target_schema_name
+            - table_pk_list
+            - truncate_indicator
+            - count_indicator
+            - count_flow
+          maps:
+            link: ArrayBuilder1/array
+  Stage 4:
+    actors:
+      FileWrite:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/RefList.csv
+          stream:
+            link: CsvBuilder1/csv
+      MTableLoad1:
+        parent: MTableLoad
+        in:
+          mtable:
+            const: RefList
+          columns:
+            const:
+            - lu_name
+            - id
+            - reference_table_name
+            - interface_name
+            - schema_name
+            - target_ref_table_name
+            - target_interface_name
+            - target_schema_name
+            - table_pk_list
+            - truncate_indicator
+            - count_indicator
+            - count_flow
+          data:
+            link: ArrayBuilder1/array
+schemas:
+  LuFunction1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+  MapBuild1.out.map:
+    type: object
+    properties:
+      lu_name:
+        type: string
+  MapBuild2.out.map:
+    type: object
+    properties:
+      id:
+        type: integer
+  MapBuild3.out.map:
+    type: object
+    properties:
+      reference_table_name:
+        type: string
+  MapBuild4.out.map:
+    type: object
+    properties:
+      interface_name:
+        type: string
+  MapBuild5.out.map:
+    type: object
+    properties:
+      schema_name:
+        type: string
+  MapBuild6.out.map:
+    type: object
+    properties:
+      target_ref_table_name:
+        type: string
+  MapBuild7.out.map:
+    type: object
+    properties:
+      target_interface_name:
+        type: string
+  MapBuild8.out.map:
+    type: object
+    properties:
+      target_schema_name: {
+        }
+  MapMerge1.out.map:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      id:
+        type: integer
+      reference_table_name:
+        type: string
+      interface_name:
+        type: string
+      schema_name:
+        type: string
+      target_ref_table_name:
+        type: string
+      target_interface_name:
+        type: string
+      target_schema_name: {
+        }
+  ArrayBuilder1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        lu_name:
+          type: string
+        id:
+          type: integer
+        reference_table_name:
+          type: string
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        target_ref_table_name:
+          type: string
+        target_interface_name:
+          type: string
+        target_schema_name: {
+          }

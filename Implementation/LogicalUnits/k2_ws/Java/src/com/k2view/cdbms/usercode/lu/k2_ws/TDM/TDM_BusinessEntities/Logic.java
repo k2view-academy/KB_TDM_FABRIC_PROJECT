@@ -45,6 +45,7 @@ public class Logic extends WebServiceUserCode {
 	public static final String PARAM_NAME = "PARAM_NAME";
 	public static final String PARAM_TYPE = "PARAM_TYPE";
 	public static final String DESCRIPTION = "DESCRIPTION";
+	public static final String DISPLAY_ORDER = "DISPLAY_ORDER";
 
 
 	public static final String COMBO_INDICATOR = "COMBO_INDICATOR";
@@ -256,32 +257,40 @@ public class Logic extends WebServiceUserCode {
 		if ("admin".equals(permissionGroup)) {
 			try {
 				String sql = "UPDATE " + schema + ".business_entities SET be_status=(?) " +
-						"WHERE be_id = " + beId + "  RETURNING be_name";
-				Db.Rows rows = db(TDM).fetch(sql, "Inactive");
-				Db.Row firstRec = rows.firstRow();
+						"WHERE be_id = ? RETURNING be_name";
 				String beName="";
+				Db.Row firstRec = db(TDM).fetch(sql, "Inactive", beId).firstRow();
 				if (!firstRec.isEmpty()) beName = "" + firstRec.get("be_name");
 
-				String updateEnvironmentProductsSql = "UPDATE " + schema + ".environment_products " +
-						"SET status= (?) " +
-						"from ( " +
-						"select product_id, count(product_id) " +
-						"from " + schema + ".product_logical_units " +
-						"WHERE be_id = " + beId + "  AND  " +
-						"product_id not in (select product_id from " + schema + ".product_logical_units where be_id <> " + beId + " AND product_id <> -1) " +
-						"GROUP BY product_id ) l " +
-						"WHERE environment_products.status = 'Active' AND l.product_id = environment_products.product_id AND l.count = 1";
-				db(TDM).execute(updateEnvironmentProductsSql, "Inactive");
+				String updateEnvironmentProductsSql = "UPDATE " + schema + ".environment_products ep " +
+						"SET status = ? " +
+						"FROM ( " +
+						"    SELECT plu.product_id " +
+						"    FROM " + schema + ".product_logical_units plu " +
+						"    JOIN " + schema + ".products p ON plu.product_id = p.product_id " +
+						"    WHERE plu.be_id = ? " +
+						"      AND COALESCE(cardinality(p.related_interfaces), 0) = 0 " +
+						"      AND plu.product_id NOT IN ( " +
+						"          SELECT product_id FROM " + schema + ".product_logical_units " +
+						"          WHERE be_id <> ? AND product_id <> -1 " +
+						"      ) " +
+						"    GROUP BY plu.product_id " +
+						"    HAVING COUNT(plu.product_id) = 1 " +
+						") l " +
+						"WHERE ep.product_id = l.product_id " +
+						"AND ep.status = 'Active'";
+
+				db(TDM).execute(updateEnvironmentProductsSql, "Inactive", beId, beId);
 
 				String updateProductLUsSql = "UPDATE " + schema + ".product_logical_units " +
 						"SET product_id=(?) " +
-						"WHERE be_id = " + beId;
-				db(TDM).execute(updateProductLUsSql, -1);
+						"WHERE be_id = ?";
+				db(TDM).execute(updateProductLUsSql, -1, beId);
 
 				String updateTasksSql = "UPDATE " + schema + ".tasks " +
 						"SET task_status=(?) " +
-						"WHERE be_id = " + beId;
-				db(TDM).execute(updateTasksSql, "Inactive");
+						"WHERE be_id = ?";
+				db(TDM).execute(updateTasksSql, "Inactive", beId);
 
 				errorCode="SUCCESS";
 
@@ -291,10 +300,6 @@ public class Logic extends WebServiceUserCode {
 				}
 				catch(Exception e){
 					log.error(e.getMessage());
-				}
-				
-				if (rows != null) {
-					rows.close();
 				}
 			} catch(Exception e){
 				message=e.getMessage();
@@ -351,7 +356,7 @@ public class Logic extends WebServiceUserCode {
 			  }
 				""")
 	public static Object wsGetLogicalUnits() throws Exception {
-		ArrayList result = new ArrayList();
+		List result = new ArrayList();
 		String BroadwayCommand = "broadway TDM.childLinkLookup RESULT_STRUCTURE=COLUMN";
 		Db.Rows rows = fabric().fetch(BroadwayCommand);
 		for (Db.Row row : rows) {
@@ -398,15 +403,12 @@ public class Logic extends WebServiceUserCode {
         
 		try {
 			String broadwayCommand = "broadway TDM.executionProcessLookup process_type = post";
-			Db.Rows rows = fabric().fetch(broadwayCommand);
-			for(Db.Row row:rows){
-				ResultSet res = row.resultSet();
-				response.put("message", null);
-				response.put("result",res.getObject("map"));
-			}
-			
-			if (rows != null) {
-				rows.close();
+			try (Db.Rows rows = fabric().fetch(broadwayCommand)) {
+				for(Db.Row row:rows){
+					ResultSet res = row.resultSet();
+					response.put("message", null);
+					response.put("result",res.getObject("map"));
+				}
 			}
 			return response;
 		} catch(Exception e){
@@ -434,14 +436,11 @@ public class Logic extends WebServiceUserCode {
         
 		try {
 			String broadwayCommand = "broadway TDM.executionProcessLookup process_type = pre";
-			Db.Rows rows = fabric().fetch(broadwayCommand);
-			for(Db.Row row:rows){
-				ResultSet res = row.resultSet();
-				response.put("result",res.getObject("map"));
-			}
-			
-			if (rows != null) {
-				rows.close();
+			try (Db.Rows rows = fabric().fetch(broadwayCommand)) {
+				for(Db.Row row:rows){
+					ResultSet res = row.resultSet();
+					response.put("result",res.getObject("map"));
+				}
 			}
             response.put("message", null);
             response.put("errorCode","SUCCESS");
@@ -485,10 +484,10 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		String sql="SELECT * FROM " + schema + ".product_logical_units " +
-		"WHERE be_id = " + beId;
-		
+		"WHERE be_id = ?";
+
 		try{
-			Db.Rows rows = db(TDM).fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql, beId);
 			List<Map<String,Object>> logicalUnits=new ArrayList<>();
 			Map<String,Object> logicalUnit;
 			for(Db.Row row:rows) {
@@ -692,7 +691,7 @@ public class Logic extends WebServiceUserCode {
 				log.error(e.getMessage());
 			}
 			errorCode="SUCCESS";
-			message="null";
+			message=null;
 		} catch(Exception e){
 			errorCode="FAILED";
 			message=e.getMessage();
@@ -797,8 +796,8 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 			String sql = "SELECT COUNT(be_id) as cnt FROM " + schema + ".product_logical_units " +
-					"WHERE be_id = " + beId + " AND product_id <> -1";
-			Db.Rows rows= db(TDM).fetch(sql);
+					"WHERE be_id = ? AND product_id <> -1";
+			Db.Rows rows= db(TDM).fetch(sql, beId);
 			int result =Integer.parseInt(rows.firstRow().get("cnt").toString());
 			if (rows != null) {
 				rows.close();
@@ -828,8 +827,8 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql="UPDATE " + schema + ".tasks " +
 					"SET task_status=(?) " +
-					"WHERE be_id = " + beId;
-			db(TDM).execute(sql,"Inactive");
+					"WHERE be_id = ?";
+			db(TDM).execute(sql,"Inactive", beId);
 			errorCode="SUCCESS";
 			String activityDesc = "Tasks were deleted for business entity Id " + beId;
 			fnInsertActivity("update", "Business entities", activityDesc);
@@ -862,9 +861,9 @@ public class Logic extends WebServiceUserCode {
 			String username = sessionUser().name();
 			fnUpdateBusinessEntityDate(beId, username);
 		} catch(Exception e){
-			log.error(message);
+			log.error(e.getMessage());
 		}
-		
+
 		return fnDeletePostExecutionForBusinessEntity(beId,beName,process_id,name,"post");
         
 	}
@@ -887,6 +886,7 @@ public class Logic extends WebServiceUserCode {
 			String username = sessionUser().name();
 			fnUpdateBusinessEntityDate(beId, username);
 		} catch(Exception e){
+			message=e.getMessage();
 			log.error(message);
 		}
 
@@ -914,9 +914,9 @@ public class Logic extends WebServiceUserCode {
 			String username = sessionUser().name();
 			fnUpdateBusinessEntityDate(beId, username);
 		} catch(Exception e){
-			log.error(message);
+			log.error(e.getMessage());
 		}
-		
+
 		return fnAddExecutionProcessForBusinessEntity(beId,beName,process_name,execution_order,process_description,"post");
 	}
     @desc("Adds a Pre Execution Process to a Business Entity.")
@@ -940,9 +940,9 @@ public class Logic extends WebServiceUserCode {
 			String username = sessionUser().name();
 			fnUpdateBusinessEntityDate(beId, username);
 		} catch(Exception e){
-			log.error(message);
+			log.error(e.getMessage());
 		}
-		
+
 		return fnAddExecutionProcessForBusinessEntity(beId,beName,process_name,execution_order,process_description,"pre");
 
 	}
@@ -1053,7 +1053,7 @@ public class Logic extends WebServiceUserCode {
 			String username = sessionUser().name();
 			fnUpdateBusinessEntityDate(beId,username);
 		} catch(Exception e){
-			log.error(message);
+			log.error(e.getMessage());
 		}
 		return fnUpdateExecutionForBusinessEntity(beId,beName,process_id,process_name,execution_order,process_description,"post");
 		
@@ -1075,7 +1075,7 @@ public class Logic extends WebServiceUserCode {
 			String username = sessionUser().name();
 			fnUpdateBusinessEntityDate(beId,username);
 		} catch(Exception e){
-			log.error(message);
+			log.error(e.getMessage());
 		}
 		return fnUpdateExecutionForBusinessEntity(beId,beName,process_id,process_name,execution_order,process_description,"pre");
 		
@@ -1087,8 +1087,8 @@ public class Logic extends WebServiceUserCode {
 		String sql = "UPDATE " + schema + ".business_entities " +
 				"SET be_last_updated_date=(?)," +
 				"be_last_updated_by=(?) " +
-				"WHERE be_id = " + beId;
-		db(TDM).execute(sql,now,username);
+				"WHERE be_id = ?";
+		db(TDM).execute(sql,now,username,beId);
 	}
 
 	static void fnUpdateLogicalUnit(Map<String,Object> logicalUnit) throws Exception{
@@ -1098,7 +1098,7 @@ public class Logic extends WebServiceUserCode {
 				"lu_description=(?), " +
 				"product_id=(?), " +
 				"product_name=(?) " +
-				"WHERE lu_id = " + logicalUnit.get("lu_id");
+				"WHERE lu_id = ?";
 		String luParentId = null;
 		String luParentName = null;
 		String luDescription = null;
@@ -1132,7 +1132,8 @@ public class Logic extends WebServiceUserCode {
 				luParentName,
 				luDescription,
 				productId,
-				productName);
+				productName,
+				logicalUnit.get("lu_id"));
 	}
 
 
@@ -1280,26 +1281,23 @@ public class Logic extends WebServiceUserCode {
 
 		String getBeLUsSql = "SELECT lu_name, lu_id FROM " + schema + ".product_logical_units " +
 				"WHERE be_id = ? ";
-		Db.Rows beLUsRows = db(TDM).fetch(getBeLUsSql,beId);
-
-		for(Db.Row row : beLUsRows) {
-			Map<String, Object> beLUs= new HashMap<>();
-			Object luName = row.get("lu_name");
-			boolean luExists = false;
-			for (Map<String, Object> map : logicalUnits) {
-				if (map.get("lu_name").equals(luName)) {
-					luExists = true;
-					break;
+		try (Db.Rows beLUsRows = db(TDM).fetch(getBeLUsSql,beId)) {
+			for(Db.Row row : beLUsRows) {
+				Map<String, Object> beLUs= new HashMap<>();
+				Object luName = row.get("lu_name");
+				boolean luExists = false;
+				for (Map<String, Object> map : logicalUnits) {
+					if (map.get("lu_name").equals(luName)) {
+						luExists = true;
+						break;
+					}
+				}
+				if (!luExists) {
+					beLUs.put("lu_name", row.get("lu_name"));
+					beLUs.put("lu_id", row.get("lu_id"));
+					logicalUnits.add(beLUs);
 				}
 			}
-			if (!luExists) {
-				beLUs.put("lu_name", row.get("lu_name"));
-				beLUs.put("lu_id", row.get("lu_id"));
-				logicalUnits.add(beLUs);
-			}
-		}
-		if (beLUsRows != null) {
-			beLUsRows.close();
 		}
 		for(Map<String,Object> logicalUnit:updatedList){
 			Map<String, Object> luParent = (Map<String, Object>) logicalUnit.get("lu_parent");
@@ -1314,9 +1312,9 @@ public class Logic extends WebServiceUserCode {
 			if (temp==null) break;
 			luParent.put("lu_id",temp.get("lu_id")) ;
 			String sql="UPDATE " + schema + ".product_logical_units " +
-					"SET lu_parent_id=(?)" +
-					"WHERE lu_id = " + logicalUnit.get("lu_id");
-			db(TDM).execute(sql,temp.get("lu_id"));
+					"SET lu_parent_id=(?) " +
+					"WHERE lu_id = ?";
+			db(TDM).execute(sql,temp.get("lu_id"), logicalUnit.get("lu_id"));
 		}
 
 	}
@@ -1331,12 +1329,12 @@ public class Logic extends WebServiceUserCode {
 			
 			String sql = "UPDATE " + schema + ".environment_products " +
 					"SET status= (?) " +
-					"WHERE environment_products.status = 'Active' AND environment_products.product_id = " + prodId.toString() +
+					"WHERE environment_products.status = 'Active' AND environment_products.product_id = ?" +
 					" AND (select count(product_logical_units.product_id) " +
 					"FROM " + schema + ".product_logical_units " +
-					"WHERE product_logical_units.product_id = " + prodId.toString() + ") = 0 RETURNING product_id";
-			
-			row = db(TDM).fetch(sql, "Inactive").firstRow();
+					"WHERE product_logical_units.product_id = ?) = 0 RETURNING product_id";
+
+			row = db(TDM).fetch(sql, "Inactive", prodId, prodId).firstRow();
 			if (!row.isEmpty()) {
 				 sql =  "UPDATE " + schema + ".tasks SET task_status = (?) " +
 						"WHERE tasks.task_status = 'Active' " +
@@ -1415,52 +1413,100 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Get the list of active Business Entities. This API is used when creating or editing a TDM task to get the list of available Business Entities for the task.")
 	@webService(path = "getActiveBusinessentities", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"be_id\": 1,\r\n" +
-			"      \"be_name\": \"BE\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"be_id\": 3,\r\n" +
-			"      \"be_name\": \"bb\",\r\n" +
-            "      \"execution_mode\": \"HORIZONTAL\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsGetActiveBusinessentities() throws Exception {
-		String sql = "SELECT be_id, be_name, execution_mode FROM "+ TDMDB_SCHEMA +".business_entities be WHERE EXISTS"+ 
-        "(SELECT be_id FROM "+ TDMDB_SCHEMA +".product_logical_units plu WHERE plu.be_id=be.be_id AND plu.product_id > 0) AND be_status = 'Active'";
-		String errorCode="";
-		String message=null;
-		
-		try{
-			Db.Rows rows = db(TDM).fetch(sql);
-			errorCode= "SUCCESS";
-			List<Map<String,Object>> result=new ArrayList<>();
-			Map<String,Object> businessEntity;
-			for(Db.Row row:rows) {
-				businessEntity=new HashMap<String,Object>();
-				businessEntity.put("be_id",Integer.parseInt(row.get("be_id").toString()));
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+				"result": [
+				  {
+					"execution_mode": "HORIZONTAL",
+					"be_id": 1,
+					"be_name": "Customer"
+				  },
+				  {
+					"execution_mode": "HORIZONTAL",
+					"be_id": 2,
+					"be_name": "Subscriber"
+				  },
+				  {
+					"execution_mode": "HORIZONTAL",
+					"be_id": 3,
+					"be_name": "dummyBE"
+				  }
+				],
+				"errorCode": "SUCCESS",
+				"message": null
+			  }
+				""")
+	public static Object wsGetActiveBusinessentities(Long source_environment_id, Long target_environment_id)
+			throws Exception {
+		String sql = "";
+		String errorCode = "";
+		String message = null;
+
+		try {
+			List<Object> sqlParams = new ArrayList<>();
+			if (source_environment_id != null && target_environment_id != null) {
+				// Case 1: Both source and target environments are provided.
+				// Use the INTERSECT query to find common active business entities.
+				sql = "SELECT be_root_system.be_id, be_root_system.be_name, be_root_system.execution_mode FROM " +
+						"(SELECT ep.product_id FROM " + TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA
+						+ ".environment_products ep WHERE e.environment_id = ep.environment_id AND ep.status = 'Active' AND ep.enable_product = TRUE AND e.environment_id = ?"
+						+ " INTERSECT SELECT ep.product_id FROM " + TDMDB_SCHEMA
+						+ ".environments e, " + TDMDB_SCHEMA
+						+ ".environment_products ep WHERE e.environment_id = ep.environment_id AND ep.status = 'Active' AND ep.enable_product = TRUE AND e.environment_id = ?"
+						+ ") common_system_list, " +
+						"(SELECT be.be_name, be.be_id, be.execution_mode, p.product_name AS system_name, plu.product_id FROM "
+						+ TDMDB_SCHEMA + ".business_entities be, " + TDMDB_SCHEMA + ".product_logical_units plu, "
+						+ TDMDB_SCHEMA
+						+ ".products p WHERE plu.lu_parent_name IS NULL AND be.be_id = plu.be_id AND plu.product_id = p.product_id AND be.be_status = 'Active') be_root_system "
+						+ "WHERE common_system_list.product_id = be_root_system.product_id";
+				sqlParams.add(source_environment_id);
+				sqlParams.add(target_environment_id);
+			} else if (source_environment_id != null || target_environment_id != null) {
+				// Cases 2 & 3: Only one environment ID is provided.
+				// The logic is the same, just with a different parameter.
+				Long environment_id = (source_environment_id != null) ? source_environment_id : target_environment_id;
+				sql = "SELECT be_root_system.be_id, be_root_system.be_name, be_root_system.execution_mode FROM " +
+						"(SELECT ep.product_id FROM " + TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA
+						+ ".environment_products ep WHERE e.environment_id = ep.environment_id AND ep.status = 'Active' AND ep.enable_product = TRUE AND e.environment_id = ?"
+						+ ") common_system_list, " +
+						"(SELECT be.be_name, be.be_id, be.execution_mode, p.product_name AS system_name, plu.product_id FROM "
+						+ TDMDB_SCHEMA + ".business_entities be, " + TDMDB_SCHEMA + ".product_logical_units plu, "
+						+ TDMDB_SCHEMA
+						+ ".products p WHERE plu.lu_parent_name IS NULL AND be.be_id = plu.be_id AND plu.product_id = p.product_id AND be.be_status = 'Active') be_root_system "
+						+ "WHERE common_system_list.product_id = be_root_system.product_id";
+				sqlParams.add(environment_id);
+			} else {
+				// If both are null, use the original query.
+				sql = "SELECT be_id, be_name, execution_mode FROM " + TDMDB_SCHEMA
+						+ ".business_entities be WHERE EXISTS" +
+						"(SELECT be_id FROM " + TDMDB_SCHEMA
+						+ ".product_logical_units plu WHERE plu.be_id=be.be_id AND plu.product_id > 0) AND be_status = 'Active'";
+			}
+
+			Db.Rows rows = db(TDM).fetch(sql, sqlParams.toArray());
+			errorCode = "SUCCESS";
+			List<Map<String, Object>> result = new ArrayList<>();
+			for (Db.Row row : rows) {
+				Map<String, Object> businessEntity = new HashMap<>();
+				businessEntity.put("be_id", Integer.parseInt(row.get("be_id").toString()));
 				businessEntity.put("be_name", row.get("be_name"));
-                businessEntity.put("execution_mode", row.get("execution_mode"));
+				businessEntity.put("execution_mode", row.get("execution_mode"));
 				result.add(businessEntity);
 			}
-			
+
 			if (rows != null) {
 				rows.close();
 			}
-			return wrapWebServiceResults(errorCode,message,result);
-		}
-		catch(Exception e){
-			errorCode= "FAILED";
-			message= e.getMessage();
+			return wrapWebServiceResults(errorCode, message, result);
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
 			log.error(message);
-			return wrapWebServiceResults(errorCode,message,null);
+			return wrapWebServiceResults(errorCode, message, null);
 		}
-				
 	}
+
 	@desc("Get the list of active Business Entities according to a given Environment name. This API is used when creating or editing a TDM task to get the list of available Business Entities for the specific environment.")
 	@webService(path = "getActiveBusinessentitiesByEnvironment", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
@@ -1491,20 +1537,17 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		String message=null;
 		try{
-			Db.Rows rows = db(TDM).fetch(sql,envName);
-			errorCode= "SUCCESS";
 			List<Map<String,Object>> result=new ArrayList<>();
-			Map<String,Object> businessEntity;
-			for(Db.Row row:rows) {
-				businessEntity=new HashMap<String,Object>();
-				businessEntity.put("be_id",Integer.parseInt(row.get("be_id").toString()));
-				businessEntity.put("be_name", row.get("be_name"));
-				result.add(businessEntity);
+			try (Db.Rows rows = db(TDM).fetch(sql,envName)) {
+				Map<String,Object> businessEntity;
+				for(Db.Row row:rows) {
+					businessEntity=new HashMap<String,Object>();
+					businessEntity.put("be_id",Integer.parseInt(row.get("be_id").toString()));
+					businessEntity.put("be_name", row.get("be_name"));
+					result.add(businessEntity);
+				}
 			}
-
-			if (rows != null) {
-				rows.close();
-			}
+			errorCode= "SUCCESS";
 			return wrapWebServiceResults(errorCode,message,result);
 		}
 		catch(Exception e){
@@ -1518,67 +1561,71 @@ public class Logic extends WebServiceUserCode {
 
     private static Object fnGetListOfParamsForBE(String beID, String sourceEnvName) throws Exception {
 		final String env = Util.isEmpty(sourceEnvName) ? "_dev" : sourceEnvName;
-        SortedMap<String, Map<String, Object>> beParametersColumnTypes = new TreeMap<>();
+        Map<String, Map<String, Object>> beParametersColumnTypes = new LinkedHashMap<>();
 		Db tdmDB = db(TDM);
-		Db.Rows luRes = tdmDB.fetch(LU_SQL, beID);
-        int maxNumOfValues = Integer.parseInt(COMBO_MAX_COUNT) + 1;
+		int maxNumOfValues = Integer.parseInt(COMBO_MAX_COUNT) + 1;
         Boolean paramCoupling =isParamsCoupling();
-		for(Db.Row luRow : luRes) {
-			String luName = luRow.get("logicalunitname").toString();
-			String broadway = "Broadway " +luName + ".VerifyParamsInDistinctValues luName = " + luName + " , sourceEnvName = " + sourceEnvName + " RESULT_STRUCTURE=COLUMN";
-            String query = fabric().fetch(broadway).firstValue().toString();
-            Db.Rows luFieldsValues = tdmDB.fetch(query);
-            for (Db.Row fieldValuesRec : luFieldsValues) {
-                String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
-                Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
-				String descirption = getParamDescription(colNameUpper,paramCoupling);
-                String isCombo = "false";
-                Boolean isNumeric = Boolean.parseBoolean(fieldValuesRec.get("is_numeric").toString());
-                String min = fieldValuesRec.get("min_value").toString();
-                String max = fieldValuesRec.get("max_value").toString();
-                
-                String fieldValues = "\\N";
-                if (numOfValues < maxNumOfValues) {
-                    isCombo = "true";
-                    fieldValues = fieldValuesRec.get("field_values").toString();
-                    fieldValues = processFieldValues(fieldValues);
-                }
-                List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
-                
-                String paramType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
+		Boolean enableParamLuName = Boolean.parseBoolean(tdmDB.fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ADD_LU_NAME_TO_PARAM_NAME'").firstValue().toString());
+		try (Db.Rows luRes = tdmDB.fetch(LU_SQL, beID)) {
+			for(Db.Row luRow : luRes) {
+				String luName = luRow.get("logicalunitname").toString();
+				String broadway = "Broadway " +luName + ".VerifyParamsInDistinctValues luName = " + luName + " , sourceEnvName = " + sourceEnvName + " RESULT_STRUCTURE=COLUMN";
+				String query = fabric().fetch(broadway).firstValue().toString();
+				try (Db.Rows luFieldsValues = tdmDB.fetch(query)) {
+					for (Db.Row fieldValuesRec : luFieldsValues) {
+						String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
+						String displayName = colNameUpper;
+						if (!enableParamLuName) {
+							int firstDotIndex = colNameUpper.indexOf('.');
+							if (firstDotIndex != -1) {
+								displayName = colNameUpper.substring(firstDotIndex + 1);
+							}
+						}
+						Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
+						String descirption = getParamDescription(colNameUpper, paramCoupling);
+						Integer orderValue = getParamOrder(colNameUpper, paramCoupling);
+						String isCombo = "false";
+						Boolean isNumeric = Boolean.parseBoolean(fieldValuesRec.get("is_numeric").toString());
+						String min = fieldValuesRec.get("min_value").toString();
+						String max = fieldValuesRec.get("max_value").toString();
 
-                if (paramCoupling) {
-                    String fieldType = fieldValuesRec.get("field_type").toString().trim();
-                    if (fieldType.isEmpty() || "null".equalsIgnoreCase(fieldType)) {
-                        fieldType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
-                    }
-                    paramType = fieldType;
-                }
-				beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-                                                                    PARAM_TYPE, paramType,DESCRIPTION, descirption, COMBO_INDICATOR, isCombo, 
-                                                                    VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, 
-                                                                    LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
-                    
-            }
-            if (luFieldsValues != null) {
-                luFieldsValues.close();
-            }
+						String fieldValues = "\\N";
+						if (numOfValues < maxNumOfValues) {
+							isCombo = "true";
+							fieldValues = fieldValuesRec.get("field_values").toString();
+							fieldValues = processFieldValues(fieldValues);
+						}
+						List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
+
+						String paramType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
+
+						if (paramCoupling) {
+							String fieldType = fieldValuesRec.get("field_type").toString().trim();
+							if (fieldType.isEmpty() || "null".equalsIgnoreCase(fieldType)) {
+								fieldType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
+							}
+							paramType = fieldType;
+						}
+						beParametersColumnTypes.put(displayName,
+								Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper,
+										PARAM_TYPE, paramType, DESCRIPTION, descirption, COMBO_INDICATOR, isCombo,
+										VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max,
+										LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params", DISPLAY_ORDER, orderValue));
+					}
+				}
+			}
 		}
-		if (luRes != null) {
-			luRes.close();
-		}
-        // Sort the Parameters according to param_name  TDM 9.1
-        /*Map<String, Map<String, Object>> sortedBeParametersColumnTypes = beParametersColumnTypes.entrySet()
-        .stream()
-        .sorted(Comparator.comparing(entry -> entry.getValue().get(PARAM_NAME).toString()))
-        .collect(Collectors.toMap(
-            Map.Entry::getKey,
-            Map.Entry::getValue,
-            (e1, e2) -> e1,
-            LinkedHashMap::new
-        ));   
-		return wrapWebServiceResults("SUCCESS", null, sortedBeParametersColumnTypes);*/
-		return wrapWebServiceResults("SUCCESS", null, beParametersColumnTypes);
+		Map<String, Map<String, Object>> sortedBeParametersColumnTypes = beParametersColumnTypes.entrySet()
+				.stream()
+				.sorted(Comparator.<Map.Entry<String, Map<String, Object>>, Integer>comparing(
+						entry -> (Integer) entry.getValue().get(DISPLAY_ORDER))
+						.thenComparing(Map.Entry::getKey))
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						Map.Entry::getValue,
+						(e1, e2) -> e1,
+						LinkedHashMap::new));
+		return wrapWebServiceResults("SUCCESS", null, sortedBeParametersColumnTypes);
 	}
         
 	static void fnUpdateProductDate(long prodId,String username) throws Exception{
@@ -1589,8 +1636,8 @@ public class Logic extends WebServiceUserCode {
 		String sql = "UPDATE " + schema + ".products SET " +
 				"product_last_updated_date=(?)," +
 				"product_last_updated_by=(?) " +
-				"WHERE product_id = " + prodId;
-		db(TDM).execute(sql,now,username);
+				"WHERE product_id = ?";
+		db(TDM).execute(sql,now,username,prodId);
 	}
 
 	static void fnInsertActivity(String action,String entity,String description) throws Exception{
@@ -1641,23 +1688,85 @@ public class Logic extends WebServiceUserCode {
         return result.toString();
     }
 
-    private static String getParamDescription(String colNameUpper,boolean paramCoupling) throws Exception{
-		String description="";
-		try{
-			Map<String, Object> mapListInputs = new HashMap<>();
-			String luName = colNameUpper.split(("\\."))[0];
-			String col = colNameUpper.split("\\.")[1];
-			mapListInputs.put("lu_name",luName);
-			mapListInputs.put(paramCoupling ? "param_name" : "column_name", col);
-			List<Map<String, Object>> mapList = MtableLookup(paramCoupling ? "LuParamsMapping" : "LuParams",mapListInputs,MTable.Feature.caseInsensitive);
-			if (!mapList.isEmpty()) {
-			Object descObj = mapList.get(0).get("description");
-			description = descObj != null ? descObj.toString() : "";
-        }
+	private static Map<String, Object> lookupParamData(String colNameUpper, boolean paramCoupling) throws Exception {
+		Map<String, Object> mapListInputs = new HashMap<>();
+		try {
+			String[] parts = colNameUpper.split("\\.");
+			String luName = parts[0];
+			String col = parts[1];
 
-    	} catch (Exception e) {
-        	log.error("Failed to get param description: " + e.getMessage());
-    	}
-    	return description;
+			mapListInputs.put("lu_name", luName);
+			mapListInputs.put(paramCoupling ? "param_name" : "column_name", col);
+
+			List<Map<String, Object>> mapList = MtableLookup(
+					paramCoupling ? "LuParamsMapping" : "LuParams",
+					mapListInputs,
+					MTable.Feature.caseInsensitive);
+
+			return mapList.isEmpty() ? new HashMap<>() : mapList.get(0);
+
+		} catch (Exception e) {
+			log.error("Failed to perform MTable lookup for param data: " + e.getMessage());
+			throw e; 
+		}
 	}
+
+	/**
+	 * Retrieves the description of a parameter or column from the appropriate
+	 * lookup table.
+	 *
+	 * @param colNameUpper  The input column name, expected to be in
+	 *                      "LU_NAME.COLUMN_NAME" format.
+	 * @param paramCoupling Boolean flag to select between "LuParamsMapping" or
+	 *                      "LuParams" table.
+	 * @return The parameter description, or an empty string if not found or an
+	 *         error occurs.
+	 */
+	private static String getParamDescription(String colNameUpper, boolean paramCoupling) throws Exception {
+		String description = "";
+		try {
+			Map<String, Object> paramMap = lookupParamData(colNameUpper, paramCoupling);
+			if (!paramMap.isEmpty()) {
+				Object descObj = paramMap.get("description");
+				description = descObj != null ? descObj.toString() : "";
+			}
+		} catch (Exception e) {
+			log.error("Failed to get param description: " + e.getMessage());
+			throw e;
+		}
+		return description;
+	}
+
+	/**
+	 * Retrieves the display order of a parameter or column from the appropriate
+	 * lookup table.
+	 *
+	 * @param colNameUpper  The input column name, expected to be in
+	 *                      "LU_NAME.COLUMN_NAME" format.
+	 * @param paramCoupling Boolean flag to select between "LuParamsMapping" or
+	 *                      "LuParams" table.
+	 * @return The parameter order, or Integer.MAX_VALUE if not found, not a valid
+	 *         integer, or an error occurs.
+	 */
+	private static Integer getParamOrder(String colNameUpper, boolean paramCoupling) throws Exception {
+		Integer orderValue = Integer.MAX_VALUE;
+		try {
+			Map<String, Object> paramMap = lookupParamData(colNameUpper, paramCoupling);
+			if (!paramMap.isEmpty()) {
+				Object orderObj = paramMap.get("display_order");
+				if (orderObj != null) {
+					try {
+						orderValue = Integer.parseInt(orderObj.toString());
+					} catch (NumberFormatException nfe) {
+						log.warn("Order value is not a valid integer for: " + colNameUpper);
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("Failed to get param order: " + e.getMessage());
+			throw e;
+		}
+		return orderValue;
+	}
+
 }

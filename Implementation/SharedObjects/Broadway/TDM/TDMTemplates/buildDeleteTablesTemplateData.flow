@@ -158,6 +158,13 @@ stages:
   Stage 7:
     last: 1
     actors:
+      Field Exists?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Field Data/result
+            schema: object
       Create Array of Fields with Types1:
         parent: ArrayBuilder
         height: 92

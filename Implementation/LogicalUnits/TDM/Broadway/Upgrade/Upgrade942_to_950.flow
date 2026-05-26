@@ -1,5 +1,16 @@
 tags: Upgrade
 stages:
+  List of Globals to Remove Final:
+    actors:
+      fieldsToHandle:
+        parent: ConstStrings
+        in:
+          strings:
+            const:
+            - COMBO_MAX_COUNT
+            - MASKING_CACHE_TTL
+            - TDM_REF_UPD_SIZE
+            - SEQ_CACHE_INTERFACE
   Change Globals To Non Finals:
     actors:
       'ChangeGlobalsToNonFinal ':
@@ -7,6 +18,11 @@ stages:
         in:
           flowName:
             const: ChangeGlobalsToNonFinal
+          fieldsToModify:
+            link: fieldsToHandle/strings
+            schema: any
+            mandatory: false
+            createdBy: flowName
   Update Activities Table:
     actors:
       UpdateActivitiesTable1:

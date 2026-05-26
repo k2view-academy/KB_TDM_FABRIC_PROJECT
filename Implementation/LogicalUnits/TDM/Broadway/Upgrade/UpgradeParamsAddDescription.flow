@@ -75,7 +75,8 @@ stages:
         parent: MTableLoad
         in:
           mtable:
-            const: LuParams
+            const: null
+            external: mtable
           columns:
             const: null
             external: columns

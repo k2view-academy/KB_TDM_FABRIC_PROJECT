@@ -1,0 +1,93 @@
+tags: Concurrency
+stages:
+  Stage 1:
+    actors:
+      getTDMDBSchema1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get Table Ref ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExeID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  Stage 2:
+    actors:
+      DbCommand1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+               set execution_status='completed'
+               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id} AND execution_action='Delete';
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema1/schema
+            schema: any
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExeID
+            schema: any
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            link: Get Table Ref ID/result
+            schema: any
+            mandatory: false
+            createdBy: sql
+  Stage 3: {
+    }
+  Stage 4: {
+    }
+  Stage 5: {
+    }
+  Stage 6: {
+    }
+  Stage 7: {
+    }
+  Stage 8: {
+    }
+  Stage 9: {
+    }
+  Stage 10: {
+    }

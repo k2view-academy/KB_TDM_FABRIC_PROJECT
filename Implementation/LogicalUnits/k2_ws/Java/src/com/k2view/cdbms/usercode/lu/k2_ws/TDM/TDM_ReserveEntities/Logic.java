@@ -439,7 +439,7 @@ public class Logic extends WebServiceUserCode {
 			}
 		});
 		
-				String currentEnvID = "-1";
+		String currentEnvID = "-1";
 		Boolean isOwner = false;
 		Boolean isTester = false;
 		String updateSql = origUpdateSql;
@@ -480,7 +480,8 @@ public class Logic extends WebServiceUserCode {
 			} else {
 				updatedEntityID = "" + db(TDM).fetch(updateSql + returnClause, newNote, entityID, beID, envID).firstValue();
 			}
-			
+			String activityDesc = "Reserved Entities were update with note " + newNote;
+			fnInsertActivity("update", "Reserved Entities", activityDesc);
 			//if record was not updated
 			if(!entityID.equals(updatedEntityID)) {
 				HashMap<String, Object> map = new HashMap<>();
@@ -606,7 +607,8 @@ public class Logic extends WebServiceUserCode {
 						return response;
 					}
 					String maxEndDate = "" + db(TDM).fetch(getMaxEndDateSql, entityID, beID, envID).firstValue();
-					
+					String activityDesc = "Reserved Entities were update with a new reservation period end date" + newEndDate ;
+					fnInsertActivity("update", "Reserved Entities", activityDesc);
 					//log.info("newEndDate: " + newEndDate + ", maxEndDate: " + maxEndDate + ", compare: " + newEndDate.compareTo(maxEndDate));
 					if(newEndDate.compareTo(maxEndDate) > 0) {
 						if (maxOverrideList == "") {

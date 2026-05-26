@@ -1,0 +1,55 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      Get TDM_SEQ_REPORT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SEQ_REPORT
+            default: false
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Stage 2:
+    actors:
+      Update Existing Tasks:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: UPDATE ${@schema}.tasks SET enable_sequence_report = ${indicator}
+          indicator:
+            link: Get TDM_SEQ_REPORT/result
+            schema: boolean
+            mandatory: false
+            createdBy: sql
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+      fieldsToHandle:
+        parent: ConstStrings
+        in:
+          strings:
+            const:
+            - TDM_SEQ_REPORT
+  Stage 3:
+    actors:
+      'ChangeGlobalsToNonFinal ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: ChangeGlobalsToNonFinal
+          fieldsToModify:
+            link: fieldsToHandle/strings
+            schema: any
+            mandatory: false
+            createdBy: flowName

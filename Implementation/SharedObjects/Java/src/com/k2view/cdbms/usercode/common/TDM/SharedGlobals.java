@@ -12,47 +12,6 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String COMBO_MAX_COUNT = "100";
 
-    @desc("Indicator to delete the instance to target DB")
-	@category("TDM")
-	public static String TDM_DELETE_BEFORE_LOAD = "false";
-
-    @desc("Indicator to insert the instance to target DB")
-	@category("TDM")
-	public static String TDM_INSERT_TO_TARGET = "false";
-
-    @category("TDM")
-	public static String TDM_SYNC_SOURCE_DATA = "true";
-
-    @desc("Target product version to override by task execution process")
-	@category("TDM")
-	public static String TDM_TARGET_PRODUCT_VERSION = "false";
-
-    @desc("Source product version to override by task execution process")
-	@category("TDM")
-	public static String TDM_SOURCE_PRODUCT_VERSION = "false";
-
-    @category("TDM")
-	public static String TDM_REPLACE_SEQUENCES = "false";
-
-    @category("TDM")
-	public static String TDM_TASK_EXE_ID = "0";
-
-    @category("TDM")
-	public static String TDM_SOURCE_ENVIRONMENT_NAME = "Production";
-
-    @category("TDM")
-	public static String TDM_TAR_ENV_NAME = "Development";
-
-    @category("TDM")
-	public static String TDM_CLONING_DATA = "false";
-
-    @category("TDM")
-	public static String TDM_TASK_ID = "0";
-
-    @desc("Indicator to mark the task as dataflux or not")
-	@category("TDM")
-	public static String TDM_DATAFLUX_TASK = "false";
-
     @desc("The TTL for masking cache")
 	@category("TDM")
 	public static String MASKING_CACHE_TTL = "2592000";
@@ -74,30 +33,6 @@ public class SharedGlobals {
 	public static String GET_RESERVED_ENTITIES_LIMIT = "0";
 
     @category("TDM_DEBUG")
-	public static String USER_NAME = "admin";
-
-    @category("TDM_DEBUG")
-	public static String USER_FABRIC_ROLES = "admin";
-
-    @category("TDM_DEBUG")
-	public static String USER_PERMISSION_GROUP = "admin";
-
-    @category("TDM_DEBUG")
-	public static String TDM_RESERVE_IND = "false";
-
-    @category("TDM_DEBUG")
-	public static String RESERVE_RETENTION_PERIOD_TYPE = "Days";
-
-    @category("TDM_DEBUG")
-	public static String RESERVE_RETENTION_PERIOD_VALUE = "10";
-
-    @category("TDM_DEBUG")
-	public static String BE_ID = "0";
-
-    @category("TDM_DEBUG")
-	public static String TASK_TYPE = "EXTRACT";
-
-    @category("TDM_DEBUG")
 	public static String enable_masking = "true";
 
     @category("TDM_DEBUG")
@@ -110,12 +45,6 @@ public class SharedGlobals {
 	public static final String TDMDB_SCHEMA = "public";
 
     @category("TDM")
-	public static String clone_id = "0";
-
-    @category("TDM")
-	public static String LOAD_MASKING_FLAG = "false";
-
-    @category("TDM")
 	public static String TDM_SUMMARY_REPORT_LIMIT = "10000";
 
     @category("TDM")
@@ -125,20 +54,11 @@ public class SharedGlobals {
 	public static final String TDM_BATCH_LIMIT = "-1";
 
     @category("TDM")
-	public static final String TDM_SEQ_REPORT = "true";
-
-    @category("TDM")
-	public static String EXTRACT_MASKING_FLAG = "true";
+	public static String TDM_SEQ_REPORT = "true";
 
     @desc("Indicates whether to run add TDM statitics")
 	@category("TDM")
 	public static final String TDM_POPULATE_JMX_STATS = "false";
-
-    @category("TDM")
-	public static final String SEQ_DO_TRUNCATE = "false";
-
-    @category("TDM")
-	public static final String SEQ_DROP_KEYSPACE = "false";
 
     @desc("The interface to be used for storing the cache of Masking")
 	@category("TDM")
@@ -147,9 +67,6 @@ public class SharedGlobals {
     @desc("The separator to be used for parsing the values of Parameters")
 	@category("TDM")
 	public static final String TDM_PARAMETERS_SEPARATOR = "<#>";
-
-    @category("TDM")
-	public static final String BUILD_TDMDB = "true";
 
     @category("TDM_DEMO")
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
@@ -167,16 +84,38 @@ public class SharedGlobals {
 	public static String SYNTHETIC_ENVIRONMENT = "Synthetic";
 
     @category("TDM")
-	public static String TDM_VERSION_TASK_EXECUTION_ID = "0";
-
-    @category("TDM")
 	public static final String CREATE_AI_K2SYSTEM_DB = "false";
 
     @category("TDM")
-	public static String TDM_DELETE_ONLY_TASK = "false";
-
-    @category("TDM")
 	public static String TDM_SUPPRESS_TEST_CONNECTION = "false";
+
+    @desc("Indicates whether to include the full parent-child entity hierarchy in the TDM LU during task execution. Set to false to exclude the hierarchy and prevent duplicate records when child entities have multiple parent relationships.")
+	@category("TDM")
+	public static final String POP_FULL_LU_HIERARCHY_IN_TDM_LU = "true";
+
+    @desc("This Global relates to the param coupling mode of business parameters and indicates whether to update the LU schema exported to the TDM database during task execution. It can be configured at either the TDM environment or task level.")
+	@category("TDM")
+	public static String UPDATE_MDB_EXPORTED_SCHEMA = "false";
+
+    @desc("Indicates whether to replace sequences (IDs) in Fabric when synchronizing an LU instance. Default is false. Set to true to replace sequences during LU instance synchronization.")
+	@category("TDM")
+	public static String REPLACE_SEQ_BY_LUI_SYNC = "false";
+
+    @desc("Sets the default sequence handling behavior of TDM. Set this Global to true to enable catalog-based mode, or false to use non-catalog mode. This Global can be applied to an LU to control its behavior.")
+	@category("TDM")
+	public static String TDM_USING_CATALOG_SEQUENCES = "false";
+
+    @desc("This Global relates to the param coupling mode of business parameters and indicates whether to create the FKs in the LU schema exported to the TDM database.")
+	@category("TDM")
+	public static String CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA = "true";
+
+    @desc ("When All - All tables are reported to the stats table, When Diff - Only Tables with Differences are reported, When None - No tables are reported.")
+	@category("TDM")
+	public static String STATISTICS_REPORT_FLAG = "ALL";
+
+    @desc("Used to suppress File System Interfaces in Table Level")
+	@category("TDM")
+	public static final String SUPPRESS_TABLE_LEVEL_SUPPRESS_FILE_SYSTEMS = "true";
 
 
 }

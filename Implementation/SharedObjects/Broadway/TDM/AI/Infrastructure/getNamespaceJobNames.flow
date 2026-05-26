@@ -1,0 +1,1038 @@
+tags: TDM,TDMAI MLInfra
+stages:
+  Stage 1:
+    actors:
+      path:
+        parent: StringFormat
+        in:
+          format:
+            const: /apis/batch/v1/namespaces/${namespace}/jobs
+          params:
+            const: ''
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false
+  Stage 2:
+    actors:
+      HttpJson1:
+        parent: HttpJson
+        in:
+          interface:
+            const: AI_Execution
+          path:
+            const: null
+            link: path/string
+          method:
+            const: GET
+          noCertificateCheck:
+            const: true
+        out:
+          header:
+            schema: '#ref'
+          result:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      'JsonParser ':
+        parent: JsonParser
+        in:
+          stream:
+            link:
+              path: HttpJson1/result/items
+              iterate: Iterate
+        out:
+          object:
+            schema: '#ref'
+  Stage 4:
+    actors:
+      ArrayBuilder:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: JsonParser /object/name
+              pos: 0
+        out:
+          array:
+            external: array
+            schema: '#ref'
+schemas:
+  HttpJson1.out.header:
+    type: object
+    properties:
+      audit-id:
+        type: string
+      cache-control:
+        type: string
+      content-type:
+        type: string
+      Date:
+        type: date
+      transfer-encoding:
+        type: string
+      x-kubernetes-pf-flowschema-uid:
+        type: string
+      x-kubernetes-pf-prioritylevel-uid:
+        type: string
+  HttpJson1.out.result:
+    type: object
+    properties:
+      kind:
+        type: string
+      apiVersion:
+        type: string
+      metadata:
+        type: object
+        properties:
+          resourceVersion:
+            type: string
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            metadata:
+              type: object
+              properties:
+                name:
+                  type: string
+                generateName:
+                  type: string
+                namespace:
+                  type: string
+                uid:
+                  type: string
+                resourceVersion:
+                  type: string
+                creationTimestamp:
+                  type: string
+                labels:
+                  type: object
+                  properties:
+                    controller-uid:
+                      type: string
+                    job-name:
+                      type: string
+                annotations:
+                  type: object
+                  properties:
+                    cni.projectcalico.org/containerID:
+                      type: string
+                    cni.projectcalico.org/podIP:
+                      type: string
+                    cni.projectcalico.org/podIPs:
+                      type: string
+                ownerReferences:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      apiVersion:
+                        type: string
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      uid:
+                        type: string
+                      controller:
+                        type: boolean
+                      blockOwnerDeletion:
+                        type: boolean
+                managedFields:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      manager:
+                        type: string
+                      operation:
+                        type: string
+                      apiVersion:
+                        type: string
+                      time:
+                        type: string
+                      fieldsType:
+                        type: string
+                      fieldsV1:
+                        type: object
+                        properties:
+                          f:metadata:
+                            type: object
+                            properties:
+                              f:generateName:
+                                type: object
+                                properties: {
+                                  }
+                              f:labels:
+                                type: object
+                                properties:
+                                  .:
+                                    type: object
+                                    properties: {
+                                      }
+                                  f:controller-uid:
+                                    type: object
+                                    properties: {
+                                      }
+                                  f:job-name:
+                                    type: object
+                                    properties: {
+                                      }
+                              f:ownerReferences:
+                                type: object
+                                properties:
+                                  .:
+                                    type: object
+                                    properties: {
+                                      }
+                                  k:{"uid":"ae533900-94fd-44e7-b9ed-bbb7249f046a"}:
+                                    type: object
+                                    properties: {
+                                      }
+                          f:spec:
+                            type: object
+                            properties:
+                              f:containers:
+                                type: object
+                                properties:
+                                  k:{"name":"training"}:
+                                    type: object
+                                    properties:
+                                      .:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:args:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:command:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:env:
+                                        type: object
+                                        properties:
+                                          .:
+                                            type: object
+                                            properties: {
+                                              }
+                                          k:{"name":"POSTGRES_DB"}:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:name:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:valueFrom:
+                                                type: object
+                                                properties:
+                                                  .:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                                  f:secretKeyRef:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                          k:{"name":"POSTGRES_HOST"}:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:name:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:valueFrom:
+                                                type: object
+                                                properties:
+                                                  .:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                                  f:secretKeyRef:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                          k:{"name":"POSTGRES_PASSWORD"}:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:name:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:valueFrom:
+                                                type: object
+                                                properties:
+                                                  .:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                                  f:secretKeyRef:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                          k:{"name":"POSTGRES_PORT"}:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:name:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:valueFrom:
+                                                type: object
+                                                properties:
+                                                  .:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                                  f:secretKeyRef:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                          k:{"name":"POSTGRES_USER"}:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:name:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:valueFrom:
+                                                type: object
+                                                properties:
+                                                  .:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                                  f:secretKeyRef:
+                                                    type: object
+                                                    properties: {
+                                                      }
+                                          k:{"name":"SQLALCHEMY_DATABASE_URI"}:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:name:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:value:
+                                                type: object
+                                                properties: {
+                                                  }
+                                      f:image:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:imagePullPolicy:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:name:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:resources:
+                                        type: object
+                                        properties:
+                                          .:
+                                            type: object
+                                            properties: {
+                                              }
+                                          f:limits:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:nvidia.com/gpu:
+                                                type: object
+                                                properties: {
+                                                  }
+                                          f:requests:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:nvidia.com/gpu:
+                                                type: object
+                                                properties: {
+                                                  }
+                                      f:terminationMessagePath:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:terminationMessagePolicy:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:volumeMounts:
+                                        type: object
+                                        properties:
+                                          .:
+                                            type: object
+                                            properties: {
+                                              }
+                                          k:{"mountPath":"/app/artifacts"}:
+                                            type: object
+                                            properties:
+                                              .:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:mountPath:
+                                                type: object
+                                                properties: {
+                                                  }
+                                              f:name:
+                                                type: object
+                                                properties: {
+                                                  }
+                              f:dnsPolicy:
+                                type: object
+                                properties: {
+                                  }
+                              f:enableServiceLinks:
+                                type: object
+                                properties: {
+                                  }
+                              f:restartPolicy:
+                                type: object
+                                properties: {
+                                  }
+                              f:schedulerName:
+                                type: object
+                                properties: {
+                                  }
+                              f:securityContext:
+                                type: object
+                                properties: {
+                                  }
+                              f:terminationGracePeriodSeconds:
+                                type: object
+                                properties: {
+                                  }
+                              f:volumes:
+                                type: object
+                                properties:
+                                  .:
+                                    type: object
+                                    properties: {
+                                      }
+                                  k:{"name":"shared-storage"}:
+                                    type: object
+                                    properties:
+                                      .:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:name:
+                                        type: object
+                                        properties: {
+                                          }
+                                      f:persistentVolumeClaim:
+                                        type: object
+                                        properties:
+                                          .:
+                                            type: object
+                                            properties: {
+                                              }
+                                          f:claimName:
+                                            type: object
+                                            properties: {
+                                              }
+            spec:
+              type: object
+              properties:
+                volumes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      persistentVolumeClaim:
+                        type: object
+                        properties:
+                          claimName:
+                            type: string
+                containers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      image:
+                        type: string
+                      command:
+                        type: array
+                        items:
+                          type: string
+                      args:
+                        type: array
+                        items:
+                          type: string
+                      env:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            valueFrom:
+                              type: object
+                              properties:
+                                secretKeyRef:
+                                  type: object
+                                  properties:
+                                    name:
+                                      type: string
+                                    key:
+                                      type: string
+                      resources:
+                        type: object
+                        properties:
+                          limits:
+                            type: object
+                            properties:
+                              nvidia.com/gpu:
+                                type: string
+                          requests:
+                            type: object
+                            properties:
+                              nvidia.com/gpu:
+                                type: string
+                      volumeMounts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            mountPath:
+                              type: string
+                      terminationMessagePath:
+                        type: string
+                      terminationMessagePolicy:
+                        type: string
+                      imagePullPolicy:
+                        type: string
+                restartPolicy:
+                  type: string
+                terminationGracePeriodSeconds:
+                  type: integer
+                dnsPolicy:
+                  type: string
+                serviceAccountName:
+                  type: string
+                serviceAccount:
+                  type: string
+                nodeName:
+                  type: string
+                securityContext:
+                  type: object
+                  properties: {
+                    }
+                schedulerName:
+                  type: string
+                tolerations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+                      operator:
+                        type: string
+                      effect:
+                        type: string
+                      tolerationSeconds:
+                        type: integer
+                priority:
+                  type: integer
+                enableServiceLinks:
+                  type: boolean
+                preemptionPolicy:
+                  type: string
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      status:
+                        type: string
+                      lastProbeTime: {
+                        }
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                hostIP:
+                  type: string
+                podIP:
+                  type: string
+                podIPs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      ip:
+                        type: string
+                startTime:
+                  type: string
+                containerStatuses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      state:
+                        type: object
+                        properties:
+                          terminated:
+                            type: object
+                            properties:
+                              exitCode:
+                                type: integer
+                              reason:
+                                type: string
+                              startedAt:
+                                type: string
+                              finishedAt:
+                                type: string
+                              containerID:
+                                type: string
+                      lastState:
+                        type: object
+                        properties: {
+                          }
+                      ready:
+                        type: boolean
+                      restartCount:
+                        type: integer
+                      image:
+                        type: string
+                      imageID:
+                        type: string
+                      containerID:
+                        type: string
+                      started:
+                        type: boolean
+                qosClass:
+                  type: string
+  JsonParser .out.object:
+    type: object
+    properties:
+      name:
+        type: string
+      generateName:
+        type: string
+      namespace:
+        type: string
+      uid:
+        type: string
+      resourceVersion:
+        type: string
+      creationTimestamp:
+        type: string
+      labels:
+        type: object
+        properties:
+          controller-uid:
+            type: string
+          job-name:
+            type: string
+      annotations:
+        type: object
+        properties:
+          cni.projectcalico.org/containerID:
+            type: string
+          cni.projectcalico.org/podIP:
+            type: string
+          cni.projectcalico.org/podIPs:
+            type: string
+      ownerReferences:
+        type: array
+        items:
+          type: object
+          properties:
+            apiVersion:
+              type: string
+            kind:
+              type: string
+            name:
+              type: string
+            uid:
+              type: string
+            controller:
+              type: boolean
+            blockOwnerDeletion:
+              type: boolean
+      managedFields:
+        type: array
+        items:
+          type: object
+          properties:
+            manager:
+              type: string
+            operation:
+              type: string
+            apiVersion:
+              type: string
+            time:
+              type: string
+            fieldsType:
+              type: string
+            fieldsV1:
+              type: object
+              properties:
+                f:metadata:
+                  type: object
+                  properties:
+                    f:generateName:
+                      type: object
+                      properties: {
+                        }
+                    f:labels:
+                      type: object
+                      properties:
+                        .:
+                          type: object
+                          properties: {
+                            }
+                        f:controller-uid:
+                          type: object
+                          properties: {
+                            }
+                        f:job-name:
+                          type: object
+                          properties: {
+                            }
+                    f:ownerReferences:
+                      type: object
+                      properties:
+                        .:
+                          type: object
+                          properties: {
+                            }
+                        k:{"uid":"c477fb5d-f1cc-4152-8990-db5e68a4e738"}:
+                          type: object
+                          properties: {
+                            }
+                f:spec:
+                  type: object
+                  properties:
+                    f:containers:
+                      type: object
+                      properties:
+                        k:{"name":"training"}:
+                          type: object
+                          properties:
+                            .:
+                              type: object
+                              properties: {
+                                }
+                            f:args:
+                              type: object
+                              properties: {
+                                }
+                            f:command:
+                              type: object
+                              properties: {
+                                }
+                            f:env:
+                              type: object
+                              properties:
+                                .:
+                                  type: object
+                                  properties: {
+                                    }
+                                k:{"name":"POSTGRES_DB"}:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:name:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:valueFrom:
+                                      type: object
+                                      properties:
+                                        .:
+                                          type: object
+                                          properties: {
+                                            }
+                                        f:secretKeyRef:
+                                          type: object
+                                          properties: {
+                                            }
+                                k:{"name":"POSTGRES_HOST"}:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:name:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:valueFrom:
+                                      type: object
+                                      properties:
+                                        .:
+                                          type: object
+                                          properties: {
+                                            }
+                                        f:secretKeyRef:
+                                          type: object
+                                          properties: {
+                                            }
+                                k:{"name":"POSTGRES_PASSWORD"}:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:name:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:valueFrom:
+                                      type: object
+                                      properties:
+                                        .:
+                                          type: object
+                                          properties: {
+                                            }
+                                        f:secretKeyRef:
+                                          type: object
+                                          properties: {
+                                            }
+                                k:{"name":"POSTGRES_PORT"}:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:name:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:valueFrom:
+                                      type: object
+                                      properties:
+                                        .:
+                                          type: object
+                                          properties: {
+                                            }
+                                        f:secretKeyRef:
+                                          type: object
+                                          properties: {
+                                            }
+                                k:{"name":"POSTGRES_USER"}:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:name:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:valueFrom:
+                                      type: object
+                                      properties:
+                                        .:
+                                          type: object
+                                          properties: {
+                                            }
+                                        f:secretKeyRef:
+                                          type: object
+                                          properties: {
+                                            }
+                                k:{"name":"SQLALCHEMY_DATABASE_URI"}:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:name:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:value:
+                                      type: object
+                                      properties: {
+                                        }
+                            f:image:
+                              type: object
+                              properties: {
+                                }
+                            f:imagePullPolicy:
+                              type: object
+                              properties: {
+                                }
+                            f:name:
+                              type: object
+                              properties: {
+                                }
+                            f:resources:
+                              type: object
+                              properties:
+                                .:
+                                  type: object
+                                  properties: {
+                                    }
+                                f:limits:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:nvidia.com/gpu:
+                                      type: object
+                                      properties: {
+                                        }
+                                f:requests:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:nvidia.com/gpu:
+                                      type: object
+                                      properties: {
+                                        }
+                            f:terminationMessagePath:
+                              type: object
+                              properties: {
+                                }
+                            f:terminationMessagePolicy:
+                              type: object
+                              properties: {
+                                }
+                            f:volumeMounts:
+                              type: object
+                              properties:
+                                .:
+                                  type: object
+                                  properties: {
+                                    }
+                                k:{"mountPath":"/app/artifacts"}:
+                                  type: object
+                                  properties:
+                                    .:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:mountPath:
+                                      type: object
+                                      properties: {
+                                        }
+                                    f:name:
+                                      type: object
+                                      properties: {
+                                        }
+                    f:dnsPolicy:
+                      type: object
+                      properties: {
+                        }
+                    f:enableServiceLinks:
+                      type: object
+                      properties: {
+                        }
+                    f:restartPolicy:
+                      type: object
+                      properties: {
+                        }
+                    f:schedulerName:
+                      type: object
+                      properties: {
+                        }
+                    f:securityContext:
+                      type: object
+                      properties: {
+                        }
+                    f:terminationGracePeriodSeconds:
+                      type: object
+                      properties: {
+                        }
+                    f:volumes:
+                      type: object
+                      properties:
+                        .:
+                          type: object
+                          properties: {
+                            }
+                        k:{"name":"shared-storage"}:
+                          type: object
+                          properties:
+                            .:
+                              type: object
+                              properties: {
+                                }
+                            f:name:
+                              type: object
+                              properties: {
+                                }
+                            f:persistentVolumeClaim:
+                              type: object
+                              properties:
+                                .:
+                                  type: object
+                                  properties: {
+                                    }
+                                f:claimName:
+                                  type: object
+                                  properties: {
+                                    }
+  ArrayBuilder.out.array:
+    type: array
+    items:
+      type: string

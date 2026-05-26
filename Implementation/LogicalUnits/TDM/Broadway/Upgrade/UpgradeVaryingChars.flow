@@ -1,0 +1,52 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Stage 2:
+    actors:
+      Alter Tables:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              DO $$
+              DECLARE
+                  v_sql TEXT;
+              BEGIN
+                  SELECT string_agg(
+                      'ALTER TABLE ' || quote_ident(table_schema) || '.' || quote_ident(table_name) ||
+                      ' ALTER COLUMN ' || quote_ident(column_name) || ' TYPE TEXT;',
+                      E'\n'
+                  )
+                  INTO v_sql
+                  FROM information_schema.columns
+                  WHERE table_schema = '${@schema}'
+                    AND table_name in ('activities', 'business_entities', 'environment_owners', 'environment_products',
+                      'environment_role_users', 'environment_roles', 'environments', 'parameters', 'product_logical_units',
+                      'products', 'task_execution_list', 'tasks', 'tdm_be_env_exclusion_list', 'tdm_seq_mapping', 'task_execution_entities',
+                      'tasks_logical_units', 'task_ref_tables', 'task_ref_exe_stats', 'tdm_general_parameters', 'task_globals',
+                      'tdm_env_globals', 'task_execution_summary', 'task_exe_error_summary', 'task_exe_error_detailed', 'tdm_be_exe_process',
+                      'task_exe_stats_detailed', 'permission_groups_mapping', 'task_execution_override_attrs', 'tdm_reserved_entities',
+                      'tdm_generate_task_field_mappings', 'tdm_params_distinct_values', 'tdm_ai_gen_iid_mapping')
+                    AND data_type = 'character varying';
+
+                  IF v_sql IS NOT NULL THEN
+                      EXECUTE v_sql;
+                  END IF;
+              END;
+              $$;
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql

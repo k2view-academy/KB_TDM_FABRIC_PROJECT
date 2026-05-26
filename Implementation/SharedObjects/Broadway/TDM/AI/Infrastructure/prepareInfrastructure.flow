@@ -1,0 +1,55 @@
+tags: Medoid,TDM
+stages:
+  Create Namespace:
+    actors:
+      createNamespace:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createNamespace
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false
+  Create Secret:
+    actors:
+      createSecret:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createSecret
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false
+          pg-pass:
+            external: pg-pass
+            schema: string
+            mandatory: false
+          pg-host:
+            external: pg-host
+            schema: string
+            mandatory: false
+          pg-db:
+            external: pg-db
+            schema: string
+            mandatory: false
+          pg-port:
+            external: pg-port
+            schema: string
+            mandatory: false
+          pg-user:
+            external: pg-user
+            schema: string
+            mandatory: false
+  Create PVC:
+    actors:
+      createStorageClaim:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createStorageClaim
+          namespace:
+            external: namespace
+            schema: string
+            mandatory: false

@@ -2,11 +2,8 @@ tags: TDM,TDMAI ML
 stages:
   Get Globals:
     actors:
-      AI_DB_ENTITIES:
-        parent: FabricSetRead
-        in:
-          key:
-            const: AI_DB_INTERFACE
+      Get Start Time:
+        parent: Now
       trainingExcludedTables:
         parent: InnerFlow
         in:
@@ -19,11 +16,6 @@ stages:
         out:
           tables:
             schema: string
-      TDM_TASK_EXE_ID:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDM_TASK_EXE_ID
       trainingIncludedTables1:
         parent: InnerFlow
         in:
@@ -36,8 +28,11 @@ stages:
         out:
           tables:
             schema: string
-      Get Start Time:
-        parent: Now
+      SplitIIDAndCloneNumber_Actor1:
+        parent: SplitIIDAndCloneNumber_Actor
+        in:
+          iid:
+            external: IID
   'Remote IID ':
     actors:
       Format Start Time:
@@ -45,19 +40,16 @@ stages:
         in:
           date:
             link: Get Start Time/date
-      Target IID:
-        parent: StringFormat
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
         in:
-          format:
-            const: ${IID}_${executionID}
-          IID:
-            external: IID
-            schema: string
-            mandatory: false
-          executionID:
-            link: TDM_TASK_EXE_ID/result
-            schema: string
-            mandatory: false
+          key:
+            const: TDM_TASK_EXE_ID
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
   Set Globals:
     actors:
       Set Start Processing Time:
@@ -68,6 +60,25 @@ stages:
             default: false
           value:
             link: Format Start Time/string
+      Target IID:
+        parent: StringFormat
+        in:
+          format:
+            const: '{"env": "${env}", "iid": "${iid}", "exec_id": ${executionID}}'
+          executionID:
+            link: TDM_TASK_EXE_ID/result
+            schema: string
+            mandatory: false
+          env:
+            link: SplitIIDAndCloneNumber_Actor1/envName
+            schema: any
+            mandatory: false
+            createdBy: format
+          iid:
+            link: SplitIIDAndCloneNumber_Actor1/instanceID
+            schema: any
+            mandatory: false
+            createdBy: format
   Export:
     dependsOn: Set Globals
     actors:

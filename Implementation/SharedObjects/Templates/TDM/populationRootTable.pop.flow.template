@@ -15,7 +15,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_SYNC_SOURCE_DATA",
+                                        "const": "TDM.TDM_SYNC_SOURCE_DATA",
                                         "isDefault": false
                                     }
                                 ],
@@ -29,7 +29,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_DELETE_ONLY_TASK",
+                                        "const": "TDM.TDM_DELETE_ONLY_TASK",
                                         "isDefault": false
                                     }
                                 ],
@@ -43,7 +43,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_DELETE_BEFORE_LOAD",
+                                        "const": "TDM.TDM_DELETE_BEFORE_LOAD",
                                         "isDefault": false
                                     }
                                 ],

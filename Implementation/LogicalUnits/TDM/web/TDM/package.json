@@ -1,0 +1,77 @@
+{
+  "name": "react-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@adobe/css-tools": "4.4.4",
+    "@tanstack/react-table": "^8.21.3",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@uidotdev/usehooks": "^2.4.1",
+    "braces": "3.0.3",
+    "chart.js": "^4.5.1",
+    "ejs": "5.0.1",
+    "exceljs": "^4.4.0",
+    "lucide-react": "^0.577.0",
+    "moment": "2.30.1",
+    "nth-check": "2.1.1",
+    "path-to-regexp": "8.3.0",
+    "react": "^19.2.4",
+    "react-chartjs-2": "^5.3.1",
+    "react-cron-generator": "^2.3.0",
+    "react-datepicker": "^9.1.0",
+    "react-dom": "^19.2.4",
+    "react-hook-form": "^7.71.2",
+    "react-select": "^5.10.2",
+    "react-tiny-popover": "^8.1.6",
+    "styled-components": "^6.3.11",
+    "sweetalert2": "^11.26.22",
+    "sweetalert2-react-content": "^5.1.1",
+    "typescript": "^5.9.3",
+    "web-vitals": "^5.1.0"
+  },
+  "scripts": {
+    "build": "vite build",
+    "start": "vite build --watch --config vite.config.watch.ts",
+    "start-local": "vite",
+    "test": "echo \"Tests not configured for Vite yet\"",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
+    "@babel/traverse": "7.29.0",
+    "@types/angular": "^1.8.9",
+    "@types/react-datepicker": "^7.0.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "css-loader": "7.1.4",
+    "glob": "13.0.6",
+    "prettier": "3.8.1",
+    "react-router-dom": "^7.13.1",
+    "style-loader": "4.0.0",
+    "vite": "^8.0.0",
+    "webpack": "5.105.4",
+    "webpack-cli": "^7.0.0",
+    "webpack-dev-middleware": "7.4.5",
+    "ws": "8.19.0"
+  }
+}

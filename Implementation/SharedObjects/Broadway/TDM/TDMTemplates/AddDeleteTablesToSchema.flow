@@ -37,6 +37,28 @@ stages:
             external: luName
             schema: string
             mandatory: false
+      MathAdd1:
+        parent: MathAdd
+        in:
+          b:
+            const: 10
+          a:
+            link: Get Max Population Order/result
+  Stage 1:
+    actors:
+      Read Schema For Duplicate Check:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: LU's Folder/string
+          path:
+            const: vdb.k2vdb.xml
+        out:
+          stream:
+            schema: string
+  Stage 2:
+    actors:
       List Population Flows:
         parent: LuFunction
         in:
@@ -49,13 +71,16 @@ stages:
         out:
           result:
             schema: '#ref'
-      MathAdd1:
-        parent: MathAdd
+      Parse vdb XML:
+        parent: XmlParser
         in:
-          b:
-            const: 10
-          a:
-            link: Get Max Population Order/result
+          stream:
+            link: Read Schema For Duplicate Check/stream
+        out:
+          object:
+            schema: '#ref'
+          info:
+            schema: '#ref'
   Filter Out Documents:
     actors:
       Get Type Of Table:
@@ -78,7 +103,30 @@ stages:
         out:
           result:
             schema: string
-  Prepare Input Data:
+      Get Delete Table Prefix:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_DELETE_TABLES_PREFIX
+            default: false
+  Stage 3:
+    actors:
+      Build Delete Table Name:
+        parent: StringFormat
+        in:
+          format:
+            const: ${prefix}${table}
+          prefix:
+            link: Get Delete Table Prefix/result
+            schema: string
+            mandatory: false
+          table:
+            link:
+              path: List Population Flows/result/tableName
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Check Existing Tables:
     actors:
       Table?:
         parent: Equals
@@ -90,15 +138,72 @@ stages:
           b:
             const: TABLE
             schema: string
+      Table Already In Schema?:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var arrIn = [];
+                var tableObj = {};
+                var tablesObjt = [];
+                print("The value of tablesList is: " + tablesList);
+                arrIn = [ ...tablesList ];
+                print("The value of arrIn is: " + arrIn);
+                var result = false;
+
+
+                if(arrIn.toString().indexOf(tableName) > 1){
+                    result = true;
+                }
+
+                result;
+              script: |-
+                var arrIn = [];
+                var tableObj = {};
+                var tablesObjt = [];
+                print("The value of tablesList is: " + tablesList);
+                arrIn = [].concat(tablesList);
+                print("The value of arrIn is: " + arrIn);
+                var result = false;
+
+                if (arrIn.toString().indexOf(tableName) > 1) {
+                  result = true;
+                }
+
+                result;
+          tableName:
+            link: Build Delete Table Name/string
+            schema: string
+            mandatory: false
+          tablesList:
+            link: Parse vdb XML/object/VirtualDB/_value/Tables/_value/Table
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Prepare Input Data:
+    actors:
+      Not Already In Schema?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Table Already In Schema?/result
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
       Calculate Table's Order:
         parent: MathAdd
         in:
+          b:
+            link: MathAdd1/result
           a:
             link:
               path: List Population Flows/result/tableOrder
               iterate: Iterate
-          b:
-            link: MathAdd1/result
       Prepare Template Data:
         parent: InnerFlow
         in:
@@ -121,6 +226,12 @@ stages:
           interfaceName:
             external: interfaceName
             schema: string
+            editor:
+              interfaceType:
+              - database
+              - CassandraLoader
+              - nosql
+              id: com.k2view.interface
             mandatory: false
           useFabric:
             external: useFabric
@@ -252,7 +363,51 @@ stages:
     last: 1
   Handle Duplicates:
     actors:
-      Remove Duplicates:
+      Remove Duplicates -  Table's Properties:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var arrIn = [];
+                arrIn = [...arr];
+                var fieldList = [];
+
+                var arrOut = [];
+                for(var i=0; i<arrIn.length; i++) {
+                    var row = arrIn[i];
+                    if (fieldList.indexOf(row)=== -1) {
+                        fieldList.push(row)
+                        arrOut.push(arrIn[i]);
+                    }
+
+                }
+
+                arrOut;
+              script: |-
+                var arrIn = [];
+                arrIn = [].concat(arr);
+                var fieldList = [];
+                var arrOut = [];
+
+                for (var i = 0; i < arrIn.length; i++) {
+                  var row = arrIn[i];
+
+                  if (fieldList.indexOf(row) === -1) {
+                    fieldList.push(row);
+                    arrOut.push(arrIn[i]);
+                  }
+                }
+
+                arrOut;
+          arr:
+            link: Aggregate Table's Properties/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Remove Duplicates - Table Names:
         parent: JavaScript
         in:
           script:
@@ -296,6 +451,51 @@ stages:
         out:
           result:
             schema: '#ref'
+      Remove Duplicates - Table's Graph:
+        parent: JavaScript
+        height: 148
+        in:
+          script:
+            const:
+              userCode: |-
+                var arrIn = [];
+                arrIn = [...arr];
+                var fieldList = [];
+
+                var arrOut = [];
+                for(var i=0; i<arrIn.length; i++) {
+                    var row = arrIn[i];
+                    if (fieldList.indexOf(row)=== -1) {
+                        fieldList.push(row)
+                        arrOut.push(arrIn[i]);
+                    }
+
+                }
+
+                arrOut;
+              script: |-
+                var arrIn = [];
+                arrIn = [].concat(arr);
+                var fieldList = [];
+                var arrOut = [];
+
+                for (var i = 0; i < arrIn.length; i++) {
+                  var row = arrIn[i];
+
+                  if (fieldList.indexOf(row) === -1) {
+                    fieldList.push(row);
+                    arrOut.push(arrIn[i]);
+                  }
+                }
+
+                arrOut;
+          arr:
+            link: Aggregate Table's Graph/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
   Concatenate:
     actors:
       Concatenate Table's Properties:
@@ -304,14 +504,14 @@ stages:
           delimiter:
             const: ''
           elements:
-            link: Aggregate Table's Properties/array
+            link: Remove Duplicates -  Table's Properties/result
       Concatenate Table's Name:
         parent: Concat
         in:
           delimiter:
             const: ''
           elements:
-            link: Remove Duplicates/result
+            link: Remove Duplicates - Table Names/result
       Concatenate Table's Relation:
         parent: Concat
         in:
@@ -325,7 +525,7 @@ stages:
           delimiter:
             const: ''
           elements:
-            link: Aggregate Table's Graph/array
+            link: Remove Duplicates - Table's Graph/result
   Read Schema And Close Tags:
     actors:
       Read Schema File:
@@ -446,6 +646,241 @@ schemas:
           type: string
         tableName:
           type: string
+  Parse vdb XML.out.object:
+    type: object
+    properties:
+      VirtualDB:
+        type: object
+        properties:
+          _attributes:
+            type: object
+            properties:
+              version:
+                type: string
+          _value:
+            type: object
+            properties:
+              Name:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              RootView:
+                type: object
+                properties:
+                  _value:
+                    type: string
+              LuLazyDataUpdate:
+                type: object
+                properties:
+                  _attributes:
+                    type: object
+                    properties:
+                      syncMethod:
+                        type: string
+                      performEvery:
+                        type: string
+              EventsList:
+                type: object
+                properties: {
+                  }
+              IidFinderProp:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      NumberOfPartitions:
+                        type: object
+                        properties:
+                          _value:
+                            type: string
+                      NumberOfJobs:
+                        type: object
+                        properties:
+                          _value:
+                            type: string
+              Tables:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Table:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _value:
+                              type: string
+              TablesProperties:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      TableProperties:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _attributes:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                            _value:
+                              type: object
+                              properties:
+                                Populations:
+                                  type: object
+                                  properties:
+                                    _value:
+                                      type: object
+                                      properties:
+                                        Population:
+                                          type: object
+                                          properties:
+                                            _attributes:
+                                              type: object
+                                              properties:
+                                                name:
+                                                  type: string
+                                                order:
+                                                  type: string
+                                                disabled:
+                                                  type: string
+                                                populationType:
+                                                  type: string
+              EnrichmentsOrderList:
+                type: object
+                properties: {
+                  }
+              ReferencesList:
+                type: object
+                properties: {
+                  }
+              Relations:
+                type: object
+                properties: {
+                  }
+              DatabaseRelations:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Relation:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _value:
+                              type: object
+                              properties:
+                                From:
+                                  type: object
+                                  properties:
+                                    _attributes:
+                                      type: object
+                                      properties:
+                                        tableType:
+                                          type: string
+                                        table:
+                                          type: string
+                                        column:
+                                          type: string
+                                        columnId:
+                                          type: string
+                                To:
+                                  type: object
+                                  properties:
+                                    _attributes:
+                                      type: object
+                                      properties:
+                                        tableType:
+                                          type: string
+                                        table:
+                                          type: string
+                                        populationObjectName:
+                                          type: string
+                                        column:
+                                          type: string
+              PreVCsSqlScript:
+                type: object
+                properties: {
+                  }
+              PostVCsSqlScript:
+                type: object
+                properties: {
+                  }
+              Indexes:
+                type: object
+                properties: {
+                  }
+              LudbProperties:
+                type: object
+                properties: {
+                  }
+              DiagramGraph:
+                type: object
+                properties:
+                  _value:
+                    type: object
+                    properties:
+                      Graph:
+                        type: object
+                        properties:
+                          _attributes:
+                            type: object
+                            properties:
+                              version:
+                                type: string
+                              name:
+                                type: string
+                          _value:
+                            type: object
+                            properties:
+                              Node:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    _attributes:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        pos:
+                                          type: string
+                                        size:
+                                          type: string
+                                        listGroupSize:
+                                          type: string
+                                        viewType:
+                                          type: string
+  Parse vdb XML.out.info:
+    type: object
+    properties:
+      version:
+        type: string
+      standalone:
+        type: boolean
+      header:
+        type: string
+  Table Already In Schema?.in.tablesList:
+    type: object
+    properties:
+      _value:
+        type: object
+        properties:
+          Table:
+            type: array
+            items:
+              type: object
+              properties:
+                _value:
+                  type: string
   Prepare Template Data.out.tableDefaultMapping:
     type: object
     properties:
@@ -503,11 +938,27 @@ schemas:
     type: array
     items:
       type: string
-  Remove Duplicates.in.arr:
+  Remove Duplicates -  Table's Properties.in.arr:
     type: array
     items:
       type: string
-  Remove Duplicates.out.result:
+  Remove Duplicates -  Table's Properties.out.result:
+    type: array
+    items:
+      type: string
+  Remove Duplicates - Table Names.in.arr:
+    type: array
+    items:
+      type: string
+  Remove Duplicates - Table Names.out.result:
+    type: array
+    items:
+      type: string
+  Remove Duplicates - Table's Graph.in.arr:
+    type: array
+    items:
+      type: string
+  Remove Duplicates - Table's Graph.out.result:
     type: array
     items:
       type: string
