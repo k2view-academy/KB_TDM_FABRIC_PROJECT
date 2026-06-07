@@ -31,18 +31,7 @@ stages:
             external: is_first_deploy
             schema: boolean
             mandatory: false
-  'Populate TDMDB ':
-    actors:
-      populateTDMDB:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: PopulateTDMDBForTesters
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
-  Create Role and Permissions:
+  'Create Role and Permissions  ':
     actors:
       createFabricRoles1:
         parent: InnerFlow
@@ -54,6 +43,17 @@ stages:
             schema: boolean
             mandatory: false
             createdBy: flowName
+  Populate TDMDB:
+    actors:
+      populateTDMDB:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTDMDBForTesters
+          is_first_deploy:
+            external: is_first_deploy
+            schema: boolean
+            mandatory: false
   End:
     actors:
       Finished Deploy Activities1:

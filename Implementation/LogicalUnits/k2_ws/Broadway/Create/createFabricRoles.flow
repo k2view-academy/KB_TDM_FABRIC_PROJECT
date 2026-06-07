@@ -25,8 +25,6 @@ stages:
           b:
             const: true
             schema: boolean
-  Get All roles:
-    actors:
       DbCommand1:
         parent: DbCommand
         in:
@@ -37,31 +35,50 @@ stages:
         out:
           result:
             schema: '#ref'
-  Get Script:
+  Build Array:
+    actors:
+      ArrayBuilder:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: DbCommand1/result
+        out:
+          array:
+            schema: '#ref'
+  Get All roles:
     actors:
       JavaScript1:
         parent: JavaScript
-        condition: result
         in:
           script:
             const: |-
-              var input = roles;
-              var result = false;
+              var hasOwner = false;
+              var hasExecutor = false;
 
-              for (var i = 0; i < input.length; i++) {
-                  if (input[i].name !== "TDM Environment Owner & Task Creator" &&
-                      input[i].name !== "TDM Task Executor") {
-                       result = true;
-                  }
+              for (var i = 0; i < roles.length; i++) {
+                  if (roles[i].name === "TDM Environment Owner & Task Creator")
+                      hasOwner = true;
+
+                  if (roles[i].name === "TDM Task Executor")
+                      hasExecutor = true;
               }
-              result ;
+
+              hasOwner && hasExecutor;
           roles:
-            link: DbCommand1/result
+            link: ArrayBuilder/array
             schema: '#ref'
             mandatory: false
         out:
           result:
             schema: boolean
+  Get Script:
+    actors:
+      Not1:
+        parent: Not
+        condition: result
+        in:
+          value:
+            link: JavaScript1/result
       Get  SQL Resource File To Create CRM DB Tables and Functions:
         parent: LuFunction
         in:
@@ -110,6 +127,17 @@ stages:
               iterate: Iterate
 schemas:
   DbCommand1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        security profiles:
+          type: string
+        description:
+          type: string
+  ArrayBuilder.out.array:
     type: array
     items:
       type: object

@@ -27,7 +27,7 @@ INSERT INTO ${@schema}.tdm_be_exe_process (process_id, process_name, process_des
 
 INSERT INTO ${@schema}.environment_owners (environment_id, user_type, user_name, user_id) SELECT 2, 'GROUP', 'TDM Environment Owner & Task Creator', 'TDM Environment Owner & Task Creator' WHERE NOT EXISTS (SELECT 1 FROM ${@schema}.environment_owners WHERE environment_id = 2 AND user_name = 'TDM Environment Owner & Task Creator');
 
-INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (1, 1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id) VALUES (1, 1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
 
 INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
 	allowed_creation_of_synthetic_data,allowed_random_entity_selection,allowed_request_of_fresh_data,
@@ -36,3 +36,5 @@ INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_descrip
 	allow_read, allow_write,allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, 
 	allowed_number_of_reserved_entities) VALUES(1,'Testers','Permission set used by testers',false,false,true,true,true,0,1,
 	'admin',NOW(),NOW(),'admin','Active',true,false,true,false,100,true,true,0) ON CONFLICT DO NOTHING;
+
+SELECT pg_catalog.setval('${@schema}.environment_roles_role_id_seq'::regclass,1);
