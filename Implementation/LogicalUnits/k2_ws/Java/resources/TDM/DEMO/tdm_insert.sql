@@ -25,8 +25,8 @@ INSERT INTO ${@schema}.products (product_name, product_description,  product_ver
 INSERT INTO ${@schema}.tdm_be_exe_process (process_id, process_name, process_description, be_id, execution_order,process_type) SELECT nextval('${@schema}.exe_process_id_seq'::regclass), 'postTaskExePrintToLog', 'This is a Post Execution Process Flow.', 1, 1,'post' where not exists (select 1 from ${@schema}.tdm_be_exe_process where process_name='postTaskExePrintToLog');
 INSERT INTO ${@schema}.tdm_be_exe_process (process_id, process_name, process_description, be_id, execution_order,process_type) SELECT nextval('${@schema}.exe_process_id_seq'::regclass), 'preTaskExePrintToLog', 'This is a Pre Execution Process Flow.', 1, 1,'pre' where not exists (select 1 from ${@schema}.tdm_be_exe_process where process_name='preTaskExePrintToLog');
 
-INSERT INTO ${@schema}.environment_owner(environment_id, user_type, user_name, user_id)VALUES (2, 'GROUP', 'TDM Environment Owner & Task Creator', 'TDM Environment Owner & Task Creator')  
-where not exists (select 1 from ${@schema}.environment_owner where environment_id =2 and user_name='TDM Environment Owner & Task Creator');
+INSERT INTO ${@schema}.environment_owners (environment_id, user_type, user_name, user_id) SELECT 2, 'GROUP', 'TDM Environment Owner & Task Creator', 'TDM Environment Owner & Task Creator' WHERE NOT EXISTS (SELECT 1 FROM ${@schema}.environment_owners WHERE environment_id = 2 AND user_name = 'TDM Environment Owner & Task Creator');
+
 INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (1, 1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
 
 INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
