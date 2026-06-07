@@ -55,7 +55,7 @@ stages:
         parent: StringPos
         in:
           substring:
-            const: _k2v_
+            const: TDM Environment Owner & Task Creator
           string:
             link:
               path: DbCommand/result/name
@@ -104,10 +104,10 @@ stages:
           sql:
             const: "INSERT INTO ${@schema}.permission_groups_mapping(\n\tdescription,\
               \ fabric_role, permission_group, created_by, updated_by, creation_date,\
-              \ update_date, can_create_tasks)\n\tVALUES ('Initial mapping for tester\
-              \ user',${k2v_user} ,'tester', 'admin', 'admin', NOW(), NOW(),true)\n\
-              \tON CONFLICT (fabric_role) DO UPDATE SET permission_group='tester',description='Initial\
-              \ mapping for tester user' ;\n"
+              \ update_date, can_create_tasks)\n\tVALUES ('Initial mapping for Environment\
+              \ Owner',${k2v_user} ,'owner', 'admin', 'admin', NOW(), NOW(),true)\n\
+              \tON CONFLICT (fabric_role) DO UPDATE SET permission_group='owner',description='Initial\
+              \ mapping for Environment Owner' ;\n"
           k2v_user:
             link: DbCommand/result/name
             schema: string

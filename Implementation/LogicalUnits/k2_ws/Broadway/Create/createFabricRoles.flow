@@ -1,0 +1,133 @@
+tags: Create
+stages:
+  Get Flag:
+    actors:
+      is_first_deploy:
+        parent: Const
+        remark: A boolean representing if this is the first deploy
+        in:
+          value:
+            const: null
+            external: is_first_deploy
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+  'True':
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: is_first_deploy/value
+            schema: boolean
+          b:
+            const: true
+            schema: boolean
+  Get All roles:
+    actors:
+      DbCommand1:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: list roles ;
+        out:
+          result:
+            schema: '#ref'
+  Get Script:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var input = roles;
+              var result = false;
+
+              for (var i = 0; i < input.length; i++) {
+                  if (input[i].name !== "TDM Environment Owner & Task Creator" &&
+                      input[i].name !== "TDM Task Executor") {
+                       result = true;
+                  }
+              }
+              result ;
+          roles:
+            link: DbCommand1/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Get  SQL Resource File To Create CRM DB Tables and Functions:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/DEMO/fabric_roles.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+  Split into commands:
+    actors:
+      'Split ':
+        parent: Split
+        in:
+          delimiter:
+            const: ;
+          string:
+            link: Get  SQL Resource File To Create CRM DB Tables and Functions/result
+  Run commands:
+    actors:
+      DB Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      'DbCommand ':
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: null
+            link:
+              path: Split /strings
+              iterate: Iterate
+schemas:
+  DbCommand1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        security profiles:
+          type: string
+        description:
+          type: string
+  JavaScript1.in.roles:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        security profiles:
+          type: string
+        description:
+          type: string
