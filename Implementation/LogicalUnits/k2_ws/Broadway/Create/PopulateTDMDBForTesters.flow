@@ -1,6 +1,6 @@
 tags: Create
 stages:
-  Stage 1:
+  Check Deploy:
     actors:
       is_first_deploy:
         parent: Const
@@ -13,10 +13,10 @@ stages:
         out:
           value:
             schema: boolean
-  Stage 2:
-    dependsOn: Stage 1
+  Equla:
+    transactional: false
     actors:
-      Equals1:
+      'Equals ':
         parent: Equals
         condition: result
         in:
@@ -26,13 +26,8 @@ stages:
           b:
             const: true
             schema: boolean
-    split: '--------------------'
-  Stage 3:
-    else: true
+  List Roles:
     transactional: false
-    dependsOn: Stage 1
-  Get List Of Roles:
-    dependsOn: Stage 2
     actors:
       DbCommand:
         parent: DbCommand
@@ -44,14 +39,10 @@ stages:
         out:
           result:
             schema: '#ref'
-    split: '--------------------'
-  Stage 4:
+  Check for role:
     transactional: false
-    dependsOn: Stage 3
-  Check if role includes _k2v_user:
-    dependsOn: Get List Of Roles
     actors:
-      _k2v_user:
+      'TDM Environment Owner ':
         parent: StringPos
         in:
           substring:
@@ -60,12 +51,8 @@ stages:
             link:
               path: DbCommand/result/name
               iterate: Iterate
-    split: '--------------------'
-  Stage 8:
+  Get TDMDB:
     transactional: false
-    dependsOn: Stage 4
-  'True':
-    dependsOn: Check if role includes _k2v_user
     actors:
       EqualsIgnoreCase:
         parent: EqualsIgnoreCase
@@ -75,7 +62,7 @@ stages:
             const: 'true'
             schema: string
           a:
-            link: _k2v_user/found
+            link: TDM Environment Owner /found
       getTDMDBSchemaName1:
         parent: InnerFlow
         in:
@@ -84,19 +71,10 @@ stages:
         out:
           schema:
             schema: string
-    split: '--------------------'
-  'False':
-    else: true
+  Add Mapping:
     transactional: false
-    dependsOn: Check if role includes _k2v_user
-    split: '--------------------'
-  Stage 9:
-    transactional: false
-    dependsOn: Stage 8
-  Insert Statements To TDMDB Tables:
-    dependsOn: 'True'
     actors:
-      DbCommand1:
+      'DbCommand   ':
         parent: DbCommand
         in:
           interface:
@@ -104,10 +82,10 @@ stages:
           sql:
             const: "INSERT INTO ${@schema}.permission_groups_mapping(\n\tdescription,\
               \ fabric_role, permission_group, created_by, updated_by, creation_date,\
-              \ update_date, can_create_tasks)\n\tVALUES ('Initial mapping for Environment\
-              \ Owner',${k2v_user} ,'owner', 'admin', 'admin', NOW(), NOW(),true)\n\
+              \ update_date, can_create_tasks)\n\tVALUES ('Initial mapping for owner\
+              \ user',${k2v_user} ,'owner', 'admin', 'admin', NOW(), NOW(),true)\n\
               \tON CONFLICT (fabric_role) DO UPDATE SET permission_group='owner',description='Initial\
-              \ mapping for Environment Owner' ;\n"
+              \ mapping for Owner' ;\n"
           k2v_user:
             link: DbCommand/result/name
             schema: string
@@ -116,16 +94,8 @@ stages:
             link: getTDMDBSchemaName1/schema
             schema: string
             mandatory: false
-    split: '--------------------'
-  Stage 5:
+  Get SQl:
     transactional: false
-    dependsOn: 'False'
-    split: '--------------------'
-  Stage 10:
-    transactional: false
-    dependsOn: Stage 9
-  Execute TDM Insert Sql Statements:
-    dependsOn: Insert Statements To TDMDB Tables
     actors:
       Get  SQL Resource File To insert data to TDM tables:
         parent: LuFunction
@@ -139,17 +109,9 @@ stages:
         out:
           result:
             schema: blob
-    split: '--------------------'
-  Stage 6:
-    transactional: false
-    dependsOn: Stage 5
-    split: '--------------------'
-  Stage 11:
-    transactional: false
-    dependsOn: Stage 10
-  Insert Statements:
+  Insert:
     last: 1
-    dependsOn: Execute TDM Insert Sql Statements
+    transactional: false
     actors:
       Create Error Handler:
         parent: ErrorHandler
@@ -176,16 +138,6 @@ stages:
             link: getTDMDBSchemaName1/schema
             schema: string
             mandatory: false
-    split: '--------------------'
-  Stage 7:
-    last: 1
-    transactional: false
-    dependsOn: Stage 6
-    split: '--------------------'
-  Stage 12:
-    last: 1
-    transactional: false
-    dependsOn: Stage 11
 schemas:
   DbCommand.out.result:
     type: array

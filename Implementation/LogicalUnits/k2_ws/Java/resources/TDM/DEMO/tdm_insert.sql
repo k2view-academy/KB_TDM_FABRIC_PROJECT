@@ -34,7 +34,8 @@ INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_descrip
 	allowed_task_scheduling,allowed_number_of_entities_to_copy, role_id, role_created_by, role_creation_date, 
 	role_last_updated_date,role_last_updated_by,role_status,allowed_refresh_reference_data, allowed_replace_sequences, 
 	allow_read, allow_write,allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, 
-	allowed_number_of_reserved_entities) VALUES(1,'Testers','Permission set used by testers',false,false,true,true,true,0,1,
-	'admin',NOW(),NOW(),'admin','Active',true,false,true,false,100,true,true,0) ON CONFLICT DO NOTHING;
+	allowed_number_of_reserved_entities) VALUES(1,'Production Testers','Permission set for Production environment testers',
+	false,false,true,true,true,0,1,
+	'admin',NOW(),NOW(),'admin','Active',true,false,true,false,-1,true,true,0) ON CONFLICT DO NOTHING;
 
 SELECT pg_catalog.setval('${@schema}.environment_roles_role_id_seq'::regclass,1);
