@@ -4,42 +4,33 @@
 
 package com.k2view.cdbms.usercode.lu.TDM.tdmProcessExecution;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
-
-import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.Globals;
-import com.k2view.cdbms.shared.user.UserCode;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.TDM.*;
-import com.k2view.fabric.common.Json;
-import com.k2view.fabric.common.Util;
-import com.k2view.fabric.common.mtable.MTable;
-import com.k2view.fabric.events.*;
-import com.k2view.fabric.fabricdb.datachange.TableDataChange;
-
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnCreateUpdateLUParams;
-import static com.k2view.cdbms.usercode.lu.TDM.Globals.*;
-import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_PROPERTIES.*;
-import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.updatedAIFailedStatus;
-import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.updatedFailedStatus;
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.UserJob;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnCreateUpdateLUParams;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnUpdateAIProcess;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.findMaxNumOfWorkers;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetTaskExecOverrideAttrs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getAffinityString;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.updatedAIFailedStatus;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.k2view.cdbms.shared.Db;
+import com.k2view.cdbms.shared.user.UserCode;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.OverrideParamKey;
+import com.k2view.fabric.common.Json;
+import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.mtable.MTable;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends UserCode {
@@ -50,7 +41,7 @@ public class Logic extends UserCode {
         //log.info("tdmProcessExecution Starting");
         String executionId = "";
 
-        String executionsSql = "Select t.process_id , t.process_name, t.execution_order, t.process_type, t.parameters, l.be_id from " +
+        String executionsSql = "Select t.process_id , t.process_name, t.execution_order, t.process_type, t.parameters, l.be_id, l.task_id from " +
             TDMDB_SCHEMA + ".tasks_exe_process t, " + TDMDB_SCHEMA + ".task_execution_list l " +
             "where l.task_execution_id = ? and l.process_id = t.process_id and upper(l.execution_status) = 'PENDING' " +
             "and l.task_id = t.task_id and t.process_type = ? and t.status='Active' " +
@@ -73,6 +64,8 @@ public class Logic extends UserCode {
         }
 
         String fabricCommandParams = " taskExecutionID=" + taskExecutionID;
+        Map<Long, List<Map<String, Object>>> processParamOverrides = new HashMap<>();
+        Long resolvedTaskId = null;
         Db.Rows rows = db(TDM).fetch(executionsSql, taskExecutionID, processType);
         for (Db.Row row : rows) {
             ResultSet resultSet = row.resultSet();
@@ -83,6 +76,26 @@ public class Logic extends UserCode {
             Integer beId = Util.rte(() -> resultSet.getInt("be_id"));
             String luName = null;
 
+            if (resolvedTaskId == null) {
+                resolvedTaskId = Util.rte(() -> resultSet.getLong("task_id"));
+                String overrideKey = "pre".equalsIgnoreCase(processType)
+                        ? OverrideParamKey.PRE_EXECUTION_PROCESSES_PARAMS.name()
+                        : OverrideParamKey.POST_EXECUTION_PROCESSES_PARAMS.name();
+                Map<String, Object> overrideAttrs = fnGetTaskExecOverrideAttrs(resolvedTaskId, taskExecutionID);
+                if (overrideAttrs != null) {
+                    List<Map<String, Object>> procList =
+                            (List<Map<String, Object>>) overrideAttrs.get(overrideKey);
+                    if (procList != null) {
+                        for (Map<String, Object> entry : procList) {
+                            Object pid = entry.get("process_id");
+                            if (pid != null)
+                                processParamOverrides.put(((Number) pid).longValue(),
+                                        (List<Map<String, Object>>) entry.get("parameter_overrides"));
+                        }
+                    }
+                }
+            }
+
             Map<String, Object> flowParamJson=null;
 
             if (flowParams != null && !"".equals(flowParams)) {
@@ -90,6 +103,25 @@ public class Logic extends UserCode {
 		        //log.info("flowParams after replace: " + flowParams);
 		        if( flowParams!=null  && !("null".equalsIgnoreCase(flowParams))){
                     flowParamJson = Json.get().fromJson(flowParams, Map.class);
+                }
+            }
+
+            List<Map<String, Object>> overrideDelta =
+                    processParamOverrides.get(Long.parseLong(processID));
+            if (overrideDelta != null && flowParamJson != null) {
+                Map<String, Object> overrideByName = new HashMap<>();
+                for (Map<String, Object> ov : overrideDelta) {
+                    Object n = ov.get("name");
+                    if (n != null) overrideByName.put(n.toString(), ov.get("value"));
+                }
+                List<Map<String, Object>> inputs =
+                        (List<Map<String, Object>>) flowParamJson.get("inputs");
+                if (inputs != null) {
+                    for (Map<String, Object> input : inputs) {
+                        Object n = input.get("name");
+                        if (n != null && overrideByName.containsKey(n.toString()))
+                            input.put("value", overrideByName.get(n.toString()));
+                    }
                 }
             }
 

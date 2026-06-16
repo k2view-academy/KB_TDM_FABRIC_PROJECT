@@ -1,6 +1,6 @@
 tags: LoadFlows,Partition,Concurrency
 stages:
-  Stage 1:
+  Table Name:
     transactional: false
     actors:
       Handle Special Chars in Table Name:
@@ -55,6 +55,9 @@ stages:
           value:
             const: null
             external: tableFilter
+        out:
+          value:
+            schema: string
   'Check Filter  ':
     transactional: false
     dependsOn: 'Build Statements   '
@@ -89,7 +92,7 @@ stages:
             schema: string
           paramters:
             schema: '#ref'
-      Add  Wherer Clause to Select Statement1:
+      Add  Wherer Clause to Count Statement:
         parent: InnerFlow
         in:
           flowName:
@@ -176,10 +179,10 @@ stages:
           sql:
             const: null
             link:
-            - Add  Wherer Clause to Select Statement1/selectStatement
+            - Add  Wherer Clause to Count Statement/selectStatement
             - Count Statement/value
           params:
-            link: Add  Wherer Clause to Select Statement1/paramters
+            link: Add  Wherer Clause to Count Statement/paramters
         out:
           result:
             schema: '#ref'
@@ -218,7 +221,7 @@ schemas:
     type: array
     items:
       type: string
-  Add  Wherer Clause to Select Statement1.out.paramters:
+  Add  Wherer Clause to Count Statement.out.paramters:
     type: array
     items:
       type: string

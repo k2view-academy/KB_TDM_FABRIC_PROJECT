@@ -276,6 +276,16 @@ stages:
         in:
           value:
             link: Get inplace masking ind /result
+      Parser the Filter Fields:
+        parent: JsonParser
+        in:
+          stream:
+            link:
+              path: GetTableInformation/result/TaskRefTables/filter_fields
+              iterate: First
+        out:
+          object:
+            schema: '#ref'
   'Extract  ':
     transactional: false
     dependsOn: Set Source Environment
@@ -466,9 +476,7 @@ stages:
             mandatory: false
             createdBy: flowName
           filterParametersInfo:
-            link:
-              path: GetTableInformation/result/TaskRefTables/filter_fields
-              iterate: First
+            link: Parser the Filter Fields/object
             schema: '#ref'
             mandatory: false
             createdBy: flowName
@@ -816,6 +824,17 @@ schemas:
         type: object
         properties: {
           }
+  Parser the Filter Fields.out.object:
+    type: array
+    items:
+      type: object
+      properties:
+        field_name:
+          type: string
+        field_type:
+          type: string
+        field_value:
+          type: integer
   GetSourceDataPartition1.in.filterParametersInfo:
     type: array
     items: {

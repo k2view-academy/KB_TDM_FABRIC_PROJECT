@@ -426,10 +426,9 @@ public class SharedLogic {
 		map.put("MAIN_TABLE_SEQ_NAME", seqName);
 
 		//log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
-		String cmd = "broadway " + luName + ".GetSequenceListForFlows luName='" + luName + "', fabricTable = '" + luTable + 
-				"', interfaceName='" + targetDbInterface + "', schemaName='" + targetDbSchema + "', tableName='" + targetDbTable + "'";
+		String cmd = "broadway " + luName + ".GetSequenceListForFlows luName=?, fabricTable =?, interfaceName=?, schemaName=?, tableName=?";
 		//log.info("buildTemplateData - cmd: " + cmd);
-		ArrayList<Object> tableSeq = (ArrayList<Object>)(fabric().fetch(cmd).firstRow().get("result"));
+		ArrayList<Object> tableSeq = (ArrayList<Object>)(fabric().fetch(cmd, luName, luTable, targetDbInterface, targetDbSchema, targetDbTable).firstRow().get("result"));
 
 		//log.info("buildTemplateData - tableSeq: " + tableSeq);
 		
@@ -548,8 +547,8 @@ public class SharedLogic {
 		luType.ludbTables.forEach((s, s2) -> {
 			Db.Rows checkTable = null;
 			try {
-				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutTDMTables tableName='" +
-						s + "', luName=" + finalLuType.luName + ", RESULT_STRUCTURE=ROW");
+				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW", 
+					s, finalLuType.luName);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -592,8 +591,7 @@ public class SharedLogic {
             Map<String, String> map = new HashMap<>();
 			try {
                 
-				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutGenertors tableName='" +
-						s + "', luName=" + finalLuType.luName + ", RESULT_STRUCTURE=ROW");
+				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutGenertors tableName=?, luName=?, RESULT_STRUCTURE=ROW", s, finalLuType.luName);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -656,9 +654,8 @@ public class SharedLogic {
 
 			String objectType = fnGetObjectType(luName, originalTableName);
 			if ("TABLE".equals(objectType)) {
-				Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
-					originalTableName + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW");
-				
+				Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=?  luName=?, RESULT_STRUCTURE=ROW", 
+					originalTableName, luType.luName);				
 				String tableFiltered = "";
 				if (checkTable != null && checkTable.firstValue() != null) {
 					tableFiltered = "" + checkTable.firstValue();
@@ -811,7 +808,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			if (!Util.isEmpty(tablesSets.get(tablesKey))) {
 				try {
 					String list = String.join(",", tablesSets.get(tablesKey));
-					tablesData = InterfaceSchemaLogic.INSTANCE.getTablesInfo(tablesKey.interfaceName, null, 
+					tablesData = InterfaceSchemaLogic.INSTANCE.getTablesInfo(tablesKey.interfaceName, tablesKey.SchemaName, 
 					tablesKey.SchemaName, list, envName, "true", "false", null);
 				} catch (Exception e) {
 					tablesList = tablesSets.get(tablesKey);
@@ -999,8 +996,8 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			int tableOrder = tableEntry.gettablePopulationOrder();
 			Db.Rows checkTable = null;
 			try {
-				checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
-						table + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW");
+				checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW",
+					table, luType.luName);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -1034,8 +1031,8 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		AtomicInteger maxTableOrder = new AtomicInteger(0);
 		luType.getPopulationCollection().forEach((tableEntry) -> {
 			String tableFiltered = "";
-			try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
-					tableEntry.getTableObject().schemaAndTableName + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW")) {
+			try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW",
+					tableEntry.getTableObject().schemaAndTableName, luType.luName)) {
 
 
 				if (checkTable != null && checkTable.firstValue() != null) {

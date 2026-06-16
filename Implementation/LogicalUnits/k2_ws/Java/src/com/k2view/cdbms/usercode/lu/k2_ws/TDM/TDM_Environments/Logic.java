@@ -1454,15 +1454,42 @@ public class Logic extends WebServiceUserCode {
 				db(TDM).execute(queryString, "Inactive");
 			}
 			{
-				// 28-Jul-21- fix the query to check if the task's environment id or the source_environment_id in the where condition
-				String queryString = "UPDATE " + schema + ".tasks SET task_status = \'Inactive\' " +
-						"FROM ( SELECT tasks_logical_units.task_id FROM " + schema + ".tasks_logical_units " +
-						"INNER JOIN " + schema + ".product_logical_units " +
-						"ON (product_logical_units.lu_id = tasks_logical_units.lu_id) " +
-						"WHERE product_logical_units.product_id = " + prodId + " ) AS sq  " +
-						"WHERE tasks.task_id = sq.task_id AND tasks.task_status = \'Active\' " + 
-						"AND (environment_id = ? or source_environment_id = ?) ";
-				db(TDM).execute(queryString, envId, envId);
+				String queryString = "UPDATE " + schema + ".tasks t SET task_status = 'Inactive' " +
+					"WHERE t.task_status = 'Active' " +
+					"AND (t.environment_id = ? OR t.source_environment_id = ?) " +
+
+					// delete the tsak ONLY if the env is locked not editable
+					"AND ( " +
+					"   (t.environment_id = ? AND COALESCE((t.task_override_fields -> 'target_environment' ->> 'is_editable')::boolean, false) = false) " +
+					"   OR " +
+					"   (t.source_environment_id = ? AND COALESCE((t.task_override_fields -> 'source_environment' ->> 'is_editable')::boolean, false) = false) " +
+					") " +
+
+					// delete the task ONLY if removing the system breaks the LU hierarchy
+					"AND EXISTS ( " +
+					"   SELECT 1 " +
+					"   FROM " + schema + ".tasks_logical_units tlu " +
+					"   INNER JOIN " + schema + ".product_logical_units removed_plu " +
+					"       ON removed_plu.lu_id = tlu.lu_id " +
+					"      AND removed_plu.be_id = t.be_id " +
+					"   WHERE tlu.task_id = t.task_id " +
+					"     AND removed_plu.product_id = ? " +
+					"     AND ( " +
+					"          removed_plu.lu_parent_id IS NULL " +
+					"          OR EXISTS ( " +
+					"              SELECT 1 " +
+					"              FROM " + schema + ".tasks_logical_units child_tlu " +
+					"              INNER JOIN " + schema + ".product_logical_units child_plu " +
+					"                  ON child_plu.lu_id = child_tlu.lu_id " +
+					"                 AND child_plu.be_id = t.be_id " +
+					"              WHERE child_tlu.task_id = t.task_id " +
+					"                AND child_plu.lu_parent_id = removed_plu.lu_id " +
+					"                AND COALESCE(child_plu.product_id, -1) <> ? " +
+					"          ) " +
+					"     ) " +
+					") ";
+
+				db(TDM).execute(queryString, envId, envId, envId, envId, prodId, prodId);
 			}
 		
 			String activityDesc = "System with Id " + prodId + " of environment " + envName + " were deleted";
@@ -3063,7 +3090,7 @@ public class Logic extends WebServiceUserCode {
 			  }
 				""")
 
-	public static Object wsGetUserEnvironments(String be_name) throws Exception {
+	public static Object wsGetUserEnvironments(String be_name, Long taskId) throws Exception {
 		Map<String, Object> response = new HashMap<>();
 		Set<Map<String, Object>> result = new HashSet<>();
 		String message = null;
@@ -3072,8 +3099,15 @@ public class Logic extends WebServiceUserCode {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		Set<Map<String, Object>> userEnvs = new HashSet<>();
 		Set<Long> productIds = null;
+		boolean inPlaceMasking = false;
 
 		try {
+			if (taskId != null) {
+				Object flag = db(TDM).fetch(
+						"SELECT in_place_masking_ind FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id = ?",
+						taskId).firstValue();
+				inPlaceMasking = Boolean.TRUE.equals(flag) || "true".equalsIgnoreCase("" + flag);
+			}
 
 			// Base query to get all active environments
 			String baseQuery = "SELECT DISTINCT env.environment_id, env.environment_name," +
@@ -3265,6 +3299,10 @@ public class Logic extends WebServiceUserCode {
 		} catch (Exception e) {
 			message = e.getMessage();
 			errorCode = "FAILED";
+		}
+
+		if (inPlaceMasking) {
+			result.removeIf(env -> !"BOTH".equals(env.get("environment_type")));
 		}
 
 		response.put("result", result);

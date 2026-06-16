@@ -1,321 +1,106 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Get Main Folder",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Project's Folder",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetProjectFolder"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "PROJECT_FOLDER",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Format Folder Full Path",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Object folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${PROJECT_DIRCTORY}/LogicalUnits/${LU_NAME}/Tables"
-                                    },
-                                    {
-                                        "name": "PROJECT_DIRCTORY",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Format Search For File Name",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "**${FLOW_FILE_NAME}**"
-                                    },
-                                    {
-                                        "name": "FLOW_FILE_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Search For File",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "List Files",
-                            "actorType": {
-                                "parentType": "ls",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "path",
-                                        "const": "."
-                                    },
-                                    {
-                                        "name": "pattern",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "name": {
-                                                        "type": "string"
-                                                    },
-                                                    "size": {
-                                                        "type": "integer"
-                                                    },
-                                                    "createTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lastModifiedTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "lastAccessTime": {
-                                                        "type": "integer"
-                                                    },
-                                                    "directory": {
-                                                        "type": "boolean"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "If File Exists?",
-                    "dependsOnList": [
-                        "Search For File"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "File Not Found",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "False",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "File Exists",
-                    "dependsOnList": [
-                        "Search For File"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "True",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Project's Folder",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "Object folder",
-                "name": "PROJECT_DIRCTORY"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Object folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "List Files",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Search For File Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "List Files",
-                "name": "pattern"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "List Files",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "File Not Found",
-                "name": "value"
-            },
-            "path": [
-                "name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "Object folder",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "FLOW_FILE_NAME"
-            },
-            "rightPort": {
-                "actor": "Format Search For File Name",
-                "name": "FLOW_FILE_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "False",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "SKIP_TABLE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "True",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "SKIP_TABLE"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Get Main Folder:
+    actors:
+      Get Project's Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Format Folder Full Path:
+    actors:
+      Object folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${PROJECT_DIRCTORY}/LogicalUnits/${LU_NAME}/Tables
+          PROJECT_DIRCTORY:
+            link: Get Project's Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+      Format Search For File Name:
+        parent: StringFormat
+        in:
+          format:
+            const: '${TABLE_NAME}'
+          TABLE_NAME:
+            external: TABLE_NAME
+            schema: string
+            mandatory: false
+            createdBy: format
+  Search For File:
+    actors:
+      List Files:
+        parent: ls
+        in:
+          interface:
+            const: null
+            link: Object folder/string
+          path:
+            const: .
+          pattern:
+            const: null
+            link: Format Search For File Name/string
+        out:
+          result:
+            schema: '#ref'
+  If File Exists?:
+    dependsOn: Search For File
+    actors:
+      File Not Found:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: List Files/result/name
+      'False':
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: SKIP_TABLE
+            schema: boolean
+    split: '--------------------'
+  File Exists:
+    else: true
+    transactional: false
+    dependsOn: Search For File
+    actors:
+      'True':
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: SKIP_TABLE
+            schema: boolean
+schemas:
+  List Files.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean

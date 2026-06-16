@@ -96,6 +96,14 @@ stages:
             default: false
           interface:
             schema: any
+      'Get Filter out reserved ':
+        parent: FabricSetRead
+        in:
+          key:
+            const: FILTEROUT_RESERVED
+            default: false
+          interface:
+            schema: any
   Get TDMDB_schema:
     actors:
       ToNumber:
@@ -446,6 +454,80 @@ stages:
         out:
           result:
             schema: boolean
+    split: '--------------------'
+  Bad End Date:
+    else: true
+    transactional: false
+    dependsOn: Check Owner
+    actors:
+      ErrorHandler1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Throw Exception, Bad End Date:
+        parent: Fail
+        in:
+          message:
+            const: null
+            link: StringFormat2/string
+    split: '--------------------'
+  Do Nothing:
+    transactional: false
+    dependsOn: The entity is reserved by other
+    split: '--------------------'
+  'Do Nothing  ':
+    transactional: false
+    dependsOn: 'Do Nothing   '
+    split: '--------------------'
+  'Do Nothing             ':
+    transactional: false
+    dependsOn: 'Do Nothing          '
+  Filter out by ALL:
+    dependsOn: Update the End Date
+    actors:
+      EqualsIgnoreCase1:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ALL
+            schema: string
+          a:
+            link: Get Filter out reserved /result
+      ErrorHandler5:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsWithFailed
+      Throw Exception, reserved by other1:
+        parent: Fail
+        in:
+          message:
+            const: Entity cannot be reserved because it is already reserved by you,
+              and the "Filter Out Reserved By ALL" option excludes all reserved entities,
+              including your own.
+    split: '--------------------'
+  Filter out by OTHERS:
+    else: true
+    dependsOn: Update the End Date
+    actors:
       Update the End date:
         parent: DbLoad
         in:
@@ -500,42 +582,17 @@ stages:
             schema: string
             mandatory: false
     split: '--------------------'
-  Bad End Date:
-    else: true
-    transactional: false
-    dependsOn: Check Owner
-    actors:
-      ErrorHandler1:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: true
-                flowName: PopulateTableErrorsWithFailed
-      Throw Exception, Bad End Date:
-        parent: Fail
-        in:
-          message:
-            const: null
-            link: StringFormat2/string
+  End:
+    dependsOn: Bad End Date
     split: '--------------------'
-  Do Nothing:
-    transactional: false
-    dependsOn: The entity is reserved by other
+  'End ':
+    dependsOn: Do Nothing
     split: '--------------------'
-  'Do Nothing  ':
-    transactional: false
-    dependsOn: 'Do Nothing   '
+  'Do Nothing        ':
+    dependsOn: 'Do Nothing  '
     split: '--------------------'
-  'Do Nothing             ':
-    transactional: false
-    dependsOn: 'Do Nothing          '
+  Stage 7:
+    dependsOn: 'Do Nothing             '
 schemas:
   DbFetchFirstRow.out.result:
     type: object

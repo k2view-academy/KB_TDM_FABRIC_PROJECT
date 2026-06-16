@@ -120,6 +120,20 @@ stages:
         out:
           map:
             schema: '#ref'
+      Create Map for Is Editable:
+        parent: MapBuild
+        in:
+          key:
+            const: is_editable
+            schema: string
+          value:
+            link:
+              path: Run Select/result/is_editable
+              iterate: Iterate
+            schema: boolean
+        out:
+          map:
+            schema: '#ref'
   Stage 1:
     actors:
       Merge Maps:
@@ -132,6 +146,8 @@ stages:
               pos: 0
             - path: Create Map for Order/map
               pos: 1
+            - path: Create Map for Is Editable/map
+              pos: 2
         out:
           map:
             schema: '#ref'
@@ -167,6 +183,8 @@ schemas:
           type: string
         param_order:
           type: integer
+        is_editable:
+          type: boolean
   JsonParser1.out.object:
     type: object
     properties:
@@ -221,6 +239,8 @@ schemas:
             type: string
       order:
         type: integer
+      is_editable:
+        type: boolean
   Add to Output.out.map:
     type: object
     properties:

@@ -59,21 +59,66 @@ stages:
           flowName:
             const: GetGDParamsFromTableIntoSession
     split: '--------------------'
-  Pass the value:
+  Merge Override With Task Params:
     else: true
     dependsOn: Get override
     actors:
-      Set GENERATE_DATA_PARAMS1:
+      GetGDParamsFromTableIntoSession1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetGDParamsFromTableIntoSession
+      ReadBaseParams:
+        parent: FabricSetRead
+        in:
+          key:
+            const: GENERATE_DATA_PARAMS
+            default: false
+  Task Params Loaded Into Session:
+    dependsOn: Get Task Params From TDMDB
+    split: '--------------------'
+  Build Merged Params:
+    dependsOn: Merge Override With Task Params
+    actors:
+      MergeParams:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var base = JSON.parse(baseParams || '{}');
+                var overrides = JSON.parse(overrideParams || '{}');
+                Object.keys(overrides).forEach(function(k) { base[k] = overrides[k]; });
+                JSON.stringify(base);
+              script: |-
+                var base = JSON.parse(baseParams || '{}');
+                var overrides = JSON.parse(overrideParams || '{}');
+                Object.keys(overrides).forEach(function(k) { base[k] = overrides[k]; });
+                JSON.stringify(base);
+          baseParams:
+            link: ReadBaseParams/result
+            schema: string
+            mandatory: false
+          overrideParams:
+            link:
+              path: Get Params from task_execution_override_attrs/result/generate_data_params
+              iterate: First
+            schema: string
+            mandatory: false
+  Base Params Path Complete:
+    dependsOn: Task Params Loaded Into Session
+    split: '--------------------'
+  Set Merged Params In Session:
+    dependsOn: Build Merged Params
+    actors:
+      SetMergedParams:
         parent: FabricSet
         in:
           key:
             const: GENERATE_DATA_PARAMS
             default: false
           value:
-            link:
-              path: Get Params from task_execution_override_attrs/result/generate_data_params
-              iterate: First
- 
+            link: MergeParams/result
 schemas:
   Get Params from task_execution_override_attrs.out.result:
     type: array

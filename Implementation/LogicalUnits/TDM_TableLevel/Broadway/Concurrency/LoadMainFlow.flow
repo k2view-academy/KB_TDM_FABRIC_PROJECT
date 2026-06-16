@@ -654,6 +654,7 @@ stages:
               FROM agg a
               WHERE s.task_execution_id = a.task_execution_id
                 AND s.task_ref_table_id = a.task_ref_table_id
+                And s.execution_action <> 'Delete'
           TDMDB_SCHEMA:
             link: Get TDMDB Schema/schema
             schema: string

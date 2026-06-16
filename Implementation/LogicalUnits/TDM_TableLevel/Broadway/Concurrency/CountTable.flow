@@ -1,0 +1,511 @@
+tags: Concurrency
+stages:
+  Split Instance ID:
+    actors:
+      Get Table Instance Fields:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableInstanceFields
+          ref_instance_id:
+            external: iid
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Get Count Ind:
+    actors:
+      get Count Indicator:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: Definitions
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: count_indicator
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Version Task Execution ID1:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: version_task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Get Ref Table ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      GetTableInformation:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableInformation
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          order:
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          isInPlaceMaskingTask:
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+  Count?:
+    dependsOn: Get Count Ind
+    actors:
+      Count Enabled or Geting Data from Fabric?:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link:
+              path: GetTableInformation/result/TaskRefTables/count_ind
+              iterate: First
+          b:
+            link:
+              path: GetTableInformation/result/TaskRefTables/version_task_execution_id
+              iterate: First
+    split: '--------------------'
+  No Count:
+    else: true
+    dependsOn: Get Count Ind
+    actors:
+      '-1':
+        parent: Const
+        in:
+          value:
+            const: -1
+            schema: integer
+        out:
+          value:
+            schema: integer
+  Get Count:
+    dependsOn: Count?
+    actors:
+      No Source Version:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Version Task Execution ID1/result
+            schema: integer
+          b:
+            const: 0
+            schema: integer
+      Get Table Count:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableCount
+          sourceSchema:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceInterface:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          tableCount:
+            schema: integer
+    split: '--------------------'
+  Get Count From Version:
+    else: true
+    dependsOn: Count?
+    actors:
+      GetTableCountFromFabric1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetTableCountFromFabric
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            link: Get Version Task Execution ID1/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          sourceEnv:
+            link: Get Table Instance Fields/result/source_env
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableFilter:
+            link:
+              path: GetTableInformation/result/TaskRefTables/table_filter
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          filterParameters:
+            link:
+              path: GetTableInformation/result/TaskRefTables/filter_parameters
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableRefID:
+            link: Get Ref Table ID/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: integer
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: No Count
+  Store Table Count:
+    actors:
+      Set Table Count:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnSetTableCount
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: integer
+            mandatory: false
+            createdBy: functionName
+          tableCount:
+            link:
+            - -1/value
+            - Get Table Count/tableCount
+            - GetTableCountFromFabric1/result
+            schema: integer
+            mandatory: false
+            createdBy: functionName
+      Update Count in TASK_REF_EXE_STATS:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.task_ref_exe_stats s
+              SET
+                number_of_records_to_process = ${tableCount}
+              WHERE s.task_execution_id = ${taskExecId}
+                AND s.task_ref_table_id = ${taskRefTableId}
+                AND s.execution_action != 'Delete'
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          tableCount:
+            link:
+            - -1/value
+            - Get Table Count/tableCount
+            - GetTableCountFromFabric1/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          taskExecId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          taskRefTableId:
+            link: Get Ref Table ID/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+schemas:
+  Get Table Instance Fields.out.result:
+    type: object
+    properties:
+      source_env:
+        type: string
+      interface_name:
+        type: string
+      schema_name:
+        type: string
+      table_name:
+        type: string
+      task_execution_id:
+        type: string
+      partition_num: {
+        }
+  GetTableInformation.out.result:
+    type: object
+    properties:
+      TaskInfo:
+        type: object
+        properties:
+          loadEntity:
+            type: boolean
+          retentionPeriodValue:
+            type: integer
+          targetEnvId:
+            type: integer
+          taskTitle:
+            type: string
+          sourceEnvName:
+            type: string
+          taskId:
+            type: integer
+          deleteBeforeLoad:
+            type: boolean
+          sourceEnvId:
+            type: integer
+      CalculatedOrder:
+        type: integer
+      TargetInfo:
+        type: object
+        properties:
+          target_schema_name:
+            type: string
+          target_interface_name:
+            type: string
+          target_ref_table_name:
+            type: string
+      TaskRefTables:
+        type: array
+        items:
+          type: object
+          properties:
+            version_task_name:
+              type: string
+            ref_table_name:
+              type: string
+            filter_parameters: {
+              }
+            interface_name:
+              type: string
+            task_id:
+              type: integer
+            schema_name:
+              type: string
+            source_max_no_of_workers: {
+              }
+            target_table_prefix: {
+              }
+            target_max_no_of_workers: {
+              }
+            update_date:
+              type: date
+            filter_fields: {
+              }
+            target_affinity: {
+              }
+            task_ref_table_id:
+              type: integer
+            source_affinity: {
+              }
+            filter_type: {
+              }
+            version_task_execution_id:
+              type: integer
+            lu_name:
+              type: string
+            target_table_suffix: {
+              }
+            count_ind: {
+              }
+            table_filter: {
+              }
+            gui_filter: {
+              }
+      Definitions:
+        type: object
+        properties:
+          interface_name:
+            type: string
+          load_flow:
+            type: string
+          partition_count_source:
+            type: string
+          schema_name:
+            type: string
+          table_name:
+            type: string
+          extract_flow:
+            type: string
+          count_indicator:
+            type: string
+          record_count_flow:
+            type: string
+          table_order:
+            type: string
+          partition_records_flow:
+            type: string
+          commit_size:
+            type: string
+          inplace_masking_update_flow:
+            type: string
+          delete_flow:
+            type: string
+      PartitionFlowInputs:
+        type: object
+        properties: {
+          }

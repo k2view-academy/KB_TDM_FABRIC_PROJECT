@@ -61,6 +61,10 @@ public class TdmExecuteTask {
                     .replace("${@TDMDB_SCHEMA}", TDMDB_SCHEMA);
         } catch (Exception e) {
             log.error("Error loading resource: " + resourcePath, e);
+            
+            updatedFailedStatus(false, -1L, -1L, "TDM",
+                "Failed to resource file: " + resourcePath, "loadAndReplace");
+            e.printStackTrace();
             throw new RuntimeException("Error loading resource: " + resourcePath, e);
         }
     } 
@@ -122,6 +126,8 @@ public class TdmExecuteTask {
                                 startTime, taskExecutionID, luID, processID);
 
             } catch (SQLException e) {
+                updatedFailedStatus(verticalExecution, taskExecutionID, luID, LU_NAME.get(taskProperties), "Failed to update start_execution_time in task_execution_list", "loadAndReplace");
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
             }
@@ -197,7 +203,7 @@ public class TdmExecuteTask {
 
                                 } else {
                                     // rollback LU and task status
-                                    updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                                    updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName,"Failed to execute batch", "fnTdmExecuteTask");
                                     updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                                 }
                             } else {
@@ -208,7 +214,9 @@ public class TdmExecuteTask {
 
                         } catch (Exception e) {
                             log.error("TdmExecuteTask - Update extract task status to failed");
-                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName,
+                                "Failed to update extract task status to failed", "fnTdmExecuteTask");
+                            e.printStackTrace();
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                         }
                         break;
@@ -225,7 +233,8 @@ public class TdmExecuteTask {
                                     Map<String, String> tableExecutionStatus = Util.rte(() ->executeTableLevelBatch(taskProperties, false)); 
                                 } else {
                                     // rollback LU and task status
-                                    updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                                    updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                        "Failed to execute batch", "fnTdmExecuteTask");
                                     log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                                 }
                             } else {
@@ -235,8 +244,10 @@ public class TdmExecuteTask {
                             }
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
+                            e.printStackTrace();
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
                         break;
@@ -251,12 +262,15 @@ public class TdmExecuteTask {
 
                             } else {
                                 // rollback LU and task status
-                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                             }
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
+                            e.printStackTrace();
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
                         break;
@@ -278,12 +292,15 @@ public class TdmExecuteTask {
 
                             } else {
                                 // rollback LU and task status
-                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                        "Failed to execute batch", "fnTdmExecuteTask");
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                             }
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
+                            e.printStackTrace();
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
@@ -301,14 +318,17 @@ public class TdmExecuteTask {
 
                             } else {
                                 // rollback LU and task status
-                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                             }
 
                         } catch (Exception e) {
                             // rollback LU and task status
-                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
+                            e.printStackTrace();
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
                         break;
@@ -321,7 +341,8 @@ public class TdmExecuteTask {
 
                             if (Util.isEmpty(fabricExecutionId)) {
                                 // Rollback LU and task status if execution failed
-                                updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                                updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
                                 log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                                 break;
                             }
@@ -332,8 +353,10 @@ public class TdmExecuteTask {
 
                         } catch (Exception e) {
                             // Rollback LU and task status if an exception occurred
-                            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
+                            updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                "Failed to execute batch", "fnTdmExecuteTask");
                             updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
+                            e.printStackTrace();
                             log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                         }
                         break;
@@ -547,6 +570,7 @@ public class TdmExecuteTask {
         Long luID = (Long) LU_ID.get(taskProperties);
         String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
         String entityInclusionOverride = "";
+
         //log.info("executeFabricBatch - luName: " + luName + ", isChild: " + isChildLU(taskProperties));
         // check the selection method only for root LUs. Build only once the root selection method per task execution
         String expDate = setTTL(taskProperties);
@@ -843,10 +867,11 @@ public class TdmExecuteTask {
         return true;
     }
     
-    public static void updatedFailedStatus(Boolean verticalExecution, Long taskExecutionID, Long luID) {
+    public static void updatedFailedStatus(Boolean verticalExecution, Long taskExecutionID, Long luID, String luName, String errorMessage, String failedFunction) {
         Timestamp endTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
         updateTaskExecutionStatus(verticalExecution, "failed",taskExecutionID, luID, null,endTime, "19700101000000",0,0,0,endTime);
         updateTaskExecutionSummary(taskExecutionID, "failed");
+        fnReportError(taskExecutionID, luName, errorMessage, failedFunction);
     }
     public static void updatedAIFailedStatus(String status, Long taskExecutionID, Long luID) {
         updateAITaskExecutionStatus( status,taskExecutionID, luID, null, null,0,0,0);
@@ -1090,6 +1115,7 @@ public class TdmExecuteTask {
                     entityId = getEntityIDSelect(selectClause, SEPARATOR.get(taskProperties));                   
                     isAIEnvironment = AI_ENVIRONMENT.equals(SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                     Long entitiesLimit = Long.valueOf("" + NUM_OF_ENTITIES.get(taskProperties));
+                    Long beID = Long.valueOf("" + BE_ID.get(taskProperties));
                     String limitClause = entitiesLimit != -1 ? " LIMIT " + NUM_OF_ENTITIES.get(taskProperties) : "";
                     cloneIdParam = "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
                     String query ="";
@@ -1101,7 +1127,7 @@ public class TdmExecuteTask {
                         entityId += "||'" + SEPARATOR.get(taskProperties) + "'||" + "task_execution_id";
                     }
                     if (cloneInd) {
-                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(beID,
                                 PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
                                 entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),true,false) + " limit 1";
                         //log.info("Parameters - listOfMatchingEntities: " + listOfMatchingEntities);
@@ -1120,7 +1146,7 @@ public class TdmExecuteTask {
                         }
                     } else {
                         entitiesList = entitiesList.replaceAll("'", "''");
-                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                        listOfMatchingEntities = generateListOfMatchingEntitiesQuery(beID,
                                 PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
                                 entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),false,false);
                         listOfMatchingEntities = isParamCoupling ? listOfMatchingEntities.replaceAll("''", "'''") : listOfMatchingEntities ; //support empty string in case param value='' 
@@ -1144,6 +1170,7 @@ public class TdmExecuteTask {
                         entityId = getEntityIDSelect(selectClause, SEPARATOR.get(taskProperties));                    
                         isAIEnvironment = AI_ENVIRONMENT.equals(SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                         entitiesLimit = Long.valueOf("" + NUM_OF_ENTITIES.get(taskProperties));
+                        beID = Long.valueOf("" + BE_ID.get(taskProperties));
                         limitClause = entitiesLimit!=-1 ? " LIMIT " + NUM_OF_ENTITIES.get(taskProperties) : "";
                         cloneIdParam = "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
                         if ("true".equals(VERSION_IND.get(taskProperties))) {
@@ -1154,7 +1181,7 @@ public class TdmExecuteTask {
                             entityId += "||'" + SEPARATOR.get(taskProperties) + "'||" + "task_execution_id";
                         }
                         if (cloneInd) {
-                            String entitiesListQuery = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                            String entitiesListQuery = generateListOfMatchingEntitiesQuery(beID,
                                                     PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
                                                     entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),true,false);
                             if (isAIEnvironment) {
@@ -1178,7 +1205,7 @@ public class TdmExecuteTask {
                             }
                         } else {
                             entitiesList = entitiesList.replaceAll("'", "''");
-                        String listOfMatchingEntitiesQuery = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties),
+                        String listOfMatchingEntitiesQuery = generateListOfMatchingEntitiesQuery(beID,
                                 PARAMS_COUPLING.get(taskProperties), PARAMETERS.get(taskProperties),
                                 entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties),false,false);
                             listOfMatchingEntitiesQuery = isParamCoupling ? listOfMatchingEntitiesQuery.replaceAll("''", "'''") : listOfMatchingEntitiesQuery; //support empty string in case param value='' 
@@ -1202,9 +1229,12 @@ public class TdmExecuteTask {
                     break;
                 case "ALL":
                     if (taskType.equalsIgnoreCase("load") && (VERSION_IND.get(taskProperties).equals("true"))) {
-                        entityExclusionListWhere.replace("WHERE", "AND");
                         // The entity list should be taken from TDMDB and it should consider the status of the entities, only entities extracted successfully should be loaded
-                        entityInclusion = "SELECT entity_id FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES " + ("".equals(entityExclusionListWhere) ? "WHERE " : entityExclusionListWhere) + " AND " + "task_execution_id=" + SELECTED_VERSION_TASK_EXE_ID.get(taskProperties) +
+                        String versionTaskExeId = "0".equalsIgnoreCase(selectedVersionTaskExeId) ? taskExecutionId : selectedVersionTaskExeId;
+                        String whereClause = "".equals(entityExclusionListWhere)
+                            ? "WHERE task_execution_id=" + versionTaskExeId
+                            : entityExclusionListWhere + " AND task_execution_id=" + versionTaskExeId;
+                        entityInclusion = "SELECT entity_id FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES " + whereClause +
                                 " and lu_name='" + LU_NAME.get(taskProperties) + "' and lower(execution_status) = 'completed' and id_type = 'ENTITY' ";
 
                     } else {
@@ -1371,6 +1401,7 @@ public class TdmExecuteTask {
         globals.put("RESERVE_RETENTION_PERIOD_TYPE", RESERVE_RETENTION_PERIOD_TYPE.get(taskProperties));
         globals.put("RESERVE_RETENTION_PERIOD_VALUE", RESERVE_RETENTION_PERIOD_VALUE.get(taskProperties));
         globals.put("RESERVE_NOTE", RESERVE_NOTE.get(taskProperties));
+        globals.put("FILTEROUT_RESERVED", FILTEROUT_RESERVED.get(taskProperties));
         globals.put("BE_ID", "" + BE_ID.get(taskProperties));
         globals.put("LU_ID", "" + LU_ID.get(taskProperties));
         globals.put("PARENT_LU_NAME", "" + PARENT_LU_NAME.get(taskProperties));
@@ -2079,16 +2110,10 @@ public class TdmExecuteTask {
         try {
             fabric().execute(command, luName,taskID);
         } catch (Exception e) {
-            updatedFailedStatus(verticalExecution, taskExecutionID, luID);
-            String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
-                                "ERROR_CATEGORY, ERROR_MESSAGE) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-            try {
-                db(TDM).execute(insertSql, taskExecutionID, luName, " ", " ", " ", errorCategory, e.getMessage());
-            } catch (SQLException e1) {
-                log.error(e1);
-                throw new RuntimeException(e1.getMessage());
-            }
+            updatedFailedStatus(verticalExecution, taskExecutionID, luID, luName, 
+                                e.getMessage(), "executeMDBExportSchema");
+        
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -2195,5 +2220,15 @@ public class TdmExecuteTask {
             throw new RuntimeException(e);
         }
     }
-    
+  
+    private static void fnReportError(Long taskExecutionId, String luOrProcessName, String errorMessage, String functionName) {
+       
+        
+        String sql = "insert into " + TDMDB_SCHEMA + ".task_exe_error_detailed " + 
+            "(TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, ERROR_CATEGORY, ERROR_MESSAGE, FLOW_NAME)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+		Util.rte(() ->db(TDM).execute(sql, 
+                taskExecutionId, luOrProcessName, "N/A", "N/A", "N/A", 
+                "Task Failed", errorMessage, functionName));
+    }
 }

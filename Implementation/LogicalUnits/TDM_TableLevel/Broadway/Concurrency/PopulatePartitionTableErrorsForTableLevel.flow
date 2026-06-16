@@ -43,14 +43,22 @@ stages:
           value:
             schema: string
       Get refTableID:
-        parent: Const
+        parent: Elvis
+        in:
+          a:
+            external: refTableID
+            schema: integer
+          b:
+            const: -1
+            schema: integer
+        out:
+          result:
+            schema: integer
+      'Get executionAction ':
+        parent: NotNull
         in:
           value:
-            const: null
-            external: refTableID
-        out:
-          value:
-            schema: integer
+            external: executionAction
   'Prepare the Data   ':
     actors:
       Format the current date:
@@ -87,6 +95,17 @@ stages:
         out:
           schema:
             schema: string
+      IfElse:
+        parent: IfElse
+        in:
+          a:
+            const: execution_action = 'Delete'
+            schema: string
+          b:
+            const: execution_action <> 'Delete'
+            schema: string
+          test:
+            link: Get executionAction /result
   Build Queries:
     actors:
       TASK_REF_PARTITION:
@@ -112,7 +131,7 @@ stages:
             const: "UPDATE ${TDMDB_SCHEMA}.TASK_REF_EXE_STATS\r\nSET execution_status\
               \ = 'failed',\r\nerror_msg = ?,\r\nend_time = CURRENT_TIMESTAMP AT TIME\
               \ ZONE 'UTC',\r\nupdated_by = '${userName}'\r\nWHERE task_execution_id\
-              \ = ${taskExecutionID}"
+              \ = ${taskExecutionID} and ${execution_action}"
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
             schema: string
@@ -126,6 +145,11 @@ stages:
           taskExecutionID:
             link: Get Task Exec ID/result
             schema: string
+            mandatory: false
+            createdBy: format
+          execution_action:
+            link: IfElse/result
+            schema: any
             mandatory: false
             createdBy: format
   Table Name Exists:
@@ -180,7 +204,7 @@ stages:
             mandatory: false
             createdBy: format
           task_ref_table_id:
-            link: Get refTableID/value
+            link: Get refTableID/result
             schema: integer
             mandatory: false
             createdBy: format
@@ -195,7 +219,7 @@ stages:
             mandatory: false
             createdBy: format
           task_ref_table_id:
-            link: Get refTableID/value
+            link: Get refTableID/result
             schema: integer
             mandatory: false
             createdBy: format
