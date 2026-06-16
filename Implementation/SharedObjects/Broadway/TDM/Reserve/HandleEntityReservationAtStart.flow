@@ -42,7 +42,7 @@ stages:
             const: 'true'
             schema: string
     split: '--------------------'
-  Stage 15:
+  'Do Nothing ':
     transactional: false
     dependsOn: Sequence Task
   'Check For Delete Only ':
@@ -66,9 +66,9 @@ stages:
           interface:
             schema: any
     split: '--------------------'
-  Stage 16:
+  'Do Nothing  ':
     transactional: false
-    dependsOn: Stage 15
+    dependsOn: 'Do Nothing '
   If Not A Delete Only Task:
     transactional: false
     dependsOn: 'Check For Delete Only '
@@ -92,9 +92,9 @@ stages:
       ReleaseReservedEntity1:
         parent: ReleaseReservedEntity
     split: '--------------------'
-  Stage 17:
+  'Do Nothing   ':
     transactional: false
-    dependsOn: Stage 16
+    dependsOn: 'Do Nothing  '
   Check if Reserve Task:
     transactional: false
     dependsOn: If Not A Delete Only Task
@@ -169,19 +169,99 @@ stages:
         out:
           schema:
             schema: string
+      'Get Filter out reserved ':
+        parent: FabricSetRead
+        in:
+          key:
+            const: FILTEROUT_RESERVED
+            default: false
+          interface:
+            schema: any
     split: '--------------------'
-  Stage 5:
+  'Do Nothing             ':
     transactional: false
     dependsOn: If A Delete Only Task
     split: '--------------------'
-  Stage 18:
+  'Do Nothing    ':
     transactional: false
-    dependsOn: Stage 17
-  Do nothing:
+    dependsOn: 'Do Nothing   '
+  'Reserve  ':
     transactional: false
     dependsOn: Check if Reserve Task
+    actors:
+      Equals2:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Get Replace Sequence Indicator/result
+            schema: string
+          b:
+            const: 'false'
+            schema: string
+      'Reserve Error Handler ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Reserve Entity:
+        parent: ReserveEntity
     split: '--------------------'
-  Owner Check:
+  'Filter out by ALL ':
+    transactional: false
+    dependsOn: Not A Reserve Task
+    actors:
+      EqualsIgnoreCase1:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ALL
+            schema: string
+          a:
+            link: Get Filter out reserved /result
+      Get Owner Of Entity1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT reserve_owner
+              FROM ${@schema}.tdm_reserved_entities
+              WHERE entity_id = ${entityId}
+              AND be_id = ${beId}
+              AND env_id = ${envId}
+          entityId:
+            link: Get Target Entity ID/result
+            schema: string
+            mandatory: false
+          beId:
+            link: Get Business Entity ID/result
+            schema: integer
+            mandatory: false
+          envId:
+            link: Get Target Environment ID/result
+            schema: integer
+            mandatory: false
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  'Filter out by OTHERS ':
+    else: true
     transactional: false
     dependsOn: Not A Reserve Task
     actors:
@@ -223,53 +303,32 @@ stages:
           result:
             schema: '#ref'
     split: '--------------------'
-  Stage 6:
+  'Do Nothing            ':
     transactional: false
-    dependsOn: Stage 5
+    dependsOn: 'Do Nothing             '
     split: '--------------------'
-  Stage 19:
+  'Do Nothing     ':
     transactional: false
-    dependsOn: Stage 18
-  Stage 10:
+    dependsOn: 'Do Nothing    '
+  'End  ':
     transactional: false
-    dependsOn: Do nothing
-    actors:
-      Equals2:
-        parent: Equals
-        condition: result
-        in:
-          a:
-            link: Get Replace Sequence Indicator/result
-            schema: string
-          b:
-            const: 'false'
-            schema: string
-      'Reserve Error Handler ':
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: false
-                flowName: PopulateTableErrorsWithFailed
-      Reserve Entity:
-        parent: ReserveEntity
+    dependsOn: 'Reserve  '
     split: '--------------------'
-  'The Entities Are Saved ':
-    transactional: false
-    dependsOn: Owner Check
+  End:
+    dependsOn:
+    - 'Filter out by OTHERS '
+    - 'Filter out by ALL '
     actors:
       If Record Exists:
         parent: NotNull
         condition: result
         in:
           value:
-            link: Get Owner Of Entity/result/reserve_owner
+            link:
+            - path: Get Owner Of Entity1/result/reserve_owner
+              iterate: First
+            - path: Get Owner Of Entity/result/reserve_owner
+              iterate: First
       ErrorHandler3:
         parent: ErrorHandler
         error: result
@@ -287,23 +346,36 @@ stages:
         parent: JavaScript
         in:
           script:
-            const: throw "Entity already Reserved by User:" + userName + " and cannot
-              be reserved by current user"
+            const: |-
+              if (userName != null && userName !== "") {
+                  throw "Entity cannot be reserved because it is already reserved by user '" +
+                        userName +
+                        "'.";
+              } else {
+                  throw "Entity cannot be reserved because it is already reserved by you, and the 'Filter Out Reserved By ALL' option excludes all reserved entities, including your own.";
+              }
           userName:
-            link: Get Owner Of Entity/result/reserve_owner
+            link:
+              path: Get Owner Of Entity/result/reserve_owner
+              iterate: First
             schema: string
             mandatory: false
     split: '--------------------'
-  Stage 7:
+  'Do Nothing                ':
     transactional: false
-    dependsOn: Stage 6
+    dependsOn: 'Do Nothing            '
     split: '--------------------'
   Stage 20:
     transactional: false
-    dependsOn: Stage 19
-  Stage 1: {
-    }
+    dependsOn: 'Do Nothing     '
 schemas:
+  Get Owner Of Entity1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        reserve_owner:
+          type: string
   Get Owner Of Entity.out.result:
     type: array
     items:

@@ -103,8 +103,8 @@ public class SharedLogic {
         
                 String luID = "" + luData.get("lu_id");
                 String uid = "";
-                if (row.get("job_uid") != null) {
-                    uid = "" + row.get("job_uid");
+                if (row.get("batch_id") != null) {
+                    uid = "" + row.get("batch_id");
                 }
         
                 String selectionMethod = "" + taskParams.get("selection_method");
@@ -292,7 +292,7 @@ public class SharedLogic {
         // 2. ONLY fallback to Interface Type if we are dealing with TableLevelDefinitions
         // and the specific Interface search returned nothing.
         if ("TableLevelDefinitions".equals(mtableName) && (result == null || result.isEmpty())) {
-            String environmentName = getGlobal("TDM_SOURCE_ENVIRONMENT_NAME", "TDM");
+            String environmentName = "_dev";
             String interfaceType = fnGetInterfaceType(interfaceName, environmentName);
             
             if (interfaceType != null && !interfaceType.isEmpty()) {

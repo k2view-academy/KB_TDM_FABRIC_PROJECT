@@ -88,6 +88,16 @@ stages:
             schema: string
           clauseParameters:
             schema: '#ref'
+      Parser the Filter Fields:
+        parent: JsonParser
+        in:
+          stream:
+            link:
+              path: Get Table Information/result/TaskRefTables/filter_fields
+              iterate: First
+        out:
+          object:
+            schema: '#ref'
   Custom Count Flow:
     dependsOn: Prepare Queries
     actors:
@@ -122,9 +132,15 @@ stages:
             schema: string
             mandatory: false
           whereClause:
+            link:
+              path: Get Table Information/result/TaskRefTables/table_filter
+              iterate: First
             schema: string
             mandatory: false
           paramtersStr:
+            link:
+              path: Get Table Information/result/TaskRefTables/filter_parameters
+              iterate: First
             schema: string
             mandatory: false
           countStatement:
@@ -136,9 +152,13 @@ stages:
             schema: '#ref'
             mandatory: false
           filterParametersInfo:
+            link: Parser the Filter Fields/object
             schema: string
             mandatory: false
           filterGUI:
+            link:
+              path: Get Table Information/result/TaskRefTables/gui_filter
+              iterate: First
             schema: string
             mandatory: false
         out:
@@ -304,6 +324,17 @@ schemas:
     type: array
     items:
       type: string
+  Parser the Filter Fields.out.object:
+    type: array
+    items:
+      type: object
+      properties:
+        field_name:
+          type: string
+        field_type:
+          type: string
+        field_value:
+          type: integer
   Run Count Flow.in.queryParameters:
     type: array
     items:

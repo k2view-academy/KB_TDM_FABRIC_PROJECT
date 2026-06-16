@@ -73,6 +73,8 @@ stages:
           TTL:
             const: null
             link: Get MASKING_CACHE_TTL/result
+            schema: number
+            mandatory: false
           values:
             link: Query/result
   LU Table:

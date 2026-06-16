@@ -70,7 +70,8 @@ stages:
             const: {{sourceSchema}}
           dataset:
             const: {{sourceTable}}
-          ttl:
+          TTL:
+            const: null
             link: Get MASKING_CACHE_TTL/result
             schema: number
             mandatory: false

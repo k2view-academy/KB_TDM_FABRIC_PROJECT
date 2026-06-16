@@ -323,7 +323,7 @@ public class Logic extends UserCode {
                     "WHERE rt.task_id = t.task_id " +
                     "AND rt.task_id = es.task_id " +
                     "AND rt.task_ref_table_id = es.task_ref_table_id " +
-                    "AND es.task_execution_id = ?";
+                    "AND es.task_execution_id = ? and execution_action <> 'Delete'";
 
             Db.Rows rows = db(TDM).fetch(sql, taskExecutionId);
 
@@ -339,18 +339,62 @@ public class Logic extends UserCode {
 
             if ("extract".equalsIgnoreCase(taskAction) || taskTables.size() == 1) {
                 tablesOrder.put(0, buildInterfaceTablesList(taskTables));
-                return 0; //maxOrder is zero in case of extract only task
-            }
-            TableLoadOrderResolver resolver =
-                    new TableLoadOrderResolver(taskTables);
+                maxOrder = 0;
+            } else {
+                TableLoadOrderResolver resolver =
+                        new TableLoadOrderResolver(taskTables);
 
-            maxOrder = resolver.getMaxOrder();
-            for (int i = 0; i <= maxOrder; i++) {
-                tablesOrder.put(i, resolver.getTablesByOrder(i, interfaces));
+                maxOrder = resolver.getMaxOrder();
+                for (int i = 0; i <= maxOrder; i++) {
+                    tablesOrder.put(i, resolver.getTablesByOrder(i, interfaces));
+                }
             }
-        } 
+
+            persistTableOrder(taskExecutionId);
+        }
 
         return maxOrder;
+    }
+
+    private static void persistTableOrder(String taskExecutionId) throws Exception {
+        boolean hasDeleteRows = db(TDM).fetch(
+            "SELECT 1 FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+            "WHERE task_execution_id = ? AND LOWER(COALESCE(execution_action, '')) = 'delete' LIMIT 1",
+            taskExecutionId
+        ).firstValue() != null;
+
+        for (Map.Entry<Integer, Map<String, List<TableMeta>>> orderEntry : tablesOrder.entrySet()) {
+            int order = orderEntry.getKey();
+            int deleteOrder = maxOrder - order;
+            for (List<TableMeta> tableMetas : orderEntry.getValue().values()) {
+                for (TableMeta t : tableMetas) {
+                    db(TDM).execute(
+                        "UPDATE " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+                        "SET table_order = ? " +
+                        "WHERE task_execution_id = ? " +
+                        "AND interface_name = ? " +
+                        "AND schema_name = ? " +
+                        "AND ref_table_name = ? " +
+                        "AND LOWER(COALESCE(execution_action, '')) <> 'delete'",
+                        order, taskExecutionId,
+                        t.getInterface(), t.getSchema(), t.getTableName()
+                    );
+                    if (hasDeleteRows) {
+                        db(TDM).execute(
+                            "UPDATE " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+                            "SET table_order = ? " +
+                            "WHERE task_execution_id = ? " +
+                            "AND interface_name = ? " +
+                            "AND schema_name = ? " +
+                            "AND ref_table_name = ? " +
+                            "AND LOWER(COALESCE(execution_action, '')) = 'delete'",
+                            deleteOrder, taskExecutionId,
+                            t.getInterface(), t.getSchema(), t.getTableName()
+                        );
+                    }
+                }
+            }
+        }
     }
 
     private static Map<String, List<TableMeta>> buildInterfaceTablesList(List<TableMeta> taskTables) {

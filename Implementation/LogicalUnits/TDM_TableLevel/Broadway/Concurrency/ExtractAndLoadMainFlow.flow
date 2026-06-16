@@ -114,9 +114,9 @@ stages:
         out:
           result:
             schema: boolean
-  'Get Table Insrances    ':
+  'Get Table Instances    ':
     actors:
-      Error Handler - Get Table Insrances:
+      Error Handler - Get Table Instances:
         parent: ErrorHandler
         error: result
         in:
@@ -177,6 +177,21 @@ stages:
             schema: '#ref'
   'Insert Into Ref Partition     ':
     actors:
+      Error Handler - Insert Into Ref Partition:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       InsertIntoTaskRefPartitions1:
         parent: InnerFlow
         in:
@@ -605,7 +620,7 @@ stages:
             const: |-
               update ${@TDMDB_SCHEMA}.task_ref_exe_stats
                set batch_id=${batch_id}, table_order = ${table_order}, interface_name=${interface_name}, schema_name = ${schema_name}
-               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id} AND execution_action='Extract & Load';
+               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id} AND execution_action <> 'Delete' ;
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
             schema: any

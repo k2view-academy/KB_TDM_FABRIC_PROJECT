@@ -501,6 +501,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_exe_stats
   updated_by text,
   table_filter text,
   filter_type text,
+  filter_parameters text,
   number_of_partitions bigint default 1,
   execution_action text,
   CONSTRAINT task_ref_exe_stats_pkey PRIMARY KEY (task_id,task_execution_id,task_ref_table_id,execution_action)
@@ -590,7 +591,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_globals
 (
   task_id bigint NOT NULL,
   global_name text,
-  global_value text
+  global_value text,
+  is_editable boolean NOT NULL DEFAULT false
 );
 
 Create INDEX IF NOT EXISTS task_globals_ix on ${@schema}.task_globals(task_id);
@@ -648,6 +650,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
   fabric_roles text,
   start_be_execution timestamp without time zone,
   end_be_execution timestamp without time zone,
+  task_type_label Text,
   CONSTRAINT task_execution_summary_pkey PRIMARY KEY (task_id,task_execution_id)
 );
 -- DROP INDEX IF EXISTS ${@schema}.task_exec_summary_ix1;
@@ -719,13 +722,14 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_exe_process (
 	process_id bigint NOT NULL DEFAULT nextval('exe_process_id_seq'::regclass),
 	process_name text,
     process_type TEXT,
+    lu_name text,
 	process_description text,
 	be_id bigint,
 	execution_order integer NOT NULL,
-	CONSTRAINT be_exe_process_pkey PRIMARY KEY (process_id,be_id,process_type)
+	CONSTRAINT be_exe_process_pkey PRIMARY KEY (process_id,be_id,process_type, lu_name)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_exe_process_ix1 ON ${@schema}.tdm_be_exe_process (process_name, be_id, process_type);
+CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_exe_process_ix1 ON ${@schema}.tdm_be_exe_process (process_name, be_id, process_type, lu_name);
 
 -- Table ${@schema}.tasks_exe_process
 --DROP TABLE IF EXISTS ${@schema}.tasks_exe_process;
@@ -836,6 +840,7 @@ CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
     param_type text COLLATE pg_catalog."default" NOT NULL,
     param_value text COLLATE pg_catalog."default",
 	param_order bigint,
+    is_editable boolean DEFAULT false,
     CONSTRAINT tdm_generate_task_field_mappings_pkey PRIMARY KEY (task_id, param_name)
 );
 
@@ -1011,6 +1016,7 @@ INSERT INTO ${@schema}.tasks (
     sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note,
     filterout_reserved, task_description, clone_ind, execution_mode,
     in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
     task_override_fields
 )
 VALUES (
@@ -1024,6 +1030,7 @@ VALUES (
     'ON', false, 'Days', 5, NULL,
     'NA', 'Extract entities', false, 'INHERITED',
     false, 'admin', 'admin',
+    'ALL', true,
     '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": false, "field_connector": "environment_name"}}'
 )
 ON CONFLICT DO NOTHING;
@@ -1039,6 +1046,7 @@ INSERT INTO ${@schema}.tasks (
     sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note,
     filterout_reserved, task_description, clone_ind, execution_mode,
     in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
     task_override_fields
 )
 VALUES (
@@ -1052,6 +1060,7 @@ VALUES (
     'ON', false, 'Days', 5, NULL,
     'OTHERS', 'Extract and Load entities', false, 'INHERITED',
     false, 'admin', 'admin',
+    'ALL', true,
     '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
 )
 ON CONFLICT DO NOTHING;
@@ -1067,6 +1076,7 @@ INSERT INTO ${@schema}.tasks (
     sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note,
     filterout_reserved, task_description, clone_ind, execution_mode,
     in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
     task_override_fields
 )
 VALUES (
@@ -1080,6 +1090,7 @@ VALUES (
     'OFF', false, 'Days', 5, NULL,
     'OTHERS', 'Load entities (load only)', false, 'INHERITED',
     false, 'admin', 'admin',
+    'ALL', true,
     '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
 )
 ON CONFLICT DO NOTHING;
@@ -1094,7 +1105,8 @@ INSERT INTO ${@schema}.tasks (
     selected_version_task_exe_id, selected_subset_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
     sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, 
     filterout_reserved, task_description, clone_ind, execution_mode, 
-    in_place_masking_ind, permission_group, fabric_roles, 
+    in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
     task_override_fields
 )
 VALUES (
@@ -1107,8 +1119,9 @@ VALUES (
     0, 0, false, 0, 
     'ON', false, 'Days', 5, NULL, 
     'NA', 'Generate entities (rule based)', false, 'INHERITED',
-    false, 'admin', 'admin', 
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": false, "field_connector": "environment_name"}}'
+    false, 'admin', 'admin',
+    'ALL', true,
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "generate_data_params": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": false, "field_connector": "environment_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
 
@@ -1123,7 +1136,8 @@ INSERT INTO ${@schema}.tasks (
     selected_ref_version_task_exe_id, sync_mode, reserve_ind, 
     reserve_retention_period_type, reserve_retention_period_value, reserve_note, 
     filterout_reserved, task_description, clone_ind, 
-    execution_mode, in_place_masking_ind, permission_group, fabric_roles, 
+    execution_mode, in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
     task_override_fields
 )
 VALUES (
@@ -1137,7 +1151,8 @@ VALUES (
     'Days', 5, NULL, 'OTHERS', 'Generate and load entities', false,
     'INHERITED', 
     false, 'admin', 'admin',
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
+    'ALL', true,
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "generate_data_params": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
 
@@ -1151,8 +1166,9 @@ INSERT INTO ${@schema}.tasks (
     selected_version_task_exe_id, selected_subset_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
     sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, 
     filterout_reserved, task_description, clone_ind, execution_mode, 
-    in_place_masking_ind, permission_group, fabric_roles, 
-    task_override_fields 
+    in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
+    task_override_fields
 )
 VALUES (
     NULL, NULL, 'immediate', true, 0, 
@@ -1164,7 +1180,8 @@ VALUES (
     0, 0, false, 0, 
     NULL, false, 'Days', 5, NULL, 
     'OTHERS', 'Delete entities', false, 'INHERITED',
-    false, 'admin', 'admin', 
+    false, 'admin', 'admin',
+    'ALL', true,
     '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
@@ -1179,7 +1196,8 @@ INSERT INTO ${@schema}.tasks (
     selected_version_task_exe_id, selected_subset_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
     sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, 
     filterout_reserved, task_description, clone_ind, execution_mode, 
-    in_place_masking_ind, permission_group, fabric_roles, 
+    in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
     task_override_fields
 )
 VALUES (
@@ -1192,7 +1210,8 @@ VALUES (
     0, 0, false, 0, 
     NULL, true, 'Days', 5, NULL, 
     'OTHERS', 'Reserve entities', false, 'INHERITED', 
-    false, 'admin', 'admin', 
+    false, 'admin', 'admin',
+    'ALL', true,
     '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": true, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
@@ -1207,7 +1226,8 @@ INSERT INTO ${@schema}.tasks (
     selected_version_task_exe_id, selected_subset_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
     sync_mode, reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, 
     filterout_reserved, task_description, clone_ind, execution_mode, 
-    in_place_masking_ind, permission_group, fabric_roles, 
+    in_place_masking_ind, permission_group, fabric_roles,
+    statistics_report_flag, enable_sequence_report,
     task_override_fields
 )
 VALUES (
@@ -1220,7 +1240,8 @@ VALUES (
     0, 0, false, 0, 
     'ON', false, 'Days', 5, NULL, 
     'OTHERS', 'Clone entities', true, 'INHERITED',
-    false, 'admin', 'admin', 
+    false, 'admin', 'admin',
+    'ALL', true,
     '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
@@ -1315,7 +1336,9 @@ Subset by <selection_method> using: <selection_param_value>. Clone the entity <n
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Extract tables','Extract tables from <source_env_name>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Extract and load tables','Copy tables from <source_env_name> to <environment_name>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load tables','Copy <source_env_name> tables from the Test Data Store to <environment_name>.') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('In-place masking','Applying in-place data masking to selected tables in <environment_name>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load data version entities','Load <scope> by <be_name> from <source_env_name> to <environment_name> using data snapshot <data_version_name> (created on <version_creation_date>).') ON CONFLICT DO NOTHING;
+
 
 -- TDM 10 - task_notes
 CREATE TABLE IF NOT EXISTS ${@schema}.task_notes (

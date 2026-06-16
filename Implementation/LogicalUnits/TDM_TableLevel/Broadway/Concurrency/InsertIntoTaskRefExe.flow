@@ -99,7 +99,7 @@ stages:
             schema: integer
   Insert Into Partition Table:
     actors:
-      'Error Handler   ':
+      Delete  Command Error Handler:
         parent: ErrorHandler
         error: result
         in:
@@ -111,20 +111,28 @@ stages:
               actions:
                 suppress: false
                 log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
           tableName:
             external: tableName
             schema: string
             mandatory: false
-          partitionNumber:
-            const: '1'
-            schema: string
-            mandatory: false
           refTableID:
             link: Get Table Ref ID/result
-            schema: any
+            schema: integer
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+          executionAction:
+            const: Delete
+            schema: string
             mandatory: false
       'Insert task_ref_exe_stats ':
         parent: DbLoad
@@ -132,7 +140,8 @@ stages:
           interface:
             const: TDM
           command:
-            const: upsert
+            const: update
+            mandatory: false
           schema:
             const: null
             link: getTDMDBSchema/schema
@@ -152,6 +161,7 @@ stages:
             - schema_name
             - execution_action
             - table_order
+            - number_of_records_to_process
           keys:
             const:
             - task_id
@@ -162,27 +172,27 @@ stages:
             const: postgres
           task_id:
             link: Get Task ID/result
-            schema: any
+            schema: integer
             mandatory: false
             createdBy: table
           task_execution_id:
             external: taskExecutionID
-            schema: any
+            schema: string
             mandatory: false
             createdBy: table
           task_ref_table_id:
             link: Get Table Ref ID/result
-            schema: any
+            schema: integer
             mandatory: false
             createdBy: table
           ref_table_name:
             external: tableName
-            schema: any
+            schema: string
             mandatory: false
             createdBy: table
           start_time:
             link: Format the Current Time/string
-            schema: any
+            schema: string
             mandatory: false
             createdBy: table
           execution_status:
@@ -197,12 +207,12 @@ stages:
             createdBy: table
           interface_name:
             external: interfaceName
-            schema: any
+            schema: string
             mandatory: false
             createdBy: table
           schema_name:
             external: schemaName
-            schema: any
+            schema: string
             mandatory: false
             createdBy: table
           execution_action:
@@ -212,23 +222,15 @@ stages:
             createdBy: table
           table_order:
             external: tableOrder
-            schema: any
+            schema: string
             mandatory: false
             createdBy: table
           batch_id:
             external: batchID
-            schema: any
+            schema: string
             mandatory: false
             createdBy: fields
-  Stage 1: {
-    }
-  Stage 2: {
-    }
-  Stage 3: {
-    }
-  Stage 4: {
-    }
-  Stage 5: {
-    }
-  Stage 6: {
-    }
+          number_of_records_to_process:
+            schema: integer
+            mandatory: false
+            createdBy: fields

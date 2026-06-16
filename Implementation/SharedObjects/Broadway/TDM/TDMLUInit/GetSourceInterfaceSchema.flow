@@ -60,7 +60,7 @@ stages:
   Get Interface and Schema:
     dependsOn: Parse
     actors:
-      NotNull1:
+      Details Found?:
         parent: NotNull
         condition: result
         in:
@@ -89,7 +89,7 @@ stages:
             external: sourceSchema
             schema: string
     split: '--------------------'
-  Stage 1:
+  No Data Found:
     else: true
     dependsOn: Parse
     actors:

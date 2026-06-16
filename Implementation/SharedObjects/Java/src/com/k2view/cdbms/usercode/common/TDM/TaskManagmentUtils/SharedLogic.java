@@ -5,6 +5,7 @@ import static com.k2view.cdbms.shared.user.UserCode.isFirstSync;
 import static com.k2view.cdbms.shared.user.UserCode.log;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
+import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.enable_sequences;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
@@ -17,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -244,6 +246,8 @@ public class SharedLogic {
 		boolean allowWrite;
 
 		boolean allowedEntityVersioning;
+		boolean allowedTestConnFailure;
+
 	}
 
 	/**
@@ -253,8 +257,8 @@ public class SharedLogic {
 	 */
 	private static StringBuilder baseQuery() {
 		StringBuilder sql = new StringBuilder(600);
-		sql.append("SELECT t.task_id, t.task_title, t.task_type, t.selection_method, t.sync_mode, t.task_execution_status,t.task_last_updated_date, ")
-				.append("t.task_override_fields, t.be_id, t.source_env_name, t.source_environment_id, t.reserve_ind, ")
+		sql.append("SELECT t.task_id, t.task_title, t.task_type, t.selection_method, t.sync_mode, t.task_execution_status,t.task_last_updated_date,t.version_ind, t.replace_sequences, ")
+				.append("t.delete_before_load, t.clone_ind, t.task_override_fields, t.scheduler, t.refresh_reference_data, t.be_id, t.source_env_name, t.source_environment_id, t.reserve_ind, ")
 				.append("t.environment_id AS target_environment_id, t.num_of_entities, t.env_name AS target_env_name, ")
 				.append("CASE WHEN tuf.favorite_item_id IS NULL THEN FALSE ELSE TRUE END AS favorite ")
 				.append("FROM ")
@@ -478,25 +482,29 @@ public class SharedLogic {
 	}
 
 	private static boolean hasEnv(String envId) {
-		return envId != null && !envId.trim().isEmpty();
+		return envId != null && !envId.trim().isEmpty() && !"undefined".equalsIgnoreCase(envId);
 	}
 
-	private static boolean requiresSourceCheck(String taskType, String syncMode) {
+	public static boolean requiresSourceCheck(String taskType, String syncMode ,String envId) {
 		String type = taskType == null ? "" : taskType.trim().toUpperCase();
+		if(hasEnv(envId)){
+			if("undefined".equalsIgnoreCase(taskType)) taskType = "EXTRACT" ;
+			
+			if ("EXTRACT".equals(type) || "GENERATE".equals(type) || "AI_GENERATED".equals(type)) {
+				return true;
+			}
 
-		if ("EXTRACT".equals(type) || "GENERATE".equals(type) || "AI_GENERATED".equals(type)) {
-			return true;
+			if ("LOAD".equals(type) || "TRAINING".equals(type)) {
+				return !"OFF".equalsIgnoreCase(syncMode);
+			}
 		}
-
-		if ("LOAD".equals(type) || "TRAINING".equals(type)) {
-			return !"OFF".equalsIgnoreCase(syncMode);
-		}
-
 		return false;
-	}
+		}
 
-	private static boolean requiresTargetCheck(String taskType) {
+	public static boolean requiresTargetCheck(String taskType, String envId) {
 		String type = taskType == null ? "" : taskType.trim().toUpperCase();
+		if(!hasEnv(envId)) return false ;
+		if("undefined".equalsIgnoreCase(taskType)) type = "LOAD" ;
 		return "LOAD".equals(type) || "DELETE".equals(type) || "RESERVE".equals(type) || "TRAINING".equals(type);
 	}
 
@@ -520,7 +528,7 @@ public class SharedLogic {
 	}
 
 	private static boolean canTesterRunTaskEntities(String sourceEnvId, String targetEnvId, String taskType,
-			long taskId, long requestedEntities, long allowedToRead, long allowedToWrite, long allowedToReserve,
+			long requestedEntities, long allowedToRead, long allowedToWrite, long allowedToReserve,
 			String syncMode, boolean reserveInd) throws Exception {
 
 		String normalizedTaskType = taskType == null ? "" : taskType.trim().toUpperCase();
@@ -571,21 +579,62 @@ public class SharedLogic {
 		}
 	}
 
+	private static boolean canTesterRunTaskEntitiesForSide(EnvType side, String sourceEnvId, String targetEnvId,
+		 String taskType,long requestedEntities, long allowedToRead, long allowedToWrite, long allowedToReserve,
+			String syncMode, boolean reserveInd) throws Exception {
+		String normalizedTaskType = taskType == null ? "" : taskType.trim().toUpperCase();
+		boolean syncOff = "OFF".equalsIgnoreCase(syncMode);
+
+		if (side == EnvType.SOURCE) {
+			if ("EXTRACT".equals(normalizedTaskType)
+					|| "GENERATE".equals(normalizedTaskType)
+					|| "AI_GENERATED".equals(normalizedTaskType)
+					|| ("LOAD".equals(normalizedTaskType) && !syncOff)
+					|| ("TRAINING".equals(normalizedTaskType) && !syncOff)) {
+				return hasEnv(sourceEnvId)
+						&& hasEnoughEntities(requestedEntities, allowedToRead);
+			}
+
+			return true;
+		}
+
+		if ("DELETE".equals(normalizedTaskType)) {
+			return hasEnv(targetEnvId)
+					&& hasEnoughEntities(requestedEntities, allowedToWrite);
+		}
+
+		if ("RESERVE".equals(normalizedTaskType)) {
+			return hasEnv(targetEnvId)
+					&& hasEnoughEntities(requestedEntities, allowedToReserve);
+		}
+
+		if ("LOAD".equals(normalizedTaskType) || "TRAINING".equals(normalizedTaskType)) {
+			long targetLimit = reserveInd
+					? maxEntitiesLimit(allowedToWrite, allowedToReserve)
+					: allowedToWrite;
+
+			return hasEnv(targetEnvId)
+					&& hasEnoughEntities(requestedEntities, targetLimit);
+		}
+
+		return true;
+	}
+
 	/**
 	 * Finds a valid alternative environment for a task based on user permissions
 	 * and system compatibility, excluding the current environment.
-	 */
+	*/
 	private static AlternativeEnv findAlternativeEnv(String userName, String permissionGroup, EnvType side,
 		String currentEnvId, String oppositeEnvId, String taskType, String syncMode, Long taskId,
-		long numOfEntities, boolean reserveInd, boolean maxEntitiesEditable, boolean beEditable, String beId,
-		List<Map<String, Object>> userEnvs) throws Exception {
-
+		long numOfEntities, boolean reserveInd, boolean maxEntitiesEditable, boolean selectionMethodEditable, boolean beEditable, String beId,
+		List<Map<String, Object>> userEnvs, boolean deleteBeforeLoad, boolean replaceSequences, boolean cloneInd, boolean refreshReferenceData, boolean versionInd, String scheduler, String selectionMethod) throws Exception {
+	
 		if (isAiOrSdgTask(taskType,currentEnvId,oppositeEnvId)) {
 			return null;
 		}
-
+		boolean isTablesOnlyTask = "-1".equals(String.valueOf(beId));
 		Set<Long> candidateEnvIds = Collections.emptySet();
-		if (!beEditable) {
+		if (!beEditable && !isTablesOnlyTask) {
 			Set<Long> resolved = hasEnv(currentEnvId)
 					? getCandidateEnvironments(taskId, Long.parseLong(currentEnvId))
 					: getCandidateEnvironmentsByTask(taskId);
@@ -593,27 +642,18 @@ public class SharedLogic {
 				candidateEnvIds = resolved;
 			}
 		}
-
-		boolean isTesterWithFixedEntities = "tester".equalsIgnoreCase(permissionGroup) && !maxEntitiesEditable;
-
-		TesterPermissions oppositePerms = null;
-		if (isTesterWithFixedEntities) {
-			EnvType oppositeType = (side == EnvType.SOURCE) ? EnvType.TARGET : EnvType.SOURCE;
-			oppositePerms = getTesterPermissionsForUserEnv(userName, oppositeEnvId, oppositeType, userEnvs);
-		}
-
 		String key = (side == EnvType.SOURCE) ? "source environments" : "target environments";
-
+	
 		for (Map<String, Object> envType : userEnvs) {
 			List<Map<String, Object>> envs = (List<Map<String, Object>>) envType.get(key);
 			if (envs == null) {
 				continue;
 			}
-
+	
 			for (Map<String, Object> envMap : envs) {
 				String envId = String.valueOf(envMap.get("environment_id"));
 				String envName = String.valueOf(envMap.get("environment_name"));
-
+	
 				if(Long.valueOf(envId) < 0 ){
 					continue;
 				}
@@ -621,11 +661,11 @@ public class SharedLogic {
 				if (Objects.equals(envId, currentEnvId)) {
 					continue;
 				}
-
-				if (!beEditable && !candidateEnvIds.contains(Long.valueOf(envId))) {
+	
+				if (!beEditable && !isTablesOnlyTask && !candidateEnvIds.contains(Long.valueOf(envId))) {
 					continue;
 				}
-
+	
 				boolean envDisabled = (side == EnvType.SOURCE)
 						? sourceEnvSystemsDisabled(envId, envName, taskType, syncMode, taskId, beId)
 						: targetEnvSystemsDisabled(envId, envName, taskType, syncMode, taskId, beId);
@@ -633,31 +673,16 @@ public class SharedLogic {
 					continue;
 				}
 
-				if (isTesterWithFixedEntities) {
-					String roleId = String.valueOf(envMap.get("role_id"));
-					TesterPermissions candidatePerms = getTesterPermissions(envId, roleId);
+				String candidateSourceEnvId = side == EnvType.SOURCE ? envId : null;
+				String candidateTargetEnvId = side == EnvType.TARGET ? envId : null;
 
-					String candidateSourceEnvId, candidateTargetEnvId;
-					long allowedToRead, allowedToWrite, allowedToReserve;
-
-					if (side == EnvType.SOURCE) {
-						candidateSourceEnvId = envId;
-						candidateTargetEnvId = oppositeEnvId;
-						allowedToRead = candidatePerms.allowedNumberOfEntitiesToRead;
-						allowedToWrite = (oppositePerms != null) ? oppositePerms.allowedNumberOfEntitiesToCopy : 0;
-						allowedToReserve = (oppositePerms != null) ? oppositePerms.allowedNumberOfReservedEntities : 0;
-					} else {
-						candidateSourceEnvId = oppositeEnvId;
-						candidateTargetEnvId = envId;
-						allowedToRead = (oppositePerms != null) ? oppositePerms.allowedNumberOfEntitiesToRead : 0;
-						allowedToWrite = candidatePerms.allowedNumberOfEntitiesToCopy;
-						allowedToReserve = candidatePerms.allowedNumberOfReservedEntities;
-					}
-
-					if (!canTesterRunTaskEntities(candidateSourceEnvId, candidateTargetEnvId,
-							taskType, taskId, numOfEntities,
-							allowedToRead, allowedToWrite, allowedToReserve,
-							syncMode, reserveInd)) {
+				if ("tester".equalsIgnoreCase(permissionGroup)) {
+					boolean canRunWithCandidate = canUserPerformTaskOperation(
+							userName, candidateSourceEnvId, candidateTargetEnvId,
+							taskType, syncMode, reserveInd, deleteBeforeLoad, replaceSequences,
+							cloneInd, refreshReferenceData, versionInd, scheduler,
+							selectionMethod, numOfEntities, "RUN",maxEntitiesEditable,selectionMethodEditable,userEnvs);
+					if (!canRunWithCandidate) {
 						continue;
 					}
 				}
@@ -670,13 +695,39 @@ public class SharedLogic {
 	}
 
 	private static TesterPermissions getTesterPermissions(String envId, String roleId) {
+		
+		if ("owner".equalsIgnoreCase(roleId)) {
+			TesterPermissions permissions = new TesterPermissions();
+
+			permissions.allowedDeleteBeforeLoad = true;
+			permissions.allowedCreationOfSyntheticData = true;
+			permissions.allowedRandomEntitySelection = true;
+			permissions.allowedRequestOfFreshData = true;
+			permissions.allowedTaskScheduling = true;
+
+			permissions.allowedNumberOfEntitiesToCopy = -1L;
+			permissions.allowedNumberOfEntitiesToRead = -1L;
+			permissions.allowedNumberOfReservedEntities = -1L;
+
+			permissions.allowedRefreshReferenceData = true;
+			permissions.allowedReplaceSequences = true;
+
+			permissions.allowRead = true;
+			permissions.allowWrite = true;
+
+			permissions.allowedEntityVersioning = true;
+			permissions.allowedTestConnFailure = true;
+
+			return permissions;
+		}
+		
 		StringBuilder sql = new StringBuilder(400);
 		sql.append("SELECT allowed_delete_before_load, allowed_creation_of_synthetic_data, ")
 				.append("allowed_random_entity_selection, allowed_request_of_fresh_data, ")
 				.append("allowed_task_scheduling, allowed_number_of_entities_to_copy, ")
 				.append("allowed_refresh_reference_data, allowed_replace_sequences, ")
 				.append("allow_read, allow_write, allowed_number_of_entities_to_read, ")
-				.append("allowed_entity_versioning, ")
+				.append("allowed_entity_versioning, allowed_test_conn_failure, ")
 				.append("allowed_number_of_reserved_entities ")
 				.append("FROM ").append(TDMDB_SCHEMA).append(".environment_roles ")
 				.append("WHERE environment_id = ? AND role_id = ? AND role_status = ?");
@@ -707,11 +758,15 @@ public class SharedLogic {
 				permissions.allowedReplaceSequences = Boolean
 						.parseBoolean(row.get("allowed_replace_sequences").toString());
 
-				permissions.allowRead = Boolean.parseBoolean(row.get("allow_read").toString());
-				permissions.allowWrite = Boolean.parseBoolean(row.get("allow_write").toString());
+				permissions.allowRead = Boolean
+				.parseBoolean(row.get("allow_read").toString());
+				permissions.allowWrite = Boolean
+				.parseBoolean(row.get("allow_write").toString());
 
 				permissions.allowedEntityVersioning = Boolean
-						.parseBoolean(row.get("allowed_entity_versioning").toString());
+				.parseBoolean(row.get("allowed_entity_versioning").toString());
+				permissions.allowedTestConnFailure = Boolean
+				.parseBoolean(row.get("allowed_test_conn_failure").toString());
 				break;
 			}
 
@@ -722,7 +777,7 @@ public class SharedLogic {
 		return permissions;
 	}
 
-	private static String buildTaskTypes(boolean allowSynthetic, String envId, boolean isTarget, boolean allowDelete,
+	private static String buildTaskTypes(String envId, boolean isTarget, boolean allowDelete,
 			boolean allowReserve) {
 		Set<String> typeConditions = new LinkedHashSet<>();
 		if (isTarget) {
@@ -738,11 +793,11 @@ public class SharedLogic {
 
 		}
 
-		if (allowSynthetic || "-1".equalsIgnoreCase(envId)) {
+		if ("-1".equalsIgnoreCase(envId)) {
 			typeConditions.add("'generate'");
 		}
 
-		if (allowSynthetic || "-2".equalsIgnoreCase(envId)) {
+		if ("-2".equalsIgnoreCase(envId)) {
 			typeConditions.add("'training'");
 			typeConditions.add("'ai_generated'");
 		}
@@ -760,62 +815,82 @@ public class SharedLogic {
 	private static TaskAvailabilityDecision evaluateTaskAvailability(String userName, String permissionGroup,
 			Long taskId, String taskType, String syncMode, String overrideParams,String beID, String sourceEnvId,
 			String sourceEnvName, String targetEnvId, String targetEnvName, String taskExecutionStatus,
-			long numOfEntities, boolean reserveInd, List<Map<String, Object>> userEnvs) throws Exception {
+			long numOfEntities, boolean reserveInd, List<Map<String, Object>> userEnvs, String selectionMethod, String scheduler,
+			boolean versionInd, boolean refreshReferenceData, boolean cloneInd,boolean replaceSequences,boolean deleteBeforeLoad) throws Exception {
 
 		TaskAvailabilityDecision decision = new TaskAvailabilityDecision();
+		
+		boolean sourceRequired = requiresSourceCheck(taskType, syncMode, sourceEnvId);
+		boolean targetRequired = requiresTargetCheck(taskType, targetEnvId);
 
-		decision.sourceEnvDisabled = requiresSourceCheck(taskType, syncMode)
-				&& sourceEnvSystemsDisabled(sourceEnvId, sourceEnvName, taskType, syncMode, taskId, beID);
-		decision.targetEnvDisabled = requiresTargetCheck(taskType)
-				&& targetEnvSystemsDisabled(targetEnvId, targetEnvName, taskType, syncMode, taskId, beID);
+		decision.sourceEnvDisabled = sourceRequired
+					&& sourceEnvSystemsDisabled(sourceEnvId, sourceEnvName, taskType, syncMode, taskId, beID);
+
+		decision.targetEnvDisabled = targetRequired
+					&& targetEnvSystemsDisabled(targetEnvId, targetEnvName, taskType, syncMode, taskId, beID);
+
 
 		decision.sourceEnvEditable = isSourceEnvEditable(overrideParams);
 		decision.targetEnvEditable = isTargetEnvEditable(overrideParams);
 		decision.beEditable = isBeEditable(overrideParams);
 
 		boolean maxEntitiesEditable = isMaxEntitiesEditable(overrideParams, numOfEntities);
+		boolean randomEditable = isNestedEditable(overrideParams, "selection_method", "random") || isEditable(overrideParams, "selection_method");
 		boolean beNull = false ; 
 		boolean beBlocked = false;
 		
 		if (beID == null || "null".equalsIgnoreCase(beID))	beNull =true ;
 		if (beID == null && !decision.beEditable)	beBlocked=true;
 			
-		if ("tester".equalsIgnoreCase(permissionGroup) && !maxEntitiesEditable) {
-			TesterPermissions sourcePerms = getTesterPermissionsForUserEnv(userName, sourceEnvId, EnvType.SOURCE,
-					userEnvs);
-			TesterPermissions targetPerms = getTesterPermissionsForUserEnv(userName, targetEnvId, EnvType.TARGET,
-					userEnvs);
+		if ("tester".equalsIgnoreCase(permissionGroup)) {
 
-			boolean canRun = canTesterRunTaskEntities(
-					sourceEnvId, targetEnvId, taskType, taskId, numOfEntities,
-					sourcePerms != null ? sourcePerms.allowedNumberOfEntitiesToRead : 0,
-					targetPerms != null ? targetPerms.allowedNumberOfEntitiesToCopy : 0,
-					targetPerms != null ? targetPerms.allowedNumberOfReservedEntities : 0,
-					syncMode, reserveInd);
+			boolean sourceCanRun = true;
+			boolean targetCanRun = true;
+			boolean forceSelectionMethod = !randomEditable ;
+			if (sourceRequired) {
+				sourceCanRun = canUserPerformTaskOperation(
+						userName,
+						sourceEnvId,
+						decision.targetEnvEditable ? null : targetEnvId,
+						taskType, syncMode, reserveInd, deleteBeforeLoad, replaceSequences,
+						cloneInd, refreshReferenceData, versionInd, scheduler,
+						selectionMethod, numOfEntities, "RUN",
+						maxEntitiesEditable, forceSelectionMethod, userEnvs);
+			}
 
-			if (!canRun) {
-				if (requiresSourceCheck(taskType, syncMode)) {
-					decision.sourceEnvDisabled = true;
-				}
-				if (requiresTargetCheck(taskType)) {
-					decision.targetEnvDisabled = true;
-				}
+			if (targetRequired) {
+				targetCanRun = canUserPerformTaskOperation(
+						userName,
+						decision.sourceEnvEditable ? null : sourceEnvId,
+						targetEnvId,
+						taskType, syncMode, reserveInd, deleteBeforeLoad, replaceSequences,
+						cloneInd, refreshReferenceData, versionInd, scheduler,
+						selectionMethod, numOfEntities, "RUN",
+						maxEntitiesEditable, forceSelectionMethod, userEnvs);
+			}
+
+			if (!sourceCanRun) {
+				decision.sourceEnvDisabled = true;
+			}
+
+			if (!targetCanRun) {
+				decision.targetEnvDisabled = true;
 			}
 		}
 
 		if (decision.sourceEnvDisabled && decision.sourceEnvEditable) {
 			decision.alternativeSourceEnv = findAlternativeEnv(userName, permissionGroup, EnvType.SOURCE, sourceEnvId,
 					targetEnvId,
-					taskType, syncMode, taskId, numOfEntities, reserveInd, maxEntitiesEditable, decision.beEditable, beID,
-					userEnvs);
+					taskType, syncMode, taskId, numOfEntities, reserveInd, maxEntitiesEditable, randomEditable, decision.beEditable, beID,
+					userEnvs,deleteBeforeLoad,replaceSequences,cloneInd,refreshReferenceData,versionInd,scheduler,selectionMethod);
 			decision.alternativeSourceEnvExists = decision.alternativeSourceEnv != null;
 		}
 		
 		if (decision.targetEnvDisabled && decision.targetEnvEditable) {
 			decision.alternativeTargetEnv = findAlternativeEnv(userName, permissionGroup, EnvType.TARGET, targetEnvId,
 					sourceEnvId,
-					taskType, syncMode, taskId, numOfEntities, reserveInd, maxEntitiesEditable, decision.beEditable, beID,
-					userEnvs);
+					taskType, syncMode, taskId, numOfEntities, reserveInd, maxEntitiesEditable, randomEditable, decision.beEditable, beID,
+					userEnvs,deleteBeforeLoad,replaceSequences,cloneInd,refreshReferenceData,versionInd,scheduler,selectionMethod);
 			decision.alternativeTargetEnvExists = decision.alternativeTargetEnv != null;
 		}
 
@@ -932,7 +1007,7 @@ public class SharedLogic {
 
 				StringBuilder editableSourceQuery = notCreatedByUser();
 				editableSourceQuery.append(" AND (t.task_override_fields -> 'source_environment' ->> 'is_editable')::boolean = true")
-				.append(" AND (t.task_override_fields -> 'business_entity'    ->> 'is_editable')::boolean = false");
+				.append(" AND (t.task_override_fields -> 'business_entity' ->> 'is_editable')::boolean = false");
 
 				taskList.addAll(fetchTasksForQuery(editableSourceQuery.toString(),
 						new Object[] { userName, groupId, userName }, "owner", userEnvs));
@@ -1059,42 +1134,63 @@ public class SharedLogic {
 		// List<Map<String, Object>> result = new ArrayList<>();
 		List<Map<String, Object>> tasks = new ArrayList<>();
 		String userName = sessionUser().name();
-		try {
-			for (Db.Row row : db(TDM).fetch(query, queryParams)) {
-				Long taskId = ((Number) row.get("task_id")).longValue();
-
-				String taskTitle = String.valueOf(row.get("task_title"));
+		for (Db.Row row : db(TDM).fetch(query, queryParams)) {
+			Long taskId = null;
+    		String taskTitle = null;
+			try {
+				taskId = ((Number) row.get("task_id")).longValue();
+				taskTitle = String.valueOf(row.get("task_title"));
 				String taskExecutionStatus = String.valueOf(row.get("task_execution_status"));
 				String taskType = String.valueOf(row.get("task_type"));
 				String syncMode = String.valueOf(row.get("sync_mode"));
 				String overrideParams = String.valueOf(row.get("task_override_fields"));
-				Long numOfEntities = row.get("num_of_entities") == null ? 0L
-						: ((Number) row.get("num_of_entities")).longValue();
-				boolean reserveInd = row.get("reserve_ind") != null
-						&& Boolean.parseBoolean(String.valueOf(row.get("reserve_ind")));
-
 				String sourceEnvName = String.valueOf(row.get("source_env_name"));
-				String sourceEnvId = String.valueOf(row.get("source_environment_id"));
+				String sourceEnvId = row.get("source_environment_id") == null? null : String.valueOf(row.get("source_environment_id"));
+				String targetEnvId = row.get("target_environment_id") == null ? null: String.valueOf(row.get("target_environment_id"));
 				String targetEnvName = String.valueOf(row.get("target_env_name"));
-				String targetEnvId = String.valueOf(row.get("target_environment_id"));
 				String beId = String.valueOf(row.get("be_id"));
 				String updatedDate = String.valueOf(row.get("task_last_updated_date"));
 				String selectionMethod = String.valueOf(row.get("selection_method"));
+				String taskScheduler = String.valueOf(row.get("scheduler"));
+				boolean versionInd = row.get("version_ind") != null
+						&& Boolean.parseBoolean(String.valueOf(row.get("version_ind")));
+
+				boolean cloneInd = row.get("clone_ind") != null
+						&& Boolean.parseBoolean(String.valueOf(row.get("clone_ind")));
+
+				boolean deleteBeforeLoad = row.get("delete_before_load") != null
+						&& Boolean.parseBoolean(String.valueOf(row.get("delete_before_load")));
+
+				boolean replaceSequences = row.get("replace_sequences") != null
+						&& Boolean.parseBoolean(String.valueOf(row.get("replace_sequences")));
+
+				boolean refreshReferenceData = row.get("refresh_reference_data") != null
+						&& Boolean.parseBoolean(String.valueOf(row.get("refresh_reference_data")));
+						
+				boolean reserveInd = row.get("reserve_ind") != null
+						&& Boolean.parseBoolean(String.valueOf(row.get("reserve_ind")));
+						
+				Long numOfEntities = row.get("num_of_entities") == null ? 0L
+						: ((Number) row.get("num_of_entities")).longValue();
+
+
 
 				boolean isPermittedUser = isPermittedUserForExecution(taskId,permessionGroup,sourceEnvId,targetEnvId);
 				if (!isPermittedUser) {
-						continue;
+					continue;
 				}
-				TaskAvailabilityDecision availability = evaluateTaskAvailability(userName, permessionGroup, taskId,
-						taskType,
+				TaskAvailabilityDecision availability = evaluateTaskAvailability(userName, permessionGroup, taskId, taskType,
 						syncMode, overrideParams, beId, sourceEnvId, sourceEnvName, targetEnvId, targetEnvName,
-						taskExecutionStatus, numOfEntities, reserveInd, userEnvs);
-
+						taskExecutionStatus, numOfEntities, reserveInd, userEnvs,selectionMethod,taskScheduler,versionInd, 
+						refreshReferenceData, cloneInd, replaceSequences, deleteBeforeLoad);
+				boolean showHoldTask = showHoldTaskForUser(availability.holdTask, permessionGroup , userName, taskId );
+				if (!showHoldTask) {
+					continue;
+				}
 				Map<String, Object> taskInfo = buildTaskInfo(taskId, taskTitle, taskType, selectionMethod, syncMode,
 						availability.holdTask,
 						availability.sourceEnvEditable, availability.targetEnvEditable, row.get("favorite"),
 						isPermittedUser, userName,updatedDate);
-
 				Map<String,Object> taskDebug = new HashMap<String,Object>();
 				taskDebug.put("source_env_disabled", availability.sourceEnvDisabled);
 				taskDebug.put("target_env_disabled", availability.targetEnvDisabled);
@@ -1131,10 +1227,17 @@ public class SharedLogic {
 				}
 
 				tasks.add(taskInfo);
+			} catch (Exception e) {
+				throw new RuntimeException("Error processing task"
+                + " [task_id=" + taskId
+                + ", task_title=" + taskTitle
+                + ", user=" + userName
+                + "]: " + e.getMessage(),
+                e
+        		);			
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error fetching tasks for user: " + userName, e);
 		}
+		
 		return tasks;
 
 	}
@@ -1155,26 +1258,24 @@ public class SharedLogic {
 	public static String getTesterSourceTasks(String envId, String roleId) throws Exception {
 		StringBuilder queryBuilderSource = notCreatedByUser();
 		queryBuilderSource.append(" AND (t.source_environment_id = ? ")
-        .append("OR (t.source_environment_id IS NULL ")
-        .append("AND (t.task_override_fields -> 'source_environment' ->> 'is_editable')::Boolean = true)) ");
+    	.append("OR (t.task_override_fields -> 'source_environment' ->> 'is_editable')::boolean = true) ");
 		try {
 			TesterPermissions permissions = getTesterPermissions(envId, roleId);
 
 			boolean allowRead = permissions.allowRead;
 			boolean allowFreshData = permissions.allowedRequestOfFreshData;
-			boolean allowSynthetic = permissions.allowedCreationOfSyntheticData;
 			boolean allowVersioning = permissions.allowedEntityVersioning;
 			boolean allowScheduling = permissions.allowedTaskScheduling;
 			boolean allowRefresh = permissions.allowedRefreshReferenceData;
 			boolean allowRandom = permissions.allowedRandomEntitySelection;
+			boolean unlimitedEntities = permissions.allowedNumberOfEntitiesToRead == -1;
 
 			queryBuilderSource.append(" AND lower(t.task_type) IN (")
-					.append(buildTaskTypes(allowSynthetic, envId, false, false, false))
+					.append(buildTaskTypes(envId, false, false, false))
 					.append(") ");
 
 			if (allowRead) {
-				queryBuilderSource.append(" AND t.selection_method <> 'ALL' ");
-
+				queryBuilderSource.append(" AND 1 = 1 ");
 				if (!allowFreshData) {
 					queryBuilderSource.append(" AND t.sync_mode <> 'FORCE' ");
 				}
@@ -1188,13 +1289,21 @@ public class SharedLogic {
 				}
 
 				if (!allowRandom) {
-					queryBuilderSource.append(" AND t.selection_method NOT IN ('R', 'PR') ");
+					queryBuilderSource.append(" AND (t.selection_method NOT IN ('R', 'PR') ")
+					.append("OR (t.task_override_fields -> 'selection_method' ->> 'is_editable')::boolean = true) ");
+;
 				}
-
+				
 				if (!allowRefresh) {
 					queryBuilderSource.append(" AND (t.selection_method <> 'TABLES' AND NOT EXISTS (SELECT 1 FROM ")
 							.append(TDMDB_SCHEMA)
 							.append(".task_ref_tables trt WHERE trt.task_id = t.task_id)) ");
+				}
+				if( !unlimitedEntities){
+					queryBuilderSource.append(" AND (t.num_of_entities <> -1 ")
+							.append("OR (t.task_override_fields -> 'selection_method' -> 'max_entities' ->> 'is_editable')::boolean = true) ");
+;
+
 				}
 			} else {
 				queryBuilderSource.append(" AND 1 = 0 ");
@@ -1210,8 +1319,7 @@ public class SharedLogic {
 	public static String getTesterTargetTasks(String envId, String roleId) throws Exception {
 		StringBuilder queryBuilderTarget = notCreatedByUser();
 		queryBuilderTarget.append(" AND (t.environment_id = ? ")
-        .append("OR (t.environment_id IS NULL ")
-        .append("AND (t.task_override_fields -> 'target_environment' ->> 'is_editable')::Boolean = true)) ");
+    	.append("OR (t.task_override_fields -> 'target_environment' ->> 'is_editable')::boolean = true) ");
 		try {
 			TesterPermissions permissions = getTesterPermissions(envId, roleId);
 
@@ -1219,15 +1327,16 @@ public class SharedLogic {
 			boolean allowReplace = permissions.allowedReplaceSequences;
 			boolean allowFreshData = permissions.allowedRequestOfFreshData;
 			boolean allowVersioning = permissions.allowedEntityVersioning;
+			boolean allowCloning = permissions.allowedCreationOfSyntheticData;
 			boolean allowScheduling = permissions.allowedTaskScheduling;
 			boolean allowRefresh = permissions.allowedRefreshReferenceData;
 			boolean allowRandom = permissions.allowedRandomEntitySelection;
 			boolean allowReserve = permissions.allowedNumberOfReservedEntities != 0;
 			boolean allowDelete = permissions.allowedDeleteBeforeLoad;
+			boolean unlimitedEntities = permissions.allowedNumberOfEntitiesToCopy == -1;
 
 			if (allowWrite) {
-				queryBuilderTarget.append(" AND t.selection_method <> 'ALL' ");
-
+				queryBuilderTarget.append(" AND 1 = 1 ");
 				if (!allowFreshData) {
 					queryBuilderTarget.append(" AND t.sync_mode <> 'FORCE' ");
 				}
@@ -1241,7 +1350,12 @@ public class SharedLogic {
 				}
 
 				if (!allowRandom) {
-					queryBuilderTarget.append(" AND t.selection_method NOT IN ('R', 'PR') ");
+					queryBuilderTarget.append(" AND ( t.selection_method NOT IN ('R', 'PR') ")
+							.append("OR (t.task_override_fields -> 'selection_method' ->> 'is_editable')::boolean = true) ");
+				}
+
+				if (!allowCloning) {
+					queryBuilderTarget.append(" AND t.clone_ind = false ");
 				}
 
 				if (!allowReplace) {
@@ -1261,9 +1375,14 @@ public class SharedLogic {
 				if (!allowDelete) {
 					queryBuilderTarget.append(" AND t.delete_before_load = false ");
 				}
+				
+				if(!unlimitedEntities){
+					queryBuilderTarget.append(" AND (t.num_of_entities <> -1 ")
+							.append("OR (t.task_override_fields -> 'selection_method' -> 'max_entities' ->> 'is_editable')::boolean = true) ");
+				}
 
 				queryBuilderTarget.append(" AND lower(t.task_type) IN (")
-						.append(buildTaskTypes(permissions.allowedCreationOfSyntheticData, envId, true, allowDelete,
+						.append(buildTaskTypes(envId, true, allowDelete,
 								allowReserve))
 						.append(") ");
 			} else {
@@ -1325,16 +1444,16 @@ public class SharedLogic {
 		String currentUser = sessionUser().name();
 		String permessionGroup = fnGetUserPermissionGroup(currentUser);
 		boolean isAdmin = permessionGroup.equalsIgnoreCase("admin");
-		if (isAdmin)
-			return true;
+		if (isAdmin) return true;
 		StringBuilder sql = new StringBuilder(200);
 		sql.append("SELECT task_executed_by ").append("FROM ").append(TDMDB_SCHEMA)
 				.append(".task_execution_list where task_execution_id=?");
 		try {
 			for (Db.Row row : db(TDM).fetch(sql.toString(), taskExeId)) {
-				String executed_by = row.get("task_executed_by").toString();
-				if (executed_by.equalsIgnoreCase(currentUser))
+				String executed_by = row.get("task_executed_by").toString().split("##")[0];;
+				if (executed_by.equalsIgnoreCase(currentUser)){
 					return true;
+				}
 				return false;
 			}
 		} catch (Exception e) {
@@ -1450,4 +1569,362 @@ public class SharedLogic {
 	private static boolean fnAreAllRootLuSystemsDisabled(String envId, String envName, Long taskId, String beId) throws Exception {
 		return fnAreSystemsDisabled(envId, envName, taskId, beId, true);
 	}
+	
+	
+	public static Object fnGetPermissionsForTask(String sourceEnvId, String targetEnvId,
+        String userName, String taskType, String syncMode, boolean reserveInd) throws Exception {
+
+		Map<String, Object> response = new HashMap<>();
+		Map<String, Object> result = new HashMap<>();
+
+		try {
+			if (taskType == null || taskType.trim().isEmpty() || "undefined".equalsIgnoreCase(taskType)) {
+				if (hasEnv(sourceEnvId) && !hasEnv(targetEnvId)) {
+					taskType = "EXTRACT";
+				} else {
+					taskType = "LOAD";
+				}
+			}
+
+			if ("EXTRACT".equalsIgnoreCase(taskType) && hasEnv(targetEnvId)) {
+				taskType = "LOAD";
+			}
+
+			boolean sourceRequired = requiresSourceCheck(taskType, syncMode, sourceEnvId);
+			boolean targetRequired = requiresTargetCheck(taskType, targetEnvId);
+
+			String permissionGroup = fnGetUserPermissionGroup(userName);
+			Map<String, Object> taskPermissions = new HashMap<>();
+
+			result.put("user_name", userName);
+			result.put("permission_group", permissionGroup);
+			result.put("source_environment_id", sourceEnvId);
+			result.put("target_environment_id", targetEnvId);
+			result.put("task_type", taskType);
+			result.put("sync_mode", syncMode);
+			result.put("reserve_ind", reserveInd);
+
+			boolean isAdmin = "admin".equalsIgnoreCase(permissionGroup);
+
+			boolean ownerAllowed = false;
+			if (!isAdmin && "owner".equalsIgnoreCase(permissionGroup)) {
+				ownerAllowed =
+						(!sourceRequired || (hasEnv(sourceEnvId) && fnIsOwner(sourceEnvId)))
+						&& (!targetRequired || (hasEnv(targetEnvId) && fnIsOwner(targetEnvId)));
+			}
+
+			if (isAdmin || ownerAllowed) {
+				taskPermissions.put("can_run_task", true);
+				taskPermissions.put("access_level", isAdmin ? "admin" : "owner");
+				taskPermissions.put("can_read", true);
+				taskPermissions.put("can_write", true);
+				taskPermissions.put("can_reserve", true);
+				taskPermissions.put("can_delete_before_load", true);
+				taskPermissions.put("can_replace_sequences", true);
+				taskPermissions.put("can_run_reference_tasks", true);
+				taskPermissions.put("can_use_random_selection", true);
+				taskPermissions.put("can_request_fresh_data", true);
+				taskPermissions.put("can_schedule_task", true);
+				taskPermissions.put("can_use_entity_versioning", true);
+				taskPermissions.put("can_use_clone", true);
+				taskPermissions.put("allowed_entities_to_read", -1);
+				taskPermissions.put("allowed_entities_to_write", -1);
+				taskPermissions.put("allowed_entities_to_reserve", -1);
+				taskPermissions.put("max_entities_per_task", -1);
+				taskPermissions.put("can_request_unlimited_entities", true);
+
+				result.put("task_permissions", taskPermissions);
+				response.put("errorCode", "SUCCESS");
+				response.put("message", "Task permissions were retrieved successfully");
+				response.put("result", result);
+				return response;
+			}
+
+			List<Map<String, Object>> userEnvs = fnGetUserEnvs(userName);
+
+			TesterPermissions sourcePerms = sourceRequired
+					? getTesterPermissionsForUserEnv(userName, sourceEnvId, EnvType.SOURCE, userEnvs)
+					: null;
+
+			TesterPermissions targetPerms = targetRequired
+					? getTesterPermissionsForUserEnv(userName, targetEnvId, EnvType.TARGET, userEnvs)
+					: null;
+
+			long allowedToRead = sourcePerms == null ? 0 : sourcePerms.allowedNumberOfEntitiesToRead;
+			long allowedToWrite = targetPerms == null ? 0 : targetPerms.allowedNumberOfEntitiesToCopy;
+			long allowedToReserve = targetPerms == null ? 0 : targetPerms.allowedNumberOfReservedEntities;
+
+			long maxEntitiesPerTask;
+
+			if (sourceRequired && targetRequired) {
+				long targetLimit = reserveInd
+						? maxEntitiesLimit(allowedToWrite, allowedToReserve)
+						: allowedToWrite;
+
+				if (allowedToRead == -1 && targetLimit == -1) {
+					maxEntitiesPerTask = -1;
+				} else if (allowedToRead == -1) {
+					maxEntitiesPerTask = targetLimit;
+				} else if (targetLimit == -1) {
+					maxEntitiesPerTask = allowedToRead;
+				} else {
+					maxEntitiesPerTask = Math.min(allowedToRead, targetLimit);
+				}
+			} else if (sourceRequired) {
+				maxEntitiesPerTask = allowedToRead;
+			} else if (targetRequired) {
+				maxEntitiesPerTask = reserveInd
+						? maxEntitiesLimit(allowedToWrite, allowedToReserve)
+						: allowedToWrite;
+			} else {
+				maxEntitiesPerTask = 0;
+			}
+			taskPermissions.put("access_level", "tester");
+
+			taskPermissions.put("can_read", sourcePerms != null && sourcePerms.allowRead);
+			taskPermissions.put("can_write", targetPerms != null && targetPerms.allowWrite);
+			taskPermissions.put("can_reserve", targetPerms != null && targetPerms.allowedNumberOfReservedEntities != 0);
+
+			taskPermissions.put("allowed_entities_to_read", allowedToRead);
+			taskPermissions.put("allowed_entities_to_write", allowedToWrite);
+			taskPermissions.put("allowed_entities_to_reserve", allowedToReserve);
+
+			taskPermissions.put("max_entities_per_task", maxEntitiesPerTask);
+			taskPermissions.put("can_request_unlimited_entities", maxEntitiesPerTask == -1);
+
+			taskPermissions.put("can_use_random_selection", checkPermission(
+					sourceRequired, targetRequired,
+					sourcePerms != null && sourcePerms.allowedRandomEntitySelection,
+					targetPerms != null && targetPerms.allowedRandomEntitySelection));
+
+			taskPermissions.put("can_request_fresh_data", checkPermission(
+					sourceRequired, targetRequired,
+					sourcePerms != null && sourcePerms.allowedRequestOfFreshData,
+					targetPerms != null && targetPerms.allowedRequestOfFreshData));
+
+			taskPermissions.put("can_schedule_task", checkPermission(
+					sourceRequired, targetRequired,
+					sourcePerms != null && sourcePerms.allowedTaskScheduling,
+					targetPerms != null && targetPerms.allowedTaskScheduling));
+
+			taskPermissions.put("can_run_reference_tasks", checkPermission(
+					sourceRequired, targetRequired,
+					sourcePerms != null && sourcePerms.allowedRefreshReferenceData,
+					targetPerms != null && targetPerms.allowedRefreshReferenceData));
+
+			taskPermissions.put("can_use_entity_versioning", checkPermission(
+					sourceRequired, targetRequired,
+					sourcePerms != null && sourcePerms.allowedEntityVersioning,
+					targetPerms != null && targetPerms.allowedEntityVersioning));
+
+			taskPermissions.put("can_delete_before_load",
+					targetPerms != null && targetPerms.allowedDeleteBeforeLoad);
+
+			taskPermissions.put("can_replace_sequences",
+					targetPerms != null && targetPerms.allowedReplaceSequences);
+
+			taskPermissions.put("can_use_clone",
+					targetPerms != null && targetPerms.allowedCreationOfSyntheticData);
+
+			result.put("task_permissions", taskPermissions);
+
+			response.put("errorCode", "SUCCESS");
+			response.put("message", "Task permissions were retrieved successfully");
+			response.put("result", result);
+
+		} catch (Exception e) {
+			response.put("errorCode", "FAILED");
+			response.put("message", e.getMessage());
+			response.put("result", null);
+		}
+
+		return response;
+	}
+
+	private static boolean checkPermission(boolean sourceRequired, boolean targetRequired, boolean sourcePermission, boolean targetPermission) {
+    	return (!sourceRequired || sourcePermission) && (!targetRequired || targetPermission);
+	}
+
+	private static boolean showHoldTaskForUser(boolean holdTask, String permessionGroup, String userName, long taskID) {
+		if (!holdTask) {
+			return true;
+		}
+		return permessionGroup.equalsIgnoreCase("admin")
+			|| isTaskCreator(userName, taskID);
+	}
+	
+	public static boolean canUserPerformTaskOperation(String userName, String sourceEnvId, String targetEnvId,
+        String taskType, String syncMode, boolean reserveInd, boolean deleteBeforeLoad,
+        boolean replaceSequences, boolean cloneInd, boolean refreshReferenceData, boolean versionInd,
+        String scheduler, String selectionMethod, long numOfEntities, String operation, boolean enforceEntityLimit, boolean enforceSelectionMethod,
+		List<Map<String, Object>> userEnvs) throws Exception {
+
+		String permissionGroup = fnGetUserPermissionGroup(userName);
+
+		if ("admin".equalsIgnoreCase(permissionGroup)) {
+			return true;
+		}
+
+		boolean sourceRequired = requiresSourceCheck(taskType, syncMode, sourceEnvId);
+		boolean targetRequired = requiresTargetCheck(taskType, targetEnvId);
+
+		if ("owner".equalsIgnoreCase(permissionGroup)) {
+			return (!sourceRequired || (hasEnv(sourceEnvId) && fnIsOwner(sourceEnvId)))
+					&& (!targetRequired || (hasEnv(targetEnvId) && fnIsOwner(targetEnvId)));
+		}
+
+		if ("CREATE".equalsIgnoreCase(operation) && !isAllowedToCreate(userName)) {
+			return false;
+		}
+
+		List<Map<String, Object>> resolvedUserEnvs =
+        userEnvs != null ? userEnvs : fnGetUserEnvs(userName);
+
+		TesterPermissions sourcePerms = sourceRequired
+				? getTesterPermissionsForUserEnv(userName, sourceEnvId, EnvType.SOURCE, resolvedUserEnvs)
+				: null;
+
+		TesterPermissions targetPerms = targetRequired
+				? getTesterPermissionsForUserEnv(userName, targetEnvId, EnvType.TARGET, resolvedUserEnvs)
+				: null;
+
+		long allowedToRead = sourcePerms == null ? 0 : sourcePerms.allowedNumberOfEntitiesToRead;
+		long allowedToWrite = targetPerms == null ? 0 : targetPerms.allowedNumberOfEntitiesToCopy;
+		long allowedToReserve = targetPerms == null ? 0 : targetPerms.allowedNumberOfReservedEntities;
+		
+		if (enforceEntityLimit) {
+			boolean canRunEntities = true;
+
+			if (sourceRequired && targetRequired) {
+				canRunEntities = canTesterRunTaskEntities(
+						sourceEnvId, targetEnvId, taskType, numOfEntities,
+						allowedToRead, allowedToWrite, allowedToReserve,
+						syncMode, reserveInd);
+			} else if (sourceRequired) {
+				canRunEntities = canTesterRunTaskEntitiesForSide(
+						EnvType.SOURCE, sourceEnvId,targetEnvId, taskType, numOfEntities,
+						allowedToRead, allowedToWrite, allowedToReserve,
+						syncMode, reserveInd);
+			} else if (targetRequired) {
+				canRunEntities = canTesterRunTaskEntitiesForSide(
+						EnvType.TARGET, sourceEnvId,targetEnvId, taskType, numOfEntities,
+						allowedToRead, allowedToWrite, allowedToReserve,
+						syncMode, reserveInd);
+			}
+
+			if (!canRunEntities) {
+				return false;
+			}
+		}
+
+
+		if (sourceRequired && (sourcePerms == null || !sourcePerms.allowRead)) {
+			return false;
+		}
+
+		if (targetRequired && (targetPerms == null || !targetPerms.allowWrite)) {
+			return false;
+		}
+
+		boolean sourceAllowRandom = sourcePerms != null && sourcePerms.allowedRandomEntitySelection;
+		boolean targetAllowRandom = targetPerms != null && targetPerms.allowedRandomEntitySelection;
+
+		boolean allowRandom =
+				(!sourceRequired || sourceAllowRandom)
+				&& (!targetRequired || targetAllowRandom);
+
+		boolean sourceAllowFreshData = sourcePerms != null && sourcePerms.allowedRequestOfFreshData;
+		boolean targetAllowFreshData = targetPerms != null && targetPerms.allowedRequestOfFreshData;
+
+		boolean allowFreshData =
+				(!sourceRequired || sourceAllowFreshData)
+				&& (!targetRequired || targetAllowFreshData);
+
+		boolean sourceAllowScheduling = sourcePerms != null && sourcePerms.allowedTaskScheduling;
+		boolean targetAllowScheduling = targetPerms != null && targetPerms.allowedTaskScheduling;
+
+		boolean allowScheduling =
+				(!sourceRequired || sourceAllowScheduling)
+				&& (!targetRequired || targetAllowScheduling);
+
+		boolean sourceAllowRefreshReference = sourcePerms != null && sourcePerms.allowedRefreshReferenceData;
+		boolean targetAllowRefreshReference = targetPerms != null && targetPerms.allowedRefreshReferenceData;
+
+		boolean allowRefreshReference =
+				(!sourceRequired || sourceAllowRefreshReference)
+				&& (!targetRequired || targetAllowRefreshReference);
+
+		boolean sourceAllowVersioning = sourcePerms != null && sourcePerms.allowedEntityVersioning;
+		boolean targetAllowVersioning = targetPerms != null && targetPerms.allowedEntityVersioning;
+
+		boolean allowVersioning =
+				(!sourceRequired || sourceAllowVersioning)
+				&& (!targetRequired || targetAllowVersioning);
+
+
+		if (!allowFreshData && "FORCE".equalsIgnoreCase(syncMode)) {
+			return false;
+		}
+
+		if (!allowScheduling && scheduler != null && !"immediate".equalsIgnoreCase(scheduler)) {
+			return false;
+		}
+
+		if (!allowRandom && ("R".equalsIgnoreCase(selectionMethod) || "PR".equalsIgnoreCase(selectionMethod)) && enforceSelectionMethod) {
+			return false;
+		}
+
+		if (!allowRefreshReference && refreshReferenceData) {
+			return false;
+		}
+
+		if (!allowVersioning && versionInd) {
+			return false;
+		}
+
+		if (targetPerms != null && !targetPerms.allowedReplaceSequences && replaceSequences) {
+			return false;
+		}
+
+		if (targetPerms != null && !targetPerms.allowedCreationOfSyntheticData && cloneInd) {
+			return false;
+		}
+
+		if (targetPerms != null && !targetPerms.allowedDeleteBeforeLoad && deleteBeforeLoad) {
+			return false;
+		}
+
+		if (reserveInd && (targetPerms == null || targetPerms.allowedNumberOfReservedEntities == 0)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public static boolean isAllowedTestConnFailure(String envId) throws Exception {
+		String userName = sessionUser().name();
+		String permessionGroup = fnGetUserPermissionGroup(userName);
+		if ("tester".equalsIgnoreCase(permessionGroup)) {
+
+			List<Map<String, Object>> userEnvs = fnGetUserEnvs(userName);
+
+			for (Map<String, Object> envType : userEnvs) {
+				for (String key : Arrays.asList("source environments", "target environments")) {
+					List<Map<String, Object>> envs = (List<Map<String, Object>>) envType.get(key);
+					if (envs == null) {
+						continue;
+					}
+					for (Map<String, Object> envMap : envs) {
+						if (envId.equals(String.valueOf(envMap.get("environment_id")))) {
+							String roleId = String.valueOf(envMap.get("role_id"));
+
+							return getTesterPermissions(envId, roleId).allowedTestConnFailure;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 }

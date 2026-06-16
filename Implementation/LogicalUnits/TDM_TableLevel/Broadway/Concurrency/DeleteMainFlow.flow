@@ -116,90 +116,6 @@ stages:
             link: Aggregate IIDs/array
   Get details before batch:
     actors:
-      get task title:
-        parent: LuFunction
-        in:
-          functionName:
-            const: fnGetCachedTableInfoBySection
-          interfaceName:
-            link: List Of Tables Per Interface/value/interface_name
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          taskExecutionId:
-            external: taskExecutionId
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          section:
-            const: TaskInfo
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          attrName:
-            const: taskTitle
-            schema: string
-            mandatory: false
-            createdBy: functionName
-        out:
-          result:
-            schema: string
-      get envID:
-        parent: LuFunction
-        in:
-          functionName:
-            const: fnGetCachedTableInfoBySection
-          interfaceName:
-            link: List Of Tables Per Interface/value/interface_name
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          taskExecutionId:
-            external: taskExecutionId
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          section:
-            const: TaskInfo
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          attrName:
-            const: targetEnvId
-            schema: string
-            mandatory: false
-            createdBy: functionName
-        out:
-          result:
-            schema: integer
       get task affinity:
         parent: LuFunction
         in:
@@ -284,6 +200,90 @@ stages:
         out:
           result:
             schema: any
+      get envID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: List Of Tables Per Interface/value/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: targetEnvId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      get task title:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: List Of Tables Per Interface/value/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: taskTitle
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
   Get affinity and max workers:
     actors:
       GetAffinityAndMaxWorker1:
@@ -457,7 +457,6 @@ stages:
           value:
             schema: '#ref'
   Wait For Order's Batches to Finish:
-    last: 1
     actors:
       Wait For Each Bach to Finish:
         parent: BatchWait
@@ -466,6 +465,9 @@ stages:
             link:
               path: Batch IDs to Wait For/value
               iterate: Iterate
+  Update status:
+    last: 1
+    actors:
       UpdateTaskRefExe:
         parent: InnerFlow
         in:
@@ -473,28 +475,14 @@ stages:
             const: UpdateTaskRefExe
           taskExeID:
             external: taskExecutionId
-            schema: string
+            schema: any
             mandatory: false
             createdBy: flowName
-          interfaceName:
+          batchID:
             link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
+              path: Batch IDs to Wait For/value
               iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
+            schema: any
             mandatory: false
             createdBy: flowName
   Clear Order's Batch IDs:

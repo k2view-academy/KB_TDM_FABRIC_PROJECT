@@ -131,15 +131,15 @@ stages:
             const: {{{TARGET_TABLE}}}
           fields:
             const:
-            {{#each TARGET_TABLE_COLUMNS}}
-            - {{{this}}}
-            {{/each~}}
-          keys:
-            const:
-            {{#each TARGET_TABLE_PKS}}
+            {{#each TARGET_TABLE_COLUMNS~}}
             - {{{this}}}
             {{/each}}
-          {{#each TARGET_TABLE_COLUMNS}}
+          keys:
+            const:
+            {{#each TARGET_TABLE_PKS~}}
+            - {{{this}}}
+            {{/each}}
+          {{#each TARGET_TABLE_COLUMNS~}}
           {{{this}}}:
             {{#if (pkfieldWithQoutesInd this)}}link: Handle Mask And Sequential Fields/result/{{getPKFieldWithoutQoutes this}}{{/if}}
             schema: any

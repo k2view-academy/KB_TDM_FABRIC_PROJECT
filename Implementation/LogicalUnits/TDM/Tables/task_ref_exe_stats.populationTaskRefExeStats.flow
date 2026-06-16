@@ -37,8 +37,9 @@ stages:
             const: TDM
           sql:
             const: |-
-              select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status,
-              exe.number_of_records_to_process, exe.number_of_processed_records, exe.number_of_failed_records, exe.error_msg, ref.lu_name, exe.start_time , exe.end_time,
+              select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status, exe.execution_action,
+              exe.number_of_records_to_process, exe.number_of_processed_records, exe.number_of_failed_records, exe.error_msg, ref.lu_name,
+              exe.start_time , exe.end_time,
               ref.table_filter, ref.filter_type, ref.filter_parameters ,ref.version_task_execution_id, exe.batch_id as batch_id
               from ${@TDMDB_SCHEMA}.task_ref_exe_stats exe inner join ${@TDMDB_SCHEMA}.task_ref_tables ref on ref.task_id=exe.task_id
               and ref.task_ref_table_id = exe.task_ref_table_id
@@ -81,6 +82,7 @@ stages:
             - filter_parameters
             - version_task_execution_id
             - batch_id
+            - execution_action
           dialect:
             const: sqlite
           task_execution_id:
@@ -119,6 +121,10 @@ stages:
             mandatory: false
           batch_id:
             schema: any
+          execution_action:
+            schema: any
+            mandatory: false
+            createdBy: fields
           params:
             link:
               path: Query/result
@@ -144,9 +150,13 @@ schemas:
           type: string
         execution_status:
           type: string
+        execution_action:
+          type: string
         number_of_records_to_process:
           type: integer
         number_of_processed_records:
+          type: integer
+        number_of_failed_records:
           type: integer
         error_msg:
           type: string
@@ -159,6 +169,12 @@ schemas:
         table_filter:
           type: string
         filter_type:
+          type: string
+        filter_parameters:
+          type: string
+        version_task_execution_id:
+          type: integer
+        batch_id:
           type: string
   task_ref_exe_stats.in.task_execution_id:
     type: array

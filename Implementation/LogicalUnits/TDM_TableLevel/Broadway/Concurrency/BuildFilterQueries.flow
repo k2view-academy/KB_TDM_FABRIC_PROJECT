@@ -58,9 +58,9 @@ stages:
         in:
           script:
             const: |-
-              var selectStatement = "select " + selectFields + " from " + schemaName + "." + tableName + " t";
+              var selectStatement = "select " + selectFields + " from " + schemaName + "." + tableName;
               if (schemaName == null || schemaName == "") {
-                 selectStatement = "select " + selectFields + " from " + tableName + " t";
+                 selectStatement = "select " + selectFields + " from " + tableName;
               }
               selectStatement;
           schemaName:

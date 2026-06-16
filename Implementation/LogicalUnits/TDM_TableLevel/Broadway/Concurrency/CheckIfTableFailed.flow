@@ -97,7 +97,7 @@ stages:
             const: |-
               select execution_status from ${@TDMDB_SCHEMA}.task_ref_exe_stats
               where task_execution_id=${task_execution_id} and task_id=${task_id}
-              and task_ref_table_id=${task_ref_table_id}
+              and task_ref_table_id=${task_ref_table_id} and execution_action = 'Delete'
           TDMDB_SCHEMA:
             link: Get TDMDB Schema/schema
             schema: string
@@ -118,7 +118,61 @@ stages:
             schema: integer
             mandatory: false
             createdBy: sql
+        out:
+          result:
+            schema: string
   'Return Condition ':
+    dependsOn: Select Status
+    actors:
+      if Failed Update:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: failed
+            schema: string
+          a:
+            link: Get Status/result
+      Update:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              SET execution_status = 'failed', number_of_failed_records = number_of_records_to_process,
+              number_of_processed_records = 0,
+              start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+              error_msg = 'Table failed during delete stage'
+              where task_execution_id=${task_execution_id} and task_id=${task_id}
+              and task_ref_table_id=${task_ref_table_id} and execution_action <> 'Delete'
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_id:
+            link: Get Task ID/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            link: Get Ref Table ID/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+    split: '--------------------'
+  Continue:
+    else: true
+    dependsOn: Select Status
+  'Return Condition    ':
     actors:
       Not Failed ?:
         parent: NotEquals

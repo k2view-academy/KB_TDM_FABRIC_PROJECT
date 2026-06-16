@@ -273,14 +273,6 @@ stages:
           value:
             external: value
             schema: integer
-  Stage 1: {
-    }
-  Stage 2: {
-    }
-  Stage 3: {
-    }
-  Stage 4: {
-    }
 schemas:
   fnGetCachedTableInfoBySection.out.result:
     type: object

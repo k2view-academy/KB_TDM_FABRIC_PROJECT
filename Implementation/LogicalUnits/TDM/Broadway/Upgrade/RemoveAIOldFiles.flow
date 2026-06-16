@@ -1,0 +1,142 @@
+tags: Upgrade
+stages:
+  Get Path:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Check If Studio:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      ls:
+        parent: ls
+        in:
+          interface:
+            const: file:///
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/
+          directories:
+            const: true
+        out:
+          result:
+            schema: '#ref'
+  Get Files:
+    actors:
+      ${path}/${file}:
+        parent: StringFormat
+        in:
+          format:
+            const: ${path}${file}
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/
+            schema: string
+            mandatory: false
+            createdBy: format
+          file:
+            link:
+              path: ls/result/name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: format
+  Remove Files Infra:
+    dependsOn: Get Files
+    actors:
+      Equals AI:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: Infra
+            schema: string
+          a:
+            link:
+              path: ls/result/name
+              iterate: Iterate
+      Delete File or Folder:
+        parent: LuFunction
+        in:
+          functionName:
+            const: deleteFile
+          fileName:
+            link: ${path}%2F${file}/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Remove Files Generate:
+    else: true
+    dependsOn: Get Files
+    actors:
+      Equals:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: Generate
+            schema: string
+          a:
+            link:
+              path: ls/result/name
+              iterate: Iterate
+      'Delete File or Folder   ':
+        parent: LuFunction
+        in:
+          functionName:
+            const: deleteFile
+          fileName:
+            link: ${path}%2F${file}/string
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  Search for specific files:
+    else: true
+    dependsOn: Get Files
+    actors:
+      Delete File or Folder11:
+        parent: LuFunction
+        in:
+          functionName:
+            const: deleteFile
+          fileName:
+            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/Training/CreateMDBExportSchemaForAI.flow
+            schema: string
+            mandatory: false
+      Delete File or Folder12:
+        parent: LuFunction
+        in:
+          functionName:
+            const: deleteFile
+          fileName:
+            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/Training/MDBExportSchemaAI.flow
+            schema: string
+            mandatory: false
+schemas:
+  ls.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        createTime:
+          type: integer
+        lastModifiedTime:
+          type: integer
+        lastAccessTime:
+          type: integer
+        directory:
+          type: boolean
+        fullPath:
+          type: string

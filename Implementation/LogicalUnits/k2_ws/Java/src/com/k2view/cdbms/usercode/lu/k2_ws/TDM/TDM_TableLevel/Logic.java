@@ -236,7 +236,7 @@ public class Logic extends WebServiceUserCode {
         String lu = String.valueOf(map.get("lu_name"));
         String schema = String.valueOf(map.get("schema_name"));
         if (schema.startsWith("@"))
-            schema = getGlobal(schema.substring(1), lu);
+            schema = getGlobal(schema.substring(1, schema.length() -1), lu);
 
         norm.put("interface_name", String.valueOf(map.get("interface_name")));
         norm.put("schema_name", schema);

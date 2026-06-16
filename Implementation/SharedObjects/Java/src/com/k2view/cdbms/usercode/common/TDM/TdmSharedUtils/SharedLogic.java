@@ -54,6 +54,31 @@ public class SharedLogic {
         put("owner", 2);
         put("tester", 1);
     }};
+
+	private static final Set<String> SQLITE_KEYWORDS = Set.of(
+		"abort", "action", "add", "after", "all", "alter", "analyze", "and", "as",
+		"asc", "attach", "autoincrement", "avg", "before", "begin", "between", "by",
+		"cascade", "case", "cast", "check", "collate", "column", "commit", "conflict",
+		"constraint", "count", "create", "cross", "cume_dist", "current",
+		"current_date", "current_time", "current_timestamp", "database", "default",
+		"deferrable", "deferred", "delete", "dense_rank", "desc", "detach",
+		"distinct", "do", "drop", "each", "else", "end", "escape", "except",
+		"exclude", "exclusive", "exists", "explain", "fail", "filter", "first_value",
+		"following", "for", "foreign", "from", "full", "glob", "group", "groups",
+		"having", "if", "ignore", "immediate", "in", "index", "indexed", "initially",
+		"inner", "insert", "instead", "intersect", "into", "is", "isnull", "join",
+		"key", "lag", "last_value", "lead", "left", "like", "limit", "match",
+		"max", "min", "natural", "no", "not", "nothing", "notnull", "nth_value",
+		"ntile", "null", "of", "offset", "on", "or", "order", "others", "outer",
+		"over", "partition", "percent_rank", "plan", "pragma", "preceding",
+		"primary", "query", "raise", "range", "rank", "recursive", "references",
+		"regexp", "reindex", "release", "rename", "replace", "restrict", "right",
+		"rollback", "row", "row_number", "rows", "returning", "savepoint", "select",
+		"set", "sum", "table", "temp", "temporary", "then", "ties", "to",
+		"transaction", "trigger", "unbounded", "union", "unique", "update", "using",
+		"vacuum", "values", "view", "virtual", "when", "where", "window", "with",
+		"without");
+
     private static final String TDM = "TDM";
     private static final String TABLES = "TABLES";
     private static final String PRODUCT_LOGICAL_UNITS = TDMDB_SCHEMA + ".product_logical_units";
@@ -101,7 +126,11 @@ public class SharedLogic {
 		SELECTED_VERSION_TASK_EXE_ID,
 		DATAFLUX_RETENTION_PARAMS,
 		RESERVE_RETENTION_PARAMS,
-		EXECUTION_NOTE
+		EXECUTION_NOTE,
+		TABLE_FILTERS,
+		PRE_EXECUTION_PROCESSES_PARAMS,
+		POST_EXECUTION_PROCESSES_PARAMS,
+		IMPLICIT_OVERRIDE_LOGICAL_UNITS
 	}
 
     public static Object fnBatchStatistics(String i_batchId, String i_runMode) throws Exception {
@@ -1477,6 +1506,9 @@ public class SharedLogic {
 			columnType = toSqliteType(fieldDataType, sourceDataTypeStr);
 		} else {
 			columnType = getFieldTypeBydefinedBy(fieldRec);
+			if ("Complex field".equals(columnType)) {
+				addField = false;
+			}
 		}
 
 		if (addField) {
@@ -1494,9 +1526,22 @@ public class SharedLogic {
 	return result;
 }
 
+	public static boolean isSqliteKeyword(String name) {
+    	return name != null && SQLITE_KEYWORDS.contains(name.toLowerCase());
+	}
+	
 	public static boolean fnCheckSpecialChars(String input) {
 		if (input == null || input.isEmpty()) {
 			return false;
+		}
+
+		//Check if already quoted
+		String quoteChar = "\"";
+		if (input.startsWith(quoteChar) && input.endsWith(quoteChar)) return false;
+		
+		//Check if the field name is reserved word in Sqlite
+		if (isSqliteKeyword(input)) {
+			return true;
 		}
 
 		//Check if field name starts with a digit
@@ -1515,6 +1560,13 @@ public class SharedLogic {
 	}
 
 	private static String getFieldTypeBydefinedBy(Map<String, Object> fieldRec) throws Exception{
+		
+		String fieldClass = fieldRec.get("class").toString();
+		String dataset = fieldRec.get("dataset").toString();
+
+		if (!dataset.equals(fieldClass)) {
+			return "Complex field";
+		}
 		
 		String definedBy = fieldRec.get("definedBy").toString();
 		String fieldType = "";

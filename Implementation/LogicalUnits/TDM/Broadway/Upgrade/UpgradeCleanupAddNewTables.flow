@@ -1,0 +1,390 @@
+tags: Upgrade
+stages:
+  Get Mtable:
+    actors:
+      MTableLookup:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TDMCleanUp
+        out:
+          result:
+            schema: '#ref'
+      JavaScript:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                const cleanupStatements = [
+                  {
+                    TABLE_NAME: "TASKS_LOGICAL_UNITS",
+                    CLEANUP_ORDER: 3,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASKS_LOGICAL_UNITS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                    CLEANUP_LOGIC: "Records belong to tasks that need to be cleaned",
+                    SEQ: 39,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                  },
+                  {
+                    TABLE_NAME: "TASKS_EXE_PROCESS",
+                    CLEANUP_ORDER: 3,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASKS_EXE_PROCESS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                    CLEANUP_LOGIC: "Process records belong to tasks that need to be cleaned",
+                    SEQ: 40,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                  },
+                  {
+                    TABLE_NAME: "TASK_GROUP_MAPPING",
+                    CLEANUP_ORDER: 3,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_GROUP_MAPPING WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                    CLEANUP_LOGIC: "Task group mappings belong to tasks that need to be cleaned",
+                    SEQ: 41,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                  },
+                  {
+                    TABLE_NAME: "TASK_EXE_PERMISSIONS",
+                    CLEANUP_ORDER: 3,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXE_PERMISSIONS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                    CLEANUP_LOGIC: "Execution permissions belong to tasks that need to be cleaned",
+                    SEQ: 42,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                  },
+                  {
+                    TABLE_NAME: "TASK_NOTES",
+                    CLEANUP_ORDER: 3,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_NOTES WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                    CLEANUP_LOGIC: "Notes belong to tasks that need to be cleaned",
+                    SEQ: 43,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                  },
+                  {
+                    TABLE_NAME: "TASK_EXECUTION_OVERRIDE_ATTRS",
+                    CLEANUP_ORDER: 3,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_OVERRIDE_ATTRS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                    CLEANUP_LOGIC: "Override attributes belong to tasks that need to be cleaned",
+                    SEQ: 44,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: 6
+                  }
+                ];
+
+                cleanupStatements;
+              script: |-
+                var cleanupStatements = [{
+                  TABLE_NAME: "TASKS_LOGICAL_UNITS",
+                  CLEANUP_ORDER: 3,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASKS_LOGICAL_UNITS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                  CLEANUP_LOGIC: "Records belong to tasks that need to be cleaned",
+                  SEQ: 39,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                }, {
+                  TABLE_NAME: "TASKS_EXE_PROCESS",
+                  CLEANUP_ORDER: 3,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASKS_EXE_PROCESS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                  CLEANUP_LOGIC: "Process records belong to tasks that need to be cleaned",
+                  SEQ: 40,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                }, {
+                  TABLE_NAME: "TASK_GROUP_MAPPING",
+                  CLEANUP_ORDER: 3,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_GROUP_MAPPING WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                  CLEANUP_LOGIC: "Task group mappings belong to tasks that need to be cleaned",
+                  SEQ: 41,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                }, {
+                  TABLE_NAME: "TASK_EXE_PERMISSIONS",
+                  CLEANUP_ORDER: 3,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXE_PERMISSIONS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                  CLEANUP_LOGIC: "Execution permissions belong to tasks that need to be cleaned",
+                  SEQ: 42,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                }, {
+                  TABLE_NAME: "TASK_NOTES",
+                  CLEANUP_ORDER: 3,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_NOTES WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                  CLEANUP_LOGIC: "Notes belong to tasks that need to be cleaned",
+                  SEQ: 43,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: null
+                }, {
+                  TABLE_NAME: "TASK_EXECUTION_OVERRIDE_ATTRS",
+                  CLEANUP_ORDER: 3,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_OVERRIDE_ATTRS WHERE TASK_ID IN (SELECT TASK_ID FROM ${@TDMDB_SCHEMA}.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE < ${TRUNC_DATE} )",
+                  CLEANUP_LOGIC: "Override attributes belong to tasks that need to be cleaned",
+                  SEQ: 44,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: 6
+                }];
+                cleanupStatements;
+        out:
+          result:
+            schema: '#ref'
+  Convert to Array:
+    actors:
+      ArrayBuilder1:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: MTableLookup/result
+        out:
+          array:
+            schema: '#ref'
+      ArrayBuilder2:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: JavaScript/result
+        out:
+          array:
+            schema: '#ref'
+  Merge:
+    actors:
+      'JavaScript ':
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var existingCleanupStatements = [...oldArr];
+                var newCleanupStatements = [...newArr];
+
+                for (var i = 0; i < newCleanupStatements.length; i++) {
+                    existingCleanupStatements.push(newCleanupStatements[i]);
+                }
+
+                existingCleanupStatements;
+              script: |-
+                var existingCleanupStatements = [].concat(oldArr);
+                var newCleanupStatements = [].concat(newArr);
+
+                for (var i = 0; i < newCleanupStatements.length; i++) {
+                  existingCleanupStatements.push(newCleanupStatements[i]);
+                }
+
+                existingCleanupStatements;
+          oldArr:
+            link: ArrayBuilder1/array
+            schema: '#ref'
+            mandatory: false
+          newArr:
+            link: ArrayBuilder2/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  'Convert to CSV ':
+    actors:
+      CsvBuilder:
+        parent: CsvBuilder
+        in:
+          columns:
+            const:
+            - TABLE_NAME
+            - CLEANUP_ORDER
+            - CLEANUP_IND
+            - CLEANUP_STATEMENT
+            - CLEANUP_LOGIC
+            - SEQ
+            - OVERRIDE_CLEANUP_RETENTION_PERIOD
+          maps:
+            link: JavaScript /result
+      ArrayBuilder3:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: JavaScript /result
+        out:
+          array:
+            schema: '#ref'
+  Write To File:
+    actors:
+      FileWrite:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/TDMCleanUp.csv
+          stream:
+            link: CsvBuilder/csv
+      MTableLoad:
+        parent: MTableLoad
+        in:
+          mtable:
+            const: TDMCleanUp
+          data:
+            const: ''
+            link: ArrayBuilder3/array
+            default: true
+          columns:
+            const:
+            - TABLE_NAME
+            - CLEANUP_ORDER
+            - CLEANUP_IND
+            - CLEANUP_STATEMENT
+            - CLEANUP_LOGIC
+            - SEQ
+            - OVERRIDE_CLEANUP_RETENTION_PERIOD
+schemas:
+  MTableLookup.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  JavaScript.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: integer
+        CLEANUP_IND:
+          type: boolean
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: integer
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  ArrayBuilder1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  ArrayBuilder2.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: integer
+        CLEANUP_IND:
+          type: boolean
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: integer
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  JavaScript .in.oldArr:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  JavaScript .in.newArr:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: integer
+        CLEANUP_IND:
+          type: boolean
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: integer
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  JavaScript .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  ArrayBuilder3.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string

@@ -3,13 +3,14 @@ package com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_TasksManagment;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.existAnotherMapping;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.fnGetPermissionsForTask;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getAdminTasks;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getFavoriteThenByDateComparator;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getOwnerTasks;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getTesterTasks;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isAllowedToCreate;
-import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isTaskCreator;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.taskGroupExist;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserRoles;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
@@ -92,7 +93,12 @@ public class Logic extends WebServiceUserCode {
 				             ELSE UPPER(t.task_type)
 				         END AS task_type_filter,
 				         t.task_Type AS task_type_raw,
-				         t.task_last_updated_date
+				         t.task_last_updated_date,
+				         t.environment_id,
+				         t.source_environment_id,
+				         (t.task_override_fields -> 'source_environment' ->> 'is_editable')::boolean AS source_env_editable,
+				         (t.task_override_fields -> 'target_environment' ->> 'is_editable')::boolean AS target_env_editable,
+				         (t.task_override_fields -> 'selection_method' ->> 'is_editable')::boolean AS selection_method_editable
 				     FROM
 				         """
 				+ TDMDB_SCHEMA + """
@@ -139,7 +145,9 @@ public class Logic extends WebServiceUserCode {
 			  }
 				""")
 
-	public static Object wsGetTasksForAssign(long task_group_id) throws Exception {
+	public static Object wsGetTasksForAssign(
+			@param(description = "Task group ID to filter out already-assigned tasks", required = true) long task_group_id)
+			throws Exception {
 		Map<String, Object> response = new LinkedHashMap<>();
 		String errorCode = "";
 		String message = null;
@@ -312,79 +320,62 @@ public class Logic extends WebServiceUserCode {
 		return response;
 
 	}
-	/// TODO: remove after testing
+	@desc("Returns the list of task groups that the given task does NOT belong to.")
+	@webService(path = "taskAvailableGroups/{task_id}", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON })
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+			"result": [
+				{
+				"task_group_id": 3,
+				"task_group_name": "zivtest1"
+				},
+				{
+				"task_group_id": 4,
+				"task_group_name": "tali1"
+				}
+			],
+			"errorCode": "SUCCESS",
+			"message": null
+			}
+			""")
+	public static Object wsGetAvailableTaskGroups(@param(description = "Task ID", required = true) long task_id) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
 
-	// @desc("Gets ALL Tasks for the task group")
-	// @webService(path = "getTasksPerTaskGroup", verb = {
-	// MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false,
-	// produce = { Produce.XML,
-	// Produce.JSON })
-	// @resultMetaData(mediaType = Produce.JSON, example = """
-	// {
-	// "result": [
-	// {
-	// "task_id": 1,
-	// "task_title": "dsf",
-	// "isPermittedUser": true,
-	// "favorite": true
-	// }
-	// ],
-	// "errorCode": "SUCCESS",
-	// "message": null
-	// }
-	// """)
+		try {
+			String sql = "SELECT tg.task_group_id, tg.task_group_name " +
+					"FROM " + TDMDB_SCHEMA + ".task_groups tg " +
+					"WHERE NOT EXISTS (" +
+					"    SELECT 1 FROM " + TDMDB_SCHEMA + ".task_group_mapping tgm " +
+					"    WHERE tgm.task_group_id = tg.task_group_id AND tgm.task_id = ?" +
+					")";
 
-	// public static Object wsGetTasksPerTaskGroup(long task_group_id, boolean
-	// createdByUser) throws Exception {
-	// Map<String, Object> response = new LinkedHashMap<>();
-	// String errorCode = "";
-	// String message = null;
+			List<Map<String, Object>> result = new ArrayList<>();
+			try (Db.Rows rows = db(TDM).fetch(sql, task_id)) {
+				for (Db.Row row : rows) {
+					Map<String, Object> group = new LinkedHashMap<>();
+					group.put("task_group_id", Long.parseLong(row.get("task_group_id").toString()));
+					group.put("task_group_name", row.get("task_group_name"));
+					result.add(group);
+				}
+			}
 
-	// StringBuilder sql = new StringBuilder(
-	// baseQuery()
-	// + " AND tgm.task_id = t.task_id AND tgm.task_group_id = ?");
+			errorCode = "SUCCESS";
+			response.put("result", result);
 
-	// if (createdByUser) {
-	// sql.append(" AND split_part(t.task_created_by, '##', 1) = '" +
-	// sessionUser().name() + "'");
-	// }
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error(message);
+		}
 
-	// try {
-	// Db.Rows rows = db(TDM).fetch(sql.toString(), sessionUser().name(),
-	// task_group_id);
-
-	// List<Map<String, Object>> result = new ArrayList<>();
-	// for (Db.Row row : rows) {
-	// Map<String, Object> taskTemplate = new LinkedHashMap<>();
-	// long taskID = Long.parseLong(row.get("task_id").toString());
-	// taskTemplate.put("task_id", taskID);
-	// taskTemplate.put("task_title", row.get("task_title"));
-	// taskTemplate.put("isPermittedUser", isAllowedToCreate(sessionUser().name(),
-	// taskID));
-	// taskTemplate.put("isPermittedUserForTask",
-	// isTaskCreator(sessionUser().name(), taskID));
-	// taskTemplate.put("favorite", row.get("favorite"));
-	// taskTemplate.put("display_task_type", row.get("task_type_derived"));
-	// result.add(taskTemplate);
-	// }
-
-	// result.sort(getFavoriteThenByKeyComparator("task_title"));
-
-	// errorCode = "SUCCESS";
-	// response.put("result", result);
-	// if (rows != null) {
-	// rows.close();
-	// }
-	// } catch (Exception e) {
-	// errorCode = "FAILED";
-	// message = e.getMessage();
-	// log.error(message);
-	// }
-
-	// response.put("errorCode", errorCode);
-	// response.put("message", message);
-	// return response;
-	// }
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
 
 	@desc("""
 			Move tasks from task group A to task group B and C
@@ -449,6 +440,7 @@ public class Logic extends WebServiceUserCode {
 		return !row.isEmpty();
 	}
 
+	@desc("Marks a task as a favourite for the current user.")
 	@webService(path = "markTaskFavorite", verb = {
 			MethodType.POST }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
 					Produce.JSON })
@@ -684,6 +676,11 @@ public class Logic extends WebServiceUserCode {
 					taskInfo.put("favorite", row.get("favorite"));
 					taskInfo.put("task_last_updated_date", row.get("task_last_updated_date"));
 					taskInfo.put("display_task_type", row.get("task_type_derived"));
+					taskInfo.put("environment_id", row.get("environment_id"));
+					taskInfo.put("source_environment_id", row.get("source_environment_id"));
+					taskInfo.put("source_env_editable", row.get("source_env_editable"));
+					taskInfo.put("target_env_editable", row.get("target_env_editable"));
+					taskInfo.put("selection_method_editable", row.get("selection_method_editable"));
 					return taskInfo;
 				});
 			}
@@ -692,6 +689,31 @@ public class Logic extends WebServiceUserCode {
 			// once per unique group, and store the full task data per group so we can
 			// enrich search results with hold_task, can_edit_task, can_create_task.
 			String permissionGroup = fnGetUserPermissionGroup(userName);
+
+			// For testers, resolve which environments they have access to and whether
+			// they have random-selection permission — used in the override gates below.
+			Set<Long> userTargetEnvIds = null;
+			Set<Long> userSourceEnvIds = null;
+			boolean testerHasRandomPerm = true; // unrestricted for admin / owner
+			if ("tester".equalsIgnoreCase(permissionGroup)) {
+				List<Map<String, Object>> allUserEnvsTypes = fnGetUserEnvs(userName);
+				userTargetEnvIds = new HashSet<>();
+				userSourceEnvIds = new HashSet<>();
+				for (Map<String, Object> envType : allUserEnvsTypes) {
+					@SuppressWarnings("unchecked")
+					List<Map<String, Object>> srcEnvs = (List<Map<String, Object>>) envType.get("source environments");
+					@SuppressWarnings("unchecked")
+					List<Map<String, Object>> tgtEnvs = (List<Map<String, Object>>) envType.get("target environments");
+					if (srcEnvs != null)
+						for (Map<String, Object> e : srcEnvs)
+							userSourceEnvIds.add(Long.parseLong(String.valueOf(e.get("environment_id"))));
+					if (tgtEnvs != null)
+						for (Map<String, Object> e : tgtEnvs)
+							userTargetEnvIds.add(Long.parseLong(String.valueOf(e.get("environment_id"))));
+				}
+				testerHasRandomPerm = checkTesterHasRandomPerm(allUserEnvsTypes);
+			}
+
 			Map<Long, Map<Long, Map<String, Object>>> permittedByGroup = new HashMap<>();
 			for (Long groupId : uniqueGroupIds) {
 				Set<Map<String, Object>> groupTasks;
@@ -725,6 +747,45 @@ public class Logic extends WebServiceUserCode {
 				Map<Long, Map<String, Object>> taskMapForGroup = permittedByGroup.get(groupId);
 				if (taskMapForGroup != null && taskMapForGroup.containsKey(taskId)) {
 					Map<String, Object> taskInfo = taskIdToInfo.get(taskId);
+
+					// Override permission gates: tasks pulled in via is_editable=true need
+					// additional checks that the user can actually use the searched parameter.
+
+					// Target env gate: task is here due to override, not a direct env match →
+					// tester must have access to at least one of the searched target envs.
+					if (userTargetEnvIds != null && targetEnvironmentIds != null && targetEnvironmentIds.length > 0) {
+						if (Boolean.TRUE.equals(taskInfo.get("target_env_editable"))) {
+							Object actualId = taskInfo.get("environment_id");
+							Set<Long> searchedTargetSet = new HashSet<>(Arrays.asList(targetEnvironmentIds));
+							boolean directMatch = actualId != null
+									&& searchedTargetSet.contains(((Number) actualId).longValue());
+							if (!directMatch
+									&& Arrays.stream(targetEnvironmentIds).noneMatch(userTargetEnvIds::contains))
+								continue;
+						}
+					}
+
+					// Source env gate: same pattern for source environments.
+					if (userSourceEnvIds != null && sourceEnvironmentIds != null && sourceEnvironmentIds.length > 0) {
+						if (Boolean.TRUE.equals(taskInfo.get("source_env_editable"))) {
+							Object actualId = taskInfo.get("source_environment_id");
+							Set<Long> searchedSourceSet = new HashSet<>(Arrays.asList(sourceEnvironmentIds));
+							boolean directMatch = actualId != null
+									&& searchedSourceSet.contains(((Number) actualId).longValue());
+							if (!directMatch
+									&& Arrays.stream(sourceEnvironmentIds).noneMatch(userSourceEnvIds::contains))
+								continue;
+						}
+					}
+
+					// Random selection method gate: overridable tasks that appear in a
+					// RANDOM_LIST search require the tester to have random-selection permission.
+					if (!testerHasRandomPerm && selectionMethods != null) {
+						boolean searchedRandom = Arrays.stream(selectionMethods)
+								.anyMatch(m -> m == SelectionMethodFilter.RANDOM_LIST);
+						if (searchedRandom && Boolean.TRUE.equals(taskInfo.get("selection_method_editable")))
+							continue;
+					}
 					if (enriched.add(taskId)) {
 						Map<String, Object> groupTaskInfo = taskMapForGroup.get(taskId);
 						taskInfo.put("hold_task", groupTaskInfo.get("hold_task"));
@@ -781,7 +842,8 @@ public class Logic extends WebServiceUserCode {
 		if (creator != null && !creator.isEmpty()) {
 			params.add("%" + creator + "%");
 		}
-		// Task type params last: they bind to the outer subquery WHERE, after all inner query params
+		// Task type params last: they bind to the outer subquery WHERE, after all inner
+		// query params
 		if (taskTypes != null && taskTypes.length > 0) {
 			for (DisplayTaskType t : taskTypes)
 				params.add(t.getDisplayValue());
@@ -805,21 +867,31 @@ public class Logic extends WebServiceUserCode {
 		}
 		// task_type_filter applied via subquery wrapper below — not inlined here
 		if (sourceEnvironmentIds != null && sourceEnvironmentIds.length > 0) {
-			sqlBuilder.append(" AND t.source_environment_id IN (")
-					.append(generatePlaceholders(sourceEnvironmentIds.length)).append(")");
+			sqlBuilder.append(
+					" AND (t.source_environment_id IN (" + generatePlaceholders(sourceEnvironmentIds.length) + ")" +
+							" OR (t.task_override_fields -> 'source_environment' ->> 'is_editable')::boolean = true)");
 		}
-		if (targetEnvironmentIds != null &&
-				targetEnvironmentIds.length > 0) {
-			sqlBuilder.append(" AND t.environment_id IN (")
-					.append(generatePlaceholders(targetEnvironmentIds.length)).append(")");
+		if (targetEnvironmentIds != null && targetEnvironmentIds.length > 0) {
+			sqlBuilder.append(
+					" AND (t.environment_id IN (" + generatePlaceholders(targetEnvironmentIds.length) + ")" +
+							" OR (t.task_override_fields -> 'target_environment' ->> 'is_editable')::boolean = true)");
 		}
 		if (beIds != null && beIds.length > 0) {
-			sqlBuilder.append(" AND t.be_id IN (")
-					.append(generatePlaceholders(beIds.length)).append(")");
+			sqlBuilder.append(
+					" AND (t.be_id IN (" + generatePlaceholders(beIds.length) + ")" +
+							" OR (t.task_override_fields -> 'business_entity' ->> 'is_editable')::boolean = true)");
 		}
 		if (selectionMethods != null && selectionMethods.length > 0) {
+			// Editable tasks can only be changed to the 4 standard methods;
+			// LOAD_PRE_GENERATED_SUBSET,
+			// SYNTHETIC_GENERATION and BUSINESS_PARAMETERS require exact-match only.
+			boolean anyEditableTarget = Arrays.stream(selectionMethods)
+					.anyMatch(m -> m == SelectionMethodFilter.PREDEFINED_ENTITY_LIST
+							|| m == SelectionMethodFilter.CUSTOM_LOGIC
+							|| m == SelectionMethodFilter.ENTITY_LIST
+							|| m == SelectionMethodFilter.RANDOM_LIST);
 			sqlBuilder.append(
-					" AND (CASE" +
+					" AND ((CASE" +
 							" WHEN t.selection_method = 'ALL' THEN 'Predefined entity list'" +
 							" WHEN t.selection_method = 'C' THEN 'Custom logic'" +
 							" WHEN t.selection_method = 'L' THEN 'Entity list'" +
@@ -827,7 +899,12 @@ public class Logic extends WebServiceUserCode {
 							" WHEN t.selection_method = 'GENERATE_SUBSET' THEN 'Load pre-generated subset'" +
 							" WHEN t.selection_method = 'R' THEN 'Random list'" +
 							" WHEN t.selection_method = 'GENERATE' THEN 'Synthetic generation'" +
-							" ELSE t.selection_method END) IN (" + generatePlaceholders(selectionMethods.length) + ")");
+							" ELSE t.selection_method END) IN (" + generatePlaceholders(selectionMethods.length) + ")" +
+							(anyEditableTarget
+									? " OR (t.task_override_fields -> 'selection_method' ->> 'is_editable')::boolean = true"
+									: "")
+							+
+							")");
 		}
 
 		if (creator != null && !creator.isEmpty()) {
@@ -877,10 +954,56 @@ public class Logic extends WebServiceUserCode {
 		return String.join(",", Collections.nCopies(count, "?"));
 	}
 
+	private static boolean checkTesterHasRandomPerm(List<Map<String, Object>> allUserEnvsTypes) throws Exception {
+		String sql = "SELECT allowed_random_entity_selection FROM " + TDMDB_SCHEMA +
+				".environment_roles WHERE environment_id = ? AND role_id = ? AND role_status = 'Active' LIMIT 1";
+		Set<String> checkedPairs = new HashSet<>();
+		for (Map<String, Object> envType : allUserEnvsTypes) {
+			for (String key : new String[] { "source environments", "target environments" }) {
+				@SuppressWarnings("unchecked")
+				List<Map<String, Object>> envs = (List<Map<String, Object>>) envType.get(key);
+				if (envs == null)
+					continue;
+				for (Map<String, Object> env : envs) {
+					String envId = String.valueOf(env.get("environment_id"));
+					String roleId = String.valueOf(env.get("role_id"));
+					if (!checkedPairs.add(envId + ":" + roleId))
+						continue;
+					for (Db.Row row : db(TDM).fetch(sql, envId, roleId)) {
+						Object val = row.get("allowed_random_entity_selection");
+						if (val != null && Boolean.parseBoolean(val.toString()))
+							return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	@desc("Returns grouped tasks available for the user based on their permission group (admin, owner, tester).")
 	@webService(path = "getTasksPerTaskGroup", verb = { MethodType.GET }, version = "1", produce = {
 			Produce.JSON }, elevatedPermission = true)
-	@desc("Returns grouped tasks available for the user based on their permission group (admin, owner, tester).")
-	public static Object wsGetTasksPerTaskGroup(long task_group_id) throws Exception {
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+			  "result": [
+			    {
+			      "task_id": 1,
+			      "task_title": "Extract entities",
+			      "display_task_type": "Extract",
+			      "task_last_updated_date": "2026-04-21 07:08:17.780096",
+			      "can_edit_task": true,
+			      "can_create_task": true,
+			      "hold_task": false,
+			      "favorite": false
+			    }
+			  ],
+			  "errorCode": "SUCCESS",
+			  "message": null
+			}
+			""")
+	public static Object wsGetTasksPerTaskGroup(
+			@param(description = "Task group ID", required = true) long task_group_id)
+			throws Exception {
 		List<Map<String, Object>> result = new ArrayList<>();
 		String permissionGroup = fnGetUserPermissionGroup("");
 		try {
@@ -896,6 +1019,7 @@ public class Logic extends WebServiceUserCode {
 			result.sort(getFavoriteThenByDateComparator("task_last_updated_date"));
 			return wrapWebServiceResults("SUCCESS", null, result);
 		} catch (Exception e) {
+			log.error(e);
 			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
 	}
@@ -1054,7 +1178,9 @@ public class Logic extends WebServiceUserCode {
 				"status": "SUCCESS"
 			  }
 				""")
-	public static Map<String, Object> wsLoadTaskExecution(@param(required = true) long task_id) throws Exception {
+	public static Map<String, Object> wsLoadTaskExecution(
+			@param(description = "Task ID", required = true) long task_id)
+			throws Exception {
 		Map<String, Object> response = new HashMap<>();
 		String message = null;
 		String status = "SUCCESS";
@@ -1340,6 +1466,91 @@ public class Logic extends WebServiceUserCode {
 			response.put("message", e.getMessage());
 			log.error("Error fetching task type filter options: " + e.getMessage());
 		}
+		return response;
+	}
+
+	@desc("""
+			Returns what a tester can and cannot do for a specific task configuration.
+			The result is calculated based on source environment, target environment,
+			task type, sync mode, reserve indication, and requested number of entities.
+			""")
+	@webService(path = "task/fnGetPermissionsForTask", verb = {
+			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+			    "result": {
+			        "user_name": "tester1",
+			        "source_environment_id": "1",
+			        "target_environment_id": "2",
+			        "task_type": "LOAD",
+			        "sync_mode": "OFF",
+			        "reserve_ind": false,
+			        "task_permissions": {
+			            "can_read": false,
+			            "can_write": true,
+			            "can_reserve": true,
+			            "allowed_entities_to_read": 0,
+			            "allowed_entities_to_write": 500,
+			            "allowed_entities_to_reserve": 100,
+			            "max_entities_per_task": 500,
+			            "can_request_unlimited_entities": false,
+			            "can_run_reference_tasks": true,
+			            "can_use_random_selection": true,
+			            "can_request_fresh_data": true,
+			            "can_schedule_task": false,
+			            "can_use_clone": false,
+			            "can_use_entity_versioning": true,
+			            "can_delete_before_load": false,
+			            "can_replace_sequences": true
+			        }
+			    },
+			    "errorCode": "SUCCESS",
+			    "message": null
+			}
+			""")
+	public static Object wsGetPermissionsForTask(
+			@param(description = "Source environment ID. Required only when the task type and sync mode require a source environment.", required = false) String sourceEnvId,
+			@param(description = "Target environment ID. Required only when the task type requires a target environment.", required = false) String targetEnvId,
+			@param(description = "User name", required = false) String userName,
+			@param(description = "Task type, for example EXTRACT, LOAD, DELETE, RESERVE, TRAINING, GENERATE, AI_GENERATED.", required = false) String taskType,
+			@param(description = "Sync mode, for example OFF or FORCE.", required = false) String syncMode,
+			@param(description = "Reserve indication", required = false) Boolean reserveInd)
+			throws Exception {
+
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
+
+		try {
+			if (userName == null || userName.trim().isEmpty()) {
+				userName = sessionUser().name();
+			}
+
+			if (taskType == null || taskType.trim().isEmpty()) {
+				taskType = "Extract";
+			}
+
+			if (syncMode == null || syncMode.trim().isEmpty()) {
+				syncMode = "OFF";
+			}
+
+			boolean reserveIndValue = reserveInd != null && reserveInd;
+
+			Object result = fnGetPermissionsForTask(sourceEnvId,
+					targetEnvId, userName, taskType, syncMode, reserveIndValue);
+
+			return result;
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error(message);
+		}
+
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		response.put("result", null);
 		return response;
 	}
 
