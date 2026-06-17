@@ -2,11 +2,11 @@ tags: Deploy,TDM
 stages:
   Start Deploying:
     actors:
-      Finished Deploy Activities1:
+      Started Deploy Activities:
         parent: Logger
         in:
           message:
-            const: Finished Deploy Activities
+            const: Started Deploy Activities
           level:
             const: info
   Create PGDB Tables:
@@ -44,10 +44,10 @@ stages:
             mandatory: false
   End:
     actors:
-      Started Deploy Activities:
+      Finished Deploy Activities1:
         parent: Logger
         in:
           message:
-            const: Started Deploy Activities
+            const: Finished Deploy Activities
           level:
             const: info
