@@ -43,8 +43,11 @@ stages:
               addEmptyEntry: true
           FOLDER_NAME:
             const: DeleteFlows
-          FLOW_FILE_NAME:
+          TABLE_NAME:
             link: Build Delete Table Name/string
+            schema: string
+            mandatory: false
+            createdBy: flowName
         out:
           SKIP_TABLE:
             schema: boolean

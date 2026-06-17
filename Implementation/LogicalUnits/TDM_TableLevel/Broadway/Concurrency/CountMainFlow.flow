@@ -1,115 +1,146 @@
 tags: Concurrency
 stages:
-  Get Tables With Count Enabled:
+  Get Input:
     actors:
-      Get Tables for Count:
+      Loop On Tables:
+        parent: ForLoop
+        in:
+          from:
+            const: 0
+          to:
+            external: maxOrder
+      Broadway Command:
+        parent: StringFormat
+        in:
+          format:
+            const: broadway TDM_TableLevel.CountTable iid=?
+  Get Tables of Current Order:
+    actors:
+      Get Tables Of Order:
         parent: LuFunction
         in:
           functionName:
-            const: fnGetTablesByAttributeValue
-          section:
-            const: TaskRefTables
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          attrName:
-            const: count_ind
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          attrVal:
-            const: 'true'
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          taskExecutionId:
-            external: taskExecutionId
-            schema: any
+            const: getTablesByOrder
+          order:
+            link:
+              path: Loop On Tables/i
+              iterate: Iterate
+            schema: integer
             mandatory: false
             createdBy: functionName
         out:
           result:
             schema: '#ref'
-  To Json String:
+  Interface's Tables Per Order:
     actors:
-      Json Stringify:
-        parent: JsonStringify
+      List Of Tables Per Interface:
+        parent: Const
         in:
-          object:
-            link: Get Tables for Count/result
-  Parse:
-    actors:
-      Json Parser:
-        parent: JsonParser
-        in:
-          stream:
-            link: Json Stringify/string
-        out:
-          object:
-            schema: '#ref'
-      Get TDMDB Schema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: getTDMDBSchema
-        out:
-          schema:
-            schema: string
-  Get Count:
-    actors:
-      Get Table Count:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: GetTableCount
-          sourceSchema:
+          value:
+            const: null
             link:
-              path: Json Parser/object/schemaName
+              path: Get Tables Of Order/result
+              iterate: Iterate
+        out:
+          value:
+            schema: '#ref'
+  Build IIDs:
+    actors:
+      Build IID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: BuildIID
+          sourceEnv:
+            external: sourceEnv
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            link: List Of Tables Per Interface/value/interface_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
               iterate: Iterate
             schema: string
             mandatory: false
             createdBy: flowName
           tableName:
             link:
-              path: Json Parser/object/tableName
+              path: List Of Tables Per Interface/value/tables_list/table_name
               iterate: Iterate
             schema: string
             mandatory: false
             createdBy: flowName
           taskExecutionId:
-            link:
-              path: Json Parser/object/taskExecutionId
-              iterate: Iterate
+            external: taskExecutionId
             schema: string
             mandatory: false
             createdBy: flowName
-          sourceInterface:
-            link:
-              path: Json Parser/object/interfaceName
-              iterate: Iterate
-            schema: string
+          partitionNum:
+            schema: any
             mandatory: false
             createdBy: flowName
         out:
-          tableCount:
-            schema: integer
-      Get Ref Table ID:
+          iid:
+            schema: string
+  IIDs List:
+    last: 1
+    actors:
+      Aggregate IIDs:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Build IID/iid
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Create List of IIDs:
+    actors:
+      Concat IIDs to Instance Group:
+        parent: Concat
+        in:
+          elements:
+            link: Aggregate IIDs/array
+      Reset List Of IIDs:
+        parent: ResetActors
+        in:
+          actorId:
+            const:
+            - Aggregate IIDs
+  Get details before batch:
+    actors:
+      get task affinity:
         parent: LuFunction
         in:
           functionName:
             const: fnGetCachedTableInfoBySection
           interfaceName:
-            link: Json Parser/object/interfaceName
+            link: List Of Tables Per Interface/value/interface_name
             schema: string
             mandatory: false
             createdBy: functionName
           schemaName:
-            link: Json Parser/object/schemaName
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
+              iterate: Iterate
             schema: string
             mandatory: false
             createdBy: functionName
           tableName:
-            link: Json Parser/object/tableName
+            link:
+              path: List Of Tables Per Interface/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
             schema: string
             mandatory: false
             createdBy: functionName
@@ -119,105 +150,309 @@ stages:
             mandatory: false
             createdBy: functionName
           attrName:
-            const: task_ref_table_id
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          taskExecutionId:
-            link: Json Parser/object/taskExecutionId
+            const: source_affinity
             schema: string
             mandatory: false
             createdBy: functionName
         out:
           result:
-            schema: integer
-  Store Table Count:
-    actors:
-      Set Table Count:
+            schema: string
+      get task maxWorkers:
         parent: LuFunction
         in:
           functionName:
-            const: fnSetTableCount
+            const: fnGetCachedTableInfoBySection
           interfaceName:
-            link:
-              path: Json Parser/object/interfaceName
-              iterate: Iterate
+            link: List Of Tables Per Interface/value/interface_name
             schema: string
             mandatory: false
             createdBy: functionName
           schemaName:
             link:
-              path: Json Parser/object/schemaName
+              path: List Of Tables Per Interface/value/tables_list/schema_name
               iterate: Iterate
             schema: string
             mandatory: false
             createdBy: functionName
           tableName:
             link:
-              path: Json Parser/object/tableName
+              path: List Of Tables Per Interface/value/tables_list/table_name
               iterate: Iterate
             schema: string
             mandatory: false
             createdBy: functionName
           taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: source_max_no_of_workers
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: any
+      get envID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: List Of Tables Per Interface/value/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
             link:
-              path: Json Parser/object/taskExecutionId
+              path: List Of Tables Per Interface/value/tables_list/schema_name
               iterate: Iterate
-            schema: integer
+            schema: string
             mandatory: false
             createdBy: functionName
-          tableCount:
-            link: Get Table Count/tableCount
-            schema: integer
+          tableName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
             mandatory: false
             createdBy: functionName
-      Update Count in TASK_REF_EXE_STATS:
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: targetEnvId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      get task title:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: List Of Tables Per Interface/value/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: taskTitle
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+  Get affinity and max workers:
+    actors:
+      GetAffinityAndMaxWorker1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetAffinityAndMaxWorker
+          taskAffinity:
+            link: get task affinity/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskMaxWorkers:
+            link: get task maxWorkers/result
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            link: List Of Tables Per Interface/value/interface_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          envId:
+            link: get envID/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+        out:
+          affinity:
+            schema: string
+          maxWorkers:
+            schema: string
+  Run Batch Per Interface Per Order:
+    actors:
+      'Batch ':
         parent: DbCommand
         in:
           interface:
-            const: TDM
+            const: fabric
           sql:
-            const: |-
-              UPDATE ${@TDMDB_SCHEMA}.task_ref_exe_stats s
-              SET
-                number_of_records_to_process = ${tableCount}
-              WHERE s.task_execution_id = ${taskExecId}
-                AND s.task_ref_table_id = ${taskRefTableId}
-          TDMDB_SCHEMA:
-            link: Get TDMDB Schema/schema
+            const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
+              WITH ASYNC='true' ${@affinityStr} ${@maxWorkersStr} BATCH_ID_PREFIX='${@taskTitle}';
+          command:
+            link: Broadway Command/string
             schema: string
             mandatory: false
-            createdBy: sql
-          tableCount:
-            link: Get Table Count/tableCount
-            schema: integer
+          instanceList:
+            link: Concat IIDs to Instance Group/string
+            schema: string
             mandatory: false
-            createdBy: sql
-          taskExecId:
-            link: Json Parser/object/taskExecutionId
-            schema: integer
+          taskTitle:
+            link: get task title/result
+            schema: string
             mandatory: false
-            createdBy: sql
-          taskRefTableId:
-            link: Get Ref Table ID/result
-            schema: integer
+          maxWorkersStr:
+            link: GetAffinityAndMaxWorker1/maxWorkers
+            schema: string
             mandatory: false
-            createdBy: sql
+          affinityStr:
+            link: GetAffinityAndMaxWorker1/affinity
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Aggregate Batch IDs:
+    last: 1
+    actors:
+      List Of Batch IIDs:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+  Batch IIDs of Current Order:
+    actors:
+      Batch IDs to Wait For:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: List Of Batch IIDs/array
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+  Wait For Order's Batches to Finish:
+    last: 1
+    actors:
+      Wait For Each Bach to Finish:
+        parent: BatchWait
+        in:
+          batchId:
+            link:
+              path: Batch IDs to Wait For/value
+              iterate: Iterate
+  Clear Order's Batch IDs:
+    actors:
+      Reset List Of Batch IDs:
+        parent: ResetActors
+        in:
+          actorId:
+            const:
+            - List Of Batch IIDs
 schemas:
-  Get Tables for Count.out.result:
-    type: array
-    items: {
-      }
-  Json Parser.out.object:
+  Get Tables Of Order.out.result:
     type: array
     items:
       type: object
       properties:
-        taskExecutionId:
-          type: integer
-        interfaceName:
+        interface_name:
           type: string
-        schemaName:
+        tables_list:
+          type: array
+          items:
+            type: object
+            properties:
+              interface_name:
+                type: string
+              schema_name:
+                type: string
+              table_name:
+                type: string
+  List Of Tables Per Interface.out.value:
+    type: object
+    properties:
+      interface_name:
+        type: string
+      tables_list:
+        type: array
+        items:
+          type: object
+          properties:
+            interface_name:
+              type: string
+            schema_name:
+              type: string
+            table_name:
+              type: string
+  Aggregate IIDs.out.array:
+    type: array
+    items:
+      type: string
+  Batch .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
           type: string
-        tableName:
+        Execution id:
           type: string
+        Notes:
+          type: string
+  List Of Batch IIDs.out.array:
+    type: array
+    items:
+      type: string
+  Batch IDs to Wait For.in.value:
+    type: array
+    items: {
+      }
+  Batch IDs to Wait For.out.value:
+    type: array
+    items:
+      type: array
+      items:
+        type: string

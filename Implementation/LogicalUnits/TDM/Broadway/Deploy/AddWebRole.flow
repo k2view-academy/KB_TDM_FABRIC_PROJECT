@@ -50,11 +50,11 @@ stages:
           interface:
             const: TDM
           sql:
-            const: "INSERT INTO ${@schema}.permission_groups_mapping(\r\n\tdescription,\
+            const: "INSERT INTO ${@schema}.permission_groups_mapping(\n\tdescription,\
               \ fabric_role, permission_group, created_by, updated_by, creation_date,\
-              \ update_date)\r\n\tVALUES ('Initial mapping for admin user',${k2v_user}\
-              \ ,'admin', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\r\
-              \n\t"
+              \ update_date, can_create_tasks)\n\tVALUES ('Initial mapping for admin\
+              \ user',${k2v_user} ,'admin', 'admin', 'admin', NOW(), NOW(),true) ON\
+              \ CONFLICT DO NOTHING;\n"
           k2v_user:
             link:
               path: Get List of Roles/result/name

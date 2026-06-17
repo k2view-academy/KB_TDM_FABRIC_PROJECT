@@ -391,8 +391,6 @@ stages:
           value:
             external: result
             schema: string
-  Stage 1: {
-    }
 schemas:
   Get LU's Main Table and Column1.out.result:
     type: object

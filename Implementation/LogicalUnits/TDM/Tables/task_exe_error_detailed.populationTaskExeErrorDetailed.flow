@@ -38,7 +38,7 @@ stages:
         out:
           result:
             schema: '#ref'
-      TDM_TableLeve:
+      TDM_TableLevel:
         parent: Const
         in:
           value:
@@ -49,14 +49,14 @@ stages:
             schema: string
   Add TDM_TableLevel LU:
     actors:
-      Concat1:
+      Adding TDM_TableLevel:
         parent: Concat
         in:
           elements:
             link:
             - path: Fetch Task Type/result/lu_list
               pos: 0
-            - path: TDM_TableLeve/value
+            - path: TDM_TableLevel/value
               pos: 1
   Add quote:
     actors:
@@ -68,7 +68,7 @@ stages:
           replace:
             const: ''','''
           string:
-            link: Concat1/string
+            link: Adding TDM_TableLevel/string
       Get TDMDB Schema:
         parent: InnerFlow
         in:
@@ -101,7 +101,7 @@ stages:
             mandatory: false
   Fetch errTableData:
     actors:
-      errTableData:
+      Get Error Table Data:
         parent: DbCommand
         in:
           interface:
@@ -112,18 +112,8 @@ stages:
         out:
           result:
             schema: '#ref'
-  Extract Task:
-    dependsOn: Fetch errTableData
+  Load Into Error Table:
     actors:
-      extract:
-        parent: EqualsIgnoreCase
-        condition: result
-        in:
-          b:
-            const: extract
-            schema: string
-          a:
-            link: Fetch Task Type/result/TASK_TYPE
       TASK_EXE_ERROR_DETAILED extract:
         parent: DbLoad
         in:
@@ -191,227 +181,7 @@ stages:
             mandatory: false
           params:
             link:
-              path: errTableData/result
-              iterate: Iterate
-    split: '--------------------'
-  Load Task:
-    else: true
-    transactional: false
-    dependsOn: Fetch errTableData
-    actors:
-      task_execution_entities:
-        parent: DbFetchFirstRow
-        in:
-          interface:
-            const: fabric
-          sql:
-            const: |-
-              select id_type, target_entity_id, iid from task_execution_link_entities
-              where TASK_EXECUTION_ID = ${TASK_EXECUTION_ID} AND LU_NAME = ${LU_NAME} AND ENTITY_ID = ${ENTITY_ID}
-          TASK_EXECUTION_ID:
-            link: errTableData/result/task_execution_id
-            schema: integer
-            mandatory: false
-          LU_NAME:
-            link: errTableData/result/lu_name
-            schema: string
-            mandatory: false
-          ENTITY_ID:
-            link:
-              path: errTableData/result/entity_id
-              iterate: Iterate
-            schema: string
-            mandatory: false
-        out:
-          result:
-            schema: '#ref'
-  Do Nothing:
-    transactional: false
-    dependsOn: Extract Task
-    split: '--------------------'
-  idType=entity:
-    transactional: false
-    dependsOn: Load Task
-    actors:
-      entity:
-        parent: EqualsIgnoreCase
-        condition: result
-        in:
-          b:
-            const: entity
-            schema: string
-          a:
-            link: task_execution_entities/result/ID_TYPE
-      TASK_EXE_ERROR_DETAILED load1:
-        parent: DbLoad
-        in:
-          interface:
-            const: fabric
-          schema:
-            const: TDM
-          table:
-            const: TASK_EXE_ERROR_DETAILED
-          fields:
-            const:
-            - TASK_EXECUTION_ID
-            - LU_NAME
-            - ENTITY_ID
-            - IID
-            - TARGET_ENTITY_ID
-            - ERROR_CATEGORY
-            - ERROR_CODE
-            - ERROR_MESSAGE
-            - CREATION_DATE
-            - FLOW_NAME
-            - STAGE_NAME
-            - ACTOR_NAME
-            - ACTOR_PARAMETERS
-          TASK_EXECUTION_ID:
-            link:
-              path: errTableData/result/task_execution_id
-              iterate: Iterate
-            schema: integer
-            mandatory: false
-          LU_NAME:
-            link:
-              path: errTableData/result/lu_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          ENTITY_ID:
-            link:
-              path: errTableData/result/entity_id
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          IID:
-            link: task_execution_entities/result/IID
-            schema: string
-            mandatory: false
-          TARGET_ENTITY_ID:
-            link: task_execution_entities/result/TARGET_ENTITY_ID
-            schema: string
-            mandatory: false
-          ERROR_CATEGORY:
-            link:
-              path: errTableData/result/error_category
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          ERROR_CODE:
-            link:
-              path: errTableData/result/error_code
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          ERROR_MESSAGE:
-            link:
-              path: errTableData/result/error_message
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          CREATION_DATE:
-            link:
-              path: errTableData/result/creation_date
-              iterate: Iterate
-            schema: date
-            mandatory: false
-          FLOW_NAME:
-            link:
-              path: errTableData/result/flow_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          STAGE_NAME:
-            link:
-              path: errTableData/result/stage_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          ACTOR_NAME:
-            link:
-              path: errTableData/result/actor_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          ACTOR_PARAMETERS:
-            link:
-              path: errTableData/result/actor_parameters
-              iterate: Iterate
-            schema: string
-            mandatory: false
-    split: '--------------------'
-  else:
-    else: true
-    transactional: false
-    dependsOn: Load Task
-    actors:
-      TASK_EXE_ERROR_DETAILED load2:
-        parent: DbLoad
-        in:
-          interface:
-            const: fabric
-          schema:
-            const: TDM
-          table:
-            const: TASK_EXE_ERROR_DETAILED
-          fields:
-            const:
-            - TASK_EXECUTION_ID
-            - LU_NAME
-            - ENTITY_ID
-            - IID
-            - TARGET_ENTITY_ID
-            - ERROR_CATEGORY
-            - ERROR_CODE
-            - ERROR_MESSAGE
-            - CREATION_DATE
-            - FLOW_NAME
-            - STAGE_NAME
-            - ACTOR_NAME
-            - ACTOR_PARAMETERS
-          TASK_EXECUTION_ID:
-            schema: any
-            mandatory: false
-          LU_NAME:
-            schema: any
-            mandatory: false
-          ENTITY_ID:
-            schema: any
-            mandatory: false
-          IID:
-            schema: any
-            mandatory: false
-          TARGET_ENTITY_ID:
-            schema: any
-            mandatory: false
-          ERROR_CATEGORY:
-            schema: any
-            mandatory: false
-          ERROR_CODE:
-            schema: any
-            mandatory: false
-          ERROR_MESSAGE:
-            schema: any
-            mandatory: false
-          CREATION_DATE:
-            schema: any
-            mandatory: false
-          FLOW_NAME:
-            schema: any
-            mandatory: false
-          STAGE_NAME:
-            schema: any
-            mandatory: false
-          ACTOR_NAME:
-            schema: any
-            mandatory: false
-          ACTOR_PARAMETERS:
-            schema: any
-            mandatory: false
-          params:
-            link:
-              path: errTableData/result
+              path: Get Error Table Data/result
               iterate: Iterate
 schemas:
   PopulationArgs.out.parent_rows:
@@ -428,7 +198,7 @@ schemas:
         type: string
       lu_list:
         type: string
-  errTableData.out.result:
+  Get Error Table Data.out.result:
     type: array
     items:
       type: object
@@ -459,12 +229,3 @@ schemas:
           type: string
         actor_parameters:
           type: string
-  task_execution_entities.out.result:
-    type: object
-    properties:
-      ID_TYPE: {
-        }
-      TARGET_ENTITY_ID:
-        type: string
-      IID: {
-        }

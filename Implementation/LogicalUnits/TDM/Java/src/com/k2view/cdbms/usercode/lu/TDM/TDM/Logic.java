@@ -183,7 +183,7 @@ public class Logic extends UserCode {
 					Integer totNoOfRefTables = 0;
 					// TDM 5.1- add the update of the reference tables fields
 					//log.info("selectionMethod: " + selectionMethod);
-					if (selectionMethod != null && selectionMethod.equals(TABLES) && (processID == 0 || processID==null)) {
+					if (selectionMethod != null && selectionMethod.equals(TABLES) && (processID == null || processID == 0)) {
 						//log.info("fnCheckMigrateAndUpdateTDMDB- handle reference only task");
 						Map<String, Object> refSummaryStatsBuf = fnGetReferenceSummaryData(taskExecutionID);
 						//log.info("Getting refSummaryStats for luName: " + luName);
@@ -325,6 +325,11 @@ public class Logic extends UserCode {
 								
 								//log.info("Getting refSummaryStats for luName: " + luName);
 								HashMap <String, Object> refSummaryStats = (HashMap <String, Object>)refSummaryStatsBuf.get(luName);
+								if (refSummaryStats == null && parentLuID == 0 && (processID == null || processID == 0)) {
+									// For override tasks (tasks.be_id=null), task_ref_tables.lu_name defaults to
+									// TDM_TableLevel because no LU is known at task-creation time.
+									refSummaryStats = (HashMap <String, Object>)refSummaryStatsBuf.get(TABLE_LEVEL_LU);
+								}
 								if (refSummaryStats != null) {
 		
 									totNoOfRefTables = (Integer) refSummaryStats.get("totNumOfTablesToProcess");

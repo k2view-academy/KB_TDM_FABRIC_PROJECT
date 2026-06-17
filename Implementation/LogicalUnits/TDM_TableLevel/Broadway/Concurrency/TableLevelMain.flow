@@ -82,11 +82,9 @@ stages:
           value:
             const: ALL_TABLES
             default: false
-      Get Start Time:
-        parent: Now
   Prepare Order of Tables:
     actors:
-      'Delete Error Handler  ':
+      Get Tables Order Error Handler:
         parent: ErrorHandler
         error: result
         in:
@@ -98,9 +96,29 @@ stages:
               actions:
                 suppress: false
                 log: false
-                flowName: ''
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
+          refTableID:
+            const: 0
+            schema: integer
+            mandatory: false
+          interfaceName:
+            const: ALL_INTERFACES
+            schema: string
+            mandatory: false
+          schemaName:
+            const: ALL_SCHEMAS
+            schema: string
+            mandatory: false
+          executionAction:
+            const: tableOrder
+            schema: string
+            mandatory: false
       Clear Tables' Orders Cache:
         parent: LuFunction
         height: 130
@@ -140,11 +158,6 @@ stages:
           value:
             const: 'false'
             link: inPlaceMasking/value
-      Format Start Time:
-        parent: DateFormat
-        in:
-          date:
-            link: Get Start Time/date
   In Case of InPlace Masking Set to the masking flag:
     dependsOn: Prepare Order of Tables
     actors:
@@ -180,19 +193,9 @@ stages:
             const: 1
           a:
             link: Prepare Tables' Order/result
-      Set Start Processing Time:
-        parent: FabricSet
-        in:
-          key:
-            const: IID_START_DATETIME
-            default: false
-          value:
-            const: null
-            link: Format Start Time/string
-            default: false
   Load Tables Data To Cache:
     actors:
-      Table Error Handler No Fields Or No Key Fields:
+      Load Tables Data Error Handler:
         parent: ErrorHandler
         error: result
         in:
@@ -204,9 +207,29 @@ stages:
               actions:
                 suppress: false
                 log: false
-                flowName: ''
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
+          tableName:
+            const: ALL_TABLES
+            schema: string
+            mandatory: false
+          refTableID:
+            const: 0
+            schema: integer
+            mandatory: false
+          interfaceName:
+            const: ALL_INTERFACES
+            schema: string
+            mandatory: false
+          schemaName:
+            const: ALL_SCHEMAS
+            schema: string
+            mandatory: false
+          executionAction:
+            const: loadInfo
+            schema: string
+            mandatory: false
       LoadTables Data To Cache:
         parent: InnerFlow
         in:
@@ -228,17 +251,22 @@ stages:
             mandatory: false
             createdBy: flowName
   Run Count For Supporting Tables:
-    dependsOn: Load Tables Data To Cache
     actors:
-      Not Loading From Snapshot?:
-        parent: NotEquals
-        condition: result
+      Count Error Handler:
+        parent: ErrorHandler
+        error: result
         in:
-          b:
-            const: 'OFF'
-            schema: string
-          a:
-            link: syncMode/value
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
       Count Main Flow:
         parent: InnerFlow
         in:
@@ -249,10 +277,16 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
-    split: '--------------------'
-  Load From Snapshot:
-    else: true
-    dependsOn: Load Tables Data To Cache
+          maxOrder:
+            link: +1/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          sourceEnv:
+            link: Get Source Environment/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
   Merge: {
     }
   If Delete is Requested:
@@ -283,10 +317,6 @@ stages:
                 flowName: ''
                 number_of_retries: ''
                 retry_interval: ''
-          tableName:
-            const: ''
-            schema: string
-            mandatory: false
       Delete Main Flow:
         parent: InnerFlow
         in:

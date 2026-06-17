@@ -4,6 +4,27 @@
 
 package com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils;
 
+import static com.k2view.cdbms.shared.user.UserCode.db;
+import static com.k2view.cdbms.shared.user.UserCode.fabric;
+import static com.k2view.cdbms.shared.user.UserCode.getActiveEnvironmentName;
+import static com.k2view.cdbms.shared.user.UserCode.getCustomProperties;
+import static com.k2view.cdbms.shared.user.UserCode.getLuType;
+import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONObject;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.k2view.cdbms.lut.DbInterface;
@@ -14,35 +35,11 @@ import com.k2view.cdbms.lut.LudbObject;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
-import com.k2view.fabric.common.Log;
-import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.Json;
-import org.json.JSONObject;
-
-import java.lang.reflect.Executable;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.management.RuntimeErrorException;
-
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
-import static com.k2view.cdbms.shared.user.UserCode.db;
-import static com.k2view.cdbms.shared.user.UserCode.getActiveEnvironmentName;
-import static com.k2view.cdbms.shared.user.UserCode.getConnection;
-import static com.k2view.cdbms.shared.user.UserCode.getCustomProperties;
-import static com.k2view.cdbms.shared.user.UserCode.getLuType;
-import static com.k2view.cdbms.shared.user.UserCode.isFirstSync;
-import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
-import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Tasks.Logic.wsGetCustomLogicParam;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
+import com.k2view.fabric.common.Log;
+import com.k2view.fabric.common.ParamConvertor;
+import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.mtable.MTable;
 
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
@@ -548,6 +545,54 @@ public class SharedLogic {
         return result;
     }
 
+    public static String fnValidateVersionExecIdNotExpired(Long dataVersionExecId) throws Exception {
+        if (dataVersionExecId == null) return "";
+
+        Object expDate = db(TDM)
+                .fetch("SELECT expiration_date FROM " + TDMDB_SCHEMA + ".task_execution_list " +
+                       "WHERE task_execution_id = ? AND expiration_date IS NOT NULL " +
+                       "AND expiration_date <= CURRENT_TIMESTAMP AT TIME ZONE 'UTC' LIMIT 1",
+                       dataVersionExecId)
+                .firstValue();
+
+        if (expDate != null)
+            return "The selected data version (execution ID " + dataVersionExecId + ") has expired.";
+
+        return "";
+    }
+
+    public static String validateEnvTypeForUser(Long envId, String envName, String expectedType, String userName) throws Exception {
+        if (envId == null || envId < 0) return "";
+
+        List<Map<String, Object>> userEnvs = fnGetUserEnvs(userName);
+        List<Map<String, Object>> sourceEnvs = new ArrayList<>();
+        List<Map<String, Object>> targetEnvs = new ArrayList<>();
+
+        for (Map<String, Object> envType : userEnvs) {
+            if (envType.get("source environments") != null)
+                sourceEnvs = (List<Map<String, Object>>) envType.get("source environments");
+            if (envType.get("target environments") != null)
+                targetEnvs = (List<Map<String, Object>>) envType.get("target environments");
+        }
+
+        List<Map<String, Object>> expectedList = "SOURCE".equals(expectedType) ? sourceEnvs : targetEnvs;
+        List<Map<String, Object>> otherList    = "SOURCE".equals(expectedType) ? targetEnvs : sourceEnvs;
+        String expectedTypeLabel = "SOURCE".equals(expectedType) ? "source" : "target";
+        String otherTypeLabel    = "SOURCE".equals(expectedType) ? "target" : "source";
+
+        for (Map<String, Object> env : expectedList) {
+            if (envId.toString().equals(String.valueOf(env.get("environment_id"))))
+                return "";
+        }
+
+        for (Map<String, Object> env : otherList) {
+            if (envId.toString().equals(String.valueOf(env.get("environment_id"))))
+                return "Environment '" + envName + "' is a " + otherTypeLabel + " environment and cannot be used as a " + expectedTypeLabel + " environment.";
+        }
+
+        return "Environment '" + envName + "' not found or not accessible.";
+    }
+
     public static String validateEnvironmentsAndBusinessEntity(Long be_id, Long environment_id,
             Long source_environment_id, String editable_params, List<Map<String, Object>> preExecutionProcesses,
             List<Map<String, Object>> postExecutionProcesses, String task_type) {
@@ -603,7 +648,7 @@ public class SharedLogic {
             }
             List<String> errors = new ArrayList<>();
             try {
-                List<Map<String, Object>> paramDefinitions = (List<Map<String, Object>>) ((Map<String, Object>)wsGetCustomLogicParam(custom_logic_lu_name, selection_param_value)).get("result");
+                List<Map<String, Object>> paramDefinitions = (List<Map<String, Object>>) fnGetFlowParams(custom_logic_lu_name, selection_param_value);
                 for (Map<String, Object> paramDef : paramDefinitions) {
                     // Check if mandatory (Use safe casting/default value)
                     Boolean isMandatory = (Boolean) paramDef.getOrDefault("mandatory", false);
@@ -627,7 +672,7 @@ public class SharedLogic {
         
                         // Check for presence and emptiness in runtime inputs
                         if (inputs.containsKey(paramName) && isValueEmpty(inputs.get(paramName))) {
-                            errors.add("Mandatory field '" + paramName + "' is missing or empty. (is_editable=false)");
+                            errors.add("Mandatory field '" + paramName + "' is missing or empty.");
                         }
                     }
                 }
@@ -658,8 +703,7 @@ public class SharedLogic {
         for (Map<String, Object> item : inputList) {
             String name = (String) item.get("name");
             Object value = item.get("value");
-            Boolean isEditable = (Boolean) item.getOrDefault("is_editable", false);
-            if (name != null && !isEditable) {
+            if (name != null) {
                 inputsForValidation.put(name, value);
             }
         }
@@ -825,6 +869,84 @@ public class SharedLogic {
         }
     
         return "";
+    }
+
+    public static List<Map<String, Object>> fnGetFlowParams(String luName, String flowName)
+            throws Exception {
+        List<Map<String, Object>> result = new ArrayList<>();
+        if ("ALL".equalsIgnoreCase(luName) || luName == null || Util.isEmpty(luName)) {
+            luName = "TDM";
+        }
+        Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName + "'");
+        for (Db.Row row : rows) {
+            if (!"LU_NAME".equalsIgnoreCase("" + row.get("name"))
+                    && !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name"))
+                    && !"SESSION_GLOBALS".equalsIgnoreCase("" + row.get("name"))
+                    && "input".equalsIgnoreCase("" + row.get("param"))) {
+                HashMap<String, Object> map = new HashMap<>();
+                HashMap<Object, Object> editorMap = new HashMap<>();
+                Map<String, Object[]> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
+                Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
+                Object[] interfaces = new Object[0];
+                if ("com.k2view.interface".equalsIgnoreCase(String.valueOf(editor.get("id")))) {
+                    String broadwayCommand = "Broadway TDM.ListEditorInterfaces editor=" + row.get("editor");
+                    Db.Rows interfaceNames = fabric().fetch(broadwayCommand);
+                    for (Db.Row name : interfaceNames) {
+                        interfaces = ParamConvertor.toArray(name.get("array"));
+                    }
+                    editor.put("interfaces", interfaces);
+                }
+                if (editor.isEmpty()) {
+                    editorMap.put("id", "com.k2view.default");
+                } else {
+                    editorMap.putAll(editor);
+                }
+                editorMap.put("name", row.get("name"));
+                editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
+                editorMap.put("mandatory", row.get("mandatory"));
+                editorMap.put("context", context);
+                map.put("editor", editorMap);
+                map.put("default", row.get("default"));
+                map.put("type", row.get("type"));
+                map.put("mandatory", row.get("mandatory"));
+                String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+                map.put("description", description);
+                result.add(map);
+            }
+        }
+        if (rows != null) {
+            rows.close();
+        }
+        return result;
+    }
+
+    public static List<HashMap<String, Object>> fnGetExecutionProcessParams(String processType, String[] processesList)
+            throws Exception {
+        List<HashMap<String, Object>> result = new ArrayList<>();
+        String luName = "";
+        Map<String, Object> processInputs = new HashMap<>();
+        processInputs.put("Process_type", processType);
+        for (String processName : processesList) {
+            processInputs.put("Process_name", processName);
+            List<Map<String, Object>> processList = MtableLookup("PostAndPreExecutionProcess", processInputs,
+                    MTable.Feature.caseInsensitive);
+            for (Map<String, Object> t : processList) {
+                Object luNameObj = t.get("Lu_name");
+                if (luNameObj != null) {
+                    luName = luNameObj.toString();
+                    break;
+                }
+            }
+            if ("".equals(luName) && processList.size() > 0) {
+                luName = "TDM";
+            }
+            List<Map<String, Object>> flowParams = fnGetFlowParams(luName, processName);
+            HashMap<String, Object> tmp = new HashMap<>();
+            tmp.put("process_name", processName);
+            tmp.put("editors", flowParams);
+            result.add(tmp);
+        }
+        return result;
     }
 
 }

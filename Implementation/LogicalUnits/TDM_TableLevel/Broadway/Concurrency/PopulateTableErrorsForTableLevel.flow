@@ -24,6 +24,22 @@ stages:
         out:
           inputs:
             schema: '#ref'
+      'Get executionAction ':
+        parent: NotNull
+        disabled: true
+        in:
+          value:
+            external: executionAction
+      Check executionAction:
+        parent: NotEquals
+        in:
+          a:
+            const: executionAction
+            external: Delete
+            schema: string
+          b:
+            const: Delete
+            schema: string
   Create IID:
     dependsOn: Prepare the Data
     actors:
@@ -145,6 +161,42 @@ stages:
             const: 1000
           string:
             link: Get the Error Fields/message
+      IfElse:
+        parent: IfElse
+        in:
+          a:
+            const: execution_action = 'Delete'
+            schema: string
+          b:
+            const: execution_action <> 'Delete'
+            schema: string
+          test:
+            link:
+            - Get executionAction /result
+            - Check executionAction/result
+        out:
+          result:
+            schema: string
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var result = "";
+              if (executionAction == null) {
+                  result = " and execution_action <> 'Delete'";
+              } else if (executionAction == "Delete") {
+                  result = "and execution_action = 'Delete'";
+              }
+
+              result;
+          executionAction:
+            external: executionAction
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   Load Data to Detailed Error table:
     actors:
       Error Handler for reporting to TDM Error Table:
@@ -273,77 +325,113 @@ stages:
             const: ALL_TABLES
             schema: string
       Update TDMDB table for Reference Table:
-        parent: DbCommand
+        parent: StringFormat
         in:
-          interface:
-            const: TDM
-          sql:
-            const: |-
-              UPDATE ${@TDMDB_SCHEMA}.TASK_REF_EXE_STATS
-              SET execution_status = 'failed',
-              error_msg = ${errorMsg},
-              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
-              updated_by = ${userName}
-              WHERE task_execution_id = ${taskExecutionID}
-              and (${tableName} = 'ALL_TABLES' OR task_ref_table_id = ${refTableID})
-          taskExecutionID:
-            link: Get Task Exec ID/result
-            schema: string
-          errorMsg:
-            link: Limit Error Message/string
-            schema: string
-          userName:
-            link: Get Executor Name/result
-            schema: string
-            mandatory: false
+          format:
+            const: "UPDATE ${TDMDB_SCHEMA}.TASK_REF_EXE_STATS\r\nSET execution_status\
+              \ = 'failed', number_of_failed_records = number_of_records_to_process,\r\
+              \nnumber_of_processed_records = 0,\r\nerror_msg = '${errorMsg}',\r\n\
+              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',\r\nupdated_by = '${userName}'\r\
+              \nWHERE task_execution_id = ${taskExecutionID} \r\nand ('${tableName}'\
+              \ = 'ALL_TABLES' OR task_ref_table_id = ${refTableID})\r\n${executionAction}"
           TDMDB_SCHEMA:
             link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
-          refTableID:
-            external: refTableID
-            schema: integer
+            createdBy: format
+          errorMsg:
+            link: Limit Error Message/string
+            schema: string
             mandatory: false
-            createdBy: sql
+            createdBy: format
+          userName:
+            link: Get Executor Name/result
+            schema: string
+            mandatory: false
+            createdBy: format
+          taskExecutionID:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+            createdBy: format
           tableName:
             external: tableName
             schema: string
             mandatory: false
-            createdBy: sql
+            createdBy: format
+          refTableID:
+            external: refTableID
+            schema: integer
+            mandatory: false
+            createdBy: format
+          executionAction:
+            link: JavaScript1/result
+            schema: string
+            mandatory: false
+            createdBy: format
     split: '--------------------'
   Update TASK_REF_EXE_STATS for All tables:
     else: true
     dependsOn: Load Data to Detailed Error table
     actors:
       Update TDMDB table for Reference Table1:
+        parent: StringFormat
+        in:
+          format:
+            const: "UPDATE ${TDMDB_SCHEMA}.TASK_REF_EXE_STATS\r\nSET execution_status\
+              \ = 'failed', number_of_failed_records = number_of_records_to_process,\r\
+              \nnumber_of_processed_records = 0,\r\nerror_msg = '${errorMsg}',\r\n\
+              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',\r\nupdated_by = '${userName}'\r\
+              \nWHERE task_execution_id = ${taskExecutionID} ${executionAction}"
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: format
+          errorMsg:
+            link: Limit Error Message/string
+            schema: string
+            mandatory: false
+            createdBy: format
+          userName:
+            link: Get Executor Name/result
+            schema: string
+            mandatory: false
+            createdBy: format
+          taskExecutionID:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+            createdBy: format
+          executionAction:
+            link: JavaScript1/result
+            schema: string
+            mandatory: false
+            createdBy: format
+  Update Table Entity:
+    actors:
+      'Update TDMDB table for Reference Table   ':
         parent: DbCommand
         in:
           interface:
             const: TDM
           sql:
-            const: |-
-              UPDATE ${@TDMDB_SCHEMA}.TASK_REF_EXE_STATS
-              SET execution_status = 'failed',
-              error_msg = ${errorMsg},
-              end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
-              updated_by = ${userName}
-              WHERE task_execution_id = ${taskExecutionID}
-          taskExecutionID:
-            link: Get Task Exec ID/result
-            schema: string
-          errorMsg:
-            link: Limit Error Message/string
-            schema: string
-          userName:
-            link: Get Executor Name/result
-            schema: string
-            mandatory: false
-          TDMDB_SCHEMA:
-            link: Get TDMDB Schema/schema
-            schema: string
-            mandatory: false
-  Update Table Entity:
+            const: null
+            link:
+            - Update TDMDB table for Reference Table/string
+            - Update TDMDB table for Reference Table1/string
+  Add to TASK_EXECUTION_ENTITIES:
     actors:
+      '!All_TABLES?1':
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            external: tableName
+            schema: string
+          b:
+            const: ALL_TABLES
+            schema: string
       Populate Task Execution Entities For Tables:
         parent: InnerFlow
         in:

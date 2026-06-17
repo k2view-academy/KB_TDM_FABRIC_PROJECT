@@ -728,8 +728,8 @@ public class SharedLogic {
 										"  ON rt.task_ref_table_id = st.task_ref_table_id " +
 										" AND rt.task_id = st.task_id " +
 										"WHERE st.task_execution_id = ? " +
-										"GROUP BY st.execution_status, rt.lu_name " +
-										"ORDER BY rt.lu_name";
+										"GROUP BY st.execution_action,st.table_order, st.execution_status, rt.lu_name " +
+										"ORDER BY st.execution_action, st.table_order, rt.lu_name " ;
 		Integer tot_num_tables_to_process=0;
 		Integer num_of_processed_ref_tables=0;
 		Integer num_of_copied_ref_tables=0;
@@ -962,68 +962,74 @@ public class SharedLogic {
 				String batchId = String.valueOf(row.get("batch_id"));
 				String interfaceName = String.valueOf(row.get("interface_name"));
 				String schemaName = String.valueOf(row.get("schema_name"));
+				String batchKey = batchId + "|" + String.valueOf(row.get("execution_action")) + "|" + String.valueOf(row.get("table_order"));
 
-				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchId, row.get("execution_action"),row.get("table_order"));
-				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchId, interfaceName);
-				Map<String, Object> schema = getOrCreateSchema(schemaIndex, interfaceMap, batchId, interfaceName, schemaName);
+				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"));
+				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchKey, interfaceName);
+				Map<String, Object> schema = getOrCreateSchema(schemaIndex, interfaceMap, batchKey, interfaceName, schemaName);
 
-				schema.put("number_of_pending_tables", row.get("pending"));
-				schema.put("number_of_running_tables", row.get("running"));
-				schema.put("number_of_completed_tables", row.get("completed"));
-				schema.put("number_of_failed_tables", row.get("failed"));
-				schema.put("number_of_processed_tables", row.get("processed"));
+				int pending = Integer.parseInt( row.get("pending").toString());
+				int running = Integer.parseInt( row.get("running").toString()); 
+				int completed = Integer.parseInt( row.get("completed").toString()); 
+				int failed = Integer.parseInt( row.get("failed").toString());
+				int stopped = Integer.parseInt( row.get("stopped").toString());
+				int total = pending + running + completed + failed + stopped;
+				String status = calculateSummaryStatus(pending, running, completed, failed, stopped, total);
 
-				interfaceMap.put(
-					"number_of_pending_tables",
-					((Number) interfaceMap.get("number_of_pending_tables")).intValue()
-						+ Integer.parseInt(row.get("pending").toString())
-				);
-			
-				interfaceMap.put(
-					"number_of_running_tables",
-					((Number) interfaceMap.get("number_of_running_tables")).intValue()
-						+ Integer.parseInt(row.get("running").toString())
-				);
+				schema.put("schema_status", status);
+				schema.put("number_of_pending_tables", pending);
+				schema.put("number_of_running_tables", running);
+				schema.put("number_of_completed_tables", completed);
+				schema.put("number_of_failed_tables", failed);
+				schema.put("number_of_stopped_tables", stopped);
+				schema.put("number_of_total_tables", total);
 
-				interfaceMap.put(
-					"number_of_completed_tables",
-					((Number) interfaceMap.get("number_of_completed_tables")).intValue()
-						+ Integer.parseInt(row.get("completed").toString())
-				);
+				int interfacePending = ((Number) interfaceMap.get("number_of_pending_tables")).intValue() + pending;
+				int interfaceRunning = ((Number) interfaceMap.get("number_of_running_tables")).intValue() + running;
+				int interfaceCompleted = ((Number) interfaceMap.get("number_of_completed_tables")).intValue() + completed;
+				int interfaceFailed = ((Number) interfaceMap.get("number_of_failed_tables")).intValue() + failed;
+				int interfaceStopped = ((Number) interfaceMap.get("number_of_stopped_tables")).intValue() + stopped;
+				int interfaceTotal = ((Number) interfaceMap.get("number_of_total_tables")).intValue() + total;
 
-				interfaceMap.put(
-					"number_of_failed_tables",
-					((Number) interfaceMap.get("number_of_failed_tables")).intValue()
-						+ Integer.parseInt(row.get("failed").toString())
-				);
+				interfaceMap.put("number_of_pending_tables", interfacePending);
+				interfaceMap.put("number_of_running_tables", interfaceRunning);
+				interfaceMap.put("number_of_completed_tables", interfaceCompleted);
+				interfaceMap.put("number_of_failed_tables", interfaceFailed);
+				interfaceMap.put("number_of_stopped_tables", interfaceStopped);
+				interfaceMap.put("number_of_total_tables", interfaceTotal);
 
-				interfaceMap.put(
-					"number_of_processed_tables",
-					((Number) interfaceMap.get("number_of_processed_tables")).intValue()
-						+ Integer.parseInt(row.get("processed").toString())
+				interfaceMap.put("interface_status",
+					calculateSummaryStatus(
+						interfacePending,
+						interfaceRunning,
+						interfaceCompleted,
+						interfaceFailed,
+						interfaceStopped,
+						interfaceTotal
+					)
 				);
 			}
 		} finally {
 			summaryRows.close();
 		}
 
-		Db.Rows tableRows = db(TDM).fetch(getRefTableDetailsQuery().toString(), refTaskExecutionId);
+		Db.Rows tableRows = db(TDM).fetch(getRefTableDetailsQuery().toString(), refTaskExecutionId, refTaskExecutionId);
 		try {
 			for (Db.Row row : tableRows) {
 				String batchId = String.valueOf(row.get("batch_id"));
 				String interfaceName = String.valueOf(row.get("interface_name"));
 				String schemaName = String.valueOf(row.get("schema_name"));
+				String batchKey = batchId + "|" + String.valueOf(row.get("execution_action")) + "|" + String.valueOf(row.get("table_order"));
 
-				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchId, row.get("execution_action"),row.get("table_order"));
-				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchId, interfaceName);
-				Map<String, Object> schema = getOrCreateSchema(schemaIndex, interfaceMap, batchId, interfaceName, schemaName);
+				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"));
+				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchKey, interfaceName);
+				Map<String, Object> schema = getOrCreateSchema(schemaIndex, interfaceMap, batchKey, interfaceName, schemaName);
 
 				((List<Map<String, Object>>) schema.get("tables")).add(buildTable(row));
 			}
 		} finally {
 			tableRows.close();
 		}
-
 		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("batches", batches);
 		return result;
@@ -1034,33 +1040,31 @@ public class SharedLogic {
 
 		sql.append("SELECT ");
 		sql.append("st.batch_id, ");
-		sql.append("COALESCE(st.execution_action, '') AS execution_action, ");
+		sql.append("st.execution_action, ");
 		sql.append("COALESCE(st.table_order, 0) AS table_order, ");
-		sql.append("COALESCE(st.interface_name, rt.interface_name) AS interface_name, ");
-		sql.append("COALESCE(st.schema_name, rt.schema_name) AS schema_name, ");
+		sql.append("st.interface_name, ");
+		sql.append("st.schema_name, ");
 		sql.append("COUNT(DISTINCT st.task_ref_table_id) AS number_of_tables, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) IN ('pending', 'waiting') THEN 1 ELSE 0 END) AS pending, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'running' THEN 1 ELSE 0 END) AS running, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'pending' THEN 1 ELSE 0 END) AS pending, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'stopped' THEN 1 ELSE 0 END) AS stopped, ");
 		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'completed' THEN 1 ELSE 0 END) AS completed, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) NOT IN ('completed', 'running', 'pending', 'waiting') THEN 1 ELSE 0 END) AS failed, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) NOT IN ('pending', 'waiting', 'running') THEN 1 ELSE 0 END) AS processed ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'failed' THEN 1 ELSE 0 END) AS failed, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) NOT IN ('pending','stopped','completed','failed') THEN 1 ELSE 0 END) AS running ");
 		sql.append("FROM ").append(TDMDB_SCHEMA).append(".task_ref_exe_stats st ");
-		sql.append("JOIN ").append(TDMDB_SCHEMA).append(".task_ref_tables rt ");
-		sql.append("ON rt.task_ref_table_id = st.task_ref_table_id ");
-		sql.append("AND rt.task_id = st.task_id ");
 		sql.append("WHERE st.task_execution_id = ? ");
 		sql.append("GROUP BY ");
 		sql.append("st.batch_id, ");
 		sql.append("st.execution_action, ");
 		sql.append("st.table_order, ");
-		sql.append("COALESCE(st.interface_name, rt.interface_name), ");
-		sql.append("COALESCE(st.schema_name, rt.schema_name) ");
+		sql.append("st.interface_name, ");
+		sql.append("st.schema_name ");
 		sql.append("ORDER BY ");
+		sql.append("MIN(st.start_time) NULLS LAST, ");
 		sql.append("st.batch_id, ");
 		sql.append("st.execution_action, ");
 		sql.append("st.table_order, ");
-		sql.append("COALESCE(st.interface_name, rt.interface_name), ");
-		sql.append("COALESCE(st.schema_name, rt.schema_name)");
+		sql.append("st.interface_name, ");
+		sql.append("st.schema_name ");
 
 		return sql;
 	}
@@ -1070,17 +1074,37 @@ public class SharedLogic {
 
 		sql.append("SELECT ");
 		sql.append("s.batch_id, ");
+		sql.append("s.execution_action, ");
+		sql.append("COALESCE(s.table_order, 0) AS table_order, ");
+		sql.append("s.interface_name, ");
+		sql.append("s.schema_name, ");
+		sql.append("s.ref_table_name, ");
+		sql.append("COALESCE(s.execution_status, 'pending') AS execution_status, ");
+		sql.append("s.start_time, ");
+		sql.append("s.end_time, ");
+		sql.append("NULL AS total, ");
+		sql.append("NULL AS processed, ");
+		sql.append("NULL AS failed, ");
+		sql.append("COALESCE(s.number_of_partitions, 1) AS partitions, ");
+		sql.append("COALESCE(NULLIF(s.error_msg, ''), '') AS error_msg ");
+		sql.append("FROM ").append(TDMDB_SCHEMA).append(".task_ref_exe_stats s ");
+		sql.append("WHERE s.task_execution_id = ? ");
+		sql.append("AND LOWER(COALESCE(s.execution_action, '')) = 'delete' ");
+
+		sql.append("UNION ALL ");
+
+		sql.append("SELECT ");
+		sql.append("s.batch_id, ");
 		sql.append("COALESCE(s.execution_action, '') AS execution_action, ");
 		sql.append("COALESCE(s.table_order, 0) AS table_order, ");
-		sql.append("rt.lu_name, ");
-		sql.append("COALESCE(s.interface_name, rt.interface_name) AS interface_name, ");
-		sql.append("COALESCE(s.schema_name, rt.schema_name) AS schema_name, ");
-		sql.append("COALESCE(s.ref_table_name, rt.ref_table_name, p.table_name, '') AS ref_table_name, ");
+		sql.append("s.interface_name, ");
+		sql.append("s.schema_name, ");
+		sql.append("s.ref_table_name, ");
 		sql.append("COALESCE(s.execution_status, ");
 		sql.append("CASE ");
 		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'failed') THEN 'failed' ");
 		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'stopped') THEN 'stopped' ");
-		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) IN ('pending', 'waiting')) THEN 'pending' ");
+		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'pending') THEN 'pending' ");
 		sql.append("WHEN BOOL_AND(LOWER(p.execution_status) = 'completed') THEN 'completed' ");
 		sql.append("ELSE 'running' ");
 		sql.append("END) AS execution_status, ");
@@ -1092,35 +1116,121 @@ public class SharedLogic {
 		sql.append("COALESCE(s.number_of_partitions, COUNT(p.partition_no)) AS partitions, ");
 		sql.append("COALESCE(MAX(NULLIF(s.error_msg, '')), MAX(NULLIF(p.error_msg, '')), '') AS error_msg ");
 		sql.append("FROM ").append(TDMDB_SCHEMA).append(".task_ref_exe_stats s ");
-		sql.append("JOIN ").append(TDMDB_SCHEMA).append(".task_ref_tables rt ");
-		sql.append("ON rt.task_ref_table_id = s.task_ref_table_id ");
 		sql.append("LEFT JOIN ").append(TDMDB_SCHEMA).append(".task_ref_partition p ");
 		sql.append("ON p.task_execution_id = s.task_execution_id ");
 		sql.append("AND p.task_ref_table_id = s.task_ref_table_id ");
 		sql.append("AND COALESCE(p.batch_id, '') = COALESCE(s.batch_id, '') ");
 		sql.append("WHERE s.task_execution_id = ? ");
+		sql.append("AND LOWER(COALESCE(s.execution_action, '')) <> 'delete' ");
 		sql.append("GROUP BY ");
 		sql.append("s.batch_id, ");
 		sql.append("s.execution_action, ");
 		sql.append("s.table_order, ");
-		sql.append("rt.lu_name, ");
-		sql.append("COALESCE(s.interface_name, rt.interface_name), ");
-		sql.append("COALESCE(s.schema_name, rt.schema_name), ");
-		sql.append("COALESCE(s.ref_table_name, rt.ref_table_name, p.table_name, ''), ");
+		sql.append("s.interface_name, ");
+		sql.append("s.schema_name, ");
+		sql.append("s.ref_table_name, ");
 		sql.append("s.execution_status, ");
 		sql.append("s.number_of_records_to_process, ");
 		sql.append("s.number_of_processed_records, ");
 		sql.append("s.number_of_failed_records, ");
 		sql.append("s.number_of_partitions ");
-		sql.append("ORDER BY s.batch_id, ");
-		sql.append("COALESCE(s.interface_name, rt.interface_name), ");
-		sql.append("COALESCE(s.schema_name, rt.schema_name), ");
-		sql.append("COALESCE(s.table_order, 0), ");
-		sql.append("COALESCE(s.ref_table_name, rt.ref_table_name, p.table_name, '')");
+
+		sql.append("ORDER BY batch_id, start_time NULLS LAST, table_order, interface_name, schema_name, ref_table_name");
 
 		return sql;
 	}
+	
+	private static Map<String, Object> getOrCreateBatch(Map<String, Map<String, Object>> batchIndex,List<Map<String, Object>> batches,String batchKey,String batchId,Object executionAction,Object tableOrder) {
+		return batchIndex.computeIfAbsent(batchKey, k -> {
+			Map<String, Object> b = new LinkedHashMap<>();
+			b.put("batch_id", batchId);
+			String action = executionAction != null ? executionAction.toString() : "";
+			Long order = tableOrder != null ? (Long.valueOf(tableOrder.toString()) + 1) : 0L;
+			b.put("execution_action", action + "#" + order);
+			b.put("process_type", action + " tables");
+			b.put("interfaces", new ArrayList<Map<String, Object>>());
+			batches.add(b);
+			return b;
+		});
+	}
 
+	private static Map<String, Object> getOrCreateInterface(Map<String, Map<String, Map<String, Object>>> interfaceIndex,Map<String, Object> batch,String batchKey,String interfaceName) {
+		return interfaceIndex
+			.computeIfAbsent(batchKey, k -> new LinkedHashMap<>())
+			.computeIfAbsent(interfaceName, k -> {
+				Map<String, Object> i = new LinkedHashMap<>();
+				i.put("interface_name", interfaceName);
+				i.put("number_of_pending_tables", 0);
+				i.put("number_of_running_tables", 0);
+				i.put("number_of_completed_tables", 0);
+				i.put("number_of_failed_tables", 0);
+				i.put("number_of_stopped_tables", 0);
+				i.put("number_of_total_tables",0);	
+				i.put("interface_status", "pending");			
+				i.put("schemas", new ArrayList<Map<String, Object>>());
+				((List<Map<String, Object>>) batch.get("interfaces")).add(i);
+				return i;
+			});
+	}
+
+	private static Map<String, Object> getOrCreateSchema(Map<String, Map<String, Map<String, Map<String, Object>>>> schemaIndex,Map<String, Object> interfaceMap,String batchKey,String interfaceName,String schemaName) {
+		return schemaIndex
+			.computeIfAbsent(batchKey, k -> new LinkedHashMap<>())
+			.computeIfAbsent(interfaceName, k -> new LinkedHashMap<>())
+			.computeIfAbsent(schemaName, k -> {
+				Map<String, Object> s = new LinkedHashMap<>();
+				s.put("schema_name", schemaName);
+				s.put("number_of_pending_tables", 0);
+				s.put("number_of_running_tables", 0);
+				s.put("number_of_completed_tables", 0);
+				s.put("number_of_failed_tables", 0);
+				s.put("number_of_stopped_tables", 0);
+				s.put("number_of_total_tables",0);
+				s.put("schema_status", "pending");			
+				s.put("tables", new ArrayList<Map<String, Object>>());
+				((List<Map<String, Object>>) interfaceMap.get("schemas")).add(s);
+				return s;
+			});
+	}
+
+	private static Map<String, Object> buildTable(Db.Row row) {
+
+		Long total = row.get("total") == null ? null : Long.parseLong(row.get("total").toString());
+		Long succeeded = row.get("processed") == null ? null : Long.parseLong(row.get("processed").toString());
+		Long failed = row.get("failed") == null ? null : Long.parseLong(row.get("failed").toString());
+		Long processed = (succeeded == null || failed == null) ? null : succeeded + failed;
+		Long pending = (total == null || processed == null) ? null : Math.max(total - processed, 0);
+
+		Map<String, Object> table = new LinkedHashMap<>();
+		table.put("table_name", row.get("ref_table_name"));
+		table.put("order", row.get("table_order"));
+		table.put("status", row.get("execution_status"));
+		table.put("total", total);
+		table.put("processed", processed);
+		table.put("succeeded", succeeded);
+		table.put("failed", failed);
+		table.put("pending", pending);
+		table.put("partitions", row.get("partitions"));
+
+		Object startTime = row.get("start_time");
+		Object endTime = row.get("end_time");
+
+		table.put("start", startTime != null ? startTime.toString() : "");
+		table.put("end", endTime != null ? endTime.toString() : "");
+		table.put("error", row.get("error_msg"));
+
+		return table;
+	}
+
+	private static String calculateSummaryStatus(int pending, int running, int completed, int failed, int stopped, int total) {
+		if (running > 0) return "running";
+		if (stopped > 0) return "stopped";
+		if (failed > 0) return "failed";
+		if (total > 0 && completed == total) return "completed";
+		if (total > 0 && pending == total) return "pending";
+		return "running";
+	}
+	
 	@out(name = "res", type = Object[].class, desc = "")
 	public static Object[] fnGetIIdSeparatorsFromTDM() throws Exception {
 		String iidOpenSeparator = "";
@@ -1147,79 +1257,6 @@ public class SharedLogic {
 			rows.close();
 		}
 		return new Object[]{iidOpenSeparator, iidCloseSeparator};
-	}
-	private static Map<String, Object> getOrCreateBatch(Map<String, Map<String, Object>> batchIndex,List<Map<String, Object>> batches,String batchId,Object executionAction,Object tableOrder) {
-		return batchIndex.computeIfAbsent(batchId, k -> {
-			Map<String, Object> b = new LinkedHashMap<>();
-			b.put("batch_id", batchId);
-			String action = executionAction != null ? executionAction.toString() : "";
-			Long order = tableOrder != null ? (Long.valueOf(tableOrder.toString()) + 1) : 0L;
-			b.put("execution_action", action + "#" + order);
-			b.put("interfaces", new ArrayList<Map<String, Object>>());
-			batches.add(b);
-			return b;
-		});
-	}
-	private static Map<String, Object> getOrCreateInterface(Map<String, Map<String, Map<String, Object>>> interfaceIndex,Map<String, Object> batch,String batchId,String interfaceName) {
-		return interfaceIndex
-			.computeIfAbsent(batchId, k -> new LinkedHashMap<>())
-			.computeIfAbsent(interfaceName, k -> {
-				Map<String, Object> i = new LinkedHashMap<>();
-				i.put("interface_name", interfaceName);
-				i.put("number_of_pending_tables", 0);
-				i.put("number_of_running_tables", 0);
-				i.put("number_of_completed_tables", 0);
-				i.put("number_of_failed_tables", 0);
-				i.put("number_of_processed_tables", 0);				
-				i.put("schemas", new ArrayList<Map<String, Object>>());
-				((List<Map<String, Object>>) batch.get("interfaces")).add(i);
-				return i;
-			});
-	}
-	private static Map<String, Object> getOrCreateSchema(Map<String, Map<String, Map<String, Map<String, Object>>>> schemaIndex,Map<String, Object> interfaceMap,String batchId,String interfaceName,String schemaName) {
-		return schemaIndex
-			.computeIfAbsent(batchId, k -> new LinkedHashMap<>())
-			.computeIfAbsent(interfaceName, k -> new LinkedHashMap<>())
-			.computeIfAbsent(schemaName, k -> {
-				Map<String, Object> s = new LinkedHashMap<>();
-				s.put("schema_name", schemaName);
-				s.put("number_of_pending_tables", 0);
-				s.put("number_of_running_tables", 0);
-				s.put("number_of_completed_tables", 0);
-				s.put("number_of_failed_tables", 0);
-				s.put("tables", new ArrayList<Map<String, Object>>());
-				((List<Map<String, Object>>) interfaceMap.get("schemas")).add(s);
-				return s;
-			});
-	}
-
-	private static Map<String, Object> buildTable(Db.Row row) {
-		long total = Long.parseLong(row.get("total").toString());
-		long succeeded = Long.parseLong(row.get("processed").toString());
-		long failed = Long.parseLong(row.get("failed").toString());
-		long processed = succeeded + failed;
-		long pending = Math.max(total - processed, 0);
-
-		Map<String, Object> table = new LinkedHashMap<>();
-		table.put("table_name", row.get("ref_table_name"));
-		table.put("order", row.get("table_order"));
-		table.put("lu_name", row.get("lu_name"));
-		table.put("status", row.get("execution_status"));
-		table.put("total", total);
-		table.put("processed", processed);
-		table.put("succeeded", succeeded);
-		table.put("failed", failed);
-		table.put("pending", pending);
-		table.put("partitions", row.get("partitions"));
-
-		Object startTime = row.get("start_time");
-		Object endTime = row.get("end_time");
-
-		table.put("start", startTime != null ? startTime.toString() : "");
-		table.put("end", endTime != null ? endTime.toString() : "");
-		table.put("error", row.get("error_msg"));
-
-		return table;
 	}
 	
 	@out(name = "instanceID", type = String.class, desc = "")

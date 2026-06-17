@@ -386,7 +386,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	@desc("Gets the list of all available Post Execution Processes that can be added to the Business Entity.")
-	@webService(path = "postexecutionprocesses", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "businessentity/{beId}/postexecutionprocesses", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example ="{\n" +
     "    \"result\": {\n" +
     "        \"postTaskExeUpdateEndTime\": {\n" +
@@ -398,28 +398,28 @@ public class Logic extends WebServiceUserCode {
     "    },\n" +
     "    \"message\": null\n" +
 			"}")
-	public static Object wsGetPostExecutionProcesses() throws Exception {
+	public static Object wsGetPostExecutionProcesses(@param(description="A unique identifer of the Business Entity", required=true) Long beId) throws Exception {
 		Map<String,Object> response=new HashMap<>();
         
 		try {
-			String broadwayCommand = "broadway TDM.executionProcessLookup process_type = post";
-			try (Db.Rows rows = fabric().fetch(broadwayCommand)) {
-				for(Db.Row row:rows){
-					ResultSet res = row.resultSet();
+			Map<String, List<String>> result = new HashMap<>();
+			result = getProcesses(beId, "post");
+			
+			response.put("result", result);
 					response.put("message", null);
-					response.put("result",res.getObject("map"));
-				}
-			}
+            response.put("errorCode","SUCCESS");
 			return response;
+
 		} catch(Exception e){
 			response.put("errorCode","FAILED");
 			response.put("message",e.getMessage());
 			return response;
 		}
+		
 	}
 
     @desc("Gets the list of all available Pre Execution Processes that can be added to the Business Entity.")
-	@webService(path = "preexecutionprocesses", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "businessentity/{beId}/preexecutionprocesses", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example ="{\n" +
     "    \"result\": {\n" +
     "        \"preTaskExeUpdateEndTime\": {\n" +
@@ -431,17 +431,15 @@ public class Logic extends WebServiceUserCode {
     "    },\n" +
     "    \"message\": null\n" +
 			"}")
-	public static Object wsGetPreExecutionProcesses() throws Exception {
+	public static Object wsGetPreExecutionProcesses(@param(description="A unique identifer of the Business Entity", required=true) Long beId) throws Exception {
 		Map<String,Object> response=new HashMap<>();
         
 		try {
-			String broadwayCommand = "broadway TDM.executionProcessLookup process_type = pre";
-			try (Db.Rows rows = fabric().fetch(broadwayCommand)) {
-				for(Db.Row row:rows){
-					ResultSet res = row.resultSet();
-					response.put("result",res.getObject("map"));
-				}
-			}
+
+			Map<String, List<String>> result = new HashMap<>();
+			result = getProcesses(beId, "pre");
+
+			response.put("result", result);
             response.put("message", null);
             response.put("errorCode","SUCCESS");
 			return response;
@@ -451,6 +449,47 @@ public class Logic extends WebServiceUserCode {
 			return response;
 		}
 	}
+
+	private static Map<String, List<String>> getProcesses(Long beId, String processType)throws Exception{
+
+		Map<String, List<String>> result = new HashMap<>();
+		List<String> BeluList = new ArrayList<>();
+
+		String sql = "SELECT lu_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE BE_ID = ?";
+	
+		db(TDM).fetch(sql, beId).each(row->{
+			BeluList.add(row.get("lu_name").toString());
+		});
+
+		Map<String,Object> parentLuInputs = new HashMap<>();
+		parentLuInputs.put("Process_type", processType);
+		List<Map<String, Object>> postExeProcesses =  MtableLookup("PostAndPreExecutionProcess",parentLuInputs, MTable.Feature.caseInsensitive);
+		List processForAll = new ArrayList<>();
+
+		for (Map<String, Object> process : postExeProcesses) {
+			String processName = process.get("Process_name").toString();
+			String luName = process.get("Lu_name") == null ? "" : process.get("Lu_name").toString();
+
+			if (!processForAll.contains(processName)) {
+				if ("".equals(luName)) {
+					List<String> lus = new ArrayList<>();
+					result.put(processName, lus);
+					processForAll.add(processName);
+				}
+				if (BeluList.contains(luName)) {
+					if (result.containsKey(processName)) {
+						result.get(processName).add(luName);
+					} else {
+						List<String> lus = new ArrayList<>();
+						lus.add(luName);
+						result.put(processName, lus);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
 	@desc("Gets the Logical Units of a Business Entity.")
 	@webService(path = "businessentity/{beId}/logicalunits", verb = {MethodType.GET}, version = "", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
@@ -902,7 +941,12 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsAddPostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(description="This is the Broadway flow name that needs to run as a post task execution process") String process_name, @param(description="Execution order of the post exeuction process. Several processes canhave the same execution order.") Integer execution_order, String process_description) throws Exception {
+	public static Object wsAddPostExecutionForBusinessEntity(@param(required=true) Long beId,
+			@param(required=true) String beName,
+			@param(description="This is the Broadway flow name that needs to run as a post task execution process") String process_name,
+			String lu_name,
+			@param(description="Execution order of the post exeuction process. Several processes canhave the same execution order.") Integer execution_order,
+			String process_description) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		
@@ -917,7 +961,7 @@ public class Logic extends WebServiceUserCode {
 			log.error(e.getMessage());
 		}
 
-		return fnAddExecutionProcessForBusinessEntity(beId,beName,process_name,execution_order,process_description,"post");
+		return fnAddExecutionProcessForBusinessEntity(beId,beName,process_name,lu_name,execution_order,process_description,"post");
 	}
     @desc("Adds a Pre Execution Process to a Business Entity.")
 	@webService(path = "businessentity/{beId}/bename/{beName}/preexecutionprocess", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -928,7 +972,12 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsAddPreExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(description="This is the Broadway flow name that needs to run as a pre task execution process") String process_name, @param(description="Execution order of the pre exeuction process. Several processes can have the same execution order.") Integer execution_order, String process_description) throws Exception {
+	public static Object wsAddPreExecutionForBusinessEntity(@param(required=true) Long beId, 
+			@param(required=true) String beName, 
+			@param(description="This is the Broadway flow name that needs to run as a pre task execution process") String process_name,
+			String lu_name,
+			@param(description="Execution order of the pre exeuction process. Several processes can have the same execution order.") Integer execution_order, 
+			String process_description) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		
@@ -943,7 +992,7 @@ public class Logic extends WebServiceUserCode {
 			log.error(e.getMessage());
 		}
 
-		return fnAddExecutionProcessForBusinessEntity(beId,beName,process_name,execution_order,process_description,"pre");
+		return fnAddExecutionProcessForBusinessEntity(beId,beName,process_name,lu_name,execution_order,process_description,"pre");
 
 	}
 
@@ -992,7 +1041,7 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	@desc("Gets Post Execution Processes by a Business Entity.")
+	@desc("Gets Pre Execution Processes by a Business Entity.")
 	@webService(path = "businessentity/{beId}/preexecutionprocess", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -1136,9 +1185,29 @@ public class Logic extends WebServiceUserCode {
 				logicalUnit.get("lu_id"));
 	}
 
+	private static int getLuDepth(Map<String, Object> lu, Set<Map<String, Object>> logicalUnits) {
+		Map<String, Object> parent = (Map<String, Object>) lu.get("lu_parent");
 
+		if (parent == null || parent.get("logical_unit") == null) {
+			return 0;
+		}
+
+		String parentName = String.valueOf(parent.get("logical_unit"));
+
+		for (Map<String, Object> otherLu : logicalUnits) {
+			if (parentName.equalsIgnoreCase(String.valueOf(otherLu.get("lu_name")))) {
+				return 1 + getLuDepth(otherLu, logicalUnits);
+			}
+		}
+
+		return 1;
+	}
+	
     static void fnAddLogicalUnits(Set<Map<String,Object>> logicalUnits,long beId) throws Exception{
-		for(Map<String,Object> logicalUnit:logicalUnits){
+			List<Map<String, Object>> orderedLogicalUnits = new ArrayList<>(logicalUnits);
+			orderedLogicalUnits.sort(Comparator.comparingInt(lu -> getLuDepth(lu, logicalUnits)));
+
+		for(Map<String,Object> logicalUnit:orderedLogicalUnits){
 			Map<String,Object> luParent = (Map<String,Object>)logicalUnit.get("lu_parent");
 			Map<String,Object> childLuInputs = new HashMap<>();
 			Map<String,Object> parentLuInputs = new HashMap<>();

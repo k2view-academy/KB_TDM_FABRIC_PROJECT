@@ -87,6 +87,20 @@ stages:
               id: com.k2view.dropdown
             mandatory: false
             createdBy: flowName
+  remove old files:
+    actors:
+      RemoveAIOldFiles:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: RemoveAIOldFiles
+  update cleanup Mtable:
+    actors:
+      UpgradeCleanupAddNewTables1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeCleanupAddNewTables
 schemas:
   UpgradeParamsAddDisplayOrder.in.columns:
     type: array
