@@ -1,0 +1,14 @@
+tags: Concurrency
+stages:
+  Stage 1:
+    actors:
+      clear cache:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnClearTaskCache
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName

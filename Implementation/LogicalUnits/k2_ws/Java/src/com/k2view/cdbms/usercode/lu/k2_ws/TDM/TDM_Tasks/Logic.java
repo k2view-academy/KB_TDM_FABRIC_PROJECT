@@ -385,7 +385,7 @@ public class Logic extends WebServiceUserCode {
             newRow.put("task_status", resultSet.getString("task_status"));
             newRow.put("task_execution_status", resultSet.getString("task_execution_status"));
             newRow.put("num_of_entities", resultSet.getInt("num_of_entities"));
-            newRow.put("environment_id", resultSet.getInt("environment_id"));
+            newRow.put("environment_id", resultSet.getObject("environment_id"));
             newRow.put("be_id", row.get("be_id"));
             newRow.put("selection_method", resultSet.getString("selection_method"));
             newRow.put("selection_param_value", resultSet.getString("selection_param_value"));
@@ -400,7 +400,7 @@ public class Logic extends WebServiceUserCode {
             newRow.put("task_last_updated_date", resultSet.getString("task_last_updated_date"));
             newRow.put("task_last_updated_by", resultSet.getString("task_last_updated_by"));
             newRow.put("source_env_name", resultSet.getString("source_env_name"));
-            newRow.put("source_environment_id", resultSet.getInt("source_environment_id"));
+            newRow.put("source_environment_id", resultSet.getObject("source_environment_id"));
             newRow.put("load_entity", resultSet.getBoolean("load_entity"));
             newRow.put("task_type", resultSet.getString("task_type"));
             newRow.put("version_ind", resultSet.getBoolean("version_ind"));
@@ -990,6 +990,7 @@ public class Logic extends WebServiceUserCode {
                 "preExecutionProcesses": [{
                         "process_id": 1,
                         "process_name": "preProcessName",
+                        "lu_name": "luName1",
                         "execution_order": 1,
                         "is_editable": true,
                         "parameters": {
@@ -1001,6 +1002,7 @@ public class Logic extends WebServiceUserCode {
                 "postExecutionProcesses": [{
                         "process_id": 2,
                         "process_name": "postProcessName",
+                        "lu_name": "luName2",
                         "execution_order": 2,
                         "is_editable": true,
                         "parameters": {
@@ -1376,7 +1378,15 @@ public class Logic extends WebServiceUserCode {
             // TDM 8.0 - In case of Synthetic task, add the input parameters of the population flows to the TDMDB tdm_generate_task_field_mappings
             //log.info("wsCreateTaskV1 - params size: " + DataManParams.size());
             if (source_environment_id != null && source_environment_id == -1 && generateParams != null) {
-                createTaskGEnerateParams(taskId, generateParams);
+                try {
+                    createTaskGEnerateParams(taskId, generateParams);
+                } catch (Exception e) {
+                    message = e.getMessage();
+                    errorCode = "FAILED";
+                    response.put("errorCode", errorCode);
+                    response.put("message", message);
+                    return response;
+                }
             }
 
             String activityDesc = "Task " + task_title + " was created";
@@ -1475,6 +1485,7 @@ public class Logic extends WebServiceUserCode {
               "preExecutionProcesses": [{
                   "process_id": 1,
                   "process_name": "preProcessName",
+                  "lu_name": "luName1",
                   "execution_order": 1,
                   "is_editable": true,
                   "parameters": {
@@ -1486,6 +1497,7 @@ public class Logic extends WebServiceUserCode {
               "postExecutionProcesses": [{
                   "process_id": 2,
                   "process_name": "postProcessName",
+                  "lu_name": "luName2",
                   "execution_order": 2,
                   "is_editable": true,
                   "parameters": {
@@ -1657,7 +1669,7 @@ public class Logic extends WebServiceUserCode {
                     reserve_ind, reserve_retention_period_type, reserve_retention_period_value,
                     reserve_note, filterout_reserved, generateParams, mask_sensitive_data, task_description,
                     custom_logic_lu_name, selected_subset_task_exe_id, clone_ind, execution_mode, in_place_masking_ind,
-                    enable_sequence_report, statistics_report_flag, env_name);
+                    task_override_fields, enable_sequence_report, statistics_report_flag, env_name);
 
             finalTaskId = (Long) ((Map<String, Object>) result.get("result")).get("id");
 
@@ -1784,7 +1796,7 @@ public class Logic extends WebServiceUserCode {
             Integer reserve_retention_period_value, String reserve_note, String filterout_reserved,
             HashMap<String, Object> generateParams, Boolean mask_sensitive_data, String task_description,
             String custom_logic_lu_name, Long selected_subset_task_exe_id,Boolean clone_ind, 
-            String execution_mode , boolean in_place_masking_ind, Boolean enable_sequence_report, String statistics_report_flag, String env_name) throws Exception {
+            String execution_mode , boolean in_place_masking_ind, String task_override_fields, Boolean enable_sequence_report, String statistics_report_flag, String env_name) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         Map<String, Object> result = new HashMap<>();
         String message = null;
@@ -1836,8 +1848,8 @@ public class Logic extends WebServiceUserCode {
                     "selected_ref_version_task_exe_id, sync_mode, reserve_ind, " +
                     "reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved," +
                     "task_description, clone_ind, execution_mode,in_place_masking_ind, permission_group, fabric_roles, " +
-                    "enable_sequence_report, statistics_report_flag) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + 
+                    "task_override_fields, enable_sequence_report, statistics_report_flag) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
                     "RETURNING task_id";
             String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC).format(Instant.now());
             String username = sessionUser().name();
@@ -1863,8 +1875,8 @@ public class Logic extends WebServiceUserCode {
                     selected_version_task_exe_id, selected_subset_task_exe_id, task_globals,
                     selected_ref_version_task_exe_id, sync_mode, reserve_ind, reserve_retention_period_type,
                     reserve_retention_period_value, reserve_note, filterout_reserved,
-                    task_description, clone_ind, execution_mode, in_place_masking_ind, permessionGroup, fabricRoles, 
-                    enable_sequence_report, statistics_report_flag, env_name).firstRow();
+                    task_description, clone_ind, execution_mode, in_place_masking_ind, permessionGroup, fabricRoles,
+                    task_override_fields, enable_sequence_report, statistics_report_flag, env_name).firstRow();
 
             Long id = Long.parseLong(row.get("task_id").toString());
 
@@ -1903,7 +1915,15 @@ public class Logic extends WebServiceUserCode {
                                 taskId, null)).get("result");
                     }
                     if (generateParams != null) {
-                        createTaskGEnerateParams(id, generateParams);
+                        try {
+                            createTaskGEnerateParams(id, generateParams);
+                        } catch (Exception e) {
+                            message = e.getMessage();
+                            errorCode = "FAILED";
+                            response.put("errorCode", errorCode);
+                            response.put("message", message);
+                            return response;
+                        }
                     }
 
                 }
@@ -3101,8 +3121,43 @@ public class Logic extends WebServiceUserCode {
         String message = null;
         String errorCode = "SUCCESS";
 
-        String query = "SELECT *, el.environment_id as environment_id, el.source_environment_id as environment_id, " +
-                        "el.env_name as environment_name, el.source_env_name as source_environment_name, " +
+        String summaryQuery = "SELECT be.be_name, s.environment_id as target_environment_id , s.source_environment_id, " +
+                              "s.env_name as target_environment_name, s.source_env_name as source_environment_name, s.task_executed_by, s.task_type_label, " +
+                              "s.start_execution_time AS final_start_time, " +
+                              "s.end_execution_time AS final_end_time, " +
+                              "s.expiration_date " +
+                              "FROM " + TDMDB_SCHEMA + ".task_execution_summary s " +
+                              "LEFT JOIN " + TDMDB_SCHEMA + ".business_entities be " + "ON (s.be_id = be.be_id)  " +
+                              "WHERE task_execution_id = ?";
+
+        Map<String, Object> summaryResult = new HashMap<>();
+        try (Db.Rows summaryRows = db(TDM).fetch(summaryQuery, taskExeId)) {
+            for (Db.Row summaryRow : summaryRows) {
+                ResultSet summaryRs = summaryRow.resultSet();
+                summaryResult.put("source_environment_name", summaryRs.getObject("source_environment_name"));
+                summaryResult.put("target_environment_name", summaryRs.getObject("target_environment_name"));
+                summaryResult.put("be_name", summaryRs.getObject("be_name"));
+                summaryResult.put("task_executed_by", summaryRs.getObject("task_executed_by"));
+                summaryResult.put("task_type_label", summaryRs.getObject("task_type_label"));
+                summaryResult.put("start_time", summaryRs.getObject("final_start_time"));
+                summaryResult.put("end_time", summaryRs.getObject("final_end_time"));
+                break;
+            }
+        }
+
+        String query = "SELECT " +
+                        "el.task_execution_id, el.task_id, el.lu_id, lu.lu_name, " +
+                        "el.parent_lu_id, parent_lu.lu_name AS parent_lu_name, el.be_id, el.process_id, " +
+                        "el.execution_status, t.execution_mode, el.fabric_execution_id, " +
+                        "el.num_of_copied_entities, el.num_of_failed_entities, el.num_of_processed_entities, " +
+                        "el.num_of_copied_ref_tables, el.num_of_failed_ref_tables, el.num_of_processed_ref_tables, " +
+                        "el.start_execution_time, el.end_execution_time, " +
+                        "el.source_env_name, el.env_name AS environment_name, " +
+                        "el.execution_note, " +
+                        "t.num_of_entities, t.task_type, t.version_ind, t.task_title, t.clone_ind, " +
+                        "t.selection_method, t.task_creation_date, el.expiration_date, t.sync_mode, " +
+                        "p.product_name, p.product_description, " +
+                        "pep.process_name, pep.process_type, " +
                         "CASE " +
                         "WHEN el.process_id > 0 THEN NULL " +
                         "WHEN el.parent_lu_id IS NOT NULL THEN el.num_of_processed_entities " +
@@ -3110,44 +3165,75 @@ public class Logic extends WebServiceUserCode {
                         "END AS fixed_num_of_entities, " +
                         "( SELECT COUNT(*) FROM " + TDMDB_SCHEMA
                             + ".task_ref_tables rt WHERE rt.task_id = el.task_id " +
-                            "and rt.lu_name in (select lu_name from " + TDMDB_SCHEMA + ".tasks_logical_units lu " +
-                            "where  lu.lu_id = el.lu_id)) AS refcount " +
+                            "AND rt.lu_name IN (SELECT lu_name FROM " + TDMDB_SCHEMA + ".tasks_logical_units tlu " +
+                            "WHERE tlu.lu_id = el.lu_id)) AS refcount " +
                             "FROM " + TDMDB_SCHEMA + ".task_execution_list el " +
-                            "LEFT JOIN " + TDMDB_SCHEMA + ".products p " + "ON (el.product_id = p.product_id) " +
-                            "INNER JOIN " + TDMDB_SCHEMA + ".tasks t " + "ON (el.task_id = t.task_id) " +
-                            "LEFT JOIN " + TDMDB_SCHEMA + ".business_entities be " + "ON (el.be_id = be.be_id) " +
-                            "LEFT JOIN " + TDMDB_SCHEMA + ".product_logical_units plu " + "ON (el.lu_id = plu.lu_id) " +
+                            "LEFT JOIN " + TDMDB_SCHEMA + ".products p ON (el.product_id = p.product_id) " +
+                            "INNER JOIN " + TDMDB_SCHEMA + ".tasks t ON (el.task_id = t.task_id) " +
+                            "LEFT JOIN " + TDMDB_SCHEMA + ".tasks_logical_units lu ON (lu.lu_id = el.lu_id AND lu.task_id = el.task_id) " +
+                            "LEFT JOIN " + TDMDB_SCHEMA + ".tasks_logical_units parent_lu ON (parent_lu.lu_id = el.parent_lu_id AND parent_lu.task_id = el.task_id) " +
                             "LEFT JOIN " + TDMDB_SCHEMA
                             + ".tasks_exe_process pep ON (el.process_id = pep.process_id AND el.task_id = pep.task_id) " +
                             "WHERE el.task_execution_id = ? ";
 
         List<Map<String, Object>> result = new ArrayList<>();
-        
+
         try (Db.Rows rows = db(TDM).fetch(query, taskExeId)) {
-            List<String> columnNames = rows.getColumnNames();
             Boolean mainBatchStarted = true;
+            boolean summaryPostFilled = false;
 
             for (Db.Row row : rows) {
                 ResultSet resultSet = row.resultSet();
                 Map<String, Object> rowMap = new HashMap<>();
-                for (String columnName : columnNames) {
-                    if ("task_executed_by".equalsIgnoreCase(columnName)) {
-                        String[] userData = resultSet.getObject(columnName).toString().split("##");
-                        rowMap.put(columnName, userData[0]);
-                    } else if ("execution_status".equalsIgnoreCase(columnName)) {
-                        String status = resultSet.getString(columnName);
-                        if ("STARTEXECUTIONREQUESTED".equalsIgnoreCase(status)) {
-                            status = "running";
-                            mainBatchStarted = false;
-                        }
-                        rowMap.put(columnName, status.toLowerCase());
-                    } else {
-                        rowMap.put(columnName, resultSet.getObject(columnName));
-                    }
+
+                String status = resultSet.getString("execution_status");
+                if ("STARTEXECUTIONREQUESTED".equalsIgnoreCase(status)) {
+                    status = "running";
+                    mainBatchStarted = false;
                 }
-                rowMap.put("num_of_entities", rowMap.remove("fixed_num_of_entities"));
-                if (!Boolean.TRUE.equals(rowMap.get("version_ind"))) {
-                    rowMap.put("expiration_date", null);
+                rowMap.put("execution_status", status.toLowerCase());
+                rowMap.put("task_execution_id", resultSet.getObject("task_execution_id"));
+                rowMap.put("task_id", resultSet.getObject("task_id"));
+                rowMap.put("lu_id", resultSet.getObject("lu_id"));
+                rowMap.put("lu_name", resultSet.getObject("lu_name"));
+                rowMap.put("parent_lu_id", resultSet.getObject("parent_lu_id"));
+                rowMap.put("parent_lu_name", resultSet.getObject("parent_lu_name"));
+                rowMap.put("be_id", resultSet.getObject("be_id"));
+                rowMap.put("process_id", resultSet.getObject("process_id"));
+                rowMap.put("execution_mode", resultSet.getObject("execution_mode"));
+                rowMap.put("fabric_execution_id", resultSet.getObject("fabric_execution_id"));
+                rowMap.put("num_of_copied_entities", resultSet.getObject("num_of_copied_entities"));
+                rowMap.put("num_of_failed_entities", resultSet.getObject("num_of_failed_entities"));
+                rowMap.put("num_of_processed_entities", resultSet.getObject("num_of_processed_entities"));
+                rowMap.put("num_of_copied_ref_tables", resultSet.getObject("num_of_copied_ref_tables"));
+                rowMap.put("num_of_failed_ref_tables", resultSet.getObject("num_of_failed_ref_tables"));
+                rowMap.put("num_of_processed_ref_tables", resultSet.getObject("num_of_processed_ref_tables"));
+                rowMap.put("start_execution_time", resultSet.getObject("start_execution_time"));
+                rowMap.put("end_execution_time", resultSet.getObject("end_execution_time"));
+                rowMap.put("source_env_name", resultSet.getObject("source_env_name"));
+                rowMap.put("environment_name", resultSet.getObject("environment_name"));
+                rowMap.put("execution_note", resultSet.getObject("execution_note"));
+                rowMap.put("task_type", resultSet.getObject("task_type"));
+                rowMap.put("version_ind", resultSet.getObject("version_ind"));
+                rowMap.put("task_title", resultSet.getObject("task_title"));
+                rowMap.put("clone_ind", resultSet.getObject("clone_ind"));
+                rowMap.put("selection_method", resultSet.getObject("selection_method"));
+                rowMap.put("creation_date", resultSet.getObject("task_creation_date"));
+                rowMap.put("expiration_date", resultSet.getObject("expiration_date"));
+                rowMap.put("sync_mode", resultSet.getObject("sync_mode"));
+                rowMap.put("product_name", resultSet.getObject("product_name"));
+                rowMap.put("product_description", resultSet.getObject("product_description"));
+                rowMap.put("process_name", resultSet.getObject("process_name"));
+                rowMap.put("process_type", resultSet.getObject("process_type"));
+                rowMap.put("num_of_entities", resultSet.getObject("fixed_num_of_entities"));
+                rowMap.put("refcount", resultSet.getObject("refcount"));
+                if (!summaryPostFilled) {
+                    if (!Boolean.TRUE.equals(rowMap.get("version_ind"))) {
+                        summaryResult.put("expiration_date", null);
+                    }
+                    summaryResult.put("execution_note", rowMap.get("execution_note"));
+                    summaryResult.put("task_title", rowMap.get("task_title"));
+                    summaryPostFilled = true;
                 }
                 if (!mainBatchStarted) {
                     rowMap.put("fabric_execution_id", null);
@@ -3157,18 +3243,10 @@ public class Logic extends WebServiceUserCode {
                         row.get("task_type").toString(),
                         Long.parseLong(row.get("be_id").toString()),
                         Boolean.parseBoolean(row.get("clone_ind").toString()));
-                String taskTypeLabel = getTaskTypeLabel("" + rowMap.get("task_type"),
-                                        "" + rowMap.get("sync_mode"),
-                                        "" + rowMap.get("selection_method"),
-                                        Boolean.parseBoolean("" + rowMap.get("in_place_masking_ind")),
-                                        Boolean.parseBoolean("" + rowMap.get("reserve_ind")),
-                                        Boolean.parseBoolean("" + rowMap.get("delete_before_load")),
-                                        Long.parseLong("" + rowMap.get("source_environment_id")));
-                if ("VERTICAL".equalsIgnoreCase(executionMode) && row.get("parent_lu_id") != null) {
+               if ("VERTICAL".equalsIgnoreCase(executionMode) && row.get("parent_lu_id") != null) {
                     rowMap.put("fabric_execution_id", null);
                 }
                 rowMap.put("execution_mode", executionMode);
-                rowMap.put("task_type_label",taskTypeLabel);
                 Map<String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs((Long) row.get("task_id"),
                         (Long) row.get("task_execution_id"));
                 Object overrideValue = new Object();
@@ -3291,10 +3369,41 @@ public class Logic extends WebServiceUserCode {
                     }
                 }
 
-                result.add(rowMap);
+                Map<String, Object> filteredRow = new HashMap<>();
+                filteredRow.put("execution_status", rowMap.get("execution_status"));
+                filteredRow.put("execution_mode", rowMap.get("execution_mode"));
+                filteredRow.put("fabric_execution_id", rowMap.get("fabric_execution_id"));
+                filteredRow.put("num_of_entities", rowMap.get("num_of_entities"));
+                filteredRow.put("num_of_copied_entities", rowMap.get("num_of_copied_entities"));
+                filteredRow.put("num_of_failed_entities", rowMap.get("num_of_failed_entities"));
+                filteredRow.put("num_of_processed_entities", rowMap.get("num_of_processed_entities"));
+                filteredRow.put("num_of_copied_ref_tables", rowMap.get("num_of_copied_ref_tables"));
+                filteredRow.put("num_of_failed_ref_tables", rowMap.get("num_of_failed_ref_tables"));
+                filteredRow.put("num_of_processed_ref_tables", rowMap.get("num_of_processed_ref_tables"));
+                filteredRow.put("refcount", rowMap.get("refcount"));
+                filteredRow.put("start_execution_time", rowMap.get("start_execution_time"));
+                filteredRow.put("end_execution_time", rowMap.get("end_execution_time"));
+                filteredRow.put("source_env_name", rowMap.get("source_env_name"));
+                filteredRow.put("environment_name", rowMap.get("environment_name"));
+                filteredRow.put("selection_method", rowMap.get("selection_method"));
+                filteredRow.put("creation_date", rowMap.get("creation_date"));
+                filteredRow.put("expiration_date", rowMap.get("expiration_date"));
+                filteredRow.put("sync_mode", rowMap.get("sync_mode"));
+                filteredRow.put("process_name", rowMap.get("process_name"));
+                filteredRow.put("lu_name", rowMap.get("lu_name"));
+                filteredRow.put("lu_id", rowMap.get("lu_id"));
+                filteredRow.put("lu_parent_id", rowMap.get("parent_lu_id"));
+                filteredRow.put("lu_parent_name", rowMap.get("parent_lu_name"));
+                filteredRow.put("product_name", rowMap.get("product_name"));
+                filteredRow.put("product_description", rowMap.get("product_description"));
+                filteredRow.put("process_id", rowMap.get("process_id"));
+                filteredRow.put("process_type", rowMap.get("process_type"));
+                filteredRow.put("execution_note", rowMap.get("execution_note"));
+                result.add(filteredRow);
             }
         }
 
+        response.put("summary", summaryResult);
         response.put("result", result);
         response.put("errorCode", errorCode);
         response.put("message", message);
@@ -3751,11 +3860,19 @@ public class Logic extends WebServiceUserCode {
     @desc("Gets the list of reference table included in a given task. Note that refcount attribute of /tasks API is populated by the number of Reference tables included in the task. If the refcount attribute is populated by zero, the task does not have Reference tables.")
     @webService(path = "task/refsTable/{task_id}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
     @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": [\r\n" + "    {\r\n" + "      \"task_ref_table_id\": 1,\r\n" + "      \"ref_table_name\": \"Ref2\",\r\n" + "      \"lu_name\": \"RefLU\",\r\n" + "      \"interface_name\": \"RefInterface\",\r\n" + "      \"task_id\": 28,\r\n" + "      \"schema_name\": \"RefSchema\",\r\n" + "      \"update_date\": \"2021-04-20 11:06:42.926\"\r\n" + "    },\r\n" + "    {\r\n" + "      \"task_ref_table_id\": 2,\r\n" + "      \"ref_table_name\": \"RefT2\",\r\n" + "      \"lu_name\": \"RefLU2\",\r\n" + "      \"interface_name\": \"RefInterface2\",\r\n" + "      \"task_id\": 28,\r\n" + "      \"schema_name\": \"RefSchema2\",\r\n" + "      \"update_date\": \"2021-04-20 11:06:42.937\"\r\n" + "    }\r\n" + "  ],\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
-    public static Object getTaskReferenceTable(@param(required = true) Long task_id ,@param(required = true) String mode ) throws Exception {
+    public static Object getTaskReferenceTable(@param(required = true) Long task_id, @param String mode) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         String message = null;
         String errorCode = "";
         try {
+            if (mode == null) {
+                String selMethod = "" + db(TDM).fetch(
+                    "SELECT selection_method FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id = " + task_id
+                ).firstValue();
+                if ("TABLES".equalsIgnoreCase(selMethod)) {
+                    mode = "tables";
+                }
+            }
             String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".task_ref_tables where task_id = " + task_id;
             Db.Rows rows = db(TDM).fetch(sql);
             boolean tablesMode = "tables".equalsIgnoreCase(mode);
@@ -5053,7 +5170,7 @@ public class Logic extends WebServiceUserCode {
     @desc("Get the list of parameters of the given Post/Pre Execution Flow")
     @webService(path = "getExecutionProcessParams", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" + "  \"result\": [\r\n" + "    {\r\n" + "      \"editor\": {\r\n" + "        \"schema\": {\r\n" + "          \"type\": \"date\"\r\n" + "        },\r\n" + "        \"name\": \"param1\",\r\n" + "        \"context\": {\r\n" + "          \"level\": {\r\n" + "            \"const\": \"error\"\r\n" + "          },\r\n" + "          \"message\": {\r\n" + "            \"const\": \"${param1}, ${param2}\"\r\n" + "          },\r\n" + "          \"param1\": {\r\n" + "            \"self\": \"param1\"\r\n" + "          },\r\n" + "          \"param2\": {\r\n" + "            \"external\": \"param2\"\r\n" + "          }\r\n" + "        },\r\n" + "        \"id\": \"com.k2view.default\"\r\n" + "      },\r\n" + "      \"default\": null,\r\n" + "      \"description\": \"\",\r\n" + "      \"type\": \"date\",\r\n" + "      \"mandatory\": false\r\n" + "    },\r\n" + "    {\r\n" + "      \"editor\": {\r\n" + "        \"schema\": {\r\n" + "          \"type\": \"integer\"\r\n" + "        },\r\n" + "        \"name\": \"param2\",\r\n" + "        \"context\": {\r\n" + "          \"level\": {\r\n" + "            \"const\": \"error\"\r\n" + "          },\r\n" + "          \"message\": {\r\n" + "            \"const\": \"${param1}, ${param2}\"\r\n" + "          },\r\n" + "          \"param1\": {\r\n" + "            \"external\": \"param1\"\r\n" + "          },\r\n" + "          \"param2\": {\r\n" + "            \"self\": \"param2\"\r\n" + "          }\r\n" + "        },\r\n" + "        \"id\": \"com.k2view.default\"\r\n" + "      },\r\n" + "      \"default\": null,\r\n" + "      \"description\": \"\",\r\n" + "      \"type\": \"integer\",\r\n" + "      \"mandatory\": false\r\n" + "    }\r\n" + "  ],\r\n" + "  \"errorCode\": \"SUCCESS\",\r\n" + "  \"message\": null\r\n" + "}")
-    public static Object wsGetExecutionProcessParam(String processType, String[] processesList) throws Exception {
+    public static Object wsGetExecutionProcessParam(String processType, List<Map<String, String>> processesList) throws Exception {
         try {
             List<HashMap<String, Object>> result = fnGetExecutionProcessParams(processType, processesList);
             return wrapWebServiceResults("SUCCESS", null, result);

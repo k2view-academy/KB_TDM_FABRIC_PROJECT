@@ -15,6 +15,7 @@ import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
 import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.TableLevelUtils.Logic.fnGetAllTableDefinitions;
+import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.TableLevelUtils.Logic.fnLoadTargetInfoFromRefList;
 /**
  * Single-file implementation for resolving table load order
  * based on foreign key dependencies across multiple interfaces.
@@ -81,16 +82,19 @@ public class Logic extends UserCode {
         private final String iface;
         private final String schema;
         private final String table;
+        private final String luName;
 
-        public TablesMeta(String iface, String schema, String table) {
+        public TablesMeta(String iface, String schema, String table, String luName) {
             this.iface = iface;
             this.schema = schema;
             this.table = table;
+            this.luName = luName;
         }
 
         public String getInterface() { return iface; }
         public String getSchema() { return schema; }
         public String getTableName() { return table; }
+        public String getLuName() { return luName; }
 
         @Override
                 public int getOrderByMtables() throws Exception {
@@ -133,8 +137,14 @@ public class Logic extends UserCode {
         public Set<TableRef> getForeignKeyDependencies() throws Exception {
             Set<TableRef> deps = getForeignKeyDependenciesByCatalog();
             if (deps != null && !deps.isEmpty()) {
+                TableRef dep =  deps.iterator().next();
+                if ("No Catalog".equals(dep.iface)) {
+                    deps.clear();
+                } 
+            } else {
                 return deps;
             }
+            
             deps = getForeignKeyDependenciesByJDBC();
             return deps != null ? deps : Collections.emptySet();
         }
@@ -152,8 +162,22 @@ public class Logic extends UserCode {
                     MtableLookup("catalog_relations_info", in, MTable.Feature.caseInsensitive);
                     
             if (rows == null || rows.isEmpty()) {
+                
+                //Check if catalog exists
+                Map<String, Object> inp = new HashMap<>();
+                inp.put("dataPlatform", iface);
+		        inp.put("schema", schema);
+            	inp.put("dataset", table);
+
+                List<Map<String, Object>> rows1 =
+                    MtableLookup("catalog_field_info", inp, MTable.Feature.caseInsensitive);
+
+                if (rows1 == null || rows1.isEmpty()){
+                    deps.add(new TableRef("No Catalog", "", ""));
+                }
                 return deps; // empty set
             }
+
             for (Map<String, Object> r : rows) {
                 TableRef parent = new TableRef(
                         r.get("parentDataPlatform").toString(),
@@ -168,10 +192,22 @@ public class Logic extends UserCode {
         }
 
         private Set<TableRef> getForeignKeyDependenciesByJDBC() throws Exception {
+            String interfaceName = iface;
+            String schemaName = schema;
+            String tableName = table;
+
+            //Check if the table has different target DB information from RefList Mtable, and use them to get FKs of table
+            Map<String, Object> targetInfo = fnLoadTargetInfoFromRefList(iface, schema, table, luName);
+            if (targetInfo != null && !targetInfo.isEmpty()) {
+                interfaceName = targetInfo.get("target_interface_name").toString();
+                schemaName = targetInfo.get("target_schema_name").toString();
+                tableName = targetInfo.get("target_ref_table_name").toString();
+            }
+
             Set<TableRef> deps = new HashSet<>();
             try {
-                DatabaseMetaData meta = getConnection(iface).getMetaData();
-                try (ResultSet rs = meta.getImportedKeys(null, schema, table)) {
+                DatabaseMetaData meta = getConnection(interfaceName).getMetaData();
+                try (ResultSet rs = meta.getImportedKeys(null, schemaName, table)) {
                     while (rs.next()) {
                         String pkSchema = Util.isEmpty(rs.getString("PKTABLE_SCHEM"))
                                 ? rs.getString("PKTABLE_CAT")
@@ -179,13 +215,13 @@ public class Logic extends UserCode {
 
                         String pkTable = rs.getString("PKTABLE_NAME");
 
-                        if (!pkTable.equalsIgnoreCase(table)) {
+                        if (!pkTable.equalsIgnoreCase(tableName)) {
                             deps.add(new TableRef(iface, pkSchema, pkTable));
                         }
                     }
                 }
             } catch (SQLException e) {
-                throw new RuntimeException("DB error on " + table, e);
+                throw new RuntimeException("DB error on " + tableName, e);
             }
             return deps;
         }
@@ -316,7 +352,7 @@ public class Logic extends UserCode {
         if (!Util.isEmpty(taskTables) || taskTables.size() == 0) {
             Set<String> interfaces = new HashSet<>();
             String sql =
-                    "SELECT rt.interface_name, rt.schema_name, es.ref_table_name " +
+                    "SELECT rt.interface_name, rt.schema_name, es.ref_table_name, rt.lu_name " +
                     "FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " +
                     TDMDB_SCHEMA + ".TASK_REF_TABLES rt, " +
                     TDMDB_SCHEMA + ".tasks t " +
@@ -332,7 +368,8 @@ public class Logic extends UserCode {
                 taskTables.add(new TablesMeta(
                         r.get("interface_name").toString(),
                         r.get("schema_name").toString(),
-                        r.get("ref_table_name").toString()));
+                        r.get("ref_table_name").toString(),
+                        r.get("lu_name").toString()));
 
                 interfaces.add(r.get("interface_name").toString());
             }

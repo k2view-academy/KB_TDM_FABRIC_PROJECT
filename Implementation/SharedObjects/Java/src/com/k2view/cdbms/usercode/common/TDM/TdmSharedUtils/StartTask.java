@@ -52,28 +52,7 @@ public class StartTask {
 		try {
 			StartTaskValidator.checkSystemHealth();
 			Db.Row taskRow = fetchTaskData(taskId);
-			Map<String, Boolean> taskGlobalsEditability = new HashMap<>();
-			if (inputOverrides.containsKey(OverrideParamKey.TASK_GLOBALS)) {
-				try (Db.Rows globalsRows = db(TDM).fetch(
-						"SELECT global_name, is_editable FROM " + TDMDB_SCHEMA + ".task_globals WHERE task_id = ?", taskId)) {
-					for (Db.Row r : globalsRows) {
-						taskGlobalsEditability.put(r.get("global_name").toString(),
-								Boolean.TRUE.equals(r.get("is_editable")));
-					}
-				}
-			}
-			Map<String, Boolean> generateParamsEditability = new HashMap<>();
-			if (inputOverrides.containsKey(OverrideParamKey.GENERATE_DATA_PARAMS)) {
-				try (Db.Rows genRows = db(TDM).fetch(
-						"SELECT param_name, is_editable FROM " + TDMDB_SCHEMA
-						+ ".tdm_generate_task_field_mappings WHERE task_id = ?", taskId)) {
-					for (Db.Row r : genRows) {
-						generateParamsEditability.put(r.get("param_name").toString(),
-								Boolean.TRUE.equals(r.get("is_editable")));
-					}
-				}
-			}
-			StartTaskValidator.validateInputOverrides(taskRow, inputOverrides, taskGlobalsEditability, generateParamsEditability);
+			StartTaskValidator.validateExecutionInputs(taskId, taskRow, inputOverrides);
 
 			Map<String, Object> overrideParams = new HashMap<>();
 			Map<String, Object> context = resolveTaskContext(taskRow, inputOverrides, overrideParams);
@@ -203,6 +182,9 @@ public class StartTask {
 			Map<String, Object> context, Map<String, Object> overrideParams) throws Exception {
 		String overrideMethod = (String) inputOverrides.get(OverrideParamKey.SELECTION_METHOD);
 		String entitiesList = (String) inputOverrides.get(OverrideParamKey.ENTITY_LIST);
+		if (inputOverrides.containsKey(OverrideParamKey.ENTITY_LIST) && entitiesList == null) {
+			throw new TdmValidationException("Invalid input", "ENTITY_LIST override cannot be null.");
+		}
 		Integer numEntitiesOverride = null;
 		if (inputOverrides.containsKey(OverrideParamKey.NO_OF_ENTITIES)) {
 			Object value = inputOverrides.get(OverrideParamKey.NO_OF_ENTITIES);
@@ -829,7 +811,6 @@ public class StartTask {
 
 	private static String fnGetTaskCreatedBy(long taskID) throws SQLException {
         String createdBy = "" + db(TDM).fetch("SELECT task_created_by FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id=?", taskID).firstValue();
-        String userName = createdBy.split("##")[0];
-		return userName;
+		return createdBy;
     }
 }

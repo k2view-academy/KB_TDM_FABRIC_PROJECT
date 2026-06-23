@@ -86,13 +86,13 @@ stages:
           script:
             const:
               userCode: |-
-                var base = JSON.parse(baseParams || '{}');
-                var overrides = JSON.parse(overrideParams || '{}');
+                var base = JSON.parse(baseParams || '{}') || {};
+                var overrides = JSON.parse(overrideParams || '{}') || {};
                 Object.keys(overrides).forEach(function(k) { base[k] = overrides[k]; });
                 JSON.stringify(base);
               script: |-
-                var base = JSON.parse(baseParams || '{}');
-                var overrides = JSON.parse(overrideParams || '{}');
+                var base = JSON.parse(baseParams || '{}') || {};
+                var overrides = JSON.parse(overrideParams || '{}') || {};
                 Object.keys(overrides).forEach(function(k) { base[k] = overrides[k]; });
                 JSON.stringify(base);
           baseParams:
