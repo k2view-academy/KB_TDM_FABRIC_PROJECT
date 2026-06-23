@@ -847,6 +847,7 @@ public class SharedLogic {
 			boolean sourceCanRun = true;
 			boolean targetCanRun = true;
 			boolean forceSelectionMethod = !randomEditable ;
+			boolean forceEntitesNum = !maxEntitiesEditable ;
 			if (sourceRequired) {
 				sourceCanRun = canUserPerformTaskOperation(
 						userName,
@@ -855,7 +856,7 @@ public class SharedLogic {
 						taskType, syncMode, reserveInd, deleteBeforeLoad, replaceSequences,
 						cloneInd, refreshReferenceData, versionInd, scheduler,
 						selectionMethod, numOfEntities, "RUN",
-						maxEntitiesEditable, forceSelectionMethod, userEnvs);
+						forceEntitesNum, forceSelectionMethod, userEnvs);
 			}
 
 			if (targetRequired) {
@@ -866,7 +867,7 @@ public class SharedLogic {
 						taskType, syncMode, reserveInd, deleteBeforeLoad, replaceSequences,
 						cloneInd, refreshReferenceData, versionInd, scheduler,
 						selectionMethod, numOfEntities, "RUN",
-						maxEntitiesEditable, forceSelectionMethod, userEnvs);
+						forceEntitesNum, forceSelectionMethod, userEnvs);
 			}
 
 			if (!sourceCanRun) {
@@ -1673,9 +1674,14 @@ public class SharedLogic {
 			} else if (sourceRequired) {
 				maxEntitiesPerTask = allowedToRead;
 			} else if (targetRequired) {
-				maxEntitiesPerTask = reserveInd
-						? maxEntitiesLimit(allowedToWrite, allowedToReserve)
-						: allowedToWrite;
+				if("RESERVE".equalsIgnoreCase(taskType)) {
+					maxEntitiesPerTask = allowedToReserve;
+				} else {
+					maxEntitiesPerTask = reserveInd
+							? maxEntitiesLimit(allowedToWrite, allowedToReserve)
+							: allowedToWrite;
+				}
+
 			} else {
 				maxEntitiesPerTask = 0;
 			}

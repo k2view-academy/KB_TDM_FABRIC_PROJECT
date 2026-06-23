@@ -52,11 +52,11 @@ stages:
         in:
           date:
             link: Now/date
-      Getk2SystemSchemaName:
+      getk2SystemSchemaName:
         parent: InnerFlow
         in:
           flowName:
-            const: Getk2SystemSchemaName
+            const: getk2SystemSchemaName
         out:
           result:
             schema: string
@@ -102,7 +102,7 @@ stages:
             schema: string
             mandatory: false
           k2system:
-            link: Getk2SystemSchemaName/result
+            link: getk2SystemSchemaName/result
             schema: string
             mandatory: false
         out:
@@ -173,7 +173,7 @@ stages:
           sql:
             const: update ${@k2system}.task_executions set status='FAILED' where id=${id}
           k2system:
-            link: Getk2SystemSchemaName/result
+            link: getk2SystemSchemaName/result
             schema: string
             mandatory: false
           id:

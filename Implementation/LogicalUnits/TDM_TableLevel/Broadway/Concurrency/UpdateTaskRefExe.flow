@@ -22,7 +22,7 @@ stages:
               update ${@TDMDB_SCHEMA}.task_ref_exe_stats
                set execution_status='completed',
                number_of_processed_records = number_of_records_to_process ,
-               number_of_failed_records = 0
+               number_of_failed_records = 0, end_time = NOW()
                where task_execution_id=${task_execution_id} AND batch_id=${batch_id} AND execution_action='Delete' and execution_status = 'running';
           TDMDB_SCHEMA:
             link: getTDMDBSchema1/schema

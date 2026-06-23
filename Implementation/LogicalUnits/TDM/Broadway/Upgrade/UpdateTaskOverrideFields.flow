@@ -1,0 +1,77 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      task_id:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: task_id
+        out:
+          value:
+            schema: integer
+  Update task_override_fields:
+    actors:
+      UpdateOverrideFields:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.tasks
+              SET task_override_fields =
+                  COALESCE(task_override_fields, '{}'::jsonb) ||
+                  jsonb_build_object(
+                      'business_entity',
+                          '{"field_connector":"be_name","is_editable":false}'::jsonb || COALESCE(task_override_fields->'business_entity', '{}'::jsonb),
+                      'task_globals',
+                          '{"field_connector":"task_globals"}'::jsonb       || COALESCE(task_override_fields->'task_globals', '{}'::jsonb)       || '{"is_editable":true}'::jsonb,
+                      'source_environment',
+                          '{"field_connector":"source_env_name"}'::jsonb    || COALESCE(task_override_fields->'source_environment', '{}'::jsonb)  || '{"is_editable":true}'::jsonb,
+                      'target_environment',
+                          '{"field_connector":"environment_name"}'::jsonb   || COALESCE(task_override_fields->'target_environment', '{}'::jsonb)  || '{"is_editable":true}'::jsonb,
+                      'selection_method',
+                          '{"field_connector":"selection_method"}'::jsonb   || COALESCE(task_override_fields->'selection_method', '{}'::jsonb) ||
+                          jsonb_build_object(
+                              'entity_list',         COALESCE(task_override_fields->'selection_method'->'entity_list',         '{}'::jsonb) || '{"is_editable":true}'::jsonb,
+                              'max_entities',        COALESCE(task_override_fields->'selection_method'->'max_entities',        '{}'::jsonb) || '{"is_editable":true}'::jsonb,
+                              'custom_logic',        '{"is_editable":false}'::jsonb || COALESCE(task_override_fields->'selection_method'->'custom_logic', '{}'::jsonb) ||
+                                                     jsonb_build_object('can_add_params', '{"is_editable":false}'::jsonb || COALESCE(task_override_fields->'selection_method'->'custom_logic'->'can_add_params', '{}'::jsonb)),
+                              'random',              '{"is_editable":false}'::jsonb || COALESCE(task_override_fields->'selection_method'->'random',              '{}'::jsonb),
+                              'business_parameters', '{"is_editable":false}'::jsonb || COALESCE(task_override_fields->'selection_method'->'business_parameters', '{}'::jsonb),
+                              'generate_data_params','{"is_editable":false}'::jsonb || COALESCE(task_override_fields->'selection_method'->'generate_data_params', '{}'::jsonb) ||
+                                                     jsonb_build_object('can_add_params', '{"is_editable":false}'::jsonb || COALESCE(task_override_fields->'selection_method'->'generate_data_params'->'can_add_params', '{}'::jsonb))
+                          ),
+                      'data_version_name',
+                          '{"field_connector":"data_version_name"}'::jsonb  || COALESCE(task_override_fields->'data_version_name', '{}'::jsonb)  || '{"is_editable":true}'::jsonb,
+                      'retention_period',
+                          '{"field_connector":"retention_period"}'::jsonb   || COALESCE(task_override_fields->'retention_period', '{}'::jsonb)   || '{"is_editable":true}'::jsonb,
+                      'reservation_period',
+                          '{"field_connector":"reservation_period"}'::jsonb || COALESCE(task_override_fields->'reservation_period', '{}'::jsonb)  || '{"is_editable":true}'::jsonb
+                  )
+              WHERE task_id = COALESCE(${task_id}, task_id)
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM ${@TDMDB_SCHEMA}.task_group_mapping tgm
+                    JOIN ${@TDMDB_SCHEMA}.task_groups tg ON tgm.task_group_id = tg.task_group_id
+                    WHERE tgm.task_id = tasks.task_id
+                      AND tg.task_group_name = 'Product predefined tasks'
+                )
+          task_id:
+            link: task_id/value
+            schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false

@@ -49,10 +49,12 @@ public class SharedLogic {
                 paramsJson = Json.get().toJson(params);
             }
             
-            db(TDM).execute("INSERT INTO " + schema + ".TASKS_EXE_PROCESS (task_id, process_id,process_name, execution_order,process_type, parameters) VALUES (?,?,?,?,?,?)",
+            db(TDM).execute("INSERT INTO " + schema + 
+				".TASKS_EXE_PROCESS (task_id, process_id,process_name, lu_name, execution_order,process_type, parameters) VALUES (?,?,?,?,?,?,?)",
                     taskId,
                     postExecutionProcess.get("process_id"),
                     postExecutionProcess.get("process_name"),
+					postExecutionProcess.get("lu_name"),
                     postExecutionProcess.get("execution_order"),
                     processType,
                     paramsJson
@@ -98,6 +100,7 @@ public class SharedLogic {
         process.put("process_description", description);
         process.put("process_id", id);
         process.put("execution_order", order);
+		process.put("lu_name", "TDM");
         return process;
     }
 
@@ -336,7 +339,11 @@ public class SharedLogic {
                 String taskExecutionID = "" + task_execution_id;
 				//log.info("fabricExecID: <" + fabricExecID + ">");
 				if(batchInfo.get("fabric_execution_id") != null) {
-	                ludb().execute("batch_cancel '" + batchInfo.get("fabric_execution_id") + "'");
+                    try {
+                        ludb().execute("batch_cancel '" + batchInfo.get("fabric_execution_id") + "'");
+                    } catch (Exception batchEx) {
+                        log.warn("fnStopTaskExecution - batch_cancel skipped for {}: {}", batchInfo.get("fabric_execution_id"), batchEx.getMessage());
+                    }
 				}
                 // TDM 7.1 Fix, stop execution of reference tables.
                 //log.info("fnStopTaskExecution - Stopping the reference Handling for task_execution_id: " + task_execution_id + ", task_type: " + taskType);
@@ -420,8 +427,8 @@ public class SharedLogic {
 				"INSERT INTO " + schema + ".task_ref_exe_stats " +
 				"(task_id, task_execution_id, task_ref_table_id, ref_table_name, interface_name, schema_name, " +
 				" table_filter, filter_type, filter_parameters, " +
-				" update_date, execution_status, number_of_processed_records, execution_action) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				" update_date, execution_status, number_of_processed_records, execution_action,table_order) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				taskID,
 				taskExecutionId,
 				ref.get("task_ref_table_id"),
@@ -434,7 +441,8 @@ public class SharedLogic {
 				now,
 				"pending",
 				0,
-				executionAction
+				executionAction,
+				-1
 		);
 	}
 
@@ -508,17 +516,29 @@ public class SharedLogic {
         Db.Rows batchIdList = null;
         try {
 			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to resume task execution", null);
-            // Disable resume for any task that has reference tables (pure table-level or entities+tables)
-            if (db(TDM).fetch("SELECT 1 FROM " + schema + ".task_ref_exe_stats WHERE task_execution_id = ? LIMIT 1",
-                    task_execution_id).firstValue() != null) {
+            // Get the selection_method for this task execution
+            Object selectionMethodObj = db(TDM).fetch(
+                "SELECT t.selection_method FROM " + schema + ".tasks t " +
+                "JOIN " + schema + ".task_execution_list l ON l.task_id = t.task_id " +
+                "WHERE l.task_execution_id = ? LIMIT 1", task_execution_id).firstValue();
+            String selectionMethod = selectionMethodObj != null ? selectionMethodObj.toString() : "";
+
+            // Pure table-level tasks are not supported for resume
+            if ("TABLES".equalsIgnoreCase(selectionMethod)) {
                 return wrapWebServiceResults("FAILED", "Resume is not supported for table level tasks", null);
             }
+
+            // Check if this is an entities+tables task (selection_method != 'TABLES' but has table entries)
+            boolean hasTableEntries = db(TDM).fetch(
+                "SELECT 1 FROM " + schema + ".task_ref_exe_stats WHERE task_execution_id = ? LIMIT 1",
+                task_execution_id).firstValue() != null;
+
             //log.info("fnResumeTaskExecution - Starting");
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
             batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, selection_method, l.task_type from " + 
 					schema + ".task_execution_list l, " + schema + ".tasks t " +
                     "where task_execution_id = ? and l.task_id = t.task_id " +
-                    "and (fabric_execution_id is not null or  selection_method = 'TABLES') and UPPER(execution_status)= 'STOPPED'", task_execution_id);
+                    "and fabric_execution_id is not null and UPPER(execution_status)= 'STOPPED'", task_execution_id);
 
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running', end_execution_time=null where " + 
 							"fabric_execution_id is not null " +
@@ -532,10 +552,15 @@ public class SharedLogic {
                             "and lower(execution_status) = 'stopped'",
                     task_execution_id);
 
-            // TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
-
-            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume', end_time=null " + 
-                "where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
+            if (hasTableEntries) {
+                // Entities+tables task: fail the stopped table entries so only LU executions resume
+                db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='failed', end_time=current_timestamp at time zone 'utc' " +
+                    "where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
+            } else {
+                // TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
+                db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume', end_time=null " +
+                    "where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
+            }
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
             //TDM 6.0 - Loop over the list of migrate IDs
@@ -543,7 +568,11 @@ public class SharedLogic {
                 fabric().execute("delete instance TDM.?", task_execution_id);
                 db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
 				if(batchInfo.get("fabric_execution_id") != null) {
-	                fabric().execute("batch_retry '" + batchInfo.get("fabric_execution_id") + "' allow_cancelled=true");
+                    try {
+                        fabric().execute("batch_retry '" + batchInfo.get("fabric_execution_id") + "' allow_cancelled=true");
+                    } catch (Exception batchEx) {
+                        log.warn("fnResumeTaskExecution - batch_retry skipped for {}: {}", batchInfo.get("fabric_execution_id"), batchEx.getMessage());
+                    }
 				}
                 // TDM 7.1 Fix, resume execution of reference tables.
                 //log.info("fnResumeTaskExecution - Resume Reference");
@@ -1929,16 +1958,21 @@ public class SharedLogic {
 		for (String paramName : params.keySet()) {
 			JSONObject paramValue = JSONObject.getJSONObject(paramName);
 			Object value = null;
-			if (paramValue.has("value")) {
-				value = paramValue.get("value");
-				String type = "" + paramValue.get("type");
-				Long order = (Long) paramValue.get("order");
-				boolean isEditable = paramValue.has("is_editable") && paramValue.getBoolean("is_editable");
-				if (value != null) {
-					String sql = "INSERT INTO " + schema + ".tdm_generate_task_field_mappings"
-							+ " values (?, ?, ?, ?, ?, ?)";
-					db(TDM).execute(sql, taskId, paramName, type, value.toString(), order, isEditable);
-				}
+			boolean isEditable = paramValue.has("is_editable") && paramValue.getBoolean("is_editable");
+			if (paramValue.has("value") && !paramValue.isNull("value")) {
+				Object rawValue = paramValue.get("value");
+				value = (rawValue instanceof String) ? rawValue : rawValue.toString();
+			}
+			String type = "" + paramValue.get("type");
+			Object orderRaw = paramValue.has("order") ? paramValue.get("order") : null;
+			Long order = orderRaw != null ? ((Number) orderRaw).longValue() : null;
+			if (!isEditable && value == null && order != null && order < 99999999L) {
+				throw new Exception("Generate parameter '" + paramName + "' is locked and must have a non-null value.");
+			}
+			if (value != null || isEditable) {
+				String sql = "INSERT INTO " + schema + ".tdm_generate_task_field_mappings"
+						+ " values (?, ?, ?, ?, ?, ?)";
+				db(TDM).execute(sql, taskId, paramName, type, value, order, isEditable);
 			}
 		}
 	}

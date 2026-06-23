@@ -887,7 +887,7 @@ public class Logic extends UserCode {
             return fnGetTaskReferenceTableForSpecificTable(taskExecutionId, interfaceName, schemaName, tableName);
         }
 
-        private static Map<String, Object> fnLoadTargetInfoFromRefList(String interfaceName, String schemaName,
+        public static Map<String, Object> fnLoadTargetInfoFromRefList(String interfaceName, String schemaName,
                 String tableName, String luName) throws Exception {
             Map<String, Object> targetInfo = new HashMap<>();
 
@@ -969,10 +969,16 @@ public class Logic extends UserCode {
             TableKey key = new TableKey(taskExecutionId, interfaceName, schemaName, tableName);
             Map<String, Object> cachedTableData = executionTableInfo.get(key);
 
-            // 1. Log Cache Miss (Table level)
+            // 1. Lazy load on cache miss (handles worker nodes that don't run LoadTablesDataToCache)
             if (cachedTableData == null) {
-                log.warn(String.format("TDM Cache Miss: Table [%s.%s] is not initialized in the cache.",
-                        schemaName, tableName));
+                log.info(String.format("TDM Cache Miss: Lazy loading table [%s.%s] for execution [%d].",
+                        schemaName, tableName, taskExecutionId));
+                cachedTableData = lazyLoadTableInfo(interfaceName, schemaName, tableName, taskExecutionId);
+            }
+
+            if (cachedTableData == null) {
+                log.warn(String.format("TDM Cache Miss: Table [%s.%s] could not be loaded for execution [%d].",
+                        schemaName, tableName, taskExecutionId));
                 return null;
             }
 
@@ -1091,6 +1097,46 @@ public class Logic extends UserCode {
             Map<String, Object> cachedTableData = executionTableInfo.get(key);
             cachedTableData.put(KEY_COUNT, tableCount);
         }   
+
+        private static Map<String, Object> lazyLoadTableInfo(String interfaceName, String schemaName,
+                String tableName, Long taskExecutionId) throws Exception {
+            TableKey key = new TableKey(taskExecutionId, interfaceName, schemaName, tableName);
+
+            Map<String, Object> cached = executionTableInfo.get(key);
+            if (cached != null) return cached;
+
+            Integer order = 0;
+            try {
+                Object orderVal = db(TDM).fetch(
+                        "SELECT table_order FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+                        "WHERE task_execution_id = ? AND interface_name = ? AND schema_name = ? AND ref_table_name = ? LIMIT 1",
+                        taskExecutionId, interfaceName, schemaName, tableName).firstValue();
+                if (orderVal != null && !orderVal.toString().isEmpty()) {
+                    order = Integer.valueOf(orderVal.toString());
+                }
+            } catch (Exception e) {
+                log.warn("lazyLoadTableInfo: could not retrieve table_order for " + schemaName + "." + tableName + ": " + e.getMessage());
+            }
+
+            boolean isInPlaceMasking = false;
+            try {
+                Object flag = db(TDM).fetch(
+                        "SELECT t.in_place_masking_ind FROM " + TDMDB_SCHEMA + ".tasks t " +
+                        "JOIN " + TDMDB_SCHEMA + ".task_execution_list e ON t.task_id = e.task_id " +
+                        "WHERE e.task_execution_id = ? LIMIT 1",
+                        taskExecutionId).firstValue();
+                isInPlaceMasking = flag != null && Boolean.parseBoolean(flag.toString());
+            } catch (Exception e) {
+                log.warn("lazyLoadTableInfo: could not retrieve in_place_masking_ind for execution " + taskExecutionId + ": " + e.getMessage());
+            }
+
+            Map<String, Object> loaded = loadAllTableConfig(interfaceName, schemaName, tableName,
+                    taskExecutionId, order, isInPlaceMasking);
+
+            // putIfAbsent handles the race: whichever thread wins sets the value; losers discard their copy
+            Map<String, Object> existing = executionTableInfo.putIfAbsent(key, loaded);
+            return existing != null ? existing : loaded;
+        }
 
         public static void fnClearTaskCache(Long taskExecutionId) {
             if (taskExecutionId == null)

@@ -877,6 +877,7 @@ public class SharedLogic {
         if ("ALL".equalsIgnoreCase(luName) || luName == null || Util.isEmpty(luName)) {
             luName = "TDM";
         }
+
         Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName + "'");
         for (Db.Row row : rows) {
             if (!"LU_NAME".equalsIgnoreCase("" + row.get("name"))
@@ -920,31 +921,31 @@ public class SharedLogic {
         return result;
     }
 
-    public static List<HashMap<String, Object>> fnGetExecutionProcessParams(String processType, String[] processesList)
+    public static List<HashMap<String, Object>> fnGetExecutionProcessParams(String processType, List<Map<String, String>> processesList)
             throws Exception {
         List<HashMap<String, Object>> result = new ArrayList<>();
-        String luName = "";
+        
         Map<String, Object> processInputs = new HashMap<>();
         processInputs.put("Process_type", processType);
-        for (String processName : processesList) {
+        for (Map<String, String> processRec : processesList) {
+            String processName =  processRec.get("processName");
+            String luName = processRec.get("luName");
             processInputs.put("Process_name", processName);
             List<Map<String, Object>> processList = MtableLookup("PostAndPreExecutionProcess", processInputs,
                     MTable.Feature.caseInsensitive);
             for (Map<String, Object> t : processList) {
                 Object luNameObj = t.get("Lu_name");
-                if (luNameObj != null) {
-                    luName = luNameObj.toString();
-                    break;
+                if ((luNameObj == null && "".equals(luName)) ||
+                    luNameObj.equals(luName)) {
+
+                    List<Map<String, Object>> flowParams = fnGetFlowParams(luName, processName);
+                    HashMap<String, Object> tmp = new HashMap<>();
+                    tmp.put("process_name", processName);
+                    tmp.put("lu_name", luName);
+                    tmp.put("editors", flowParams);
+                    result.add(tmp);
                 }
             }
-            if ("".equals(luName) && processList.size() > 0) {
-                luName = "TDM";
-            }
-            List<Map<String, Object>> flowParams = fnGetFlowParams(luName, processName);
-            HashMap<String, Object> tmp = new HashMap<>();
-            tmp.put("process_name", processName);
-            tmp.put("editors", flowParams);
-            result.add(tmp);
         }
         return result;
     }

@@ -124,6 +124,10 @@ public class TdmExecuteTask {
                                 "start_execution_time = ? " +
                                 "WHERE task_execution_id = ? AND lu_id = ? AND process_id = ? AND LOWER(execution_status) = 'pending' and start_execution_time is null",
                                 startTime, taskExecutionID, luID, processID);
+                db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_summary SET " +
+                                "start_execution_time = COALESCE(start_execution_time, ?) " +
+                                "WHERE task_execution_id = ?",
+                                startTime, taskExecutionID);
 
             } catch (SQLException e) {
                 updatedFailedStatus(verticalExecution, taskExecutionID, luID, LU_NAME.get(taskProperties), "Failed to update start_execution_time in task_execution_list", "loadAndReplace");
@@ -1978,7 +1982,7 @@ public class TdmExecuteTask {
                                 "num_of_processed_entities = ?, " +
                                 "num_of_copied_entities = ?, " +
                                 "num_of_failed_entities = ?, " +
-                                "end_execution_time = ? " +
+                                "end_execution_time = COALESCE(end_execution_time, ?) " +
                                 "WHERE task_execution_id=? and lu_id = ? and process_id=0"
                         , status, params[0], params[1], params[2], params[3], params[4],params[5],params[6], taskExecutionID, luID);
             } else {
@@ -1998,7 +2002,7 @@ public class TdmExecuteTask {
                     "num_of_processed_entities = ?, " +
                     "num_of_copied_entities = ?, " +
                     "num_of_failed_entities = ?, " +
-                    "end_execution_time = ? " +
+                    "end_execution_time = COALESCE(end_execution_time, ?) " +
                     "FROM ph " +
                     "WHERE task_execution_id = ? AND " +
                     "(ph.lu_id = task_execution_list.parent_lu_id OR (task_execution_list.parent_lu_id is null AND task_execution_list.lu_id = ?))";
@@ -2228,7 +2232,7 @@ public class TdmExecuteTask {
             "(TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, ERROR_CATEGORY, ERROR_MESSAGE, FLOW_NAME)"
 			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
 		Util.rte(() ->db(TDM).execute(sql, 
-                taskExecutionId, luOrProcessName, "N/A", "N/A", "N/A", 
+                taskExecutionId, luOrProcessName, " ", " ", " ", 
                 "Task Failed", errorMessage, functionName));
     }
 }

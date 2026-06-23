@@ -109,6 +109,16 @@ ALTER TABLE ${@schema}.tdm_be_exe_process ADD CONSTRAINT
 
 CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_exe_process_ix1 ON ${@schema}.tdm_be_exe_process (process_name, be_id, process_type, lu_name);
 
+ALTER TABLE ${@schema}.tasks_exe_process 
+ADD COLUMN IF NOT EXISTS lu_name text;
+
+ALTER TABLE ${@schema}.tasks_exe_process DROP CONSTRAINT
+    IF EXISTS tasks_exe_pkey;
+
+UPDATE ${@schema}.tasks_exe_process SET lu_name = '' WHERE lu_name is null;
+ALTER TABLE ${@schema}.tasks_exe_process ADD CONSTRAINT
+    tasks_exe_pkey PRIMARY KEY (task_id, process_id,process_type, lu_name);
+
 UPDATE ${@schema}.tasks t
 SET env_name = e.environment_name
 FROM ${@schema}.environments e
@@ -196,7 +206,7 @@ VALUES (
     'NA', 'Extract entities', false, 'INHERITED',
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": false, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": false, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 )
 ON CONFLICT DO NOTHING;
 
@@ -226,7 +236,7 @@ VALUES (
     'OTHERS', 'Extract and Load entities', false, 'INHERITED',
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 )
 ON CONFLICT DO NOTHING;
 
@@ -256,7 +266,7 @@ VALUES (
     'OTHERS', 'Load entities (load only)', false, 'INHERITED',
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 )
 ON CONFLICT DO NOTHING;
 
@@ -286,7 +296,7 @@ VALUES (
     'NA', 'Generate entities (rule based)', false, 'INHERITED',
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "generate_data_params": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": false, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "generate_data_params": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": false, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
 
@@ -317,7 +327,7 @@ VALUES (
     'INHERITED', 
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "generate_data_params": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": false}, "entity_list": {"is_editable": false}, "is_editable": false, "custom_logic": {"is_editable": false, "can_add_params": {"is_editable": false}}, "generate_data_params": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": false}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
 
@@ -347,7 +357,7 @@ VALUES (
     'OTHERS', 'Delete entities', false, 'INHERITED',
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
 
@@ -377,7 +387,7 @@ VALUES (
     'OTHERS', 'Reserve entities', false, 'INHERITED', 
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": true, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": true, "field_connector": "reservation_period"}, "source_environment": {"is_editable": false, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
 
@@ -407,7 +417,7 @@ VALUES (
     'OTHERS', 'Clone entities', true, 'INHERITED',
     false, 'admin', 'admin',
     'ALL', true,
-    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}}'
+    '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
 ) 
 ON CONFLICT DO NOTHING;
 
