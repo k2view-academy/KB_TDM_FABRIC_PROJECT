@@ -120,13 +120,6 @@ stages:
         in:
           flowName:
             const: TDMDB
-  Craete Web Role:
-    actors:
-      Add Web Role:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: AddWebRole
   Create K2System If Relevant:
     actors:
       create K2system Schema:
@@ -141,6 +134,13 @@ stages:
         in:
           flowName:
             const: TDMDBUpgradeScripts
+  'Add Web Role For Admin ':
+    actors:
+      Add Web Role:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: AddWebRole
   Get Globals For k2masking:
     actors:
       SEQ_CACHE_INTERFACE:

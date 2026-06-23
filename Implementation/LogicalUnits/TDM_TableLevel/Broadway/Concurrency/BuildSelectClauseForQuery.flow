@@ -8,6 +8,16 @@ stages:
           key:
             const: IN_PLACE_MASKING_IND
             default: false
+      All Table Fields:
+        parent: StringFormat
+        in:
+          format:
+            const: ${tableName}.*
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: format
   Get List of Delete's Keys:
     dependsOn: In Place Masking Indicator
     actors:
@@ -120,7 +130,8 @@ stages:
         parent: Const
         in:
           value:
-            const: t.*
+            const: null
+            link: All Table Fields/string
             schema: string
         out:
           value:
@@ -135,11 +146,13 @@ stages:
         parent: StringFormat
         in:
           format:
-            const: t.*, ${0}
+            const: ${0}, ${1}
           params:
             link:
-              path: Build list of Fields/string
+            - path: All Table Fields/string
               pos: 0
+            - path: Build list of Fields/string
+              pos: 1
         out:
           string:
             external: result

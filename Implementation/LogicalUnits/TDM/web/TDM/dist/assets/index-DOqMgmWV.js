@@ -15855,8 +15855,9 @@ var fetchData$3 = async (path, body, method) => {
 	if (response.isError) throw new Error(response.message);
 	if (response.errorCode === "FAILED") {
 		if (path.indexOf("startTask") > 0) {
-			toast?.error(response.result);
-			throw new Error(response.result);
+			const startTaskAPIMessage = `${response.result}: ${response.message}`;
+			toast?.error(startTaskAPIMessage);
+			throw new Error(startTaskAPIMessage);
 		}
 		toast?.error(response.message);
 		throw new Error(response.message);
@@ -17715,7 +17716,7 @@ createLucideIcon("arrow-left-right", [
 		key: "h6l3hr"
 	}]
 ]);
-createLucideIcon("arrow-left", [["path", {
+var ArrowLeft = createLucideIcon("arrow-left", [["path", {
 	d: "m12 19-7-7 7-7",
 	key: "1l729n"
 }], ["path", {
@@ -52379,6 +52380,8 @@ var Container$48 = ct.div`
 var ParamsContainer$1 = ct.div`
     width: 100%;
     position: relative;
+    border: solid 1px #ccc;
+    border-radius: 3px;
 `;
 var ParamsList$1 = ct.ul`
     padding: 0;
@@ -52387,9 +52390,8 @@ var ParamsList$1 = ct.ul`
     max-height: 235px;
     overflow: auto;
     max-width: 100%;
-    border-radius: 3px;
-    box-shadow: 0 0 9px 1px rgba(51, 51, 51, 0.2);
-    border: solid 1px #ccc;
+    border: none;
+    border-top: 1px solid #ccc;
     background-color: #fff;
 
 `;
@@ -52504,23 +52506,36 @@ var DataGenerationSelectTitle = ct.div`
     letter-spacing: normal;
     text-align: left;
     color: #2e2e2e;
-    margin-bottom: 7px;
     display: flex;
     margin-left: 38px;
-    align-items:center;
-    padding-top: 3px;
+    align-items: center;
+    height: 34px;
+`;
+var AddParamsAtExecution$1 = ct.div`
+    padding-bottom: 15px;
+`;
+var HorizontalSeparator$1 = ct.div`
+    border-top: 1px solid #ccc;
+    margin: 0 0 15px 0;
+`;
+var SearchInputWrapper$2 = ct.div`
+    & input {
+        border: none;
+        border-top: 1px solid rgb(204, 204, 204);
+        border-radius: 0;
+    }
 `;
 var ParamsIconsRight$1 = ct.div`
     z-index: 100;
     position: absolute;
     right: 10px;
-    top: 4px;
+    top: 7px;
 `;
 var ParamsIconsLeft$1 = ct.div`
     z-index: 100;
     position: absolute;
     left: 14px;
-    top: 4px;
+    top: 7px;
 `;
 function useClickAway(cb) {
 	const ref = import_react.useRef(null);
@@ -60769,8 +60784,8 @@ function TDMTextArea(props) {
 //#endregion
 //#region src/containers/Task/Froms/DataSubset/EntityList.tsx
 function EntityList(props) {
-	const { register, clearErrors, errors, unregister, resetField, taskData, saveForm, getOverrideParamIsEditable, saveOverrideParams, viewMode } = (0, import_react.useContext)(TaskContext);
-	const { selection_param_value, maxToCopy } = taskData;
+	const { register, clearErrors, errors, unregister, resetField, taskData, saveForm, getOverrideParamIsEditable, saveOverrideParams, viewMode, permissions } = (0, import_react.useContext)(TaskContext);
+	const { selection_param_value } = taskData;
 	const localChange = (0, import_react.useCallback)((value) => {
 		saveForm({
 			selection_param_value: value,
@@ -60778,9 +60793,9 @@ function EntityList(props) {
 		});
 	}, [saveForm]);
 	const validateEntites = (0, import_react.useCallback)((value) => {
-		if (value && value.split(",").length > (maxToCopy || 0)) return `The number of entities cannot exceed ${maxToCopy || 0} entities.`;
+		if (value && value.split(",").length > (permissions?.max_entities_per_task || 0)) return `The number of entities cannot exceed ${permissions?.max_entities_per_task || 0} entities.`;
 		return true;
-	}, [maxToCopy]);
+	}, [permissions?.max_entities_per_task]);
 	(0, import_react.useEffect)(() => {
 		unregister("selection_param_value");
 		return () => {
@@ -60790,7 +60805,7 @@ function EntityList(props) {
 	const entityListIsEditable = getOverrideParamIsEditable("selection_method.entity_list");
 	const MAX_SAFE = 9007199254740992;
 	const typedCount = selection_param_value ? selection_param_value.split(",").filter((s) => s.trim() !== "").length : 0;
-	const showMax = maxToCopy !== MAX_SAFE;
+	const showMax = permissions?.max_entities_per_task !== MAX_SAFE;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Container$40, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(OverrideParamsContainer, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OverrideParams, {
 			fieldname: "selection_method.entity_list",
@@ -60814,7 +60829,7 @@ function EntityList(props) {
 			error: errors.selection_param_value?.message,
 			disabled: viewMode
 		}),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(EntityCounter$1, { children: showMax ? `${typedCount}/${maxToCopy}` : `${typedCount}` })
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(EntityCounter$1, { children: [showMax ? `${typedCount}/${permissions?.max_entities_per_task}` : `${typedCount}`, " entities"] })
 	] });
 }
 //#endregion
@@ -60869,6 +60884,8 @@ var ParamsWidget = ct.div`
 var ParamsContainer = ct.div`
     width: 100%;
     position: relative;
+    border: solid 1px #ccc;
+    border-radius: 3px;
 `;
 var ParamsList = ct.ul`
     padding: 0;
@@ -60877,9 +60894,8 @@ var ParamsList = ct.ul`
     max-height: 235px;
     overflow: auto;
     max-width: 100%;
-    border-radius: 3px;
-    box-shadow: 0 0 9px 1px rgba(51, 51, 51, 0.2);
-    border: solid 1px #ccc;
+    border: none;
+    border-top: 1px solid #ccc;
     background-color: #fff;
 
 `;
@@ -60932,13 +60948,27 @@ var ParamsIconsRight = ct.div`
     z-index: 100;
     position: absolute;
     right: 4px;
-    top: 4px;
+    top: 7px;
 `;
 var ParamsIconsLeft = ct.div`
     z-index: 100;
     position: absolute;
     left: 14px;
-    top: 4px;
+    top: 7px;
+`;
+var AddParamsAtExecution = ct.div`
+    padding-bottom: 15px;
+`;
+var HorizontalSeparator = ct.div`
+    border-top: 1px solid #ccc;
+    margin: 0 0 15px 0;
+`;
+var SearchInputWrapper$1 = ct.div`
+    & input {
+        border: none;
+        border-top: 1px solid rgb(204, 204, 204);
+        border-radius: 0;
+    }
 `;
 var CustomLogicSearchHeader = ct.div`
     font-family: Roboto;
@@ -60950,11 +60980,10 @@ var CustomLogicSearchHeader = ct.div`
     letter-spacing: normal;
     text-align: left;
     color: #2e2e2e;
-    margin-bottom: 7px;
     display: flex;
     margin-left: 38px;
-    align-items:center;
-    padding-top: 3px;
+    align-items: center;
+    height: 34px;
 `;
 //#endregion
 //#region src/components/TriStateCheckbox/styles.ts
@@ -61076,6 +61105,7 @@ function CustomLogic(props) {
 	const saveOverrideParams = contextValue?.saveOverrideParams || (() => {});
 	const disabled = props.disabled || false;
 	const [paramsLocked, setParamsLocked] = (0, import_react.useState)(false);
+	const key = props.key || 0;
 	const { selection_param_value, parameters, be_name, source_environment_name, environment_name, customLogicParams, maxToCopy } = taskData;
 	const [loading, setLoading] = (0, import_react.useState)(true);
 	const [customLogicFlows, setCustomLogicFlows] = (0, import_react.useState)([]);
@@ -61105,7 +61135,12 @@ function CustomLogic(props) {
 			}
 		}
 		fetchCutomLogicFlows();
-	}, [be_name]);
+	}, [
+		be_name,
+		key,
+		environment_name,
+		source_environment_name
+	]);
 	(0, import_react.useEffect)(() => {
 		if (controlParamChange && selection_param_value) {
 			const found = customLogicFlows.find((it) => it.flowName === selection_param_value);
@@ -61168,6 +61203,7 @@ function CustomLogic(props) {
 		const index = customParamsTemp.findIndex((param) => param.name === name);
 		if (index >= 0) {
 			customParamsTemp[index].value = value;
+			if (!value && !customParamsTemp[index].is_editable) customParamsTemp[index].is_editable = true;
 			if (customParamsTemp[index] && customParamsTemp[index].editor) {
 				const editorTemp = customParamsTemp[index].editor;
 				if (editorTemp) editorTemp.value = value;
@@ -61276,7 +61312,7 @@ function CustomLogic(props) {
 						saveForm({ customLogicParams });
 					},
 					hide: controlParamChange,
-					disabled: selection_method_lock_value,
+					disabled: selection_method_lock_value || !customLogicParam.value,
 					children: getInfoIcon(customLogicParam)
 				})
 			})]
@@ -61304,7 +61340,8 @@ function CustomLogic(props) {
 	}, [customLogicParams, saveForm]);
 	const changeLockAllParams = (0, import_react.useCallback)((value) => {
 		customLogicParams?.forEach((it) => {
-			it.is_editable = value;
+			if (it.value) it.is_editable = value;
+			else it.is_editable = true;
 		});
 		setParamsLocked(value);
 		saveForm({ customLogicParams });
@@ -61318,81 +61355,81 @@ function CustomLogic(props) {
 	}, [selection_method_lock_value]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: customLogicParams?.length === 0 && controlParamChange ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Container$38, {
 		execution_view: controlParamChange,
-		children: [!controlParamChange ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LeftSide$3, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NumberOfEntities, {
-				overrideParams: {
-					fieldname: "selection_method.max_entities",
-					getOverrideParamIsEditable,
-					onLockToggle: saveOverrideParams,
-					disabled: getOverrideParamIsEditable("selection_method")
-				},
-				width: "300px",
-				disabled,
-				title: "Max number of entities"
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TDMSelect, {
-				...register("selection_method_custom_logic", { validate: () => !getOverrideParamIsEditable("selection_method.custom_logic") ? selectedCustomLogicFlow ? true : "Please select a custom logic" : true }),
-				overrideParams: {
-					fieldname: "selection_method.custom_logic",
-					getOverrideParamIsEditable,
-					onLockToggle: saveOverrideParams,
-					hide: controlParamChange,
-					disabled: getOverrideParamIsEditable("selection_method")
-				},
-				title: "Select custom logic",
-				mandatory: !getOverrideParamIsEditable("selection_method.custom_logic"),
-				options: customLogicFlows,
-				value: selectedCustomLogicFlow,
-				onChange: updateCustomFlow,
-				width: "300px",
-				disabled: controlParamChange && getOverrideParamIsEditable("selection_method.custom_logic") || disabled,
-				error: errors?.["selection_method_custom_logic"]?.message,
-				isSubmitted: submittedForm
-			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-				name: "enable_run_time_execution_custom_logic",
-				title: "Allow runtime parameters",
-				onChange: (value) => {
-					saveOverrideParams("selection_method.custom_logic.can_add_params", value || false);
-				},
-				value: getOverrideParamIsEditable("selection_method.custom_logic.can_add_params"),
-				disabled: selection_param_value === ""
-			}) })
-		] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}), selectedCustomLogicFlow && (customLogicParams?.length || 0) > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Params, {
+		children: [!controlParamChange ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LeftSide$3, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NumberOfEntities, {
+			overrideParams: {
+				fieldname: "selection_method.max_entities",
+				getOverrideParamIsEditable,
+				onLockToggle: saveOverrideParams,
+				disabled: getOverrideParamIsEditable("selection_method")
+			},
+			width: "300px",
+			disabled,
+			title: "Max number of entities"
+		}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TDMSelect, {
+			...register("selection_method_custom_logic", { validate: () => !getOverrideParamIsEditable("selection_method.custom_logic") ? selectedCustomLogicFlow ? true : "Please select a custom logic" : true }),
+			overrideParams: {
+				fieldname: "selection_method.custom_logic",
+				getOverrideParamIsEditable,
+				onLockToggle: saveOverrideParams,
+				hide: controlParamChange,
+				disabled: getOverrideParamIsEditable("selection_method")
+			},
+			title: "Select custom logic",
+			mandatory: !getOverrideParamIsEditable("selection_method.custom_logic"),
+			options: customLogicFlows,
+			value: selectedCustomLogicFlow,
+			onChange: updateCustomFlow,
+			width: "300px",
+			disabled: controlParamChange && getOverrideParamIsEditable("selection_method.custom_logic") || disabled,
+			error: errors?.["selection_method_custom_logic"]?.message,
+			isSubmitted: submittedForm
+		}) })] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}), selectedCustomLogicFlow && (customLogicParams?.length || 0) > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Params, {
 			fullView: controlParamChange,
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsSelect, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ParamsContainer, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsLeft, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriStateCheckbox, {
-					title: "",
-					name: "select_all_custom_params",
-					value: getSelectAllValue(),
-					onChange: changeSelectAllParams,
-					disabled: disabled || controlParamChange && !can_add_params_value
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ParamsSelect, { children: [
+				!controlParamChange && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddParamsAtExecution, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+					name: "enable_run_time_execution_custom_logic",
+					title: "Add parameters at execution",
+					onChange: (value) => {
+						saveOverrideParams("selection_method.custom_logic.can_add_params", value || false);
+					},
+					value: getOverrideParamIsEditable("selection_method.custom_logic.can_add_params"),
+					disabled: selection_param_value === ""
 				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsRight, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OverrideParams, {
-					fieldname: "selection_method.custom_logic.can_add_params",
-					lock: paramsLocked,
-					onLockToggle: (fieldName, value) => changeLockAllParams(value),
-					position: "relative",
-					hide: controlParamChange,
-					disabled: selection_method_lock_value,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {})
-				}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CustomLogicSearchHeader, { children: "Custom logic parameters" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TDMInput, {
-					name: "data_generation_parameters",
-					title: "",
-					mandatory: false,
-					value: paramSelectionName,
-					onChange: setParamSelectionName || (() => {}),
-					type: InputTypes.text,
-					placeholder: "Search...",
-					disabled
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsList, { children: customLogicParams?.filter((customLogicParam) => {
-					if (!paramSelectionName) return true;
-					return (customLogicParam?.editor?.name || customLogicParam?.name || "").toLowerCase().indexOf(paramSelectionName.toLowerCase()) >= 0;
-				})?.map((customLogicParam) => getParamItem(customLogicParam)) })
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ParamsWidget, { children: [getFabricParams(), getParams()] })]
+				!controlParamChange && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HorizontalSeparator, {}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ParamsContainer, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsLeft, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriStateCheckbox, {
+						title: "",
+						name: "select_all_custom_params",
+						value: getSelectAllValue(),
+						onChange: changeSelectAllParams,
+						disabled: disabled || controlParamChange && !can_add_params_value
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsRight, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OverrideParams, {
+						fieldname: "selection_method.custom_logic.can_add_params",
+						lock: paramsLocked,
+						onLockToggle: (fieldName, value) => changeLockAllParams(value),
+						position: "relative",
+						hide: controlParamChange,
+						disabled: selection_method_lock_value,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {})
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CustomLogicSearchHeader, { children: "Custom logic parameters" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SearchInputWrapper$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TDMInput, {
+						name: "data_generation_parameters",
+						title: "",
+						mandatory: false,
+						value: paramSelectionName,
+						onChange: setParamSelectionName || (() => {}),
+						type: InputTypes.text,
+						placeholder: "Search...",
+						disabled
+					}) }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsList, { children: customLogicParams?.filter((customLogicParam) => {
+						if (!paramSelectionName) return true;
+						return (customLogicParam?.editor?.name || customLogicParam?.name || "").toLowerCase().indexOf(paramSelectionName.toLowerCase()) >= 0;
+					})?.map((customLogicParam) => getParamItem(customLogicParam)) })
+				] })
+			] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ParamsWidget, { children: [getFabricParams(), getParams()] })]
 		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {})]
 	}) });
 }
@@ -81178,7 +81215,7 @@ function Parameters(props) {
 			entitiesCount
 		] }), !props.disableRuleFieldChanges && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
 			name: "enable_run_time_execution",
-			title: "Allow runtime parameters",
+			title: "Add parameters at execution",
 			onChange: (value) => {
 				saveOverrideParams("selection_method.business_parameters", value || false);
 			},
@@ -81850,7 +81887,7 @@ var convertTaskData = (apiData, copy, task_group_id) => {
 		type: "ID",
 		value: "ME"
 	}];
-	if (taskData.selection_method === "P" || taskData.selection_method === "PR") {
+	if ((taskData.selection_method === "P" || taskData.selection_method === "PR") && taskData.parameters) {
 		if (JSON.parse(taskData.parameters || "")?.group?.rules?.length > 0) taskData.parametersExist = true;
 	}
 	return taskData;
@@ -81859,7 +81896,8 @@ var updateTaskType = (taskData, data) => {
 	data = data || {};
 	let task_type = "";
 	if (taskData.target_env === "ai_training") task_type = "TRAINING";
-	else if (taskData.dataSourceType === "data_source" && !taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind) task_type = "EXTRACT";
+	else if (taskData.dataSourceType === "data_source" && !taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind) if (taskData.source_type === "tables" && taskData.sync_mode === "OFF" && taskData.version_ind === true) task_type = "LOAD";
+	else task_type = "EXTRACT";
 	else if (taskData.dataSourceType === "ai_generated" && taskData.synthetic_type === "new_data") if (!taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind) {
 		task_type = "AI_GENERATED";
 		data.selection_method = "AI_GENERATED";
@@ -81992,7 +82030,10 @@ var prepareDataForSave = (taskData, logicalUnits, copy) => {
 		});
 	}
 	if (taskData.clone_ind) data.num_of_entities = taskData.num_of_clones;
-	data.generateParams = taskData.dataGenerationParams;
+	data.generateParams = taskData?.dataGenerationParams || {};
+	Object.keys(data.generateParams).forEach((key) => {
+		if (data.generateParams[key].order === 99999999) delete data.generateParams[key].is_editable;
+	});
 	updateTaskType(taskData, data);
 	if (taskData.tables_selected && data.task_type === "EXTRACT") data.delete_before_load = false;
 	if (taskData.dataSourceType == "data_source" && taskData.source_type === "tables" && taskData.sync_mode === "OFF" && taskData.version_ind) data.in_place_masking_ind = false;
@@ -82866,10 +82907,11 @@ function DataGenerationParameters(props) {
 	const { synthetic_type, be_id, sourceUserRole } = taskData;
 	const [paramsRefData, setParamsRefData] = (0, import_react.useState)(null);
 	const [paramSelectionName, setParamSelectionName] = (0, import_react.useState)("");
+	const isParamOpen = (0, import_react.useCallback)((key) => dataGenerationParams?.[key]?.is_editable !== false, [dataGenerationParams]);
 	const paramsLocked = (0, import_react.useMemo)(() => {
 		const keys = Object.keys(dataGenerationParams || {});
-		return keys.length > 0 && keys.every((key) => dataGenerationParams[key]?.is_editable);
-	}, [dataGenerationParams]);
+		return keys.length > 0 && keys.every((key) => isParamOpen(key));
+	}, [dataGenerationParams, isParamOpen]);
 	(0, import_react.useEffect)(() => {
 		if (!paramsRefData) return;
 		console.log(paramsRefData.getValues());
@@ -82940,11 +82982,12 @@ function DataGenerationParameters(props) {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OverrideParams, {
 					fieldname: key,
 					position: "relative",
-					lock: dataGenerationParams[key]?.is_editable || false,
+					lock: isParamOpen(key),
 					onLockToggle: (fieldname, is_editable) => {
 						changeLockParam(fieldname, is_editable);
 					},
 					hide: controlParamChange,
+					disabled: !dataGenerationParams[key].value,
 					children: getInfoIcon(dataGenerationParams[key])
 				})
 			})]
@@ -82952,7 +82995,8 @@ function DataGenerationParameters(props) {
 	}, [
 		dataGenerationParams,
 		chosenParams,
-		getSelectedIcon
+		getSelectedIcon,
+		isParamOpen
 	]);
 	const getEditorData = (0, import_react.useCallback)(() => {
 		if (!dataGenerationParams) return;
@@ -83035,70 +83079,70 @@ function DataGenerationParameters(props) {
 					enabledTabs: ["be"],
 					type: "source"
 				})
-			}), be_id ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SyntheticEntitiesOptions$1, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Radio, {
-					onChange: syntheticTypeChange,
-					name: "synthetic_type",
-					value: "new_data",
-					selectedValue: synthetic_type,
-					title: "Generate new data",
-					disabled: sourceUserRole && sourceUserRole.userType === "tester" && !sourceUserRole.allow_read || disabled
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Radio, {
-					onChange: syntheticTypeChange,
-					name: "synthetic_type",
-					value: "generated_data",
-					selectedValue: synthetic_type,
-					disabled,
-					title: "Use generated data in the Test data store"
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: synthetic_type === "new_data" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NumberOfEntities, {
-					disabled,
-					overrideParams: {
-						fieldname: "selection_method.max_entities",
-						getOverrideParamIsEditable,
-						onLockToggle: saveOverrideParams
-					},
-					width: "290px",
-					title: "Number of entities to generate"
-				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}) }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: synthetic_type === "new_data" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-					name: "enable_run_time_execution_ruke_base",
-					title: "Allow runtime parameters",
-					onChange: (value) => {
-						saveOverrideParams("selection_method.generate_data_params.can_add_params", value || false);
-					},
-					value: getOverrideParamIsEditable("selection_method.generate_data_params.can_add_params")
-				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}) })
-			] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {})]
-		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}),
-		synthetic_type === "new_data" && be_id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Middle, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ParamsContainer$1, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsLeft$1, { children: controlParamChange && getOverrideParamIsEditable("selection_method.generate_data_params.can_add_params") || !controlParamChange ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriStateCheckbox, {
+			}), be_id ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SyntheticEntitiesOptions$1, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Radio, {
+				onChange: syntheticTypeChange,
+				name: "synthetic_type",
+				value: "new_data",
+				selectedValue: synthetic_type,
+				title: "Generate new data",
+				disabled: sourceUserRole && sourceUserRole.userType === "tester" && !sourceUserRole.allow_read || disabled
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Radio, {
+				onChange: syntheticTypeChange,
+				name: "synthetic_type",
+				value: "generated_data",
+				selectedValue: synthetic_type,
 				disabled,
-				title: "",
-				name: "select_all_custom_params",
-				value: getSelectAllValue(),
-				onChange: changeSelectAllParams
-			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsRight$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OverrideParams, {
-				fieldname: "selection_method.custom_logic.can_add_params",
-				lock: paramsLocked,
-				onLockToggle: (fieldName, value) => changeLockAllParams(value),
-				position: "relative",
-				hide: controlParamChange,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {})
+				title: "Use generated data in the Test data store"
+			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: synthetic_type === "new_data" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NumberOfEntities, {
+				disabled,
+				overrideParams: {
+					fieldname: "selection_method.max_entities",
+					getOverrideParamIsEditable,
+					onLockToggle: saveOverrideParams
+				},
+				width: "290px",
+				title: "Number of entities to generate"
+			}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}) })] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {})]
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}),
+		synthetic_type === "new_data" && be_id ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Middle, { children: [
+			!controlParamChange && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AddParamsAtExecution$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+				name: "enable_run_time_execution_ruke_base",
+				title: "Add parameters at execution",
+				onChange: (value) => {
+					saveOverrideParams("selection_method.generate_data_params.can_add_params", value || false);
+				},
+				value: getOverrideParamIsEditable("selection_method.generate_data_params.can_add_params")
 			}) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataGenerationSelectTitle, { children: "Data generation parameters" }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TDMInput, {
-				name: "data_generation_parameters",
-				title: "",
-				mandatory: false,
-				value: paramSelectionName,
-				onChange: setParamSelectionName || (() => {}),
-				type: InputTypes.text,
-				placeholder: "Search..."
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsList$1, { children: getParamSelectionOptions().map((key) => getParamItem(key)) })
-		] }) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}),
+			!controlParamChange && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HorizontalSeparator$1, {}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ParamsContainer$1, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsLeft$1, { children: controlParamChange && getOverrideParamIsEditable("selection_method.generate_data_params.can_add_params") || !controlParamChange ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriStateCheckbox, {
+					disabled,
+					title: "",
+					name: "select_all_custom_params",
+					value: getSelectAllValue(),
+					onChange: changeSelectAllParams
+				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsIconsRight$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(OverrideParams, {
+					fieldname: "selection_method.custom_logic.can_add_params",
+					lock: paramsLocked,
+					onLockToggle: (fieldName, value) => changeLockAllParams(value),
+					position: "relative",
+					hide: controlParamChange,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {})
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataGenerationSelectTitle, { children: "Data generation parameters" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SearchInputWrapper$2, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TDMInput, {
+					name: "data_generation_parameters",
+					title: "",
+					mandatory: false,
+					value: paramSelectionName,
+					onChange: setParamSelectionName || (() => {}),
+					type: InputTypes.text,
+					placeholder: "Search..."
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ParamsList$1, { children: getParamSelectionOptions().map((key) => getParamItem(key)) })
+			] })
+		] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {}),
 		be_id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSide$4, { children: synthetic_type === "new_data" && chosenParams && chosenParams.length > 0 && editorData && editorData.length > 0 ? widgetAPIExist ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FabricWidget, {
 			updateValues,
 			editor: getEditorData(),
@@ -83370,16 +83414,19 @@ function EnvironmentSelect(props) {
 	const { be_name, environment_id, onChange, syntheticType, isMandatory, mode, title, disabled = false, fieldName } = props;
 	const toast = useToast();
 	const { taskData, getOverrideParamIsEditable, saveOverrideParams, register, errors, unregister } = (0, import_react.useContext)(TaskContext);
-	const { dataSourceType, source_type, targetReset } = taskData;
+	const { dataSourceType, source_type, targetReset, sourceReset } = taskData;
 	const resolvedFieldName = fieldName || (mode === "SOURCE" ? "source_environment_id" : "target_environment_id");
 	const [selectedEnviornment, setSelectedEnviornment] = (0, import_react.useState)(null);
 	const [loading, setLoading] = (0, import_react.useState)(true);
 	const [environments, setEnvironments] = (0, import_react.useState)([]);
 	(0, import_react.useEffect)(() => {
-		if (targetReset && mode !== "SOUCE") setTimeout(() => {
+		if (targetReset && mode !== "SOURCE") setTimeout(() => {
 			unregister("target_environment_id");
 		}, 200);
-	}, [targetReset]);
+		if (sourceReset && mode === "SOURCE") setTimeout(() => {
+			unregister("source_environment_id");
+		}, 200);
+	}, [targetReset, sourceReset]);
 	(0, import_react.useEffect)(() => {
 		if (isMandatory && register) register(resolvedFieldName, { required: "Please select an environment1" });
 		else if (!isMandatory) unregister(resolvedFieldName);
@@ -84994,7 +85041,13 @@ function ReferenceTables(props) {
 		if (!found_interface?.schemas[schemaKey]?.opened && found_interface?.schemas[schemaKey]?.tables.length === 0) {
 			const data = await taskAPIs.getSchemaTableList(source_environment_name, interface_name, schemaKey);
 			if (sync_mode === "OFF") return data.filter((it) => it.task_execution_id);
-			return data;
+			return data.map((table) => {
+				if (!showVersion) {
+					table.task_execution_id = null;
+					table.task_name = null;
+				}
+				return table;
+			});
 		}
 		return [];
 	}, [
@@ -85252,7 +85305,7 @@ function ReferenceTables(props) {
 //#region src/containers/Task/Froms/DataSourceSettings/index.tsx
 function DataSourceSettingsForm(props) {
 	const { taskData, saveForm, unregister, saveOverrideParams, getOverrideParamIsEditable, viewMode, permissions } = (0, import_react.useContext)(TaskContext);
-	const { be_name, dataSourceType, source_environment_id, mask_sensitive_data, sync_mode, synthetic_type, source_environment_name, environment_sync_mode, version_ind, be_id, source_type, tables_selected, sourceUserRole, fetchPolicy, generateChosenParams, dataGenerationParams, enable_masking_only, target_env, in_place_masking_ind, source_environment_type, advancedLogicalUnits, advancedReferenceTables } = taskData;
+	const { be_name, dataSourceType, source_environment_id, mask_sensitive_data, sync_mode, synthetic_type, source_environment_name, environment_sync_mode, version_ind, be_id, source_type, tables_selected, sourceUserRole, fetchPolicy, generateChosenParams, dataGenerationParams, enable_masking_only, target_env, in_place_masking_ind, source_environment_type, advancedLogicalUnits, advancedReferenceTables, sourceReset } = taskData;
 	const [maskSensitiveDataLocal, setMaskSensitiveDataLocal] = (0, import_react.useState)(mask_sensitive_data || false);
 	const toast = useToast();
 	(0, import_react.useEffect)(() => {
@@ -85448,6 +85501,7 @@ function DataSourceSettingsForm(props) {
 			values.forEach((data) => {
 				if (copyGenerationParams[data.name]) {
 					copyGenerationParams[data.name].value = data.value;
+					if (!copyGenerationParams[data.name].value) copyGenerationParams[data.name].is_editable = true;
 					if (copyGenerationParams[data.name].editor) copyGenerationParams[data.name].editor.value = data.value;
 				}
 			});
@@ -85460,7 +85514,8 @@ function DataSourceSettingsForm(props) {
 		let copyGenerateChosenParams = [...generateChosenParams];
 		data.forEach((item) => {
 			if (item.action === "lock") {
-				copyDataGenerationParams[item.key].is_editable = false;
+				if (copyDataGenerationParams[item.key].order === 99999999 || !copyDataGenerationParams[item.key].value) copyDataGenerationParams[item.key].is_editable = true;
+				else copyDataGenerationParams[item.key].is_editable = false;
 				updateData.dataGenerationParams = copyDataGenerationParams;
 				copyDataGenerationParams = { ...updateData.dataGenerationParams };
 			} else if (item.action === "unlock") {
@@ -85480,7 +85535,7 @@ function DataSourceSettingsForm(props) {
 				copyGenerateChosenParams = [...updateData.generateChosenParams];
 			} else {
 				copyDataGenerationParams[item.key].editor.value = copyDataGenerationParams[item.key].default;
-				copyDataGenerationParams[item.key].value = copyDataGenerationParams[item.key].default;
+				copyDataGenerationParams[item.key].value = void 0;
 				copyDataGenerationParams[item.key].order = 99999999;
 				updateData.dataGenerationParams = copyDataGenerationParams;
 				copyDataGenerationParams = { ...updateData.dataGenerationParams };
@@ -85521,6 +85576,9 @@ function DataSourceSettingsForm(props) {
 	(0, import_react.useEffect)(() => {
 		if (fecthDataPolicyLocal?.value !== fetchPolicy) saveForm({ fetchPolicy: fecthDataPolicyLocal?.value });
 	}, [fecthDataPolicyLocal]);
+	(0, import_react.useEffect)(() => {
+		if (sourceReset) saveForm({ sourceReset: false });
+	}, [sourceReset]);
 	const syntheticTypeMapper = {
 		data_source: "None",
 		synthetic: "RuleBased",
@@ -88632,7 +88690,7 @@ function TaskVariables(props) {
 		ref,
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
 			name: "enable_run_time_execution_variable",
-			title: "Allow runtime parameters",
+			title: "Add parameters at execution",
 			onChange: (value) => {
 				saveOverrideParams("task_globals", value || false);
 			},
@@ -91513,6 +91571,7 @@ var useGenerationParams = (saveForm, dataSourceType, task_id, selected_logical_u
 		Object.keys(data || {}).forEach((key) => {
 			let newValueAdded = false;
 			if (data[key].order > order_temp && data[key].order < 99999) order_temp = data[key].order;
+			if (generateParams && generateParams[key] && generateParams[key].is_editable !== void 0) data[key].is_editable = generateParams[key].is_editable;
 			if (generateParams && generateParams[key] && generateParams[key].value !== void 0) {
 				data[key].editor.value = generateParams[key].value;
 				data[key].value = generateParams[key].value;
@@ -91533,8 +91592,8 @@ var useGenerationParams = (saveForm, dataSourceType, task_id, selected_logical_u
 			}
 		});
 		Object.keys(generateParams || []).forEach((key) => {
-			if (execution_mode) data[key].added_in_execution = true;
-			if (data[key].order === 99999999) {
+			if (data[key].order === 99999999 && generateParams[key]?.value !== void 0) {
+				if (execution_mode) data[key].added_in_execution = true;
 				order_temp++;
 				data[key].order = order_temp;
 				selectedParams.push({
@@ -95867,7 +95926,7 @@ function TaskMain(props) {
 	const [failedComp, setFailedComp] = (0, import_react.useState)("");
 	const [disableChange, setDisableChange] = (0, import_react.useState)(false);
 	const [task_titles, setTaskTitles] = (0, import_react.useState)(tasks && tasks.filter((it) => it.task_status === "Active").map((it) => it.task_title || "") || []);
-	const [overrideParams, setOverrideParams] = (0, import_react.useState)(task && task.task_override_fields && JSON.parse(task.task_override_fields) || JSON.parse(JSON.stringify(defaultOverrideParams)));
+	const [overrideParams, setOverrideParams] = (0, import_react.useState)(JSON.parse(JSON.stringify(defaultOverrideParams)));
 	const auth = useAuth();
 	(0, import_react.useEffect)(() => {
 		let disableChangeLocal = false;
@@ -95920,6 +95979,17 @@ function TaskMain(props) {
 			return newParams;
 		});
 	}, [setOverrideParams]);
+	(0, import_react.useEffect)(() => {
+		if (task && task.task_override_fields) {
+			const task_override_fields = JSON.parse(task.task_override_fields);
+			const isEmpty = (obj) => Object.keys(obj).length === 0 && obj.constructor === Object;
+			if (isEmpty(task_override_fields)) return;
+			setOverrideParams(task_override_fields);
+			setTimeout(() => {
+				if (task_override_fields?.selection_method?.is_editable) saveOverrideParams("selection_method", true);
+			}, 100);
+		}
+	}, [task]);
 	const getOverrideParamIsEditable = (0, import_react.useCallback)((field_name) => {
 		const pathParts = field_name.split(".");
 		let current = overrideParams;
@@ -96000,6 +96070,7 @@ function TaskMain(props) {
 		});
 		if (currentStep === "source") saveForm({
 			dataSourceType: "data_source",
+			sourceReset: true,
 			source_type: taskData.enable_masking_only ? "tables" : "BE",
 			source_environment_id: null,
 			source_environment_name: "",
@@ -96720,7 +96791,7 @@ var Body$4 = ct.div`
   flex-direction: column;
   gap: 15px;
   padding-left: 30px;
-  padding-right: 51px;
+  padding-right: 30px;
 `;
 var FieldRow = ct.div`
   display: flex;
@@ -96736,7 +96807,7 @@ var Label = ct.label`
   letter-spacing: normal;
   text-align: left;
   color: #2e2e2e;
-  width: 30%;
+  width: 28%;
 `;
 ct.input`
   height: 30px;
@@ -97010,7 +97081,21 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const [searchValue, setSearchValue] = (0, import_react.useState)(initialDisplayValue || "");
 	const [data, setData] = (0, import_react.useState)(initialFormData || {});
+	const SEARCH_DEBOUNCE_MS = 400;
+	const debounceRef = (0, import_react.useRef)(null);
+	const clearDebounce = () => {
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
+			debounceRef.current = null;
+		}
+	};
+	const runTextSearch = (value) => {
+		if (value.trim()) onSearch({ text: value }, data, value);
+		else if (isSearchActive && onClearSearch) onClearSearch();
+	};
+	(0, import_react.useEffect)(() => clearDebounce, []);
 	const handleSearch = (data, isTablesSelected) => {
+		clearDebounce();
 		if (data) {
 			const reqData = {};
 			if (data.taskTypesStr && data.taskTypesStr.length > 0) reqData.taskTypes = data.taskTypesStr.map((it) => it.value);
@@ -97053,12 +97138,22 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 			setData(data);
 			onSearch(reqData, data, displayValue);
 			setOpen(false);
-		} else if (searchValue.trim()) onSearch({ text: searchValue }, data, searchValue);
+		} else runTextSearch(searchValue);
+	};
+	const handleInputChange = (e) => {
+		const value = e.target.value;
+		setSearchValue(value);
+		clearDebounce();
+		if (open) return;
+		debounceRef.current = setTimeout(() => {
+			runTextSearch(value);
+		}, SEARCH_DEBOUNCE_MS);
 	};
 	const handleKeyPress = (e) => {
 		if (e.key === "Enter") handleSearch();
 	};
 	const handleClearSearch = () => {
+		clearDebounce();
 		setSearchValue("");
 		setOpen(false);
 		setData({});
@@ -97067,7 +97162,8 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Popover.Popover, {
 		containerStyle: {
 			zIndex: "100",
-			width: "33%"
+			width: "33%",
+			left: "10px"
 		},
 		reposition: true,
 		padding: 10,
@@ -97082,7 +97178,7 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SearchContainer, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SearchInput$4, {
 			placeholder: "Search...",
 			value: searchValue,
-			onChange: (e) => setSearchValue(e.target.value),
+			onChange: handleInputChange,
 			onKeyPress: handleKeyPress
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(IconsContainer, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
@@ -97092,7 +97188,10 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Divider, {}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
-				onClick: () => setOpen(true),
+				onClick: () => {
+					clearDebounce();
+					setOpen(true);
+				},
 				src: advanced_menu_icon_default,
 				style: { cursor: "pointer" }
 			}),
@@ -117076,9 +117175,7 @@ var SCOPE_MAP = {
 	inProgress: "In-process",
 	future: "Future"
 };
-var formatDateParam = (d) => {
-	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}.${String(d.getMilliseconds()).padStart(3, "0")}Z`;
-};
+var formatDateParam = (d) => d.toISOString();
 var useExecutions = (filters) => {
 	const [data, setData] = (0, import_react.useState)([]);
 	const [loading, setLoading] = (0, import_react.useState)(false);
@@ -151548,6 +151645,11 @@ var buildGeneralInfoTab = (worksheet) => {
 		} else worksheet.addRow([field.name, "" + value]);
 	});
 };
+var stringifyOverrideValue = (value) => {
+	if (value === null || value === void 0) return "";
+	if (typeof value === "object") return JSON.stringify(value);
+	return "" + value;
+};
 var buildOverrideParametersTab = (worksheet, tabData) => {
 	const raw = tabData?.[0]?.override_parameters;
 	if (!raw) {
@@ -151567,12 +151669,14 @@ var buildOverrideParametersTab = (worksheet, tabData) => {
 		let reserveRetentionPeriod = null;
 		let retentionPeriod = null;
 		let logicalUnits = null;
+		let generateDataParams = null;
 		overrideParametersKeys.forEach((key) => {
 			if (key === "TASK_GLOBALS") taskGlobals = override_parameters[key];
 			else if (key === "RESERVE_RETENTION_PARAMS") reserveRetentionPeriod = override_parameters[key];
 			else if (key === "DATAFLUX_RETENTION_PARAMS") retentionPeriod = override_parameters[key];
 			else if (key === "LOGICAL_UNITS") logicalUnits = override_parameters[key];
-			else if (key === "IMPLICIT_OVERRIDE_LOGICAL_UNITS") {} else worksheet.addRow([key, "" + override_parameters[key]]);
+			else if (key === "GENERATE_DATA_PARAMS") generateDataParams = override_parameters[key];
+			else if (key === "IMPLICIT_OVERRIDE_LOGICAL_UNITS") {} else worksheet.addRow([key, stringifyOverrideValue(override_parameters[key])]);
 		});
 		if (taskGlobals) {
 			addEmptyLine(worksheet);
@@ -151596,6 +151700,14 @@ var buildOverrideParametersTab = (worksheet, tabData) => {
 			addEmptyLine(worksheet);
 			Object.keys(retentionPeriod).forEach((key) => {
 				worksheet.addRow([key, "" + retentionPeriod[key]]);
+			});
+		}
+		if (generateDataParams && Object.keys(generateDataParams).length > 0) {
+			addEmptyLine(worksheet);
+			addWorksheetTitle("Generate Data Params", worksheet);
+			addEmptyLine(worksheet);
+			Object.keys(generateDataParams).forEach((key) => {
+				worksheet.addRow([key, stringifyOverrideValue(generateDataParams[key])]);
 			});
 		}
 		if (logicalUnits && Array.isArray(logicalUnits) && logicalUnits.length > 0) {
@@ -151914,6 +152026,7 @@ var getStatusColor = (status) => {
 		case "failed": return "#dc3545";
 		case "stopped":
 		case "paused": return "#ffc107";
+		case "ordering tables": return "#b45309";
 		default: return "#6c757d";
 	}
 };
@@ -151929,6 +152042,7 @@ var getStatusBgColor = (status) => {
 		case "failed": return "#fce8e8";
 		case "stopped":
 		case "paused": return "#fff8e1";
+		case "ordering tables": return "#fff8e1";
 		default: return "#f0f0f0";
 	}
 };
@@ -152042,7 +152156,7 @@ var ExecutionSidePanel = ({ row, onClose, onOpenMonitor, onOpenTaskExecution }) 
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidePanelTextButton, {
 					onClick: () => onOpenTaskExecution(row.execId),
-					title: "Open task execution",
+					title: "View execution details or rerun this execution",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { size: 13 }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
 						"Open task",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("br", {}),
@@ -152888,7 +153002,7 @@ function SimpleEntityList({ value, onChange, maxToCopy = 9007199254740992, onVal
 		placeholder,
 		error: error || void 0,
 		mandatory: false
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EntityCounter, { children: showMax ? `${typedCount}/${maxToCopy}` : `${typedCount}` })] });
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(EntityCounter, { children: [showMax ? `${typedCount}/${maxToCopy}` : `${typedCount}`, " entities"] })] });
 }
 //#endregion
 //#region src/containers/TaskTemplates/TaskSelectionBox/PromptField.tsx
@@ -153344,8 +153458,7 @@ var TaskBodyContainer = ct.div`
     border-radius: 4px;
     background-color: #fafafa;
 `;
-var TaskBody = ({ selectionMethod, taskId, taskType, taskExecutionId, onParametersChange, taskOverrideParams, currentData }) => {
-	console.log("currentData", currentData);
+var TaskBody = ({ key, selectionMethod, taskId, taskType, taskExecutionId, onParametersChange, taskOverrideParams, currentData }) => {
 	const [taskData, setTaskData] = (0, import_react.useState)(convertTaskData({}));
 	const [initFinished, setInitFinished] = (0, import_react.useState)(false);
 	const { dataGenerationParams, generateChosenParams } = taskData;
@@ -153418,8 +153531,9 @@ var TaskBody = ({ selectionMethod, taskId, taskType, taskExecutionId, onParamete
 				updateData.generateChosenParams = [...copyGenerateChosenParams, item.key];
 				copyGenerateChosenParams = [...updateData.generateChosenParams];
 			} else {
+				if (copyDataGenerationParams[item.key].added_in_execution) copyDataGenerationParams[item.key].added_in_execution = false;
 				copyDataGenerationParams[item.key].editor.value = copyDataGenerationParams[item.key].default;
-				copyDataGenerationParams[item.key].value = copyDataGenerationParams[item.key].default;
+				copyDataGenerationParams[item.key].value = void 0;
 				copyDataGenerationParams[item.key].order = 99999999;
 				updateData.dataGenerationParams = copyDataGenerationParams;
 				copyDataGenerationParams = { ...updateData.dataGenerationParams };
@@ -153469,7 +153583,7 @@ var TaskBody = ({ selectionMethod, taskId, taskType, taskExecutionId, onParamete
 				controlParamChange: true,
 				onSave: saveForm,
 				getOverrideParamIsEditable
-			});
+			}, key);
 			case "GENERATE":
 				if (taskType === "Rule-based Generate entities" || taskType === "Rule-based Generate and load entities") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataGenerationParameters, {
 					dataGenerationParams: dataGenerationParams || {},
@@ -155534,10 +155648,6 @@ function TaskSelectionBox(props) {
 		Object.assign(initialValues, reversedFields);
 		return initialValues;
 	});
-	console.log({
-		...task_data,
-		...fieldValues
-	});
 	const permissions = usePermissions$1({
 		...task_data,
 		...fieldValues
@@ -155560,7 +155670,14 @@ function TaskSelectionBox(props) {
 			if (field === "selection_param_value") updatedData.custom_logic_lu_name = option.luName;
 		}
 		if (field === "environment_name") updatedData.environment_id = newValue;
-		if (field === "source_env_name") updatedData["source_environment_name"] = newLabel;
+		if (field === "source_env_name") {
+			updatedData["source_environment_name"] = newLabel;
+			if (fieldValues["source_environment_name"] !== newLabel && task_data.selected_version_task_exe_id) {
+				task_data.selected_version_task_exe_id = null;
+				task_data.data_version_name = null;
+				task_data.version_creation_date = null;
+			}
+		}
 		if (field === "selection_method") {
 			const result = await taskAPIs.getFinalPrompt(base_prompt_text, newLabel.toString(), fieldValues["num_of_entities"] || num_of_entities);
 			if (typeof result === "string") setPromptText(result);
@@ -155754,15 +155871,18 @@ function TaskSelectionBox(props) {
 		const isEmpty = (obj) => obj && Object.keys(obj).length === 0 && obj.constructor === Object;
 		let generateParams = {};
 		if (fieldValues.dataGenerationParams) Object.keys(fieldValues.dataGenerationParams).forEach((key) => {
-			if (fieldValues.dataGenerationParams[key].added_in_execution || fieldValues.dataGenerationParams[key].order < 99999999 && (!deepEqual(fieldValues.dataGenerationParamsOrig[key]?.editor?.value, fieldValues.dataGenerationParams[key]?.editor?.value) || fieldValues.dataGenerationParams[key].added_in_execution)) generateParams[key] = fieldValues.dataGenerationParams[key];
+			if (fieldValues.dataGenerationParams[key].added_in_execution || fieldValues.dataGenerationParams[key].order < 99999999 && (!deepEqual(fieldValues.dataGenerationParamsOrig[key]?.editor?.value, fieldValues.dataGenerationParams[key]?.editor?.value) || fieldValues.dataGenerationParams[key].added_in_execution)) generateParams[key] = {
+				...fieldValues.dataGenerationParams[key],
+				added_in_execution: void 0
+			};
 		});
 		if (isEmpty(generateParams)) generateParams = void 0;
 		const selection_method = fieldValues.selection_method === task_data.selection_method ? void 0 : fieldValues.selection_method;
 		let parametersValue = void 0;
-		if (task_data.selection_method === "Custom logic") {
+		if ((selection_method || task_data.selection_method) === "Custom logic") {
 			if (parametersChanged(fieldValues.parameters, task_data.parameters)) parametersValue = fieldValues.parameters;
 		} else if (JSON.stringify(fieldValues.parameters) !== JSON.stringify(task_data.parameters)) parametersValue = fieldValues.parameters;
-		if (task_data.selection_method !== "Custom logic" && task_data.selection_method !== "Business parameters with random" && task_data.selection_method !== "Business parameters") parametersValue = void 0;
+		if ((selection_method || task_data.selection_method) !== "Custom logic" && (selection_method || task_data.selection_method) !== "Business parameters with random" && (selection_method || task_data.selection_method) !== "Business parameters") parametersValue = void 0;
 		const entityListEditable = parseTaskOverrideFields(task_data.task_override_fields)?.selection_method?.entity_list?.is_editable;
 		const retentionValueChanged = fieldValues.retention_period_value !== void 0 && fieldValues.retention_period_value !== task_data.retention_period_value;
 		const reserveValueChanged = fieldValues.reserve_retention_period_value !== void 0 && fieldValues.reserve_retention_period_value !== task_data.reserve_retention_period_value;
@@ -155792,6 +155912,7 @@ function TaskSelectionBox(props) {
 				value: fieldValues.reserve_retention_period_value ?? task_data.reserve_retention_period_value
 			} : void 0
 		};
+		if (values?.ENTITY_LIST === "") values.ENTITY_LIST = null;
 		Object.keys(values).forEach((key) => {
 			if (values[key] === void 0 || values[key] === "") delete values[key];
 		});
@@ -155950,7 +156071,12 @@ function TaskSelectionBox(props) {
 			}
 		}
 		if (task_data?.parameters) initialValues.parameters = task_data.parameters;
-		setFieldValues(initialValues);
+		const reversedFields = reverseFieldValues(task_data?.override_params, task_data);
+		Object.assign(initialValues, reversedFields);
+		setFieldValues({
+			...initialValues,
+			selection_method: void 0
+		});
 		set_execution_note(task_data?.override_params?.EXECUTION_NOTE);
 		setPromptText(prompt_text);
 		setAdvancedOverrides({});
@@ -155958,6 +156084,7 @@ function TaskSelectionBox(props) {
 		setAdvancedPreProcesses([]);
 		setAdvancedPostProcesses([]);
 		setTimeout(() => {
+			setFieldValues(initialValues);
 			setTaskBodyKey((prev) => prev + 1);
 			setIsResetting(false);
 		}, 500);
@@ -156904,6 +157031,27 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 	const sortedGroups = Array.from(groups.values()).sort((a, b) => a.order - b.order);
 	for (const group of sortedGroups) {
 		const groupBatchId = group.batchIds.size === 1 ? Array.from(group.batchIds)[0] : "";
+		if (group.interfaceRefs.length > 0 && group.interfaceRefs.every((iface) => iface.interface_status?.toLowerCase() === "ordering tables")) {
+			rows.push({
+				...baseRow,
+				lu_name: "–",
+				type: "–",
+				status: "ordering tables",
+				processedData: "–",
+				succeededEntities: "–",
+				failedEntities: "–",
+				duration: "",
+				batchId: groupBatchId,
+				parentLu: "",
+				percentage: 0,
+				rowKind: "batch",
+				subRows: void 0,
+				interface: group.interface_name,
+				total: "–",
+				countUnit: void 0
+			});
+			continue;
+		}
 		const schemaRows = [];
 		const allTables = [];
 		const schemaEntries = Array.from(group.schemas.entries());
@@ -156939,7 +157087,29 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 			const schemaBatchIds = new Set(entries.map((e) => e.batchId));
 			const schemaBatchId = schemaBatchIds.size === 1 ? Array.from(schemaBatchIds)[0] : "";
 			const agg = aggregateTableCounts(schemaTables);
-			const schemaCounts = sumTableStateCounts(group.schemaRefs.get(schemaName) || []);
+			const schemaRefs = group.schemaRefs.get(schemaName) || [];
+			if (schemaRefs.length > 0 && schemaRefs.every((s) => s.schema_status?.toLowerCase() === "ordering tables")) {
+				schemaRows.push({
+					...baseRow,
+					lu_name: schemaName,
+					type: "–",
+					status: "ordering tables",
+					processedData: "–",
+					succeededEntities: "–",
+					failedEntities: "–",
+					duration: "",
+					batchId: "",
+					parentLu: group.interface_name,
+					percentage: 0,
+					rowKind: "schema",
+					subRows: void 0,
+					interface: group.interface_name,
+					total: "–",
+					countUnit: void 0
+				});
+				continue;
+			}
+			const schemaCounts = sumTableStateCounts(schemaRefs);
 			const schemaStatus = schemaCounts ? deriveStatusFromTableCounts(schemaCounts.running, schemaCounts.completed, schemaCounts.failed, schemaCounts.pending, schemaCounts.stopped) : agg.status;
 			let schemaProcessed;
 			let schemaSucceeded;
@@ -157309,7 +157479,9 @@ var useExecutionMonitor = (taskExecutionId) => {
 	const wasStoppedRef = (0, import_react.useRef)(false);
 	const fetchHistoryAndStatus = (0, import_react.useCallback)(async () => {
 		const execId = activeExecutionIdRef.current;
-		const historyRows = (await executionMonitorAPIs.getTaskHistory(execId)).result;
+		const historyRes = await executionMonitorAPIs.getTaskHistory(execId);
+		const historyRows = historyRes.result;
+		const summary = historyRes.summary;
 		if (!historyRows || historyRows.length === 0) return null;
 		const processOrder = (type) => type === "pre" ? 0 : type === null ? 1 : 2;
 		historyRows.sort((a, b) => {
@@ -157384,24 +157556,25 @@ var useExecutionMonitor = (taskExecutionId) => {
 			});
 			return dt.replace(/\.\d+$/, "");
 		};
+		const expirationDate = summary?.expiration_date ?? infoRow.expiration_date;
 		setData({
 			executionId: execId,
-			taskTitle: infoRow.task_title || "",
+			taskTitle: summary?.task_title || infoRow.task_title || "",
 			summaryCards,
 			tableRows,
 			isTablesTask: tablesTask,
 			executionInfo: {
-				taskName: infoRow.task_title || "",
-				taskType: infoRow.task_type_label || infoRow.task_type || "",
-				taskStartTime: formatDateTime(infoRow.start_execution_time),
-				taskEndTime: formatDateTime(infoRow.end_execution_time),
+				taskName: summary?.task_title || infoRow.task_title || "",
+				taskType: summary?.task_type_label || infoRow.task_type_label || infoRow.task_type || "",
+				taskStartTime: formatDateTime(summary?.start_time ?? infoRow.start_execution_time),
+				taskEndTime: formatDateTime(summary?.end_time ?? infoRow.end_execution_time),
 				taskStatus: infoRow.task_execution_status || "",
-				sourceEnv: infoRow.source_env_name || "",
-				targetEnv: infoRow.environment_name || "",
-				executedBy: infoRow.task_executed_by || "",
-				businessEntity: infoRow.be_name || "",
-				versionExpDate: infoRow.expiration_date && !infoRow.expiration_date.startsWith("9999-12-31") && !infoRow.expiration_date.startsWith("1970-01-01") ? infoRow.expiration_date : "-",
-				executionNote: infoRow.execution_note || ""
+				sourceEnv: summary?.source_environment_name || infoRow.source_env_name || "",
+				targetEnv: summary?.target_environment_name || infoRow.environment_name || "",
+				executedBy: summary?.task_executed_by || infoRow.task_executed_by || "",
+				businessEntity: summary?.be_name || infoRow.be_name || "",
+				versionExpDate: expirationDate && !expirationDate.startsWith("9999-12-31") && !expirationDate.startsWith("1970-01-01") ? expirationDate : "-",
+				executionNote: summary?.execution_note ?? infoRow.execution_note ?? ""
 			}
 		});
 		return {
@@ -157781,6 +157954,29 @@ var CountUnitSuffix = ct.span`
     font-size: 11px;
     margin-left: 4px;
 `;
+var OrderingTablesPill = ct.span`
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff8e1;
+    border: 1px solid #fcd34d;
+    color: #b45309;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 500;
+    font-style: normal;
+    white-space: nowrap;
+`;
+var SpinningGear = ct.span`
+    display: inline-block;
+    font-size: 12px;
+    animation: tdm-gear-spin 2s linear infinite;
+
+    @keyframes tdm-gear-spin {
+        to { transform: rotate(360deg); }
+    }
+`;
 //#endregion
 //#region src/containers/ExecutionMonitor/components/ExecutionDetailsTable/index.tsx
 var openBatchMonitor$1 = (batchId) => {
@@ -157800,6 +157996,7 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 		downloadSummaryReport(taskExecutionId, taskTitle, luName);
 	}, [taskExecutionId, taskTitle]);
 	const getRowStyle = (0, import_react.useCallback)((row) => {
+		if (row.status?.toLowerCase() === "ordering tables") return { backgroundColor: "#fafafa" };
 		if (row.status?.toLowerCase() === "stopped") return { backgroundColor: "#fff8e1" };
 	}, []);
 	const columns = (0, import_react.useMemo)(() => {
@@ -157809,10 +158006,18 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 				accessorKey: "lu_name",
 				header: "Process name",
 				cell: ({ row }) => {
-					const { rowKind, lu_name, partitions, batchId } = row.original;
+					const { rowKind, lu_name, partitions, batchId, status } = row.original;
 					const indent = row.depth * 18;
 					const canExpand = row.getCanExpand();
 					const isExpanded = row.getIsExpanded();
+					if (status?.toLowerCase() === "ordering tables") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NameCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NameIndent, {
+						style: {
+							paddingLeft: indent,
+							color: "#aaa",
+							fontStyle: "italic"
+						},
+						children: "–"
+					}) });
 					if (rowKind === "schema") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NameCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(NameIndent, {
 						style: { paddingLeft: indent },
 						children: [
@@ -157891,7 +158096,18 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 				id: "interface",
 				accessorKey: "interface",
 				header: "Interface",
-				cell: ({ row }) => row.original.interface || "",
+				cell: ({ row }) => {
+					const { interface: iface, status } = row.original;
+					if (status?.toLowerCase() === "ordering tables") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						style: {
+							color: "#333",
+							fontStyle: "normal",
+							fontWeight: 500
+						},
+						children: iface || ""
+					});
+					return iface || "";
+				},
 				enableColumnFilter: true
 			},
 			{
@@ -157911,6 +158127,7 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 					const percentage = row.original.percentage;
 					const type = row.original.type;
 					const statusLower = status.toLowerCase();
+					if (statusLower === "ordering tables") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(StatusCell$2, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(OrderingTablesPill, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SpinningGear, { children: "⚙" }), "Ordering tables"] }) });
 					const barColor = statusLower === "failed" ? "#dc3545" : statusLower === "stopped" ? "#ffc107" : type === "Pre-Process" ? "#00acc1" : type === "Post-Process" ? "#9c27b0" : "#1483f3";
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(StatusCell$2, { children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ProgressBarTrack, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ProgressBarFill, {
@@ -157959,7 +158176,8 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 				accessorKey: "succeededEntities",
 				header: "Succeeded",
 				cell: ({ row }) => {
-					const { succeededEntities, countUnit } = row.original;
+					const { succeededEntities, countUnit, status } = row.original;
+					if (status?.toLowerCase() === "ordering tables") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: succeededEntities });
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SucceededText, { children: succeededEntities }), countUnit ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CountUnitSuffix, { children: countUnit }) : null] });
 				},
 				enableColumnFilter: true
@@ -157969,7 +158187,8 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 				accessorKey: "failedEntities",
 				header: "Failed",
 				cell: ({ row }) => {
-					const { failedEntities, countUnit } = row.original;
+					const { failedEntities, countUnit, status } = row.original;
+					if (status?.toLowerCase() === "ordering tables") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: failedEntities });
 					return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FailedText, { children: failedEntities }), countUnit ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CountUnitSuffix, { children: countUnit }) : null] });
 				},
 				enableColumnFilter: true
@@ -158397,7 +158616,7 @@ var ExecutionMonitor = ({ content, taskExecutionId: taskExecutionIdProp, openTas
 		] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ViewToggle, {
 			onClick: handleNavigateToStats,
 			disabled: isTaskRunning,
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutList, { size: 16 }), "Entity / Table list"]
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LayoutList, { size: 16 }), "Entity/Table Details"]
 		})] }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(InfoSummaryWrapper, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SummarySectionHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CollapseToggle, {
 			expanded: infoExpanded,
@@ -160061,6 +160280,7 @@ var PageContainer = ct.div`
 `;
 var PageHeader = ct.div`
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 20px 24px 12px;
     border-bottom: 1px solid #eaeaea;
@@ -160072,6 +160292,22 @@ var PageTitle = ct.h1`
     color: #1483f3;
     margin: 0;
     text-align: left;
+`;
+var BackToMonitorLink = ct.button`
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: #1483f3;
+    padding: 4px 8px;
+
+    &:hover {
+        text-decoration: underline;
+    }
 `;
 var ContentLayout = ct.div`
     display: flex;
@@ -160124,7 +160360,7 @@ var SpinnerIcon = ct.div`
 `;
 //#endregion
 //#region src/containers/TaskExecStats/index.tsx
-var TaskExecStats = ({ content = {} }) => {
+var TaskExecStats = ({ content = {}, onBackToMonitor }) => {
 	const { taskExecId, fabricExecutionId, type, selectionMethod, refCount } = content;
 	const stats = useTaskExecStats({
 		taskExecId: taskExecId ?? 0,
@@ -160170,7 +160406,10 @@ var TaskExecStats = ({ content = {} }) => {
 	}, []);
 	if (stats.loading) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageContainer, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LoadingContainer, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SpinnerIcon, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { size: 20 }) }), "Loading statistics..."] }) });
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PageContainer, { children: [
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageTitle, { children: "Task execution — Detailed statistics" }) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PageHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PageTitle, { children: [taskExecId ? `Exec ID ${taskExecId} — ` : "", "Detailed statistics"] }), onBackToMonitor && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(BackToMonitorLink, {
+			onClick: onBackToMonitor,
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { size: 16 }), "Back to monitor"]
+		})] }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ContentLayout, { children: [!stats.hideLogicalUnit && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TreePanel, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TreePanelHeader, { children: "Logical units hierarchy" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LuTree, {
 			nodes: stats.luTree,
 			selectedLu: stats.selectedLU,
@@ -160429,15 +160668,22 @@ var ExecutionMonitorRoute = () => {
 };
 var TaskExecStatsRoute = () => {
 	const [searchParams] = useSearchParams();
+	const navigate = useNavigate();
 	const execId = searchParams.get("execId");
 	const parsedExecId = execId ? Number(execId) : void 0;
+	const onBackToMonitor = (0, import_react.useCallback)(() => {
+		navigate(`/tasks/monitor?execId=${parsedExecId}`);
+	}, [navigate, parsedExecId]);
 	if (!parsedExecId) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
 		to: "/tasks",
 		replace: true
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Container$57, {
 		className: "react-comp",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskExecStats, { content: { taskExecId: parsedExecId } })
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskExecStats, {
+			content: { taskExecId: parsedExecId },
+			onBackToMonitor
+		})
 	});
 };
 var NewEnvironmentRoute = () => {

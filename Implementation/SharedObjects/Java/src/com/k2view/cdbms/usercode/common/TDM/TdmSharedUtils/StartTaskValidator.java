@@ -98,6 +98,63 @@ class StartTaskValidator {
 		}
 	}
 
+	static void validateExecutionInputs(Long taskId, Db.Row taskRow, Map<OverrideParamKey, Object> inputOverrides) throws Exception {
+		Map<String, Boolean> taskGlobalsEditability = loadTaskGlobalsEditability(taskId, inputOverrides);
+		Map<String, Boolean> generateParamsEditability = new HashMap<>();
+		Set<String> nullEditableParams = new HashSet<>();
+		loadGenerateParamsData(taskId, taskRow, inputOverrides, generateParamsEditability, nullEditableParams);
+		validateInputOverrides(taskRow, inputOverrides, taskGlobalsEditability, generateParamsEditability);
+		validateNullGenerateParams(inputOverrides, nullEditableParams);
+	}
+
+	private static Map<String, Boolean> loadTaskGlobalsEditability(Long taskId,
+			Map<OverrideParamKey, Object> inputOverrides) throws Exception {
+		Map<String, Boolean> result = new HashMap<>();
+		if (inputOverrides.containsKey(OverrideParamKey.TASK_GLOBALS)) {
+			try (Db.Rows rows = db(TDM).fetch(
+					"SELECT global_name, is_editable FROM " + TDMDB_SCHEMA + ".task_globals WHERE task_id = ?", taskId)) {
+				for (Db.Row r : rows)
+					result.put(r.get("global_name").toString(), Boolean.TRUE.equals(r.get("is_editable")));
+			}
+		}
+		return result;
+	}
+
+	private static void loadGenerateParamsData(Long taskId, Db.Row taskRow,
+			Map<OverrideParamKey, Object> inputOverrides,
+			Map<String, Boolean> editabilityOut, Set<String> nullEditableOut) throws Exception {
+		boolean isGenerate = "GENERATE".equalsIgnoreCase("" + taskRow.get("selection_method"));
+		if (!isGenerate && !inputOverrides.containsKey(OverrideParamKey.GENERATE_DATA_PARAMS)) return;
+		try (Db.Rows rows = db(TDM).fetch(
+				"SELECT param_name, is_editable, param_value FROM " + TDMDB_SCHEMA
+				+ ".tdm_generate_task_field_mappings WHERE task_id = ?", taskId)) {
+			for (Db.Row r : rows) {
+				boolean editable = Boolean.TRUE.equals(r.get("is_editable"));
+				editabilityOut.put(r.get("param_name").toString(), editable);
+				Object pv = r.get("param_value");
+				if (isGenerate && editable && (pv == null || pv.toString().trim().isEmpty()))
+					nullEditableOut.add(r.get("param_name").toString());
+			}
+		}
+	}
+
+	private static void validateNullGenerateParams(Map<OverrideParamKey, Object> inputOverrides,
+			Set<String> nullEditableParams) throws TdmValidationException {
+		if (nullEditableParams.isEmpty()) return;
+		Map<String, Object> genOverrides = (Map<String, Object>) inputOverrides.get(OverrideParamKey.GENERATE_DATA_PARAMS);
+		for (String paramName : nullEditableParams) {
+			Object overrideValue = null;
+			if (genOverrides != null && genOverrides.containsKey(paramName)) {
+				Map<String, Object> override = (Map<String, Object>) genOverrides.get(paramName);
+				if (override != null) overrideValue = override.get("value");
+			}
+			if (overrideValue == null || (overrideValue instanceof String && ((String) overrideValue).trim().isEmpty())) {
+				throw new TdmValidationException("Generate Parameter Validation",
+					"Generate parameter '" + paramName + "' has no stored value and must be provided before execution.");
+			}
+		}
+	}
+
 	static void validateInputOverrides(Db.Row taskRow,
 			Map<OverrideParamKey, Object> inputOverrides,
 			Map<String, Boolean> taskGlobalsEditability,
@@ -492,12 +549,15 @@ class StartTaskValidator {
 			Map<String, Map<String, Object>> storedIndex = new HashMap<>();
 			boolean processEditable = false;
 			String procName = null;
+			String luName = null;
 			try {
-				String sql = "SELECT process_name, parameters FROM " + TDMDB_SCHEMA
+				String sql = "SELECT process_name, lu_name, parameters FROM " + TDMDB_SCHEMA
 						+ ".tasks_exe_process WHERE task_id = ? AND process_id = ? AND process_type = ?";
 				try (Db.Rows dbRows = db(TDM).fetch(sql, taskId, processId, processType)) {
 					for (Db.Row dbRow : dbRows) {
 						procName = dbRow.get("process_name") != null ? dbRow.get("process_name").toString() : null;
+						luName = dbRow.get("lu_name") != null ? dbRow.get("lu_name").toString() : null;
+						
 						Object raw = dbRow.get("parameters");
 						if (raw != null && !raw.toString().isBlank()) {
 							Map<String, Object> parsed = Json.get().fromJson(raw.toString());
@@ -526,7 +586,10 @@ class StartTaskValidator {
 			final Set<String> mandatoryNames = new HashSet<>();
 			final Set<String> flowParamNames = new HashSet<>();
 			if (procName != null) {
-				for (Map<String, Object> editor : getProcessEditors(processType, procName)) {
+				Map<String, String> processRec = new HashMap<>();
+				processRec.put("luName", luName);
+				processRec.put("processName", procName);
+				for (Map<String, Object> editor : getProcessEditors(processType, processRec)) {
 					Object editorObj = editor.get("editor");
 					if (editorObj instanceof Map) {
 						Object eName = ((Map<?, ?>) editorObj).get("name");
@@ -1138,9 +1201,9 @@ class StartTaskValidator {
 		return false;
 	}
 	
-	private static List<Map<String, Object>> getProcessEditors(String processType, String processName) {
+	private static List<Map<String, Object>> getProcessEditors(String processType, Map<String, String> processRec) {
 		try {
-			List<HashMap<String, Object>> processList = fnGetExecutionProcessParams(processType, new String[]{processName});
+			List<HashMap<String, Object>> processList = fnGetExecutionProcessParams(processType, new ArrayList<>(List.of(processRec)));
 			if (processList == null || processList.isEmpty()) return Collections.emptyList();
 			List<Map<String, Object>> editors = (List<Map<String, Object>>) processList.get(0).get("editors");
 			return editors != null ? editors : Collections.emptyList();
@@ -1152,7 +1215,7 @@ class StartTaskValidator {
 	private static void validateProcessMandatoryParams(Db.Row taskRow,
 			Map<OverrideParamKey, Object> inputOverrides) throws TdmValidationException {
 		long taskId = ((Number) taskRow.get("task_id")).longValue();
-		String sql = "SELECT process_id, process_name, process_type, parameters FROM "
+		String sql = "SELECT process_id, process_name, process_type, lu_name, parameters FROM "
 				+ TDMDB_SCHEMA + ".tasks_exe_process WHERE task_id = ?";
 		try (Db.Rows rows = db(TDM).fetch(sql, taskId)) {
 			for (Db.Row row : rows) {
@@ -1161,6 +1224,10 @@ class StartTaskValidator {
 						: null;
 				String processType = row.get("process_type") != null
 						? row.get("process_type").toString()
+						: null;
+
+				String luName = row.get("lu_name") != null
+						? row.get("lu_name").toString()
 						: null;
 				if (processName == null)
 					continue;
@@ -1211,7 +1278,11 @@ class StartTaskValidator {
 				}
 
 				// Get mandatory param definitions from the Broadway flow definition
-				for (Map<String, Object> editor : getProcessEditors(processType, processName)) {
+				Map<String, String> processRec = new HashMap<>();
+				processRec.put("luName", luName);
+				processRec.put("processName", processName);
+				
+				for (Map<String, Object> editor : getProcessEditors(processType ,processRec)) {
 					if (!Boolean.TRUE.equals(editor.get("mandatory")))
 						continue;
 					Object editorObj = editor.get("editor");

@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
@@ -42,7 +43,7 @@ public class Logic extends UserCode {
 
 	public static final String PENDING = "pending";
 	public static final String TABLES = "TABLES";
-    public static final String TABLE_LEVEL_LU = "TDM_TableLevel";
+	public static final String TABLE_LEVEL_LU = "TDM_TableLevel";
 	public static final String TASKS = TDMDB_SCHEMA + ".TASKS";
 	public static final String TDM = "TDM";
 	public static final String DB_FABRIC = "fabric";
@@ -55,22 +56,22 @@ public class Logic extends UserCode {
 	public static final String STOPPED = "stopped";
 	public static final String RESUME = "resume";
 	public static final String TASK_EXECUTION_LIST = TDMDB_SCHEMA + ".task_execution_list";
-    public static final String FAILED = "failed";
-    public static final String COMPLETED = "completed";
+	public static final String FAILED = "failed";
+	public static final String COMPLETED = "completed";
 	public static final String PAUSED = "paused";
-    public static final Long maxNumOfValues = Optional.ofNullable(getGlobal("COMBO_MAX_COUNT", "TDM")).map(Long::parseLong).orElse(0L); 
+	public static final Long maxNumOfValues = Optional.ofNullable(getGlobal("COMBO_MAX_COUNT", "TDM")).map(Long::parseLong).orElse(0L); 
 
-    public static final String insertDistintValuesSql = "INSERT INTO " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
-		        "(SOURCE_ENVIRONMENT, LU_NAME, FIELD_NAME, NUMBER_OF_VALUES, FIELD_VALUES, IS_NUMERIC, MIN_VALUE, MAX_VALUE, FIELD_TYPE ) " +
-		        "VALUES (?, ?, ? ,?, string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "'), ?, ?, ?,?)";
-		    
-    public static final String updateDistintValuesSql = "UPDATE " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES SET " +
-		    "NUMBER_OF_VALUES = ?, FIELD_VALUES = string_to_array(?, '" +  TDM_PARAMETERS_SEPARATOR + "'), IS_NUMERIC = ?, MIN_VALUE = ?, MAX_VALUE = ?, FIELD_TYPE=? " +
-		    "WHERE source_environment = ? AND lu_name = ? AND field_name = ?";
+	public static final String insertDistintValuesSql = "INSERT INTO " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
+				"(SOURCE_ENVIRONMENT, LU_NAME, FIELD_NAME, NUMBER_OF_VALUES, FIELD_VALUES, IS_NUMERIC, MIN_VALUE, MAX_VALUE, FIELD_TYPE ) " +
+				"VALUES (?, ?, ? ,?, string_to_array(?, '" + TDM_PARAMETERS_SEPARATOR + "'), ?, ?, ?,?)";
+			
+	public static final String updateDistintValuesSql = "UPDATE " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES SET " +
+			"NUMBER_OF_VALUES = ?, FIELD_VALUES = string_to_array(?, '" +  TDM_PARAMETERS_SEPARATOR + "'), IS_NUMERIC = ?, MIN_VALUE = ?, MAX_VALUE = ?, FIELD_TYPE=? " +
+			"WHERE source_environment = ? AND lu_name = ? AND field_name = ?";
 
-    public static final String getDistinctValuesSql = "SELECT source_environment, lu_name, field_name, number_of_values, " +
-    "array_to_string(field_values, '" + TDM_PARAMETERS_SEPARATOR + "') as field_values, is_numeric, min_value, max_value , field_type " +
-    "from " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES WHERE source_environment = ? and lu_name = ? and (number_of_values <= ? or is_numeric = true)";
+	public static final String getDistinctValuesSql = "SELECT source_environment, lu_name, field_name, number_of_values, " +
+	"array_to_string(field_values, '" + TDM_PARAMETERS_SEPARATOR + "') as field_values, is_numeric, min_value, max_value , field_type " +
+	"from " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES WHERE source_environment = ? and lu_name = ? and (number_of_values <= ? or is_numeric = true)";
 
 	@out(name = "instanceId", type = String.class, desc = "")
 	@out(name = "envName", type = String.class, desc = "")
@@ -92,10 +93,10 @@ public class Logic extends UserCode {
 	public static void fnCheckMigrateAndUpdateTDMDB() throws Exception {
 		// TDM 5.1- fix the query- check the task_type instead of the fabric_execution_id, since a reference only task does not have the fabric_execution_id (= migrate id)
 		String selectFromTaskExecutionListSql = "Select tel.fabric_execution_id, tel.task_id, tel.lu_id, " +
-                "plu.lu_name, tel.task_type, tel.source_env_name, tel.process_id, tpost.process_name, tpost.process_type, " + 
-                "tel.task_execution_id, tel.parent_lu_id, t.execution_mode, tel.be_id, t.clone_ind " +
-                "from " + TDMDB_SCHEMA + ".task_execution_list tel " +
-                "left join " + TDMDB_SCHEMA + ".tasks t on tel.task_id = t.task_id " +
+				"plu.lu_name, tel.task_type, tel.source_env_name, tel.process_id, tpost.process_name, tpost.process_type, " + 
+				"tel.task_execution_id, tel.parent_lu_id, t.execution_mode, tel.be_id, t.clone_ind " +
+				"from " + TDMDB_SCHEMA + ".task_execution_list tel " +
+				"left join " + TDMDB_SCHEMA + ".tasks t on tel.task_id = t.task_id " +
 				"left join " + TDMDB_SCHEMA + ".product_logical_units plu on tel.lu_id = plu.lu_id " +
 				"left join " + TDMDB_SCHEMA + ".tasks_exe_process tpost On tel.task_id = tpost.task_id " +
 				"and tel.process_id = tpost.process_id Where Lower(tel.execution_status) = 'running'";
@@ -120,7 +121,7 @@ public class Logic extends UserCode {
 				String taskID = "";
 				String taskExecutionID = "";
 				String updateTaskExecutionListSql = "UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status = ?, num_of_processed_entities = ?, " +
-					"num_of_copied_entities = ?, num_of_failed_entities = ?, end_execution_time = ?, " +
+					"num_of_copied_entities = ?, num_of_failed_entities = ?, end_execution_time = COALESCE(end_execution_time, ?), " +
 					"num_of_processed_ref_tables = ?, num_of_copied_ref_tables = ?, num_of_failed_ref_tables = ? " +
 					"WHERE task_id = ? AND task_execution_id = ? and lu_id = ? and process_id = ?";
 				String status = COMPLETED;
@@ -129,26 +130,28 @@ public class Logic extends UserCode {
 				Long parentLuID = 0L;
 				Long processID = 0L;
 				String total="0";
-                String failed="0";
-                String copied="0";
+				String failed="0";
+				String copied="0";
 				String luName = "";
 				String srcEnv = "";
 				String taskType = "";
-                String processType = "";
+				String processType = "";
 
-                //TDM 9.1 - Params Coupling
-                Boolean paramsCoupling = isParamsCoupling();
-                
+				//TDM 9.1 - Params Coupling
+				Boolean paramsCoupling = isParamsCoupling();
+				
 				//TDM 9.2 - Vertical Execution
-                Boolean verticalExecution = false;
-                
+				Boolean verticalExecution = false;
+				
+				// TDM 5.1- add a check if row[0] is null (will be null for reference only tasks)
+				String batchID = null;
+				
 				try {
-					// TDM 5.1- add a check if row[0] is null (will be null for reference only tasks)
-					String batchID = null;
+					
 					
 					if (row.get("fabric_execution_id") != null && !("null".equalsIgnoreCase("" + row.get("fabric_execution_id"))) && !Util.isEmpty("" + row.get("fabric_execution_id"))) {
-                            batchID = "" + row.get("fabric_execution_id");
-                        }
+							batchID = "" + row.get("fabric_execution_id");
+					}
 	
 					taskID = "" + row.get("task_id");
 					taskExecutionID = "" + row.get("task_execution_id");
@@ -157,7 +160,7 @@ public class Logic extends UserCode {
 					// entry per LU, therefore we need to check the data of each LU seperately
 					luID = (Long) row.get("lu_id");
 					processID = (Long) row.get("process_id");
-                    processType = "" + row.get("process_type");
+					processType = "" + row.get("process_type");
 					luName = "" + row.get("lu_name");
 					srcEnv = "" + row.get("source_env_name");
 					// TDM 7.0 - Since the this job also handles Load tasks, get the task_type
@@ -169,16 +172,16 @@ public class Logic extends UserCode {
 						parentLuID = (Long)row.get("parent_lu_id");
 					}
 
-                    // TDM 9.2 - Vertical Execution
-                    String executionMode = fnGetTaskExecutionMode(row.get("execution_mode").toString(), taskType, 
-                        Long.parseLong(row.get("be_id").toString()), Boolean.parseBoolean(row.get("clone_ind").toString()));
-                    verticalExecution = "VERTICAL".equalsIgnoreCase(executionMode) ? true : false;
+					// TDM 9.2 - Vertical Execution
+					String executionMode = fnGetTaskExecutionMode(row.get("execution_mode").toString(), taskType, 
+						Long.parseLong(row.get("be_id").toString()), Boolean.parseBoolean(row.get("clone_ind").toString()));
+					verticalExecution = "VERTICAL".equalsIgnoreCase(executionMode) ? true : false;
 					// TDM 5.1- Tali- Fix- get the selection_method from TASKS. If this selection_method is REF- do not call the migrate_summary command, 
 					//but check the reference status instead
 		
 					//String selectionMethod = "" + db(TDM).fetch("Select selection_method from " + TASKS + " where task_id=?", taskID).firstValue();
-                    Db.Row taskRec = db(TDM).fetch("Select selection_method from " + TASKS + " where task_id=?", taskID).firstRow();
-                    String selectionMethod = taskRec.get("selection_method").toString();
+					Db.Row taskRec = db(TDM).fetch("Select selection_method from " + TASKS + " where task_id=?", taskID).firstRow();
+					String selectionMethod = taskRec.get("selection_method").toString();
 
 					Integer totNoOfRefTables = 0;
 					// TDM 5.1- add the update of the reference tables fields
@@ -218,13 +221,16 @@ public class Logic extends UserCode {
 									//log.info("num_of_copied_ref_tables: " + num_of_copied_ref_tables);
 									if (num_of_copied_ref_tables == 0) {
 										status = FAILED;
-                                    }
+									}
 		
 									// TDM 5.1- change the start and end date parameters and add the parameters for the reference tables
 									//log.info("Updating task status to: " + status);
 									db(TDM).execute(updateTaskExecutionListSql, status, 0, 0, 0, //refMinDate.toString(), -- No need to update the start time
 										refMaxDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, 
 										num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID);
+									if (FAILED.equals(status)) {
+										addErrorMsgIfAbsent(taskExecutionID, luName, batchID);
+									}
 								}
 							} // if(totNoOfRefTables > 0)
 						}//if (refSummaryStats != null)
@@ -383,7 +389,7 @@ public class Logic extends UserCode {
 									num_of_copied_ref_tables=null;
 									num_of_failed_ref_tables=null;
 								}
-                                if("completed".equalsIgnoreCase(status) && processID==-2 && "pre".equalsIgnoreCase(processType)){
+								if("completed".equalsIgnoreCase(status) && processID==-2 && "pre".equalsIgnoreCase(processType)){
 									Map num = fnUpdateAIProcess(taskExecutionID,"-2");
 									total= "" + num.get("total");
 									copied= "" + num.get("copied");
@@ -402,38 +408,42 @@ public class Logic extends UserCode {
 
 								}
 								//log.info("verticalExecution: " + verticalExecution);
-                                // TDM 9.2 - in case of vertical execution, the statistics of the child LUs will be taken from task_execution_entities.
-                                if (verticalExecution && parentLuID != 0) {
-                                    //log.info("Handling Vertical for luName: " + luName);
-                                    String childStatsSql = "SELECT count(*)  as total, " + 
-                                            "coalesce(sum(case when execution_status = 'completed' then 1 else 0 end), 0) as copied, " +
-                                            "coalesce(sum(case when execution_status = 'failed' then 1 else 0 end), 0) as failed " +
-                                            "FROM " + TDMDB_SCHEMA + ".task_execution_entities " +
-                                            "WHERE task_execution_id = ? AND lu_name = ? AND id_type = 'ENTITY'";
+								// TDM 9.2 - in case of vertical execution, the statistics of the child LUs will be taken from task_execution_entities.
+								if (verticalExecution && parentLuID != 0) {
+									//log.info("Handling Vertical for luName: " + luName);
+									String childStatsSql = "SELECT count(*)  as total, " + 
+											"coalesce(sum(case when execution_status = 'completed' then 1 else 0 end), 0) as copied, " +
+											"coalesce(sum(case when execution_status = 'failed' then 1 else 0 end), 0) as failed " +
+											"FROM " + TDMDB_SCHEMA + ".task_execution_entities " +
+											"WHERE task_execution_id = ? AND lu_name = ? AND id_type = 'ENTITY'";
 
-                                    Db.Row childStats = db(TDM).fetch(childStatsSql, taskExecutionID, luName).firstRow();
-                                    total = "" + childStats.get("total");
-                                    copied= "" + childStats.get("copied");
+									Db.Row childStats = db(TDM).fetch(childStatsSql, taskExecutionID, luName).firstRow();
+									total = "" + childStats.get("total");
+									copied= "" + childStats.get("copied");
 									failed= "" + childStats.get("failed");
-                                    //log.info("Vertical results: total: " + total + ", copied: " + copied);
+									//log.info("Vertical results: total: " + total + ", copied: " + copied);
 
-                                }
+								}
 
 
 								db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, //taskStartDate.toString(),  -- no need to set the start time
 										taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables,
 										taskID, taskExecutionID, luID, processID});
 
-								// TDM 8.1 Update TDMDB table TDM_PARAMS_DISTINCT_VALUES
-                                // TDM 9.1 Params Coupling 
-								if (luID != 0 && processID == 0 && "completed".equalsIgnoreCase(status)) {
-                                    if(paramsCoupling) {
-                                        fnUpdateParamCouplingDistinctValues(srcEnv, luName, taskExecutionID);
-                                    }else{
-                                        fnUpdateParamDistinctValues(srcEnv, luName, taskExecutionID);
-                                    }
+								if (FAILED.equals(status)) {
+									addErrorMsgIfAbsent(taskExecutionID, luName, batchID);
 								}
-                                
+
+								// TDM 8.1 Update TDMDB table TDM_PARAMS_DISTINCT_VALUES
+								// TDM 9.1 Params Coupling 
+								if (luID != 0 && processID == 0 && "completed".equalsIgnoreCase(status)) {
+									if(paramsCoupling) {
+										fnUpdateParamCouplingDistinctValues(srcEnv, luName, taskExecutionID);
+									}else{
+										fnUpdateParamDistinctValues(srcEnv, luName, taskExecutionID);
+									}
+								}
+								
 							} // end of if status is not running
 						}// end if ( (batchStats).contains("\"Level\" : \"Cluster\"") )
 					} // end of else (if the selection method is not 'REF')
@@ -443,6 +453,10 @@ public class Logic extends UserCode {
 					status = FAILED;
 					db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, //taskStartDate.toString(), -- No need to set the start time
 							taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID});
+					if (FAILED.equals(status)) {
+						addErrorMsgIfAbsent(taskExecutionID, luName, batchID);
+					}
+
 					throw e;
 				}
 			} // end of for loop on the task_execution_list
@@ -464,7 +478,7 @@ public class Logic extends UserCode {
 		String taskType="";
 		String selectionMethod = "";
 		String syncMode = "";
-        String executionStatus = "";
+		String executionStatus = "";
 		
 		try
 		{
@@ -478,7 +492,7 @@ public class Logic extends UserCode {
 					taskType = "" + row.get("task_type");
 					selectionMethod = "" + row.get("selection_method");
 					syncMode = "" + row.get("sync_mode");
-                    executionStatus = "" + row.get("execution_status");
+					executionStatus = "" + row.get("execution_status");
 					
 					//log.info("fnCheckMigrateAndUpdateTDMDB - Loading task: " + taskExecutionId + " to TDM");
 					int count = 0;
@@ -486,16 +500,16 @@ public class Logic extends UserCode {
 					while(!Thread.currentThread().isInterrupted()) {
 						try
 						{
-                            // TDM 9.0 Calling function to update task execution summary based on TDMDB and not part of the sync
+							// TDM 9.0 Calling function to update task execution summary based on TDMDB and not part of the sync
 							fnUpdateTaskSummaryTableBasedOnTDMDB(taskExecutionId);
-                            // Get the task into the TDM LU
+							// Get the task into the TDM LU
 							fabric().execute("get TDM." + taskExecutionId);
 							db(TDM).execute("update " + TDMDB_SCHEMA + ".task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
-		                           // TDM 8.1 - in case of Custom Logic, drop the entity list table if exists
-		                           if (("C".equalsIgnoreCase(selectionMethod) || "GENERATE".equalsIgnoreCase(selectionMethod)) && !"stopped".equalsIgnoreCase(executionStatus)) {
-		                              String dropSql = "DROP TABLE IF EXISTS " + TDMDB_SCHEMA + ".entity_list_" + taskExecutionId;
-		                              db(TDM).execute(dropSql);
-		                          }
+								   // TDM 8.1 - in case of Custom Logic, drop the entity list table if exists
+								   if (("C".equalsIgnoreCase(selectionMethod) || "GENERATE".equalsIgnoreCase(selectionMethod)) && !"stopped".equalsIgnoreCase(executionStatus)) {
+									  String dropSql = "DROP TABLE IF EXISTS " + TDMDB_SCHEMA + ".entity_list_" + taskExecutionId;
+									  db(TDM).execute(dropSql);
+								  }
 							break;
 						}catch(Exception e){
 							if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
@@ -535,6 +549,28 @@ public class Logic extends UserCode {
 		}
 	}
 
+	private static void addErrorMsgIfAbsent(String taskExecId, String luName, String batchID) throws SQLException {
+		if (batchID != null) {
+			String select = "SELECT 1 FROM " + TDMDB_SCHEMA + ".task_exe_error_detailed where task_execution_id = ? LIMIT 1";
+
+			Object found = db(TDM).fetch(select, taskExecId).firstValue();
+
+			if (found != null && "1".equals(found.toString())) {
+				return;
+			}
+			String errorMsg = "";
+			Db.Row row = fabric().fetch("batch_details ?", batchID).firstRow();
+			if (row != null) {
+				errorMsg = row.get("Error").toString();
+			}
+			String insert = "INSERT INTO " + TDMDB_SCHEMA + ".task_exe_error_detailed (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
+				"ERROR_CATEGORY, ERROR_MESSAGE) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?)" ;
+			
+			db(TDM).execute(insert, taskExecId, luName, " ", " ", " ", "Task Failed", errorMsg);
+		}
+	}
+	
 	private static boolean isCommonlyUsedType(Object val) {
 		// Cover all cases of Integer, Decimal, Double, Float etc...
 		if (val instanceof Number) {
@@ -759,7 +795,7 @@ public class Logic extends UserCode {
 		paramList.add(updateDate);
 
 		if (!"null".equals(startExecTime) && !"".equals(startExecTime)) {
-			sqlUpdateTaskSummaryTable += ", start_execution_time = ?";
+			sqlUpdateTaskSummaryTable += ", start_execution_time = COALESCE(start_execution_time, ?)";
 			paramList.add(startExecTime);
 		}
 		if (!"null".equals(endExecTime) && !"".equals(endExecTime)) {

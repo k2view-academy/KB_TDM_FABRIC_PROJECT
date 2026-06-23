@@ -928,9 +928,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsValidateReservedEntities(@param(required=true) String beID, @param(required=true) String envID, @param(required=true) List<Map<String,String>> listOfEntities, String filterout_reserved) throws Exception {
+	public static Object wsValidateReservedEntities(String beID, String envID, @param(required=true) List<Map<String,String>> listOfEntities, String filterout_reserved) throws Exception {
 		ArrayList<String> entitiesArray = new ArrayList<>();
-		
 		for (Map<String, String> entityInfo : listOfEntities) {
 			entitiesArray.add(entityInfo.get("target_entity_id"));
 		}

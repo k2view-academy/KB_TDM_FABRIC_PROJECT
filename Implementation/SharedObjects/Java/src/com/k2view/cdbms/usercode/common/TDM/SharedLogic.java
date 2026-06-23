@@ -963,18 +963,19 @@ public class SharedLogic {
 				String interfaceName = String.valueOf(row.get("interface_name"));
 				String schemaName = String.valueOf(row.get("schema_name"));
 				String batchKey = batchId + "|" + String.valueOf(row.get("execution_action")) + "|" + String.valueOf(row.get("table_order"));
+				int tableOrderVal = Integer.parseInt(row.get("table_order").toString());
 
 				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"));
 				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchKey, interfaceName);
 				Map<String, Object> schema = getOrCreateSchema(schemaIndex, interfaceMap, batchKey, interfaceName, schemaName);
 
 				int pending = Integer.parseInt( row.get("pending").toString());
-				int running = Integer.parseInt( row.get("running").toString()); 
-				int completed = Integer.parseInt( row.get("completed").toString()); 
+				int running = Integer.parseInt( row.get("running").toString());
+				int completed = Integer.parseInt( row.get("completed").toString());
 				int failed = Integer.parseInt( row.get("failed").toString());
 				int stopped = Integer.parseInt( row.get("stopped").toString());
 				int total = pending + running + completed + failed + stopped;
-				String status = calculateSummaryStatus(pending, running, completed, failed, stopped, total);
+				String status = tableOrderVal == -1 ? "ordering tables" : calculateSummaryStatus(pending, running, completed, failed, stopped, total);
 
 				schema.put("schema_status", status);
 				schema.put("number_of_pending_tables", pending);
@@ -999,6 +1000,7 @@ public class SharedLogic {
 				interfaceMap.put("number_of_total_tables", interfaceTotal);
 
 				interfaceMap.put("interface_status",
+					tableOrderVal == -1 ? "ordering tables" :
 					calculateSummaryStatus(
 						interfacePending,
 						interfaceRunning,
@@ -1016,6 +1018,9 @@ public class SharedLogic {
 		Db.Rows tableRows = db(TDM).fetch(getRefTableDetailsQuery().toString(), refTaskExecutionId, refTaskExecutionId);
 		try {
 			for (Db.Row row : tableRows) {
+				int tableOrderVal = Integer.parseInt(row.get("table_order").toString());
+				if (tableOrderVal == -1) continue;
+
 				String batchId = String.valueOf(row.get("batch_id"));
 				String interfaceName = String.valueOf(row.get("interface_name"));
 				String schemaName = String.valueOf(row.get("schema_name"));
@@ -1145,8 +1150,8 @@ public class SharedLogic {
 			Map<String, Object> b = new LinkedHashMap<>();
 			b.put("batch_id", batchId);
 			String action = executionAction != null ? executionAction.toString() : "";
-			Long order = tableOrder != null ? (Long.valueOf(tableOrder.toString()) + 1) : 0L;
-			b.put("execution_action", action + "#" + order);
+			Long orderVal = tableOrder != null ? Long.valueOf(tableOrder.toString()) : 0L;
+			b.put("execution_action", orderVal == -1L ? action : action + "#" + (orderVal + 1));
 			b.put("process_type", action + " tables");
 			b.put("interfaces", new ArrayList<Map<String, Object>>());
 			batches.add(b);
@@ -1223,11 +1228,11 @@ public class SharedLogic {
 	}
 
 	private static String calculateSummaryStatus(int pending, int running, int completed, int failed, int stopped, int total) {
-		if (running > 0) return "running";
 		if (stopped > 0) return "stopped";
-		if (failed > 0) return "failed";
-		if (total > 0 && completed == total) return "completed";
+		if (running > 0) return "running";
+		if (total > 0 && failed == total) return "failed";
 		if (total > 0 && pending == total) return "pending";
+		if (completed > 0) return "completed";
 		return "running";
 	}
 	
