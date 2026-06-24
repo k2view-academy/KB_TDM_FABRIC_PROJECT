@@ -12,6 +12,7 @@ name,pii
 "BANK_ACCOUNT",true
 "BUSINESS_NAME",true
 "CARDHOLDER_NAME",true
+"CITY",true
 "CREDIT_CARD",true
 "CREDIT_SCORE",true
 "DATE_OF_BIRTH",true
@@ -72,4 +73,3 @@ name,pii
 "TSN",true
 "USERNAME",true
 "VIDEO",true
-CITY,true
