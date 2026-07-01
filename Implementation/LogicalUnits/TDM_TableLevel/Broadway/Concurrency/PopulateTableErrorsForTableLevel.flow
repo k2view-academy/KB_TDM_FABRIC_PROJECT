@@ -24,12 +24,6 @@ stages:
         out:
           inputs:
             schema: '#ref'
-      'Get executionAction ':
-        parent: NotNull
-        disabled: true
-        in:
-          value:
-            external: executionAction
       Check executionAction:
         parent: NotEquals
         in:
@@ -171,9 +165,7 @@ stages:
             const: execution_action <> 'Delete'
             schema: string
           test:
-            link:
-            - Get executionAction /result
-            - Check executionAction/result
+            link: Check executionAction/result
         out:
           result:
             schema: string
@@ -197,6 +189,72 @@ stages:
         out:
           result:
             schema: string
+  Check Table ID:
+    dependsOn: Format the actor's parameters
+    actors:
+      Table ID Given?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            external: refTableID
+            schema: integer
+      Table ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: refTableID
+            schema: integer
+        out:
+          value:
+            schema: integer
+    split: '--------------------'
+  Table ID is Given:
+    else: true
+    dependsOn: Format the actor's parameters
+    actors:
+      Get Table ID:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT task_ref_table_id
+              FROM ${@schema}.task_ref_tables
+              WHERE ref_table_name = ${tableName}
+              AND schema_name = ${schemaName}
+              AND interface_name = ${interfaceName}
+              AND task_id = (SELECT task_id FROM ${@schema}.task_ref_exe_stats WHERE task_execution_id = ${taskExecutionId} limit 1)
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: sql
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: sql
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: sql
+          taskExecutionId:
+            link: Get Task Exec ID/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: integer
   Load Data to Detailed Error table:
     actors:
       Error Handler for reporting to TDM Error Table:
@@ -248,7 +306,9 @@ stages:
             const: TDM_TableLevel
             schema: string
           entity_id:
-            link: Build IID/iid
+            link:
+            - Build IID/iid
+            - ALL_TABLES/value
             schema: string
           iid:
             link:
@@ -329,7 +389,7 @@ stages:
         in:
           format:
             const: "UPDATE ${TDMDB_SCHEMA}.TASK_REF_EXE_STATS\r\nSET execution_status\
-              \ = 'failed', number_of_failed_records = number_of_records_to_process,\r\
+              \ = 'failed', \r\nnumber_of_failed_records = number_of_records_to_process,\r\
               \nnumber_of_processed_records = 0,\r\nerror_msg = '${errorMsg}',\r\n\
               end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',\r\nupdated_by = '${userName}'\r\
               \nWHERE task_execution_id = ${taskExecutionID} \r\nand ('${tableName}'\
@@ -360,7 +420,9 @@ stages:
             mandatory: false
             createdBy: format
           refTableID:
-            external: refTableID
+            link:
+            - Table ID/value
+            - Get Table ID/result
             schema: integer
             mandatory: false
             createdBy: format

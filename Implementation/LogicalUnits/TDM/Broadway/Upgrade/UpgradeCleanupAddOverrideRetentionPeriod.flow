@@ -1,7 +1,23 @@
 tags: Upgrade
 stages:
+  Get Project Path:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
   Get Mtable:
     actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
       MTableLookup:
         parent: MTableLookup
         in:
@@ -20,6 +36,16 @@ stages:
         out:
           map:
             schema: '#ref'
+      File Name And Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/LogicalUnits/TDM/Mtable/TDMCleanUp.csv
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+            createdBy: format
   Add Description:
     actors:
       MapMerge:
@@ -73,7 +99,7 @@ stages:
           interface:
             const: file://
           path:
-            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/TDM/Mtable/TDMCleanUp.csv
+            link: File Name And Location/string
           stream:
             link: CsvBuilder/csv
       MTableLoad:

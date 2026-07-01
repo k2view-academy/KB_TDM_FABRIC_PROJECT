@@ -417,13 +417,6 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
-          tableOrder:
-            link:
-              path: For Loop For Deleting Tables/i
-              iterate: Iterate
-            schema: integer
-            mandatory: false
-            createdBy: flowName
           batchID:
             link:
               path: Batch /result/Batch id

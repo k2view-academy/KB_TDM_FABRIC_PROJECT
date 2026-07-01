@@ -22,12 +22,14 @@
     <Column name="version_task_execution_id" id="version_task_execution_id" index="14" datatype="Text" />
     <Column name="batch_id" id="batch_id" index="15" datatype="Text" />
     <Column name="execution_action" id="execution_action" index="16" datatype="Text" />
+    <Column name="schema_name" id="schema_name" index="17" datatype="Text" />
+    <Column name="interface_name" id="interface_name" index="18" datatype="Text" />
   </Columns>
   <IndexesList>
   </IndexesList>
   <EnrichmentList>
   </EnrichmentList>
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" deleteMode="">
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
     <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
   <TriggersList>

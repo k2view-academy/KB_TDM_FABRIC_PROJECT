@@ -16,12 +16,15 @@ import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fn
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
+import static java.lang.Math.nextDown;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
@@ -106,6 +109,27 @@ public class SharedLogic {
         if (Util.isEmpty(env_name) || "null".equalsIgnoreCase(env_name)) {
             return inactiveProducts;
         }
+        // Only fail if ALL LUs for this task are disabled — if at least one enabled LU remains,
+        // the disabled ones will be silently skipped at execution time.
+        String enabledCheckQuery = "SELECT COUNT(1) " +
+                       "FROM " + TDMDB_SCHEMA + ".environments e " +
+                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON ep.product_id = pu.product_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".tasks_logical_units tu ON tu.lu_id = pu.lu_id " +
+                       "WHERE e.environment_status = 'Active' " +
+                       "AND e.environment_id = ? " +
+                       "AND e.environment_name = ? " +
+                       "AND ep.enable_product = true " +
+                       "AND tu.task_id = ?";
+        try {
+            Long enabledCount = (Long) db(TDM).fetch(enabledCheckQuery, env_id, env_name, task_id).firstValue();
+            if (enabledCount != null && enabledCount > 0)
+                return inactiveProducts;
+        } catch (Exception e) {
+            log.error("Error in fnValidateProductForEnv enabled check: " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
         String query = "SELECT p.product_name " +
                        "FROM " + TDMDB_SCHEMA + ".environments e " +
                        "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
@@ -118,14 +142,14 @@ public class SharedLogic {
                        "AND p.product_status = ? " +
                        "AND tu.task_id = ? " +
                        "AND ep.enable_product = ? " ;
-    
+
         try {
             Db.Rows results = db(TDM).fetch(query, "Active", env_id, env_name,"Active",task_id,false);
             for (Db.Row row : results) {
-                inactiveProducts.add(row.get("product_name").toString()); 
+                inactiveProducts.add(row.get("product_name").toString());
             }
             return inactiveProducts;
-        } catch (Exception e) { 
+        } catch (Exception e) {
             log.error("Error in fnValidateProductForEnv: " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -158,6 +182,30 @@ public class SharedLogic {
             if (i > 0) placeholders.append(", ");
             placeholders.append("?");
         }
+        // Only fail if ALL LUs are disabled — if at least one enabled LU remains,
+        // the disabled ones will be silently skipped at execution time.
+        String enabledCheckQuery = "SELECT COUNT(1) " +
+                       "FROM " + TDMDB_SCHEMA + ".environments e " +
+                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON ep.product_id = pu.product_id " +
+                       "WHERE e.environment_status = 'Active' " +
+                       "AND e.environment_id = ? " +
+                       "AND e.environment_name = ? " +
+                       "AND ep.enable_product = true " +
+                       "AND pu.lu_id IN (" + placeholders + ")";
+        List<Object> enabledParams = new ArrayList<>();
+        enabledParams.add(env_id);
+        enabledParams.add(env_name);
+        enabledParams.addAll(luIds);
+        try {
+            Long enabledCount = (Long) db(TDM).fetch(enabledCheckQuery, enabledParams.toArray()).firstValue();
+            if (enabledCount != null && enabledCount > 0)
+                return inactiveProducts;
+        } catch (Exception e) {
+            log.error("Error in fnValidateProductForEnv (luIds) enabled check: " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
         String query = "SELECT DISTINCT p.product_name " +
                        "FROM " + TDMDB_SCHEMA + ".environments e " +
                        "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
@@ -235,7 +283,7 @@ public class SharedLogic {
         ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
         //log.info("fnValidateSourceEnvForTask - role_id: " + role_id);
 
-        //check if system are diabled in the source environment
+        //check if system are disabled in the source environment
         String inactive_source_products = fnValidateProductForTask(env_id,env_name,task_type,sync_mode,"SOURCE",lusList);
         if(!"".equalsIgnoreCase(inactive_source_products)){
             errorMessages.put("systems", "The task cannot be executed. The following systems are currently disabled in " + env_name + ": " + inactive_source_products);
@@ -597,6 +645,14 @@ public class SharedLogic {
             Long source_environment_id, String editable_params, List<Map<String, Object>> preExecutionProcesses,
             List<Map<String, Object>> postExecutionProcesses, String task_type) {
 
+        boolean hasOverrideConfig = editable_params != null
+                && !editable_params.isBlank()
+                && !editable_params.equals("{}");
+
+        if (!hasOverrideConfig) {
+            return "";
+        }
+
         JsonObject jsonObject = JsonParser.parseString(editable_params).getAsJsonObject();
 
         // Check if BE is mandatory based on override settings
@@ -878,7 +934,8 @@ public class SharedLogic {
             luName = "TDM";
         }
 
-        Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName + "'");
+        final String finalLuName = luName;
+        Db.Rows rows = Util.rte(() -> fabric().fetch("list BF lu_name = '" + finalLuName + "' flow='" + flowName + "'"));
         for (Db.Row row : rows) {
             if (!"LU_NAME".equalsIgnoreCase("" + row.get("name"))
                     && !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name"))
@@ -929,15 +986,37 @@ public class SharedLogic {
         processInputs.put("Process_type", processType);
         for (Map<String, String> processRec : processesList) {
             String processName =  processRec.get("processName");
-            String luName = processRec.get("luName");
             processInputs.put("Process_name", processName);
-            List<Map<String, Object>> processList = MtableLookup("PostAndPreExecutionProcess", processInputs,
-                    MTable.Feature.caseInsensitive);
-            for (Map<String, Object> t : processList) {
-                Object luNameObj = t.get("Lu_name");
-                if ((luNameObj == null && "".equals(luName)) ||
-                    luNameObj.equals(luName)) {
+            List<String> luNames = Pattern.compile(",").splitAsStream(processRec.get("luNames")).collect(Collectors.toList());
+            for (String luName : luNames) {
+                if (!"".equals(luName)) {
+                    processInputs.put("Lu_name", luName);
+                }
+            
+                Boolean found = false;
+                List<Map<String, Object>> processList = MtableLookup("PostAndPreExecutionProcess", processInputs,
+                        MTable.Feature.caseInsensitive);
 
+                if (!"".equals(luName) && (processList == null || processList.isEmpty())) {
+                    processInputs.remove("Lu_name");
+                    processList = MtableLookup("PostAndPreExecutionProcess", processInputs,
+                        MTable.Feature.caseInsensitive);
+                    
+                    if (processList != null && processList.size() > 0) {
+                        for (Map<String, Object> t : processList) {
+                            if (t.get("Lu_name") == null) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    if (processList != null && !processList.isEmpty()) {
+                        found = true;
+                    }
+                }
+                
+                if (found) {
                     List<Map<String, Object>> flowParams = fnGetFlowParams(luName, processName);
                     HashMap<String, Object> tmp = new HashMap<>();
                     tmp.put("process_name", processName);
@@ -949,5 +1028,4 @@ public class SharedLogic {
         }
         return result;
     }
-
 }

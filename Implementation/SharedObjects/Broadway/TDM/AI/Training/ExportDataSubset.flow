@@ -157,7 +157,7 @@ stages:
                 "logical_relations": {
                   "prevalence_threshold_eq": 0.98,
                   "prevalence_threshold_1_1": 0.98,
-                  "prevalence_threshold_1_n": 0.85,
+                  "prevalence_threshold_1_n": 0.90,
                   "lt_random_pairs_percent_threshold": 20,
                   "cut_off_threshold": 10,
                   "cut_off_threshold_for_eq": 90,
@@ -179,12 +179,12 @@ stages:
                   "border_tolerance": 0.25,
                   "max_n_categories_for_ranges": 50,
                   "identification_min_non_na": 100,
-                  "identification_max_na_ratio": 0.5,
+                  "identification_max_na_ratio": 0.6,
                   "identification_joined_max_na_ratio": 0.8,
                   "dense_1_to_n_threshold": 3,
                   "logical_relations_overrides": {
-                    "groups": [],
-                    "participation": []
+                    "groups": [["customer_account.service_line.line_act_dt"],["customer_account.service_line.mtn_act_dt"],["customer_account.service_line.mtn_role"]],
+                    "participation": [true,true,true]
                   }
                 },
                 "logical_relations_table_training": {

@@ -75,7 +75,7 @@ stages:
           value:
             schema: string
     split: '--------------------'
-  Stage 5:
+  Do Nothing:
     transactional: false
     dependsOn: If Flase
   Create Deploy Environment Command:
@@ -95,9 +95,9 @@ stages:
             - path: Path/value
               pos: 2
     split: '--------------------'
-  Stage 6:
+  'Do Nothing ':
     transactional: false
-    dependsOn: Stage 5
+    dependsOn: Do Nothing
   Run Deploy Environments:
     dependsOn: Create Deploy Environment Command
     actors:
@@ -112,7 +112,7 @@ stages:
     split: '--------------------'
   Stage 7:
     transactional: false
-    dependsOn: Stage 6
+    dependsOn: 'Do Nothing '
   Create TDMDB Tables:
     actors:
       Create TDMDB:
@@ -120,16 +120,9 @@ stages:
         in:
           flowName:
             const: TDMDB
-  Create K2System If Relevant:
-    actors:
-      create K2system Schema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: createK2systemSchema
   Check If Upgrade TDM version Needed:
     actors:
-      TDMDBUpgradeScripts1:
+      TDMDB Upgrade:
         parent: InnerFlow
         in:
           flowName:
@@ -151,7 +144,7 @@ stages:
             default: false
   Create k2masking if it does not exists:
     actors:
-      maskingCreateCacheTable:
+      Create masking Cache Table:
         parent: InnerFlow
         in:
           flowName:

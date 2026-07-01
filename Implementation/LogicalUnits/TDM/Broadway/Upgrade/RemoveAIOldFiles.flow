@@ -10,6 +10,34 @@ stages:
         out:
           value:
             schema: string
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Build AI Path:
+    actors:
+      AI Folder Path:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/SharedObjects/Broadway/TDM/AI/
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+      AI Folder Path1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/SharedObjects/Broadway/TDM/AI/
+          projDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
   Check If Studio:
     actors:
       Studio Present?:
@@ -22,9 +50,10 @@ stages:
         parent: ls
         in:
           interface:
-            const: file:///
+            const: null
+            link: AI Folder Path1/string
           path:
-            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/
+            const: .
           directories:
             const: true
         out:
@@ -38,7 +67,7 @@ stages:
           format:
             const: ${path}${file}
           path:
-            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/
+            link: AI Folder Path/string
             schema: string
             mandatory: false
             createdBy: format
@@ -98,9 +127,29 @@ stages:
             schema: string
             mandatory: false
     split: '--------------------'
-  Search for specific files:
+  Build Specific File Paths:
     else: true
     dependsOn: Get Files
+    actors:
+      Training File 1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/SharedObjects/Broadway/TDM/AI/Training/CreateMDBExportSchemaForAI.flow
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+      Training File 2:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/SharedObjects/Broadway/TDM/AI/Training/MDBExportSchemaAI.flow
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+  Delete Specific Files:
     actors:
       Delete File or Folder11:
         parent: LuFunction
@@ -108,7 +157,7 @@ stages:
           functionName:
             const: deleteFile
           fileName:
-            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/Training/CreateMDBExportSchemaForAI.flow
+            link: Training File 1/string
             schema: string
             mandatory: false
       Delete File or Folder12:
@@ -117,7 +166,7 @@ stages:
           functionName:
             const: deleteFile
           fileName:
-            const: /opt/apps/fabric/workspace/project/Implementation/SharedObjects/Broadway/TDM/AI/Training/MDBExportSchemaAI.flow
+            link: Training File 2/string
             schema: string
             mandatory: false
 schemas:

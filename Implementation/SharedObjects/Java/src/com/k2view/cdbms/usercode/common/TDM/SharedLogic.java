@@ -959,11 +959,11 @@ public class SharedLogic {
 		Db.Rows summaryRows = db(TDM).fetch(getRefSchemaSummaryQuery().toString(), refTaskExecutionId);
 		try {
 			for (Db.Row row : summaryRows) {
-				String batchId = String.valueOf(row.get("batch_id"));
+				String batchId = row.get("batch_id") != null ? String.valueOf(row.get("batch_id")) : null;
 				String interfaceName = String.valueOf(row.get("interface_name"));
 				String schemaName = String.valueOf(row.get("schema_name"));
 				String batchKey = batchId + "|" + String.valueOf(row.get("execution_action")) + "|" + String.valueOf(row.get("table_order"));
-				int tableOrderVal = Integer.parseInt(row.get("table_order").toString());
+				Integer tableOrderVal = row.get("table_order") != null ? Integer.parseInt(row.get("table_order").toString()) : null;
 
 				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"));
 				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchKey, interfaceName);
@@ -975,7 +975,7 @@ public class SharedLogic {
 				int failed = Integer.parseInt( row.get("failed").toString());
 				int stopped = Integer.parseInt( row.get("stopped").toString());
 				int total = pending + running + completed + failed + stopped;
-				String status = tableOrderVal == -1 ? "ordering tables" : calculateSummaryStatus(pending, running, completed, failed, stopped, total);
+				String status = (tableOrderVal != null && tableOrderVal == -1) ? "ordering tables" : calculateSummaryStatus(pending, running, completed, failed, stopped, total);
 
 				schema.put("schema_status", status);
 				schema.put("number_of_pending_tables", pending);
@@ -1000,7 +1000,7 @@ public class SharedLogic {
 				interfaceMap.put("number_of_total_tables", interfaceTotal);
 
 				interfaceMap.put("interface_status",
-					tableOrderVal == -1 ? "ordering tables" :
+					(tableOrderVal != null && tableOrderVal == -1) ? "ordering tables" :
 					calculateSummaryStatus(
 						interfacePending,
 						interfaceRunning,
@@ -1018,10 +1018,10 @@ public class SharedLogic {
 		Db.Rows tableRows = db(TDM).fetch(getRefTableDetailsQuery().toString(), refTaskExecutionId, refTaskExecutionId);
 		try {
 			for (Db.Row row : tableRows) {
-				int tableOrderVal = Integer.parseInt(row.get("table_order").toString());
-				if (tableOrderVal == -1) continue;
+				Integer tableOrderVal = row.get("table_order") != null ? Integer.parseInt(row.get("table_order").toString()) : null;
+				if (tableOrderVal != null && tableOrderVal == -1) continue;
 
-				String batchId = String.valueOf(row.get("batch_id"));
+				String batchId = row.get("batch_id") != null ? String.valueOf(row.get("batch_id")) : null;
 				String interfaceName = String.valueOf(row.get("interface_name"));
 				String schemaName = String.valueOf(row.get("schema_name"));
 				String batchKey = batchId + "|" + String.valueOf(row.get("execution_action")) + "|" + String.valueOf(row.get("table_order"));
@@ -1046,7 +1046,7 @@ public class SharedLogic {
 		sql.append("SELECT ");
 		sql.append("st.batch_id, ");
 		sql.append("st.execution_action, ");
-		sql.append("COALESCE(st.table_order, 0) AS table_order, ");
+		sql.append("st.table_order, ");
 		sql.append("st.interface_name, ");
 		sql.append("st.schema_name, ");
 		sql.append("COUNT(DISTINCT st.task_ref_table_id) AS number_of_tables, ");
@@ -1080,7 +1080,7 @@ public class SharedLogic {
 		sql.append("SELECT ");
 		sql.append("s.batch_id, ");
 		sql.append("s.execution_action, ");
-		sql.append("COALESCE(s.table_order, 0) AS table_order, ");
+		sql.append("s.table_order, ");
 		sql.append("s.interface_name, ");
 		sql.append("s.schema_name, ");
 		sql.append("s.ref_table_name, ");
@@ -1101,7 +1101,7 @@ public class SharedLogic {
 		sql.append("SELECT ");
 		sql.append("s.batch_id, ");
 		sql.append("COALESCE(s.execution_action, '') AS execution_action, ");
-		sql.append("COALESCE(s.table_order, 0) AS table_order, ");
+		sql.append("s.table_order, ");
 		sql.append("s.interface_name, ");
 		sql.append("s.schema_name, ");
 		sql.append("s.ref_table_name, ");
@@ -1150,8 +1150,12 @@ public class SharedLogic {
 			Map<String, Object> b = new LinkedHashMap<>();
 			b.put("batch_id", batchId);
 			String action = executionAction != null ? executionAction.toString() : "";
-			Long orderVal = tableOrder != null ? Long.valueOf(tableOrder.toString()) : 0L;
-			b.put("execution_action", orderVal == -1L ? action : action + "#" + (orderVal + 1));
+			Long orderVal = tableOrder != null ? Long.valueOf(tableOrder.toString()) : null;
+			if (orderVal == null || orderVal == -1L) {
+				b.put("execution_action", action);
+			} else {
+				b.put("execution_action", action + " " + (orderVal + 1));
+			}
 			b.put("process_type", action + " tables");
 			b.put("interfaces", new ArrayList<Map<String, Object>>());
 			batches.add(b);
@@ -1228,11 +1232,11 @@ public class SharedLogic {
 	}
 
 	private static String calculateSummaryStatus(int pending, int running, int completed, int failed, int stopped, int total) {
+		if (total == 0 || pending == total) return "pending";
 		if (stopped > 0) return "stopped";
 		if (running > 0) return "running";
-		if (total > 0 && failed == total) return "failed";
-		if (total > 0 && pending == total) return "pending";
-		if (completed > 0) return "completed";
+		if (failed == total) return "failed";
+		if (pending == 0) return "completed";
 		return "running";
 	}
 	
@@ -1641,24 +1645,31 @@ public class SharedLogic {
 	}
 
 	@out(name = "result", type = Object.class, desc = "")
-    public static Set<Object> MtableGetKeyValues(String name,String key) throws Exception {
-        MTable mtable = MTables.get(name);
-        if (mtable == null) return Collections.emptySet();
+	public static Set<Object> MtableGetKeyValues(String name, String key) throws Exception {
+		MTable mtable;
+		try {
+			mtable = MTables.get(name);
+		} catch (Exception e) {
+			return Collections.emptySet();
+		}
+		if (mtable == null)
+			return Collections.emptySet();
 
-        List<String> columns = mtable.columns();
-        int idx = columns.indexOf(key);
-        if (idx == -1) return Collections.emptySet(); // column not found
+		List<String> columns = mtable.columns();
+		int idx = columns.indexOf(key);
+		if (idx == -1)
+			return Collections.emptySet(); // column not found
 
-        // extract just that column, distinct and ordered
-        Set<Object> unique = new LinkedHashSet<>();
-        for (Object[] row : mtable.allRows()) {
-            if (idx < row.length && row[idx] != null) {
-                unique.add(row[idx]);
-            }
-        }
+		// extract just that column, distinct and ordered
+		Set<Object> unique = new LinkedHashSet<>();
+		for (Object[] row : mtable.allRows()) {
+			if (idx < row.length && row[idx] != null) {
+				unique.add(row[idx]);
+			}
+		}
 
-        return unique;
-    }
+		return unique;
+	}
 	
 	public static void MtableRemove(String name) throws Exception {
 		MTables.remove(name);

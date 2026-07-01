@@ -483,7 +483,7 @@ INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
 
--- generate - should be 8 entries
+-- generate & AI - should be 10 entries
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Rule-based Generate entities','Generate <num_of_entities> synthetic <be_name> entities.
 The entities are generated based on the following parameters:') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('AI-based Generate entities','Generate <num_of_entities> synthetic <be_name> entities.
@@ -500,9 +500,11 @@ The entities are generated based AI training model.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load generated entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name>.
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load execution generation entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name> using data generation <generation_title> (created on <generation_creation_date>, <generation_number_of_entities> entities).') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load and reserve generated entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name>.
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Training','Extract data by <be_name> from <source_env_name>. Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities. Run AI training on the extracted entities.') ON CONFLICT DO NOTHING;
 
 -- basic
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Delete entities','Delete data by <be_name> from <environment_name>.
@@ -547,10 +549,28 @@ ALTER TABLE ${@schema}.task_ref_exe_stats
     ADD COLUMN IF NOT EXISTS table_order bigint,
     ADD COLUMN IF NOT EXISTS filter_parameters text;
 
+UPDATE ${@schema}.task_ref_exe_stats es
+SET interface_name = trt.interface_name,
+    schema_name    = trt.schema_name,
+    filter_parameters = trt.filter_parameters
+FROM ${@schema}.task_ref_tables trt
+WHERE es.task_ref_table_id = trt.task_ref_table_id
+  AND es.task_id = trt.task_id;
+
 UPDATE ${@schema}.task_ref_exe_stats set execution_action ='Extract & Load';
 
-ALTER TABLE ${@schema}.task_ref_exe_stats
-    RENAME COLUMN job_uid TO batch_id;
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = '${@schema}'
+          AND table_name = 'task_ref_exe_stats'
+          AND column_name = 'job_uid'
+    ) THEN
+        ALTER TABLE ${@schema}.task_ref_exe_stats RENAME COLUMN job_uid TO batch_id;
+    END IF;
+END $$;
+
 
 ALTER TABLE ${@schema}.task_ref_exe_stats
     DROP CONSTRAINT IF EXISTS task_ref_exe_stats_pkey;

@@ -1,5 +1,15 @@
 tags: Upgrade
 stages:
+  Get Project Path:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
   Get Mtable:
     actors:
       MTableLookup:
@@ -21,6 +31,21 @@ stages:
         out:
           map:
             schema: '#ref'
+      MTable Name and Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/LogicalUnits/k2_ref/Mtable/${mtable}.csv
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+            createdBy: format
+          mtable:
+            external: mtable
+            schema: string
+            mandatory: false
+            createdBy: format
   Add Description:
     actors:
       MapMerge:
@@ -67,10 +92,10 @@ stages:
         in:
           interface:
             const: file://
+          path:
+            link: MTable Name and Location/string
           stream:
             link: CsvBuilder/csv
-          path:
-            external: path
       MTableLoad:
         parent: MTableLoad
         in:

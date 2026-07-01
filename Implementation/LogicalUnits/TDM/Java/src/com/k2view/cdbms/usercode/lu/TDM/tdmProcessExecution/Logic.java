@@ -41,7 +41,7 @@ public class Logic extends UserCode {
         //log.info("tdmProcessExecution Starting");
         String executionId = "";
 
-        String executionsSql = "Select t.process_id , t.process_name, t.execution_order, t.process_type, t.parameters, l.be_id, l.task_id from " +
+        String executionsSql = "Select t.process_id , t.process_name, t.execution_order, t.process_type, t.parameters, l.be_id, l.task_id, t.lu_name from " +
             TDMDB_SCHEMA + ".tasks_exe_process t, " + TDMDB_SCHEMA + ".task_execution_list l " +
             "where l.task_execution_id = ? and l.process_id = t.process_id and upper(l.execution_status) = 'PENDING' " +
             "and l.task_id = t.task_id and t.process_type = ? and t.status='Active' " +
@@ -74,7 +74,7 @@ public class Logic extends UserCode {
             String processID = Util.rte(() -> resultSet.getString("process_id"));
             String flowParams = Util.rte(() -> resultSet.getString("parameters"));
             Integer beId = Util.rte(() -> resultSet.getInt("be_id"));
-            String luName = null;
+            String luName = Util.rte(() -> resultSet.getString("lu_name"));
 
             if (resolvedTaskId == null) {
                 resolvedTaskId = Util.rte(() -> resultSet.getLong("task_id"));
@@ -173,15 +173,7 @@ public class Logic extends UserCode {
                 }else {
                     log.info("************* set task execution list to running for process id " + processID + " *************");
                     if (beId != -1) {
-                        List<Map<String, Object>> ProcessList = MtableLookup("PostAndPreExecutionProcess", ProcessInputs, MTable.Feature.caseInsensitive);
-                        for (Map<String, Object> t : ProcessList) {
-                            Object luNameObj = t.get("Lu_name");
-                            if (luNameObj != null) {
-                                luName = luNameObj.toString();
-                            }
-                        }
-
-                        if ((luName == null || luName.isEmpty()) && ProcessList.size() > 0) {
+                        if (luName == null || luName.isEmpty()) {
                             luName = "TDM";
                         }
                     } else {

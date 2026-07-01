@@ -1092,7 +1092,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdatePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long process_id, String process_name, Integer execution_order, String process_description) throws Exception {
+	public static Object wsUpdatePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long process_id, 
+			String process_name, Integer execution_order, String process_description, String lu_name) throws Exception {
+				
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 	
@@ -1104,7 +1106,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			log.error(e.getMessage());
 		}
-		return fnUpdateExecutionForBusinessEntity(beId,beName,process_id,process_name,execution_order,process_description,"post");
+		return fnUpdateExecutionForBusinessEntity(beId,beName,process_id,process_name,execution_order,process_description,lu_name, "post");
 		
 	}
 
@@ -1114,7 +1116,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdatePreExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long process_id, String process_name, Integer execution_order, String process_description) throws Exception {
+	public static Object wsUpdatePreExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long process_id, 
+		String process_name, Integer execution_order, String process_description, String lu_name) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 	
@@ -1126,7 +1129,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			log.error(e.getMessage());
 		}
-		return fnUpdateExecutionForBusinessEntity(beId,beName,process_id,process_name,execution_order,process_description,"pre");
+		return fnUpdateExecutionForBusinessEntity(beId,beName,process_id,process_name,execution_order,process_description,lu_name, "pre");
 		
 	}
 	 static void fnUpdateBusinessEntityDate(long beId,String username) throws Exception{

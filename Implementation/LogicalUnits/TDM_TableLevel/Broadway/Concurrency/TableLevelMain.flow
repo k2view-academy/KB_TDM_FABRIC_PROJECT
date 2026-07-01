@@ -22,6 +22,12 @@ stages:
         out:
           value:
             schema: string
+      Get Target Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TAR_ENV_NAME
+            default: false
       syncMode:
         parent: Const
         in:
@@ -62,6 +68,12 @@ stages:
         out:
           value:
             schema: boolean
+      Get Source Environment:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
       Set Source Entity ID:
         parent: FabricSet
         in:
@@ -104,7 +116,6 @@ stages:
             schema: string
             mandatory: false
           refTableID:
-            const: 0
             schema: integer
             mandatory: false
           interfaceName:
@@ -121,15 +132,18 @@ stages:
             mandatory: false
       Clear Tables' Orders Cache:
         parent: LuFunction
-        height: 130
         in:
           functionName:
             const: tablesOrderCleanUp
-      Get Source Environment:
-        parent: FabricSetRead
+      Set Target Env:
+        parent: FabricSet
         in:
           key:
-            const: TDM_SOURCE_ENVIRONMENT_NAME
+            const: environment
+            default: false
+          value:
+            const: null
+            link: Get Target Environment/result
             default: false
       Prepare Tables' Order:
         parent: LuFunction
@@ -149,8 +163,19 @@ stages:
         out:
           result:
             schema: integer
+      Set Source Env:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: Get Source Environment/result
+            default: false
       Set IN_PLACE_MASKING_IND:
         parent: FabricSet
+        height: 131
         in:
           key:
             const: IN_PLACE_MASKING_IND
@@ -215,7 +240,6 @@ stages:
             schema: string
             mandatory: false
           refTableID:
-            const: 0
             schema: integer
             mandatory: false
           interfaceName:
@@ -385,14 +409,16 @@ stages:
             createdBy: flowName
   Clear the cache:
     actors:
-      set CLUSTER_DISTRIBUTE_AFFINITY to all:
+      Run Clear cashe on all nodes:
         parent: FabricSet
         in:
           key:
             const: CLUSTER_DISTRIBUTE_AFFINITY
+            default: false
           value:
             const: ALL
-      DbCommand1:
+            default: false
+      Clear Cache:
         parent: DbCommand
         in:
           interface:

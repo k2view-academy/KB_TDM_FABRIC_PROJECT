@@ -2,7 +2,7 @@ tags: Upgrade
 stages:
   Remove Final from Seq Report Global:
     actors:
-      UpgradeSeqReportGlobal1:
+      UpgradeSeqReportGlobal:
         parent: InnerFlow
         in:
           flowName:
@@ -38,10 +38,6 @@ stages:
             editor:
               id: com.k2view.strings
             mandatory: false
-          path:
-            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParams.csv
-            schema: string
-            mandatory: false
       UpgradeParamsAddDisplayOrder1:
         parent: InnerFlow
         in:
@@ -65,20 +61,16 @@ stages:
             editor:
               id: com.k2view.strings
             mandatory: false
-          path:
-            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParamsMapping.csv
-            schema: string
-            mandatory: false
   add task exe_permissions:
     actors:
-      addTaskExePermission1:
+      'addTaskExePermission1 : InnerFlo':
         parent: InnerFlow
         in:
           flowName:
             const: addTaskExePermission
           task executer:
             const: ALL
-            schema: any
+            schema: string
             editor:
               options:
               - ALL
@@ -96,11 +88,18 @@ stages:
             const: RemoveAIOldFiles
   update cleanup Mtable:
     actors:
-      UpgradeCleanupAddNewTables1:
+      UpgradeCleanupAddNewTables:
         parent: InnerFlow
         in:
           flowName:
             const: UpgradeCleanupAddNewTables
+  'Add LU Name to Pre/Post ':
+    actors:
+      UpdateLuNameForExecutionProcesses:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpdateLuNameForExecutionProcesses
 schemas:
   UpgradeParamsAddDisplayOrder.in.columns:
     type: array
