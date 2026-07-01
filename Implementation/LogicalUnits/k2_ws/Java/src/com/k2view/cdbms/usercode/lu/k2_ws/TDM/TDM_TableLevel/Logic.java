@@ -211,15 +211,23 @@ public class Logic extends WebServiceUserCode {
                     .add(tableObj);
         }
 
-        // Build final nested List
+        // Build final nested List — interfaces, schemas, and tables sorted alphabetically
+        TreeMap<String, Map<String, List<Map<String, Object>>>> sortedGrouped =
+                new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        sortedGrouped.putAll(grouped);
         List<Map<String, Object>> finalResult = new ArrayList<>();
-        grouped.forEach((intfName, schemasMap) -> {
+        sortedGrouped.forEach((intfName, schemasMap) -> {
             Map<String, Object> intfNode = new LinkedHashMap<>();
             intfNode.put("interfaceName", intfName);
             intfNode.put("config", configLookup.getOrDefault(intfName, createDefaultConfig()));
 
+            TreeMap<String, List<Map<String, Object>>> sortedSchemas =
+                    new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+            sortedSchemas.putAll(schemasMap);
             List<Map<String, Object>> schemaList = new ArrayList<>();
-            schemasMap.forEach((schemaName, tables) -> {
+            sortedSchemas.forEach((schemaName, tables) -> {
+                tables.sort(Comparator.comparing(
+                        (Map<String, Object> t) -> (String) t.get("tableName"), String.CASE_INSENSITIVE_ORDER));
                 Map<String, Object> schemaNode = new LinkedHashMap<>();
                 schemaNode.put("schemaName", schemaName);
                 schemaNode.put("tables", tables);
@@ -276,9 +284,10 @@ public class Logic extends WebServiceUserCode {
                 "exe.start_time, t.task_description, exe.number_of_processed_records " +
                 "from " + TDMDB_SCHEMA + ".task_ref_tables ref, " + TDMDB_SCHEMA + ".task_ref_exe_stats exe , " +
                 TDMDB_SCHEMA + ".task_execution_list l, " + TDMDB_SCHEMA + ".tasks t " +
-                "Where ref.ref_table_name  = exe.ref_table_name " +
+                "Where ref.ref_table_name  = exe.ref_table_name and ref.schema_name = exe.schema_name and ref.interface_name = exe.interface_name " +
                 "And ref.ref_table_name = ? " +
                 "And exe.execution_status = 'completed' " +
+                "AND LOWER(exe.execution_action) <> 'delete' " +
                 "and exe.task_execution_id = l.task_execution_id " +
                 "and lower(l.execution_status) = 'completed' " +
                 "and l.source_env_name = ? " +
@@ -353,7 +362,7 @@ public class Logic extends WebServiceUserCode {
     )
     public static Object wsGetInterfaceSchemaList(String environment, String interfaceName) throws Exception {
         Map<String, Object> response = new LinkedHashMap<>();
-        Set<String> result = new HashSet<>();
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         String errorCode = "SUCCESS";
         String message = null;
 
@@ -428,8 +437,9 @@ public class Logic extends WebServiceUserCode {
             }
             for (String table : tables){
                 result.add(fnCheckTableLastExecution(environment, interfaceName, schemaName,table));
-
             }
+            result.sort(Comparator.comparing(
+                item -> item.get("table_name").toString(), String.CASE_INSENSITIVE_ORDER));
 
         } catch (Exception e) {
             errorCode = "FAILED";
@@ -451,7 +461,7 @@ public class Logic extends WebServiceUserCode {
                 "SELECT s.task_execution_id, t.task_title " +
                 "FROM " + TDMDB_SCHEMA + ".task_ref_tables rt " +
                 "JOIN " + TDMDB_SCHEMA + ".tasks t               ON t.task_id = rt.task_id " +
-                "JOIN " + TDMDB_SCHEMA + ".task_ref_exe_stats s  ON s.task_ref_table_id = rt.task_ref_table_id " +
+                "JOIN " + TDMDB_SCHEMA + ".task_ref_exe_stats s  ON s.task_id = rt.task_id AND s.ref_table_name = rt.ref_table_name AND s.schema_name = rt.schema_name AND s.interface_name = rt.interface_name " +
                 "JOIN " + TDMDB_SCHEMA + ".task_execution_list l ON l.task_execution_id = s.task_execution_id " +
                 "WHERE rt.interface_name = ? " +
                 "  AND rt.schema_name = ? " +
@@ -647,14 +657,14 @@ public class Logic extends WebServiceUserCode {
         SortedMap<String, Object > tableVersion = new TreeMap<>();
         String sql = "SELECT s.task_execution_id AS taskExecutionId, t.task_title AS taskName " +
             "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s, " + TDMDB_SCHEMA + ".task_ref_tables rt, " + TDMDB_SCHEMA + ".tasks t " +
-            "WHERE rt.ref_table_name = ? AND rt.task_ref_table_id = s.task_ref_table_id " +
+            "WHERE rt.ref_table_name = ? AND s.task_id = rt.task_id AND s.ref_table_name = rt.ref_table_name AND s.schema_name = rt.schema_name AND s.interface_name = rt.interface_name " +
             "AND rt.schema_name = ? AND rt.interface_name = ? AND rt.task_id = t.task_id " +
-            "AND t.source_env_name = ? AND s.task_execution_id = (select MAX(s2.task_execution_id) " + 
+            "AND t.source_env_name = ? AND s.task_execution_id = (select MAX(s2.task_execution_id) " +
             "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s2, " + TDMDB_SCHEMA + ".task_execution_list l, " +
             TDMDB_SCHEMA + ".tasks t2, " + TDMDB_SCHEMA + ".task_ref_tables rt2 " +
             "WHERE rt2.ref_table_name = ? " +
             "AND rt2.schema_name = ? AND rt2.interface_name = ? " +
-            "AND rt2.task_ref_table_id = s2.task_ref_table_id " +
+            "AND s2.task_id = rt2.task_id AND s2.ref_table_name = rt2.ref_table_name AND s2.schema_name = rt2.schema_name AND s2.interface_name = rt2.interface_name " +
             "AND s2.execution_status = 'completed' " + 
             "AND s2.task_execution_id = l.task_execution_id " +
             "AND t2.task_id = l.task_id AND t2.source_env_name = ? " +
@@ -938,6 +948,9 @@ public class Logic extends WebServiceUserCode {
                     resultList.add(item);
                 }
             }
+
+            resultList.sort(Comparator.comparing(
+                item -> item.get("interfaceName").toString(), String.CASE_INSENSITIVE_ORDER));
 
         } catch (IllegalArgumentException e) {
             errorCode = "FAILED";

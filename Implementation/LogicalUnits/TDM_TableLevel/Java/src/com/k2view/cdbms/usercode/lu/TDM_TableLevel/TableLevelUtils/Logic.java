@@ -19,6 +19,7 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.cdbms.usercode.common.SharedGlobals;
 import com.k2view.cdbms.usercode.lu.TDM_TableLevel.*;
 import com.k2view.fabric.events.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
@@ -47,6 +48,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.*;
 public class Logic extends UserCode {
 
     private static final Map<TableKey, Map<String, Object>> executionTableInfo = new ConcurrentHashMap<>();
+    private static final Map<Long, Map<String, String>> schemaGlobals = new ConcurrentHashMap<>();
     private static final String KEY_DEFS = "Definitions";
     private static final String KEY_PARTS = "PartitionFlowInputs";
     private static final String KEY_MASKING_WHERE = "MaskingUpdateFields";
@@ -613,7 +615,7 @@ public class Logic extends UserCode {
             }
 
             // E. Load Target Database Information (Interface/Schema mappings from RefList)
-            Map<String, Object> tarInfo = fnLoadTargetInfoFromRefList(interfaceName, schemaName, tableName, luName);
+            Map<String, Object> tarInfo = fnLoadTargetInfoFromRefList(taskExecutionId, interfaceName, schemaName, tableName, luName);
             allDataContainer.put(KEY_TAR_INFO, tarInfo);
 
             // F. Store Calculated Execution Order
@@ -887,7 +889,7 @@ public class Logic extends UserCode {
             return fnGetTaskReferenceTableForSpecificTable(taskExecutionId, interfaceName, schemaName, tableName);
         }
 
-        public static Map<String, Object> fnLoadTargetInfoFromRefList(String interfaceName, String schemaName,
+        public static Map<String, Object> fnLoadTargetInfoFromRefList(Long taskExecutionId, String interfaceName, String schemaName,
                 String tableName, String luName) throws Exception {
             Map<String, Object> targetInfo = new HashMap<>();
 
@@ -913,21 +915,21 @@ public class Logic extends UserCode {
 
                 Map<String, Object> matched = findMatchedEntry(refListNoSchema, schemaName, luName);
                 if (matched != null) {
-                    updateTargetInfoMap(targetInfo, matched);
+                    updateTargetInfoMap(taskExecutionId, targetInfo, matched);
                     return targetInfo;
                 }
             }
 
             // 3. Final assignment if exact match was found
             if (refList != null && !refList.isEmpty()) {
-                updateTargetInfoMap(targetInfo, refList.get(0));
+                updateTargetInfoMap(taskExecutionId, targetInfo, refList.get(0));
             }
 
             return targetInfo;
         }
 
 
-        private static void updateTargetInfoMap(Map<String, Object> targetMap, Map<String, Object> refRow) {
+        private static void updateTargetInfoMap(Long taskExecutionId, Map<String, Object> targetMap, Map<String, Object> refRow) {
             Object tarTable = refRow.get("target_ref_table_name");
             if (tarTable != null && !"".equals(tarTable.toString())) {
                 targetMap.put("target_ref_table_name", tarTable.toString());
@@ -942,11 +944,41 @@ public class Logic extends UserCode {
             if (tarSchema != null && !"".equals(tarSchema.toString())) {
                 String schemaStr = tarSchema.toString();
                 if (schemaStr.startsWith("@")) {
-                    String gVar = schemaStr.replaceAll("@", "");
-                    schemaStr = getGlobal(gVar,getLuType().luName);
+                    schemaStr = fnGetSchemaNameFromGlobal(taskExecutionId, schemaStr);
                 }
                 targetMap.put("target_schema_name", schemaStr);
             }
+        }
+
+        
+        private static String fnGetSchemaNameFromGlobal(Long taskExecutionId, String globalName){
+            
+            String gVar = globalName.replaceAll("@", "");
+
+
+            Map<String, String > cachedSchemas = schemaGlobals.get(taskExecutionId);
+            String schemaStr = null;
+            if (cachedSchemas != null) {
+                schemaStr = cachedSchemas.get(gVar) != null ?  cachedSchemas.get(gVar) : null;
+            }
+
+            if (schemaStr == null) {
+                    String currEnv = getGlobal("ENVIRONMENT");
+                    String envName = getGlobal("TDM_TAR_ENV_NAME");
+                    
+                    Util.rte(() ->fabric().execute("SET ENVIRONMENT=?", envName));
+                    Object value = getGlobal(gVar);
+
+                    if (value != null) {
+                        schemaStr = value.toString();
+                        
+                    }
+                    Map<String, String> map = new HashMap<>();
+                    map.put(gVar, schemaStr);
+                    schemaGlobals.put(taskExecutionId, map);
+                    Util.rte(() ->fabric().execute("SET ENVIRONMENT=?", currEnv));
+                }
+            return schemaStr;
         }
 
        /**
@@ -1145,6 +1177,7 @@ public class Logic extends UserCode {
             // Removes all cached tables belonging to this specific execution ID
             executionTableInfo.keySet().removeIf(key -> taskExecutionId.equals(key.taskExecutionId));
 
+            schemaGlobals.keySet().remove(taskExecutionId);
             //log.info("TDM Cache Cleanup: Memory released for Task Execution: " + taskExecutionId);
         }
 }

@@ -15442,11 +15442,13 @@ var Container$57 = ct.div`
 `;
 var LeftSide$4 = ct.div`
     width: 30%;
-    margin-right: 40px; 
+    margin-right: 40px;
     margin-top: 35px;
     display: flex;
     flex-direction: column;
     gap: 45px;
+    min-height: 0;
+    overflow: hidden;
 `;
 var LeftSideHeader = ct.div`
     font-size: 20px;
@@ -15505,6 +15507,7 @@ var RightSide$5 = ct.div`
     padding: 0px 38px;
     background-color: #ececec;
     overflow: auto;
+    min-height: 0;
 `;
 var RightSideHeader = ct.div`
     font-size: 20px;
@@ -15670,7 +15673,15 @@ var DotMenuIconWrapper = ct.div`
   height: 100%;
 `;
 var CategoriesContainer = ct.div`
-
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+`;
+var LeftSideTemplatesList = ct.div`
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
 `;
 var TaskTypeIconContainer = ct.div`
     position: absolute;
@@ -15750,6 +15761,30 @@ var BoxesContainer = ct.div`
     gap: 20px;
     margin-top: 32px;
 `;
+var spin$2 = pt`
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+`;
+var EmptyGroupMessage = ct.div`
+    margin-top: 5px;
+    font-family: Roboto;
+    font-size: 16px;
+    color: #2e2e2e;
+`;
+var TaskTilesLoader = ct.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 50vh;
+    color: #1483f3;
+
+    svg {
+        width: 64px;
+        height: 64px;
+        animation: ${spin$2} 1s linear infinite;
+    }
+`;
 var TaskTemplateMenuIcon = ct.div`
     display: flex;
     align-items: center;
@@ -15765,385 +15800,6 @@ var TaskTemplateMenuIcon = ct.div`
         background: rgba(0, 0, 0, 0.06);
     }
 `;
-//#endregion
-//#region src/images/selected-favorit.svg
-var selected_favorit_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='21'%20height='20'%3e%3cpath%20fill-rule='evenodd'%20fill='%23F0832B'%20d='m10.026.328%203.096%206.176%206.92.99-5.007%204.807%201.181%206.786-6.19-3.204-6.188%203.204%201.181-6.786L.012%207.494l6.92-.99L10.026.328z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/favorite-icon-new.svg
-var favorite_icon_new_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='22'%20height='21'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m4.184%2020.886%201.244-7.203L.151%208.579l7.292-1.052L10.701.978l3.257%206.549%207.294%201.052-5.277%205.104%201.243%207.203-6.517-3.4-6.517%203.4zm6.517-4.678%205.01%202.613-.955-5.535%204.049-3.915-5.597-.809-2.507-5.038-2.506%205.038-5.597.809%204.049%203.915-.957%205.535%205.011-2.613z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/dotmenu.svg
-var dotmenu_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='16'%20height='4'%20viewBox='0%200%2016%204'%20fill='none'%3e%3ccircle%20cx='2'%20cy='2'%20r='2'%20fill='%232E2E2E'%20/%3e%3ccircle%20cx='8'%20cy='2'%20r='2'%20fill='%232E2E2E'%20/%3e%3ccircle%20cx='14'%20cy='2'%20r='2'%20fill='%232E2E2E'%20/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/edit-icon.svg
-var edit_icon_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='17'%20height='17'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m15.538%204.814-.434.435c-.013.019-.009.044-.026.061s-.042.013-.061.026l-.869.87c-.013.018-.008.043-.025.06-.016.016-.041.012-.06.024L5%2015.363a.332.332%200%200%201-.162.089L.47%2016.479a.332.332%200%200%201-.315-.091.337.337%200%200%201-.09-.317l1.024-4.372a.34.34%200%200%201%20.09-.161l.169-.17h.001L11.717.988a1.69%201.69%200%200%201%202.388%200l1.433%201.435a1.695%201.695%200%200%201%200%202.391zM.846%2015.695l3.523-.826-2.697-2.699-.826%203.525zm1.219-4.088%202.866%202.869%208.458-8.467-2.866-2.869-8.458%208.467zm9.414-9.424-.478.479%202.865%202.869.478-.478-2.865-2.87zm3.582.718-1.433-1.434a1.014%201.014%200%200%200-1.434%200l-.238.238%202.866%202.87.239-.24a1.016%201.016%200%200%200%200-1.434z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/eye-icon.svg
-var eye_icon_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='1.5'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M1%2012s4-8%2011-8%2011%208%2011%208-4%208-11%208-11-8-11-8z'/%3e%3ccircle%20cx='12'%20cy='12'%20r='3'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/reserve.svg
-var reserve_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='4qkq00nxia'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill='url(%234qkq00nxia)'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M97.407%20105.29H53.825c-.85%200-1.538-.693-1.538-1.548V68.65c0-.855.688-1.548%201.538-1.548h7.179v-2.864c0-8.109%206.556-14.707%2014.613-14.707%208.057%200%2014.612%206.598%2014.612%2014.707v2.864h7.178c.851%200%201.539.693%201.539%201.548v35.092c0%20.855-.688%201.548-1.539%201.548zM87.152%2064.238c0-6.402-5.174-11.61-11.535-11.61S64.08%2057.836%2064.08%2064.238v2.864h23.072v-2.864zm8.717%205.961H55.364v31.995h40.505V70.199zM75.617%2077.41c2.404%200%204.358%201.962%204.358%204.387a4.379%204.379%200%200%201-2.82%204.09v6.888c0%20.856-.688%201.549-1.538%201.549-.85%200-1.538-.693-1.538-1.549v-6.887a4.377%204.377%200%200%201-2.821-4.091c0-2.425%201.95-4.387%204.359-4.387zm1.285-31.248c-.723%200-1.309-.59-1.309-1.317v-4.098c-3.885%203.461-11.732%205.782-20.998%205.782-9.267%200-17.114-2.322-20.999-5.782v4.465c0%203.848%208.624%208.135%2020.999%208.135.723%200%201.308.59%201.308%201.317%200%20.728-.585%201.318-1.308%201.318-9.267%200-17.114-2.321-20.999-5.782v5.646c0%203.411%206.214%206.672%2014.776%207.754a1.315%201.315%200%200%201%201.136%201.47%201.312%201.312%200%200%201-1.46%201.143c-6.522-.824-11.587-2.74-14.452-5.289v5.557c0%203.152%205.401%206.242%2013.135%207.515a1.316%201.316%200%200%201%201.079%201.513%201.31%201.31%200%200%201-1.502%201.087c-9.455-1.558-15.329-5.433-15.329-10.115V35.758c0-6.039%2010.374-10.77%2023.616-10.77%2013.241%200%2023.615%204.731%2023.615%2010.77v9.087c0%20.727-.586%201.317-1.308%201.317zm-22.307-18.54c-12.375%200-20.999%204.288-20.999%208.136%200%203.849%208.624%208.137%2020.999%208.137%2012.375%200%2020.998-4.288%2020.998-8.137%200-3.848-8.623-8.136-20.998-8.136z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/synthetic.svg
-var synthetic_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='dqbesxv69a'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill='url(%23dqbesxv69a)'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M101.061%2082.178c-6.518.632-8.308%204.038-8.988%208.96a1.303%201.303%200%200%201-1.294%201.119%201.303%201.303%200%200%201-1.294-1.119c-.68-4.922-2.47-8.328-8.99-8.96a1.298%201.298%200%200%201-1.178-1.288c0-.666.51-1.224%201.178-1.288%206.52-.632%208.31-4.038%208.99-8.96a1.303%201.303%200%200%201%201.294-1.118c.652%200%201.205.478%201.294%201.118.68%204.922%202.47%208.328%208.988%208.96a1.297%201.297%200%200%201%201.178%201.288c0%20.666-.509%201.224-1.178%201.288zm-10.282-6.321c-.915%202.021-2.415%203.847-4.954%205.033%202.539%201.185%204.039%203.011%204.954%205.032.916-2.021%202.415-3.847%204.954-5.032-2.539-1.186-4.038-3.012-4.954-5.033zm-8.9-4.87c-11.701%201.134-13.498%207.486-14.63%2015.674a1.303%201.303%200%200%201-1.294%201.119%201.302%201.302%200%200%201-1.293-1.119c-1.191-8.607-4.326-14.566-15.759-15.674a1.298%201.298%200%200%201-1.178-1.288c0-.666.51-1.223%201.178-1.288%2011.433-1.108%2014.568-7.068%2015.759-15.675a1.302%201.302%200%200%201%201.293-1.119c.652%200%201.205.478%201.294%201.119%201.132%208.188%202.929%2014.542%2014.63%2015.675a1.298%201.298%200%200%201%201.178%201.288c0%20.666-.509%201.224-1.178%201.288zM65.871%2059.224c-1.534%204.466-4.45%208.427-10.444%2010.475%205.994%202.047%208.91%206.008%2010.444%2010.475%201.334-4.603%203.85-8.469%209.552-10.475-5.702-2.006-8.218-5.872-9.552-10.475zm6.943-13.713a1.3%201.3%200%200%201-1.306-1.295v-4.029c-3.876%203.403-11.704%205.685-20.949%205.685-9.244%200-17.073-2.282-20.949-5.685v4.389c0%203.784%208.603%207.999%2020.949%207.999a1.3%201.3%200%200%201%201.306%201.295%201.3%201.3%200%200%201-1.306%201.295c-9.244%200-17.073-2.282-20.949-5.684v5.55c0%203.353%206.199%206.56%2014.741%207.624a1.296%201.296%200%200%201%201.133%201.445%201.3%201.3%200%200%201-1.457%201.123c-6.505-.81-11.559-2.693-14.417-5.199v5.463c0%203.098%205.388%206.137%2013.104%207.388a1.295%201.295%200%200%201%201.076%201.487%201.3%201.3%200%200%201-1.498%201.068c-9.433-1.531-15.293-5.34-15.293-9.943V35.283c0-5.937%2010.349-10.588%2023.56-10.588%2013.211%200%2023.561%204.651%2023.561%2010.588v8.933a1.3%201.3%200%200%201-1.306%201.295zM50.559%2027.284c-12.346%200-20.949%204.215-20.949%207.999%200%203.783%208.603%207.999%2020.949%207.999%2012.346%200%2020.949-4.216%2020.949-7.999%200-3.784-8.603-7.999-20.949-7.999zM65.828%2094.15c4.882-.473%206.222-3.029%206.733-6.722a1.302%201.302%200%200%201%201.293-1.118%201.304%201.304%200%200%201%201.294%201.119c.509%203.692%201.849%206.248%206.731%206.721a1.297%201.297%200%200%201%201.178%201.288c0%20.666-.509%201.223-1.178%201.288-4.882.473-6.222%203.03-6.731%206.722a1.304%201.304%200%200%201-1.294%201.119%201.302%201.302%200%200%201-1.293-1.119c-.511-3.692-1.851-6.249-6.733-6.722a1.298%201.298%200%200%201-1.178-1.288c0-.666.509-1.224%201.178-1.288zm8.026%204.531a7.757%207.757%200%200%201%203.197-3.243%207.758%207.758%200%200%201-3.198-3.242%207.76%207.76%200%200%201-3.199%203.242%207.771%207.771%200%200%201%203.2%203.243z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/task_extract.svg
-var task_extract_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='cypsyn86ua'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999%200c35.9%200%2065%2029.101%2065%2065s-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065S29.102%200%2064.999%200z'/%3e%3cpath%20fill='url(%23cypsyn86ua)'%20d='M64.999%200c35.9%200%2065%2029.101%2065%2065s-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065S29.102%200%2064.999%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M65.03%2098.983C52.411%2098.983%2039%2094.669%2039%2086.675V54.672c0-1.997.899-4.938%205.187-7.593a2.492%202.492%200%200%201%203.416.786%202.453%202.453%200%200%201-.792%203.392c-1.813%201.123-2.853%202.368-2.853%203.415%200%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385%200-1.211-1.392-2.674-3.723-3.912a2.455%202.455%200%200%201-1.017-3.332%202.49%202.49%200%200%201%203.355-1.01c5.243%202.785%206.343%206.026%206.343%208.254v32.003c0%207.994-13.411%2012.308-26.03%2012.308zM86.102%2062.11c-5.042%203.196-13.21%204.871-21.072%204.871-7.862%200-16.03-1.675-21.072-4.871v2.409c0%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385V62.11zm0%209.847c-5.042%203.196-13.21%204.871-21.072%204.871-7.862%200-16.03-1.675-21.072-4.871v3.64c0%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385v-3.64zm0%2011.077c-5.042%203.196-13.21%204.871-21.072%204.871-7.862%200-16.03-1.675-21.072-4.871v3.641c0%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385v-3.641zm-9.093-42.603a2.48%202.48%200%200%201-1.753.721c-.634%200-1.268-.24-1.753-.721l-5.994-5.952v19.443a2.47%202.47%200%200%201-2.479%202.462%202.47%202.47%200%200%201-2.479-2.462V34.479l-5.994%205.952a2.49%202.49%200%200%201-3.506%200%202.45%202.45%200%200%201%200-3.481l10.225-10.153c.23-.229.506-.411.812-.536.013-.006.025-.007.038-.012.28-.11.584-.175.903-.175h.002c.32%200%20.623.065.903.175.013.005.026.007.038.012.306.125.582.307.812.535L77.009%2036.95a2.45%202.45%200%200%201%200%203.481z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/task_load.svg
-var task_load_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='i2aw18yy1a'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.899-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.899%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill='url(%23i2aw18yy1a)'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.899-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.899%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M65.45%20100.998c-12.337%200-26.35-4.231-26.35-12.072V57.537c0-1.959%201.78-4.842%205.971-7.448a2.43%202.43%200%200%201%203.339.772%202.408%202.408%200%200%201-.773%203.326c-1.773%201.102-2.789%202.323-2.789%203.35%200%202.953%208.026%207.244%2020.602%207.244s20.602-4.291%2020.602-7.244c0-1.188-1.36-2.623-3.64-3.838a2.41%202.41%200%200%201-.994-3.268%202.43%202.43%200%200%201%203.281-.99c5.125%202.732%206.201%205.91%206.201%208.096v31.389c0%207.841-13.113%2012.072-25.45%2012.072zm20.602-36.166c-4.93%203.135-12.916%204.778-20.602%204.778-7.687%200-15.673-1.643-20.602-4.778v2.363c0%202.953%208.026%207.244%2020.602%207.244s20.602-4.291%2020.602-7.244v-2.363zm0%209.658c-4.93%203.135-12.916%204.778-20.602%204.778-7.687%200-15.673-1.643-20.602-4.778v3.57c0%202.954%208.026%207.244%2020.602%207.244s20.602-4.29%2020.602-7.244v-3.57zm0%2010.865c-4.93%203.135-12.916%204.778-20.602%204.778-7.687%200-15.673-1.643-20.602-4.778v3.571c0%202.953%208.026%207.243%2020.602%207.243s20.602-4.29%2020.602-7.243v-3.571zm-8.89-36.807-9.997%209.959a2.441%202.441%200%200%201-.794.526c-.012.005-.024.007-.037.011a2.404%202.404%200%200%201-.884.172c-.313%200-.61-.064-.885-.172-.012-.004-.024-.006-.036-.011a2.456%202.456%200%200%201-.795-.526l-9.996-9.959a2.406%202.406%200%200%201%200-3.414%202.43%202.43%200%200%201%203.427%200l5.861%205.838v-19.07a2.42%202.42%200%200%201%202.424-2.415%202.42%202.42%200%200%201%202.424%202.415v19.07l5.86-5.838a2.43%202.43%200%200%201%203.428%200%202.406%202.406%200%200%201%200%203.414z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/task_extract-and-load.svg
-var task_extract_and_load_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='4oe0zkdbga'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.9-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.9%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill='url(%234oe0zkdbga)'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.9-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.9%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M94.69%2051.779a2.297%202.297%200%200%201-3.233%200l-9.106-9.049v49.457a2.28%202.28%200%200%201-2.286%202.272%202.28%202.28%200%200%201-2.287-2.272V42.73l-9.105%209.049a2.297%202.297%200%200%201-3.233%200%202.262%202.262%200%200%201%200-3.213L78.446%2035.64c.106-.105.223-.2.348-.283.027-.019.059-.03.087-.048a2.4%202.4%200%200%201%20.305-.162c.043-.017.09-.026.134-.041.096-.033.191-.068.293-.088a2.265%202.265%200%200%201%20.904%200c.093.018.18.051.269.081.052.017.107.028.158.049.098.041.189.095.279.148.037.022.078.037.113.061.125.083.241.178.347.283L94.69%2048.566a2.26%202.26%200%200%201%200%203.213zM65.112%2080.866%2052.105%2093.792a2.3%202.3%200%200%201-.347.282c-.031.021-.066.034-.098.054-.095.056-.191.113-.294.156-.046.018-.095.027-.141.043-.094.032-.187.067-.286.086a2.273%202.273%200%200%201-.904%200c-.092-.018-.177-.051-.265-.079-.054-.018-.11-.029-.163-.051-.096-.039-.184-.093-.273-.145-.039-.022-.081-.039-.119-.064a2.243%202.243%200%200%201-.346-.282L35.861%2080.866a2.262%202.262%200%200%201%200-3.213%202.295%202.295%200%200%201%203.233%200l9.107%209.048V37.245a2.28%202.28%200%200%201%202.286-2.273%202.28%202.28%200%200%201%202.286%202.273v49.456l9.106-9.048a2.295%202.295%200%200%201%203.233%200%202.262%202.262%200%200%201%200%203.213z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/task_delete.svg
-var task_delete_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='ovhj697oua'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999%200c35.9%200%2065%2029.102%2065%2065%200%2035.899-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065%200%2029.102%2029.102%200%2064.999%200z'/%3e%3cpath%20fill='url(%23ovhj697oua)'%20d='M64.999%200c35.9%200%2065%2029.102%2065%2065%200%2035.899-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065%200%2029.102%2029.102%200%2064.999%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M92.879%2044.636h-4.79v47.759a2.406%202.406%200%200%201-2.395%202.418H44.981a2.406%202.406%200%200%201-2.395-2.418V44.636h-4.79c-.992%200-2.696-.812-2.696-1.814s1.704-1.814%202.696-1.814h14.968v-4.231c0-1.002.804-1.813%201.797-1.813h21.554c.992%200%201.796.811%201.796%201.813v4.231h14.968c.992%200%201.796.812%201.796%201.814a1.805%201.805%200%200%201-1.796%201.814zm-18.56-6.045H56.357v2.417h17.962v-2.417zM83.3%2046.45H47.376v43.527H83.3V46.45zm-28.739%204.836c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418zm10.777%200c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418zm10.777%200c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/utils/toast.ts
-/**
-* Toast utility - replaces Angular's toastr service.
-* Uses sweetalert2 (already a dependency) for notifications.
-* 
-* API matches Angular toastr:
-*   toast.success(title, text?)
-*   toast.error(title, text?)
-*   toast.warning(title, text?)
-*   toast.info(title, text?)
-*/
-var showToast = (type, title, text) => {
-	try {
-		__vitePreload(() => Promise.resolve().then(() => /* @__PURE__ */ __toESM(require_sweetalert2_all())).then((Swal) => {
-			const SwalDefault = Swal.default || Swal;
-			SwalDefault.fire({
-				toast: true,
-				position: "top-end",
-				icon: type,
-				title,
-				text,
-				showConfirmButton: false,
-				timer: type === "error" ? 1e4 : 3e3,
-				timerProgressBar: true,
-				didOpen: (toastEl) => {
-					toastEl.style.cursor = "pointer";
-					toastEl.addEventListener("click", () => SwalDefault.close());
-				}
-			});
-		}), void 0, import.meta.url).catch(() => {
-			console[type === "error" ? "error" : type === "warning" ? "warn" : "log"](title, text);
-		});
-	} catch (e) {
-		console[type === "error" ? "error" : type === "warning" ? "warn" : "log"](title, text);
-	}
-};
-var toast = {
-	success: (title, text) => showToast("success", title, text),
-	error: (title, text) => showToast("error", title, text),
-	warning: (title, text) => showToast("warning", title, text),
-	info: (title, text) => showToast("info", title, text)
-};
-//#endregion
-//#region src/apis/task.ts
-var runningRequests$3 = {};
-var hashKey = (path, body) => {
-	const str = path + JSON.stringify(body);
-	let hash = 5381;
-	for (let i = 0; i < str.length; i++) hash = hash * 33 ^ str.charCodeAt(i);
-	return String(hash >>> 0);
-};
-var fetchData$3 = async (path, body, method) => {
-	const response = await window.k2api.invokeFabricWebService(path, body, method);
-	if (response.isError) throw new Error(response.message);
-	if (response.errorCode === "FAILED") {
-		if (path.indexOf("startTask") > 0) {
-			const startTaskAPIMessage = `${response.result}: ${response.message}`;
-			toast?.error(startTaskAPIMessage);
-			throw new Error(startTaskAPIMessage);
-		}
-		toast?.error(response.message);
-		throw new Error(response.message);
-	} else if (response.errorCode === "WARNING") if (path.indexOf("startTask") > 0) response.result = {
-		warning: true,
-		message: response.result
-	};
-	else toast?.warning(response.message);
-	return response.result;
-};
-var invokeFabricWebService$4 = async (path, body, method, force) => {
-	if (window.k2api && window.k2api.invokeFabricWebService) {
-		if (force) return fetchData$3(path, body, method);
-		const key = hashKey(path, body);
-		if (runningRequests$3[key]) {
-			clearTimeout(runningRequests$3[key]);
-			delete runningRequests$3[key];
-		}
-		return new Promise((resolve, reject) => {
-			runningRequests$3[key] = setTimeout(async () => {
-				try {
-					resolve(await fetchData$3(path, body, method));
-				} catch (error) {
-					reject(error);
-				} finally {
-					clearTimeout(runningRequests$3[key]);
-					delete runningRequests$3[key];
-				}
-			}, 100);
-		});
-	}
-	throw new Error("window.k2api is not defined");
-};
-var getActiveBEs = async (source_environment_id, target_environment_id) => {
-	const data = {};
-	if (source_environment_id) data.source_environment_id = source_environment_id;
-	if (target_environment_id) data.target_environment_id = target_environment_id;
-	return invokeFabricWebService$4("getActiveBusinessentities", data, "GET");
-};
-var getEnvironments$1 = async (be_name, force, taskId) => {
-	const params = {};
-	if (be_name) params.be_name = be_name;
-	if (taskId) params.taskId = taskId;
-	return invokeFabricWebService$4("userEnvironments", params, "GET", force);
-};
-var getDataGenerationParams = async (taskId, luList, taskExecutionId) => {
-	const body = {};
-	if (taskId) body.taskId = taskId;
-	if (luList) body.luList = luList;
-	if (taskExecutionId) body.taskExecutionId = taskExecutionId;
-	return invokeFabricWebService$4("getDMPopParams", body, "GET");
-};
-var getTrainingModels = async (fromDate, toDate, be_name, lu_name) => invokeFabricWebService$4("tasks/getTrainingModels", {
-	fromDate,
-	toDate,
-	be_name,
-	lu_name
-}, "POST");
-var getSelectionMethodsValues = async () => invokeFabricWebService$4("selectionMethods", {}, "GET");
-var getTaskTypeFilterValues = async () => invokeFabricWebService$4("taskTypeFilter", {}, "GET");
-var getCustomLogicFlows = async (beName, envName) => invokeFabricWebService$4("getcustomlogicflows", {
-	beName,
-	envName
-}, "GET");
-var getCustomLogicParams = async (luName, flowName) => invokeFabricWebService$4("getCustomLogicParams", {
-	flowName,
-	luName
-}, "GET");
-var getPreExecutionProcess = async (beId) => invokeFabricWebService$4(`businessentity/${beId}/preexecutionprocess`, {}, "GET");
-var getPostExecutionProcess = async (beId) => invokeFabricWebService$4(`businessentity/${beId}/postexecutionprocess`, {}, "GET");
-var getTaskPostExecutionProcess = async (taskId) => invokeFabricWebService$4(`task/${taskId}/postexecutionprocess`, {}, "GET");
-var getTaskPreExecutionProcess = async (taskId) => invokeFabricWebService$4(`task/${taskId}/preexecutionprocess`, {}, "GET");
-var getFabricRoles$1 = (permissionGroupList) => invokeFabricWebService$4(`wsGetFabricRoles`, { permissionGroupList }, "GET");
-var getTaskLuAffinityWorkers = async (taskId, srcEnvId, tgtEnvId) => {
-	const body = {};
-	if (srcEnvId !== void 0 && srcEnvId !== null) body.srcEnvId = srcEnvId;
-	if (tgtEnvId !== void 0 && tgtEnvId !== null) body.tgtEnvId = tgtEnvId;
-	return invokeFabricWebService$4(`task/${taskId}/lu-affinity-workers`, body, "GET");
-};
-var getTaskTables = async (taskId, mode) => invokeFabricWebService$4(`task/refsTable/${taskId}`, { mode }, "GET");
-var getTaskVariables = async (taskId) => invokeFabricWebService$4(`task/${taskId}/globals`, {}, "GET");
-var getRetentionPeriodsData = async () => invokeFabricWebService$4("retentionperiodinfo", {}, "GET");
-var getReferenceTables = async () => invokeFabricWebService$4("task/getReferenceTaskTable", {}, "POST");
-var getEnvironmentOwners$1 = async (environmentID) => invokeFabricWebService$4(`environment/${environmentID}/owners`, {}, "GET");
-var getEnvironmentByID = async (environmentID) => invokeFabricWebService$4(`environment/${environmentID}`, {}, "GET");
-var getEnvironmentUserRole = async (environmentID) => invokeFabricWebService$4(`environment/${environmentID}/userRole`, {}, "GET");
-var getFabricRolesByUser = async (user) => invokeFabricWebService$4(`wsGetFabricRolesByUser`, { user }, "GET");
-var checkAIInstallation = async (taskType) => invokeFabricWebService$4(`tasks/checkAIInstallation`, { taskType }, "POST");
-var getTableByBeAndEnv = async (source_env, envId, be_name) => invokeFabricWebService$4("getTableByBeAndEnv", {
-	source_env,
-	envId,
-	be_name
-}, "POST");
-var getTablesAPIMode = async () => invokeFabricWebService$4("wsGetTablesAPIMode", {}, "GET");
-var getEnvInterfaceList = async (environment, envId) => invokeFabricWebService$4("getEnvInterfaceListWithConfig", {
-	environment,
-	envId
-}, "POST");
-var getInterfaceSchemaList = async (environment, interfaceName) => invokeFabricWebService$4("getInterfaceSchemaList", {
-	environment,
-	interfaceName
-}, "POST");
-var getSchemaTableList = async (environment, interfaceName, schemaName) => invokeFabricWebService$4("getSchemaTableList", {
-	environment,
-	interfaceName,
-	schemaName
-}, "POST");
-var getTableVersions = async (table_name, env_name) => invokeFabricWebService$4("getTableVersions", {
-	table_name,
-	env_name
-}, "POST");
-var getEnvironmentsByUser = async () => invokeFabricWebService$4("userEnvironments", {}, "GET");
-var getGlobalVariables = async (lus) => invokeFabricWebService$4("environment/getAllGlobals", { lus }, "GET");
-var validateReservedEntitiesList = async (beID, envID, listOfEntities, filterout_reserved) => invokeFabricWebService$4("validateReservedEntitiesList", {
-	beID,
-	envID,
-	listOfEntities,
-	filterout_reserved
-}, "POST");
-var getLogicalUnits$1 = async (be_id, env_id) => {
-	if (env_id) return invokeFabricWebService$4(`businessentity/${be_id}/environment/${env_id}/logicalunits`, {}, "GET");
-	return invokeFabricWebService$4(`businessentity/${be_id}/logicalunits`, {}, "GET");
-};
-var getTaskLogicalUnits = async (task_id) => invokeFabricWebService$4(`task/${task_id}/logicalunits`, {}, "GET");
-var getParameters = async (be_id, envName) => invokeFabricWebService$4(`businessentity/${be_id}/sourceEnv/${envName}/parameters`, {}, "GET");
-var getEnableParamWidth = async () => invokeFabricWebService$4(`wsGetParamsAutoWidth`, {}, "GET");
-var getParamsLUName = async () => invokeFabricWebService$4(`wsGetParamsLUName`, {}, "GET");
-var getTableParameters = async (dbInterfaceName, SchemaName, tableName) => invokeFabricWebService$4(`getTableFields`, {
-	tableName,
-	SchemaName,
-	dbInterfaceName
-}, "POST");
-var getEntitiesCount = async (be_id, envName, body) => invokeFabricWebService$4(`businessentity/${be_id}/sourceEnv/${envName}/analysiscount`, body, "POST");
-var deleteTask = async (task_id, task_title) => invokeFabricWebService$4(`task/${task_id}/taskname/${task_title}`, {}, "DELETE");
-var getExecutionProcessParams = async (processType, processesList) => invokeFabricWebService$4(`getExecutionProcessParams`, {
-	processType,
-	processesList
-}, "POST");
-var getCheckIfParamsCoupling = async () => invokeFabricWebService$4(`wsCheckIfParamsCoupling`, {}, "GET");
-var getTaskLuEditForTesters = async () => invokeFabricWebService$4(`wsGetTaskLuEditForTesters`, {}, "GET");
-var getTaskGroups = async () => invokeFabricWebService$4(`taskgroup`, {}, "GET");
-var getCanCreateTasks = async (userName) => invokeFabricWebService$4(`taskCreationPermission/canCreateTasks`, { userName }, "GET");
-var getTaskGroupById = async (task_group_id) => invokeFabricWebService$4(`getTasksPerTaskGroup`, { task_group_id }, "GET");
-var addTaskGroup = async (task_group_name, task_group_desc) => invokeFabricWebService$4(`taskgroup`, {
-	task_group_name,
-	task_group_desc
-}, "POST");
-var updateTaskGroup = async (task_group_id, task_group_name, task_group_desc) => invokeFabricWebService$4(`taskgroup/${task_group_id}`, {
-	task_group_name,
-	task_group_desc
-}, "PUT");
-var moveTasksToTaskGroup = async (taskIds, fromTaskGroup, toTaskGroups, keepCurrentGroup) => invokeFabricWebService$4(`moveTasksToGroups`, {
-	taskIds,
-	fromTaskGroup,
-	toTaskGroups,
-	keepCurrentGroup
-}, "PUT");
-var deleteTaskGroup = async (task_group_id) => invokeFabricWebService$4(`taskgroup`, { task_group_id }, "DELETE");
-var searchTasks = async (data) => invokeFabricWebService$4(`search`, data, "POST");
-var deleteTaskFromGroup = async (task_id, task_group_id) => invokeFabricWebService$4(`deleteTaskFromTaskGroup`, {
-	task_group_id,
-	task_id
-}, "DELETE");
-var getPermissionsForTask = async (sourceEnvId, targetEnvId, taskType, syncMode, reserveInd) => invokeFabricWebService$4(`task/fnGetPermissionsForTask`, {
-	sourceEnvId,
-	targetEnvId,
-	taskType,
-	syncMode,
-	reserveInd
-}, "GET");
-var getTaskAvailableGroups = async (task_id) => invokeFabricWebService$4(`taskAvailableGroups/${task_id}`, {}, "GET");
-var toggleTaskGroupFavorite = async (task_group_id, marked) => {
-	if (!marked) return invokeFabricWebService$4(`markFavorite`, { task_group_id }, "POST");
-	return invokeFabricWebService$4(`unMarkFavorite`, { task_group_id }, "DELETE");
-};
-var toggleTaskFavorite = async (task_id, marked) => {
-	if (!marked) return invokeFabricWebService$4(`markTaskFavorite`, { task_id }, "POST");
-	return invokeFabricWebService$4(`unMarkTaskFavorite`, { task_id }, "DELETE");
-};
-var getTaskById = async (taskID) => invokeFabricWebService$4(`task/${taskID}`, {}, "GET");
-var getTaskByIdOld = async (task_ids, mode) => invokeFabricWebService$4(`tasks`, {
-	task_ids,
-	mode
-}, "GET");
-var getTaskByExecutionId = async (taskExecutionId) => invokeFabricWebService$4(`task/execution/${taskExecutionId}`, {}, "GET");
-var getMaxWorkersPerNode$1 = async () => invokeFabricWebService$4(`getMaxWorkersPerNode`, {}, "GET");
-var getGlobalMaxWorkersLimit = async () => invokeFabricWebService$4(`getGlobalMaxWorkersLimit`, {}, "GET");
-var getDataCenters$2 = async () => invokeFabricWebService$4(`dataCenters`, {}, "GET");
-var saveTaskAPI = async (taskData) => {
-	if (taskData.task_id) return invokeFabricWebService$4(`task/${taskData.task_id}`, taskData, "PUT");
-	return invokeFabricWebService$4("task", taskData, "POST");
-};
-var getVersionsForLoad = async (fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) => invokeFabricWebService$4("tasks/versionsForLoad", {
-	fromDate,
-	toDate,
-	entitiesList,
-	lu_list,
-	source_env_name,
-	target_env_name,
-	be_id,
-	filterout_reserved
-}, "POST");
-var getGenerationExecutions = async (fromDate, toDate, envName, beID, selectedLogicalUnits) => invokeFabricWebService$4("tasks/getGenerationModels", {
-	fromDate,
-	toDate,
-	envName,
-	beID,
-	selectedLogicalUnits
-}, "POST");
-var getFabricRolesforUser$1 = (user) => invokeFabricWebService$4("wsGetFabricRolesByUser", { user }, "GET");
-var getFinalPrompt = (prompt, displayedSelectionMethod, numOfEntities) => invokeFabricWebService$4("getFinalPrompt", {
-	prompt,
-	displayedSelectionMethod,
-	numOfEntities
-}, "GET");
-var execute_task = (taskID, overrideParameters, forced) => invokeFabricWebService$4(`task/${taskID}/forced/${forced || false}/startTask`, { overrideParameters }, "POST");
-var taskAPIs = {
-	getActiveBEs,
-	getEnvironments: getEnvironments$1,
-	getDataGenerationParams,
-	getTrainingModels,
-	getCustomLogicFlows,
-	getCustomLogicParams,
-	getPreExecutionProcess,
-	getPostExecutionProcess,
-	getTaskVariables,
-	getRetentionPeriodsData,
-	getVersionsForLoad,
-	getReferenceTables,
-	getLogicalUnits: getLogicalUnits$1,
-	getGenerationExecutions,
-	getParameters,
-	getEnableParamWidth,
-	getEntitiesCount,
-	saveTaskAPI,
-	deleteTask,
-	getTaskLogicalUnits,
-	getTableByBeAndEnv,
-	getTableVersions,
-	getGlobalVariables,
-	getTaskPostExecutionProcess,
-	getTaskPreExecutionProcess,
-	getTaskLuAffinityWorkers,
-	getTableParameters,
-	getTaskTables,
-	getEnvironmentOwners: getEnvironmentOwners$1,
-	getFabricRolesByUser,
-	getEnvironmentUserRole,
-	getEnvironmentByID,
-	checkAIInstallation,
-	validateReservedEntitiesList,
-	getExecutionProcessParams,
-	getParamsLUName,
-	getCheckIfParamsCoupling,
-	getTaskLuEditForTesters,
-	getTaskGroups,
-	getTaskGroupById,
-	addTaskGroup,
-	toggleTaskGroupFavorite,
-	getTaskById,
-	getTaskByIdOld,
-	getTaskByExecutionId,
-	toggleTaskFavorite,
-	moveTasksToTaskGroup,
-	deleteTaskGroup,
-	updateTaskGroup,
-	searchTasks,
-	getEnvironmentsByUser,
-	deleteTaskFromGroup,
-	getFabricRolesforUser: getFabricRolesforUser$1,
-	execute_task,
-	getFinalPrompt,
-	getEnvInterfaceList,
-	getInterfaceSchemaList,
-	getSchemaTableList,
-	getMaxWorkersPerNode: getMaxWorkersPerNode$1,
-	getDataCenters: getDataCenters$2,
-	getTablesAPIMode,
-	getGlobalMaxWorkersLimit,
-	getCanCreateTasks,
-	getTaskTypeFilterValues,
-	getSelectionMethodsValues,
-	getPermissionsForTask,
-	getTaskAvailableGroups,
-	getFabricRoles: getFabricRoles$1
-};
 //#endregion
 //#region node_modules/lucide-react/dist/esm/shared/src/utils/mergeClasses.js
 /**
@@ -48819,6 +48475,382 @@ createLucideIcon("zoom-out", [
 * See the LICENSE file in the root directory of this source tree.
 */
 //#endregion
+//#region src/images/selected-favorit.svg
+var selected_favorit_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='21'%20height='20'%3e%3cpath%20fill-rule='evenodd'%20fill='%23F0832B'%20d='m10.026.328%203.096%206.176%206.92.99-5.007%204.807%201.181%206.786-6.19-3.204-6.188%203.204%201.181-6.786L.012%207.494l6.92-.99L10.026.328z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/favorite-icon-new.svg
+var favorite_icon_new_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='22'%20height='21'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m4.184%2020.886%201.244-7.203L.151%208.579l7.292-1.052L10.701.978l3.257%206.549%207.294%201.052-5.277%205.104%201.243%207.203-6.517-3.4-6.517%203.4zm6.517-4.678%205.01%202.613-.955-5.535%204.049-3.915-5.597-.809-2.507-5.038-2.506%205.038-5.597.809%204.049%203.915-.957%205.535%205.011-2.613z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/dotmenu.svg
+var dotmenu_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='16'%20height='4'%20viewBox='0%200%2016%204'%20fill='none'%3e%3ccircle%20cx='2'%20cy='2'%20r='2'%20fill='%232E2E2E'%20/%3e%3ccircle%20cx='8'%20cy='2'%20r='2'%20fill='%232E2E2E'%20/%3e%3ccircle%20cx='14'%20cy='2'%20r='2'%20fill='%232E2E2E'%20/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/edit-icon.svg
+var edit_icon_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='17'%20height='17'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m15.538%204.814-.434.435c-.013.019-.009.044-.026.061s-.042.013-.061.026l-.869.87c-.013.018-.008.043-.025.06-.016.016-.041.012-.06.024L5%2015.363a.332.332%200%200%201-.162.089L.47%2016.479a.332.332%200%200%201-.315-.091.337.337%200%200%201-.09-.317l1.024-4.372a.34.34%200%200%201%20.09-.161l.169-.17h.001L11.717.988a1.69%201.69%200%200%201%202.388%200l1.433%201.435a1.695%201.695%200%200%201%200%202.391zM.846%2015.695l3.523-.826-2.697-2.699-.826%203.525zm1.219-4.088%202.866%202.869%208.458-8.467-2.866-2.869-8.458%208.467zm9.414-9.424-.478.479%202.865%202.869.478-.478-2.865-2.87zm3.582.718-1.433-1.434a1.014%201.014%200%200%200-1.434%200l-.238.238%202.866%202.87.239-.24a1.016%201.016%200%200%200%200-1.434z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/eye-icon.svg
+var eye_icon_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='currentColor'%20stroke-width='1.5'%20stroke-linecap='round'%20stroke-linejoin='round'%3e%3cpath%20d='M1%2012s4-8%2011-8%2011%208%2011%208-4%208-11%208-11-8-11-8z'/%3e%3ccircle%20cx='12'%20cy='12'%20r='3'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/reserve.svg
+var reserve_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='4qkq00nxia'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill='url(%234qkq00nxia)'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M97.407%20105.29H53.825c-.85%200-1.538-.693-1.538-1.548V68.65c0-.855.688-1.548%201.538-1.548h7.179v-2.864c0-8.109%206.556-14.707%2014.613-14.707%208.057%200%2014.612%206.598%2014.612%2014.707v2.864h7.178c.851%200%201.539.693%201.539%201.548v35.092c0%20.855-.688%201.548-1.539%201.548zM87.152%2064.238c0-6.402-5.174-11.61-11.535-11.61S64.08%2057.836%2064.08%2064.238v2.864h23.072v-2.864zm8.717%205.961H55.364v31.995h40.505V70.199zM75.617%2077.41c2.404%200%204.358%201.962%204.358%204.387a4.379%204.379%200%200%201-2.82%204.09v6.888c0%20.856-.688%201.549-1.538%201.549-.85%200-1.538-.693-1.538-1.549v-6.887a4.377%204.377%200%200%201-2.821-4.091c0-2.425%201.95-4.387%204.359-4.387zm1.285-31.248c-.723%200-1.309-.59-1.309-1.317v-4.098c-3.885%203.461-11.732%205.782-20.998%205.782-9.267%200-17.114-2.322-20.999-5.782v4.465c0%203.848%208.624%208.135%2020.999%208.135.723%200%201.308.59%201.308%201.317%200%20.728-.585%201.318-1.308%201.318-9.267%200-17.114-2.321-20.999-5.782v5.646c0%203.411%206.214%206.672%2014.776%207.754a1.315%201.315%200%200%201%201.136%201.47%201.312%201.312%200%200%201-1.46%201.143c-6.522-.824-11.587-2.74-14.452-5.289v5.557c0%203.152%205.401%206.242%2013.135%207.515a1.316%201.316%200%200%201%201.079%201.513%201.31%201.31%200%200%201-1.502%201.087c-9.455-1.558-15.329-5.433-15.329-10.115V35.758c0-6.039%2010.374-10.77%2023.616-10.77%2013.241%200%2023.615%204.731%2023.615%2010.77v9.087c0%20.727-.586%201.317-1.308%201.317zm-22.307-18.54c-12.375%200-20.999%204.288-20.999%208.136%200%203.849%208.624%208.137%2020.999%208.137%2012.375%200%2020.998-4.288%2020.998-8.137%200-3.848-8.623-8.136-20.998-8.136z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/synthetic.svg
+var synthetic_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='dqbesxv69a'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill='url(%23dqbesxv69a)'%20d='M64.1%200c36.799%200%2065%2029.101%2065%2065s-28.201%2065-65%2065C29.102%20130-.001%20100.899-.001%2065S29.102%200%2064.1%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M101.061%2082.178c-6.518.632-8.308%204.038-8.988%208.96a1.303%201.303%200%200%201-1.294%201.119%201.303%201.303%200%200%201-1.294-1.119c-.68-4.922-2.47-8.328-8.99-8.96a1.298%201.298%200%200%201-1.178-1.288c0-.666.51-1.224%201.178-1.288%206.52-.632%208.31-4.038%208.99-8.96a1.303%201.303%200%200%201%201.294-1.118c.652%200%201.205.478%201.294%201.118.68%204.922%202.47%208.328%208.988%208.96a1.297%201.297%200%200%201%201.178%201.288c0%20.666-.509%201.224-1.178%201.288zm-10.282-6.321c-.915%202.021-2.415%203.847-4.954%205.033%202.539%201.185%204.039%203.011%204.954%205.032.916-2.021%202.415-3.847%204.954-5.032-2.539-1.186-4.038-3.012-4.954-5.033zm-8.9-4.87c-11.701%201.134-13.498%207.486-14.63%2015.674a1.303%201.303%200%200%201-1.294%201.119%201.302%201.302%200%200%201-1.293-1.119c-1.191-8.607-4.326-14.566-15.759-15.674a1.298%201.298%200%200%201-1.178-1.288c0-.666.51-1.223%201.178-1.288%2011.433-1.108%2014.568-7.068%2015.759-15.675a1.302%201.302%200%200%201%201.293-1.119c.652%200%201.205.478%201.294%201.119%201.132%208.188%202.929%2014.542%2014.63%2015.675a1.298%201.298%200%200%201%201.178%201.288c0%20.666-.509%201.224-1.178%201.288zM65.871%2059.224c-1.534%204.466-4.45%208.427-10.444%2010.475%205.994%202.047%208.91%206.008%2010.444%2010.475%201.334-4.603%203.85-8.469%209.552-10.475-5.702-2.006-8.218-5.872-9.552-10.475zm6.943-13.713a1.3%201.3%200%200%201-1.306-1.295v-4.029c-3.876%203.403-11.704%205.685-20.949%205.685-9.244%200-17.073-2.282-20.949-5.685v4.389c0%203.784%208.603%207.999%2020.949%207.999a1.3%201.3%200%200%201%201.306%201.295%201.3%201.3%200%200%201-1.306%201.295c-9.244%200-17.073-2.282-20.949-5.684v5.55c0%203.353%206.199%206.56%2014.741%207.624a1.296%201.296%200%200%201%201.133%201.445%201.3%201.3%200%200%201-1.457%201.123c-6.505-.81-11.559-2.693-14.417-5.199v5.463c0%203.098%205.388%206.137%2013.104%207.388a1.295%201.295%200%200%201%201.076%201.487%201.3%201.3%200%200%201-1.498%201.068c-9.433-1.531-15.293-5.34-15.293-9.943V35.283c0-5.937%2010.349-10.588%2023.56-10.588%2013.211%200%2023.561%204.651%2023.561%2010.588v8.933a1.3%201.3%200%200%201-1.306%201.295zM50.559%2027.284c-12.346%200-20.949%204.215-20.949%207.999%200%203.783%208.603%207.999%2020.949%207.999%2012.346%200%2020.949-4.216%2020.949-7.999%200-3.784-8.603-7.999-20.949-7.999zM65.828%2094.15c4.882-.473%206.222-3.029%206.733-6.722a1.302%201.302%200%200%201%201.293-1.118%201.304%201.304%200%200%201%201.294%201.119c.509%203.692%201.849%206.248%206.731%206.721a1.297%201.297%200%200%201%201.178%201.288c0%20.666-.509%201.223-1.178%201.288-4.882.473-6.222%203.03-6.731%206.722a1.304%201.304%200%200%201-1.294%201.119%201.302%201.302%200%200%201-1.293-1.119c-.511-3.692-1.851-6.249-6.733-6.722a1.298%201.298%200%200%201-1.178-1.288c0-.666.509-1.224%201.178-1.288zm8.026%204.531a7.757%207.757%200%200%201%203.197-3.243%207.758%207.758%200%200%201-3.198-3.242%207.76%207.76%200%200%201-3.199%203.242%207.771%207.771%200%200%201%203.2%203.243z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/task_extract.svg
+var task_extract_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='cypsyn86ua'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999%200c35.9%200%2065%2029.101%2065%2065s-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065S29.102%200%2064.999%200z'/%3e%3cpath%20fill='url(%23cypsyn86ua)'%20d='M64.999%200c35.9%200%2065%2029.101%2065%2065s-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065S29.102%200%2064.999%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M65.03%2098.983C52.411%2098.983%2039%2094.669%2039%2086.675V54.672c0-1.997.899-4.938%205.187-7.593a2.492%202.492%200%200%201%203.416.786%202.453%202.453%200%200%201-.792%203.392c-1.813%201.123-2.853%202.368-2.853%203.415%200%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385%200-1.211-1.392-2.674-3.723-3.912a2.455%202.455%200%200%201-1.017-3.332%202.49%202.49%200%200%201%203.355-1.01c5.243%202.785%206.343%206.026%206.343%208.254v32.003c0%207.994-13.411%2012.308-26.03%2012.308zM86.102%2062.11c-5.042%203.196-13.21%204.871-21.072%204.871-7.862%200-16.03-1.675-21.072-4.871v2.409c0%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385V62.11zm0%209.847c-5.042%203.196-13.21%204.871-21.072%204.871-7.862%200-16.03-1.675-21.072-4.871v3.64c0%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385v-3.64zm0%2011.077c-5.042%203.196-13.21%204.871-21.072%204.871-7.862%200-16.03-1.675-21.072-4.871v3.641c0%203.011%208.208%207.385%2021.072%207.385%2012.864%200%2021.072-4.374%2021.072-7.385v-3.641zm-9.093-42.603a2.48%202.48%200%200%201-1.753.721c-.634%200-1.268-.24-1.753-.721l-5.994-5.952v19.443a2.47%202.47%200%200%201-2.479%202.462%202.47%202.47%200%200%201-2.479-2.462V34.479l-5.994%205.952a2.49%202.49%200%200%201-3.506%200%202.45%202.45%200%200%201%200-3.481l10.225-10.153c.23-.229.506-.411.812-.536.013-.006.025-.007.038-.012.28-.11.584-.175.903-.175h.002c.32%200%20.623.065.903.175.013.005.026.007.038.012.306.125.582.307.812.535L77.009%2036.95a2.45%202.45%200%200%201%200%203.481z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/task_load.svg
+var task_load_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='i2aw18yy1a'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.899-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.899%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill='url(%23i2aw18yy1a)'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.899-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.899%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M65.45%20100.998c-12.337%200-26.35-4.231-26.35-12.072V57.537c0-1.959%201.78-4.842%205.971-7.448a2.43%202.43%200%200%201%203.339.772%202.408%202.408%200%200%201-.773%203.326c-1.773%201.102-2.789%202.323-2.789%203.35%200%202.953%208.026%207.244%2020.602%207.244s20.602-4.291%2020.602-7.244c0-1.188-1.36-2.623-3.64-3.838a2.41%202.41%200%200%201-.994-3.268%202.43%202.43%200%200%201%203.281-.99c5.125%202.732%206.201%205.91%206.201%208.096v31.389c0%207.841-13.113%2012.072-25.45%2012.072zm20.602-36.166c-4.93%203.135-12.916%204.778-20.602%204.778-7.687%200-15.673-1.643-20.602-4.778v2.363c0%202.953%208.026%207.244%2020.602%207.244s20.602-4.291%2020.602-7.244v-2.363zm0%209.658c-4.93%203.135-12.916%204.778-20.602%204.778-7.687%200-15.673-1.643-20.602-4.778v3.57c0%202.954%208.026%207.244%2020.602%207.244s20.602-4.29%2020.602-7.244v-3.57zm0%2010.865c-4.93%203.135-12.916%204.778-20.602%204.778-7.687%200-15.673-1.643-20.602-4.778v3.571c0%202.953%208.026%207.243%2020.602%207.243s20.602-4.29%2020.602-7.243v-3.571zm-8.89-36.807-9.997%209.959a2.441%202.441%200%200%201-.794.526c-.012.005-.024.007-.037.011a2.404%202.404%200%200%201-.884.172c-.313%200-.61-.064-.885-.172-.012-.004-.024-.006-.036-.011a2.456%202.456%200%200%201-.795-.526l-9.996-9.959a2.406%202.406%200%200%201%200-3.414%202.43%202.43%200%200%201%203.427%200l5.861%205.838v-19.07a2.42%202.42%200%200%201%202.424-2.415%202.42%202.42%200%200%201%202.424%202.415v19.07l5.86-5.838a2.43%202.43%200%200%201%203.428%200%202.406%202.406%200%200%201%200%203.414z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/task_extract-and-load.svg
+var task_extract_and_load_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='4oe0zkdbga'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.9-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.9%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill='url(%234oe0zkdbga)'%20d='M64.999.001c35.9%200%2065%2029.1%2065%2064.999%200%2035.9-29.1%2064.1-65%2064.1C29.102%20129.1%200%20100.9%200%2065%200%2029.101%2029.102.001%2064.999.001z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M94.69%2051.779a2.297%202.297%200%200%201-3.233%200l-9.106-9.049v49.457a2.28%202.28%200%200%201-2.286%202.272%202.28%202.28%200%200%201-2.287-2.272V42.73l-9.105%209.049a2.297%202.297%200%200%201-3.233%200%202.262%202.262%200%200%201%200-3.213L78.446%2035.64c.106-.105.223-.2.348-.283.027-.019.059-.03.087-.048a2.4%202.4%200%200%201%20.305-.162c.043-.017.09-.026.134-.041.096-.033.191-.068.293-.088a2.265%202.265%200%200%201%20.904%200c.093.018.18.051.269.081.052.017.107.028.158.049.098.041.189.095.279.148.037.022.078.037.113.061.125.083.241.178.347.283L94.69%2048.566a2.26%202.26%200%200%201%200%203.213zM65.112%2080.866%2052.105%2093.792a2.3%202.3%200%200%201-.347.282c-.031.021-.066.034-.098.054-.095.056-.191.113-.294.156-.046.018-.095.027-.141.043-.094.032-.187.067-.286.086a2.273%202.273%200%200%201-.904%200c-.092-.018-.177-.051-.265-.079-.054-.018-.11-.029-.163-.051-.096-.039-.184-.093-.273-.145-.039-.022-.081-.039-.119-.064a2.243%202.243%200%200%201-.346-.282L35.861%2080.866a2.262%202.262%200%200%201%200-3.213%202.295%202.295%200%200%201%203.233%200l9.107%209.048V37.245a2.28%202.28%200%200%201%202.286-2.273%202.28%202.28%200%200%201%202.286%202.273v49.456l9.106-9.048a2.295%202.295%200%200%201%203.233%200%202.262%202.262%200%200%201%200%203.213z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/task_delete.svg
+var task_delete_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='ovhj697oua'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999%200c35.9%200%2065%2029.102%2065%2065%200%2035.899-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065%200%2029.102%2029.102%200%2064.999%200z'/%3e%3cpath%20fill='url(%23ovhj697oua)'%20d='M64.999%200c35.9%200%2065%2029.102%2065%2065%200%2035.899-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065%200%2029.102%2029.102%200%2064.999%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M92.879%2044.636h-4.79v47.759a2.406%202.406%200%200%201-2.395%202.418H44.981a2.406%202.406%200%200%201-2.395-2.418V44.636h-4.79c-.992%200-2.696-.812-2.696-1.814s1.704-1.814%202.696-1.814h14.968v-4.231c0-1.002.804-1.813%201.797-1.813h21.554c.992%200%201.796.811%201.796%201.813v4.231h14.968c.992%200%201.796.812%201.796%201.814a1.805%201.805%200%200%201-1.796%201.814zm-18.56-6.045H56.357v2.417h17.962v-2.417zM83.3%2046.45H47.376v43.527H83.3V46.45zm-28.739%204.836c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418zm10.777%200c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418zm10.777%200c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/utils/toast.ts
+/**
+* Toast utility - replaces Angular's toastr service.
+* Uses sweetalert2 (already a dependency) for notifications.
+* 
+* API matches Angular toastr:
+*   toast.success(title, text?)
+*   toast.error(title, text?)
+*   toast.warning(title, text?)
+*   toast.info(title, text?)
+*/
+var showToast = (type, title, text) => {
+	try {
+		__vitePreload(() => Promise.resolve().then(() => /* @__PURE__ */ __toESM(require_sweetalert2_all())).then((Swal) => {
+			const SwalDefault = Swal.default || Swal;
+			SwalDefault.fire({
+				toast: true,
+				position: "top-end",
+				icon: type,
+				title,
+				text,
+				showConfirmButton: false,
+				timer: type === "error" ? 1e4 : 3e3,
+				timerProgressBar: true,
+				didOpen: (toastEl) => {
+					toastEl.style.cursor = "pointer";
+					toastEl.addEventListener("click", () => SwalDefault.close());
+				}
+			});
+		}), void 0, import.meta.url).catch(() => {
+			console[type === "error" ? "error" : type === "warning" ? "warn" : "log"](title, text);
+		});
+	} catch (e) {
+		console[type === "error" ? "error" : type === "warning" ? "warn" : "log"](title, text);
+	}
+};
+var toast = {
+	success: (title, text) => showToast("success", title, text),
+	error: (title, text) => showToast("error", title, text),
+	warning: (title, text) => showToast("warning", title, text),
+	info: (title, text) => showToast("info", title, text)
+};
+//#endregion
+//#region src/apis/task.ts
+var runningRequests$3 = {};
+var hashKey = (path, body) => {
+	const str = path + JSON.stringify(body);
+	let hash = 5381;
+	for (let i = 0; i < str.length; i++) hash = hash * 33 ^ str.charCodeAt(i);
+	return String(hash >>> 0);
+};
+var fetchData$3 = async (path, body, method) => {
+	const response = await window.k2api.invokeFabricWebService(path, body, method);
+	if (response.isError) throw new Error(response.message);
+	if (response.errorCode === "FAILED") {
+		toast?.error(response.message);
+		throw new Error(response.message);
+	} else if (response.errorCode === "WARNING") if (path.indexOf("startTask") > 0) response.result = {
+		warning: true,
+		message: response.result
+	};
+	else toast?.warning(response.message);
+	return response.result;
+};
+var invokeFabricWebService$4 = async (path, body, method, force) => {
+	if (window.k2api && window.k2api.invokeFabricWebService) {
+		if (force) return fetchData$3(path, body, method);
+		const key = hashKey(path, body);
+		if (runningRequests$3[key]) {
+			clearTimeout(runningRequests$3[key]);
+			delete runningRequests$3[key];
+		}
+		return new Promise((resolve, reject) => {
+			runningRequests$3[key] = setTimeout(async () => {
+				try {
+					resolve(await fetchData$3(path, body, method));
+				} catch (error) {
+					reject(error);
+				} finally {
+					clearTimeout(runningRequests$3[key]);
+					delete runningRequests$3[key];
+				}
+			}, 100);
+		});
+	}
+	throw new Error("window.k2api is not defined");
+};
+var getActiveBEs = async (source_environment_id, target_environment_id) => {
+	const data = {};
+	if (source_environment_id) data.source_environment_id = source_environment_id;
+	if (target_environment_id) data.target_environment_id = target_environment_id;
+	return invokeFabricWebService$4("getActiveBusinessentities", data, "GET");
+};
+var getEnvironments$1 = async (be_name, force, taskId) => {
+	const params = {};
+	if (be_name) params.be_name = be_name;
+	if (taskId) params.taskId = taskId;
+	return invokeFabricWebService$4("userEnvironments", params, "GET", force);
+};
+var getDataGenerationParams = async (taskId, luList, taskExecutionId) => {
+	const body = {};
+	if (taskId) body.taskId = taskId;
+	if (luList) body.luList = luList;
+	if (taskExecutionId) body.taskExecutionId = taskExecutionId;
+	return invokeFabricWebService$4("getDMPopParams", body, "GET");
+};
+var getTrainingModels = async (fromDate, toDate, be_name, lu_name) => invokeFabricWebService$4("tasks/getTrainingModels", {
+	fromDate,
+	toDate,
+	be_name,
+	lu_name
+}, "POST");
+var getSelectionMethodsValues = async () => invokeFabricWebService$4("selectionMethods", {}, "GET");
+var getTaskTypeFilterValues = async () => invokeFabricWebService$4("taskTypeFilter", {}, "GET");
+var getCustomLogicFlows = async (beName, envName) => invokeFabricWebService$4("getcustomlogicflows", {
+	beName,
+	envName
+}, "GET");
+var getCustomLogicParams = async (luName, flowName) => invokeFabricWebService$4("getCustomLogicParams", {
+	flowName,
+	luName
+}, "GET");
+var getPreExecutionProcess = async (beId) => invokeFabricWebService$4(`businessentity/${beId}/preexecutionprocess`, {}, "GET");
+var getPostExecutionProcess = async (beId) => invokeFabricWebService$4(`businessentity/${beId}/postexecutionprocess`, {}, "GET");
+var getTaskPostExecutionProcess = async (taskId) => invokeFabricWebService$4(`task/${taskId}/postexecutionprocess`, {}, "GET");
+var getTaskPreExecutionProcess = async (taskId) => invokeFabricWebService$4(`task/${taskId}/preexecutionprocess`, {}, "GET");
+var getFabricRoles$1 = (permissionGroupList) => invokeFabricWebService$4(`wsGetFabricRoles`, { permissionGroupList }, "GET");
+var getTaskLuAffinityWorkers = async (taskId, srcEnvId, tgtEnvId) => {
+	const body = {};
+	if (srcEnvId !== void 0 && srcEnvId !== null) body.srcEnvId = srcEnvId;
+	if (tgtEnvId !== void 0 && tgtEnvId !== null) body.tgtEnvId = tgtEnvId;
+	return invokeFabricWebService$4(`task/${taskId}/lu-affinity-workers`, body, "GET");
+};
+var getTaskTables = async (taskId, mode) => invokeFabricWebService$4(`task/refsTable/${taskId}`, { mode }, "GET");
+var getTaskVariables = async (taskId) => invokeFabricWebService$4(`task/${taskId}/globals`, {}, "GET");
+var getRetentionPeriodsData = async () => invokeFabricWebService$4("retentionperiodinfo", {}, "GET");
+var getReferenceTables = async () => invokeFabricWebService$4("task/getReferenceTaskTable", {}, "POST");
+var getEnvironmentOwners$1 = async (environmentID) => invokeFabricWebService$4(`environment/${environmentID}/owners`, {}, "GET");
+var getEnvironmentByID = async (environmentID) => invokeFabricWebService$4(`environment/${environmentID}`, {}, "GET");
+var getEnvironmentUserRole = async (environmentID) => invokeFabricWebService$4(`environment/${environmentID}/userRole`, {}, "GET");
+var getFabricRolesByUser = async (user) => invokeFabricWebService$4(`wsGetFabricRolesByUser`, { user }, "GET");
+var checkAIInstallation = async (taskType) => invokeFabricWebService$4(`tasks/checkAIInstallation`, { taskType }, "POST");
+var getTableByBeAndEnv = async (source_env, envId, be_name) => invokeFabricWebService$4("getTableByBeAndEnv", {
+	source_env,
+	envId,
+	be_name
+}, "POST");
+var getTablesAPIMode = async () => invokeFabricWebService$4("wsGetTablesAPIMode", {}, "GET");
+var getEnvInterfaceList = async (environment, envId) => invokeFabricWebService$4("getEnvInterfaceListWithConfig", {
+	environment,
+	envId
+}, "POST");
+var getInterfaceSchemaList = async (environment, interfaceName) => invokeFabricWebService$4("getInterfaceSchemaList", {
+	environment,
+	interfaceName
+}, "POST");
+var getSchemaTableList = async (environment, interfaceName, schemaName) => invokeFabricWebService$4("getSchemaTableList", {
+	environment,
+	interfaceName,
+	schemaName
+}, "POST");
+var getTableVersions = async (table_name, env_name) => invokeFabricWebService$4("getTableVersions", {
+	table_name,
+	env_name
+}, "POST");
+var getEnvironmentsByUser = async () => invokeFabricWebService$4("userEnvironments", {}, "GET");
+var getGlobalVariables = async (lus) => invokeFabricWebService$4("environment/getAllGlobals", { lus }, "GET");
+var validateReservedEntitiesList = async (beID, envID, listOfEntities, filterout_reserved) => invokeFabricWebService$4("validateReservedEntitiesList", {
+	beID,
+	envID,
+	listOfEntities,
+	filterout_reserved
+}, "POST");
+var getLogicalUnits$1 = async (be_id, env_id) => {
+	if (env_id) return invokeFabricWebService$4(`businessentity/${be_id}/environment/${env_id}/logicalunits`, {}, "GET");
+	return invokeFabricWebService$4(`businessentity/${be_id}/logicalunits`, {}, "GET");
+};
+var getTaskLogicalUnits = async (task_id) => invokeFabricWebService$4(`task/${task_id}/logicalunits`, {}, "GET");
+var getParameters = async (be_id, envName) => invokeFabricWebService$4(`businessentity/${be_id}/sourceEnv/${envName}/parameters`, {}, "GET");
+var getEnableParamWidth = async () => invokeFabricWebService$4(`wsGetParamsAutoWidth`, {}, "GET");
+var getParamsLUName = async () => invokeFabricWebService$4(`wsGetParamsLUName`, {}, "GET");
+var getTableParameters = async (dbInterfaceName, SchemaName, tableName) => invokeFabricWebService$4(`getTableFields`, {
+	tableName,
+	SchemaName,
+	dbInterfaceName
+}, "POST");
+var getEntitiesCount = async (be_id, envName, body) => invokeFabricWebService$4(`businessentity/${be_id}/sourceEnv/${envName}/analysiscount`, body, "POST");
+var deleteTask = async (task_id, task_title) => invokeFabricWebService$4(`task/${task_id}/taskname/${task_title}`, {}, "DELETE");
+var getExecutionProcessParams = async (processType, processesList) => invokeFabricWebService$4(`getExecutionProcessParams`, {
+	processType,
+	processesList
+}, "POST");
+var getCheckIfParamsCoupling = async () => invokeFabricWebService$4(`wsCheckIfParamsCoupling`, {}, "GET");
+var getTaskLuEditForTesters = async () => invokeFabricWebService$4(`wsGetTaskLuEditForTesters`, {}, "GET");
+var getTaskGroups = async () => invokeFabricWebService$4(`taskgroup`, {}, "GET");
+var getCanCreateTasks = async (userName) => invokeFabricWebService$4(`taskCreationPermission/canCreateTasks`, { userName }, "GET");
+var getTaskGroupById = async (task_group_id) => invokeFabricWebService$4(`getTasksPerTaskGroup`, { task_group_id }, "GET");
+var addTaskGroup = async (task_group_name, task_group_desc) => invokeFabricWebService$4(`taskgroup`, {
+	task_group_name,
+	task_group_desc
+}, "POST");
+var updateTaskGroup = async (task_group_id, task_group_name, task_group_desc) => invokeFabricWebService$4(`taskgroup/${task_group_id}`, {
+	task_group_name,
+	task_group_desc
+}, "PUT");
+var moveTasksToTaskGroup = async (taskIds, fromTaskGroup, toTaskGroups, keepCurrentGroup) => invokeFabricWebService$4(`moveTasksToGroups`, {
+	taskIds,
+	fromTaskGroup,
+	toTaskGroups,
+	keepCurrentGroup
+}, "PUT");
+var deleteTaskGroup = async (task_group_id) => invokeFabricWebService$4(`taskgroup`, { task_group_id }, "DELETE");
+var searchTasks = async (data) => invokeFabricWebService$4(`search`, data, "POST");
+var deleteTaskFromGroup = async (task_id, task_group_id) => invokeFabricWebService$4(`deleteTaskFromTaskGroup`, {
+	task_group_id,
+	task_id
+}, "DELETE");
+var getPermissionsForTask = async (sourceEnvId, targetEnvId, taskType, syncMode, reserveInd) => invokeFabricWebService$4(`task/fnGetPermissionsForTask`, {
+	sourceEnvId,
+	targetEnvId,
+	taskType,
+	syncMode,
+	reserveInd
+}, "GET");
+var getTaskAvailableGroups = async (task_id) => invokeFabricWebService$4(`taskAvailableGroups/${task_id}`, {}, "GET");
+var toggleTaskGroupFavorite = async (task_group_id, marked) => {
+	if (!marked) return invokeFabricWebService$4(`markFavorite`, { task_group_id }, "POST");
+	return invokeFabricWebService$4(`unMarkFavorite`, { task_group_id }, "DELETE");
+};
+var toggleTaskFavorite = async (task_id, marked) => {
+	if (!marked) return invokeFabricWebService$4(`markTaskFavorite`, { task_id }, "POST");
+	return invokeFabricWebService$4(`unMarkTaskFavorite`, { task_id }, "DELETE");
+};
+var getTaskById = async (taskID) => invokeFabricWebService$4(`task/${taskID}`, {}, "GET");
+var getTaskByIdOld = async (task_ids, mode) => invokeFabricWebService$4(`tasks`, {
+	task_ids,
+	mode
+}, "GET");
+var getTaskByExecutionId = async (taskExecutionId) => invokeFabricWebService$4(`task/execution/${taskExecutionId}`, {}, "GET");
+var getMaxWorkersPerNode$1 = async () => invokeFabricWebService$4(`getMaxWorkersPerNode`, {}, "GET");
+var getGlobalMaxWorkersLimit = async () => invokeFabricWebService$4(`getGlobalMaxWorkersLimit`, {}, "GET");
+var getDataCenters$2 = async () => invokeFabricWebService$4(`dataCenters`, {}, "GET");
+var getTdmVersion = async () => invokeFabricWebService$4(`tdmVersion`, {}, "GET");
+var saveTaskAPI = async (taskData) => {
+	if (taskData.task_id) return invokeFabricWebService$4(`task/${taskData.task_id}`, taskData, "PUT");
+	return invokeFabricWebService$4("task", taskData, "POST");
+};
+var getVersionsForLoad = async (fromDate, toDate, entitiesList, lu_list, source_env_name, target_env_name, be_id, filterout_reserved) => invokeFabricWebService$4("tasks/versionsForLoad", {
+	fromDate,
+	toDate,
+	entitiesList,
+	lu_list,
+	source_env_name,
+	target_env_name,
+	be_id,
+	filterout_reserved
+}, "POST");
+var getGenerationExecutions = async (fromDate, toDate, envName, beID, selectedLogicalUnits) => invokeFabricWebService$4("tasks/getGenerationModels", {
+	fromDate,
+	toDate,
+	envName,
+	beID,
+	selectedLogicalUnits
+}, "POST");
+var getFabricRolesforUser$1 = (user) => invokeFabricWebService$4("wsGetFabricRolesByUser", { user }, "GET");
+var getFinalPrompt = (prompt, displayedSelectionMethod, numOfEntities) => invokeFabricWebService$4("getFinalPrompt", {
+	prompt,
+	displayedSelectionMethod,
+	numOfEntities
+}, "GET");
+var execute_task = (taskID, overrideParameters, forced) => invokeFabricWebService$4(`task/${taskID}/forced/${forced || false}/startTask`, { overrideParameters }, "POST");
+var taskAPIs = {
+	getActiveBEs,
+	getEnvironments: getEnvironments$1,
+	getDataGenerationParams,
+	getTrainingModels,
+	getCustomLogicFlows,
+	getCustomLogicParams,
+	getPreExecutionProcess,
+	getPostExecutionProcess,
+	getTaskVariables,
+	getRetentionPeriodsData,
+	getVersionsForLoad,
+	getReferenceTables,
+	getLogicalUnits: getLogicalUnits$1,
+	getGenerationExecutions,
+	getParameters,
+	getEnableParamWidth,
+	getEntitiesCount,
+	saveTaskAPI,
+	deleteTask,
+	getTaskLogicalUnits,
+	getTableByBeAndEnv,
+	getTableVersions,
+	getGlobalVariables,
+	getTaskPostExecutionProcess,
+	getTaskPreExecutionProcess,
+	getTaskLuAffinityWorkers,
+	getTableParameters,
+	getTaskTables,
+	getEnvironmentOwners: getEnvironmentOwners$1,
+	getFabricRolesByUser,
+	getEnvironmentUserRole,
+	getEnvironmentByID,
+	checkAIInstallation,
+	validateReservedEntitiesList,
+	getExecutionProcessParams,
+	getParamsLUName,
+	getCheckIfParamsCoupling,
+	getTaskLuEditForTesters,
+	getTaskGroups,
+	getTaskGroupById,
+	addTaskGroup,
+	toggleTaskGroupFavorite,
+	getTaskById,
+	getTaskByIdOld,
+	getTaskByExecutionId,
+	toggleTaskFavorite,
+	moveTasksToTaskGroup,
+	deleteTaskGroup,
+	updateTaskGroup,
+	searchTasks,
+	getEnvironmentsByUser,
+	deleteTaskFromGroup,
+	getFabricRolesforUser: getFabricRolesforUser$1,
+	execute_task,
+	getFinalPrompt,
+	getEnvInterfaceList,
+	getInterfaceSchemaList,
+	getSchemaTableList,
+	getMaxWorkersPerNode: getMaxWorkersPerNode$1,
+	getDataCenters: getDataCenters$2,
+	getTdmVersion,
+	getTablesAPIMode,
+	getGlobalMaxWorkersLimit,
+	getCanCreateTasks,
+	getTaskTypeFilterValues,
+	getSelectionMethodsValues,
+	getPermissionsForTask,
+	getTaskAvailableGroups,
+	getFabricRoles: getFabricRoles$1
+};
+//#endregion
 //#region src/components/TaskGroupTabs/styles.ts
 var TabContainer$2 = ct.div`
   display: flex;
@@ -52256,7 +52288,7 @@ var EnvironmentsContainer$1 = ct.div`
     display: ${(props) => props.data_source ? "flex" : "none"};
     align-items: flex-start;
     flex-direction: column;
-    width: 560px;
+    width: 470px;
     gap: 10px;
 
 `;
@@ -52537,70 +52569,16 @@ var ParamsIconsLeft$1 = ct.div`
     left: 14px;
     top: 7px;
 `;
-function useClickAway(cb) {
-	const ref = import_react.useRef(null);
-	const refCb = import_react.useRef(cb);
-	import_react.useLayoutEffect(() => {
-		refCb.current = cb;
-	});
-	import_react.useEffect(() => {
-		const handler = (e) => {
-			const element = ref.current;
-			if (element && !element.contains(e.target)) refCb.current(e);
-		};
-		document.addEventListener("mousedown", handler);
-		document.addEventListener("touchstart", handler);
-		return () => {
-			document.removeEventListener("mousedown", handler);
-			document.removeEventListener("touchstart", handler);
-		};
-	}, []);
-	return ref;
-}
-function useHover$1() {
-	const [hovering, setHovering] = import_react.useState(false);
-	const previousNode = import_react.useRef(null);
-	const handleMouseEnter = import_react.useCallback(() => {
-		setHovering(true);
-	}, []);
-	const handleMouseLeave = import_react.useCallback(() => {
-		setHovering(false);
-	}, []);
-	return [import_react.useCallback((node) => {
-		if (previousNode.current?.nodeType === Node.ELEMENT_NODE) {
-			previousNode.current.removeEventListener("mouseenter", handleMouseEnter);
-			previousNode.current.removeEventListener("mouseleave", handleMouseLeave);
-		}
-		if (node?.nodeType === Node.ELEMENT_NODE) {
-			node.addEventListener("mouseenter", handleMouseEnter);
-			node.addEventListener("mouseleave", handleMouseLeave);
-		}
-		previousNode.current = node;
-	}, [handleMouseEnter, handleMouseLeave]), hovering];
-}
-function usePrevious(value) {
-	const [current, setCurrent] = import_react.useState(value);
-	const [previous, setPrevious] = import_react.useState(null);
-	if (value !== current) {
-		setPrevious(current);
-		setCurrent(value);
-	}
-	return previous;
-}
 //#endregion
 //#region src/components/fabricWidget/index.tsx
 function FabricWidget(props) {
 	const { luName, flowName, editor, error, updateValues, saveRef } = props;
 	const ref = (0, import_react.useRef)(null);
 	const [widgetRefData, setWidgetRefData] = (0, import_react.useState)(null);
-	const refclickAway = useClickAway(() => {
-		const editors = widgetRefData?.getValues();
-		if (editors && editors.length >= 0) updateValues(editors.map((it) => ({
-			value: it.value,
-			name: it.name,
-			schema: it.schema
-		})));
-	});
+	const updateValuesRef = (0, import_react.useRef)(updateValues);
+	(0, import_react.useEffect)(() => {
+		updateValuesRef.current = updateValues;
+	}, [updateValues]);
 	(0, import_react.useEffect)(() => {
 		const onWidgetLoad = (data) => {
 			(!Array.isArray(editor) ? [editor] : editor).forEach((editor) => {
@@ -52619,7 +52597,13 @@ function FabricWidget(props) {
 			plugins: !Array.isArray(editor) ? [editor] : editor,
 			theme: "light",
 			luName,
-			flowName
+			flowName,
+			onUpdateCB: (name, value) => {
+				updateValuesRef.current([{
+					name,
+					value
+				}]);
+			}
 		});
 	}, [
 		ref,
@@ -52642,10 +52626,7 @@ function FabricWidget(props) {
 		}
 		if (plugins_to_add.length > 0) widgetRefData.addPlugins(plugins_to_add);
 	}, [editor, widgetRefData]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		ref: refclickAway,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { ref }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FieldError, { error })]
-	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { ref }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FieldError, { error })] });
 }
 //#endregion
 //#region src/images/info-icon.svg
@@ -52722,8 +52703,8 @@ var Title$30 = ct.span`
 `;
 var CheckboxInput$1 = ct.input`
     margin: ${(props) => props.title ? "0px 10px 0px 0px !important" : "0px 0px 0px 0px !important"};
-    width: 20px;
-    height: 20px;
+    width: ${(props) => props.small ? "15px" : "20px"};
+    height: ${(props) => props.small ? "15px" : "20px"};
 `;
 ct.img`
 
@@ -52731,7 +52712,7 @@ ct.img`
 //#endregion
 //#region src/components/checkbox/index.tsx
 function Checkbox(props) {
-	const { title, name, value, onChange, disabled } = props;
+	const { title, name, value, onChange, disabled, small } = props;
 	const onChangeLocal = (0, import_react.useCallback)((event) => {
 		onChange(event.target.checked);
 	}, [onChange]);
@@ -52741,7 +52722,8 @@ function Checkbox(props) {
 		name,
 		checked: value,
 		onChange: onChangeLocal,
-		title
+		title,
+		small
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Title$30, { children: title })] });
 }
 //#endregion
@@ -52749,6 +52731,36 @@ function Checkbox(props) {
 var TooltipContainer$1 = ct.div`
   position: relative;
 `;
+function useHover$1() {
+	const [hovering, setHovering] = import_react.useState(false);
+	const previousNode = import_react.useRef(null);
+	const handleMouseEnter = import_react.useCallback(() => {
+		setHovering(true);
+	}, []);
+	const handleMouseLeave = import_react.useCallback(() => {
+		setHovering(false);
+	}, []);
+	return [import_react.useCallback((node) => {
+		if (previousNode.current?.nodeType === Node.ELEMENT_NODE) {
+			previousNode.current.removeEventListener("mouseenter", handleMouseEnter);
+			previousNode.current.removeEventListener("mouseleave", handleMouseLeave);
+		}
+		if (node?.nodeType === Node.ELEMENT_NODE) {
+			node.addEventListener("mouseenter", handleMouseEnter);
+			node.addEventListener("mouseleave", handleMouseLeave);
+		}
+		previousNode.current = node;
+	}, [handleMouseEnter, handleMouseLeave]), hovering];
+}
+function usePrevious(value) {
+	const [current, setCurrent] = import_react.useState(value);
+	const [previous, setPrevious] = import_react.useState(null);
+	if (value !== current) {
+		setPrevious(current);
+		setCurrent(value);
+	}
+	return previous;
+}
 //#endregion
 //#region src/components/TooltipPopover/index.tsx
 var TooltipPopover = ({ children, position, body, align }) => {
@@ -59573,6 +59585,10 @@ var AuthProvider = ({ children }) => {
 					name: "Reports",
 					path: "/reports"
 				});
+				navigationMenu.push({
+					name: "Tutorials",
+					path: "/tutorials"
+				});
 				if (window.k2api?.setNavigationMenu) window.k2api.setNavigationMenu(navigationMenu);
 				setAuthState({
 					userRole,
@@ -59961,7 +59977,7 @@ var LI = ct.li`
 `;
 //#endregion
 //#region src/components/Tooltip/index.tsx
-var Tooltip$1 = ({ children, position, textArray, hideTriangle }) => {
+var Tooltip$2 = ({ children, position, textArray, hideTriangle }) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TooltipContainer, {
 		position,
 		hideTriangle,
@@ -60040,7 +60056,7 @@ function SourceAndEnv(props) {
 			status,
 			highlightColor: colors.highlightColor,
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconWrapper$2, { children: info && info.length ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip$1, {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconWrapper$2, { children: info && info.length ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip$2, {
 					position: "right",
 					textArray: info,
 					hideTriangle: true,
@@ -60242,7 +60258,7 @@ function TestDataStore(props) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TestDataStoreWrapper, {
 		onClick: handleClick,
 		id: "test_data_store",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconWrapper$1, { children: info && info.length ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip$1, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconWrapper$1, { children: info && info.length ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip$2, {
 			position: "right",
 			textArray: info,
 			hideTriangle: true,
@@ -60394,7 +60410,7 @@ function Filter$1(props) {
 		isDataSourceSubSet,
 		isSelected
 	]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: subsetStatus !== StatusEnum.disabled ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconWrapper, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconContainer, { children: info && info.length ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip$1, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: subsetStatus !== StatusEnum.disabled ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconWrapper, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoIconContainer, { children: info && info.length ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip$2, {
 		position: "right",
 		textArray: info,
 		hideTriangle: true,
@@ -60829,7 +60845,7 @@ function EntityList(props) {
 			error: errors.selection_param_value?.message,
 			disabled: viewMode
 		}),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(EntityCounter$1, { children: [showMax ? `${typedCount}/${permissions?.max_entities_per_task}` : `${typedCount}`, " entities"] })
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(EntityCounter$1, { children: [showMax ? `${typedCount}/${permissions?.max_entities_per_task}` : `${typedCount}`, " entities selected"] })
 	] });
 }
 //#endregion
@@ -61152,9 +61168,7 @@ function CustomLogic(props) {
 			try {
 				if (!selectedCustomLogicFlow) return;
 				let data = await taskAPIs.getCustomLogicParams(selectedCustomLogicFlow.luName, selectedCustomLogicFlow.flowName);
-				console.log(data.map((it) => it.editor?.name));
 				data = data.sort((a, b) => (a?.editor?.name || a?.name || "").toLowerCase().localeCompare((b?.editor?.name || b?.name || "").toLowerCase()));
-				console.log(data.map((it) => it.editor?.name));
 				data.forEach((param) => {
 					if (param.editor) {
 						param.name = param.editor.name;
@@ -61182,6 +61196,18 @@ function CustomLogic(props) {
 					});
 				} catch (err) {
 					console.log(err);
+				}
+				else {
+					const parameters = { inputs: (data || []).filter((customParam) => customParam.mandatory).map((it) => {
+						return {
+							name: it.name,
+							type: it.type,
+							value: it.value,
+							is_editable: it.is_editable,
+							checked: it.checked
+						};
+					}) };
+					saveForm({ parameters: JSON.stringify(parameters) });
 				}
 				saveForm({ customLogicParams: data });
 				setParamsLocked(false);
@@ -61285,7 +61311,23 @@ function CustomLogic(props) {
 			onChange: (value) => {
 				data.checked = value;
 				if (data.checked) data.is_editable = true;
-				saveForm({ customLogicParams });
+				if (!customLogicParams) return;
+				const customParamsTemp = [...customLogicParams];
+				const index = customParamsTemp.findIndex((param) => param?.name === data?.name);
+				if (index >= 0) customParamsTemp[index].value = "";
+				const parameters = { inputs: (customParamsTemp || []).filter((customParam) => customParam.mandatory || customParam.checked).map((it) => {
+					return {
+						name: it.name,
+						type: it.type,
+						value: it.value,
+						is_editable: it.is_editable,
+						checked: it.checked
+					};
+				}) };
+				saveForm({
+					customLogicParams,
+					parameters: JSON.stringify(parameters)
+				});
 			},
 			value: data.checked || data.mandatory
 		});
@@ -63154,7 +63196,7 @@ function isValid$1$1() {
 function createInvalid$1() {
 	return createDuration(NaN);
 }
-function Duration(duration) {
+function Duration$1(duration) {
 	var normalizedInput = normalizeObjectUnits(duration), years = normalizedInput.year || 0, quarters = normalizedInput.quarter || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || normalizedInput.isoWeek || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
 	this._isValid = isDurationValid(normalizedInput);
 	this._milliseconds = +milliseconds + seconds * 1e3 + minutes * 6e4 + hours * 1e3 * 60 * 60;
@@ -63165,7 +63207,7 @@ function Duration(duration) {
 	this._bubble();
 }
 function isDuration(obj) {
-	return obj instanceof Duration;
+	return obj instanceof Duration$1;
 }
 function absRound(number) {
 	if (number < 0) return Math.round(-1 * number) * -1;
@@ -63339,12 +63381,12 @@ function createDuration(input, key) {
 		duration.ms = diffRes.milliseconds;
 		duration.M = diffRes.months;
 	}
-	ret = new Duration(duration);
+	ret = new Duration$1(duration);
 	if (isDuration(input) && hasOwnProp(input, "_locale")) ret._locale = input._locale;
 	if (isDuration(input) && hasOwnProp(input, "_isValid")) ret._isValid = input._isValid;
 	return ret;
 }
-createDuration.fn = Duration.prototype;
+createDuration.fn = Duration$1.prototype;
 createDuration.invalid = createInvalid$1;
 function parseIso(inp, sign) {
 	var res = inp && parseFloat(inp.replace(",", "."));
@@ -64496,7 +64538,7 @@ function toISOString$1() {
 	hmsSign = sign$1(this._milliseconds) !== sign$1(total) ? "-" : "";
 	return totalSign + "P" + (years ? ymSign + years + "Y" : "") + (months ? ymSign + months + "M" : "") + (days ? daysSign + days + "D" : "") + (hours || minutes || seconds ? "T" : "") + (hours ? hmsSign + hours + "H" : "") + (minutes ? hmsSign + minutes + "M" : "") + (seconds ? hmsSign + s + "S" : "");
 }
-var proto$2 = Duration.prototype;
+var proto$2 = Duration$1.prototype;
 proto$2.isValid = isValid$1$1;
 proto$2.abs = abs;
 proto$2.add = add$1$1;
@@ -83543,7 +83585,7 @@ var TablesContainer = ct.div`
     height: 269px;
 `;
 var SourceTablesContainer = ct.div`
-    width: 260px;
+    width: 320px;
     background-color: #f2f2f2;
     padding: 10px 20px 30px 20px;
     height: calc(100% - 40px);
@@ -85127,7 +85169,8 @@ function ReferenceTables(props) {
 					name: `table_${BE}_${schemaKey}_${tableData.name}`,
 					title: "",
 					onChange: () => {},
-					value: tableData.selected
+					value: tableData.selected,
+					small: true
 				}) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$17, {
 					width: "17px",
@@ -85146,7 +85189,8 @@ function ReferenceTables(props) {
 				onChange: (value) => {
 					toggleTableInterfaces(env.env_name, schemaKey, value);
 				},
-				value: schem.selectAll
+				value: schem.selectAll,
+				small: true
 			})
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableTitle, {
 			onClick: () => toggleTables(env.env_name, schemaKey),
@@ -89118,17 +89162,24 @@ function generateInstanceId() {
 	return `inst_${Date.now()}_${instanceCounter}`;
 }
 function ExecutionPorcesses(props) {
-	const { rows, processType, save, data, executionMode } = props;
+	const { rows, processType, save, data, executionMode, logical_units } = props;
 	const [options, setOptions] = (0, import_react.useState)([]);
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const [searchQuery, setSearchQuery] = (0, import_react.useState)("");
-	const [processesData, setProcessesData] = (0, import_react.useState)([]);
+	const [processesData, setProcessesData] = (0, import_react.useState)(data || []);
 	const [chosenProcessIds, setChosenProcessIds] = (0, import_react.useState)(/* @__PURE__ */ new Set());
 	const [expandedRows, setExpandedRows] = (0, import_react.useState)([]);
 	(0, import_react.useEffect)(() => {
 		async function fetchExecutionProcessParam() {
 			try {
-				const params_data = await taskAPIs.getExecutionProcessParams(processType, rows.map((it) => it.process_name));
+				if (rows.length === 0) return;
+				const processes_for_request = rows.map((it) => {
+					return {
+						processName: it.process_name,
+						luNames: logical_units?.toString()
+					};
+				});
+				const params_data = await taskAPIs.getExecutionProcessParams(processType, processes_for_request);
 				rows.map((it) => {
 					it.editors = params_data.find((it2) => it.process_name === it2.process_name)?.editors || [];
 					it.editors = it.editors.map((it) => {
@@ -89674,7 +89725,7 @@ function AdvancedForm(props) {
 	const { be_id } = props;
 	const { taskData, saveForm, permissions, saveOverrideParams, getOverrideParamIsEditable } = (0, import_react.useContext)(TaskContext);
 	const systemUserRole = useAuth().getRole();
-	const { postExecutionProcesses, preExecutionProcesses, scheduler, globals, sourceUserRole, userRole, enable_masking_only } = taskData;
+	const { postExecutionProcesses, preExecutionProcesses, scheduler, globals, sourceUserRole, userRole, enable_masking_only, selected_logical_units_names } = taskData;
 	console.log("taskData", taskData);
 	const [preLoading, setPreLoading] = (0, import_react.useState)(true);
 	const [postLoading, setPostLoading] = (0, import_react.useState)(true);
@@ -89710,7 +89761,8 @@ function AdvancedForm(props) {
 			rows: preExecutionProcessOptions,
 			processType: "pre",
 			save: saveExecutionProcesses,
-			data: preExecutionProcesses
+			data: preExecutionProcesses,
+			logical_units: selected_logical_units_names
 		}, "pre_execution_container");
 	};
 	const getPostProcessBody = (0, import_react.useCallback)(() => {
@@ -89718,7 +89770,8 @@ function AdvancedForm(props) {
 			rows: postExecutionProcessOptions,
 			processType: "post",
 			save: saveExecutionProcesses,
-			data: postExecutionProcesses
+			data: postExecutionProcesses,
+			logical_units: selected_logical_units_names
 		}, "post_execution_container");
 	}, [
 		postExecutionProcesses,
@@ -89773,7 +89826,8 @@ function AdvancedForm(props) {
 		getPreProcessBody,
 		getPostProcessBody,
 		preExecutionProcessOptions,
-		postExecutionProcessOptions
+		postExecutionProcessOptions,
+		selected_logical_units_names
 	]);
 	const onReset = (0, import_react.useCallback)(() => {
 		if (selectedTab === "Pre execution process") {
@@ -91178,6 +91232,7 @@ var useLogicalUnits = (initFinished, saveForm, initTask, dataSourceType, source_
 		}
 	}, [be_id]);
 	(0, import_react.useEffect)(() => {
+		if (sourceLogicalUnits.length === 0 && targetLogicalUnits.length === 0) return;
 		let allLus = uniqueByField((sourceLogicalUnits || []).concat(targetLogicalUnits || []), "lu_id").filter((it) => {
 			const sourceResult = sourceLogicalUnits.findIndex((sourceItem) => sourceItem.lu_id === it.lu_id) >= 0;
 			const targeResult = targetLogicalUnits.findIndex((targetItem) => targetItem.lu_id === it.lu_id) >= 0;
@@ -96007,6 +96062,10 @@ function TaskMain(props) {
 	}, [overrideParams]);
 	const { resetField, register, unregister, setValue, handleSubmit, trigger, formState: { errors, isValid }, clearErrors } = useForm({ defaultValues: taskData });
 	const { statuses, onClickStep, currentStep, touchedForms, setTouchedForms, submittedForm, setSubmittedForm, statusesFuncMap, initTask } = useWidgetStatus(taskData, trigger, isValid, handleSubmit, failedComp, getOverrideParamIsEditable);
+	(0, import_react.useEffect)(() => {
+		if (statuses.dataSourceStatus === "disabled") unregister("source_environment_id");
+		if (statuses.targetStatus === "disabled") unregister("environment_id");
+	}, [statuses.dataSourceStatus, statuses.targetStatus]);
 	const saveForm = (0, import_react.useCallback)((data) => {
 		if (failedComp === currentStep) setFailedComp("");
 		setTaskData((previousTaskData) => ({
@@ -96279,7 +96338,7 @@ function TaskMain(props) {
 				return false;
 			}
 		}
-		if (taskData.environment_id && !taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind) {
+		if (taskData.environment_id && taskData.environment_id > 0 && !taskData.load_entity && !taskData.delete_before_load && !taskData.reserve_ind) {
 			toast.error(`All mandatory information must be completed before saving the task`);
 			onClickStep("target");
 			setFailedComp("target");
@@ -96324,6 +96383,7 @@ function TaskMain(props) {
 		const new_override_params = JSON.parse(JSON.stringify(overrideParams));
 		new_override_params.business_entity.is_editable = dataForSave.be_id ? false : true;
 		if (!dataForSave.be_id) unlockAllIsEditableUnderKey(new_override_params, "selection_method");
+		if (new_override_params?.selection_method?.entity_list?.is_editable && taskData.selection_method === "L") new_override_params.selection_method.max_entities.is_editable = true;
 		dataForSave.task_override_fields = JSON.stringify(new_override_params);
 		setSaveInProgress(true);
 		try {
@@ -97268,6 +97328,7 @@ function TaskTemplates() {
 	const [selectedTaskGroup, setSelectedTaskGroup] = (0, import_react.useState)(null);
 	const [open, setOpen] = (0, import_react.useState)("");
 	const [selectedTaskGroupData, setSelectedTaskGroupData] = (0, import_react.useState)([]);
+	const [isGroupTasksLoading, setIsGroupTasksLoading] = (0, import_react.useState)(false);
 	const { searchParams, searchResults, isSearchActive, formData, displayValue, setSearch, clearSearch, updateSearchResults } = useTaskSearch();
 	const [openComp, setOpenedComp] = (0, import_react.useState)(TaskTemplatesScreens.task_templates);
 	const [compData, setCompData] = (0, import_react.useState)(null);
@@ -97356,9 +97417,13 @@ function TaskTemplates() {
 	]);
 	(0, import_react.useEffect)(() => {
 		async function fetchTaskGroupById() {
+			if (!selectedTaskGroup?.task_group_id) return;
+			setIsGroupTasksLoading(true);
 			try {
-				if (selectedTaskGroup?.task_group_id) setSelectedTaskGroupData(await taskAPIs.getTaskGroupById(selectedTaskGroup?.task_group_id));
-			} catch (err) {}
+				setSelectedTaskGroupData(await taskAPIs.getTaskGroupById(selectedTaskGroup?.task_group_id));
+			} catch (err) {} finally {
+				setIsGroupTasksLoading(false);
+			}
 		}
 		fetchTaskGroupById();
 	}, [selectedTaskGroup]);
@@ -97739,7 +97804,7 @@ function TaskTemplates() {
 		clearSearch();
 	}, [clearSearch]);
 	const getRightSide = (0, import_react.useCallback)(() => {
-		if (searchResults === void 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideHeader, { children: selectedTaskGroup?.task_group_name }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BoxesContainer, { children: getRightSideTemplates(selectedTaskGroupData, true) })] });
+		if (searchResults === void 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideHeader, { children: selectedTaskGroup?.task_group_name }), isGroupTasksLoading ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskTilesLoader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Loader, { size: 64 }) }) : selectedTaskGroupData.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EmptyGroupMessage, { children: "No available tasks in this group yet.." }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BoxesContainer, { children: getRightSideTemplates(selectedTaskGroupData, true) })] });
 		else {
 			const results = [];
 			Object.keys(searchResults).forEach((group) => {
@@ -97750,7 +97815,9 @@ function TaskTemplates() {
 	}, [
 		searchResults,
 		selectedTaskGroupData,
-		getRightSideTemplates
+		getRightSideTemplates,
+		isGroupTasksLoading,
+		selectedTaskGroup
 	]);
 	const getCurrentScreen = (0, import_react.useCallback)(() => {
 		switch (openComp) {
@@ -97800,7 +97867,7 @@ function TaskTemplates() {
 			] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Body$13, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSide$4, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CategoriesContainer, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideHeader, { children: "Task groups" }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideFilter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskGroupTabs, { onChange: setSelectedTab }) }),
-				getLeftSideTemplates()
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideTemplatesList, { children: getLeftSideTemplates() })
 			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSide$5, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideBody, { children: getRightSide() }) })] })] })] });
 			case TaskTemplatesScreens.task: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskMain, { content: compData });
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {});
@@ -106849,7 +106916,7 @@ function invokeCallbackWithFallback(callbacks, name, ctx, arg) {
 	if (typeof result === "undefined") return defaultCallbacks[name].call(ctx, arg);
 	return result;
 }
-var Tooltip = class extends Element$1 {
+var Tooltip$1 = class extends Element$1 {
 	static positioners = positioners;
 	constructor(config) {
 		super();
@@ -107344,10 +107411,10 @@ var Tooltip = class extends Element$1 {
 };
 var plugin_tooltip = {
 	id: "tooltip",
-	_element: Tooltip,
+	_element: Tooltip$1,
 	positioners,
 	afterInit(chart, _args, options) {
-		if (options) chart.tooltip = new Tooltip({
+		if (options) chart.tooltip = new Tooltip$1({
 			chart,
 			options
 		});
@@ -112606,6 +112673,7 @@ var AddSystem = ({ systemData, readOnly }) => {
 	const { canPerformAction } = usePermissions();
 	const canEdit = canPerformAction(0);
 	const [formData, setFormData] = (0, import_react.useState)(() => getInitialFormData(systemData));
+	const navigate = useNavigate();
 	const { setSelectedSystem, setCurrentPage, existedSystems } = useSystemContext();
 	const [showDeleteConfirm, setShowDeleteConfirm] = (0, import_react.useState)(false);
 	const [hasActiveEnvironment, setHasActiveEnvironment] = (0, import_react.useState)([]);
@@ -112723,21 +112791,9 @@ var AddSystem = ({ systemData, readOnly }) => {
 				});
 				if (resp && !resp.isError) {
 					setCurrentPage("edit");
+					navigate(`/systems?productId=${resp.id}`);
 					toast.success("System # " + trimmedFormData.product_name, "Created Successfully");
 					setIsSubmitted(false);
-					setTimeout(() => {
-						setSelectedSystem({
-							...trimmedFormData,
-							product_versions: versionsString,
-							related_interfaces: relatedInterfacesString,
-							product_id: resp.id,
-							product_last_updated_by: "",
-							product_last_updated_date: "",
-							product_created_by: "",
-							product_status: "",
-							product_creation_date: ""
-						});
-					}, 100);
 				} else toast.error("System # " + trimmedFormData.product_name, "Unable to Create : " + (resp?.message || "Unknown error"));
 			}
 		} catch (e) {
@@ -112748,7 +112804,8 @@ var AddSystem = ({ systemData, readOnly }) => {
 		formData,
 		setSelectedSystem,
 		setCurrentPage,
-		existedSystems
+		existedSystems,
+		navigate
 	]);
 	const onDeleteClick = (0, import_react.useCallback)(() => {
 		setShowDeleteConfirm(true);
@@ -117329,7 +117386,7 @@ var PageHeader$2 = ct.div`
     align-items: center;
     padding: 16px 22px 0;
 `;
-var PageTitle$2 = ct.div`
+var PageTitle$3 = ct.div`
     font-family: Roboto;
     font-size: 30px;
     font-weight: 500;
@@ -117802,6 +117859,18 @@ var StatusChip = ({ status }) => {
 };
 //#endregion
 //#region src/containers/ExecutionDashboard/components/ExecutionTable.tsx
+var ExecIdCell = ({ execId, onClick }) => {
+	const href = useHref(`/tasks/monitor?execId=${execId}`).replace("/static/", "/app/");
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExecIdLink, {
+		href,
+		onClick: (e) => {
+			if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+			e.preventDefault();
+			onClick(execId);
+		},
+		children: execId
+	});
+};
 var ExecutionTable = ({ data, columnVisibility, groupConfig, loading, searchText, onRowSelect, onExecIdClick, onGroupByToggle, selectedExecId }) => {
 	const [sorting, setSorting] = (0, import_react.useState)([]);
 	const [pagination, setPagination] = (0, import_react.useState)({
@@ -117865,13 +117934,9 @@ var ExecutionTable = ({ data, columnVisibility, groupConfig, loading, searchText
 			meta: { type: "string" },
 			cell: ({ getValue }) => {
 				const val = getValue();
-				return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExecIdLink, {
-					href: "#",
-					onClick: (e) => {
-						e.preventDefault();
-						onExecIdClick(val);
-					},
-					children: val
+				return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExecIdCell, {
+					execId: val,
+					onClick: onExecIdClick
 				});
 			}
 		},
@@ -151658,6 +151723,7 @@ var buildOverrideParametersTab = (worksheet, tabData) => {
 	}
 	try {
 		const override_parameters = JSON.parse(raw);
+		if (tabData?.[0]?.selection_method && override_parameters?.SELECTION_METHOD) override_parameters.SELECTION_METHOD = tabData?.[0]?.selection_method;
 		const overrideParametersKeys = Object.keys(override_parameters);
 		if (!overrideParametersKeys.length) {
 			addWorksheetWarning("No overridden execution attributes", worksheet);
@@ -152464,7 +152530,7 @@ var ExecutionDashboard = ({ taskId: taskIdProp }) => {
 		setGroupConfig({ fields: [] });
 	}, []);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PageContainer$2, { children: [
-		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PageHeader$2, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageTitle$2, { children: "Execution Dashboard" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(HeaderActions, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SecondaryButton, {
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PageHeader$2, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageTitle$3, { children: "Execution Dashboard" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(HeaderActions, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SecondaryButton, {
 			onClick: refresh,
 			title: "Refresh",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { size: 14 }), "Refresh"]
@@ -152574,6 +152640,352 @@ var ExecutionDashboard = ({ taskId: taskIdProp }) => {
 			onOpenMonitor: handleOpenMonitor,
 			onOpenTaskExecution: handleOpenTaskExecution
 		})] })
+	] });
+};
+//#endregion
+//#region src/containers/Tutorials/styles.ts
+var Page = ct.main`
+    padding: 32px 28px;
+    min-height: calc(100vh - 46px);
+    background: #f4f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+`;
+var PageTitle$2 = ct.h1`
+    font-size: 22px;
+    font-weight: 500;
+    color: #111;
+    margin: 0 0 6px;
+`;
+var PageSub = ct.p`
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 28px;
+`;
+var TwoCol = ct.div`
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 16px;
+    align-items: start;
+    max-width: 1100px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+`;
+var VideoCard = ct.div`
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+`;
+var Thumb = ct.button`
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+`;
+var PlayRing = ct.div`
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        width: 26px;
+        height: 26px;
+        color: #1a1a2e;
+    }
+`;
+var Duration = ct.div`
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+`;
+var NewBadge = ct.div`
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    background: #4f9eff;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 4px;
+`;
+var VideoPlayer = ct.video`
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: #000;
+`;
+var CardBody = ct.div`
+    padding: 18px 20px;
+`;
+var CardTag = ct.div`
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+`;
+var CardTitle = ct.div`
+    font-size: 15px;
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 8px;
+    line-height: 1.4;
+`;
+var CardDesc = ct.p`
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 14px;
+`;
+var CardMeta = ct.div`
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: #9ca3af;
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+`;
+var WatchBtn = ct.button`
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #1a1a2e;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    cursor: pointer;
+    margin-top: 16px;
+
+    svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    &:hover {
+        background: #2d2d4e;
+    }
+`;
+var LinkCard = ct.div`
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`;
+var LinkIcon = ct.div`
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #d1fae5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        width: 20px;
+        height: 20px;
+        color: #065f46;
+    }
+`;
+var LinkTitle = ct.div`
+    font-size: 14px;
+    font-weight: 500;
+    color: #111;
+`;
+var LinkDesc = ct.p`
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-top: 2px;
+`;
+var LinkBtn = ct.a`
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #185fa5;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+`;
+//#endregion
+//#region src/containers/Tutorials/index.tsx
+var TUTORIAL_VIDEO_URL = "https://www.k2view.com/hubfs/TDM%2010/TDM_Tester_Onboarding.mp4";
+var formatDuration = (seconds) => {
+	if (!Number.isFinite(seconds)) return "";
+	const total = Math.round(seconds);
+	return `${Math.floor(total / 60)}:${(total % 60).toString().padStart(2, "0")}`;
+};
+var PlayIcon = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", {
+	viewBox: "0 0 24 24",
+	fill: "currentColor",
+	"aria-hidden": "true",
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M8 5v14l11-7z" })
+});
+var ClockIcon = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", {
+	viewBox: "0 0 24 24",
+	fill: "none",
+	stroke: "currentColor",
+	strokeWidth: "2",
+	"aria-hidden": "true",
+	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
+		cx: "12",
+		cy: "12",
+		r: "9"
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", {
+		d: "M12 7v5l3 2",
+		strokeLinecap: "round",
+		strokeLinejoin: "round"
+	})]
+});
+var TagIcon = () => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", {
+	viewBox: "0 0 24 24",
+	fill: "none",
+	stroke: "currentColor",
+	strokeWidth: "2",
+	"aria-hidden": "true",
+	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", {
+		d: "M3 12V3h9l9 9-9 9z",
+		strokeLinecap: "round",
+		strokeLinejoin: "round"
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
+		cx: "7.5",
+		cy: "7.5",
+		r: "1.2",
+		fill: "currentColor"
+	})]
+});
+var BookIcon = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", {
+	viewBox: "0 0 24 24",
+	fill: "none",
+	stroke: "currentColor",
+	strokeWidth: "2",
+	"aria-hidden": "true",
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", {
+		d: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z",
+		strokeLinecap: "round",
+		strokeLinejoin: "round"
+	})
+});
+var ExternalLinkIcon = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", {
+	viewBox: "0 0 24 24",
+	fill: "none",
+	stroke: "currentColor",
+	strokeWidth: "2",
+	"aria-hidden": "true",
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", {
+		d: "M14 5h5v5M19 5l-8 8M19 13v6H5V5h6",
+		strokeLinecap: "round",
+		strokeLinejoin: "round"
+	})
+});
+var Tutorials = () => {
+	const [playing, setPlaying] = (0, import_react.useState)(false);
+	const [duration, setDuration] = (0, import_react.useState)(null);
+	const [aspectRatio, setAspectRatio] = (0, import_react.useState)(null);
+	(0, import_react.useEffect)(() => {
+		const probe = document.createElement("video");
+		probe.preload = "metadata";
+		probe.src = TUTORIAL_VIDEO_URL;
+		const onMeta = () => {
+			setDuration(probe.duration);
+			if (probe.videoWidth && probe.videoHeight) setAspectRatio(probe.videoWidth / probe.videoHeight);
+		};
+		probe.addEventListener("loadedmetadata", onMeta);
+		return () => {
+			probe.removeEventListener("loadedmetadata", onMeta);
+			probe.src = "";
+		};
+	}, []);
+	const durationLabel = duration ? formatDuration(duration) : "";
+	const minutesLabel = duration ? `${Math.max(1, Math.round(duration / 60))} min` : "";
+	const ratioStyle = aspectRatio ? { aspectRatio: String(aspectRatio) } : void 0;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Page, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageTitle$2, { children: "Tutorials" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageSub, { children: "Get up to speed with guided videos and documentation." }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TwoCol, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(VideoCard, { children: [playing ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VideoPlayer, {
+			src: TUTORIAL_VIDEO_URL,
+			controls: true,
+			autoPlay: true,
+			preload: "metadata",
+			style: ratioStyle
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Thumb, {
+			type: "button",
+			onClick: () => setPlaying(true),
+			"aria-label": "Play tutorial video",
+			style: ratioStyle,
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(NewBadge, { children: "New" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PlayRing, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PlayIcon, {}) }),
+				durationLabel && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Duration, { children: durationLabel })
+			]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardBody, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTag, { children: "Walkthrough · Video" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Task execution walkthrough" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDesc, { children: "A step-by-step walkthrough of creating, configuring, and running a TDM task from start to finish." }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardMeta, { children: [minutesLabel && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ClockIcon, {}),
+				" ",
+				minutesLabel
+			] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TagIcon, {}), " Tasks"] })] }),
+			!playing && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(WatchBtn, {
+				type: "button",
+				onClick: () => setPlaying(true),
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PlayIcon, {}), " Watch now"]
+			})
+		] })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LinkCard, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LinkIcon, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BookIcon, {}) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LinkTitle, { children: "TDM documentation" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LinkDesc, { children: "Browse the full knowledge base — concepts, configuration guides, and reference docs on support.k2view.com." })] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(LinkBtn, {
+				href: "https://support.k2view.com/Academy/articles/TDM/tdm_overview/README.html",
+				target: "_blank",
+				rel: "noopener noreferrer",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLinkIcon, {}), " Visit support site"]
+			})
+		] })] })
 	] });
 };
 //#endregion
@@ -153002,7 +153414,7 @@ function SimpleEntityList({ value, onChange, maxToCopy = 9007199254740992, onVal
 		placeholder,
 		error: error || void 0,
 		mandatory: false
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(EntityCounter, { children: [showMax ? `${typedCount}/${maxToCopy}` : `${typedCount}`, " entities"] })] });
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(EntityCounter, { children: [showMax ? `${typedCount}/${maxToCopy}` : `${typedCount}`, " entities selected"] })] });
 }
 //#endregion
 //#region src/containers/TaskTemplates/TaskSelectionBox/PromptField.tsx
@@ -153216,7 +153628,7 @@ var DescriptionIcon = ct.img`
     height: 16px;
     cursor: pointer;
 `;
-var PopoverContent = ct.div`
+ct.div`
     padding: 10px;
     font-family: Roboto;
     font-size: 14px;
@@ -153361,8 +153773,39 @@ var PromptField = ({ field, value, isEditable = true, options = [], onValueChang
 		setTempNumberValue(void 0);
 		setValidationError(null);
 	};
+	const DescriptionTooltip = ({ description, anchorEl }) => {
+		if (!anchorEl) return null;
+		const rect = anchorEl.getBoundingClientRect();
+		const style = {
+			position: "fixed",
+			top: rect.bottom + 8,
+			left: rect.left + rect.width / 2,
+			transform: "translateX(-50%)",
+			zIndex: 99999,
+			padding: "10px",
+			fontFamily: "Roboto",
+			fontSize: "14px",
+			fontWeight: "normal",
+			fontStretch: "normal",
+			fontStyle: "normal",
+			letterSpacing: "normal",
+			width: "max-content",
+			maxWidth: "250px",
+			maxHeight: "400px",
+			borderRadius: "3px",
+			border: "solid 1px #ccc",
+			backgroundColor: "#fff",
+			boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+			pointerEvents: "none"
+		};
+		return import_react_dom.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			style,
+			children: description
+		}), document.body);
+	};
 	const OptionWithDescription = ({ option, index }) => {
-		const [ref, hovering] = useHover$1();
+		const [hovering, setHovering] = (0, import_react.useState)(false);
+		const iconRef = (0, import_react.useRef)(null);
 		const handleOptionClick = (e) => {
 			e.preventDefault();
 			e.stopPropagation();
@@ -153373,27 +153816,16 @@ var PromptField = ({ field, value, isEditable = true, options = [], onValueChang
 			onMouseDown: handleOptionClick,
 			role: "option",
 			"aria-selected": value?.toString() === option.value.toString(),
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(OptionContainer, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(OptionText, { children: option.label }), option.description ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				ref,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Popover.Popover, {
-					reposition: false,
-					padding: 20,
-					align: "center",
-					isOpen: hovering,
-					positions: [
-						"bottom",
-						"top",
-						"left",
-						"right"
-					],
-					containerClassName: "popover-high-z-index",
-					content: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopoverContent, { children: option.description }),
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DescriptionIcon, {
-						src: info_icon_default,
-						alt: "Description"
-					})
-				})
-			}) : null] })
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(OptionContainer, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(OptionText, { children: option.label }), option.description ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DescriptionIcon, {
+				ref: iconRef,
+				src: info_icon_default,
+				alt: "Description",
+				onMouseEnter: () => setHovering(true),
+				onMouseLeave: () => setHovering(false)
+			}), hovering && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DescriptionTooltip, {
+				description: option.description,
+				anchorEl: iconRef.current
+			})] }) : null] })
 		}, option.value.toString());
 	};
 	const FieldComponent = isEmpty ? EmptyFieldPlaceholder : ClickableField;
@@ -153575,17 +154007,27 @@ var TaskBody = ({ key, selectionMethod, taskId, taskType, taskExecutionId, onPar
 				disableRuleFieldChanges: true,
 				getOverrideParamIsEditable
 			});
-			case "Custom logic": return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CustomLogic, {
-				taskData: {
+			case "Custom logic":
+				const data = {
 					...taskData,
 					...currentData
-				},
-				controlParamChange: true,
-				onSave: saveForm,
-				getOverrideParamIsEditable
-			}, key);
+				};
+				let parametersExist = false;
+				if (data.parameters) try {
+					const temp_params = JSON.parse(data.parameters);
+					if (temp_params && temp_params.inputs && temp_params.inputs.length > 0) parametersExist = true;
+				} catch (err) {
+					console.log(err);
+				}
+				if (getOverrideParamIsEditable("selection_method.custom_logic.can_add_params") || parametersExist) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CustomLogic, {
+					taskData: data,
+					controlParamChange: true,
+					onSave: saveForm,
+					getOverrideParamIsEditable
+				}, key);
+				return null;
 			case "GENERATE":
-				if (taskType === "Rule-based Generate entities" || taskType === "Rule-based Generate and load entities") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataGenerationParameters, {
+				if (((generateChosenParams || []).length > 0 || getOverrideParamIsEditable("selection_method.generate_data_params.can_add_params")) && (taskType === "Rule-based Generate entities" || taskType === "Rule-based Generate and load entities")) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataGenerationParameters, {
 					dataGenerationParams: dataGenerationParams || {},
 					updateParams: updateChosenParams,
 					chosenParams: generateChosenParams || [],
@@ -153599,7 +154041,7 @@ var TaskBody = ({ key, selectionMethod, taskId, taskType, taskExecutionId, onPar
 					saveOverrideParams: (field_name, value) => {},
 					controlParamChange: true
 				});
-				return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {});
+				return null;
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {});
 		}
 	};
@@ -153885,7 +154327,10 @@ var reverseFieldValues = (overrideParams, taskData) => {
 		values.source_environment_name = overrideParams.SOURCE_ENVIRONMENT_NAME;
 	}
 	if (overrideParams.TARGET_ENVIRONMENT_NAME != null) values.environment_name = overrideParams.TARGET_ENVIRONMENT_NAME;
-	if (overrideParams.BE_ID != null) values.be_id = overrideParams.BE_ID;
+	if (overrideParams.BE_ID != null) {
+		values.be_id = overrideParams.BE_ID;
+		values.be_name = taskData.be_name;
+	}
 	if (overrideParams.SELECTION_METHOD != null) {
 		const selMethodName = reverseSelectionMethodKey(overrideParams.SELECTION_METHOD);
 		if (selMethodName) {
@@ -154752,14 +155197,16 @@ function AdvancedExecutionModal(props) {
 			processType: "pre",
 			save: saveExecutionProcesses,
 			data: preExecutionProcesses,
-			executionMode: true
+			executionMode: true,
+			logical_units: selectedLogicalUnitsNames
 		}, "pre_execution_container");
 		if (selectedTab === "Post execution process") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExecutionPorcesses, {
 			rows: postExecutionProcessOptions,
 			processType: "post",
 			save: saveExecutionProcesses,
 			data: postExecutionProcesses,
-			executionMode: true
+			executionMode: true,
+			logical_units: selectedLogicalUnitsNames
 		}, "post_execution_container");
 		if (selectedTab === "Task variables") return renderTaskVariablesTab();
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EmptyTab, { children: "No content available." });
@@ -155746,7 +156193,7 @@ function TaskSelectionBox(props) {
 		} catch {}
 		return true;
 	}, [task_data.task_override_fields]);
-	const allLogicalUnitsForVersioning = useLogicalUnits(true, versioningSaveForm, false, versioningTaskData?.dataSourceType, versioningTaskData?.source_type, versioningTaskData?.selected_logical_units_names, versioningTaskData?.be_type, versioningTaskData?.be_id, versioningTaskData?.source_environment_id, versioningTaskData?.environment_id);
+	const allLogicalUnitsForVersioning = useLogicalUnits(true, versioningSaveForm, false, versioningTaskData?.dataSourceType, versioningTaskData?.source_type, versioningTaskData?.selected_logical_units_names, versioningTaskData?.be_type, versioningTaskData?.be_id, versioningTaskData?.source_environment_id, versioningTaskData?.environment_id, true);
 	const getPromptText = (0, import_react.useCallback)(() => {
 		if (promptText) return parsePromptText(promptText, {
 			...task_data,
@@ -156358,6 +156805,12 @@ function TaskSelection(props) {
 				else if (typeof result.task_override_fields === "string") result.task_override_fields = JSON.parse(result.task_override_fields);
 				if (result.target_env_id) result.environment_id = result.target_env_id;
 				result.selection_method_orig = result.selection_method;
+				if (result.task_id) try {
+					const taskLogicalUnits = await taskAPIs.getTaskLogicalUnits(result.task_id);
+					result.selected_logical_units_names = taskLogicalUnits.map((it) => it.lu_name);
+				} catch (err) {
+					result.selected_logical_units_names = [];
+				}
 				setTaskData(result);
 			}
 		}
@@ -156400,6 +156853,7 @@ var isTerminalStatus = (status) => {
 };
 var TABLE_LEVEL_LU = "TDM_TableLevel";
 var isProcessRow = (row) => (Number(row.process_id) || 0) > 0 || row.process_type != null;
+var formatCount = (value) => value == null ? "-" : String(value);
 var normalizeBatchId = (id) => {
 	if (id == null) return "";
 	const trimmed = String(id).trim();
@@ -156644,9 +157098,9 @@ var buildProcessRow = (row, migrateStatusMap, luPhaseTracker, durationTracker) =
 		lu_name: row.lu_name || row.process_name || "",
 		type: row.process_type === "pre" ? "Pre-Process" : "Post-Process",
 		status: row.execution_status || "",
-		processedData: "-",
-		succeededEntities: "-",
-		failedEntities: "-",
+		processedData: formatCount(row.num_of_processed_entities),
+		succeededEntities: formatCount(row.num_of_processed_entities),
+		failedEntities: formatCount(row.num_of_failed_entities),
 		businessEntity: row.be_name || "",
 		taskType: row.task_type || "",
 		sourceEnv: row.source_env_name || "",
@@ -156658,7 +157112,7 @@ var buildProcessRow = (row, migrateStatusMap, luPhaseTracker, durationTracker) =
 		parentLu: row.lu_parent_name || "",
 		system: row.product_name || "",
 		percentage,
-		total: "-",
+		total: formatCount(row.num_of_entities),
 		countUnit: void 0
 	};
 };
@@ -156714,9 +157168,9 @@ var buildTableRowsFromHistory = (historyRows, migrateStatusMap, luPhaseTracker, 
 			lu_name: row.lu_name || row.process_name || "",
 			type: row.process_type === "pre" ? "Pre-Process" : row.process_type === "post" ? "Post-Process" : "LU",
 			status: row.execution_status || "",
-			processedData: processRow ? "-" : String(processed),
-			succeededEntities: processRow ? "-" : String(succeeded),
-			failedEntities: processRow ? "-" : String(failed),
+			processedData: processRow ? formatCount(row.num_of_processed_entities) : String(processed),
+			succeededEntities: processRow ? formatCount(row.num_of_processed_entities) : String(succeeded),
+			failedEntities: processRow ? formatCount(row.num_of_failed_entities) : String(failed),
 			businessEntity: row.be_name || "",
 			taskType: row.task_type || "",
 			sourceEnv: row.source_env_name || "",
@@ -156728,7 +157182,7 @@ var buildTableRowsFromHistory = (historyRows, migrateStatusMap, luPhaseTracker, 
 			parentLu: row.lu_parent_name || "",
 			system: row.product_name || "",
 			percentage,
-			total: processRow ? "-" : String(total),
+			total: processRow ? formatCount(row.num_of_entities) : String(total),
 			countUnit: processRow ? void 0 : "entities"
 		});
 		const tablesBatchesAvailable = !!(tablesBatches && tablesBatches.length > 0);
@@ -156868,6 +157322,10 @@ var filterBatchesByUnmatchedLu = (batches, knownLuNames) => {
 	for (const batch of batches) {
 		const filteredInterfaces = [];
 		for (const iface of batch.interfaces || []) {
+			if (iface.interface_status?.toLowerCase() === "ordering tables") {
+				filteredInterfaces.push(iface);
+				continue;
+			}
 			const filteredSchemas = [];
 			const ifaceTables = [];
 			for (const schema of iface.schemas || []) {
@@ -156903,6 +157361,18 @@ var deriveStatusFromTableCounts = (running, completed, failed, pending, stopped)
 	if (stopped > 0) return "stopped";
 	if (completed > 0) return "completed";
 	return "pending";
+};
+var combineApiStatuses = (statuses) => {
+	const norm = statuses.map((s) => s?.toLowerCase().trim()).filter((s) => !!s);
+	if (norm.length === 0) return null;
+	const has = (...vals) => norm.some((s) => vals.includes(s));
+	if (has("running", "in progress", "in_progress")) return "running";
+	if (has("ordering tables")) return "ordering tables";
+	if (has("pending")) return "pending";
+	if (has("failed")) return "failed";
+	if (has("stopped")) return "stopped";
+	if (norm.every((s) => s === "completed")) return "completed";
+	return norm[0];
 };
 var sumTableStateCounts = (sources) => {
 	let anyDefined = false;
@@ -157110,7 +157580,7 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 				continue;
 			}
 			const schemaCounts = sumTableStateCounts(schemaRefs);
-			const schemaStatus = schemaCounts ? deriveStatusFromTableCounts(schemaCounts.running, schemaCounts.completed, schemaCounts.failed, schemaCounts.pending, schemaCounts.stopped) : agg.status;
+			const schemaStatus = combineApiStatuses(schemaRefs.map((s) => s.schema_status)) ?? (schemaCounts ? deriveStatusFromTableCounts(schemaCounts.running, schemaCounts.completed, schemaCounts.failed, schemaCounts.pending, schemaCounts.stopped) : agg.status);
 			let schemaProcessed;
 			let schemaSucceeded;
 			let schemaFailed;
@@ -157150,7 +157620,7 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 		}
 		const batchAgg = aggregateTableCounts(allTables);
 		const batchCounts = sumTableStateCounts(group.interfaceRefs);
-		const batchStatus = batchCounts ? deriveStatusFromTableCounts(batchCounts.running, batchCounts.completed, batchCounts.failed, batchCounts.pending, batchCounts.stopped) : batchAgg.status;
+		const batchStatus = combineApiStatuses(group.interfaceRefs.map((i) => i.interface_status)) ?? (batchCounts ? deriveStatusFromTableCounts(batchCounts.running, batchCounts.completed, batchCounts.failed, batchCounts.pending, batchCounts.stopped) : batchAgg.status);
 		let batchProcessed;
 		let batchSucceeded;
 		let batchFailed;
@@ -157556,7 +158026,7 @@ var useExecutionMonitor = (taskExecutionId) => {
 			});
 			return dt.replace(/\.\d+$/, "");
 		};
-		const expirationDate = summary?.expiration_date ?? infoRow.expiration_date;
+		const expirationDate = summary?.expiration_date ?? null;
 		setData({
 			executionId: execId,
 			taskTitle: summary?.task_title || infoRow.task_title || "",
@@ -157564,17 +158034,17 @@ var useExecutionMonitor = (taskExecutionId) => {
 			tableRows,
 			isTablesTask: tablesTask,
 			executionInfo: {
-				taskName: summary?.task_title || infoRow.task_title || "",
-				taskType: summary?.task_type_label || infoRow.task_type_label || infoRow.task_type || "",
-				taskStartTime: formatDateTime(summary?.start_time ?? infoRow.start_execution_time),
-				taskEndTime: formatDateTime(summary?.end_time ?? infoRow.end_execution_time),
+				taskName: summary?.task_title || "-",
+				taskType: summary?.task_type_label || "-",
+				taskStartTime: formatDateTime(summary?.start_time ?? null),
+				taskEndTime: formatDateTime(summary?.end_time ?? null),
 				taskStatus: infoRow.task_execution_status || "",
-				sourceEnv: summary?.source_environment_name || infoRow.source_env_name || "",
-				targetEnv: summary?.target_environment_name || infoRow.environment_name || "",
-				executedBy: summary?.task_executed_by || infoRow.task_executed_by || "",
-				businessEntity: summary?.be_name || infoRow.be_name || "",
+				sourceEnv: summary?.source_environment_name || "-",
+				targetEnv: summary?.target_environment_name || "-",
+				executedBy: summary?.task_executed_by || "-",
+				businessEntity: summary?.be_name || "-",
 				versionExpDate: expirationDate && !expirationDate.startsWith("9999-12-31") && !expirationDate.startsWith("1970-01-01") ? expirationDate : "-",
-				executionNote: summary?.execution_note ?? infoRow.execution_note ?? ""
+				executionNote: summary?.execution_note ?? "-"
 			}
 		});
 		return {
@@ -158365,14 +158835,15 @@ var ToolbarAction = ct.button`
     gap: 6px;
     background: transparent;
     border: none;
-    cursor: pointer;
+    cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
     font-family: Roboto, sans-serif;
     font-size: 13px;
-    color: #1483f3;
+    color: ${(props) => props.disabled ? "#999" : "#1483f3"};
     padding: 4px 8px;
+    opacity: ${(props) => props.disabled ? .6 : 1};
 
     &:hover {
-        text-decoration: underline;
+        text-decoration: ${(props) => props.disabled ? "none" : "underline"};
     }
 `;
 var DropdownOverlay = ct.div`
@@ -158437,15 +158908,20 @@ var hasAnyInterface = (rows) => {
 	}
 	return false;
 };
-var ExecutionToolbar = ({ columnVisibility, onToggleColumn, rows, taskExecutionId, taskTitle }) => {
+var ExecutionToolbar = ({ columnVisibility, onToggleColumn, rows, taskExecutionId, taskTitle, isTaskRunning }) => {
 	const COLUMN_LABELS = hasAnyInterface(rows) ? Object.fromEntries(Object.entries(BASE_COLUMN_LABELS).flatMap(([key, label]) => key === "lu_name" ? [[key, label], ["interface", "Interface"]] : [[key, label]])) : BASE_COLUMN_LABELS;
 	const [showColumnsDropdown, setShowColumnsDropdown] = (0, import_react.useState)(false);
 	const handleExport = (0, import_react.useCallback)(() => {
 		exportTableToCSV(rows, Object.entries(columnVisibility).filter(([, visible]) => visible).map(([key]) => key), "execution-monitor.csv");
 	}, [rows, columnVisibility]);
 	const handleDownloadReport = (0, import_react.useCallback)(() => {
+		if (isTaskRunning) return;
 		downloadSummaryReport(taskExecutionId, taskTitle);
-	}, [taskExecutionId, taskTitle]);
+	}, [
+		taskExecutionId,
+		taskTitle,
+		isTaskRunning
+	]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ToolbarContainer, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ToolbarActionWrapper, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ToolbarAction, {
 			onClick: () => setShowColumnsDropdown((prev) => !prev),
@@ -158461,6 +158937,7 @@ var ExecutionToolbar = ({ columnVisibility, onToggleColumn, rows, taskExecutionI
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ToolbarAction, {
 			onClick: handleDownloadReport,
+			disabled: isTaskRunning,
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileDown, { size: 14 }), "Download report"]
 		})
 	] });
@@ -158645,7 +159122,8 @@ var ExecutionMonitor = ({ content, taskExecutionId: taskExecutionIdProp, openTas
 			onToggleColumn: toggleColumn,
 			rows: data.tableRows,
 			taskExecutionId: data.executionId,
-			taskTitle: data.taskTitle
+			taskTitle: data.taskTitle,
+			isTaskRunning
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExecutionDetailsTable, {
 			rows: data.tableRows,
 			columnVisibility,
@@ -161042,15 +161520,96 @@ var AppRouter = () => {
 			element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ApiDoc, {})
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route$1, {
+			path: "/tutorials",
+			element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tutorials, {})
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route$1, {
 			path: "*",
 			element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DefaultRedirect, {})
 		})
 	] }) });
 };
 //#endregion
+//#region src/components/VersionInfo/styles.ts
+var VersionInfoContainer = ct.div`
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+`;
+var InfoButton = ct.button`
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--dusty-grey, #999999);
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover {
+        color: var(--primary-color, #1483f3);
+    }
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+`;
+var Tooltip = ct.div`
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    transform: translateY(calc(-50% + 3px));
+    white-space: nowrap;
+    padding: 3px 5px;
+    border-radius: 4px;
+    border: solid 1px #ccc;
+    background-color: #fff;
+    color: var(--secondary-color, #2e2e2e);
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: normal;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    z-index: 1001;
+`;
+//#endregion
+//#region src/components/VersionInfo/index.tsx
+var VersionInfo = () => {
+	const [showTooltip, setShowTooltip] = (0, import_react.useState)(false);
+	const [version, setVersion] = (0, import_react.useState)("");
+	(0, import_react.useEffect)(() => {
+		let isMounted = true;
+		taskAPIs.getTdmVersion().then((result) => {
+			if (isMounted && result) setVersion(result);
+		}).catch(() => {});
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+	if (!version) return null;
+	const label = `TDM version ${version}`;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(VersionInfoContainer, {
+		onMouseEnter: () => setShowTooltip(true),
+		onMouseLeave: () => setShowTooltip(false),
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InfoButton, {
+			type: "button",
+			"aria-label": label,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Info, {})
+		}), showTooltip && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tooltip, { children: label })]
+	});
+};
+//#endregion
 //#region src/App.tsx
 function App() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppRouter, {});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(VersionInfo, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppRouter, {})] });
 }
 //#endregion
 //#region src/main.tsx

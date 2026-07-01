@@ -10,6 +10,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getTesterTasks;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isAllowedToCreate;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.taskGroupExist;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.INTERNAL_ONLY_OVERRIDE_KEYS;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserRoles;
@@ -1325,6 +1326,8 @@ public class Logic extends WebServiceUserCode {
 					} catch (IllegalArgumentException e) {
 						throw new Exception("Unknown override parameter key: " + entry.getKey());
 					}
+					if (INTERNAL_ONLY_OVERRIDE_KEYS.contains(key))
+						throw new Exception("Override parameter '" + entry.getKey() + "' is system-internal and cannot be set externally.");
 					validatedParams.put(key.name(), entry.getValue());
 				}
 			}

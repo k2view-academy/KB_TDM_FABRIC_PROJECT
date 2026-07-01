@@ -39,10 +39,10 @@ stages:
             const: |-
               select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status, exe.execution_action,
               exe.number_of_records_to_process, exe.number_of_processed_records, exe.number_of_failed_records, exe.error_msg, ref.lu_name,
-              exe.start_time , exe.end_time,
-              ref.table_filter, ref.filter_type, ref.filter_parameters ,ref.version_task_execution_id, exe.batch_id as batch_id
+              exe.start_time , exe.end_time, exe.interface_name, exe.schema_name ,
+              exe.table_filter, exe.filter_type, exe.filter_parameters ,ref.version_task_execution_id, exe.batch_id as batch_id
               from ${@TDMDB_SCHEMA}.task_ref_exe_stats exe inner join ${@TDMDB_SCHEMA}.task_ref_tables ref on ref.task_id=exe.task_id
-              and ref.task_ref_table_id = exe.task_ref_table_id
+              and ref.ref_table_name = exe.ref_table_name and ref.schema_name = exe.schema_name and ref.interface_name=exe.interface_name
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
             schema: string
@@ -83,6 +83,8 @@ stages:
             - version_task_execution_id
             - batch_id
             - execution_action
+            - schema_name
+            - interface_name
           dialect:
             const: sqlite
           task_execution_id:
@@ -125,6 +127,10 @@ stages:
             schema: any
             mandatory: false
             createdBy: fields
+          schema_name:
+            schema: any
+          interface_name:
+            schema: any
           params:
             link:
               path: Query/result

@@ -1306,7 +1306,7 @@ INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
 
--- generate - should be 8 entries
+-- generate & AI - should be 10 entries
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Rule-based Generate entities','Generate <num_of_entities> synthetic <be_name> entities.
 The entities are generated based on the following parameters:') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('AI-based Generate entities','Generate <num_of_entities> synthetic <be_name> entities.
@@ -1323,9 +1323,11 @@ The entities are generated based AI training model.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load generated entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name>.
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load execution generation entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name> using data generation <generation_title> (created on <generation_creation_date>, <generation_number_of_entities> entities).') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load and reserve generated entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name>.
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Training','Extract data by <be_name> from <source_env_name>. Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities. Run AI training on the extracted entities.') ON CONFLICT DO NOTHING;
 
 -- basic
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Delete entities','Delete data by <be_name> from <environment_name>.

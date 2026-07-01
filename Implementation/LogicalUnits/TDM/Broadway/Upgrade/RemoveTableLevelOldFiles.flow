@@ -10,6 +10,35 @@ stages:
         out:
           value:
             schema: string
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Build Path:
+    actors:
+      File Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/LogicalUnits/TDM_TableLevel/Broadway
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+            createdBy: format
+      File Location1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/LogicalUnits/TDM_TableLevel/Broadway
+          projDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
   Check If Studio:
     actors:
       Studio Present?:
@@ -22,9 +51,10 @@ stages:
         parent: ls
         in:
           interface:
-            const: file:///
+            const: null
+            link: File Location1/string
           path:
-            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/TDM_TableLevel/Broadway
+            const: .
         out:
           result:
             schema: '#ref'
@@ -36,7 +66,7 @@ stages:
           format:
             const: ${path}/${file}
           path:
-            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/TDM_TableLevel/Broadway
+            link: File Location/string
             schema: string
             mandatory: false
             createdBy: format

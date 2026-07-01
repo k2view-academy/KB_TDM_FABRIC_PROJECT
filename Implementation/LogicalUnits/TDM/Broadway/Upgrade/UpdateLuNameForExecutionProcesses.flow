@@ -1,0 +1,195 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+  Stage 2:
+    actors:
+      Get Records for Update:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: select * from ${@schema}.tdm_be_exe_process
+          schema:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      Find LU Name:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: PostAndPreExecutionProcess
+          Process_name:
+            link:
+              path: Get Records for Update/result/process_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: mtable
+          Process_type:
+            link:
+              path: Get Records for Update/result/process_type
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: mtable
+        out:
+          result:
+            schema: '#ref'
+  Stage 4:
+    actors:
+      Under LU?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Find LU Name/result/Lu_name
+              iterate: First
+            schema: string
+      Update tdm_be_exe_process:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@schema}.tdm_be_exe_process
+              set lu_name = ${luName}
+              where process_name = ${processName}
+              and process_type = ${processType}
+              and process_id = ${processId}
+              and be_id = ${beId}
+          schema:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+          luName:
+            link:
+              path: Find LU Name/result/Lu_name
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: sql
+          processName:
+            link:
+              path: Find LU Name/result/Process_name
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: sql
+          processType:
+            link:
+              path: Find LU Name/result/Process_type
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: sql
+          processId:
+            link:
+              path: Get Records for Update/result/process_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          beId:
+            link:
+              path: Get Records for Update/result/be_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: sql
+      Update tasks_exe_process:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@schema}.tasks_exe_process
+              set lu_name = ${luName}
+              where process_name = ${processName}
+              and process_type = ${processType}
+              and process_id = ${processId}
+          schema:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+          luName:
+            link:
+              path: Find LU Name/result/Lu_name
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: sql
+          processName:
+            link:
+              path: Find LU Name/result/Process_name
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: sql
+          processType:
+            link:
+              path: Find LU Name/result/Process_type
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: sql
+          processId:
+            link:
+              path: Get Records for Update/result/process_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: sql
+schemas:
+  Get Records for Update.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        process_id:
+          type: integer
+        process_name:
+          type: string
+        process_type:
+          type: string
+        process_description:
+          type: string
+        be_id:
+          type: integer
+        execution_order:
+          type: integer
+        lu_name:
+          type: string
+  Find LU Name.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Process_name:
+          type: string
+        Lu_name:
+          type: string
+        Process_type:
+          type: string

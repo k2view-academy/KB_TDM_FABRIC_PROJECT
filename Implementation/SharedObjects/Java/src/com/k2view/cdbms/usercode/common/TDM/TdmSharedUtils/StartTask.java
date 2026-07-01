@@ -4,6 +4,7 @@ import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnCreateSummaryRecord;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.filterAndPruneExecutionLus;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetActiveTaskForActivation;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetNextTaskExecution;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTasks;
@@ -15,6 +16,8 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.canUserPerformTaskOperation;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.requiresSourceCheck;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.requiresTargetCheck;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.sourceEnvSystemsDisabled;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.targetEnvSystemsDisabled;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.validateEnvTypeForUser;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetLogicalUnitsByEnvironmentAndBusinessentity;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
@@ -113,9 +116,9 @@ public class StartTask {
 			return buildSuccessResponse(taskExecutionId);
 
 		} catch (TdmWarningException e) {
-			return wrapWebServiceResults("WARNING", e.getCategory(), e.getErrorDetails());
+			return wrapWebServiceResults("WARNING",e.getErrorDetails(),e.getCategory());
 		} catch (TdmValidationException e) {
-			return wrapWebServiceResults("FAILED", e.getCategory(), e.getErrorDetails());
+			return wrapWebServiceResults("FAILED", e.getErrorDetails(), e.getCategory());
 		} catch (Exception e) {
 			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
@@ -242,18 +245,6 @@ public class StartTask {
 					}
 					break;
 				case "R":
-					if (numEntitiesOverride != null) {
-						finalCount = numEntitiesOverride;
-					} else {
-						Object taskCount = taskRow.get("num_of_entities");
-						int taskCountVal = taskCount == null ? 0 : Integer.parseInt(taskCount.toString());
-						if (taskCountVal <= 0)
-							throw new TdmValidationException("Selection Method Validation",
-									"Number of entities must be provided for '"
-											+ selectionMethodDisplayName(finalMethod)
-											+ "' selection method override.");
-						finalCount = taskCountVal;
-					}
 					break;
 				default:
 					throw new TdmValidationException("Selection Method Validation","Invalid selection method '" + selectionMethodDisplayName(finalMethod)
@@ -275,7 +266,14 @@ public class StartTask {
 					: Integer.parseInt(taskRow.get("num_of_entities").toString());
 		}
 
-		if ("GENERATE".equalsIgnoreCase("" + taskRow.get("selection_method")) && (finalCount == null || finalCount <= 0)) {
+		if ("R".equalsIgnoreCase(finalMethod) && finalCount <= 0) {
+			throw new TdmValidationException("Selection Method Validation",
+					"Number of entities must be greater than 0 for '"
+							+ selectionMethodDisplayName(finalMethod)
+							+ "' selection method.");
+		}
+
+		if ("GENERATE".equalsIgnoreCase("" + taskRow.get("selection_method")) &&  finalCount <= 0) {
 			throw new TdmValidationException("Task Configuration Validation",
 				"Number of entities must be greater than 0 for rule-based generate tasks.");
 		}
@@ -387,6 +385,9 @@ public class StartTask {
 				throw new TdmValidationException("Business Entity Validation","Logical units cannot be empty.");
 			context.put("overrideBeId", beId);
 			overrideParams.put(OverrideParamKey.BE_ID.name(), beId);
+			Db.Row beRow = db("TDM").fetch("SELECT be_name FROM " + TDMDB_SCHEMA + ".business_entities WHERE be_id = ?", Long.parseLong(beId)).firstRow();
+			if (beRow != null && beRow.get("be_name") != null)
+				overrideParams.put(OverrideParamKey.BE_NAME.name(), beRow.get("be_name").toString());
 		}
 
 		// When env is overridden (no BE override), LOGICAL_UNITS carries workers/affinity
@@ -489,9 +490,12 @@ public class StartTask {
 				(String) context.get("finalSelectionMethod"),
 				(context.containsKey("overrideBeId") || Boolean.TRUE.equals(context.get("envOverridden")))
 						? (List) context.get("logicalUnits") : null,
-				(Long) context.get("tarEnvId"));
+				(Long) context.get("tarEnvId"),(Long) context.get("srcEnvId"));
+		executions = filterAndPruneExecutionLus(executions, (Long) context.get("srcEnvId"), (Long) context.get("tarEnvId"));
 		if (executions == null || executions.isEmpty())
 			throw new TdmValidationException("Task Validation","Failed to execute Task");
+
+		validateRootLuPresent(executions, taskRow, context);
 
 		String taskType = "" + taskRow.get("task_type");
 		boolean hasTarget = !"EXTRACT".equalsIgnoreCase(taskType)
@@ -607,9 +611,9 @@ public class StartTask {
 		if (taskExecId == null)
 			throw new TdmValidationException("Task Validation","Failed to generate task execution ID.");
 		Object refcountVal = executions.get(0).get("refcount");
-		if ((executions.get(0).get("selection_method") != null
-				&& TABLES.equals(executions.get(0).get("selection_method").toString()))
-				|| (refcountVal != null && (Long) refcountVal > 0)) {
+		boolean isTablesSelection = executions.get(0).get("selection_method") != null
+				&& TABLES.equals(executions.get(0).get("selection_method").toString());
+		if (isTablesSelection || (refcountVal != null && (Long) refcountVal > 0)) {
 			List<Map<String, Object>> tableFilterOverrides =
 					(List<Map<String, Object>>) inputOverrides.get(OverrideParamKey.TABLE_FILTERS);
 			Map<String, Map<String, Object>> resolvedTableFilters =
@@ -618,7 +622,11 @@ public class StartTask {
 				overrideParams.put(OverrideParamKey.TABLE_FILTERS.name(), tableFilterOverrides);
 			Long overrideBeId = (Long) inputOverrides.get(OverrideParamKey.BE_ID);
 			Long finalBeId = overrideBeId != null ? overrideBeId: (Long) taskRow.get("be_id");
-			fnSaveRefExeTablestoTask((Long) executions.get(0).get("task_id"), finalBeId, taskExecId, resolvedTableFilters,taskType);
+			int savedTables = fnSaveRefExeTablestoTask((Long) executions.get(0).get("task_id"), finalBeId, taskExecId, resolvedTableFilters, taskType,
+						(Long) context.get("srcEnvId"), (Long) context.get("tarEnvId"));
+			if (isTablesSelection && savedTables == 0)
+				throw new TdmValidationException("Table Level Validation",
+						"The task cannot be executed. All tables interfaces are disabled in the relevant environment(s).");
 		}
 
 		fnStartTaskExecutions(executions, taskExecId, (String) inputOverrides.get(OverrideParamKey.BE_ID),
@@ -813,4 +821,48 @@ public class StartTask {
         String createdBy = "" + db(TDM).fetch("SELECT task_created_by FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id=?", taskID).firstValue();
 		return createdBy;
     }
+
+	/**
+	 * Validates that at least one root LU (lu_parent_id IS NULL) is present in the execution list.
+	 * Uses sourceEnvSystemsDisabled / targetEnvSystemsDisabled to build a precise error message.
+	 */
+	private static void validateRootLuPresent(List<Map<String, Object>> executions, Db.Row taskRow,
+			Map<String, Object> context) throws Exception {
+		// TABLES tasks use lu_id=-1 and have no LU hierarchy — skip.
+		boolean isTablesTask = executions.stream().anyMatch(e -> "-1".equals("" + e.get("lu_id")));
+		if (isTablesTask) return;
+
+		boolean hasRoot = executions.stream()
+				.filter(e -> {
+					Object procId = e.get("process_id");
+					return procId == null || ((Number) procId).longValue() == 0;
+				})
+				.anyMatch(e -> {
+					Object parentId = e.get("lu_parent_id");
+					return parentId == null || "null".equals("" + parentId);
+				});
+
+		if (hasRoot) return;
+
+		String taskType = "" + taskRow.get("task_type");
+		String syncMode = "" + taskRow.get("sync_mode");
+		String beId     = "" + taskRow.get("be_id");
+		Long   taskId   = toLong(taskRow.get("task_id"));
+
+		String srcEnvId   = context.get("srcEnvId")  != null ? "" + context.get("srcEnvId")  : null;
+		String srcEnvName = "" + context.get("sourceEnvName");
+		String tarEnvId   = context.get("tarEnvId")  != null ? "" + context.get("tarEnvId")  : null;
+		String tarEnvName = "" + context.get("targetEnvName");
+
+		boolean srcDisabled = sourceEnvSystemsDisabled(srcEnvId, srcEnvName, taskType, syncMode, taskId, beId);
+		boolean tarDisabled = targetEnvSystemsDisabled(tarEnvId, tarEnvName, taskType, syncMode, taskId, beId);
+
+		String where = (srcDisabled && tarDisabled) ? "source and target environments"
+				: srcDisabled ? "source environment"
+				: tarDisabled ? "target environment"
+				: "the relevant environment";
+
+		throw new TdmValidationException("Business Entity Validation",
+				"The task cannot be executed. The root LU is disabled in the " + where + ".");
+	}
 }

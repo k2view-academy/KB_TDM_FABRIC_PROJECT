@@ -160,7 +160,6 @@ stages:
             - interface_name
             - schema_name
             - execution_action
-            - table_order
             - number_of_records_to_process
           keys:
             const:
@@ -217,11 +216,6 @@ stages:
             createdBy: table
           execution_action:
             const: Delete
-            schema: string
-            mandatory: false
-            createdBy: table
-          table_order:
-            external: tableOrder
             schema: string
             mandatory: false
             createdBy: table

@@ -808,66 +808,10 @@ public class Logic extends WebServiceUserCode {
 					"enable_product=? WHERE environment_product_id = ? ";
 			db(TDM).execute(sql, "false",envProdcutID);
 
-            // Disable tasks where source environment has diabled system and the fetch data policy not sync OFF 
-			String updateSourceTasks ="UPDATE " + schema + ".tasks " +
-			"SET enable_execution = ? " +
-			"FROM " + schema + ".environments e " +
-			"JOIN " + schema + ".environment_products ep " +
-			"ON e.environment_id = ep.environment_id " +
-			"WHERE tasks.source_environment_id = e.environment_id " +
-			"AND tasks.source_env_name = e.environment_name " +
-			"AND e.environment_name = ? " +
-			"AND tasks.sync_mode <> 'OFF' " +
-			"AND tasks.task_type <> 'RESERVE' " +
-			"AND e.environment_status = 'Active' " +
-			"AND ep.environment_id = ? " +
-			"AND ep.environment_product_id = ? " +
-			"AND ep.product_id = ? " +
-			"AND ep.enable_product = 'false' " +
-			"AND tasks.task_status = 'Active' " +
-			"AND tasks.task_execution_status = 'Active' " +
-			"    AND EXISTS ( " +
-			"        SELECT 1 FROM " + schema + ".tasks_logical_units tu_rel " +
-			"        JOIN " + schema + ".product_logical_units pu_rel " +
-			"        ON tu_rel.lu_id = pu_rel.lu_id " +
-			"        WHERE tu_rel.task_id = tasks.task_id " +
-			"        AND pu_rel.product_id = ep.product_id " +
-			"    ) " ;
-
-			// Disable tasks where task logical unit systems are in the target environment and disabled.
-			String updateTargetTasks ="UPDATE " + schema + ".tasks " +
-			"SET enable_execution = ? " +
-			"FROM " + schema + ".environments e " +
-			"JOIN " + schema + ".environment_products ep " +
-			"ON e.environment_id = ep.environment_id " +
-			"WHERE tasks.environment_id = e.environment_id " +
-			"AND tasks.task_type in ('LOAD','DELETE') " +
-			"AND e.environment_name = ? " +
-			"AND e.environment_status = 'Active' " +
-			"AND ep.environment_id = ? " +
-			"AND ep.environment_product_id = ? " +
-			"AND ep.product_id = ? " +
-			"AND ep.enable_product = 'false' " +
-			"AND tasks.task_status = 'Active' " +
-			"AND tasks.task_execution_status = 'Active' " +
-			"    AND EXISTS ( " +
-			"        SELECT 1 FROM " + schema + ".tasks_logical_units tu_rel " +
-			"        JOIN " + schema + ".product_logical_units pu_rel " +
-			"        ON tu_rel.lu_id = pu_rel.lu_id " +
-			"        WHERE tu_rel.task_id = tasks.task_id " +
-			"        AND pu_rel.product_id = ep.product_id " +
-			"    ) " ;
-
-			db(TDM).execute(updateSourceTasks,"false",envName,envId,envProdcutID,productId);
-			db(TDM).execute(updateTargetTasks,"false",envName,envId,envProdcutID,productId);
-
 			String activityDesc = "'Environment System " + envProdcutID + " was disbaled in environment " + envName ;
-			String tasksActivityDesc = "Tasks were disabled because environment system '" + envProdcutID +
-			"' was disabled in environment '" + envName + "'.";
-		
+
 			try {
 				fnInsertActivity("update", "Environments", activityDesc);
-				fnInsertActivity("update", "Tasks", tasksActivityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -904,78 +848,10 @@ public class Logic extends WebServiceUserCode {
 					"enable_product=? WHERE environment_product_id = ?";
 			db(TDM).execute(sql, "true",envProdcutID);
 
-			//Enable source tasks that dont have any diabled systems 
-			String updateSourceTasks = "UPDATE " + schema + ".tasks " +
-			"SET enable_execution = ? " +
-			"FROM " + schema + ".environments e " +
-			"JOIN " + schema + ".environment_products ep " +
-			"ON e.environment_id = ep.environment_id " +
-			"WHERE tasks.source_environment_id = e.environment_id " +
-			"AND tasks.source_env_name = e.environment_name " +
-			"AND e.environment_name = ? " +
-			"AND tasks.sync_mode <> 'OFF' " +
-			"AND tasks.task_type <> 'RESERVE' " +
-			"AND e.environment_status = 'Active' " +
-			"AND ep.environment_id = ? " +
-			"AND ep.environment_product_id = ? " +
-			"AND ep.product_id = ? " +
-			"AND ep.enable_product = 'true' " +
-			"AND tasks.task_status = 'Active' " +
-			"AND tasks.task_execution_status = 'Active' " +
-			"AND NOT EXISTS ( " +
-			"    SELECT 1 FROM " + schema + ".environment_products ep2 " +
-			"    JOIN " + schema + ".product_logical_units pu " +
-			"    ON pu.product_id = ep2.product_id " +
-			"    JOIN " + schema + ".tasks_logical_units tu " +
-			"    ON pu.lu_id = tu.lu_id " +
-			"    WHERE tu.task_id = tasks.task_id " +
-			"    AND ( " +
-			"        (ep2.environment_id = tasks.source_environment_id AND ep2.enable_product = 'false') " +
-			"        OR " +
-			"        (ep2.environment_id = tasks.environment_id AND ep2.enable_product = 'false') " +
-			"    ) " +
-			") ";
-			
-			//Enable target tasks that dont have any diabled systems 
-			String updateTargetTasks = "UPDATE " + schema + ".tasks " +
-			"SET enable_execution = ? " +
-			"FROM " + schema + ".environments e " +
-			"JOIN " + schema + ".environment_products ep " +
-			"ON e.environment_id = ep.environment_id " +
-			"WHERE tasks.environment_id = e.environment_id " +
-			"AND tasks.task_type IN ('LOAD', 'DELETE') " +
-			"AND e.environment_name = ? " +
-			"AND e.environment_status = 'Active' " +
-			"AND ep.environment_id = ? " +
-			"AND ep.environment_product_id = ? " +
-			"AND ep.product_id = ? " +
-			"AND ep.enable_product = 'true' " +
-			"AND tasks.task_status = 'Active' " +
-			"AND tasks.task_execution_status = 'Active' " +
-			"AND NOT EXISTS ( " +
-			"    SELECT 1 FROM " + schema + ".environment_products ep2 " +
-			"    JOIN " + schema + ".product_logical_units pu " +
-			"    ON pu.product_id = ep2.product_id " +
-			"    JOIN " + schema + ".tasks_logical_units tu " +
-			"    ON pu.lu_id = tu.lu_id " +
-			"    WHERE tu.task_id = tasks.task_id " +
-			"    AND ( " +
-			"        (ep2.environment_id = tasks.source_environment_id AND ep2.enable_product = 'false' and tasks.sync_mode <> 'OFF') " +
-			"        OR " +
-			"        (ep2.environment_id = tasks.environment_id AND ep2.enable_product = 'false') " +
-			"    ) " +
-			") ";
-			
-			db(TDM).execute(updateSourceTasks,"true",envName,envId,envProdcutID,productId);
-			db(TDM).execute(updateTargetTasks,"true",envName,envId,envProdcutID,productId);
-
 			String activityDesc = "'Environment System " + envProdcutID + " was enabled in environment " + envName ;
-			String tasksActivityDesc = "Tasks were enabled because environment system '" + envProdcutID +
-			"' was disabled in environment '" + envName + "'.";
-		
+
 			try {
 				fnInsertActivity("update", "Environments", activityDesc);
-				fnInsertActivity("update", "Tasks", tasksActivityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}

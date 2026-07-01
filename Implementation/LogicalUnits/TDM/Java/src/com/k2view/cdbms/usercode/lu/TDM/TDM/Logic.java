@@ -252,7 +252,7 @@ public class Logic extends UserCode {
 							// In case there are reference table to be handled, if the refernece job has finished
 							String sqlrefSts = "select distinct lu_name from " + TDMDB_SCHEMA + ".task_ref_exe_stats es, " + TDMDB_SCHEMA + ".task_ref_tables rt where " +
 								"lower(execution_status) in ('waiting', 'running', 'pending') and " +
-								"task_Execution_id = ? and es.task_id = rt.task_id and es.task_ref_table_id = rt.task_ref_table_id " +
+								"task_Execution_id = ? and es.task_id = rt.task_id and es.ref_table_name = rt.ref_table_name and es.schema_name = rt.schema_name and es.interface_name = rt.interface_name " +
 								"group by lu_name";
 							
 							refRunningLus = db(TDM).fetch(sqlrefSts, taskExecutionID);

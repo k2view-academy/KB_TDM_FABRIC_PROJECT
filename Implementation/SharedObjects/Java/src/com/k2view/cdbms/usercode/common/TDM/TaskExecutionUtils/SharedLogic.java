@@ -28,6 +28,8 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLo
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isPermittedUserForStopResume;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.requiresSourceCheck;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.requiresTargetCheck;
 
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
@@ -49,12 +51,13 @@ public class SharedLogic {
                 paramsJson = Json.get().toJson(params);
             }
             
+			String luName  = postExecutionProcess.containsKey("lu_name") ? postExecutionProcess.get("lu_name").toString() : "TDM_TableLevel";
             db(TDM).execute("INSERT INTO " + schema + 
 				".TASKS_EXE_PROCESS (task_id, process_id,process_name, lu_name, execution_order,process_type, parameters) VALUES (?,?,?,?,?,?,?)",
                     taskId,
                     postExecutionProcess.get("process_id"),
                     postExecutionProcess.get("process_name"),
-					postExecutionProcess.get("lu_name"),
+					luName,
                     postExecutionProcess.get("execution_order"),
                     processType,
                     paramsJson
@@ -62,16 +65,16 @@ public class SharedLogic {
         }
     }
 
-    public static Object fnUpdateExecutionForBusinessEntity(Long beId,String beName,Long process_id, String process_name, Integer execution_order, String process_description, String process_type) throws Exception {
+    public static Object fnUpdateExecutionForBusinessEntity(Long beId,String beName,Long process_id, String process_name, Integer execution_order, String process_description, String lu_name, String process_type) throws Exception {
         HashMap<String,Object> response=new HashMap<>();
         String errorCode="";
         String message=null;
 
         try {
             String sql= "UPDATE " + schema + ".TDM_BE_EXE_PROCESS " +
-                    "SET process_name=(?), execution_order=(?), process_description=(?), process_type=(?)" +
+                    "SET process_name=(?), execution_order=(?), process_description=(?), process_type=(?), lu_name=(?)" +
                     "WHERE process_id = ?";
-            db(TDM).execute(sql, process_name, execution_order, process_description, process_type, process_id);
+            db(TDM).execute(sql, process_name, execution_order, process_description, process_type, lu_name, process_id);
 
             try {
                 String activityDesc = process_type.equals("pre") ? "Pre Execution Order " : "Post Execution Order ";
@@ -383,16 +386,17 @@ public class SharedLogic {
     }
 
 
-	public static void fnSaveRefExeTablestoTask(Long taskID,Long beID, Long taskExecutionId,
-        Map<String, Map<String, Object>> resolvedTableFilters, String taskType) throws Exception {
+	public static int fnSaveRefExeTablestoTask(Long taskID, Long beID, Long taskExecutionId,
+        Map<String, Map<String, Object>> resolvedTableFilters, String taskType,
+        Long srcEnvId, Long tarEnvId) throws Exception {
 
 		List<Map<String, Object>> refs = (List<Map<String, Object>>) fnGetTaskReferenceTable(taskID);
 		if (refs.isEmpty()) {
-			return;
+			return 0;
 		}
 
 		Db.Row taskRow = db(TDM).fetch(
-				"SELECT delete_before_load FROM " + schema + ".tasks WHERE task_id = ?",
+				"SELECT delete_before_load, sync_mode FROM " + schema + ".tasks WHERE task_id = ?",
 				taskID
 		).firstRow();
 
@@ -402,9 +406,55 @@ public class SharedLogic {
 
 		String executionAction = "EXTRACT".equalsIgnoreCase(taskType) ? "Extract" : "Extract & Load";
 
+		// Determine which environments to check for disabled systems:
+		// - EXTRACT           → source only
+		// - non-EXTRACT FORCE → source + target (data is freshly read from source then written to target)
+		// - non-EXTRACT       → target only
+		boolean isExtract = "EXTRACT".equalsIgnoreCase(taskType);
+		String syncMode = taskRow.get("sync_mode") != null ? taskRow.get("sync_mode").toString() : "";
+		boolean isForce = "FORCE".equalsIgnoreCase(syncMode);
+
+		List<Long> envsToCheck = new ArrayList<>();
+		if (isExtract) {
+			if (srcEnvId != null) envsToCheck.add(srcEnvId);
+		} else if (isForce) {
+			if (srcEnvId != null) envsToCheck.add(srcEnvId);
+			if (tarEnvId != null) envsToCheck.add(tarEnvId);
+		} else {
+			if (tarEnvId != null) envsToCheck.add(tarEnvId);
+		}
+
+		// Build the set of interfaces that belong to a disabled system in the relevant env(s).
+		// One query per env up-front — no per-row cost inside the loop.
+		Set<String> disabledInterfaces = new HashSet<>();
+		for (Long envId : envsToCheck) {
+			try (Db.Rows disRows = db(TDM).fetch(
+					"SELECT UNNEST(p.related_interfaces) AS iface " +
+					"FROM " + schema + ".environment_products ep " +
+					"JOIN " + schema + ".products p ON p.product_id = ep.product_id " +
+					"WHERE ep.environment_id = ? AND ep.status = 'Active' AND ep.enable_product = false",
+					envId)) {
+				for (Db.Row r : disRows) {
+					Object iface = r.get("iface");
+					if (iface != null) disabledInterfaces.add(iface.toString());
+				}
+			}
+		}
+
+		int savedCount = 0;
 		for (Map<String, Object> ref : refs) {
 			String tableName = ref.get("ref_table_name").toString();
-			String tableKey = ref.get("interface_name").toString() + "|" + (ref.get("schema_name").toString()) + "|" + tableName;
+			String interfaceName = ref.get("interface_name") != null ? ref.get("interface_name").toString() : null;
+
+			// Skip tables whose interface belongs to a disabled system — mirrors the
+			// INNER JOIN on environment_products that silently drops disabled LUs for BE tasks.
+			if (interfaceName != null && disabledInterfaces.contains(interfaceName)) {
+				log.info("Skipping table '{}' (interface '{}') — system is disabled in one of envs {}",
+						tableName, interfaceName, envsToCheck);
+				continue;
+			}
+
+			String tableKey = interfaceName + "|" + (ref.get("schema_name").toString()) + "|" + tableName;
 			Map<String, Object> ov = resolvedTableFilters != null ? resolvedTableFilters.get(tableKey) : null;
 
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
@@ -412,11 +462,13 @@ public class SharedLogic {
 					.format(Instant.now());
 
 			insertTaskRefExeStats(taskID, taskExecutionId, ref, tableName, ov, now, executionAction);
+			savedCount++;
 
 			if (shouldAddDeleteAction) {
 				insertTaskRefExeStats(taskID, taskExecutionId, ref, tableName, ov, now, "Delete");
 			}
 		}
+		return savedCount;
 	}
 
 	private static void insertTaskRefExeStats(Long taskID, Long taskExecutionId,
@@ -442,7 +494,7 @@ public class SharedLogic {
 				"pending",
 				0,
 				executionAction,
-				-1
+				null
 		);
 	}
 
@@ -481,7 +533,7 @@ public class SharedLogic {
 				"trt.target_table_prefix, trt.target_table_suffix, " +
 				"COALESCE(trt.version_task_execution_id, 0) as version_task_execution_id, trt.version_task_name " +
 				"FROM " + schema + ".task_ref_tables trt " +
-				"JOIN " + schema + ".task_ref_exe_stats e ON trt.task_ref_table_id = e.task_ref_table_id " +
+				"JOIN " + schema + ".task_ref_exe_stats e ON e.task_id = trt.task_id AND e.ref_table_name = trt.ref_table_name AND e.schema_name = trt.schema_name AND e.interface_name = trt.interface_name " +
 				"WHERE e.task_execution_id = ? AND trt.interface_name = ? AND trt.schema_name = ? AND trt.ref_table_name = ?";
 		Db.Rows rows = db(TDM).fetch(query, taskExecutionId, interfaceName, schemaName, tableName);
 		List<Map<String, Object>> result = new ArrayList<>();
@@ -900,7 +952,7 @@ public class SharedLogic {
 			rows.close();
 			return true;
 		} else {
-			throw new Exception("This task was changed and is currently inactive. Please refresh the page first to execute the task.");
+			throw new Exception("This task has been deleted. Select a different task for execution.");
 		}
 	}
     public static Boolean fnValidateBELogicalUnits(Long be_id, List<Map<String, Object>> logicalUnits) throws Exception {
@@ -944,7 +996,7 @@ public class SharedLogic {
     }
 
 	public static List<Map<String, Object>> fnGetActiveTaskForActivation(Long taskId, String selectionMethod,
-			List<Map<String, Object>> logicalUnits, Long tarEnvId) throws Exception {
+			List<Map<String, Object>> logicalUnits, Long tarEnvId, Long srcEnvId) throws Exception {
 		Long lu_id = null;
 		String clientQuery = "";
 
@@ -1040,14 +1092,14 @@ public class SharedLogic {
 							plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active';
 						""".formatted(schema, schema);
 
-				Long envIDToUse = tarEnvId != null ? tarEnvId : (Long) luExecution.get("environment_id");
-				Db.Row tgtRow = db(TDM).fetch(query, luExecution.get("lu_id"), envIDToUse).firstRow();
+				Long tarEnvIDToUse = tarEnvId != null ? tarEnvId : (Long) luExecution.get("environment_id");
+				Db.Row tgtRow = db(TDM).fetch(query, luExecution.get("lu_id"), tarEnvIDToUse).firstRow();
 				if (tgtRow == null) continue; // LU not present in override target env — skip
 				luExecution.put("product_id", tgtRow.get("product_id"));
 				luExecution.put("product_version", tgtRow.get("product_version"));
 				luExecution.put("data_center_name", tgtRow.get("data_center_name"));
 				
-				Long srcEnvId = (Long) luExecution.get("source_environment_id");
+				Long srcEnvIDToUse = srcEnvId != null ? srcEnvId : (Long) luExecution.get("source_environment_id");
 				Db.Row srcRow = null;
 				if (srcEnvId != null) {
 					String srcQuery = """
@@ -1056,7 +1108,7 @@ public class SharedLogic {
 							INNER JOIN %s.product_logical_units AS plu ON ep.product_id = plu.product_id
 							WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active';
 							""".formatted(schema, schema);
-					srcRow = db(TDM).fetch(srcQuery, lu.get("lu_id"), srcEnvId).firstRow();
+					srcRow = db(TDM).fetch(srcQuery, lu.get("lu_id"), srcEnvIDToUse).firstRow();
 				}
 
 				// COALESCE: LU override value -> env-product default (mirrors the non-override
@@ -1079,6 +1131,7 @@ public class SharedLogic {
 			}
 		} else {
 			try {
+				if (executions.isEmpty()) return executions;
 				List<Map<String, Object>> data = fnGetTaskPostExecutionProcesses(taskId);
 				Map<String, Object> execution = new HashMap(executions.get(0));
 				Set<String> subsetProcesses = new HashSet<String>(Arrays.asList("Training Data Subset",
@@ -1106,6 +1159,113 @@ public class SharedLogic {
 		}
 
 		return executions;
+	}
+
+	/**
+	 * Applies disabled-product filtering and orphan pruning to an execution list built by
+	 * fnGetActiveTaskForActivation. srcEnvId / tarEnvId from the caller's context override
+	 * the env IDs stored on the execution rows so runtime env overrides are respected.
+	 */
+	public static List<Map<String, Object>> filterAndPruneExecutionLus(
+			List<Map<String, Object>> executions, Long srcEnvId, Long tarEnvId) throws Exception {
+		if (executions == null || executions.isEmpty()) return executions;
+		executions = filterDisabledProductLus(executions, srcEnvId, tarEnvId);
+		executions = pruneOrphanedLuEntries(executions);
+		return executions;
+	}
+
+	/**
+	 * Drops any LU whose product is disabled (enable_product = false) in an environment that
+	 * the task actually needs to access. Uses requiresSourceCheck / requiresTargetCheck — the
+	 * same gate logic used everywhere else in the task execution pipeline — to decide which
+	 * environments are relevant.
+	 */
+	private static List<Map<String, Object>> filterDisabledProductLus(List<Map<String, Object>> luEntries) throws Exception {
+		return filterDisabledProductLus(luEntries, null, null);
+	}
+
+	private static List<Map<String, Object>> filterDisabledProductLus(
+			List<Map<String, Object>> luEntries, Long srcEnvIdOverride, Long tarEnvIdOverride) throws Exception {
+		if (luEntries.isEmpty()) return luEntries;
+
+		Map<String, Object> first = luEntries.get(0);
+		String taskType  = "" + first.get("task_type");
+		String syncMode  = "" + first.get("sync_mode");
+		String srcEnvId  = srcEnvIdOverride != null ? "" + srcEnvIdOverride
+				: (first.get("source_environment_id") != null ? "" + first.get("source_environment_id") : null);
+		String tarEnvId  = tarEnvIdOverride != null ? "" + tarEnvIdOverride
+				: (first.get("environment_id")        != null ? "" + first.get("environment_id")        : null);
+
+		boolean checkSource = requiresSourceCheck(taskType, syncMode, srcEnvId);
+		boolean checkTarget = requiresTargetCheck(taskType, tarEnvId);
+
+		if (!checkSource && !checkTarget) return luEntries;
+
+		Set<String> disabledLuIds = new HashSet<>();
+
+		for (Map<String, Object> e : luEntries) {
+			Object luId = e.get("lu_id");
+			if (luId == null || "-1".equals("" + luId)) continue;
+
+			if (checkSource && srcEnvId != null) {
+				Db.Row row = db(TDM).fetch(
+						"SELECT ep.enable_product FROM " + schema + ".environment_products ep " +
+						"JOIN " + schema + ".product_logical_units plu ON ep.product_id = plu.product_id " +
+						"WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active'",
+						luId, Long.valueOf(srcEnvId)).firstRow();
+				if (row != null && Boolean.FALSE.equals(row.get("enable_product"))) {
+					log.info("Dropping LU '{}' (id={}) — product disabled in source environment {}", e.get("lu_name"), luId, srcEnvId);
+					disabledLuIds.add("" + luId);
+					continue;
+				}
+			}
+
+			if (checkTarget && tarEnvId != null) {
+				Db.Row row = db(TDM).fetch(
+						"SELECT ep.enable_product FROM " + schema + ".environment_products ep " +
+						"JOIN " + schema + ".product_logical_units plu ON ep.product_id = plu.product_id " +
+						"WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active'",
+						luId, Long.valueOf(tarEnvId)).firstRow();
+				if (row != null && Boolean.FALSE.equals(row.get("enable_product"))) {
+					log.info("Dropping LU '{}' (id={}) — product disabled in target environment {}", e.get("lu_name"), luId, tarEnvId);
+					disabledLuIds.add("" + luId);
+				}
+			}
+		}
+
+		if (disabledLuIds.isEmpty()) return luEntries;
+		return luEntries.stream()
+				.filter(e -> !disabledLuIds.contains("" + e.get("lu_id")))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Cascade-removes children of any LU absent from the list (disabled product, not active in env).
+	 * Loops until stable so grandchildren and deeper levels are also pruned.
+	 * Expects a list of plain LU entries only — no process entries.
+	 */
+	private static List<Map<String, Object>> pruneOrphanedLuEntries(List<Map<String, Object>> luEntries) {
+		if (luEntries.size() <= 1) return luEntries;
+		boolean changed = true;
+		while (changed) {
+			changed = false;
+			Set<String> presentIds = luEntries.stream()
+					.map(e -> "" + e.get("lu_id"))
+					.collect(Collectors.toSet());
+			List<Map<String, Object>> next = new ArrayList<>();
+			for (Map<String, Object> e : luEntries) {
+				Object parentId = e.get("lu_parent_id");
+				if (parentId != null && !"null".equals("" + parentId) && !presentIds.contains("" + parentId)) {
+					log.info("Dropping LU '{}' (id={}) — parent lu_id={} is disabled or excluded from environment",
+							e.get("lu_name"), e.get("lu_id"), parentId);
+					changed = true;
+				} else {
+					next.add(e);
+				}
+			}
+			luEntries = next;
+		}
+		return luEntries;
 	}
 
 
@@ -1249,8 +1409,7 @@ public class SharedLogic {
 					}
 
 					if ( ref.get("filter_fields") != null) {
-						Object obj = ref.get("filter_fields");
-						filterFieldsStr = obj.toString();
+						filterFieldsStr = Json.get().toJson(ref.get("filter_fields"));
 					}
 				}
 						
@@ -1370,7 +1529,7 @@ public class SharedLogic {
 				"l.version_datetime, lu.lu_name, l.num_of_copied_entities as num_of_succeeded_entities, l.num_of_failed_entities, l.execution_note " +
 				"FROM " + schema + ".tasks t, " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units lu, " +
 				"(select  array_agg(lower(e.ref_table_name)) ref_list, array_agg(distinct lower(t.lu_name))  lu_list, task_execution_id " +
-				"from " + schema + ".task_ref_exe_stats e, " + schema + ".task_ref_tables t where e.task_ref_table_id = t.task_ref_table_id and e.execution_status = \'completed\' " +
+				"from " + schema + ".task_ref_exe_stats e, " + schema + ".task_ref_tables t where e.task_id = t.task_id and e.ref_table_name = t.ref_table_name and e.schema_name = t.schema_name and e.interface_name = t.interface_name and e.execution_status = \'completed\' " +
 				"group by task_execution_id) ref " +
 				"where lower(t.task_Type) = \'extract\'  " +
 				"and t.task_id = l.task_id " +
@@ -1866,7 +2025,10 @@ public class SharedLogic {
 				"draft = false";
 		try {
 			if (overrideParameters.containsKey("TASK_GLOBALS")) {
-				Map<String, Object> overrideGlobals = Json.get().fromJson(overrideParameters.get("TASK_GLOBALS").toString());
+				Object taskGlobals = overrideParameters.get("TASK_GLOBALS");
+				if (taskGlobals instanceof String) {
+					Json.get().fromJson((String) taskGlobals);
+				}
 			}
 		} catch (Exception e) {
 			throw new Exception("Invalid Task Globals : " + e.getMessage());
