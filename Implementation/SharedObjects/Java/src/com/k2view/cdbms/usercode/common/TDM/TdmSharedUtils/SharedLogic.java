@@ -110,6 +110,7 @@ public class SharedLogic {
 
 	public enum OverrideParamKey {
 		BE_ID,
+		BE_NAME,
 		LOGICAL_UNITS,
 		SOURCE_ENVIRONMENT_NAME,
 		TARGET_ENVIRONMENT_NAME,
@@ -132,6 +133,13 @@ public class SharedLogic {
 		POST_EXECUTION_PROCESSES_PARAMS,
 		IMPLICIT_OVERRIDE_LOGICAL_UNITS
 	}
+
+	public static final Set<OverrideParamKey> INTERNAL_ONLY_OVERRIDE_KEYS = Collections.unmodifiableSet(
+		EnumSet.of(
+			OverrideParamKey.BE_NAME,
+			OverrideParamKey.IMPLICIT_OVERRIDE_LOGICAL_UNITS
+		)
+	);
 
     public static Object fnBatchStatistics(String i_batchId, String i_runMode) throws Exception {
         Object response;
@@ -837,18 +845,16 @@ public class SharedLogic {
 				"  'admin' As assignment_type\n" +
 				"From " + TDMDB_SCHEMA + ".environments env\n" +
 				"Where env.environment_status = 'Active'";
-			Db.Rows rows = Util.rte(() -> db(TDM).fetch(allEnvs));
-			List<String> columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				ResultSet resultSet = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
-				for (String columnName : columnNames) {
-					Util.rte(() -> rowMap.put(columnName, resultSet.getObject(columnName)));
+			try (Db.Rows rows = Util.rte(() -> db(TDM).fetch(allEnvs))) {
+				List<String> columnNames = rows.getColumnNames();
+				for (Db.Row row : rows) {
+					ResultSet resultSet = row.resultSet();
+					Map<String, Object> rowMap = new HashMap<>();
+					for (String columnName : columnNames) {
+						Util.rte(() -> rowMap.put(columnName, resultSet.getObject(columnName)));
+					}
+					rowsList.add(rowMap);
 				}
-			rowsList.add(rowMap);
-			}
-			if (rows != null) {
-				rows.close();
 			}
 
 		} else {
@@ -1154,19 +1160,16 @@ public class SharedLogic {
 					"  'admin' As assignment_type\n" +
 					"From " + TDMDB_SCHEMA + ".environments env\n" +
 					"Where env.environment_status = 'Active'";
-			Db.Rows rows= db(TDM).fetch(allEnvs);
-			List<String> columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				ResultSet resultSet = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
-				for (String columnName : columnNames) {
-					rowMap.put(columnName, resultSet.getObject(columnName));
+			try (Db.Rows rows = db(TDM).fetch(allEnvs)) {
+				List<String> columnNames = rows.getColumnNames();
+				for (Db.Row row : rows) {
+					ResultSet resultSet = row.resultSet();
+					Map<String, Object> rowMap = new HashMap<>();
+					for (String columnName : columnNames) {
+						rowMap.put(columnName, resultSet.getObject(columnName));
+					}
+					rowsList.add(rowMap);
 				}
-				rowsList.add(rowMap);
-			}
-			
-			if (rows != null) {
-				rows.close();
 			}
 	
 		} else {

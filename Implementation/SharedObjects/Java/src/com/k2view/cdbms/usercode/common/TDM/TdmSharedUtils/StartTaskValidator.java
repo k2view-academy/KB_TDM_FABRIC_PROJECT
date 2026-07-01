@@ -166,6 +166,12 @@ class StartTaskValidator {
 			throw new TdmValidationException("Override Validation",
 					"Invalid override parameter key: null key is not allowed.");
 
+		for (OverrideParamKey key : inputOverrides.keySet()) {
+			if (SharedLogic.INTERNAL_ONLY_OVERRIDE_KEYS.contains(key))
+				throw new TdmValidationException("Override Validation",
+						key.name() + " is a system-internal parameter and cannot be provided as an override.");
+		}
+
 		Object overrideFieldsRaw = taskRow.get("task_override_fields");
 		String overrideFieldsJson = overrideFieldsRaw != null ? overrideFieldsRaw.toString() : null;
 		boolean hasConfig = overrideFieldsJson != null && !overrideFieldsJson.isBlank()
@@ -199,6 +205,12 @@ class StartTaskValidator {
 				"Reservation period", "reservation_period");
 
 		if (inputOverrides.containsKey(OverrideParamKey.NO_OF_ENTITIES)) {
+			String effectiveMethod = inputOverrides.containsKey(OverrideParamKey.SELECTION_METHOD)
+					? (String) inputOverrides.get(OverrideParamKey.SELECTION_METHOD)
+					: taskMethod;
+			if ("L".equalsIgnoreCase(effectiveMethod))
+				throw new TdmValidationException("Override Validation",
+						"NO_OF_ENTITIES is not applicable when the selection method is 'Entity List'.");
 			String[] path = new String[] { "selection_method", "max_entities" };
 			if (!isEditableAt(fields, path))
 				throw new TdmValidationException("Override Validation",
@@ -754,10 +766,13 @@ class StartTaskValidator {
 		}
 
 		if (!srcValid || !trgValid) {
-			if (!srcFound)
+			if (!srcValid && !srcFound) {
 				validationErrors.add(Collections.singletonMap("SourceEnvironment", "No Source Environment found"));
-			if (!trgFound)
+			}
+			if (!trgValid && !trgFound) {
 				validationErrors.add(Collections.singletonMap("TargetEnvironment", "No Target Environment found"));
+			}
+			
 			throw new TdmValidationException("Validation Failure", validationErrors.get(validationErrors.size() - 1).values().iterator().next());
 		}
 	}

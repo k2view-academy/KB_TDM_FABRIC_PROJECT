@@ -82,6 +82,32 @@ stages:
             default: false
   Get and Set Parameters:
     actors:
+      Get Table Info Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            link: SplitIID/result/table
+            schema: string
+            mandatory: false
+          partitionNumber:
+            link: SplitIID/result/partition_no
+            schema: string
+            mandatory: false
+          refTableID:
+            schema: integer
+            mandatory: false
       Format Start Time:
         parent: DateFormat
         in:
@@ -171,9 +197,38 @@ stages:
             const: null
             link: SplitIID/result/table
             default: false
-  Set Source Environment:
+  Continue setting:
     transactional: false
     actors:
+      Update Table Status Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            link: SplitIID/result/table
+            schema: string
+            mandatory: false
+          partitionNumber:
+            link: SplitIID/result/partition_no
+            schema: string
+            mandatory: false
+          refTableID:
+            link:
+              path: GetTableInformation/result/TaskRefTables/task_ref_table_id
+              iterate: First
+            schema: integer
+            mandatory: false
       set Source Env:
         parent: InnerFlow
         in:
@@ -288,7 +343,7 @@ stages:
             schema: '#ref'
   'Extract  ':
     transactional: false
-    dependsOn: Set Source Environment
+    dependsOn: Continue setting
     actors:
       Extract Only Task?:
         parent: EqualsIgnoreCase
@@ -342,7 +397,7 @@ stages:
   'Load  ':
     else: true
     transactional: false
-    dependsOn: Set Source Environment
+    dependsOn: Continue setting
     actors:
       Update task_ref_partition11:
         parent: DbCommand
@@ -721,8 +776,8 @@ schemas:
             type: boolean
           retentionPeriodValue:
             type: integer
-          targetEnvId:
-            type: integer
+          targetEnvId: {
+            }
           taskTitle:
             type: string
           sourceEnvName:
@@ -749,12 +804,12 @@ schemas:
         items:
           type: object
           properties:
-            version_task_name:
-              type: string
+            version_task_name: {
+              }
             ref_table_name:
               type: string
-            filter_parameters: {
-              }
+            filter_parameters:
+              type: string
             interface_name:
               type: string
             task_id:
@@ -763,34 +818,34 @@ schemas:
               type: string
             source_max_no_of_workers: {
               }
-            target_table_prefix: {
-              }
             target_max_no_of_workers: {
               }
-            update_date:
-              type: date
-            filter_fields: {
+            target_table_prefix: {
               }
+            filter_fields:
+              type: string
             target_affinity: {
               }
             task_ref_table_id:
               type: integer
             source_affinity: {
               }
-            filter_type: {
-              }
+            filter_type:
+              type: string
             version_task_execution_id:
               type: integer
             lu_name:
               type: string
             target_table_suffix: {
               }
-            count_ind: {
-              }
-            table_filter: {
-              }
-            gui_filter: {
-              }
+            count_ind:
+              type: boolean
+            table_filter:
+              type: string
+            gui_filter:
+              type: string
+      RecordsCount:
+        type: integer
       Definitions:
         type: object
         properties:
@@ -822,8 +877,12 @@ schemas:
             type: string
       PartitionFlowInputs:
         type: object
-        properties: {
-          }
+        properties:
+          PGGetDataByPhysicalPartition:
+            type: object
+            properties:
+              message:
+                type: string
   Parser the Filter Fields.out.object:
     type: array
     items:

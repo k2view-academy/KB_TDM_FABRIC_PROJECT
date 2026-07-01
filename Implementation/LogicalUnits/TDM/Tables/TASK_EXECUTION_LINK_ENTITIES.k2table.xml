@@ -8,7 +8,7 @@
     <Column name="TASK_EXECUTION_ID" id="TASK_EXECUTION_ID" index="0" datatype="integer" mandatory="true" />
     <Column name="LU_NAME" id="tblCol_96d37bfc6cf44834b400791ed4a05534" index="1" datatype="text" mandatory="true" />
     <Column name="ENTITY_ID" id="tblCol_ca5a607128f140568e46ffdf0c0780e3" index="2" datatype="text" mandatory="true" />
-    <Column name="CLONE_NO" id="CLONE_NO" index="3" datatype="Text" mandatory="true" />
+    <Column name="CLONE_NO" id="CLONE_NO" index="3" datatype="Text" mandatory="true" defaultValue="0" />
     <Column name="TARGET_ROOT_ENTITY_ID" id="tblCol_a5ccd52015af4843a9263ee7497b7dad" index="4" datatype="text" />
     <Column name="BE_ROOT_ENTITY_ID" id="tblCol_36cd2d60c5b34027bba76ebb3e207515" index="5" datatype="text" />
     <Column name="IID" id="tblCol_e5889c497c164e3f980ec53dc05869e5" index="6" datatype="text" mandatory="true" />
@@ -37,7 +37,7 @@
   </IndexesList>
   <EnrichmentList>
   </EnrichmentList>
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" deleteMode="">
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
     <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
   <TriggersList>

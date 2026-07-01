@@ -117,32 +117,34 @@ public class TdmExecuteTask {
             //log.info("tdmExecuteTask - taskExecutionID: " + taskExecutionID + ", luID: " + luID + ", processID: " + processID);
             
             String startTime = "" + Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
-            if (processID == 0) {
-                // skip the update for post/pre process
+            
             try {
-                db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
-                                "start_execution_time = ? " +
-                                "WHERE task_execution_id = ? AND lu_id = ? AND process_id = ? AND LOWER(execution_status) = 'pending' and start_execution_time is null",
-                                startTime, taskExecutionID, luID, processID);
+                if (processID == 0) {
+                    // skip the update for post/pre process
+                    db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
+                            "start_execution_time = ? " +
+                            "WHERE task_execution_id = ? AND lu_id = ? AND process_id = ? AND LOWER(execution_status) = 'pending' and start_execution_time is null",
+                            startTime, taskExecutionID, luID, processID);
+                }
                 db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_summary SET " +
-                                "start_execution_time = COALESCE(start_execution_time, ?) " +
-                                "WHERE task_execution_id = ?",
-                                startTime, taskExecutionID);
+                        "start_execution_time = COALESCE(start_execution_time, ?) " +
+                        "WHERE task_execution_id = ?",
+                        startTime, taskExecutionID);
 
             } catch (SQLException e) {
-                updatedFailedStatus(verticalExecution, taskExecutionID, luID, LU_NAME.get(taskProperties), "Failed to update start_execution_time in task_execution_list", "loadAndReplace");
+                updatedFailedStatus(verticalExecution, taskExecutionID, luID, LU_NAME.get(taskProperties),
+                        "Failed to update start_execution_time in task_execution_list", "loadAndReplace");
                 e.printStackTrace();
                 throw new RuntimeException(e);
-            }
             }
 
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             String parentLUStatus = PARENT_LU_STATUS.get(taskProperties);
             if (isChildLU(taskProperties) && !parentLUStatus.toUpperCase().equals("COMPLETED")) {
-                updateTaskExecutionStatus(verticalExecution, parentLUStatus, taskExecutionID, luID, null, startTime, "19700101000000", null, null, null, null);
+                updateTaskExecutionStatus(verticalExecution, parentLUStatus, taskExecutionID, luID, null, startTime, "19700101000000", null, null, null, startTime);
                 return;
             }
-            //updateTaskExecutionStatus("running", taskExecutionID,luID, "", "0", "0", "0", null);
+            
             // Update task execution summary
             updateTaskExecutionSummary(taskExecutionID, "running");
             String selectionMethod = SELECTION_METHOD.get(taskProperties);
@@ -187,7 +189,7 @@ public class TdmExecuteTask {
                         }
                 }
                 if (("TRAINING".equalsIgnoreCase(taskType) || "ai_generated".equalsIgnoreCase(taskType)) && !"".equalsIgnoreCase(luName)) {
-                    executeMDBExportSchema(verticalExecution, luName, taskExecutionID, luID,taskID, TDMDB_SCHEMA, "broadway " + luName + ".CreateMDBExportSchemaForAI luName=?, taskID = ?", "MDB SCHEMA EXPORT");
+                    executeMDBExportSchema(verticalExecution, luName, taskExecutionID, luID,taskID, TDMDB_SCHEMA, "broadway " + luName + ".createMDBExportSchemaForAI luName=?, taskID = ?", "MDB SCHEMA EXPORT");
                 }
                 switch (taskType) {
                     case "extract":
@@ -725,11 +727,13 @@ public class TdmExecuteTask {
 
             //log.info("executeTableLevelBatch - batchCommand: " + batchCommand);
             //log.info("executeTableLevelBatch - broadwayCommand: " + broadwayCommand);
+            db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_ref_exe_stats SET table_order = -1 WHERE task_execution_id = ?", "" + TASK_EXECUTION_ID.get(taskProperties));
             String batchID = (String)fabric().fetch(batchCommand, TABLE_LEVEL_LU + "_" + TASK_EXECUTION_ID.get(taskProperties), broadwayCommand).firstValue();
             ExecutionInfo.put("fabric_execution_id", batchID);
             return ExecutionInfo ;
         } catch (Exception e) {
             log.error("Can't run Table Level for task_execution_id=" +  TASK_EXECUTION_ID.get(taskProperties), e);
+            updateLuRefExeFailedStatus(TASK_EXECUTION_ID.get(taskProperties), LU_NAME.get(taskProperties), "failed");
             return null;
         }
     }
@@ -1444,14 +1448,11 @@ public class TdmExecuteTask {
 
         //TDM 7.2 - Get task execution override globals and add them to the task's globals.
         Map<String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs(TASK_ID.get(taskProperties), TASK_EXECUTION_ID.get(taskProperties));
-        String overrideGlobalsStr = "" + taskOverrideAttrs.get("TASK_GLOBALS");
-        //log.info("TdmExecuteTask - overrideGlobalsStr : " + overrideGlobalsStr);
-
-        if (!"".equals(overrideGlobalsStr) && !"null".equals(overrideGlobalsStr)) {
-            //Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
-            //Map <String, Object> overrideGlobals = gson.fromJson(overrideGlobalsStr, mapType);
-            Map<String, Object> overrideGlobals = Json.get().fromJson(overrideGlobalsStr);
-            globals.putAll(overrideGlobals);
+        Object taskGlobalsObj = taskOverrideAttrs.get("TASK_GLOBALS");
+        if (taskGlobalsObj instanceof Map) {
+            globals.putAll((Map<String, Object>) taskGlobalsObj);
+        } else if (taskGlobalsObj instanceof String && !((String) taskGlobalsObj).isEmpty()) {
+            globals.putAll(Json.get().fromJson((String) taskGlobalsObj));
         }
         
         if (cloneInd) {

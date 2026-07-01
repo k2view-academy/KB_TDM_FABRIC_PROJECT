@@ -195,9 +195,9 @@ public class Logic extends UserCode {
             String interfaceName = iface;
             String schemaName = schema;
             String tableName = table;
-
+            Long taskExecutionId = Long.parseLong(getGlobal("TDM_TASK_EXE_ID"));
             //Check if the table has different target DB information from RefList Mtable, and use them to get FKs of table
-            Map<String, Object> targetInfo = fnLoadTargetInfoFromRefList(iface, schema, table, luName);
+            Map<String, Object> targetInfo = fnLoadTargetInfoFromRefList(taskExecutionId, iface, schema, table, luName);
             if (targetInfo != null && !targetInfo.isEmpty()) {
                 interfaceName = targetInfo.get("target_interface_name").toString();
                 schemaName = targetInfo.get("target_schema_name").toString();
@@ -207,7 +207,7 @@ public class Logic extends UserCode {
             Set<TableRef> deps = new HashSet<>();
             try {
                 DatabaseMetaData meta = getConnection(interfaceName).getMetaData();
-                try (ResultSet rs = meta.getImportedKeys(null, schemaName, table)) {
+                try (ResultSet rs = meta.getImportedKeys(null, schemaName, tableName)) {
                     while (rs.next()) {
                         String pkSchema = Util.isEmpty(rs.getString("PKTABLE_SCHEM"))
                                 ? rs.getString("PKTABLE_CAT")
@@ -396,7 +396,7 @@ public class Logic extends UserCode {
     private static void persistTableOrder(String taskExecutionId) throws Exception {
         boolean hasDeleteRows = db(TDM).fetch(
             "SELECT 1 FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
-            "WHERE task_execution_id = ? AND LOWER(COALESCE(execution_action, '')) = 'delete' LIMIT 1",
+            "WHERE task_execution_id = ? AND LOWER(execution_action) = 'delete' LIMIT 1",
             taskExecutionId
         ).firstValue() != null;
 
@@ -412,7 +412,7 @@ public class Logic extends UserCode {
                         "AND interface_name = ? " +
                         "AND schema_name = ? " +
                         "AND ref_table_name = ? " +
-                        "AND LOWER(COALESCE(execution_action, '')) <> 'delete'",
+                        "AND LOWER(execution_action) <> 'delete'",
                         order, taskExecutionId,
                         t.getInterface(), t.getSchema(), t.getTableName()
                     );
@@ -424,7 +424,7 @@ public class Logic extends UserCode {
                             "AND interface_name = ? " +
                             "AND schema_name = ? " +
                             "AND ref_table_name = ? " +
-                            "AND LOWER(COALESCE(execution_action, '')) = 'delete'",
+                            "AND LOWER(execution_action) = 'delete'",
                             deleteOrder, taskExecutionId,
                             t.getInterface(), t.getSchema(), t.getTableName()
                         );

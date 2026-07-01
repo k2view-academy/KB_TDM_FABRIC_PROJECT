@@ -619,7 +619,7 @@ stages:
           sql:
             const: |-
               update ${@TDMDB_SCHEMA}.task_ref_exe_stats
-               set batch_id=${batch_id}, table_order = ${table_order}, interface_name=${interface_name}, schema_name = ${schema_name}
+               set batch_id=${batch_id}, interface_name=${interface_name}, schema_name = ${schema_name}
                where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id} AND execution_action <> 'Delete' ;
           TDMDB_SCHEMA:
             link: getTDMDBSchema/schema
@@ -630,13 +630,6 @@ stages:
             link:
               path: Batch /result/Batch id
               iterate: First
-            schema: any
-            mandatory: false
-            createdBy: sql
-          table_order:
-            link:
-              path: Loop On Tables/i
-              iterate: Iterate
             schema: any
             mandatory: false
             createdBy: sql

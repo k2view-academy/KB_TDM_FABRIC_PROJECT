@@ -77,10 +77,6 @@ stages:
             editor:
               id: com.k2view.strings
             mandatory: false
-          path:
-            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParams.csv
-            schema: string
-            mandatory: false
       UpgradeParamsAddDescription11:
         parent: InnerFlow
         in:
@@ -102,10 +98,6 @@ stages:
             schema: '#ref'
             editor:
               id: com.k2view.strings
-            mandatory: false
-          path:
-            const: /opt/apps/fabric/workspace/project/Implementation/LogicalUnits/k2_ref/Mtable/LuParamsMapping.csv
-            schema: string
             mandatory: false
       UpgradeGlobals:
         parent: InnerFlow
