@@ -266,6 +266,13 @@ public class StartTask {
 					: Integer.parseInt(taskRow.get("num_of_entities").toString());
 		}
 
+		// For clone tasks, finalCount is "number of clones per entity" — 0 or -1 (ALL)
+		// would silently produce zero clones at execution time (generate_series(1, N)).
+		if ((Boolean) taskRow.get("clone_ind") && finalCount <= 0) {
+			throw new TdmValidationException("Selection Method Validation",
+					"Number of entities (clones) must be greater than 0 for clone tasks.");
+		}
+
 		if ("R".equalsIgnoreCase(finalMethod) && finalCount <= 0) {
 			throw new TdmValidationException("Selection Method Validation",
 					"Number of entities must be greater than 0 for '"

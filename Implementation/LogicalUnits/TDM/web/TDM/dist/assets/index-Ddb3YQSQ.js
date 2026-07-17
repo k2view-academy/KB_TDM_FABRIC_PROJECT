@@ -15766,7 +15766,7 @@ var spin$2 = pt`
     to { transform: rotate(360deg); }
 `;
 var EmptyGroupMessage = ct.div`
-    margin-top: 5px;
+    margin-top: 20px;
     font-family: Roboto;
     font-size: 16px;
     color: #2e2e2e;
@@ -97329,6 +97329,7 @@ function TaskTemplates() {
 	const [open, setOpen] = (0, import_react.useState)("");
 	const [selectedTaskGroupData, setSelectedTaskGroupData] = (0, import_react.useState)([]);
 	const [isGroupTasksLoading, setIsGroupTasksLoading] = (0, import_react.useState)(false);
+	const [isSearchLoading, setIsSearchLoading] = (0, import_react.useState)(false);
 	const { searchParams, searchResults, isSearchActive, formData, displayValue, setSearch, clearSearch, updateSearchResults } = useTaskSearch();
 	const [openComp, setOpenedComp] = (0, import_react.useState)(TaskTemplatesScreens.task_templates);
 	const [compData, setCompData] = (0, import_react.useState)(null);
@@ -97794,18 +97795,23 @@ function TaskTemplates() {
 		toggleTaskFavorite
 	]);
 	const handleSearch = (0, import_react.useCallback)(async (reqData, rawFormData, rawDisplayValue) => {
+		setIsSearchLoading(true);
 		try {
 			setSearch(reqData, await taskAPIs.searchTasks(reqData), rawFormData, rawDisplayValue);
 		} catch (err) {
 			console.error("Search failed:", err);
+		} finally {
+			setIsSearchLoading(false);
 		}
 	}, [setSearch]);
 	const handleClearSearch = (0, import_react.useCallback)(() => {
 		clearSearch();
 	}, [clearSearch]);
 	const getRightSide = (0, import_react.useCallback)(() => {
-		if (searchResults === void 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideHeader, { children: selectedTaskGroup?.task_group_name }), isGroupTasksLoading ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskTilesLoader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Loader, { size: 64 }) }) : selectedTaskGroupData.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EmptyGroupMessage, { children: "No available tasks in this group yet.." }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BoxesContainer, { children: getRightSideTemplates(selectedTaskGroupData, true) })] });
+		if (searchResults === void 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideHeader, { children: selectedTaskGroup?.task_group_name }), isGroupTasksLoading || isSearchLoading ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskTilesLoader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Loader, { size: 64 }) }) : selectedTaskGroupData.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EmptyGroupMessage, { children: "No available tasks in this group yet.." }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BoxesContainer, { children: getRightSideTemplates(selectedTaskGroupData, true) })] });
 		else {
+			if (isSearchLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskTilesLoader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Loader, { size: 64 }) });
+			if (!Object.keys(searchResults).some((group) => searchResults[group]?.length > 0)) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EmptyGroupMessage, { children: "No tasks match your search.." });
 			const results = [];
 			Object.keys(searchResults).forEach((group) => {
 				results.push(/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideHeader, { children: group }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BoxesContainer, { children: getRightSideTemplates(searchResults[group]) })] }));
@@ -97817,6 +97823,7 @@ function TaskTemplates() {
 		selectedTaskGroupData,
 		getRightSideTemplates,
 		isGroupTasksLoading,
+		isSearchLoading,
 		selectedTaskGroup
 	]);
 	const getCurrentScreen = (0, import_react.useCallback)(() => {

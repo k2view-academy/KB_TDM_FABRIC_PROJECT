@@ -208,7 +208,10 @@ class StartTaskValidator {
 			String effectiveMethod = inputOverrides.containsKey(OverrideParamKey.SELECTION_METHOD)
 					? (String) inputOverrides.get(OverrideParamKey.SELECTION_METHOD)
 					: taskMethod;
-			if ("L".equalsIgnoreCase(effectiveMethod))
+			boolean isEntityCloneTask = Boolean.TRUE.equals(taskRow.get("clone_ind"));
+			// For entity-clone tasks, NO_OF_ENTITIES means "number of clones per entity",
+			// which stays applicable even when entities are selected via Entity List.
+			if ("L".equalsIgnoreCase(effectiveMethod) && !isEntityCloneTask)
 				throw new TdmValidationException("Override Validation",
 						"NO_OF_ENTITIES is not applicable when the selection method is 'Entity List'.");
 			String[] path = new String[] { "selection_method", "max_entities" };

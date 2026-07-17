@@ -376,7 +376,7 @@ public class SharedLogic {
             }
         }
 
-        return null;
+        return "true";
     }
 
     public static Map<String, Object> findMatchedEntry(List<Map<String, Object>> entries, String schemaName,

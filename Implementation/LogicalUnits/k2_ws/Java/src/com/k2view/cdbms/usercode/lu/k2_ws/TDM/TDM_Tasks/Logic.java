@@ -3127,10 +3127,11 @@ public class Logic extends WebServiceUserCode {
                     rowMap.put("fabric_execution_id", null);
                 }
 
+                boolean cloneInd = Boolean.parseBoolean(row.get("clone_ind").toString());
                 String executionMode = fnGetTaskExecutionMode(row.get("execution_mode").toString(),
                         row.get("task_type").toString(),
                         Long.parseLong(row.get("be_id").toString()),
-                        Boolean.parseBoolean(row.get("clone_ind").toString()));
+                        cloneInd);
                if ("VERTICAL".equalsIgnoreCase(executionMode) && row.get("parent_lu_id") != null) {
                     rowMap.put("fabric_execution_id", null);
                 }
@@ -3139,7 +3140,7 @@ public class Logic extends WebServiceUserCode {
                         (Long) row.get("task_execution_id"));
                 Object overrideValue = new Object();
                 String attrName = "";
-                boolean entityListFlag = false;
+                boolean hasEntityList = taskOverrideAttrs.containsKey(OverrideParamKey.ENTITY_LIST.name());
                 for (String attr : taskOverrideAttrs.keySet()) {
 
                     if ("task_globals".equalsIgnoreCase(attr)) {
@@ -3157,9 +3158,10 @@ public class Logic extends WebServiceUserCode {
                                 break;
                             case OverrideParamKey.ENTITY_LIST:
                                 rowMap.put("selection_param_value", overrideValue);
-                                int numberOfEntities = String.valueOf(overrideValue).split(",", -1).length;
-                                rowMap.put("num_of_entities", numberOfEntities);
-                                entityListFlag = true;
+                                if (!cloneInd) {
+                                    int numberOfEntities = String.valueOf(overrideValue).split(",", -1).length;
+                                    rowMap.put("num_of_entities", numberOfEntities);
+                                }
                                 break;
                             case OverrideParamKey.CUSTOM_LOGIC_FLOW:
                                 rowMap.put("selection_param_value", overrideValue);
@@ -3174,7 +3176,7 @@ public class Logic extends WebServiceUserCode {
                                 rowMap.put("parameters", overrideValue);
                                 break;
                             case OverrideParamKey.NO_OF_ENTITIES:
-                                if (!entityListFlag && isParentLu) {
+                                if ((!hasEntityList || cloneInd) && isParentLu) {
                                     rowMap.put("num_of_entities", overrideValue);
                                 }
                                 break;
@@ -7346,7 +7348,6 @@ public class Logic extends WebServiceUserCode {
               "message": null
             }""")
 
-    // TODO : complete with GUI        
     public static Object wsUpdateTaskExecutionNote(
             @param(required = true) Long task_execution_id,
             @param(required = true) String execution_note,
