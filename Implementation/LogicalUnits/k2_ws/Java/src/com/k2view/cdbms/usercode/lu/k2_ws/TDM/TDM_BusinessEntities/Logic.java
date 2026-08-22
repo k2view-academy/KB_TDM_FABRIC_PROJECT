@@ -4,35 +4,43 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_BusinessEntities;
 
-import com.k2view.cdbms.shared.Db;
-import com.k2view.cdbms.shared.user.WebServiceUserCode;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
-import com.k2view.fabric.api.endpoint.Endpoint.*;
-import com.k2view.fabric.common.ParamConvertor;
-import com.k2view.fabric.common.Util;
-import com.k2view.fabric.common.mtable.MTable;
-import org.json.JSONObject;
-
-import java.sql.ResultSet;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.COMBO_MAX_COUNT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnAddExecutionProcessForBusinessEntity;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnDeletePostExecutionForBusinessEntity;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetExecutionProcesses;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnUpdateExecutionForBusinessEntity;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import com.k2view.cdbms.shared.Db;
+import com.k2view.cdbms.shared.user.WebServiceUserCode;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
+import com.k2view.fabric.api.endpoint.Endpoint.MethodType;
+import com.k2view.fabric.api.endpoint.Endpoint.Produce;
+import com.k2view.fabric.api.endpoint.Endpoint.param;
+import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
+import com.k2view.fabric.api.endpoint.Endpoint.webService;
+import com.k2view.fabric.common.ParamConvertor;
+import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.mtable.MTable;
 
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
@@ -1635,7 +1643,7 @@ public class Logic extends WebServiceUserCode {
 		final String env = Util.isEmpty(sourceEnvName) ? "_dev" : sourceEnvName;
         Map<String, Map<String, Object>> beParametersColumnTypes = new LinkedHashMap<>();
 		Db tdmDB = db(TDM);
-		int maxNumOfValues = Integer.parseInt(COMBO_MAX_COUNT) + 1;
+		int maxNumOfValues = Integer.parseInt(getGlobal("COMBO_MAX_COUNT", "TDM")) + 1;
         Boolean paramCoupling =isParamsCoupling();
 		Boolean enableParamLuName = Boolean.parseBoolean(tdmDB.fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ADD_LU_NAME_TO_PARAM_NAME'").firstValue().toString());
 		try (Db.Rows luRes = tdmDB.fetch(LU_SQL, beID)) {

@@ -64,6 +64,7 @@ stages:
             schema: any{{#if (fieldWithQoutesInd this)}}
             link:
               path: Query/result/{{getDeleleColumnWithoutQoutes this}}{{/if}}
+              iterate: Iterate
           {{/each~}}
           params:
             link:

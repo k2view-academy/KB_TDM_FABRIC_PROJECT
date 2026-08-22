@@ -49,6 +49,7 @@ stages:
     actors:
       Parse File:
         parent: XmlParser
+        height: 363
         in:
           stream:
             link: Read Table's File/stream
@@ -77,15 +78,17 @@ stages:
           value:
             external: sourceInterface
             schema: string
-      Source Schema:
-        parent: Const
+      If No Schema Take Catalog:
+        parent: Elvis
         in:
-          value:
-            const: null
+          a:
             link: Parse File/object/TableObject/_value/BasedOn/_value/Source/_attributes/schema
             schema: string
+          b:
+            link: Parse File/object/TableObject/_value/BasedOn/_value/Source/_attributes/catalog
+            schema: string
         out:
-          value:
+          result:
             external: sourceSchema
             schema: string
     split: '--------------------'
@@ -131,21 +134,6 @@ schemas:
                   _value:
                     type: string
               ID:
-                type: object
-                properties:
-                  _value:
-                    type: string
-              EntityId:
-                type: object
-                properties:
-                  _value:
-                    type: string
-              ColumnsCollation:
-                type: object
-                properties:
-                  _value:
-                    type: string
-              FullTextSearch:
                 type: object
                 properties:
                   _value:
@@ -234,6 +222,8 @@ schemas:
                             type: object
                             properties:
                               interface:
+                                type: string
+                              catalog:
                                 type: string
                               schema:
                                 type: string

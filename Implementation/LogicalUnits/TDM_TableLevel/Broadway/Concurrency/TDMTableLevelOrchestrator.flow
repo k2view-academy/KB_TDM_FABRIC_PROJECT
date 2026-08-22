@@ -82,7 +82,7 @@ stages:
             default: false
   Get and Set Parameters:
     actors:
-      Get Table Info Error Handler:
+      Table Error Handler No Fields Or No Key Fields:
         parent: ErrorHandler
         error: result
         in:
@@ -94,19 +94,23 @@ stages:
               actions:
                 suppress: false
                 log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
+                flowName: PopulateTableErrorsForTableLevel
                 number_of_retries: ''
                 retry_interval: ''
           tableName:
             link: SplitIID/result/table
             schema: string
             mandatory: false
-          partitionNumber:
-            link: SplitIID/result/partition_no
-            schema: string
-            mandatory: false
           refTableID:
             schema: integer
+            mandatory: false
+          interfaceName:
+            link: SplitIID/result/interface
+            schema: string
+            mandatory: false
+          schemaName:
+            link: SplitIID/result/schema
+            schema: string
             mandatory: false
       Format Start Time:
         parent: DateFormat
@@ -247,6 +251,7 @@ stages:
               updated_by = ${userName}
               where task_execution_id = ${taskExeId}
               and task_ref_table_id = ${tableRefId}
+              and execution_action <> 'Delete'
           userName:
             link: Get Executor Name/result
             schema: string
@@ -263,6 +268,9 @@ stages:
             schema: string
             mandatory: false
           tableRefId:
+            link:
+              path: GetTableInformation/result/TaskRefTables/task_ref_table_id
+              iterate: First
             schema: integer
             mandatory: false
             createdBy: sql
@@ -496,14 +504,14 @@ stages:
             mandatory: false
             createdBy: flowName
           interfaceName:
-            link: GetTableInformation/result/Definitions/interface_name
+            link: GetTableInformation/result/SourceInfo/source_interface_name
             schema: string
             editor:
               id: com.k2view.mTableKey
             mandatory: false
             createdBy: flowName
           tableName:
-            link: GetTableInformation/result/Definitions/table_name
+            link: GetTableInformation/result/SourceInfo/source_ref_table_name
             schema: string
             mandatory: false
             createdBy: flowName
@@ -543,7 +551,7 @@ stages:
             mandatory: false
             createdBy: flowName
           schemaName:
-            link: SplitIID/result/schema
+            link: GetTableInformation/result/SourceInfo/source_schema_name
             schema: string
             mandatory: false
             createdBy: flowName
@@ -639,17 +647,17 @@ stages:
             mandatory: false
             createdBy: flowName
           sourceTableName:
-            link: SplitIID/result/table
+            link: GetTableInformation/result/SourceInfo/source_ref_table_name
             schema: string
             mandatory: false
             createdBy: flowName
           sourceInterfaceName:
-            link: SplitIID/result/interface
+            link: GetTableInformation/result/SourceInfo/source_interface_name
             schema: string
             mandatory: false
             createdBy: flowName
           sourceSchemaName:
-            link: SplitIID/result/schema
+            link: GetTableInformation/result/SourceInfo/source_schema_name
             schema: string
             mandatory: false
             createdBy: flowName
@@ -776,8 +784,8 @@ schemas:
             type: boolean
           retentionPeriodValue:
             type: integer
-          targetEnvId: {
-            }
+          targetEnvId:
+            type: integer
           taskTitle:
             type: string
           sourceEnvName:
@@ -799,6 +807,15 @@ schemas:
             type: string
           target_ref_table_name:
             type: string
+      SourceInfo:
+        type: object
+        properties:
+          source_schema_name:
+            type: string
+          source_ref_table_name:
+            type: string
+          source_interface_name:
+            type: string
       TaskRefTables:
         type: array
         items:
@@ -808,8 +825,8 @@ schemas:
               }
             ref_table_name:
               type: string
-            filter_parameters:
-              type: string
+            filter_parameters: {
+              }
             interface_name:
               type: string
             task_id:
@@ -822,16 +839,16 @@ schemas:
               }
             target_table_prefix: {
               }
-            filter_fields:
-              type: string
+            filter_fields: {
+              }
             target_affinity: {
               }
             task_ref_table_id:
               type: integer
             source_affinity: {
               }
-            filter_type:
-              type: string
+            filter_type: {
+              }
             version_task_execution_id:
               type: integer
             lu_name:
@@ -840,10 +857,10 @@ schemas:
               }
             count_ind:
               type: boolean
-            table_filter:
-              type: string
-            gui_filter:
-              type: string
+            table_filter: {
+              }
+            gui_filter: {
+              }
       RecordsCount:
         type: integer
       Definitions:
@@ -882,6 +899,11 @@ schemas:
             type: object
             properties:
               message:
+                type: string
+          PGGetDataByIdColumn:
+            type: object
+            properties:
+              columnName:
                 type: string
   Parser the Filter Fields.out.object:
     type: array

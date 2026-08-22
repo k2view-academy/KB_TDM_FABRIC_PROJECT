@@ -45,10 +45,11 @@ stages:
           script:
             const: |
               var upgradeLU = true;
-              if (luName == 'TDM' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
-                  upgradeLU = false;
-              }
-              upgradeLU;
+               if (luName == 'TDM' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference'
+               || luName == 'aifusion' || luName == 'Vectors') {
+                   upgradeLU = false;
+               }
+               upgradeLU;
           luName:
             link:
               path: Get List of LUs/result/LU_NAME

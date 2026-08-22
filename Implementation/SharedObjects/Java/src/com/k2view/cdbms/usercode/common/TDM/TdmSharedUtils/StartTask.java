@@ -3,8 +3,8 @@ package com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnCreateSummaryRecord;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.filterAndPruneExecutionLus;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnCreateSummaryRecord;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetActiveTaskForActivation;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetNextTaskExecution;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTasks;
@@ -266,6 +266,13 @@ public class StartTask {
 					: Integer.parseInt(taskRow.get("num_of_entities").toString());
 		}
 
+		// For clone tasks, finalCount is "number of clones per entity" — 0 or -1 (ALL)
+		// would silently produce zero clones at execution time (generate_series(1, N)).
+		if ((Boolean) taskRow.get("clone_ind") && finalCount <= 0) {
+			throw new TdmValidationException("Selection Method Validation",
+					"Number of entities (clones) must be greater than 0 for clone tasks.");
+		}
+
 		if ("R".equalsIgnoreCase(finalMethod) && finalCount <= 0) {
 			throw new TdmValidationException("Selection Method Validation",
 					"Number of entities must be greater than 0 for '"
@@ -319,7 +326,18 @@ public class StartTask {
 			// Handle Custom Logic parameters
 			putIfPresent(inputOverrides, OverrideParamKey.CUSTOM_LOGIC_FLOW, overrideParams);
 			putIfPresent(inputOverrides, OverrideParamKey.CUSTOM_LOGIC_LU_NAME, overrideParams);
-			putIfPresent(inputOverrides, OverrideParamKey.PARAMETERS, overrideParams);
+			Object paramsOverride = inputOverrides.get(OverrideParamKey.PARAMETERS);
+			if (paramsOverride != null && !paramsOverride.toString().isBlank()) {
+				overrideParams.put(OverrideParamKey.PARAMETERS.name(), paramsOverride);
+			} else if (!effectiveFlow.equalsIgnoreCase(taskFlow)) {
+				// Flow changed and no new PARAMETERS were supplied — the task's stored
+				// parameters belong
+				// to the old flow/method. Persist an explicit empty-inputs value so
+				// PARAMETERS.get
+				// (taskProperties) at execution time doesn't silently fall back to that stale
+				// JSON.
+				overrideParams.put(OverrideParamKey.PARAMETERS.name(), "{\"inputs\":[]}");
+			}
 
 		} else if ("P".equals(m) || "PR".equals(m)) {
 			// Handle Business Process / Query parameters

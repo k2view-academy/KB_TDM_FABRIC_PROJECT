@@ -1,0 +1,11 @@
+tags: AIFlows
+stages:
+  Stage 1:
+    actors:
+      RefreshTaskDescriptions:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.RefreshTaskDescriptions

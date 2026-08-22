@@ -28,7 +28,7 @@ public class TDMSetSessionGlobals implements Actor {
 				globalsInput.forEach((key, value) -> {
 			
 					//log.info("TDMSetSessionGlobals - setting "+key+"='"+value+ "'");
-					String query = "set " + key + "='" + value + "'";
+					String query = "set " + key + "='" + String.valueOf(value).replace("'", "''") + "'";
                     try {
                         fabricSession.prepareStatement(query).execute();
                     } catch (Exception e) {

@@ -160,6 +160,8 @@ public class TdmExecuteTask {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                updatedFailedStatus(verticalExecution, taskExecutionID, luID, LU_NAME.get(taskProperties),
+                        "Failed to execute pre-process", "fnTdmExecuteTask");
                 throw new RuntimeException(e);
             }
             // TDM 9.0 - Check if all pre execution processes where handled
@@ -388,6 +390,8 @@ public class TdmExecuteTask {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        updatedFailedStatus(verticalExecution, taskExecutionID, luID, LU_NAME.get(taskProperties),
+                                "Failed to execute post-process", "fnTdmExecuteTask");
                         throw new RuntimeException(e);
                     }
                 }
@@ -866,7 +870,7 @@ public class TdmExecuteTask {
                         "luID", LU_ID.get(taskProperties),
                         "taskTitle", TASK_TITLE.get(taskProperties),
                         "sourceMaxWorkers", SOURCE_MAX_WORKERS_PER_NODE.get(taskProperties),
-                        "targetMaxWorkers", TARGET_MAX_WORKERS_PER_NODE.get(taskProperties))));
+                        "targetMaxWorkers", TARGET_MAX_WORKERS_PER_NODE.get(taskProperties))).replace("'", "''"));
 
         String jobCommand = "startjob USER_JOB NAME='TDM.tdmProcessExecution' UID='tdmProcessExecution_"
                 + taskExecutionID + "' " + args;

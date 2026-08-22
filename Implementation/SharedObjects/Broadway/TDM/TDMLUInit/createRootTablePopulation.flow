@@ -155,12 +155,57 @@ stages:
         parent: Replace
         in:
           search:
-            const: '{{SOURCE_SCHEMA}}.'
+            const: '{{{SOURCE_SCHEMA}}}.'
           string:
             link: Replace       /string
-  'Search For  {{SOURCE_SCHEMA}} ':
+  'Search For  {{{SOURCE_SCHEMA}}} ':
     actors:
       'Replace   ':
+        parent: Replace
+        in:
+          search:
+            const: '{{{SOURCE_SCHEMA}}}'
+          replace:
+            const: null
+            external: SOURCE_SCHEMA
+          string:
+            link:
+            - Const  /value
+            - Replace         /string
+  Check for Schema Again:
+    dependsOn: 'Search For  {{{SOURCE_SCHEMA}}} '
+    actors:
+      Schema is Not Null? - 2:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            external: SOURCE_SCHEMA
+      'Const   ':
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Replace   /string
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Schema is NULL ':
+    else: true
+    dependsOn: 'Search For  {{{SOURCE_SCHEMA}}} '
+    actors:
+      'Replace          ':
+        parent: Replace
+        in:
+          search:
+            const: '{{SOURCE_SCHEMA}}.'
+          string:
+            link: Replace   /string
+  Search For  {{SOURCE_SCHEMA}}:
+    actors:
+      'Replace    ':
         parent: Replace
         in:
           search:
@@ -170,8 +215,8 @@ stages:
             external: SOURCE_SCHEMA
           string:
             link:
-            - Const  /value
-            - Replace         /string
+            - Const   /value
+            - Replace          /string
   Search For {{{SOURCE_TABLE}}}:
     actors:
       'Replace               ':
