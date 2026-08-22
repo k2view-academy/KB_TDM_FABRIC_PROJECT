@@ -1,7 +1,7 @@
 name,pattern,score
 "ACCOUNT_NAME","(?i)(.*ACCOUNT_NA.*|.*ACCT_NA.*|.*PAYPAL[_-]?ID.*)",1.0
 "ACCOUNT_NUMBER","(?i).*ACCOUNT_NU.*|(?i).*ACCT_NU.*|(?i)ACCOUNT",1.0
-"ADDRESS","(?i)ADDRESS.*|(?i)ADR[_0-1]|.*(?i)ADDR.*",1.0
+"ADDRESS","(?i)^(?!.*ID)(?:ADDRESS.*|ADR[_01]|.*ADDR.*)$",1.0
 "AFFILIATE_ID","(?i)AFF.*ID",0.95
 "AFFILIATE_NAME","(?i)AFF.*NAME",0.95
 "AGE","(?i)AGE|(?i).*[_]{1}AGE|(?i)AGE[_]{1}.*",0.5
