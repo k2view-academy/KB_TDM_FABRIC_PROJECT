@@ -81,14 +81,15 @@ stages:
             const:
               userCode: |-
                 let name = lu ;
-                if(name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel"){
+                if(name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel"
+                && name !== "aifusion" && name !== "Vectors"){
                     name=true;
                 }
                 name;
               script: |-
                 var name = lu;
 
-                if (name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel") {
+                if (name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel" && name !== "aifusion" && name !== "Vectors") {
                   name = true;
                 }
 

@@ -40,7 +40,8 @@ stages:
           script:
             const: |
               var upgradeLU = true;
-              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
+              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel'
+              || luName == 'TDM_Reference' || luName == 'aifusion' || luName == 'Vectors') {
                   upgradeLU = false;
               }
               upgradeLU;

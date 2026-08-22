@@ -256,7 +256,7 @@ public class Logic extends WebServiceUserCode {
         return norm;
     }
             
-	@desc("Get Table's Versions")
+	@desc("Get Table's Versions. If fromDate and toDate are not provided, all versions are returned.")
 	@webService(path = "getTableVersions", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -273,11 +273,15 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 
-	public static Object wsGetTableVersions(String table_name, String env_name) throws Exception {
+	public static Object wsGetTableVersions(String table_name, String env_name, String fromDate, String toDate) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         List<HashMap<String, Object>> result = new ArrayList<>();
         String errorCode = "SUCCESS";
         String message = null;
+
+        List<Object> params = new ArrayList<>();
+        params.add(table_name);
+        params.add(env_name);
 
         String sql = "Select distinct t.task_title, exe.task_execution_id, split_part(l.task_executed_by, '##', 1) as task_executed_by, "
                 +
@@ -296,10 +300,17 @@ public class Logic extends WebServiceUserCode {
                 "and l.task_id = t.task_id " +
                 "and ref.task_id = t.task_id " +
                 "and t.sync_mode != 'OFF' " +
-                "and t.retention_period_value != 0 " +
-                "order by exe.task_execution_id desc";
+                "and t.retention_period_value != 0 ";
 
-        try (Db.Rows rows = db(TDM).fetch(sql, table_name, env_name)) {
+        if (fromDate != null && !fromDate.trim().isEmpty() && toDate != null && !toDate.trim().isEmpty()) {
+            sql += "and exe.start_time::date >= ? and exe.start_time::date <= ? ";
+            params.add(fromDate);
+            params.add(toDate);
+        }
+
+        sql += "order by exe.task_execution_id desc";
+
+        try (Db.Rows rows = db(TDM).fetch(sql, params.toArray())) {
             for (Db.Row row : rows) {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("task_name", row.get("task_title"));

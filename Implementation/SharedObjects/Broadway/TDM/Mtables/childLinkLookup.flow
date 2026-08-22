@@ -78,13 +78,33 @@ stages:
         in:
           script:
             const:
-              userCode: "let name = input ;\r\nvar output ;\r\nswitch (name) {\r\n\
-                \    case \"TDM\" :\r\n        output = \"true\"\r\n        break;\r\
-                \n    case \"TDM_LIBRARY\" :\r\n        output = \"true\"\r\n    \
-                \    break;\r\n    case \"TDM_Reference\" :\r\n        output = \"\
-                true\"\r\n        break;\r\n    case \"TDM_TableLevel\" :\r\n    \
-                \    output = \"true\"\r\n        break;\r\n    default :\r\n    \
-                \    output=\"false\";\r\n        break;\r\n}\r\noutput;"
+              userCode: |-
+                let name = input ;
+                var output ;
+                switch (name) {
+                    case "TDM" :
+                        output = "true"
+                        break;
+                    case "TDM_LIBRARY" :
+                        output = "true"
+                        break;
+                    case "TDM_Reference" :
+                        output = "true"
+                        break;
+                    case "TDM_TableLevel" :
+                        output = "true"
+                        break;
+                    case "aifusion" :
+                        output = "true"
+                        break;
+                    case "Vectors" :
+                        output = "true"
+                        break;
+                    default :
+                        output="false";
+                        break;
+                }
+                output;
               script: |-
                 var name = input;
                 var output;
@@ -103,6 +123,14 @@ stages:
                     break;
 
                   case "TDM_TableLevel":
+                    output = "true";
+                    break;
+
+                  case "aifusion":
+                    output = "true";
+                    break;
+
+                  case "Vectors":
                     output = "true";
                     break;
 

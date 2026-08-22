@@ -1451,7 +1451,7 @@ public class SharedLogic {
 				statusData.forEach((key, value) -> {
 					try {
 						//log.info("setGlobals - setting "+key+"='"+value+ "'");
-						fabric().execute("set " + key + "='" + value + "'");
+						fabric().execute("set " + key + "='" + String.valueOf(value).replace("'", "''") + "'");
 					} catch (SQLException e) {
                         log.error("Failed to set Globals due to: " + e.getMessage());
 						e.printStackTrace();

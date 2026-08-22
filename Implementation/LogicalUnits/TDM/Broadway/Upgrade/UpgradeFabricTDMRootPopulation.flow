@@ -41,6 +41,8 @@ stages:
             - LU_NAME: TDM_TableLevel
             - LU_NAME: k2_ref
             - LU_NAME: k2_ws
+            - LU_NAME: aifusion
+            - LU_NAME: Vectors
             schema: '#ref'
           LU_NAME:
             link:

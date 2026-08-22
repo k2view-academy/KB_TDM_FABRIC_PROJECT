@@ -1355,3 +1355,10 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_notes (
 );
 
 CREATE INDEX IF NOT EXISTS task_notes_task_id_ix ON ${@schema}.task_notes (task_id);
+
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_agent_info (
+    task_id bigint NOT NULL,
+    agent_info text NOT NULL,    
+    job_last_updated_date timestamp without time zone NOT NULL DEFAULT now(),
+    CONSTRAINT tdm_agent_info_pkey PRIMARY KEY (task_id)
+);

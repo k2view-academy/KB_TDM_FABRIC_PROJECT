@@ -194,10 +194,9 @@ public class Logic extends UserCode {
         private Set<TableRef> getForeignKeyDependenciesByJDBC() throws Exception {
             String interfaceName = iface;
             String schemaName = schema;
-            String tableName = table;
-            Long taskExecutionId = Long.parseLong(getGlobal("TDM_TASK_EXE_ID"));
+            String tableName = table;            
             //Check if the table has different target DB information from RefList Mtable, and use them to get FKs of table
-            Map<String, Object> targetInfo = fnLoadTargetInfoFromRefList(taskExecutionId, iface, schema, table, luName);
+            Map<String, Object> targetInfo = fnLoadTargetInfoFromRefList( iface, schema, table, luName);
             if (targetInfo != null && !targetInfo.isEmpty()) {
                 interfaceName = targetInfo.get("target_interface_name").toString();
                 schemaName = targetInfo.get("target_schema_name").toString();

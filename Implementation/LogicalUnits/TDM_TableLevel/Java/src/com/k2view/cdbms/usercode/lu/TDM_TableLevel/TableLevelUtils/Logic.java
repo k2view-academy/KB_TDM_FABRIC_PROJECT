@@ -48,7 +48,6 @@ import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.*;
 public class Logic extends UserCode {
 
     private static final Map<TableKey, Map<String, Object>> executionTableInfo = new ConcurrentHashMap<>();
-    private static final Map<Long, Map<String, String>> schemaGlobals = new ConcurrentHashMap<>();
     private static final String KEY_DEFS = "Definitions";
     private static final String KEY_PARTS = "PartitionFlowInputs";
     private static final String KEY_MASKING_WHERE = "MaskingUpdateFields";
@@ -56,6 +55,7 @@ public class Logic extends UserCode {
     private static final String KEY_TASK_REF = "TaskRefTables";
     private static final String KEY_ORDER = "CalculatedOrder";
     private static final String KEY_TAR_INFO = "TargetInfo";
+    private static final String KEY_SOURCE_INFO = "SourceInfo";
     private static final String KEY_TASK_INFO = "TaskInfo";
     private static final String KEY_COUNT = "RecordsCount";
 
@@ -117,7 +117,8 @@ public class Logic extends UserCode {
                 lookupInputs.remove("schema_name");
                 List<Map<String, Object>> tableDefinitions2 =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
                 //List<Map<String, Object>> tableDefinitions2 =  fnGetInterfaceInfo(lookupInputs, interfaceName);
-                Map<String, Object>  matchEntry = findMatchedEntry(tableDefinitions2, schemaName, getLuType().luName);
+                fabric().execute("set environment = ?", getGlobal("TDM_SOURCE_ENVIRONMENT_NAME","TDM_TableLevel"));
+                Map<String, Object> matchEntry = findMatchedEntry(tableDefinitions2, getLuType().luName, "schema_name");
                 if (matchEntry != null) {
                     tableDefinitions = new ArrayList<>();
                     tableDefinitions.add(matchEntry );
@@ -238,212 +239,12 @@ public class Logic extends UserCode {
 
             Object commitSize = finalResult.get("commit_size");
             if (commitSize == null || "".equals(commitSize.toString())) {
-                String globalDefault = getGlobal("TDM_REF_UPD_SIZE");
+                String globalDefault = getGlobal("TDM_REF_UPD_SIZE", getLuType().luName);
                 finalResult.put("commit_size", !"".equals(globalDefault) ? globalDefault : "1000");
             }
 
             return finalResult;
         }
-    
-        @out(name = "result", type = Map.class, desc = "")
-        public static Map<String, Object> fnGetTablesSetsByOrder(Map<String, Integer> tablesOrder, String interfaceName, String schemaName) throws Exception {
-            SortedMap<Integer, Set<String>> tablesList = new TreeMap<>();
-            Map<String, Object> result = new HashMap<>();
-    
-            Map<String,Object> lookupInputs = new HashMap<>();
-            lookupInputs.put("interface_name",interfaceName);
-            lookupInputs.put("schema_name",schemaName);
-            
-            Integer maxOrder = 0;
-    
-            for( Map.Entry<String, Integer> tableEntry : tablesOrder.entrySet()) {
-                String tableName = tableEntry.getKey();
-                Integer order = tableEntry.getValue();
-                lookupInputs.put("table_name",tableName);
-                //List<Map<String, Object>> tableDefinitions =  MtableLookup("TableLevelDefinitions",lookupInputs, MTable.Feature.caseInsensitive);
-                List<Map<String, Object>> tableDefinitions = fnGetInterfaceInfo("TableLevelDefinitions",lookupInputs, interfaceName);
-                if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {
-                    // TDM 9.3.1 - Check if the schema is dynamic
-                    if (!"".equals(schemaName) && (tableDefinitions == null || tableDefinitions.size() == 0)) {                        
-                        lookupInputs.remove("schema_name");
-                        // List<Map<String, Object>> tableDefinitions2 =
-                        // MtableLookup("TableLevelDefinitions",lookupInputs,
-                        // MTable.Feature.caseInsensitive);
-                        List<Map<String, Object>> tableDefinitions2 = fnGetInterfaceInfo("TableLevelDefinitions",
-                                lookupInputs, interfaceName);
-                        Map<String, Object> matchEntry = findMatchedEntry(tableDefinitions2, schemaName,
-                                getLuType().luName);
-                        if (matchEntry != null) {
-                            tableDefinitions = new ArrayList<>();
-                            tableDefinitions.add(matchEntry);
-                        }
-                    }
-                }
-                if (tableDefinitions != null && tableDefinitions.size() > 0) {
-                    Object orderObj = tableDefinitions.get(0).get("table_order");
-                    if (orderObj != null && !"".equals(orderObj.toString())) {
-                        try {
-                            int tableOrder = Integer.parseInt(orderObj.toString());
-                            order = tableOrder;
-                        } catch (Exception e) {
-                            log.error("The order of table: "+ tableName + " defined in TableLevelDefinitions Mtable is invalid, ingoring it");
-                        }
-                    }
-                }
-    
-                if (order > maxOrder) {
-                    maxOrder = order;
-                }
-                if(tablesList.get(order) != null) {
-            
-                    tablesList.get(order).add(tableName);
-                } else {
-                    Set<String> set = new HashSet<>();
-                    set.add(tableName);
-                    tablesList.put(order, set);
-                }
-                
-            }
-    
-            result.put("tablesList", tablesList);
-            result.put("maxOrder", maxOrder + 1);
-            return result;
-        }
-    
-        @out(name = "result", type = List.class, desc = "")
-        public static List<Map<String, Object>> fnGetTablesOfTask(String taskExecutionId) throws Exception {
-    
-            String sql = "SELECT  rt.lu_name, rt.interface_name, rt.schema_name, es.ref_table_name as table_name " +
-                "FROM  " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".TASK_REF_TABLES rt, " + 
-                TDMDB_SCHEMA + ".tasks t " +
-                "WHERE  rt.task_id = t.task_id " + 
-                "AND (lower(es.execution_status) = 'pending' or (lower(t.sync_mode) != 'off' and lower(es.execution_status) = 'running')) " +
-                "AND rt.task_id = es.task_id AND rt.task_ref_table_id = es.task_ref_table_id " +
-                "AND es.task_execution_id = ?";
-    
-            Map<String, Map<String, Object>> interfaceSChemaList = new HashMap<>();
-    
-            Db.Rows rows = db(TDM).fetch(sql, taskExecutionId);
-            for (Db.Row row : rows) {
-                String luName = row.get("lu_name").toString();
-                String interfaceName = row.get("interface_name").toString();
-                String schemaName = row.get("schema_name").toString();
-                String tableName = row.get("table_name").toString();
-                String targetInterfaceName = row.get("interface_name").toString();
-                String targetSchemaName = row.get("schema_name").toString();
-                String targetTableName = row.get("table_name").toString();
-                String taskSchemaName = row.get("schema_name").toString();
-                String taskInterfaceName = row.get("interface_name").toString();
-    
-                Map<String,Object> lookupInputs = new HashMap<>();
-                lookupInputs.put("lu_name",luName);
-                lookupInputs.put("interface_name",interfaceName);
-                lookupInputs.put("schema_name",schemaName);
-                lookupInputs.put("reference_table_name",tableName);
-                List<Map<String, Object>> tableInfo =  MtableLookup("RefList",lookupInputs, MTable.Feature.caseInsensitive);
-                if (tableInfo != null && tableInfo.size() > 0) {
-                    if (tableInfo.get(0).get("target_ref_table_name") != null
-                            && !"".equals(tableInfo.get(0).get("target_ref_table_name").toString())) {
-                        targetTableName = tableInfo.get(0).get("target_ref_table_name").toString();
-                    }
-
-                    if (tableInfo.get(0).get("target_interface_name") != null
-                            && !"".equals(tableInfo.get(0).get("target_interface_name").toString())) {
-                        targetInterfaceName = tableInfo.get(0).get("target_interface_name").toString();
-                    }
-
-                    if (tableInfo.get(0).get("target_schema_name") != null
-                            && !"".equals(tableInfo.get(0).get("target_schema_name").toString())) {
-                        targetSchemaName = tableInfo.get(0).get("target_schema_name").toString();
-
-                    }
-                } else {
-                    lookupInputs.remove("schema_name");
-                    tableInfo = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
-                    if (tableInfo != null && tableInfo.size() > 0) {
-                        Map<String, Object> matchedEntry = findMatchedEntry(tableInfo, schemaName, luName);
-                        if (matchedEntry != null) {
-                            if (matchedEntry.get("target_ref_table_name") != null
-                                    && !"".equals(matchedEntry.get("target_ref_table_name").toString())) {
-                                targetTableName = matchedEntry.get("target_ref_table_name").toString();
-                            }
-                            if (matchedEntry.get("target_interface_name") != null
-                                    && !"".equals(matchedEntry.get("target_interface_name").toString())) {
-                                targetInterfaceName = matchedEntry.get("target_interface_name").toString();
-                            }
-                            if (matchedEntry.get("target_schema_name") != null
-                                    && !"".equals(matchedEntry.get("target_schema_name").toString())) {
-                                targetSchemaName = matchedEntry.get("target_schema_name").toString();
-                                if (targetSchemaName.startsWith("@")) {
-                                    targetSchemaName = targetSchemaName.replaceAll("@", "");
-                                    targetSchemaName = getGlobal(targetSchemaName, luName);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                String key = interfaceName + "<#>" + schemaName;
-                Map<String, Object> interfaceSchemaEntry = interfaceSChemaList.get(key);
-                if (interfaceSchemaEntry != null) {
-                    Set<String> tableSet = (Set<String>)interfaceSchemaEntry.get("tableSet");
-                    
-                    Map<String, String>  targetTableMap = (Map<String, String>)interfaceSchemaEntry.get("targetTableMap");
-                    tableSet.add(tableName);
-                    targetTableMap.put(tableName, targetTableName);
-    
-                } else {
-                    if ((taskSchemaName.equals(schemaName) && taskInterfaceName.equals(interfaceName)) || 
-                        (taskSchemaName.equals(targetSchemaName) && taskInterfaceName.equals(targetInterfaceName))) {
-                        Map<String,Object> interfaceInput = new HashMap<>();
-                        interfaceInput.put("interface_name", interfaceName);
-    
-                        List<Map<String, Object>> interfaceParams =  MtableLookup("TableLevelInterfaces",interfaceInput, MTable.Feature.caseInsensitive);
-                        if (interfaceParams != null  && !interfaceParams.isEmpty()) {
-                            Boolean noSchema = false;
-                            Object obj = interfaceParams.get(0).get("no_schema");
-                            if (obj != null) {
-                                noSchema = Boolean.parseBoolean(obj.toString());
-                            }
-                             
-                            if (noSchema) {
-                                if (taskSchemaName.equals(schemaName) && taskInterfaceName.equals(interfaceName)) {
-                                    schemaName = null;
-                                }
-                                if (taskSchemaName.equals(targetSchemaName) && taskInterfaceName.equals(targetInterfaceName)) {                       
-                                    targetSchemaName = null;
-                                }
-                            }
-                        }
-                    }
-    
-                    Map<String, Object> newEntry = new HashMap<>();
-                    newEntry.put("lu_name", luName);
-                    newEntry.put("interfaceName", interfaceName);
-                    newEntry.put("schemaName", schemaName);
-                    newEntry.put("targetInterfaceName", targetInterfaceName);
-                    newEntry.put("targetSchemaName", targetSchemaName);
-                    newEntry.put("taskSchemaName", taskSchemaName);
-                    Set<String> tableSet = new HashSet<>();
-                    Map<String, String>  targetTableMap = new HashMap<>();
-                    
-                    targetTableMap.put(tableName, targetTableName);
-                    tableSet.add(tableName);
-                   
-                    newEntry.put("tableSet", tableSet);
-                    newEntry.put("targetTableMap", targetTableMap);
-                    interfaceSChemaList.put(key, newEntry);
-                }
-            }
-    
-            List<Map<String, Object>> result = new ArrayList<>();
-            for (Map.Entry<String, Map<String, Object>> map : interfaceSChemaList.entrySet()) {
-                result.add(map.getValue());
-            }
-    
-            return result;
-        }
-    
     
         @out(name = "result", type = Map.class, desc = "")
         public static Map<String, Integer> fnGetTablesOrder(ArrayList<String> tableList, String dbInterfaceName, String dbSchemaName) throws Exception {
@@ -615,8 +416,11 @@ public class Logic extends UserCode {
             }
 
             // E. Load Target Database Information (Interface/Schema mappings from RefList)
-            Map<String, Object> tarInfo = fnLoadTargetInfoFromRefList(taskExecutionId, interfaceName, schemaName, tableName, luName);
+            Map<String, Object> tarInfo = fnLoadTargetInfoFromRefList(interfaceName, schemaName, tableName, luName);
             allDataContainer.put(KEY_TAR_INFO, tarInfo);
+
+            Map<String, Object> srcInfo = fnLoadSourceInfoFromRefList(interfaceName, schemaName, tableName, luName);
+            allDataContainer.put(KEY_SOURCE_INFO, srcInfo);
 
             // F. Store Calculated Execution Order
             allDataContainer.put(KEY_ORDER, order);
@@ -678,7 +482,8 @@ public class Logic extends UserCode {
             if ((tableRecs == null || tableRecs.isEmpty()) && !"".equals(schemaName)) {
                 inputs.remove("schema_name");
                 List<Map<String, Object>> entries = MtableLookup(mtableName, inputs, MTable.Feature.caseInsensitive);
-                Map<String, Object>  matchEntry = findMatchedEntry(entries, schemaName, getLuType().luName);
+                fabric().execute("set environment = ?", getGlobal("TDM_SOURCE_ENVIRONMENT_NAME","TDM_TableLevel"));
+                Map<String, Object> matchEntry = findMatchedEntry(entries, getLuType().luName, "schema_name");
                 if (matchEntry != null) {
                     tableRecs = new ArrayList<>();
                     tableRecs.add(matchEntry );
@@ -759,7 +564,8 @@ public class Logic extends UserCode {
                 List<Map<String, Object>> tableDefinitions2 = MtableLookup(MTABLE_NAME, lookupInputs,
                         MTable.Feature.caseInsensitive);
 
-                Map<String, Object> matchEntry = findMatchedEntry(tableDefinitions2, schemaName, getLuType().luName);
+                fabric().execute("set environment = ?", getGlobal("TDM_SOURCE_ENVIRONMENT_NAME","TDM_TableLevel"));
+                Map<String, Object> matchEntry = findMatchedEntry(tableDefinitions2, getLuType().luName, "schema_name");
                 if (matchEntry != null) {
                     tableDefinitions = new ArrayList<>();
                     tableDefinitions.add(matchEntry);
@@ -889,7 +695,7 @@ public class Logic extends UserCode {
             return fnGetTaskReferenceTableForSpecificTable(taskExecutionId, interfaceName, schemaName, tableName);
         }
 
-        public static Map<String, Object> fnLoadTargetInfoFromRefList(Long taskExecutionId, String interfaceName, String schemaName,
+        public static Map<String, Object> fnLoadTargetInfoFromRefList(String interfaceName, String schemaName,
                 String tableName, String luName) throws Exception {
             Map<String, Object> targetInfo = new HashMap<>();
 
@@ -913,23 +719,71 @@ public class Logic extends UserCode {
                 List<Map<String, Object>> refListNoSchema = MtableLookup("RefList", lookupInputs,
                         MTable.Feature.caseInsensitive);
 
-                Map<String, Object> matched = findMatchedEntry(refListNoSchema, schemaName, luName);
+                Map<String, Object> matched = findMatchedEntry(refListNoSchema, luName, "schema_name");
                 if (matched != null) {
-                    updateTargetInfoMap(taskExecutionId, targetInfo, matched);
+                    updateTargetInfoMap(targetInfo, matched);
                     return targetInfo;
                 }
             }
 
             // 3. Final assignment if exact match was found
             if (refList != null && !refList.isEmpty()) {
-                updateTargetInfoMap(taskExecutionId, targetInfo, refList.get(0));
+                updateTargetInfoMap(targetInfo, refList.get(0));
             }
 
             return targetInfo;
         }
 
+        private static Map<String, Object> fnLoadSourceInfoFromRefList(String interfaceName, String schemaName,
+                String tableName, String luName) throws Exception {
+            Map<String, Object> sourceInfo = new HashMap<>();
 
-        private static void updateTargetInfoMap(Long taskExecutionId, Map<String, Object> targetMap, Map<String, Object> refRow) {
+            // Default values: source info mirrors the table's own identity
+            sourceInfo.put("source_ref_table_name", tableName);
+            sourceInfo.put("source_interface_name", interfaceName);
+            sourceInfo.put("source_schema_name", schemaName);
+
+            Map<String, Object> lookupInputs = new HashMap<>();
+            lookupInputs.put("lu_name", luName);
+            lookupInputs.put("interface_name", interfaceName);
+            lookupInputs.put("schema_name", schemaName);
+            lookupInputs.put("reference_table_name", tableName);
+
+            // 1. Try exact match lookup
+            List<Map<String, Object>> refList = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
+
+            // 2. Dynamic Schema Fallback (If exact match fails)
+            if ((refList == null || refList.isEmpty()) && schemaName != null && !schemaName.isEmpty()) {
+                lookupInputs.remove("schema_name");
+                List<Map<String, Object>> refListNoSchema = MtableLookup("RefList", lookupInputs,
+                        MTable.Feature.caseInsensitive);
+
+                Map<String, Object> matched = findMatchedEntry(refListNoSchema, luName, "schema_name");
+                if (matched != null) {
+                    updateSourceInfoMap(sourceInfo, matched);
+                    return sourceInfo;
+                }
+            }
+
+            // 3. Final assignment if exact match was found
+            if (refList != null && !refList.isEmpty()) {
+                updateSourceInfoMap(sourceInfo, refList.get(0));
+            }
+
+            return sourceInfo;
+        }
+
+
+        private static String resolveSchemaIfGlobal(String schemaValue, String envGlobalName) throws Exception {
+            if (schemaValue == null || !schemaValue.startsWith("@")) {
+                return schemaValue;
+            }
+            fabric().execute("set environment = ?", getGlobal(envGlobalName, getLuType().luName));
+            String gVar = schemaValue.replaceAll("@", "");
+            return getGlobal(gVar, getLuType().luName);
+        }
+
+        private static void updateTargetInfoMap(Map<String, Object> targetMap, Map<String, Object> refRow) throws Exception {
             Object tarTable = refRow.get("target_ref_table_name");
             if (tarTable != null && !"".equals(tarTable.toString())) {
                 targetMap.put("target_ref_table_name", tarTable.toString());
@@ -942,43 +796,25 @@ public class Logic extends UserCode {
 
             Object tarSchema = refRow.get("target_schema_name");
             if (tarSchema != null && !"".equals(tarSchema.toString())) {
-                String schemaStr = tarSchema.toString();
-                if (schemaStr.startsWith("@")) {
-                    schemaStr = fnGetSchemaNameFromGlobal(taskExecutionId, schemaStr);
-                }
-                targetMap.put("target_schema_name", schemaStr);
+                targetMap.put("target_schema_name", resolveSchemaIfGlobal(tarSchema.toString(), "TDM_TAR_ENV_NAME"));
             }
         }
 
-        
-        private static String fnGetSchemaNameFromGlobal(Long taskExecutionId, String globalName){
-            
-            String gVar = globalName.replaceAll("@", "");
-
-
-            Map<String, String > cachedSchemas = schemaGlobals.get(taskExecutionId);
-            String schemaStr = null;
-            if (cachedSchemas != null) {
-                schemaStr = cachedSchemas.get(gVar) != null ?  cachedSchemas.get(gVar) : null;
+        private static void updateSourceInfoMap(Map<String, Object> sourceMap, Map<String, Object> refRow) throws Exception {
+            Object refTable = refRow.get("reference_table_name");
+            if (refTable != null && !"".equals(refTable.toString())) {
+                sourceMap.put("source_ref_table_name", refTable.toString());
             }
 
-            if (schemaStr == null) {
-                    String currEnv = getGlobal("ENVIRONMENT");
-                    String envName = getGlobal("TDM_TAR_ENV_NAME");
-                    
-                    Util.rte(() ->fabric().execute("SET ENVIRONMENT=?", envName));
-                    Object value = getGlobal(gVar);
+            Object srcInt = refRow.get("interface_name");
+            if (srcInt != null && !"".equals(srcInt.toString())) {
+                sourceMap.put("source_interface_name", srcInt.toString());
+            }
 
-                    if (value != null) {
-                        schemaStr = value.toString();
-                        
-                    }
-                    Map<String, String> map = new HashMap<>();
-                    map.put(gVar, schemaStr);
-                    schemaGlobals.put(taskExecutionId, map);
-                    Util.rte(() ->fabric().execute("SET ENVIRONMENT=?", currEnv));
-                }
-            return schemaStr;
+            Object srcSchema = refRow.get("schema_name");
+            if (srcSchema != null && !"".equals(srcSchema.toString())) {
+                sourceMap.put("source_schema_name", resolveSchemaIfGlobal(srcSchema.toString(), "TDM_SOURCE_ENVIRONMENT_NAME"));
+            }
         }
 
        /**
@@ -992,6 +828,7 @@ public class Logic extends UserCode {
          * - "MaskingUpdateFields": List<String> of columns used for identifying records 
          * (e.g., PKs) during in-place masking updates.
          * - "TargetInfo": Map containing target interface and schema details.
+         * - "SourceInfo": Map containing source interface, schema, and reference table details.
          * - "TaskRefTables": List of Maps containing TDM reference metadata.
          * - "TaskInfo": Map containing task flags like 'in_place_masking_pk'.
          */
@@ -1024,7 +861,7 @@ public class Logic extends UserCode {
 
             // 3. Extract data based on the section's data structure
             if (sectionData instanceof Map) {
-                // Covers KEY_DEFS, KEY_PARTS, KEY_TAR_INFO, and KEY_TASK_INFO
+                // Covers KEY_DEFS, KEY_PARTS, KEY_TAR_INFO, KEY_SOURCE_INFO, and KEY_TASK_INFO
                 Map<String, Object> sectionMap = (Map<String, Object>) sectionData;
                 Object value = sectionMap.get(attrName);
 
@@ -1168,7 +1005,7 @@ public class Logic extends UserCode {
             // putIfAbsent handles the race: whichever thread wins sets the value; losers discard their copy
             Map<String, Object> existing = executionTableInfo.putIfAbsent(key, loaded);
             return existing != null ? existing : loaded;
-        }
+        }   
 
         public static void fnClearTaskCache(Long taskExecutionId) {
             if (taskExecutionId == null)
@@ -1177,7 +1014,6 @@ public class Logic extends UserCode {
             // Removes all cached tables belonging to this specific execution ID
             executionTableInfo.keySet().removeIf(key -> taskExecutionId.equals(key.taskExecutionId));
 
-            schemaGlobals.keySet().remove(taskExecutionId);
             //log.info("TDM Cache Cleanup: Memory released for Task Execution: " + taskExecutionId);
         }
 }

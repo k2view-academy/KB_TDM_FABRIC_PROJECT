@@ -67,7 +67,7 @@ stages:
           dataPlatform:
             const: {{sourceInterface}}
           schema:
-            const: {{sourceSchema}}
+            const: {{#if sourceSchema}}{{{sourceSchema}}}{{else}}{{{sourceCatalog}}}{{/if}}
           dataset:
             const: {{sourceTable}}
           TTL:

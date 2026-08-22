@@ -15504,10 +15504,11 @@ ct.div`
 var RightSide$5 = ct.div`
     width: 70%;
     border-left: 1px solid #ccc;
-    padding: 0px 38px;
+    padding: 0px 38px 0px 80px;
     background-color: #ececec;
-    overflow: auto;
-    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 `;
 var RightSideHeader = ct.div`
     font-size: 20px;
@@ -15520,7 +15521,9 @@ var RightSideHeader = ct.div`
         
 `;
 var RightSideBody = ct.div`
-    // padding-top: 35px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
 `;
 var RightSideBox = ct.div`
     cursor: ${(props) => props.hold ? "not-allowed" : "grab"};
@@ -15798,6 +15801,54 @@ var TaskTemplateMenuIcon = ct.div`
     transition: background 0.12s ease;
     &:hover {
         background: rgba(0, 0, 0, 0.06);
+    }
+`;
+var AIHelperButton = ct.button`
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    color: ${(props) => props.active ? "#1483f3" : "#fff"};
+    background: ${(props) => props.active ? "#fff" : "#1483f3"};
+    border: 2px solid #1483f3;
+    border-radius: 6px;
+    /* Search bar is 36px tall with a 1px border, so 30px leaves the 2px gap above and
+       below (the bar's 2px right padding gives the matching gap on the right). */
+    height: 30px;
+    padding: 0 13px;
+    flex-shrink: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    &:hover {
+        opacity: 0.88;
+    }
+`;
+var AIHelperIcon = ct.img`
+    width: 14px;
+    height: 14px;
+    filter: ${(props) => props.active ? "none" : "brightness(0) invert(1)"};
+`;
+var AIHelperCloseIcon = ct.img`
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+    margin-top: 1px;
+`;
+var RecentChatItem = ct.div`
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    color: #555;
+    cursor: pointer;
+    padding: 8px 6px;
+    border-radius: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:hover {
+        background: rgba(0, 0, 0, 0.06);
+        color: #1483f3;
     }
 `;
 //#endregion
@@ -39376,7 +39427,7 @@ createLucideIcon("rotate-ccw-square", [
 		key: "d36hnl"
 	}]
 ]);
-createLucideIcon("rotate-ccw", [["path", {
+var RotateCcw = createLucideIcon("rotate-ccw", [["path", {
 	d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",
 	key: "1357e3"
 }], ["path", {
@@ -48475,6 +48526,9 @@ createLucideIcon("zoom-out", [
 * See the LICENSE file in the root directory of this source tree.
 */
 //#endregion
+//#region src/containers/TaskTemplates/SearchBar/ai-icon.svg
+var ai_icon_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='13'%20height='13'%3e%3cpath%20fill-rule='evenodd'%20fill='%231483f3'%20d='M6.227%2011.852c.458.459%201.237.126%201.237-.513a4.37%204.37%200%200%201%204.366-4.366c.638%200%20.971-.778.512-1.237a.722.722%200%200%200-.512-.212%204.37%204.37%200%200%201-4.366-4.366c0-.2-.081-.381-.213-.512-.459-.459-1.237-.126-1.237.512a4.37%204.37%200%200%201-4.366%204.366c-.638%200-.971.778-.512%201.237a.718.718%200%200%200%20.512.212%204.37%204.37%200%200%201%204.366%204.366.72.72%200%200%200%20.213.513z'/%3e%3c/svg%3e";
+//#endregion
 //#region src/images/selected-favorit.svg
 var selected_favorit_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='21'%20height='20'%3e%3cpath%20fill-rule='evenodd'%20fill='%23F0832B'%20d='m10.026.328%203.096%206.176%206.92.99-5.007%204.807%201.181%206.786-6.19-3.204-6.188%203.204%201.181-6.786L.012%207.494l6.92-.99L10.026.328z'/%3e%3c/svg%3e";
 //#endregion
@@ -48507,6 +48561,9 @@ var task_extract_and_load_default = "data:image/svg+xml,%3csvg%20xmlns='http://w
 //#endregion
 //#region src/images/task_delete.svg
 var task_delete_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='130'%3e%3cdefs%3e%3clinearGradient%20id='ovhj697oua'%20x1='0%25'%20x2='0%25'%20y1='100%25'%20y2='0%25'%3e%3cstop%20offset='0%25'%20stop-color='%235691F5'/%3e%3cstop%20offset='100%25'%20stop-color='%239667EF'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath%20fill-rule='evenodd'%20fill='%23E4B90B'%20d='M64.999%200c35.9%200%2065%2029.102%2065%2065%200%2035.899-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065%200%2029.102%2029.102%200%2064.999%200z'/%3e%3cpath%20fill='url(%23ovhj697oua)'%20d='M64.999%200c35.9%200%2065%2029.102%2065%2065%200%2035.899-29.1%2065-65%2065C29.102%20130%200%20100.899%200%2065%200%2029.102%2029.102%200%2064.999%200z'/%3e%3cpath%20fill-rule='evenodd'%20fill='%23FFF'%20d='M92.879%2044.636h-4.79v47.759a2.406%202.406%200%200%201-2.395%202.418H44.981a2.406%202.406%200%200%201-2.395-2.418V44.636h-4.79c-.992%200-2.696-.812-2.696-1.814s1.704-1.814%202.696-1.814h14.968v-4.231c0-1.002.804-1.813%201.797-1.813h21.554c.992%200%201.796.811%201.796%201.813v4.231h14.968c.992%200%201.796.812%201.796%201.814a1.805%201.805%200%200%201-1.796%201.814zm-18.56-6.045H56.357v2.417h17.962v-2.417zM83.3%2046.45H47.376v43.527H83.3V46.45zm-28.739%204.836c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418zm10.777%200c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418zm10.777%200c1.322%200%202.395%201.083%202.395%202.418v27.809c0%201.336-1.073%202.418-2.395%202.418a2.406%202.406%200%200%201-2.395-2.418V53.704c0-1.335%201.072-2.418%202.395-2.418z'/%3e%3c/svg%3e";
+//#endregion
+//#region src/images/x.svg
+var x_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='11'%20height='11'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m6.65%205.322%203.949%203.973a.706.706%200%200%201-.494%201.202.693.693%200%200%201-.495-.206L5.66%206.317l-3.95%203.974a.694.694%200%200%201-.99%200%20.706.706%200%200%201%200-.996l3.95-3.973L.72%201.348a.706.706%200%200%201%200-.996.697.697%200%200%201%20.99%200l3.95%203.974L9.61.352a.696.696%200%200%201%20.989%200%20.706.706%200%200%201%200%20.996L6.65%205.322z'/%3e%3c/svg%3e";
 //#endregion
 //#region src/utils/toast.ts
 /**
@@ -48669,9 +48726,11 @@ var getSchemaTableList = async (environment, interfaceName, schemaName) => invok
 	interfaceName,
 	schemaName
 }, "POST");
-var getTableVersions = async (table_name, env_name) => invokeFabricWebService$4("getTableVersions", {
+var getTableVersions = async (table_name, env_name, fromDate, toDate) => invokeFabricWebService$4("getTableVersions", {
 	table_name,
-	env_name
+	env_name,
+	fromDate,
+	toDate
 }, "POST");
 var getEnvironmentsByUser = async () => invokeFabricWebService$4("userEnvironments", {}, "GET");
 var getGlobalVariables = async (lus) => invokeFabricWebService$4("environment/getAllGlobals", { lus }, "GET");
@@ -59459,7 +59518,8 @@ var AuthProvider = ({ children }) => {
 		fluxMode: true,
 		isReady: false,
 		isAllowed: false,
-		errorMessage: null
+		errorMessage: null,
+		errorSeverity: "error"
 	});
 	const navigateTo = (path) => {
 		if (location.pathname === path) navigate(path, {
@@ -59500,7 +59560,8 @@ var AuthProvider = ({ children }) => {
 						...prev,
 						isReady: true,
 						isAllowed: false,
-						errorMessage: roleResp.message || "User Not Allowed to use TDM APP"
+						errorMessage: roleResp.message || "User Not Allowed to use TDM APP",
+						errorSeverity: roleResp.errorCode === "WARNING" ? "warning" : "error"
 					}));
 					return;
 				}
@@ -59515,7 +59576,8 @@ var AuthProvider = ({ children }) => {
 						...prev,
 						isReady: true,
 						isAllowed: false,
-						errorMessage: paramsResp.message || "Failed to load TDM params"
+						errorMessage: paramsResp.message || "Failed to load TDM params",
+						errorSeverity: paramsResp.errorCode === "WARNING" ? "warning" : "error"
 					}));
 					return;
 				}
@@ -59601,14 +59663,16 @@ var AuthProvider = ({ children }) => {
 					fluxMode: true,
 					isReady: true,
 					isAllowed: true,
-					errorMessage: null
+					errorMessage: null,
+					errorSeverity: "error"
 				});
 			} catch (err) {
 				setAuthState((prev) => ({
 					...prev,
 					isReady: true,
 					isAllowed: false,
-					errorMessage: err?.message || "User Not Allowed to use TDM APP"
+					errorMessage: err?.message || "User Not Allowed to use TDM APP",
+					errorSeverity: "error"
 				}));
 			}
 		}
@@ -80873,7 +80937,7 @@ function QueryBuilder(props) {
 			groupIndex: index,
 			ruleIndex,
 			rule,
-			disableMainOp: disableRuleFieldChanges && !nextRule?.new_field && !nextRule?.group?.newGroup,
+			disableMainOp: disableRuleFieldChanges && !nextRule?.new_field && !nextRule?.group?.runtimeGroup,
 			parameters,
 			disableRuleFieldChanges,
 			getOverrideParamIsEditable,
@@ -80895,11 +80959,12 @@ function QueryBuilder(props) {
 	const addGroup = (0, import_react.useCallback)(() => {
 		group?.rules.push({ group: {
 			newGroup: true,
+			runtimeGroup: disableRuleFieldChanges ? true : false,
 			operator: "AND",
 			rules: []
 		} });
 		onChange();
-	}, [onChange]);
+	}, [onChange, disableRuleFieldChanges]);
 	const removeGroupLocal = (0, import_react.useCallback)(() => {
 		if (removeGroup) removeGroup(index);
 	}, [removeGroup]);
@@ -80925,7 +80990,7 @@ function QueryBuilder(props) {
 				icon: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='21'%20height='21'%3e%3cpath%20fill-rule='evenodd'%20fill='%231483F3'%20d='M10.757.023C5.108.012.522%204.582.509%2010.229.5%2015.878%205.068%2020.464%2010.715%2020.475c5.65.011%2010.236-4.558%2010.247-10.206C20.972%204.622%2016.403.034%2010.757.023zm5.558%2011.167h-.003l-4.733-.005v4.643a.93.93%200%200%201-1.857%200v-4.646l-4.653-.004a.928.928%200%201%201%20.003-1.858h.002l4.648.004V4.672a.928.928%200%201%201%201.857%200v4.654l4.736.005a.93.93%200%200%201%200%201.859z'/%3e%3c/svg%3e",
 				disabled
 			}),
-			removeGroup && (!disableRuleFieldChanges || group?.newGroup) ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button$1, {
+			removeGroup && (!disableRuleFieldChanges || group?.runtimeGroup) ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button$1, {
 				title: "Remove group",
 				width: "150px",
 				type: "secondary",
@@ -83582,7 +83647,7 @@ var TablesContainer = ct.div`
     display: flex;
     gap: 7px;
     align-items:center;
-    height: 269px;
+    height: 340px;
 `;
 var SourceTablesContainer = ct.div`
     width: 320px;
@@ -83609,7 +83674,7 @@ var MoveTablesButton = ct.div`
 `;
 var SelectedTables = ct.div`
     flex-grow: 1;
-    height: 269px;
+    height: 100%;
 `;
 var Icon$17 = ct.img`
     cursor: pointer;
@@ -84141,10 +84206,15 @@ var useTable$1 = (deleteRow, toggleModalUpdateVersion, showVersion, onUpdateTabl
 	return { columns: (0, import_react.useMemo)(() => [
 		columnHelper.accessor("reference_table_name", {
 			header: () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Table name" }),
-			cell: ({ row }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-				title: `Interface: ${row.original.interface_name}, schema: ${row.original.schema_name}.`,
-				children: row.original.reference_table_name
-			})
+			cell: ({ row }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: row.original.reference_table_name })
+		}),
+		columnHelper.accessor("interface_name", {
+			header: () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Interface" }),
+			cell: ({ row }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: row.original.interface_name })
+		}),
+		columnHelper.accessor("schema_name", {
+			header: () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Schema" }),
+			cell: ({ row }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: row.original.schema_name })
 		}),
 		...showVersion ? [columnHelper.accessor("version_task_name", {
 			header: () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Table version" }),
@@ -84340,7 +84410,7 @@ var MyIcon = ({ color = "white" }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx
 		d: "m8.45 6.8 4.53-4.948a1.007 1.007 0 0 0 .003-1.415C12.594.46 11.964.43 11.574.434L6.642 5.381 1.727.414C1.339.23.708.21.32.412c.37.39.37 1.024-.003 1.416l4.914 4.966-4.932 4.947c.601.39.621 1.024-.003 1.416.194.197.449.295.804.295.154 0 .408-.097.602-.292l4.934-4.947 4.914 4.966a.987.987 0 0 0 1.408.003c.388-.39.39-1.024.002-1.416L8.45 6.8z"
 	})
 });
-var CustomerTypeTable = ({ onClose, data, column, onClickSave, tableName, disabled }) => {
+var CustomerTypeTable = ({ onClose, data, column, onClickSave, tableName, disabled, fromDate, toDate, onFromDateChange, onToDateChange }) => {
 	const onSave = () => {
 		if (disabled) return;
 		onClickSave();
@@ -84358,10 +84428,10 @@ var CustomerTypeTable = ({ onClose, data, column, onClickSave, tableName, disabl
 		] }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(WrapperTop, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RangeDatePicker, {
 			title: "",
-			startDate: /* @__PURE__ */ new Date(),
-			startDateChange: () => {},
-			endDate: /* @__PURE__ */ new Date(),
-			endDateChange: () => {},
+			startDate: fromDate,
+			startDateChange: onFromDateChange,
+			endDate: toDate,
+			endDateChange: onToDateChange,
 			disabled
 		}) }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(WrapperBottom, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Table, {
@@ -84388,6 +84458,8 @@ var useCustomerTable = (disabled) => {
 	const [data, setData] = (0, import_react.useState)([]);
 	const [selected, setSelected] = (0, import_react.useState)(null);
 	const [current, setCurrent] = (0, import_react.useState)(null);
+	const [fromDate, setFromDate] = (0, import_react.useState)(() => /* @__PURE__ */ new Date(Date.now() - 2592e6));
+	const [toDate, setToDate] = (0, import_react.useState)(() => /* @__PURE__ */ new Date());
 	const selectRow = (row) => {
 		setSelected({
 			task_execution_id: row.task_execution_id,
@@ -84457,13 +84529,25 @@ var useCustomerTable = (disabled) => {
 		selected,
 		disabled
 	]);
+	(0, import_react.useEffect)(() => {
+		if (!showModal || !current || !source_environment_name) return;
+		let cancelled = false;
+		taskAPIs.getTableVersions(current.reference_table_name, source_environment_name, fromDate, toDate).then((data) => {
+			if (!cancelled) setData(data || []);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [
+		showModal,
+		current,
+		fromDate,
+		toDate,
+		source_environment_name
+	]);
 	const OpenModalUpdateVersion = (0, import_react.useCallback)(async (row) => {
 		if (source_environment_name) {
-			const request = {
-				table_name: row.reference_table_name,
-				env_name: source_environment_name
-			};
-			setData(await taskAPIs.getTableVersions(row.reference_table_name, request.env_name));
+			setData([]);
 			setShowModal(true);
 			setCurrent(row);
 			setSelected({
@@ -84472,6 +84556,12 @@ var useCustomerTable = (disabled) => {
 			});
 		}
 	}, [source_environment_name]);
+	const onFromDateChange = (0, import_react.useCallback)((date) => {
+		if (date) setFromDate(date);
+	}, []);
+	const onToDateChange = (0, import_react.useCallback)((date) => {
+		if (date) setToDate(date);
+	}, []);
 	const onClose = () => {
 		setShowModal(false);
 	};
@@ -84489,7 +84579,11 @@ var useCustomerTable = (disabled) => {
 		onClose,
 		data,
 		onClickSave,
-		current
+		current,
+		fromDate,
+		toDate,
+		onFromDateChange,
+		onToDateChange
 	};
 };
 //#endregion
@@ -85153,7 +85247,7 @@ function ReferenceTables(props) {
 					const lastIndex = lastKey != null ? tables.findIndex((t) => `${BE}.${schemaKey}.${t.name}` === lastKey) : -1;
 					if (e.shiftKey && lastIndex !== -1) {
 						const [start, end] = [lastIndex, clickedIndex].sort((a, b) => a - b);
-						for (let i = start; i <= end; i++) tables[i].selected = true;
+						for (let i = start; i <= end; i++) if (!filter || tables[i].name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) tables[i].selected = true;
 					} else {
 						tables[clickedIndex].selected = !tables[clickedIndex].selected;
 						setLastSelectedMap((prev) => ({
@@ -85179,7 +85273,7 @@ function ReferenceTables(props) {
 				tableData.name
 			]
 		});
-	}, [lastSelectedMap]);
+	}, [lastSelectedMap, filter]);
 	const getEnvTables = (0, import_react.useCallback)((env, schem, schemaKey) => {
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: env.opened ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TablesIconContainer, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectAllContainer, {
 			title: schem.selectAll ? "Unselect all" : "Select all",
@@ -85242,7 +85336,7 @@ function ReferenceTables(props) {
 		});
 		saveForm({ tableList: updatedTables });
 	}, [tableList, saveForm]);
-	const { columns: customerTableColumns, data: customerTableData, OpenModalUpdateVersion, showModal, onClose, onClickSave, current } = useCustomerTable(viewMode);
+	const { columns: customerTableColumns, data: customerTableData, OpenModalUpdateVersion, showModal, onClose, onClickSave, current, fromDate, toDate, onFromDateChange, onToDateChange } = useCustomerTable(viewMode);
 	const { columns } = useTable$1(deleteRow, OpenModalUpdateVersion, showVersion, (0, import_react.useCallback)((tableId, settings) => {
 		const updatedTables = tableList?.map((table) => {
 			if (!table.id) table.id = `${table.interface_name}_${table.schema_name}_${table.reference_table_name}`;
@@ -85259,6 +85353,7 @@ function ReferenceTables(props) {
 	* Passing `true` checks all the check-boxes, passing `false` clears them.
 	*/
 	const toggleTableInterfaces = (0, import_react.useCallback)((BE, schemaKey, value) => {
+		const matchesFilter = (name) => !filter || name.toLowerCase().indexOf(filter.toLowerCase()) >= 0;
 		getSchemaTableList(BE, schemaKey).then((data) => {
 			setTablesData((prevData) => {
 				const foundBE = prevData.find((it) => it.env_name === BE);
@@ -85280,13 +85375,13 @@ function ReferenceTables(props) {
 						});
 					});
 					foundBE.schemas[schemaKey].tables.forEach((table) => {
-						if (!table.moved) table.selected = value || false;
+						if (!table.moved && matchesFilter(table.name)) table.selected = value || false;
 					});
 				}
 				return [...prevData];
 			});
 		});
-	}, [getSchemaTableList]);
+	}, [getSchemaTableList, filter]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Container$23, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Title$14, { children: ["Tables", (tableList || []).length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TablesAdvanced, {
 			type: "source",
@@ -85341,7 +85436,11 @@ function ReferenceTables(props) {
 			column: customerTableColumns,
 			onClose,
 			onClickSave,
-			disabled: viewMode
+			disabled: viewMode,
+			fromDate,
+			toDate,
+			onFromDateChange,
+			onToDateChange
 		})
 	] });
 }
@@ -96767,13 +96866,13 @@ function MoveTaskGroup(props) {
 }
 //#endregion
 //#region src/components/ConfirmationPopup/index.tsx
-var ConfirmationPopup = ({ isOpen, title, message, onConfirm, onCancel, confirmText = "Yes", cancelText = "No" }) => {
+var ConfirmationPopup = ({ isOpen, title, message, onConfirm, onCancel, confirmText = "Yes", cancelText = "No", hideCancel = false }) => {
 	if (!isOpen) return null;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card$1, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header$7, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Title$8, { children: title }) }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Hr$2, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopupLabel$2, { children: message }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopupActionsWrapper, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button$1, {
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PopupActionsWrapper, { children: [hideCancel ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button$1, {
 			onClick: onCancel,
 			type: "secondary",
 			title: cancelText,
@@ -96793,20 +96892,25 @@ var SearchContainer = ct.div`
   align-items: center;
   border-radius: 10px;
   border: solid 1px #999;
-  background-color: #999;
-  padding: 0 10px;
+  /* With the chat enabled the AI Helper button is the last item in the bar and sits
+     2px inside the border, so the right padding shrinks to that 2px. */
+  padding: ${({ hasChat }) => hasChat ? "0 2px 0 10px" : "0 10px"};
   height: 36px;
-  width: 33%;
+  width: ${({ hasChat }) => hasChat ? "40vw" : "35vw"};
+  margin-left: ${({ hasChat }) => hasChat ? "105px" : "10px"};
   background: #fff;
-  position: absolute;
-  left: calc(50% - 16%);
 `;
 var SearchInput$4 = ct.input`
   border: none;
   flex: 1;
+  min-width: 0;
   outline: none;
   font-size: 14px; /* Optional: slightly smaller font to fit nicely */
   color: #000;
+  padding-right: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 
   &::placeholder {
     color: #999;
@@ -96914,9 +97018,6 @@ var search_icon_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/
 //#endregion
 //#region src/images/advanced-menu-icon.svg
 var advanced_menu_icon_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='15'%20height='11'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='M14.076%201.754H.995a.582.582%200%201%201%200-1.162h13.081c.322%200%20.584.26.584.581%200%20.32-.262.581-.584.581zM2.933%205.173h9.205a.582.582%200%201%201%200%201.163H2.933a.582.582%200%201%201%200-1.163zm1.938%204.582h5.33c.321%200%20.583.26.583.581a.583.583%200%200%201-.583.581h-5.33a.583.583%200%200%201-.585-.581c0-.321.262-.581.585-.581z'/%3e%3c/svg%3e";
-//#endregion
-//#region src/images/x.svg
-var x_default = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='11'%20height='11'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m6.65%205.322%203.949%203.973a.706.706%200%200%201-.494%201.202.693.693%200%200%201-.495-.206L5.66%206.317l-3.95%203.974a.694.694%200%200%201-.99%200%20.706.706%200%200%201%200-.996l3.95-3.973L.72%201.348a.706.706%200%200%201%200-.996.697.697%200%200%201%20.99%200l3.95%203.974L9.61.352a.696.696%200%200%201%20.989%200%20.706.706%200%200%201%200%20.996L6.65%205.322z'/%3e%3c/svg%3e";
 //#endregion
 //#region src/containers/TaskTemplates/SearchBar/AdvancedSearchBar.tsx
 var data_types = [
@@ -97137,10 +97238,11 @@ var AdvancedSearch = ({ onClose, onSearch, data }) => {
 };
 //#endregion
 //#region src/containers/TaskTemplates/SearchBar/index.tsx
-var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFormData, initialDisplayValue }) => {
+var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFormData, initialDisplayValue, onValueChange, onEnterPress, rightContent, placeholder = "Ask AI or Search…", hasChat, clearTrigger }) => {
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const [searchValue, setSearchValue] = (0, import_react.useState)(initialDisplayValue || "");
 	const [data, setData] = (0, import_react.useState)(initialFormData || {});
+	const isFirstRender = (0, import_react.useRef)(true);
 	const SEARCH_DEBOUNCE_MS = 400;
 	const debounceRef = (0, import_react.useRef)(null);
 	const clearDebounce = () => {
@@ -97154,6 +97256,17 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 		else if (isSearchActive && onClearSearch) onClearSearch();
 	};
 	(0, import_react.useEffect)(() => clearDebounce, []);
+	(0, import_react.useEffect)(() => {
+		if (isFirstRender.current) {
+			isFirstRender.current = false;
+			return;
+		}
+		clearDebounce();
+		setSearchValue("");
+		setData({});
+		onValueChange?.("");
+		if (isSearchActive) onClearSearch?.();
+	}, [clearTrigger]);
 	const handleSearch = (data, isTablesSelected) => {
 		clearDebounce();
 		if (data) {
@@ -97200,9 +97313,14 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 			setOpen(false);
 		} else runTextSearch(searchValue);
 	};
+	const handleSubmit = () => {
+		if (onEnterPress && searchValue.trim()) onEnterPress(searchValue);
+		else handleSearch();
+	};
 	const handleInputChange = (e) => {
 		const value = e.target.value;
 		setSearchValue(value);
+		onValueChange?.(value);
 		clearDebounce();
 		if (open) return;
 		debounceRef.current = setTimeout(() => {
@@ -97210,7 +97328,7 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 		}, SEARCH_DEBOUNCE_MS);
 	};
 	const handleKeyPress = (e) => {
-		if (e.key === "Enter") handleSearch();
+		if (e.key === "Enter") handleSubmit();
 	};
 	const handleClearSearch = () => {
 		clearDebounce();
@@ -97222,8 +97340,7 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Popover.Popover, {
 		containerStyle: {
 			zIndex: "100",
-			width: "33%",
-			left: "10px"
+			width: "33%"
 		},
 		reposition: true,
 		padding: 10,
@@ -97235,32 +97352,145 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 			onSearch: handleSearch,
 			data
 		}),
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SearchContainer, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SearchInput$4, {
-			placeholder: "Search...",
-			value: searchValue,
-			onChange: handleInputChange,
-			onKeyPress: handleKeyPress
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(IconsContainer, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
-				src: search_icon_default,
-				onClick: () => handleSearch(),
-				style: { cursor: "pointer" }
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Divider, {}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
-				onClick: () => {
-					clearDebounce();
-					setOpen(true);
-				},
-				src: advanced_menu_icon_default,
-				style: { cursor: "pointer" }
-			}),
-			isSearchActive && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Divider, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
-				src: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='11'%20height='11'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m6.65%205.322%203.949%203.973a.706.706%200%200%201-.494%201.202.693.693%200%200%201-.495-.206L5.66%206.317l-3.95%203.974a.694.694%200%200%201-.99%200%20.706.706%200%200%201%200-.996l3.95-3.973L.72%201.348a.706.706%200%200%201%200-.996.697.697%200%200%201%20.99%200l3.95%203.974L9.61.352a.696.696%200%200%201%20.989%200%20.706.706%200%200%201%200%20.996L6.65%205.322z'/%3e%3c/svg%3e",
-				onClick: handleClearSearch,
-				style: { cursor: "pointer" }
-			})] })
-		] })] })
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SearchContainer, {
+			hasChat,
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SearchInput$4, {
+				placeholder,
+				value: searchValue,
+				onChange: handleInputChange,
+				onKeyPress: handleKeyPress
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(IconsContainer, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
+					src: search_icon_default,
+					onClick: handleSubmit,
+					style: { cursor: "pointer" }
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Divider, {}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
+					onClick: () => {
+						clearDebounce();
+						setOpen(true);
+					},
+					src: advanced_menu_icon_default,
+					style: { cursor: "pointer" }
+				}),
+				isSearchActive && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Divider, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon$8, {
+					src: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='11'%20height='11'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m6.65%205.322%203.949%203.973a.706.706%200%200%201-.494%201.202.693.693%200%200%201-.495-.206L5.66%206.317l-3.95%203.974a.694.694%200%200%201-.99%200%20.706.706%200%200%201%200-.996l3.95-3.973L.72%201.348a.706.706%200%200%201%200-.996.697.697%200%200%201%20.99%200l3.95%203.974L9.61.352a.696.696%200%200%201%20.989%200%20.706.706%200%200%201%200%20.996L6.65%205.322z'/%3e%3c/svg%3e",
+					onClick: handleClearSearch,
+					style: { cursor: "pointer" }
+				})] }),
+				rightContent ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Divider, {}), rightContent] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { paddingLeft: "7px" } })
+			] })]
+		})
+	});
+};
+//#endregion
+//#region src/containers/TaskTemplates/AIChat/index.tsx
+var AIChat = ({ initialMessage, titleHtml, chatKey = 0, onNavigate, lu = "TDM", initParams }) => {
+	const wrapperRef = (0, import_react.useRef)(null);
+	const [unavailable, setUnavailable] = (0, import_react.useState)(false);
+	const onNavigateRef = (0, import_react.useRef)(onNavigate);
+	onNavigateRef.current = onNavigate;
+	(0, import_react.useEffect)(() => {
+		if (!wrapperRef.current) return;
+		const wrapper = wrapperRef.current;
+		const container = document.createElement("div");
+		container.style.cssText = "display:flex;flex-direction:column;box-sizing:border-box;background:white;width:100%;height:100%;padding:10px;border-radius:10px;box-shadow:0 0 4.8px 0.3px rgba(0,0,0,0.2);position:relative;";
+		wrapper.innerHTML = "";
+		wrapper.appendChild(container);
+		const handleLinkClick = (e, anchor) => {
+			const navigate = onNavigateRef.current;
+			if (!navigate) return;
+			const href = anchor.getAttribute("href");
+			if (!href) return;
+			try {
+				const url = new URL(href, window.location.href);
+				if (url.origin !== window.location.origin) return;
+				e.preventDefault();
+				const idx = url.pathname.indexOf("/app/TDM");
+				navigate(`${url.pathname.substring(idx + 8)}${url.search}`);
+			} catch {}
+		};
+		const launch = () => {
+			if (typeof window.buildChat !== "function") {
+				setUnavailable(true);
+				return;
+			}
+			const appid = window.k2api?.config?.aifusionAppId;
+			window.buildChat({
+				chatContainer: container,
+				chatId: crypto.randomUUID(),
+				appid,
+				agent: "DataAgent",
+				lu,
+				initParams,
+				suppressInitialMessage: !!initialMessage,
+				titleHtml,
+				hideFeedbacks: true,
+				onLinkClick: handleLinkClick
+			});
+			if (initialMessage) {
+				const poll = setInterval(() => {
+					if (typeof window.sendChatMessage === "function") {
+						clearInterval(poll);
+						window.sendChatMessage(initialMessage);
+					}
+				}, 50);
+				setTimeout(() => clearInterval(poll), 5e3);
+			}
+		};
+		const loadScript = (src) => new Promise((resolve) => {
+			const script = document.createElement("script");
+			script.src = src;
+			script.onload = () => resolve();
+			script.onerror = () => resolve();
+			document.head.appendChild(script);
+		});
+		if (typeof window.buildChat === "function") launch();
+		else {
+			const w = window;
+			const origin = window.location.origin;
+			const tenant = w.k2api?.tenantName ? `/${w.k2api.tenantName}` : "";
+			Promise.all([loadScript(`${origin}${tenant}/static/shared/widgetChart.js`), loadScript(`${origin}${tenant}/static/shared/chat.js`)]).then(() => {
+				if (typeof window.buildChat !== "function") {
+					setUnavailable(true);
+					return;
+				}
+				launch();
+			});
+		}
+	}, [
+		chatKey,
+		lu,
+		initParams
+	]);
+	if (unavailable) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		style: {
+			display: "flex",
+			justifyContent: "center",
+			alignItems: "center",
+			height: "100%",
+			color: "#999",
+			fontSize: "18px"
+		},
+		children: "There is no chat available."
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		style: {
+			width: "100%",
+			height: "100%",
+			display: "flex",
+			alignItems: "flex-start",
+			padding: "35px 0",
+			boxSizing: "border-box"
+		},
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			ref: wrapperRef,
+			style: {
+				width: "100%",
+				height: "100%"
+			}
+		})
 	});
 };
 //#endregion
@@ -97316,12 +97546,60 @@ function useTaskSearch() {
 //#endregion
 //#region src/containers/TaskTemplates/index.tsx
 var MySwal$2 = (0, import_sweetalert2_react_content_umd.default)(import_sweetalert2_all.default);
+var MOCK_RECENT_CHATS = [
+	{
+		id: 1,
+		title: "How to create a new task?"
+	},
+	{
+		id: 2,
+		title: "Extract data from environment"
+	},
+	{
+		id: 3,
+		title: "Task group configuration"
+	},
+	{
+		id: 4,
+		title: "Load task setup guide"
+	},
+	{
+		id: 5,
+		title: "Reserve data for testing"
+	}
+];
 var TaskTemplatesScreens = /* @__PURE__ */ function(TaskTemplatesScreens) {
 	TaskTemplatesScreens[TaskTemplatesScreens["task_templates"] = 0] = "task_templates";
 	TaskTemplatesScreens[TaskTemplatesScreens["task"] = 1] = "task";
 	return TaskTemplatesScreens;
 }(TaskTemplatesScreens || {});
 var SELECTED_TASK_GROUP_STORAGE_KEY = "tdm.taskManagement.selectedTaskGroupId";
+function shouldRouteToAIChat(text) {
+	const trimmed = text.trim();
+	if (!trimmed) return false;
+	if (/#\d+/.test(trimmed)) return false;
+	const words = trimmed.toLowerCase().split(/\s+/);
+	if (trimmed.includes("?")) return true;
+	const aiFirstWords = [
+		"how",
+		"why",
+		"what",
+		"when",
+		"explain",
+		"generate",
+		"create",
+		"list"
+	];
+	const aiFirstTwoWords = [
+		"can you",
+		"show me",
+		"find me"
+	];
+	if (aiFirstWords.includes(words[0])) return true;
+	if (words.length >= 2 && aiFirstTwoWords.includes(`${words[0]} ${words[1]}`)) return true;
+	if (words.length <= 3) return false;
+	return true;
+}
 function TaskTemplates() {
 	const [taskGroups, setTaskGroups] = (0, import_react.useState)(null);
 	const [selectedTab, setSelectedTab] = (0, import_react.useState)("allTaskGroups");
@@ -97336,6 +97614,13 @@ function TaskTemplates() {
 	const [canCreateTask, setCanCreateTask] = (0, import_react.useState)(false);
 	const [deleteGroupConfirmId, setDeleteGroupConfirmId] = (0, import_react.useState)(null);
 	const [taskAvailableGroups, setTaskAvailableGroups] = (0, import_react.useState)([]);
+	const [isAIChatOpen, setIsAIChatOpen] = (0, import_react.useState)(false);
+	const [chatEverOpened, setChatEverOpened] = (0, import_react.useState)(false);
+	const [initialChatMessage, setInitialChatMessage] = (0, import_react.useState)();
+	const [chatKey, setChatKey] = (0, import_react.useState)(0);
+	const [searchClearTrigger, setSearchClearTrigger] = (0, import_react.useState)(0);
+	const [isSidebarExpanded, setIsSidebarExpanded] = (0, import_react.useState)(false);
+	const searchTextRef = (0, import_react.useRef)("");
 	const [draggedTaskId, setDraggedTaskId] = (0, import_react.useState)(null);
 	const [dragOverGroupId, setDragOverGroupId] = (0, import_react.useState)(null);
 	const draggedFromGroupId = (0, import_react.useRef)(null);
@@ -97350,6 +97635,7 @@ function TaskTemplates() {
 	const chooseCategory = (0, import_react.useCallback)((taskGroup) => {
 		setSelectedTaskGroup(taskGroup);
 		sessionStorage.setItem(SELECTED_TASK_GROUP_STORAGE_KEY, `${taskGroup.task_group_id}`);
+		setIsAIChatOpen(false);
 	}, [setSelectedTaskGroup]);
 	const openTasks = (0, import_react.useCallback)(async (reload, task_id) => {
 		if (task_id) navigate(`/tasks/execute?taskId=${task_id}`);
@@ -97807,6 +98093,18 @@ function TaskTemplates() {
 	const handleClearSearch = (0, import_react.useCallback)(() => {
 		clearSearch();
 	}, [clearSearch]);
+	const handleEnterPress = (0, import_react.useCallback)((value) => {
+		if (!value.trim()) return;
+		if (window.k2api?.config?.hideChat || !shouldRouteToAIChat(value)) {
+			handleSearch({ text: value }, {}, value);
+			return;
+		}
+		setSearchClearTrigger((t) => t + 1);
+		setChatEverOpened(true);
+		setChatKey((k) => k + 1);
+		setInitialChatMessage(value);
+		setIsAIChatOpen(true);
+	}, [handleSearch]);
 	const getRightSide = (0, import_react.useCallback)(() => {
 		if (searchResults === void 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideHeader, { children: selectedTaskGroup?.task_group_name }), isGroupTasksLoading || isSearchLoading ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskTilesLoader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Loader, { size: 64 }) }) : selectedTaskGroupData.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EmptyGroupMessage, { children: "No available tasks in this group yet.." }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BoxesContainer, { children: getRightSideTemplates(selectedTaskGroupData, true) })] });
 		else {
@@ -97845,7 +98143,41 @@ function TaskTemplates() {
 					isSearchActive,
 					onClearSearch: handleClearSearch,
 					initialFormData: formData,
-					initialDisplayValue: displayValue
+					initialDisplayValue: displayValue,
+					onValueChange: (v) => {
+						searchTextRef.current = v;
+					},
+					onEnterPress: handleEnterPress,
+					placeholder: window.k2api?.config?.hideChat ? "Search..." : "Ask AI or Search…",
+					hasChat: !window.k2api?.config?.hideChat,
+					clearTrigger: searchClearTrigger,
+					rightContent: window.k2api?.config?.hideChat ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AIHelperButton, {
+						active: isAIChatOpen,
+						onClick: () => {
+							if (!isAIChatOpen) {
+								if (!chatEverOpened) {
+									setInitialChatMessage(searchTextRef.current || void 0);
+									setChatEverOpened(true);
+									setSearchClearTrigger((t) => t + 1);
+								}
+								setIsAIChatOpen(true);
+							}
+						},
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AIHelperIcon, {
+								src: ai_icon_default,
+								active: isAIChatOpen
+							}),
+							"AI Helper",
+							isAIChatOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AIHelperCloseIcon, {
+								src: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='11'%20height='11'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m6.65%205.322%203.949%203.973a.706.706%200%200%201-.494%201.202.693.693%200%200%201-.495-.206L5.66%206.317l-3.95%203.974a.694.694%200%200%201-.99%200%20.706.706%200%200%201%200-.996l3.95-3.973L.72%201.348a.706.706%200%200%201%200-.996.697.697%200%200%201%20.99%200l3.95%203.974L9.61.352a.696.696%200%200%201%20.989%200%20.706.706%200%200%201%200%20.996L6.65%205.322z'/%3e%3c/svg%3e",
+								onClick: (e) => {
+									e.stopPropagation();
+									setIsAIChatOpen(false);
+								}
+							})
+						]
+					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(HeaderActions$2, { children: [
 					canCreateTask ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskActionContainer$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskAction, {
@@ -97873,9 +98205,169 @@ function TaskTemplates() {
 				] })
 			] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Body$13, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSide$4, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CategoriesContainer, { children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideHeader, { children: "Task groups" }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideFilter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskGroupTabs, { onChange: setSelectedTab }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideFilter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskGroupTabs, { onChange: (tab) => {
+					setSelectedTab(tab);
+					setIsAIChatOpen(false);
+				} }) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideTemplatesList, { children: getLeftSideTemplates() })
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSide$5, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RightSideBody, { children: getRightSide() }) })] })] })] });
+			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(RightSide$5, { children: [isAIChatOpen && !window.k2api?.config?.hideChat && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				style: {
+					position: "absolute",
+					left: 10,
+					top: 25,
+					width: isSidebarExpanded ? 220 : 36,
+					maxHeight: "calc(100% - 50px)",
+					overflow: "hidden",
+					transition: "width 0.25s ease",
+					zIndex: 1
+				},
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					style: {
+						position: "absolute",
+						top: 0,
+						left: 0,
+						display: "flex",
+						flexDirection: "column",
+						gap: 15,
+						opacity: isSidebarExpanded ? 0 : 1,
+						transition: "opacity 0.15s ease",
+						pointerEvents: isSidebarExpanded ? "none" : "auto"
+					},
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+						src: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='21'%20height='21'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m20.799%203.805-1.813%201.842h-.001v.001l-6.92%207.029a.522.522%200%200%201-.165.113l-4.89%202.13a.527.527%200%200%201-.582-.114.543.543%200%200%201-.112-.59l2.096-4.968a.55.55%200%200%201%20.112-.168L17.258.207a.522.522%200%200%201%20.746%200l2.795%202.84a.54.54%200%200%201%200%20.758zM7.806%2013.406l2.962-1.289-1.692-1.719-1.27%203.008zm1.838-3.947%202.049%202.081%206.173-6.272-2.049-2.081-6.173%206.272zm7.987-8.115-1.068%201.085%202.049%202.081%201.068-1.084-2.049-2.082zm-6.882.209H3.576c-1.106%200-2.005.913-2.005%202.037v13.724c0%201.123.899%202.037%202.005%202.037h13.51c1.106%200%202.005-.914%202.005-2.037%200-.026.011-.049.014-.073%200-.006-.003-.01-.003-.016V9.401c0-.296.237-.536.528-.536.292%200%20.527.24.527.536v7.824c0%20.025-.01.047-.014.072%200%20.006.004.011.004.017%200%201.714-1.373%203.109-3.061%203.109H3.576c-1.688%200-3.06-1.395-3.06-3.109V3.59c0-1.715%201.372-3.109%203.06-3.109h7.173c.292%200%20.528.239.528.536a.532.532%200%200%201-.528.536z'/%3e%3c/svg%3e",
+						onClick: () => {
+							setChatKey((k) => k + 1);
+							setInitialChatMessage(void 0);
+						},
+						title: "New chat",
+						style: { cursor: "pointer" }
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					style: {
+						display: "flex",
+						flexDirection: "column",
+						gap: 15,
+						minWidth: 220,
+						opacity: isSidebarExpanded ? 1 : 0,
+						transition: "opacity 0.2s ease",
+						pointerEvents: isSidebarExpanded ? "auto" : "none"
+					},
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: {
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between"
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								style: {
+									display: "flex",
+									alignItems: "center",
+									gap: 6
+								},
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+									src: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='13'%20height='13'%3e%3cpath%20fill-rule='evenodd'%20fill='%231483f3'%20d='M6.227%2011.852c.458.459%201.237.126%201.237-.513a4.37%204.37%200%200%201%204.366-4.366c.638%200%20.971-.778.512-1.237a.722.722%200%200%200-.512-.212%204.37%204.37%200%200%201-4.366-4.366c0-.2-.081-.381-.213-.512-.459-.459-1.237-.126-1.237.512a4.37%204.37%200%200%201-4.366%204.366c-.638%200-.971.778-.512%201.237a.718.718%200%200%200%20.512.212%204.37%204.37%200%200%201%204.366%204.366.72.72%200%200%200%20.213.513z'/%3e%3c/svg%3e",
+									style: {
+										width: 20,
+										height: 20,
+										filter: "brightness(0)"
+									}
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									style: {
+										fontFamily: "Roboto, sans-serif",
+										fontSize: 16,
+										fontWeight: 500,
+										color: "#000",
+										whiteSpace: "nowrap"
+									},
+									children: "AI Helper"
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='21'%20height='20'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='M15.638%2019.969H5.147a4.747%204.747%200%200%201-4.742-4.742V4.736A4.747%204.747%200%200%201%205.147-.006h10.491a4.747%204.747%200%200%201%204.742%204.742v10.491a4.747%204.747%200%200%201-4.742%204.742zM1.496%204.736v10.491a3.655%203.655%200%200%200%203.651%203.651h.294V1.085h-.294a3.655%203.655%200%200%200-3.651%203.651zm17.793%200a3.655%203.655%200%200%200-3.651-3.651H6.532v17.793h9.106a3.655%203.655%200%200%200%203.651-3.651V4.736z'/%3e%3c/svg%3e",
+								onClick: () => setIsSidebarExpanded(false),
+								title: "Collapse",
+								style: { cursor: "pointer" }
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: {
+								display: "flex",
+								alignItems: "center",
+								gap: 8,
+								cursor: "pointer"
+							},
+							onClick: () => {
+								setChatKey((k) => k + 1);
+								setInitialChatMessage(void 0);
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+								src: "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='21'%20height='21'%3e%3cpath%20fill-rule='evenodd'%20fill='%232E2E2E'%20d='m20.799%203.805-1.813%201.842h-.001v.001l-6.92%207.029a.522.522%200%200%201-.165.113l-4.89%202.13a.527.527%200%200%201-.582-.114.543.543%200%200%201-.112-.59l2.096-4.968a.55.55%200%200%201%20.112-.168L17.258.207a.522.522%200%200%201%20.746%200l2.795%202.84a.54.54%200%200%201%200%20.758zM7.806%2013.406l2.962-1.289-1.692-1.719-1.27%203.008zm1.838-3.947%202.049%202.081%206.173-6.272-2.049-2.081-6.173%206.272zm7.987-8.115-1.068%201.085%202.049%202.081%201.068-1.084-2.049-2.082zm-6.882.209H3.576c-1.106%200-2.005.913-2.005%202.037v13.724c0%201.123.899%202.037%202.005%202.037h13.51c1.106%200%202.005-.914%202.005-2.037%200-.026.011-.049.014-.073%200-.006-.003-.01-.003-.016V9.401c0-.296.237-.536.528-.536.292%200%20.527.24.527.536v7.824c0%20.025-.01.047-.014.072%200%20.006.004.011.004.017%200%201.714-1.373%203.109-3.061%203.109H3.576c-1.688%200-3.06-1.395-3.06-3.109V3.59c0-1.715%201.372-3.109%203.06-3.109h7.173c.292%200%20.528.239.528.536a.532.532%200%200%201-.528.536z'/%3e%3c/svg%3e",
+								title: "New chat"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								style: {
+									fontFamily: "Roboto, sans-serif",
+									fontSize: 14,
+									color: "#2e2e2e",
+									whiteSpace: "nowrap"
+								},
+								children: "New Chat"
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							style: {
+								display: "flex",
+								flexDirection: "column",
+								gap: 6,
+								overflow: "hidden",
+								marginTop: 12
+							},
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								style: {
+									fontFamily: "Roboto, sans-serif",
+									fontSize: 13,
+									fontWeight: 700,
+									color: "#2e2e2e"
+								},
+								children: "Recents"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								style: {
+									display: "flex",
+									flexDirection: "column",
+									overflowY: "auto"
+								},
+								children: MOCK_RECENT_CHATS.map((chat) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RecentChatItem, {
+									title: chat.title,
+									children: chat.title
+								}, chat.id))
+							})]
+						})
+					]
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: {
+				position: "absolute",
+				left: isSidebarExpanded ? 236 : 42,
+				top: 0,
+				bottom: 0,
+				width: 1,
+				background: "#e1e1e1",
+				zIndex: 1,
+				transition: "left 0.25s ease"
+			} })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(RightSideBody, { children: [chatEverOpened && !window.k2api?.config?.hideChat && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				style: {
+					height: "100%",
+					display: isAIChatOpen ? void 0 : "none",
+					paddingLeft: isSidebarExpanded ? 150 : 0,
+					transition: "padding-left 0.2s ease"
+				},
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AIChat, {
+					chatKey,
+					initialMessage: initialChatMessage,
+					onNavigate: (path) => {
+						navigate(path || "/");
+					},
+					titleHtml: `<img src="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='13'%20height='13'%3e%3cpath%20fill-rule='evenodd'%20fill='%231483f3'%20d='M6.227%2011.852c.458.459%201.237.126%201.237-.513a4.37%204.37%200%200%201%204.366-4.366c.638%200%20.971-.778.512-1.237a.722.722%200%200%200-.512-.212%204.37%204.37%200%200%201-4.366-4.366c0-.2-.081-.381-.213-.512-.459-.459-1.237-.126-1.237.512a4.37%204.37%200%200%201-4.366%204.366c-.638%200-.971.778-.512%201.237a.718.718%200%200%200%20.512.212%204.37%204.37%200%200%201%204.366%204.366.72.72%200%200%200%20.213.513z'/%3e%3c/svg%3e" style="width:28px;height:28px"/><span style="font-family:Roboto,sans-serif;font-size:26px;color:#1483f3;font-weight:500">AI Helper</span>`
+				})
+			}), !isAIChatOpen && getRightSide()] })] })] })] })] });
 			case TaskTemplatesScreens.task: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskMain, { content: compData });
 			default: return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, {});
 		}
@@ -97891,7 +98383,14 @@ function TaskTemplates() {
 		openNewTask,
 		handleClearSearch,
 		handleSearch,
-		canCreateTask
+		handleEnterPress,
+		canCreateTask,
+		isAIChatOpen,
+		chatEverOpened,
+		chatKey,
+		initialChatMessage,
+		isSidebarExpanded,
+		searchClearTrigger
 	]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Container$57, {
 		className: "react-comp",
@@ -110545,17 +111044,17 @@ var RoleDetail = ({ environment, role, onClose, onSave, onDelete }) => {
 		let found = false;
 		if (formData.allow_read && !formData.read_unlimited_entities) {
 			const readNum = Number(formData.allowed_number_of_entities_to_read);
-			if (isNaN(readNum) || readNum < 1) validationErrors.allowed_number_of_entities_to_read = "Maximum number of entities must be at least 1";
+			if (isNaN(readNum) || readNum < 0) validationErrors.allowed_number_of_entities_to_read = "Maximum number of entities must be at least 1";
 			found = true;
 		}
 		if (formData.allow_write && !formData.write_unlimited_entities && !found) {
 			const copyNum = Number(formData.allowed_number_of_entities_to_copy);
-			if (isNaN(copyNum) || copyNum <= 0) {
+			if (isNaN(copyNum) || copyNum < 0) {
 				validationErrors.allowed_number_of_entities_to_copy = "Maximum number of entities must be at least 1";
 				found = true;
 			}
 		}
-		if (isFluxMode() && !found) {
+		if (isFluxMode() && environment.allow_write && !found) {
 			const reservedNum = Number(formData.allowed_number_of_reserved_entities);
 			if (isNaN(reservedNum) || reservedNum <= 0) validationErrors.allowed_number_of_reserved_entities = "Max number of reserved entities must be at least 1";
 		}
@@ -118518,6 +119017,14 @@ var resumeTask = async (taskExecutionId) => {
 	}
 	throw new Error("window.k2api is not defined");
 };
+var retryTaskWithFailures = async (taskExecutionId) => {
+	if (window.k2api && window.k2api.invokeFabricWebService) {
+		const response = await window.k2api.invokeFabricWebService("retryTaskWithFailures", { taskExecutionId }, "POST");
+		if (response.isError || response.errorCode === "FAILED") throw new Error(response.message || "Failed to rerun the failed processes");
+		return;
+	}
+	throw new Error("window.k2api is not defined");
+};
 var getExtractRefStats = async (taskExecutionId) => {
 	if (window.k2api && window.k2api.invokeFabricWebService) {
 		const response = await window.k2api.invokeFabricWebService("extractrefstats", {
@@ -118541,6 +119048,7 @@ var resetMockPolling = () => {};
 var executionMonitorAPIs = {
 	startTask,
 	resumeTask,
+	retryTaskWithFailures,
 	getTaskHistory,
 	getMigrateStatus,
 	getExtractRefStats,
@@ -156330,6 +156838,27 @@ function TaskSelectionBox(props) {
 				added_in_execution: void 0
 			};
 		});
+		const priorGenerateParams = task_data?.override_params?.GENERATE_DATA_PARAMS;
+		if (priorGenerateParams && typeof priorGenerateParams === "object") {
+			const rehydrated = {};
+			Object.keys(priorGenerateParams).forEach((key) => {
+				const def = fieldValues.dataGenerationParams?.[key];
+				if (!def) {
+					rehydrated[key] = { value: priorGenerateParams[key] };
+					return;
+				}
+				if (def.order >= 99999999) return;
+				rehydrated[key] = {
+					...def,
+					value: def.value !== void 0 ? def.value : priorGenerateParams[key],
+					added_in_execution: void 0
+				};
+			});
+			generateParams = {
+				...rehydrated,
+				...generateParams
+			};
+		}
 		if (isEmpty(generateParams)) generateParams = void 0;
 		const selection_method = fieldValues.selection_method === task_data.selection_method ? void 0 : fieldValues.selection_method;
 		let parametersValue = void 0;
@@ -156411,7 +156940,7 @@ function TaskSelectionBox(props) {
 		const postProcessParams = buildProcessParams(advancedPostProcesses);
 		if (preProcessParams.length > 0) values.PRE_EXECUTION_PROCESSES_PARAMS = preProcessParams;
 		if (postProcessParams.length > 0) values.POST_EXECUTION_PROCESSES_PARAMS = postProcessParams;
-		const { EXECUTION_NOTE: _priorNote, ...priorOverridesWithoutNote } = task_data.override_params || {};
+		const { EXECUTION_NOTE: _priorNote, GENERATE_DATA_PARAMS: _priorGenerateParams, ...priorOverridesWithoutNote } = task_data.override_params || {};
 		return {
 			...priorOverridesWithoutNote,
 			...values
@@ -159083,13 +159612,33 @@ var SpinnerIcon$1 = ct.div`
 `;
 //#endregion
 //#region src/containers/ExecutionMonitor/index.tsx
+var hasRerunnableWork = (rows) => rows.some((row) => {
+	const status = row.status?.toLowerCase().trim();
+	if (status && status !== "completed") return true;
+	if (Number(row.failedEntities) > 0) return true;
+	return row.subRows ? hasRerunnableWork(row.subRows) : false;
+});
 var ExecutionMonitor = ({ content, taskExecutionId: taskExecutionIdProp, openTaskStats }) => {
 	const taskExecutionId = content?.exec_id ?? taskExecutionIdProp ?? 0;
-	const { data, loading, error, isPolling, isTaskRunning, wasStopped, infoExpanded, columnVisibility, toggleInfo, toggleColumn, startPolling, stopTask } = useExecutionMonitor(taskExecutionId);
+	const { data, loading, error, isPolling, isTaskRunning, wasStopped, infoExpanded, columnVisibility, toggleInfo, toggleColumn, startPolling, stopTask, refetch } = useExecutionMonitor(taskExecutionId);
+	const toast = useToast();
 	const handleNavigateToStats = (0, import_react.useCallback)(() => {
 		if (isTaskRunning) return;
 		openTaskStats({ taskExecId: taskExecutionId });
 	}, [taskExecutionId, isTaskRunning]);
+	const handleRerunFailures = (0, import_react.useCallback)(async () => {
+		try {
+			await executionMonitorAPIs.retryTaskWithFailures(taskExecutionId);
+			refetch();
+		} catch (err) {
+			console.error("Failed to rerun failed processes:", err);
+			toast.error(err.message || "Failed to rerun the failed processes");
+		}
+	}, [
+		taskExecutionId,
+		refetch,
+		toast
+	]);
 	if (loading) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageContainer$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoadingContainer$1, { children: "Loading execution data..." }) });
 	if (error || !data) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageContainer$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ErrorContainer, { children: error || "No data available" }) });
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card$1, { children: [
@@ -159112,6 +159661,12 @@ var ExecutionMonitor = ({ content, taskExecutionId: taskExecutionIdProp, openTas
 				onClick: startPolling,
 				disabled: isTaskRunning || !wasStopped || data.isTablesTask,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { size: 16 })
+			}),
+			data.isTablesTask && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ControlIcon, {
+				title: "Rerun failed processes",
+				onClick: handleRerunFailures,
+				disabled: isTaskRunning || isPolling || !hasRerunnableWork(data.tableRows),
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RotateCcw, { size: 16 })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ControlIcon, {
 				title: "Stop",
@@ -161615,8 +162170,34 @@ var VersionInfo = () => {
 };
 //#endregion
 //#region src/App.tsx
+var NOT_ALLOWED_FALLBACK = "User Not Allowed to use TDM APP";
 function App() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(VersionInfo, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppRouter, {})] });
+	const { isReady, isAllowed, errorMessage, errorSeverity } = useAuth();
+	const blocked = isReady && !isAllowed;
+	const message = errorMessage || NOT_ALLOWED_FALLBACK;
+	const [showAccessPopup, setShowAccessPopup] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		if (blocked) setShowAccessPopup(true);
+	}, [blocked]);
+	const closeAccessPopup = () => setShowAccessPopup(false);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(VersionInfo, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppRouter, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Popup$1, {
+			width: "400px",
+			isOpen: showAccessPopup,
+			onClose: closeAccessPopup,
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ConfirmationPopup, {
+				isOpen: showAccessPopup,
+				title: errorSeverity === "warning" ? "Access Restricted" : "Access Denied",
+				message,
+				onConfirm: closeAccessPopup,
+				onCancel: closeAccessPopup,
+				confirmText: "OK",
+				hideCancel: true
+			})
+		})
+	] });
 }
 //#endregion
 //#region src/main.tsx

@@ -48,7 +48,7 @@ import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
 
 @SuppressWarnings({ "DefaultAnnotationParam", "unchecked" })
-class StartTaskValidator {
+public class StartTaskValidator {
 
 	private static final String TDM = "TDM";
 
@@ -98,7 +98,8 @@ class StartTaskValidator {
 		}
 	}
 
-	static void validateExecutionInputs(Long taskId, Db.Row taskRow, Map<OverrideParamKey, Object> inputOverrides) throws Exception {
+	public static void validateExecutionInputs(Long taskId, Db.Row taskRow,
+			Map<OverrideParamKey, Object> inputOverrides) throws Exception {
 		Map<String, Boolean> taskGlobalsEditability = loadTaskGlobalsEditability(taskId, inputOverrides);
 		Map<String, Boolean> generateParamsEditability = new HashMap<>();
 		Set<String> nullEditableParams = new HashSet<>();
@@ -1132,17 +1133,29 @@ class StartTaskValidator {
 
 	private static void validateMandatoryCustomLogicParams(
 			Db.Row taskRow, Map<OverrideParamKey, Object> inputOverrides) throws TdmValidationException {
-		Object paramOverride = inputOverrides.get(OverrideParamKey.PARAMETERS);
-		String effectiveParams = (paramOverride != null && !paramOverride.toString().isBlank())
-				? paramOverride.toString()
-				: (taskRow.get("parameters") != null ? taskRow.get("parameters").toString() : null);
-		if (effectiveParams == null || effectiveParams.isBlank())
-			return;
+		String overrideFlow = (String) inputOverrides.get(OverrideParamKey.CUSTOM_LOGIC_FLOW);
+		String taskFlow = "" + taskRow.get("selection_param_value");
+		String effectiveFlow = (overrideFlow != null && !overrideFlow.isBlank()) ? overrideFlow : taskFlow;
+		boolean flowChanged = overrideFlow != null && !overrideFlow.isBlank()
+				&& !overrideFlow.equalsIgnoreCase(taskFlow);
 
-		String overrideFlow   = (String) inputOverrides.get(OverrideParamKey.CUSTOM_LOGIC_FLOW);
+		Object paramOverride = inputOverrides.get(OverrideParamKey.PARAMETERS);
+		String effectiveParams;
+		if (paramOverride != null && !paramOverride.toString().isBlank()) {
+			effectiveParams = paramOverride.toString();
+		} else if (!flowChanged && taskRow.get("parameters") != null) {
+			effectiveParams = taskRow.get("parameters").toString();
+		} else {
+			// No override supplied and the flow changed (or the task has no stored
+			// parameters at all) —
+			// the task's stored parameters belong to a different flow/method and must not
+			// be reused.
+			// Validate against an empty input set so the real mandatory-param check below
+			// decides.
+			effectiveParams = "{\"inputs\":[]}";
+		}
+
 		String overrideLuName = (String) inputOverrides.get(OverrideParamKey.CUSTOM_LOGIC_LU_NAME);
-		String effectiveFlow   = (overrideFlow   != null && !overrideFlow.isBlank())   ? overrideFlow
-				: "" + taskRow.get("selection_param_value");
 		String effectiveLuName = (overrideLuName != null && !overrideLuName.isBlank()) ? overrideLuName
 				: "" + taskRow.get("custom_logic_lu_name");
 
@@ -1360,7 +1373,7 @@ class StartTaskValidator {
 		}
 	}
 
-	static class TdmValidationException extends Exception {
+	public static class TdmValidationException extends Exception {
 		private final Object errorDetails;
 
 		public TdmValidationException(String category, Object errorDetails) {

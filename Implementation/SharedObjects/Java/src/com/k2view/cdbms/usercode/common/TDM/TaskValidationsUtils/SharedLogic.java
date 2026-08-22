@@ -16,7 +16,6 @@ import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fn
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
-import static java.lang.Math.nextDown;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -696,23 +695,24 @@ public class SharedLogic {
 
         if (selection_method.equalsIgnoreCase("C")) {
             Map<String, Object> inputs;
-            
+
             try {
-                 inputs = convertInputListToMap(params);
-            } catch (Exception e) {                
+                inputs = convertInputListToMap(params);
+            } catch (Exception e) {
                 return "Invalid input parameter format: " + e.getMessage();
             }
             List<String> errors = new ArrayList<>();
             try {
-                List<Map<String, Object>> paramDefinitions = (List<Map<String, Object>>) fnGetFlowParams(custom_logic_lu_name, selection_param_value);
+                List<Map<String, Object>> paramDefinitions = (List<Map<String, Object>>) fnGetFlowParams(
+                        custom_logic_lu_name, selection_param_value);
                 for (Map<String, Object> paramDef : paramDefinitions) {
                     // Check if mandatory (Use safe casting/default value)
                     Boolean isMandatory = (Boolean) paramDef.getOrDefault("mandatory", false);
-        
+
                     if (isMandatory != null && isMandatory) {
                         String paramName = null;
                         Object editorObj = paramDef.get("editor");
-                        
+
                         if (editorObj instanceof Map) {
                             Map<?, ?> editorMap = (Map<?, ?>) editorObj;
                             Object nameObj = editorMap.get("name");
@@ -720,14 +720,14 @@ public class SharedLogic {
                                 paramName = (String) nameObj;
                             }
                         }
-                        
+
                         if (paramName == null || paramName.isEmpty()) {
                             errors.add("Internal error: Mandatory parameter definition is missing a 'name'.");
                             continue;
                         }
-        
+
                         // Check for presence and emptiness in runtime inputs
-                        if (inputs.containsKey(paramName) && isValueEmpty(inputs.get(paramName))) {
+                        if (!inputs.containsKey(paramName) || isValueEmpty(inputs.get(paramName))) {
                             errors.add("Mandatory field '" + paramName + "' is missing or empty.");
                         }
                     }

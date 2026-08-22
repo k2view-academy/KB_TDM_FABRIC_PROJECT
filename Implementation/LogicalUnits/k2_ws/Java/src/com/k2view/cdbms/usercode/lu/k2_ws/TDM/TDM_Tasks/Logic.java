@@ -3431,6 +3431,17 @@ public class Logic extends WebServiceUserCode {
         return response;
     }
 
+
+    @desc("Retry Task with Failed Tables")
+    @webService(path = "retryTaskWithFailures", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+    public static Object wsRetryTaskWithFailures(Long taskExecutionId) throws Exception {
+         HashMap<String, Object> response = new HashMap<>();
+        Object message = null;
+        Object errorCode = "SUCCESS";
+
+        return response;
+    }
+
     @desc("Stops the task execution of the input task execution id.")
     @webService(path = "cancelMigratWS", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
     public static Object wsCancelMigratWS(Long taskExecutionId) throws Exception {

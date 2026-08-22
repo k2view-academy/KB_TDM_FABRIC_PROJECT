@@ -53,7 +53,7 @@ public class Logic extends UserCode {
 
         if (globalsInput != null && !(globalsInput.isEmpty())) {
             globalsInput.forEach((key, value) -> {
-                String query = "set " + key + "='" + value + "'";
+                String query = "set " + key + "='" + String.valueOf(value).replace("'", "''") + "'";
                 try {
                     fabric().execute(query);
                 } catch (Exception e) {
