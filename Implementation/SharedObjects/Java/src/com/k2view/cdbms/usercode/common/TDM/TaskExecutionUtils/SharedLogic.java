@@ -1915,7 +1915,6 @@ public class SharedLogic {
 		fabric().fetch("test_connection active=true;").forEach(i -> {
 			String type = "" + i.get("type");
 			String iface = "" + i.get("interface");
-			///TODO : only for demo disable the check for AI interface DONT NOT COMMIT TO LIB 
 			if (!"AI_Execution".equalsIgnoreCase(iface)) {
 				connResMap.put(iface, "" + i.get("passed"));
 			}

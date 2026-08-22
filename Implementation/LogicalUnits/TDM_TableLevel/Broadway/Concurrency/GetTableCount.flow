@@ -48,12 +48,12 @@ stages:
           flowName:
             const: BuildFilterQueries
           sourceSchema:
-            external: sourceSchema
+            link: Get Table Information/result/SourceInfo/source_schema_name
             schema: string
             mandatory: false
             createdBy: flowName
           tableName:
-            external: tableName
+            link: Get Table Information/result/SourceInfo/source_ref_table_name
             schema: string
             mandatory: false
             createdBy: flowName
@@ -77,7 +77,7 @@ stages:
             mandatory: false
             createdBy: flowName
           sourceInterface:
-            external: sourceInterface
+            link: Get Table Information/result/SourceInfo/source_interface_name
             schema: string
             mandatory: false
             createdBy: flowName
@@ -120,15 +120,15 @@ stages:
           innerFlowClose:
             const: false
           sourceInterface:
-            external: sourceInterface
+            link: Get Table Information/result/SourceInfo/source_interface_name
             schema: string
             mandatory: false
           sourceSchema:
-            external: sourceSchema
+            link: Get Table Information/result/SourceInfo/source_schema_name
             schema: string
             mandatory: false
           sourceTableName:
-            external: tableName
+            link: Get Table Information/result/SourceInfo/source_ref_table_name
             schema: string
             mandatory: false
           whereClause:
@@ -196,7 +196,7 @@ stages:
         in:
           interface:
             const: null
-            external: sourceInterface
+            link: Get Table Information/result/SourceInfo/source_interface_name
           sql:
             const: null
             link: Count Statement/value
@@ -239,6 +239,15 @@ schemas:
           target_interface_name:
             type: string
           target_ref_table_name:
+            type: string
+      SourceInfo:
+        type: object
+        properties:
+          source_schema_name:
+            type: string
+          source_ref_table_name:
+            type: string
+          source_interface_name:
             type: string
       TaskRefTables:
         type: array

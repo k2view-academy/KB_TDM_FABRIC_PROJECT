@@ -337,7 +337,8 @@ public class SharedLogic {
             List<Map<String, Object>> tableDefinitions2 = MtableLookup(mtableName, lookupInputs,
                     MTable.Feature.caseInsensitive);
 
-            Map<String, Object> matched = findMatchedEntry(tableDefinitions2, schemaName, luName);
+            fabric().execute("set environment = ?", getGlobal("TDM_SOURCE_ENVIRONMENT_NAME","TDM_TableLevel"));
+            Map<String, Object> matched = findMatchedEntry(tableDefinitions2, luName, "schema_name");
             if (matched != null) {
                 Object v = matched.get("count_indicator");
                 if (v != null && !v.toString().trim().isEmpty()) {
@@ -376,21 +377,20 @@ public class SharedLogic {
             }
         }
 
-        return null;
+        return "true";
     }
 
-    public static Map<String, Object> findMatchedEntry(List<Map<String, Object>> entries, String schemaName,
-            String luName) {
+    public static Map<String, Object> findMatchedEntry(List<Map<String, Object>> entries,
+            String luName, String fieldName) {
         if (entries == null || entries.isEmpty())
             return null;
         for (Map<String, Object> entry : entries) {
-            Object schemaObj = entry.get("schema_name");
+            Object schemaObj = entry.get(fieldName);
             String entrySchema = schemaObj != null ? schemaObj.toString() : "";
             if (entrySchema.startsWith("@")) {
-                String globalName = entrySchema.replaceAll("@", "");
-                if (schemaName.equals(getGlobal(globalName, luName))) {
-                    return entry;
-                }
+
+                return entry;
+
             }
         }
         return null;

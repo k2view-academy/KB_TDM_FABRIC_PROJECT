@@ -42,6 +42,9 @@ public class Logic extends WebServiceUserCode{
 		try {
 			String userName = "";
 			String permissionGroup = fnGetUserPermissionGroup(userName);
+			if (permissionGroup == null || permissionGroup.isEmpty()) {
+				return wrapWebServiceResults("WARNING", "No permission group mapping found for the user's Fabric role.", permissionGroup);
+			}
 			return wrapWebServiceResults("SUCCESS", null, permissionGroup);
 		} catch (Throwable t) {
 			return wrapWebServiceResults("FAILED", t.getMessage(), null);

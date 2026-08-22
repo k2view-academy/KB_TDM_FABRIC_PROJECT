@@ -153,12 +153,12 @@ stages:
             link: SEQ_CACHE_INTERFACE/result
             schema: string
             editor:
-              id: com.k2view.interface
               interfaceType:
               - database
               - CassandraLoader
               interfaces: [
                 ]
+              id: com.k2view.interface
             mandatory: false
   End:
     actors:
@@ -169,3 +169,10 @@ stages:
             const: Finished Deploy Activities
           level:
             const: info
+  Stage 1:
+    actors:
+      checkAiFlows:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: checkDescriptionFlowExists

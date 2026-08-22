@@ -37,7 +37,8 @@ stages:
           script:
             const: |
               var upgradeLU = true;
-              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference') {
+              if (luName == 'TDM' || luName == 'TDM_LIBRARY' || luName == 'TDM_TableLevel' || luName == 'TDM_Reference'
+              || luName == 'aifusion' || luName == 'Vectors') {
                   upgradeLU = false;
               }
               upgradeLU;
@@ -119,6 +120,7 @@ stages:
             schema: string
             mandatory: false
   Handle load flows:
+    dependsOn: Prepare name and pathes
     actors:
       Check If File Exists:
         parent: InnerFlow
@@ -130,13 +132,13 @@ stages:
             link: LU folder LoadFlows/string
             schema: string
             editor:
-              id: com.k2view.interface
               interfaceType:
               - LOCAL
               - SFTP
               - filesystem
               interfaces:
               - file:///
+              id: com.k2view.interface
             mandatory: false
           pattern:
             link: Old load file name/value
@@ -155,6 +157,10 @@ stages:
             link: Old load file name/value
           to:
             link: New load file name/value
+    split: '--------------------'
+  nothing:
+    else: true
+    dependsOn: Prepare name and pathes
   Handle delete flows:
     actors:
       Check If File Exists1:
@@ -167,13 +173,13 @@ stages:
             link: LU folder DeleteFlows/string
             schema: string
             editor:
-              id: com.k2view.interface
               interfaceType:
               - LOCAL
               - SFTP
               - filesystem
               interfaces:
               - file:///
+              id: com.k2view.interface
             mandatory: false
           pattern:
             link: Old delete file name/value

@@ -290,7 +290,7 @@ stages:
         in:
           flowName:
             const: null
-            external: flowName
+            external: customUpdateFlow
           innerFlowClose:
             const: false
           targetInterface:
@@ -313,8 +313,32 @@ stages:
             link: Get Table's Fields/result
             schema: '#ref'
             mandatory: false
+          commitSize:
+            external: commitSize
+            schema: integer
+            mandatory: false
+          task_execution_id:
+            external: taskExeId
+            schema: string
+            mandatory: false
+          task_ref_table_id:
+            external: refTableID
+            schema: integer
+            mandatory: false
+          partition_no:
+            external: partitionNumber
+            schema: string
+            mandatory: false
+          whereArray:
+            link: Get Fields For Where Clause/result
+            schema: '#ref'
+            mandatory: false
+          TDMDB_SCHEMA:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
         out:
-          olay:
+          okay:
             schema: integer
           errors:
             schema: integer
@@ -330,7 +354,7 @@ stages:
             const: null
             link:
             - Update Table By Query/okay
-            - Run Custom Update Flow/olay
+            - Run Custom Update Flow/okay
             schema: integer
         out:
           value:
@@ -529,6 +553,10 @@ schemas:
     items: {
       }
   Run Custom Update Flow.in.fieldsArray:
+    type: array
+    items:
+      type: string
+  Run Custom Update Flow.in.whereArray:
     type: array
     items:
       type: string

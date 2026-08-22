@@ -1,4 +1,5 @@
 tags: SequencesFlows
+
 stages:
   Input:
     actors:
@@ -11,7 +12,7 @@ stages:
             schema: object
         out:
           value:
-            schema: '#ref'
+            schema: "#ref"
   New Sequence:
     actors:
       Transformation Error Handler:
@@ -20,14 +21,15 @@ stages:
         in:
           config:
             const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: false
-                flowName: PopulateTableErrorsWithFailed
-      {{#each TABLE_SEQ_DATA~}}Get Sequence for {{getFieldName this}}:
+              - exceptionKey: java.lang.Exception
+                conditions:
+                  message: ""
+                actions:
+                  suppress: false
+                  log: false
+                  flowName: PopulateTableErrorsWithFailed
+{{#each TABLE_SEQ_DATA}}
+      Get Sequence for {{getFieldName this}}:
         parent: {{getSequenceActorName this}}
         in:
           tableName:
@@ -36,22 +38,22 @@ stages:
             const: {{getFieldName this}}
           OriginalSeqValue:
             link: Record/value/{{getSourceFieldName this}}
-      {{/each~}}
+{{/each}}
   Build Maps:
     actors:
       Maps Of Masked Fields:
         parent: MapCreate
         height: 170
         in:
-          {{#each TABLE_SEQ_DATA~}}
+{{#each TABLE_SEQ_DATA}}
           {{getFieldName this}}:
             link: Get Sequence for {{getFieldName this}}/NewSeqValue
             schema: string
             mandatory: false
-          {{/each~}}
+{{/each}}
         out:
           map:
-            schema: '#ref'
+            schema: "#ref"
   Build Record:
     actors:
       Final Record:
@@ -59,35 +61,33 @@ stages:
         in:
           maps:
             link:
-            - path: Record/value
-              pos: 0
-            - path: Maps Of Masked Fields/map
-              pos: 1
+              - path: Record/value
+                pos: 0
+              - path: Maps Of Masked Fields/map
+                pos: 1
         out:
           map:
             external: result
-            schema: '#ref'
+            schema: "#ref"
 schemas:
   Record.out.value:
     type: object
     properties:
-    {{#each LU_TABLE_COLUMNS~}}
+{{#each LU_TABLE_COLUMNS}}
       {{this}}:
         type: Any
-    {{/each~}}
-
+{{/each}}
   Maps Of Masked Fields.out.map:
     type: object
     properties:
-    {{#each TABLE_SEQ_DATA~}}
+{{#each TABLE_SEQ_DATA}}
       {{getFieldName this}}:
         type: Any
-    {{/each~}}
-      
+{{/each}}
   Final Record.out.map:
     type: object
     properties:
-    {{#each TARGET_TABLE_COLUMNS~}}
+{{#each TARGET_TABLE_COLUMNS}}
       {{this}}:
         type: Any
-    {{/each~}}
+{{/each}}

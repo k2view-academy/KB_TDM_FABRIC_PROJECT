@@ -211,6 +211,12 @@
                     "script_id": 34,
                     "script_name": "update_tdmdb_from_v9.5.1_to_v10.0.sql",
                     "flow_name": "Upgrade951_to_10"
+                },
+                {
+                    "version_name": "10.0.1",
+                    "script_id": 35,
+                    "script_name": "update_tdmdb_from_v10.0_to_v10.0.1.sql",
+                    "flow_name": ""
                 }
             ],
             "final": true,

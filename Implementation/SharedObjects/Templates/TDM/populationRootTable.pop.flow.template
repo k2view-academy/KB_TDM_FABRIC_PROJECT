@@ -272,7 +272,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from {{SOURCE_SCHEMA}}.{{{SOURCE_TABLE}}}"
+                                        "const": "select * from {{{SOURCE_SCHEMA}}}.{{{SOURCE_TABLE}}}"
                                     },
                                     {
                                         "name": "rowsGeneratorDistribution",
@@ -401,7 +401,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": "{{SOURCE_SCHEMA}}"
+                                        "const": "{{{SOURCE_SCHEMA}}}"
                                     },
                                     {
                                         "name": "dataset",

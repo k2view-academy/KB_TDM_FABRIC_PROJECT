@@ -28,6 +28,7 @@ import com.k2view.fabric.interfaceSchema.InterfaceSchemaLogic;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.*;
 import java.io.File;
 import java.io.FileWriter;
@@ -804,15 +805,16 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			Set<String> tablesList = new HashSet<>();
 			
 			String tableName = null;
-			Map<String, TableInfoResult> tablesData = new HashMap<>();
+			
 			if (!Util.isEmpty(tablesSets.get(tablesKey))) {
-				try {
-					String list = String.join(",", tablesSets.get(tablesKey));
-					tablesData = InterfaceSchemaLogic.INSTANCE.getTablesInfo(tablesKey.interfaceName, tablesKey.SchemaName, 
-					tablesKey.SchemaName, list, envName, "true", "false", null);
-				} catch (Exception e) {
-					tablesList = tablesSets.get(tablesKey);
-				}
+				String list = String.join(",", tablesSets.get(tablesKey));
+				Map<String, String> schemaCatalog = new HashMap<>();
+				tablesList = new HashSet<>(tablesSets.get(tablesKey));
+				schemaCatalog = getInterfaceSchemaCatalog(tablesKey.interfaceName, tablesKey.SchemaName);
+
+				Map<String, TableInfoResult> tablesData = InterfaceSchemaLogic.INSTANCE.getTablesInfo(tablesKey.interfaceName,
+					schemaCatalog.get("catalogName"), schemaCatalog.get("schemaName"), 
+					list, envName, "true", "true", null);
 
 				if (!Util.isEmpty(tablesData)) {
 					for (String table : tablesSets.get(tablesKey)) {
@@ -832,6 +834,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 							}
 						}
 						addToTableInfo(tableName, tableColumns,tablePKs, tablesKey.SchemaName, tablesKey.interfaceName, targetSchema, targetInterface);
+						tablesList.remove(tableName);
 					}
 				}
 			}
@@ -844,6 +847,41 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 				}
 			}
 		}	
+	}
+
+	private static Map<String, String> getInterfaceSchemaCatalog(String interfaceName, String containerName) throws Exception{
+		Map<String, String> result = new HashMap<>();
+		result.put("schemaName", null);
+		result.put("catalogName", null);
+
+		DatabaseMetaData meta = getConnection(interfaceName).getMetaData();
+			
+		// Check Schema
+		try {
+			ResultSet schemas = meta.getSchemas(null, containerName);
+			if (schemas.next()) {
+				schemas.close();
+				result.put("schemaName", containerName);
+				return result;
+			}
+			schemas.close();
+		} catch (SQLFeatureNotSupportedException e) {
+			return result;
+		
+		}
+		
+		
+		// Check Catalog
+		ResultSet catalogs = meta.getCatalogs();
+		while (catalogs.next()) {
+			if (containerName.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
+				result.put("catalogName", containerName);
+				return result;
+			}
+		}
+		catalogs.close();
+	
+		return result; 
 	}
 
 	private static void addToTableInfo(String tableName, Set <String> tableColumns,Set <String> tablePKs, 
@@ -1495,13 +1533,15 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 
 	public static Map<String, String> fnGetMainTableAndColumn(String luName) throws Exception {
 		Map<String, String> result = new HashMap<>();
-		String mainTable = "";
 		String mainColumnType = "";
+		String mainTable = getGlobal("ROOT_TABLE_NAME", luName);
 		String mainColumn = getGlobal("ROOT_COLUMN_NAME", luName);
-		if (mainColumn != null && !mainColumn.isEmpty()) {
-			mainTable = getGlobal("ROOT_TABLE_NAME", luName);
-			mainColumn = getGlobal("ROOT_COLUMN_NAME",luName);
+		if (mainTable != null && !mainTable.isEmpty() && mainColumn != null && !mainColumn.isEmpty()) {
 			mainColumnType = getGlobal("ROOT_COLUMN_TYPE",luName);
+			if (mainColumnType == null || mainColumnType.isEmpty()) {
+				LUType luType = LUType.getTypeByName(luName);
+				mainColumnType = luType.ludbObjects.get(mainTable).getLudbColumnMap().get(mainColumn).columnType;
+			}
 		} else {
 			LUType luType = LUType.getTypeByName(luName);
 			mainTable = luType.rootObjectName;

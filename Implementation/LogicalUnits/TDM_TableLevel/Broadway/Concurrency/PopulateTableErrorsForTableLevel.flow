@@ -29,7 +29,7 @@ stages:
         in:
           a:
             const: executionAction
-            external: Delete
+            external: executionAction
             schema: string
           b:
             const: Delete
