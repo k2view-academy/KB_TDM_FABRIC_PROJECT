@@ -43,6 +43,7 @@ stages:
             - LU_NAME: k2_ws
             - LU_NAME: aifusion
             - LU_NAME: Vectors
+            - LU_NAME: PipelineLu
             schema: '#ref'
           LU_NAME:
             link:

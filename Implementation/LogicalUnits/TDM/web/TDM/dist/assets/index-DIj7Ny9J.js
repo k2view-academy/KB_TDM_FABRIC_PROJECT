@@ -59639,7 +59639,6 @@ var AuthProvider = ({ children }) => {
 				];
 				if (enableMaskingOnly) {
 					navigationMenu[2].children.splice(4, 1);
-					navigationMenu[2].children.splice(3, 1);
 					navigationMenu[2].children.splice(1, 1);
 					navigationMenu.splice(1, 1);
 				}
@@ -61172,6 +61171,17 @@ function TriStateCheckbox(props) {
 }
 //#endregion
 //#region src/containers/Task/Froms/DataSubset/CustomLogic/index.tsx
+var buildParametersJSON = (params) => {
+	return JSON.stringify({ inputs: (params || []).filter((customParam) => customParam.mandatory || customParam.checked).map((it) => {
+		return {
+			name: it.name,
+			type: it.type,
+			value: it.value,
+			is_editable: it.is_editable,
+			checked: it.checked
+		};
+	}) });
+};
 function CustomLogic(props) {
 	const contextValue = (0, import_react.useContext)(TaskContext);
 	contextValue && contextValue.taskData && Object.keys(contextValue.taskData).length;
@@ -61261,18 +61271,7 @@ function CustomLogic(props) {
 				} catch (err) {
 					console.log(err);
 				}
-				else {
-					const parameters = { inputs: (data || []).filter((customParam) => customParam.mandatory).map((it) => {
-						return {
-							name: it.name,
-							type: it.type,
-							value: it.value,
-							is_editable: it.is_editable,
-							checked: it.checked
-						};
-					}) };
-					saveForm({ parameters: JSON.stringify(parameters) });
-				}
+				else saveForm({ parameters: buildParametersJSON(data) });
 				saveForm({ customLogicParams: data });
 				setParamsLocked(false);
 				setLoading(false);
@@ -61298,18 +61297,9 @@ function CustomLogic(props) {
 				const editorTemp = customParamsTemp[index].editor;
 				if (editorTemp) editorTemp.value = value;
 			}
-			const parameters = { inputs: (customParamsTemp || []).filter((customParam) => customParam.mandatory || customParam.checked).map((it) => {
-				return {
-					name: it.name,
-					type: it.type,
-					value: it.value,
-					is_editable: it.is_editable,
-					checked: it.checked
-				};
-			}) };
 			saveForm({
 				customLogicParams,
-				parameters: JSON.stringify(parameters)
+				parameters: buildParametersJSON(customParamsTemp)
 			});
 		}
 	}, [customLogicParams]);
@@ -61379,18 +61369,9 @@ function CustomLogic(props) {
 				const customParamsTemp = [...customLogicParams];
 				const index = customParamsTemp.findIndex((param) => param?.name === data?.name);
 				if (index >= 0) customParamsTemp[index].value = "";
-				const parameters = { inputs: (customParamsTemp || []).filter((customParam) => customParam.mandatory || customParam.checked).map((it) => {
-					return {
-						name: it.name,
-						type: it.type,
-						value: it.value,
-						is_editable: it.is_editable,
-						checked: it.checked
-					};
-				}) };
 				saveForm({
 					customLogicParams,
-					parameters: JSON.stringify(parameters)
+					parameters: buildParametersJSON(customParamsTemp)
 				});
 			},
 			value: data.checked || data.mandatory
@@ -61415,7 +61396,10 @@ function CustomLogic(props) {
 					lock: customLogicParam?.is_editable || false,
 					onLockToggle: (fieldname, is_editable) => {
 						customLogicParam.is_editable = is_editable;
-						saveForm({ customLogicParams });
+						saveForm({
+							customLogicParams,
+							parameters: buildParametersJSON(customLogicParams)
+						});
 					},
 					hide: controlParamChange,
 					disabled: selection_method_lock_value || !customLogicParam.value,
@@ -61439,18 +61423,30 @@ function CustomLogic(props) {
 	}, [customLogicParams]);
 	const changeSelectAllParams = (0, import_react.useCallback)((value) => {
 		customLogicParams?.forEach((it) => {
-			if (value === "all") it.checked = true;
-			else it.checked = false;
+			if (value === "all") {
+				it.checked = true;
+				if (!it.value) it.is_editable = true;
+			} else it.checked = false;
 		});
-		saveForm({ customLogicParams });
+		saveForm({
+			customLogicParams,
+			parameters: buildParametersJSON(customLogicParams)
+		});
 	}, [customLogicParams, saveForm]);
 	const changeLockAllParams = (0, import_react.useCallback)((value) => {
-		customLogicParams?.forEach((it) => {
+		if (!customLogicParams?.length) {
+			setParamsLocked(value);
+			return;
+		}
+		customLogicParams.forEach((it) => {
 			if (it.value) it.is_editable = value;
 			else it.is_editable = true;
 		});
 		setParamsLocked(value);
-		saveForm({ customLogicParams });
+		saveForm({
+			customLogicParams,
+			parameters: buildParametersJSON(customLogicParams)
+		});
 	}, [
 		customLogicParams,
 		saveForm,
@@ -81092,9 +81088,12 @@ var getSubQuery = (rule, parameters, type, resultValues, filter_types, isCouplin
 var computeQuery = (group, parametersList, type, resultValues, filter_types, isCoupling) => {
 	if (!group) return "";
 	let str = "(";
-	for (let i = 0; i < group.rules.length; i++) if (group.rules[i].group) if (i === group.rules.length - 1) str += computeQuery(group.rules[i].group, parametersList, type, resultValues, filter_types, isCoupling);
-	else str += computeQuery(group.rules[i].group, parametersList, type, resultValues, filter_types, isCoupling) + " " + (group.rules[i].operator === "AND" ? "INTERSECT" : "UNION") + " ";
-	else {
+	for (let i = 0; i < group.rules.length; i++) if (group.rules[i].group) {
+		const subQuery = computeQuery(group.rules[i].group, parametersList, type, resultValues, filter_types, isCoupling);
+		if (!subQuery || subQuery === "()") return "";
+		if (i === group.rules.length - 1) str += subQuery;
+		else str += subQuery + " " + (group.rules[i].operator === "AND" ? "INTERSECT" : "UNION") + " ";
+	} else {
 		let data;
 		if (!group.rules[i].data && group.rules[i].data !== "" && group.rules[i].data !== 0 && group.rules[i].condition !== "IS NULL" && group.rules[i].condition !== "IS NOT NULL") return "";
 		if (group.rules[i].type === "real") if (group.rules[i].data.toLocaleString().indexOf(".") <= 0) data = group.rules[i].data.toFixed(1);
@@ -81128,7 +81127,7 @@ var getSelectionParamValue = (filter, parametersList, isCoupling, type) => {
 			else if (["IS NULL", "IS NOT NULL"].indexOf(rule.condition) >= 0) return true;
 			else if (["IN", "NOT IN"].indexOf(rule.condition) >= 0) {
 				if (!rule.data || rule.data.length === 0) return false;
-			} else if (rule.data !== "" && rule.data === void 0) return false;
+			} else if (rule.data === void 0 || rule.data === null) return false;
 			return true;
 		}
 	};
@@ -81138,16 +81137,13 @@ var getSelectionParamValue = (filter, parametersList, isCoupling, type) => {
 		if (!first && group.rules.length === 0) return false;
 		return true;
 	};
-	if (filter && checkGroup(filter.group, type, true) === true) {
-		const result = computeQuery(filter.group, parametersList, type, resultValues, filter_types, isCoupling);
-		if (type === 1) return {
-			sqlQuery: result,
-			values: resultValues,
-			filter_types
-		};
-		return result;
-	}
-	return "";
+	const result = filter && checkGroup(filter.group, type, true) === true ? computeQuery(filter.group, parametersList, type, resultValues, filter_types, isCoupling) : "";
+	if (type === 1) return {
+		sqlQuery: result,
+		values: result ? resultValues : [],
+		filter_types: result ? filter_types : []
+	};
+	return result;
 };
 //#endregion
 //#region src/containers/Task/Froms/DataSubset/Parameters/index.tsx
@@ -81202,6 +81198,14 @@ function Parameters(props) {
 			setFilter(filter);
 		}
 	}, [parameters]);
+	const getWhereStatement = (0, import_react.useCallback)(() => {
+		return getSelectionParamValue(filter, parametersList, isCoupling) || selection_param_value;
+	}, [
+		filter,
+		parametersList,
+		isCoupling,
+		selection_param_value
+	]);
 	(0, import_react.useEffect)(() => {
 		let timeoutId;
 		timeoutId = setTimeout(() => {
@@ -81211,7 +81215,8 @@ function Parameters(props) {
 	}, [
 		selection_param_value,
 		filterout_reserved,
-		filter
+		filter,
+		parametersList
 	]);
 	(0, import_react.useEffect)(() => {
 		const getData = async () => {
@@ -81266,7 +81271,8 @@ function Parameters(props) {
 		isCoupling
 	]);
 	const getEntitesCount = (0, import_react.useCallback)(() => {
-		if (!selection_param_value || selection_param_value === "()") {
+		const where_statement = getWhereStatement();
+		if (!where_statement || where_statement === "()") {
 			if (filter?.group?.rules?.length === 0) setEntitiesCount(0);
 			return;
 		}
@@ -81277,7 +81283,7 @@ function Parameters(props) {
 			if ((clone_ind || replace_sequences) && load_entity || target_env === "ai_training" || !environment_id || !(sync_mode === "OFF" && version_ind) && selection_method === "ALL") local_filterout_reserved = "NA";
 			const sourceStatus = statusesFuncMap["dataSourceStatus"](taskData);
 			const body = {
-				where: selection_param_value,
+				where: where_statement,
 				tar_env_name: environment_name,
 				src_env_name: sourceStatus === StatusEnum.disabled ? environment_name : source_environment_name,
 				queryJson: JSON.stringify(filter),
@@ -81294,7 +81300,7 @@ function Parameters(props) {
 		getData();
 	}, [
 		be_id,
-		selection_param_value,
+		getWhereStatement,
 		source_environment_name,
 		environment_name,
 		filterout_reserved,
@@ -97238,12 +97244,12 @@ var AdvancedSearch = ({ onClose, onSearch, data }) => {
 };
 //#endregion
 //#region src/containers/TaskTemplates/SearchBar/index.tsx
-var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFormData, initialDisplayValue, onValueChange, onEnterPress, rightContent, placeholder = "Ask AI or Search…", hasChat, clearTrigger }) => {
+var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFormData, initialDisplayValue, onValueChange, onEnterPress, isAiQuery, rightContent, placeholder = "Ask AI or Search…", hasChat, clearTrigger }) => {
 	const [open, setOpen] = (0, import_react.useState)(false);
 	const [searchValue, setSearchValue] = (0, import_react.useState)(initialDisplayValue || "");
 	const [data, setData] = (0, import_react.useState)(initialFormData || {});
 	const isFirstRender = (0, import_react.useRef)(true);
-	const SEARCH_DEBOUNCE_MS = 400;
+	const SEARCH_DEBOUNCE_MS = 1e3;
 	const debounceRef = (0, import_react.useRef)(null);
 	const clearDebounce = () => {
 		if (debounceRef.current) {
@@ -97252,7 +97258,8 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 		}
 	};
 	const runTextSearch = (value) => {
-		if (value.trim()) onSearch({ text: value }, data, value);
+		if (value.trim()) if (onEnterPress) onEnterPress(value);
+		else onSearch({ text: value }, data, value);
 		else if (isSearchActive && onClearSearch) onClearSearch();
 	};
 	(0, import_react.useEffect)(() => clearDebounce, []);
@@ -97323,6 +97330,7 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 		onValueChange?.(value);
 		clearDebounce();
 		if (open) return;
+		if (isAiQuery?.(value)) return;
 		debounceRef.current = setTimeout(() => {
 			runTextSearch(value);
 		}, SEARCH_DEBOUNCE_MS);
@@ -97386,11 +97394,9 @@ var SearchBar$2 = ({ onSearch, isSearchActive = false, onClearSearch, initialFor
 };
 //#endregion
 //#region src/containers/TaskTemplates/AIChat/index.tsx
-var AIChat = ({ initialMessage, titleHtml, chatKey = 0, onNavigate, lu = "TDM", initParams }) => {
+var AIChat = ({ initialMessage, titleHtml, chatKey = 0, lu = "TDM", initParams }) => {
 	const wrapperRef = (0, import_react.useRef)(null);
 	const [unavailable, setUnavailable] = (0, import_react.useState)(false);
-	const onNavigateRef = (0, import_react.useRef)(onNavigate);
-	onNavigateRef.current = onNavigate;
 	(0, import_react.useEffect)(() => {
 		if (!wrapperRef.current) return;
 		const wrapper = wrapperRef.current;
@@ -97399,28 +97405,28 @@ var AIChat = ({ initialMessage, titleHtml, chatKey = 0, onNavigate, lu = "TDM", 
 		wrapper.innerHTML = "";
 		wrapper.appendChild(container);
 		const handleLinkClick = (e, anchor) => {
-			const navigate = onNavigateRef.current;
-			if (!navigate) return;
 			const href = anchor.getAttribute("href");
 			if (!href) return;
+			let url;
 			try {
-				const url = new URL(href, window.location.href);
-				if (url.origin !== window.location.origin) return;
-				e.preventDefault();
-				const idx = url.pathname.indexOf("/app/TDM");
-				navigate(`${url.pathname.substring(idx + 8)}${url.search}`);
-			} catch {}
+				url = new URL(href, window.location.href);
+			} catch {
+				return;
+			}
+			const tenant = window.k2api?.tenantName ? `/${window.k2api.tenantName}` : "";
+			if (tenant && url.origin === window.location.origin && !url.pathname.startsWith(`${tenant}/`) && url.pathname !== tenant) url.pathname = `${tenant}${url.pathname}`;
+			e.preventDefault();
+			window.open(url.href, "_blank", "noopener,noreferrer");
 		};
 		const launch = () => {
 			if (typeof window.buildChat !== "function") {
 				setUnavailable(true);
 				return;
 			}
-			const appid = window.k2api?.config?.aifusionAppId;
 			window.buildChat({
 				chatContainer: container,
 				chatId: crypto.randomUUID(),
-				appid,
+				appid: "tdm",
 				agent: "DataAgent",
 				lu,
 				initParams,
@@ -97574,6 +97580,9 @@ var TaskTemplatesScreens = /* @__PURE__ */ function(TaskTemplatesScreens) {
 	return TaskTemplatesScreens;
 }(TaskTemplatesScreens || {});
 var SELECTED_TASK_GROUP_STORAGE_KEY = "tdm.taskManagement.selectedTaskGroupId";
+function isChatEnabled() {
+	return !!window.k2api?.config?.showChat;
+}
 function shouldRouteToAIChat(text) {
 	const trimmed = text.trim();
 	if (!trimmed) return false;
@@ -98095,7 +98104,7 @@ function TaskTemplates() {
 	}, [clearSearch]);
 	const handleEnterPress = (0, import_react.useCallback)((value) => {
 		if (!value.trim()) return;
-		if (window.k2api?.config?.hideChat || !shouldRouteToAIChat(value)) {
+		if (!isChatEnabled() || !shouldRouteToAIChat(value)) {
 			handleSearch({ text: value }, {}, value);
 			return;
 		}
@@ -98148,10 +98157,11 @@ function TaskTemplates() {
 						searchTextRef.current = v;
 					},
 					onEnterPress: handleEnterPress,
-					placeholder: window.k2api?.config?.hideChat ? "Search..." : "Ask AI or Search…",
-					hasChat: !window.k2api?.config?.hideChat,
+					isAiQuery: (value) => isChatEnabled() && shouldRouteToAIChat(value),
+					placeholder: isChatEnabled() ? "Ask AI or Search…" : "Search...",
+					hasChat: isChatEnabled(),
 					clearTrigger: searchClearTrigger,
-					rightContent: window.k2api?.config?.hideChat ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AIHelperButton, {
+					rightContent: !isChatEnabled() ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AIHelperButton, {
 						active: isAIChatOpen,
 						onClick: () => {
 							if (!isAIChatOpen) {
@@ -98210,7 +98220,7 @@ function TaskTemplates() {
 					setIsAIChatOpen(false);
 				} }) }),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LeftSideTemplatesList, { children: getLeftSideTemplates() })
-			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(RightSide$5, { children: [isAIChatOpen && !window.k2api?.config?.hideChat && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(RightSide$5, { children: [isAIChatOpen && isChatEnabled() && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				style: {
 					position: "absolute",
 					left: 10,
@@ -98352,7 +98362,7 @@ function TaskTemplates() {
 				background: "#e1e1e1",
 				zIndex: 1,
 				transition: "left 0.25s ease"
-			} })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(RightSideBody, { children: [chatEverOpened && !window.k2api?.config?.hideChat && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			} })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(RightSideBody, { children: [chatEverOpened && isChatEnabled() && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				style: {
 					height: "100%",
 					display: isAIChatOpen ? void 0 : "none",
@@ -98362,9 +98372,6 @@ function TaskTemplates() {
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AIChat, {
 					chatKey,
 					initialMessage: initialChatMessage,
-					onNavigate: (path) => {
-						navigate(path || "/");
-					},
 					titleHtml: `<img src="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='13'%20height='13'%3e%3cpath%20fill-rule='evenodd'%20fill='%231483f3'%20d='M6.227%2011.852c.458.459%201.237.126%201.237-.513a4.37%204.37%200%200%201%204.366-4.366c.638%200%20.971-.778.512-1.237a.722.722%200%200%200-.512-.212%204.37%204.37%200%200%201-4.366-4.366c0-.2-.081-.381-.213-.512-.459-.459-1.237-.126-1.237.512a4.37%204.37%200%200%201-4.366%204.366c-.638%200-.971.778-.512%201.237a.718.718%200%200%200%20.512.212%204.37%204.37%200%200%201%204.366%204.366.72.72%200%200%200%20.213.513z'/%3e%3c/svg%3e" style="width:28px;height:28px"/><span style="font-family:Roboto,sans-serif;font-size:26px;color:#1483f3;font-weight:500">AI Helper</span>`
 				})
 			}), !isAIChatOpen && getRightSide()] })] })] })] })] });
@@ -157847,8 +157854,7 @@ var buildTableRowsFromHistory = (historyRows, migrateStatusMap, luPhaseTracker, 
 				hasNotes: false,
 				system: meta.product_name || ""
 			};
-			const fallbackBatchId = historyRows.find((r) => r.process_type === null && r.fabric_execution_id)?.fabric_execution_id || void 0;
-			rows.push(...buildBatchHierarchyRows(unmatchedBatches, baseRow, fallbackBatchId, durationTracker));
+			rows.push(...buildBatchHierarchyRows(unmatchedBatches, baseRow, durationTracker));
 		}
 	}
 	return rows;
@@ -157998,8 +158004,7 @@ var aggregateTableCounts = (tables) => {
 		latestEnd
 	};
 };
-var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracker) => {
-	const normalizedFallback = normalizeBatchId(fallbackBatchId);
+var buildBatchHierarchyRows = (batches, baseRow, durationTracker) => {
 	const groups = /* @__PURE__ */ new Map();
 	let nextOrder = 0;
 	for (const batch of batches) for (const iface of batch.interfaces || []) {
@@ -158013,14 +158018,17 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 				batchIds: /* @__PURE__ */ new Set(),
 				schemas: /* @__PURE__ */ new Map(),
 				interfaceRefs: [],
+				realInterfaceRefs: [],
 				schemaRefs: /* @__PURE__ */ new Map(),
+				realSchemaRefs: /* @__PURE__ */ new Map(),
 				order: nextOrder++
 			};
 			groups.set(key, group);
 		} else if (!group.process_type && batch.process_type) group.process_type = batch.process_type;
-		const normalizedBatchId = normalizeBatchId(batch.batch_id) || normalizedFallback;
+		const normalizedBatchId = normalizeBatchId(batch.batch_id);
 		if (normalizedBatchId) group.batchIds.add(normalizedBatchId);
 		group.interfaceRefs.push(iface);
+		if (normalizedBatchId) group.realInterfaceRefs.push(iface);
 		for (const schema of iface.schemas || []) {
 			const existing = group.schemas.get(schema.schema_name) || [];
 			for (const t of schema.tables || []) existing.push({
@@ -158031,13 +158039,19 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 			const refs = group.schemaRefs.get(schema.schema_name) || [];
 			refs.push(schema);
 			group.schemaRefs.set(schema.schema_name, refs);
+			if (normalizedBatchId) {
+				const realRefs = group.realSchemaRefs.get(schema.schema_name) || [];
+				realRefs.push(schema);
+				group.realSchemaRefs.set(schema.schema_name, realRefs);
+			}
 		}
 	}
 	const rows = [];
 	const sortedGroups = Array.from(groups.values()).sort((a, b) => a.order - b.order);
 	for (const group of sortedGroups) {
 		const groupBatchId = group.batchIds.size === 1 ? Array.from(group.batchIds)[0] : "";
-		if (group.interfaceRefs.length > 0 && group.interfaceRefs.every((iface) => iface.interface_status?.toLowerCase() === "ordering tables")) {
+		const interfaceRefs = group.realInterfaceRefs.length > 0 ? group.realInterfaceRefs : group.interfaceRefs;
+		if (interfaceRefs.length > 0 && interfaceRefs.every((iface) => iface.interface_status?.toLowerCase() === "ordering tables")) {
 			rows.push({
 				...baseRow,
 				lu_name: "–",
@@ -158068,7 +158082,7 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 				const tableProcessed = Number(t.processed) || 0;
 				const tableFailed = Number(t.failed) || 0;
 				const tableSucceeded = typeof t.succeeded === "number" ? t.succeeded : Math.max(0, tableProcessed - tableFailed);
-				const tablePercentage = tableTotal > 0 ? Math.min(100, Math.max(0, Math.round(tableProcessed / tableTotal * 100))) : (t.status || "").toLowerCase() === "completed" ? 100 : 0;
+				const tablePercentage = tableTotal > 0 ? Math.min(100, Math.max(0, Math.round(tableProcessed / tableTotal * 100))) : (t.status || "").toLowerCase() === "completed" || hasNoRecordStats && !!batchId ? 100 : 0;
 				return {
 					...baseRow,
 					lu_name: t.table_name,
@@ -158090,10 +158104,11 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 			});
 			const schemaTables = entries.map((e) => e.table);
 			allTables.push(...schemaTables);
-			const schemaBatchIds = new Set(entries.map((e) => e.batchId));
+			const schemaBatchIds = new Set(entries.map((e) => e.batchId).filter(Boolean));
 			const schemaBatchId = schemaBatchIds.size === 1 ? Array.from(schemaBatchIds)[0] : "";
 			const agg = aggregateTableCounts(schemaTables);
-			const schemaRefs = group.schemaRefs.get(schemaName) || [];
+			const realSchemaRefsForSchema = group.realSchemaRefs.get(schemaName) || [];
+			const schemaRefs = realSchemaRefsForSchema.length > 0 ? realSchemaRefsForSchema : group.schemaRefs.get(schemaName) || [];
 			if (schemaRefs.length > 0 && schemaRefs.every((s) => s.schema_status?.toLowerCase() === "ordering tables")) {
 				schemaRows.push({
 					...baseRow,
@@ -158115,7 +158130,7 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 				});
 				continue;
 			}
-			const schemaCounts = sumTableStateCounts(schemaRefs);
+			const schemaCounts = sumTableStateCounts(group.schemaRefs.get(schemaName) || []);
 			const schemaStatus = combineApiStatuses(schemaRefs.map((s) => s.schema_status)) ?? (schemaCounts ? deriveStatusFromTableCounts(schemaCounts.running, schemaCounts.completed, schemaCounts.failed, schemaCounts.pending, schemaCounts.stopped) : agg.status);
 			let schemaProcessed;
 			let schemaSucceeded;
@@ -158156,7 +158171,7 @@ var buildBatchHierarchyRows = (batches, baseRow, fallbackBatchId, durationTracke
 		}
 		const batchAgg = aggregateTableCounts(allTables);
 		const batchCounts = sumTableStateCounts(group.interfaceRefs);
-		const batchStatus = combineApiStatuses(group.interfaceRefs.map((i) => i.interface_status)) ?? (batchCounts ? deriveStatusFromTableCounts(batchCounts.running, batchCounts.completed, batchCounts.failed, batchCounts.pending, batchCounts.stopped) : batchAgg.status);
+		const batchStatus = combineApiStatuses(interfaceRefs.map((i) => i.interface_status)) ?? (batchCounts ? deriveStatusFromTableCounts(batchCounts.running, batchCounts.completed, batchCounts.failed, batchCounts.pending, batchCounts.stopped) : batchAgg.status);
 		let batchProcessed;
 		let batchSucceeded;
 		let batchFailed;
@@ -158262,7 +158277,7 @@ var buildTablesTaskRows = (historyRows, batches, migrateStatusMap, luPhaseTracke
 		executedBy: meta.task_executed_by || "",
 		hasNotes: false,
 		system: meta.product_name || ""
-	}, historyRows.find((r) => r.process_type === null && r.fabric_execution_id)?.fabric_execution_id || void 0, durationTracker);
+	}, durationTracker);
 	const statusMap = migrateStatusMap || /* @__PURE__ */ new Map();
 	const tracker = luPhaseTracker || /* @__PURE__ */ new Map();
 	const preRows = historyRows.filter((r) => r.process_type === "pre").map((r) => buildProcessRow(r, statusMap, tracker, durationTracker));
@@ -158419,7 +158434,7 @@ var usePolling = (config) => {
 	}, []);
 	const startPolling = (0, import_react.useCallback)(async () => {
 		if (pollingRef.current) return;
-		if (config.taskIdRef.current == null) {
+		if (!config.wasStoppedRef.current && config.taskIdRef.current == null) {
 			console.error("Cannot start task: task_id not available");
 			return;
 		}
@@ -158441,7 +158456,7 @@ var usePolling = (config) => {
 		} catch (err) {
 			console.error("Failed to start/resume task:", err);
 			setIsPolling(false);
-			config.setError(err.message || "Failed to start/resume task");
+			toast.error(err.message || "Failed to start/resume task");
 		}
 	}, [config, pollHistoryAndStatus]);
 	const stopTask = (0, import_react.useCallback)(async () => {
@@ -158449,7 +158464,7 @@ var usePolling = (config) => {
 			await executionMonitorAPIs.cancelMigrate(config.activeExecutionIdRef.current);
 		} catch (err) {
 			console.error("Failed to stop task:", err);
-			config.setError(err.message || "Failed to stop task");
+			toast.error(err.message || "Failed to stop task");
 		}
 	}, [config]);
 	(0, import_react.useEffect)(() => {
@@ -158595,8 +158610,7 @@ var useExecutionMonitor = (taskExecutionId) => {
 		wasStoppedRef,
 		luPhaseTrackerRef,
 		aggregatedMaxPercentageRef,
-		durationTrackerRef,
-		setError
+		durationTrackerRef
 	});
 	const fetchData = (0, import_react.useCallback)(async () => {
 		try {
@@ -158612,6 +158626,16 @@ var useExecutionMonitor = (taskExecutionId) => {
 			setError(err.message || "Failed to fetch execution data");
 		} finally {
 			setLoading(false);
+		}
+	}, [fetchHistoryAndStatus, beginPolling]);
+	const refresh = (0, import_react.useCallback)(async () => {
+		try {
+			const result = await fetchHistoryAndStatus();
+			if (!result) return;
+			if (!isExecutionDone(result.historyRows, result.refStatsMap)) beginPolling();
+		} catch (err) {
+			console.error("Failed to refresh execution data:", err);
+			toast.error(err.message || "Failed to refresh execution data");
 		}
 	}, [fetchHistoryAndStatus, beginPolling]);
 	(0, import_react.useEffect)(() => {
@@ -158640,6 +158664,7 @@ var useExecutionMonitor = (taskExecutionId) => {
 			}));
 		}, []),
 		refetch: fetchData,
+		refresh,
 		startPolling,
 		stopPolling,
 		stopTask
@@ -159004,6 +159029,14 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 	const getRowStyle = (0, import_react.useCallback)((row) => {
 		if (row.status?.toLowerCase() === "ordering tables") return { backgroundColor: "#fafafa" };
 		if (row.status?.toLowerCase() === "stopped") return { backgroundColor: "#fff8e1" };
+		if ([
+			"batch",
+			"schema",
+			"table"
+		].includes(row.rowKind || "") && !row.batchId) return {
+			backgroundColor: "#f2f2f2",
+			color: "#9a9a9a"
+		};
 	}, []);
 	const columns = (0, import_react.useMemo)(() => {
 		const allColumns = [
@@ -159069,7 +159102,11 @@ var ExecutionDetailsTable = ({ rows, columnVisibility, taskExecutionId, taskTitl
 						}) : null, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LuNameLink, {
 							title: batchId ? "Open Batch Monitor" : void 0,
 							onClick: batchId ? () => openBatchMonitor$1(batchId) : void 0,
-							style: batchId ? void 0 : { cursor: "default" },
+							style: batchId ? void 0 : {
+								cursor: "default",
+								color: "inherit",
+								fontWeight: "normal"
+							},
 							children: lu_name
 						})]
 					}) });
@@ -159563,7 +159600,7 @@ var ControlsRow = ct.div`
     align-items: center;
     gap: 12px;
 `;
-var ControlIcon = ct.button`
+var ControlIcon = ct.button.attrs({ type: "button" })`
     background: transparent;
     border: none;
     cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
@@ -159612,15 +159649,14 @@ var SpinnerIcon$1 = ct.div`
 `;
 //#endregion
 //#region src/containers/ExecutionMonitor/index.tsx
-var hasRerunnableWork = (rows) => rows.some((row) => {
-	const status = row.status?.toLowerCase().trim();
-	if (status && status !== "completed") return true;
+var hasFailures = (rows) => rows.some((row) => {
+	if (row.status?.toLowerCase().trim() === "failed") return true;
 	if (Number(row.failedEntities) > 0) return true;
-	return row.subRows ? hasRerunnableWork(row.subRows) : false;
+	return row.subRows ? hasFailures(row.subRows) : false;
 });
 var ExecutionMonitor = ({ content, taskExecutionId: taskExecutionIdProp, openTaskStats }) => {
 	const taskExecutionId = content?.exec_id ?? taskExecutionIdProp ?? 0;
-	const { data, loading, error, isPolling, isTaskRunning, wasStopped, infoExpanded, columnVisibility, toggleInfo, toggleColumn, startPolling, stopTask, refetch } = useExecutionMonitor(taskExecutionId);
+	const { data, loading, error, isPolling, isTaskRunning, wasStopped, infoExpanded, columnVisibility, toggleInfo, toggleColumn, startPolling, stopTask, refresh } = useExecutionMonitor(taskExecutionId);
 	const toast = useToast();
 	const handleNavigateToStats = (0, import_react.useCallback)(() => {
 		if (isTaskRunning) return;
@@ -159629,16 +159665,18 @@ var ExecutionMonitor = ({ content, taskExecutionId: taskExecutionIdProp, openTas
 	const handleRerunFailures = (0, import_react.useCallback)(async () => {
 		try {
 			await executionMonitorAPIs.retryTaskWithFailures(taskExecutionId);
-			refetch();
+			refresh();
 		} catch (err) {
 			console.error("Failed to rerun failed processes:", err);
 			toast.error(err.message || "Failed to rerun the failed processes");
 		}
 	}, [
 		taskExecutionId,
-		refetch,
+		refresh,
 		toast
 	]);
+	const executionFinished = !isTaskRunning && !isPolling;
+	const executionStopped = executionFinished && wasStopped;
 	if (loading) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageContainer$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoadingContainer$1, { children: "Loading execution data..." }) });
 	if (error || !data) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PageContainer$1, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ErrorContainer, { children: error || "No data available" }) });
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card$1, { children: [
@@ -159657,15 +159695,15 @@ var ExecutionMonitor = ({ content, taskExecutionId: taskExecutionIdProp, openTas
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { size: 20 })
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ControlsRow, { children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ControlIcon, {
-				title: "Run",
+				title: executionStopped ? "Resume" : "Run",
 				onClick: startPolling,
-				disabled: isTaskRunning || !wasStopped || data.isTablesTask,
+				disabled: !executionStopped,
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { size: 16 })
 			}),
 			data.isTablesTask && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ControlIcon, {
 				title: "Rerun failed processes",
 				onClick: handleRerunFailures,
-				disabled: isTaskRunning || isPolling || !hasRerunnableWork(data.tableRows),
+				disabled: !executionFinished || wasStopped || !hasFailures(data.tableRows),
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RotateCcw, { size: 16 })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ControlIcon, {

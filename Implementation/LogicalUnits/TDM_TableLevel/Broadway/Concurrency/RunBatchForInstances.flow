@@ -1,0 +1,355 @@
+tags: Concurrency
+stages:
+  Concat IIDs List:
+    actors:
+      Concat IIDs to Instance Group:
+        parent: Concat
+        in:
+          elements:
+            external: TablesInstanceList
+  'Run Batch     ':
+    actors:
+      IDs Not Empty:
+        parent: NotEquals
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: Concat IIDs to Instance Group/string
+      Table Error Handler - Batch:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+      'Batch ':
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
+              WITH ASYNC='true' ${@affinityStr} ${@maxWorkersStr} BATCH_ID_PREFIX='${@taskTitle}';
+          command:
+            external: command
+            schema: string
+            mandatory: false
+          instanceList:
+            link: Concat IIDs to Instance Group/string
+            schema: string
+            mandatory: false
+          taskTitle:
+            external: taskTitle
+            schema: string
+            mandatory: false
+          affinityStr:
+            external: interfaceAffinity
+            schema: string
+            mandatory: false
+          maxWorkersStr:
+            external: interfaceMaxWorkers
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  'Reset IIDs List ':
+    actors:
+      IIDS List:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: TablesInstanceList
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+      Reset List Of IIDs:
+        parent: ResetActors
+        in:
+          actorId:
+            const:
+            - Concat IIDs to Instance Group
+  Split IIDS:
+    actors:
+      SplitIID:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SplitIID
+          IID:
+            link:
+              path: IIDS List/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: '#ref'
+  Get Table Ref Info:
+    actors:
+      Error Handler - Get Table ID:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Get Table Ref ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: SplitIID/result/interface
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: SplitIID/result/schema
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: SplitIID/result/table
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExeID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  Insert Into Ref Partition:
+    actors:
+      Error Handler - Insert into Partition Table:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            link: SplitIID/result/table
+            schema: string
+            mandatory: false
+          partitionNumber:
+            link: SplitIID/result/partition_no
+            schema: string
+            mandatory: false
+          refTableID:
+            link: Get Table Ref ID/result
+            schema: integer
+            mandatory: false
+      Insert Into Task Ref Partition:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: InsertIntoTaskRefPartitions
+          taskExecutionID:
+            external: taskExeID
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link: SplitIID/result/table
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            link: SplitIID/result/interface
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link: SplitIID/result/schema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          partitionNumber:
+            link: SplitIID/result/partition_no
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          batchId:
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          instance_id:
+            link:
+              path: IIDS List/value
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+  Update  Ref Exe Stats:
+    last: 1
+    actors:
+      Error Handler - Update Ref Exe Stats:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulatePartitionTableErrorsForTableLevel
+                number_of_retries: ''
+                retry_interval: ''
+          tableName:
+            link: SplitIID/result/table
+            schema: string
+            mandatory: false
+          partitionNumber:
+            link: SplitIID/result/partition_no
+            schema: string
+            mandatory: false
+          refTableID:
+            link: Get Table Ref ID/result
+            schema: integer
+            mandatory: false
+      Update task_ref_exe:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+               set batch_id=${batch_id}, interface_name=${interface_name}, schema_name = ${schema_name}
+               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id} AND execution_action <> 'Delete' ;
+          TDMDB_SCHEMA:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: sql
+          batch_id:
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExeID
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            link: Get Table Ref ID/result
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          interface_name:
+            link: SplitIID/result/interface
+            schema: string
+            mandatory: false
+            createdBy: sql
+          schema_name:
+            link: SplitIID/result/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+  Return BatchId:
+    actors:
+      BatchId:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Batch /result/Batch id
+              iterate: First
+            schema: string
+        out:
+          value:
+            external: batchId
+            schema: string
+schemas:
+  Batch .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
+          type: string
+        Execution id:
+          type: string
+        Notes:
+          type: string
+  IIDS List.in.value:
+    type: array
+    items:
+      type: string
+  IIDS List.out.value:
+    type: array
+    items:
+      type: string
+  SplitIID.out.result:
+    type: object
+    properties:
+      environment:
+        type: string
+      interface:
+        type: string
+      schema:
+        type: string
+      table:
+        type: string
+      execution_id:
+        type: string
+      partition_no:
+        type: string

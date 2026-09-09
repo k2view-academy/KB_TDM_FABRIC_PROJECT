@@ -172,16 +172,52 @@ stages:
   Continue:
     else: true
     dependsOn: Select Status
+  Check if Task is Stopped:
+    actors:
+      Check if the Task is Stopped:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT execution_status FROM ${@schema}.task_execution_list
+              WHERE task_execution_id = ${taskExecutionId}
+              AND execution_status = 'stopped'
+              LIMIT 1
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: string
   'Return Condition    ':
     actors:
-      Not Failed ?:
-        parent: NotEquals
+      Table Execution Failed Or Stopped:
+        parent: JavaScript
         in:
-          b:
-            const: failed
+          script:
+            const: |-
+              var result = true;
+              if (executionFailed == true || executionStopped != null) {
+                  result = false;
+              }
+              result;
+          executionFailed:
+            link: if Failed Update/result
+            schema: boolean
+            mandatory: false
+          executionStopped:
+            link: Check if the Task is Stopped/result
             schema: string
-          a:
-            link: Get Status/result
+            mandatory: false
         out:
           result:
             external: result

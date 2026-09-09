@@ -27,8 +27,10 @@ stages:
         in:
           flowName:
             const: initRefreshTaskDesc
+          uid:
+            const: tdmAiGenerateTaskDescriptions
           schedule:
-            const: 0 0 0 * * ?
+            const: 0.00:05:00
 schemas:
   list bf.out.result:
     type: array

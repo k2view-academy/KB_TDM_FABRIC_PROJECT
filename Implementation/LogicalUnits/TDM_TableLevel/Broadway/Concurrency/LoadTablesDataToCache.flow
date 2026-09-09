@@ -23,6 +23,11 @@ stages:
             schema: integer
             mandatory: false
             createdBy: functionName
+          executionAction:
+            const: Cache
+            schema: string
+            mandatory: false
+            createdBy: functionName
         out:
           result:
             schema: '#ref'

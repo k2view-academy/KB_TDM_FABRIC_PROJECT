@@ -2,6 +2,20 @@ tags: Concurrency
 stages:
   Initiate:
     actors:
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      TDM_TASK_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_ID
+            default: false
       Get Start Time:
         parent: Now
       Logger:
@@ -80,8 +94,54 @@ stages:
             const: null
             external: iid
             default: false
+  Get Status if Exists:
+    actors:
+      Check If instance already ran:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT execution_status FROM ${@schema}.task_ref_partition
+              WHERE task_id = ${task_id}
+              AND task_execution_id = ${task_execution_id}
+              AND instance_id = ${instance_id}
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExeID
+            schema: string
+            mandatory: false
+            createdBy: sql
+          instance_id:
+            external: iid
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_id:
+            link: TDM_TASK_ID/result
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: string
   Get and Set Parameters:
     actors:
+      Did not Run Or Failed?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Check If instance already ran/result
+            schema: string
+          b:
+            const: completed
+            schema: string
       Table Error Handler No Fields Or No Key Fields:
         parent: ErrorHandler
         error: result
@@ -183,14 +243,6 @@ stages:
         out:
           result:
             schema: '#ref'
-      Get TDMDB Schema:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: getTDMDBSchema
-        out:
-          schema:
-            schema: string
       Set Source Table Name:
         parent: FabricSet
         in:
@@ -261,10 +313,7 @@ stages:
             schema: string
             mandatory: false
           TDMDB_SCHEMA:
-            link:
-            - path: GetTableInformation/result/TaskRefTables/task_ref_table_id
-              iterate: First
-            - Get TDMDB Schema/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
           tableRefId:
@@ -402,7 +451,7 @@ stages:
             mandatory: false
             createdBy: sql
     split: '--------------------'
-  'Load  ':
+  Load:
     else: true
     transactional: false
     dependsOn: Continue setting
@@ -758,6 +807,44 @@ stages:
             default: true
             mandatory: false
             createdBy: flowName
+  Update Table Status:
+    transactional: false
+    actors:
+      Update status:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              UPDATE ${@TDMDB_SCHEMA}.task_ref_partition
+               SET execution_status='completed',
+               number_of_processed_records = number_of_records_to_process ,
+               number_of_failed_records = 0, end_time = NOW()
+               WHERE task_execution_id=${task_execution_id}
+               AND task_ref_table_id  = ${task_ref_table_id} AND partition_no = ${partition_no} AND execution_status = 'running';
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExeID
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            link:
+              path: GetTableInformation/result/TaskRefTables/task_ref_table_id
+              iterate: First
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          partition_no:
+            link: SplitIID/result/partition_no
+            schema: string
+            mandatory: false
+            createdBy: sql
 schemas:
   SplitIID.out.result:
     type: object
@@ -784,6 +871,8 @@ schemas:
             type: boolean
           retentionPeriodValue:
             type: integer
+          runType:
+            type: string
           targetEnvId:
             type: integer
           taskTitle:

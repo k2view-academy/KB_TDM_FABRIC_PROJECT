@@ -2,15 +2,6 @@ tags: Concurrency
 stages:
   Get Inputs:
     actors:
-      TablesInstanceList:
-        parent: Const
-        in:
-          value:
-            const: null
-            external: TablesInstanceList
-        out:
-          value:
-            schema: '#ref'
       Now:
         parent: Now
       getTDMDBSchema:
@@ -23,21 +14,6 @@ stages:
             schema: string
   Split IID:
     actors:
-      SplitIID:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: SplitIID
-          IID:
-            link:
-              path: TablesInstanceList/value
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-        out:
-          result:
-            schema: '#ref'
       Format the Current Time:
         parent: DateFormat
         in:
@@ -139,16 +115,16 @@ stages:
                 number_of_retries: ''
                 retry_interval: ''
           tableName:
-            link: SplitIID/result/table
+            external: tableName
             schema: string
             mandatory: false
           partitionNumber:
-            link: SplitIID/result/partition_no
+            external: partitionNumber
             schema: string
             mandatory: false
           refTableID:
             link: Get Table Ref ID/result
-            schema: any
+            schema: integer
             mandatory: false
       DbLoad:
         parent: DbLoad
@@ -199,17 +175,18 @@ stages:
             mandatory: false
             createdBy: table
           table_name:
-            link: SplitIID/result/table
+            external: tableName
             schema: string
             mandatory: false
             createdBy: table
           partition_no:
-            link: SplitIID/result/partition_no
-            schema: integer
+            external: partitionNumber
+            schema: string
             mandatory: false
             createdBy: table
           batch_id:
-            schema: any
+            external: batchId
+            schema: string
             mandatory: false
             createdBy: table
           start_time:
@@ -239,9 +216,7 @@ stages:
             mandatory: false
             createdBy: table
           instance_id:
-            link:
-              path: TablesInstanceList/value
-              iterate: Iterate
+            external: instance_id
             schema: string
             mandatory: false
             createdBy: fields
@@ -249,23 +224,3 @@ stages:
             schema: any
             mandatory: false
             createdBy: fields
-schemas:
-  TablesInstanceList.out.value:
-    type: array
-    items:
-      type: string
-  SplitIID.out.result:
-    type: object
-    properties:
-      environment:
-        type: string
-      interface:
-        type: string
-      schema:
-        type: string
-      table:
-        type: string
-      execution_id:
-        type: string
-      partition_no:
-        type: string

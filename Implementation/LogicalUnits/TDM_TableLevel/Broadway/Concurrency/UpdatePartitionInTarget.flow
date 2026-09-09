@@ -346,7 +346,7 @@ stages:
             schema: integer
   Records Count:
     actors:
-      Count:
+      Total:
         parent: Const
         height: 147
         in:
@@ -354,6 +354,18 @@ stages:
             const: null
             link:
             - Update Table By Query/okay
+            - Run Custom Update Flow/total
+            schema: integer
+        out:
+          value:
+            schema: integer
+      Processed:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - Update Table By Query/total
             - Run Custom Update Flow/okay
             schema: integer
         out:
@@ -386,7 +398,7 @@ stages:
         condition: result
         in:
           a:
-            link: Count/value
+            link: Total/value
             schema: integer
           b:
             const: -1
@@ -444,7 +456,7 @@ stages:
             mandatory: false
             createdBy: sql
           number_of_processed_records:
-            link: Count/value
+            link: Processed/value
             schema: integer
             mandatory: false
             createdBy: sql
@@ -454,7 +466,7 @@ stages:
             mandatory: false
             createdBy: sql
           number_of_records_to_process:
-            link: Count/value
+            link: Total/value
             schema: integer
             mandatory: false
             createdBy: sql
@@ -514,6 +526,19 @@ stages:
             schema: string
             mandatory: false
             createdBy: sql
+  Return Number of Errors:
+    actors:
+      Number Of Errors:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Got Errors Count?/result
+            schema: integer
+        out:
+          value:
+            external: errors
+            schema: integer
 schemas:
   Get Table's Fields.in.dataSample:
     type: object

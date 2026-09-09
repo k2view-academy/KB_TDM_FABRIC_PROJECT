@@ -39,7 +39,6 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.Globals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
-import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.fnGetInterfaceType;
 import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.*;
 
 
@@ -444,8 +443,8 @@ public class Logic extends UserCode {
 
         private static Map<String, Object> fnGetTaskInfo(Long taskExecutionId) throws SQLException {
             Map<String, Object> taskInfo = new HashMap<>();
-            String sql = "SELECT t.task_id, t.delete_before_load, t.load_entity, " +
-                    "t.retention_period_value, t.task_title, t.environment_id, t.source_environment_id, t.source_env_name "
+            String sql = "SELECT distinct t.task_id, t.delete_before_load, t.load_entity, " +
+                    "t.retention_period_value, t.task_title, t.environment_id, t.source_environment_id, t.source_env_name, e.run_type "
                     +
                     "FROM " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".task_execution_list e " +
                     "WHERE t.task_id = e.task_id AND e.task_execution_id = ?";
@@ -461,6 +460,7 @@ public class Logic extends UserCode {
                 taskInfo.put("targetEnvId", row.get("environment_id"));
                 taskInfo.put("sourceEnvId", row.get("source_environment_id"));
                 taskInfo.put("sourceEnvName", row.get("source_env_name"));
+                taskInfo.put("runType", row.get("run_type"));
 
             }
             return taskInfo;

@@ -246,12 +246,12 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
     source_environment_id bigint, 
     task_executed_by text,
     fabric_execution_id text,
+    tables_batch_id text,
 	subset_task_execution_id bigint DEFAULT 0,
     version_task_execution_id bigint DEFAULT 0,
     expiration_date timestamp without time zone,
     synced_to_fabric boolean DEFAULT false, 
     updated_by text, 
-    clean_redis boolean DEFAULT false, -- TDM 5.5
     process_id bigint NOT NULL default 0, -- IDM 7.0.1
     execution_note text, -- TDM 7.4
     source_product_version text, -- TDM 7.5.2
@@ -260,6 +260,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
     target_max_no_of_workers bigint,
     source_affinity text,
     target_affinity text,
+    run_type text default 'new',
     CONSTRAINT task_execution_list_pkey PRIMARY KEY (task_execution_id, lu_id, process_id)
 );
 
@@ -530,7 +531,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '10.0.0' 
+    select 'TDM_VERSION', '10.0.1' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 INSERT INTO ${@schema}.tdm_general_parameters(

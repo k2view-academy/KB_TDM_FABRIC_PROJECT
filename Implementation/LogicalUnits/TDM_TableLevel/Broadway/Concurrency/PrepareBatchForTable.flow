@@ -1,0 +1,389 @@
+tags: Concurrency
+stages:
+  Input:
+    actors:
+      List Of Order's Tables:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: listOfOrderTables
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+      Initiate Affinity:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.affinity = null;
+  Run Only If Table Didn't Already Failed:
+    actors:
+      Check Table Before Extract And Load:
+        parent: InnerFlow
+        condition: result
+        in:
+          flowName:
+            const: CheckIfTableFailed
+          interfaceName:
+            link:
+              path: List Of Order's Tables/value/tables_list/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: List Of Order's Tables/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link:
+              path: List Of Order's Tables/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionID:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          result:
+            schema: boolean
+      Get Affinity If Already Set:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.affinity;
+        out:
+          result:
+            schema: string
+  Get Task Info:
+    dependsOn: Run Only If Table Didn't Already Failed
+    actors:
+      Data Already Set?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Get Affinity If Already Set/result
+      Get Affinity & Max Workers By Task Type:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetAffinityAndMaxWorkerByTaskType
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          interfaceName:
+            link:
+              path: List Of Order's Tables/value/tables_list/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: List Of Order's Tables/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link:
+              path: List Of Order's Tables/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          affinity:
+            schema: string
+          maxWorkers:
+            schema: string
+      Get Task Title:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link:
+              path: List Of Order's Tables/value/tables_list/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link:
+              path: List Of Order's Tables/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link:
+              path: List Of Order's Tables/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: taskTitle
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: string
+      Get Task ID:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link:
+              path: List Of Order's Tables/value/tables_list/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link:
+              path: List Of Order's Tables/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link:
+              path: List Of Order's Tables/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskInfo
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: taskId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    dependsOn: Run Only If Table Didn't Already Failed
+  Rerun Table:
+    actors:
+      Generate Table Instances:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GenerateTableInstances
+          interfaceName:
+            link:
+              path: List Of Order's Tables/value/tables_list/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: List Of Order's Tables/value/tables_list/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link:
+              path: List Of Order's Tables/value/tables_list/table_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          syncMode:
+            external: syncMode
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionID:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          instances:
+            schema: '#ref'
+      Set Affinity to Mark Data as Set Already:
+        parent: JavaScript
+        in:
+          script:
+            const: flowArgs.affinity = affinity
+          affinity:
+            link: Get Affinity & Max Workers By Task Type/affinity
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Get List of Instances:
+    last: 1
+    actors:
+      Aggregate List of Instances:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: Generate Table Instances/instances
+            schema: '#ref'
+        out:
+          array:
+            schema: '#ref'
+  Outputs:
+    actors:
+      Output - List Of Instances:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Aggregate List of Instances/array
+            schema: '#ref'
+        out:
+          value:
+            external: TablesInstanceList
+            schema: '#ref'
+      Interface Affinity:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Affinity & Max Workers By Task Type/affinity
+            schema: string
+        out:
+          value:
+            external: interfaceAfinity
+            schema: string
+      Interface Max Number Of Workers:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Affinity & Max Workers By Task Type/maxWorkers
+            schema: string
+        out:
+          value:
+            external: interfaceMaxWorkers
+            schema: string
+      Task Title:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Task Title/result
+            schema: string
+        out:
+          value:
+            external: taskTitle
+            schema: string
+      Task ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Task ID/result
+            schema: integer
+        out:
+          value:
+            external: taskId
+            schema: integer
+schemas:
+  List Of Order's Tables.in.value:
+    type: array
+    items:
+      type: object
+      properties:
+        batch_id: {
+          }
+        interface_name:
+          type: string
+        tables_list:
+          type: array
+          items:
+            type: object
+            properties:
+              interface_name:
+                type: string
+              schema_name:
+                type: string
+              table_name:
+                type: string
+  List Of Order's Tables.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        batch_id: {
+          }
+        interface_name:
+          type: string
+        tables_list:
+          type: array
+          items:
+            type: object
+            properties:
+              interface_name:
+                type: string
+              schema_name:
+                type: string
+              table_name:
+                type: string
+  Generate Table Instances.out.instances:
+    type: array
+    items:
+      type: string
+  Aggregate List of Instances.in.input:
+    type: array
+    items:
+      type: string
+  Aggregate List of Instances.out.array:
+    type: array
+    items:
+      type: string
+  Output - List Of Instances.in.value:
+    type: array
+    items:
+      type: string
+  Output - List Of Instances.out.value:
+    type: array
+    items:
+      type: string

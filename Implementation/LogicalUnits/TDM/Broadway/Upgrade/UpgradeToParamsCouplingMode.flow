@@ -82,14 +82,14 @@ stages:
               userCode: |-
                 let name = lu ;
                 if(name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel"
-                && name !== "aifusion" && name !== "Vectors"){
+                && name !== "aifusion" && name !== "Vectors" && name !== "PipelineLu"){
                     name=true;
                 }
                 name;
               script: |-
                 var name = lu;
 
-                if (name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel" && name !== "aifusion" && name !== "Vectors") {
+                if (name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel" && name !== "aifusion" && name !== "Vectors" && name !== "PipelineLu") {
                   name = true;
                 }
 

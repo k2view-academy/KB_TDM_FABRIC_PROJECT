@@ -2,7 +2,7 @@ tags: Concurrency
 stages:
   Get Input:
     actors:
-      getTDMDBSchema:
+      Get TDMDB Schema:
         parent: InnerFlow
         in:
           flowName:
@@ -29,6 +29,11 @@ stages:
               path: Loop On Tables/i
               iterate: Iterate
             schema: integer
+            mandatory: false
+            createdBy: functionName
+          executionAction:
+            const: ExtractAndLoad
+            schema: string
             mandatory: false
             createdBy: functionName
         out:
@@ -77,45 +82,26 @@ stages:
         out:
           value:
             schema: '#ref'
-  Run Only If Table Didn't Already Failed:
-    actors:
-      Check Table Before Extract And Load:
-        parent: InnerFlow
-        condition: result
+      Initiate List of Rerun Batches:
+        parent: JavaScript
         in:
-          flowName:
-            const: CheckIfTableFailed
-          interfaceName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          taskExecutionID:
-            external: taskExeID
-            schema: string
-            mandatory: false
-            createdBy: flowName
+          script:
+            const: flowArgs.listBatchRerun = [];
         out:
           result:
-            schema: boolean
+            schema: '#ref'
   'Get Table Instances    ':
+    dependsOn: Get Tables List
     actors:
+      Tables To Handle?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/interface_name
+              iterate: First
+            schema: string
       Error Handler - Get Table Instances:
         parent: ErrorHandler
         error: result
@@ -136,32 +122,11 @@ stages:
         in:
           flowName:
             const: setSourceEnv
-      Generate Table Instances:
+      PrepareBatchForTable1:
         parent: InnerFlow
         in:
           flowName:
-            const: GenerateTableInstances
-          interfaceName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
+            const: PrepareBatchForTable
           taskExecutionID:
             external: taskExeID
             schema: string
@@ -172,10 +137,33 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
-        out:
-          instances:
+          listOfOrderTables:
+            link: List Of Tables Per Interface/value
             schema: '#ref'
-  'Insert Into Ref Partition     ':
+            mandatory: false
+            createdBy: flowName
+          taskType:
+            external: taskType
+            schema: string
+            mandatory: false
+            createdBy: flowName
+        out:
+          TablesInstanceList:
+            schema: '#ref'
+          interfaceAfinity:
+            schema: string
+          interfaceMaxWorkers:
+            schema: string
+          taskTitle:
+            schema: string
+          taskId:
+            schema: integer
+    split: '--------------------'
+  No Tables to Handle:
+    else: true
+    dependsOn: Get Tables List
+  Run Batch For Instances:
+    dependsOn: 'Get Table Instances    '
     actors:
       Error Handler - Insert Into Ref Partition:
         parent: ErrorHandler
@@ -192,478 +180,114 @@ stages:
                 flowName: ''
                 number_of_retries: ''
                 retry_interval: ''
-      InsertIntoTaskRefPartitions1:
+      RunBatchForInstances1:
         parent: InnerFlow
         in:
           flowName:
-            const: InsertIntoTaskRefPartitions
+            const: RunBatchForInstances
           TablesInstanceList:
-            link: Generate Table Instances/instances
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          taskExecutionID:
-            external: taskExeID
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          interfaceName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-  instances List:
-    last: 1
-    actors:
-      Aggregate IIDs To Run:
-        parent: ArrayBuilder
-        in:
-          input:
-            link: Generate Table Instances/instances
-        out:
-          array:
+            link: PrepareBatchForTable1/TablesInstanceList
             schema: '#ref'
-  Get Affinity And Number Of Workers:
-    actors:
-      GetAffinityAndMaxWorkerByTaskType1:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: GetAffinityAndMaxWorkerByTaskType
-          taskType:
-            external: taskType
-            schema: string
             mandatory: false
             createdBy: flowName
-          interfaceName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: flowName
-          taskExecutionId:
+          taskExeID:
             external: taskExeID
             schema: string
             mandatory: false
             createdBy: flowName
-        out:
-          affinity:
-            schema: string
-          maxWorkers:
-            schema: string
-  Concat IIDs List:
-    actors:
-      Concat IIDs to Instance Group:
-        parent: Concat
-        in:
-          elements:
-            link: Aggregate IIDs To Run/array
-      Get Task Title:
-        parent: LuFunction
-        in:
-          functionName:
-            const: fnGetCachedTableInfoBySection
           interfaceName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
-              iterate: Iterate
+            link: List Of Tables Per Interface/value/interface_name
             schema: string
             mandatory: false
-            createdBy: functionName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
+            createdBy: flowName
+          command:
+            link: Broadway Command/string
             schema: string
             mandatory: false
-            createdBy: functionName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
+            createdBy: flowName
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
-            createdBy: functionName
-          section:
-            const: TaskInfo
+            createdBy: flowName
+          taskTitle:
+            link: PrepareBatchForTable1/taskTitle
             schema: string
             mandatory: false
-            createdBy: functionName
-          attrName:
-            const: taskTitle
+            createdBy: flowName
+          interfaceAffinity:
+            link: PrepareBatchForTable1/interfaceAfinity
             schema: string
             mandatory: false
-            createdBy: functionName
-          taskExecutionId:
-            external: taskExeID
+            createdBy: flowName
+          interfaceMaxWorkers:
+            link: PrepareBatchForTable1/interfaceMaxWorkers
             schema: string
             mandatory: false
-            createdBy: functionName
-        out:
-          result:
+            createdBy: flowName
+          taskId:
+            link: PrepareBatchForTable1/taskId
             schema: integer
-      'Get Table Ref ID    ':
-        parent: LuFunction
-        in:
-          functionName:
-            const: fnGetCachedTableInfoBySection
-          interfaceName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
-              iterate: Iterate
-            schema: string
             mandatory: false
-            createdBy: functionName
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          section:
-            const: TaskRefTables
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          attrName:
-            const: task_ref_table_id
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          taskExecutionId:
-            external: taskExeID
-            schema: string
-            mandatory: false
-            createdBy: functionName
+            createdBy: flowName
         out:
-          result:
-            schema: integer
-  'Run Batch     ':
+          batchId:
+            schema: string
+    split: '--------------------'
+  Do Nothing:
+    dependsOn: No Tables to Handle
+  Merge Stage: {
+    }
+  Rerunning Batch:
+    dependsOn: Merge Stage
     actors:
-      IDs Not Empty:
-        parent: NotEquals
+      Rerun?:
+        parent: NotNull
         condition: result
         in:
-          b:
-            const: ''
-            schema: string
-          a:
-            link: Concat IIDs to Instance Group/string
-      Table Error Handler - Batch:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: true
-                flowName: PopulateTableErrorsForTableLevel
-                number_of_retries: ''
-                retry_interval: ''
-          tableName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          refTableID:
-            link: Get Table Ref ID    /result
-            schema: integer
-            mandatory: false
-          interfaceName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/interface_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-          schemaName:
-            link:
-              path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
-            schema: string
-            mandatory: false
-      'Batch ':
+          value:
+            link: List Of Tables Per Interface/value/batch_id
+      Retry Batch:
         parent: DbCommand
         in:
           interface:
             const: fabric
           sql:
-            const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
-              WITH ASYNC='true' ${@affinityStr} ${@maxWorkersStr} BATCH_ID_PREFIX='${@taskTitle}';
-          command:
-            link: Broadway Command/string
+            const: batch_retry ${batchId} allow_cancelled=true
+          batchId:
+            link: List Of Tables Per Interface/value/batch_id
             schema: string
             mandatory: false
-          instanceList:
-            link: Concat IIDs to Instance Group/string
-            schema: string
-            mandatory: false
-          taskTitle:
-            link: Get Task Title/result
-            schema: string
-            mandatory: false
-          affinityStr:
-            link: GetAffinityAndMaxWorkerByTaskType1/affinity
-            schema: string
-            mandatory: false
-          maxWorkersStr:
-            link: GetAffinityAndMaxWorkerByTaskType1/maxWorkers
-            schema: string
-            mandatory: false
+            createdBy: sql
         out:
           result:
             schema: '#ref'
-  'Reset IIDs List ':
-    actors:
-      IIDS List:
+      Rerun BatchId:
         parent: Const
         in:
           value:
             const: null
-            link: Aggregate IIDs To Run/array
+            link: List Of Tables Per Interface/value/batch_id
+            schema: string
         out:
           value:
-            schema: '#ref'
-      Reset List Of IIDs:
-        parent: ResetActors
-        in:
-          actorId:
-            const:
-            - Concat IIDs to Instance Group
-      Reset List Of IIDs1:
-        parent: ResetActors
-        in:
-          actorId:
-            const:
-            - Aggregate IIDs To Run
-  Split IIDS:
-    actors:
-      SplitIID:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: SplitIID
-          IID:
-            link:
-              path: IIDS List/value
-              iterate: Iterate
             schema: string
-            mandatory: false
-            createdBy: flowName
-        out:
-          result:
-            schema: '#ref'
-  Get Table Ref Info:
-    actors:
-      Get Table Ref ID:
-        parent: LuFunction
-        in:
-          functionName:
-            const: fnGetCachedTableInfoBySection
-          interfaceName:
-            link: SplitIID/result/interface
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          schemaName:
-            link: SplitIID/result/schema
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          tableName:
-            link: SplitIID/result/table
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          section:
-            const: TaskRefTables
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          attrName:
-            const: task_ref_table_id
-            schema: string
-            mandatory: false
-            createdBy: functionName
-          taskExecutionId:
-            external: taskExeID
-            schema: string
-            mandatory: false
-            createdBy: functionName
-        out:
-          result:
-            schema: integer
-  Update TDMDB Tables:
-    last: 1
-    actors:
-      Table Error Handler Update TDMDB:
-        parent: ErrorHandler
-        error: result
-        in:
-          config:
-            const:
-            - exceptionKey: java.lang.Exception
-              conditions:
-                message: ''
-              actions:
-                suppress: false
-                log: true
-                flowName: PopulatePartitionTableErrorsForTableLevel
-                number_of_retries: ''
-                retry_interval: ''
-          tableName:
-            link: SplitIID/result/table
-            schema: string
-            mandatory: false
-          partitionNumber:
-            link: SplitIID/result/partition_no
-            schema: string
-            mandatory: false
-          refTableID:
-            link: Get Table Ref ID/result
-            schema: integer
-            mandatory: false
-      Update task_ref_partition:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: |-
-              update ${@TDMDB_SCHEMA}.task_ref_partition
-               set batch_id=${batch_id} , instance_id=${instance_id}
-               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
-               AND partition_no=${partition_no}
-          TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
-            schema: string
-            mandatory: false
-            createdBy: sql
-          task_execution_id:
-            external: taskExeID
-            schema: string
-            mandatory: false
-            createdBy: sql
-          task_ref_table_id:
-            link: Get Table Ref ID/result
-            schema: string
-            mandatory: false
-            createdBy: sql
-          partition_no:
-            link: SplitIID/result/partition_no
-            schema: string
-            mandatory: false
-            createdBy: sql
-          batch_id:
-            link:
-              path: Batch /result/Batch id
-              iterate: First
-            schema: string
-            mandatory: false
-            createdBy: sql
-          instance_id:
-            link:
-              path: IIDS List/value
-              iterate: Iterate
-            schema: '#ref'
-            mandatory: false
-            createdBy: sql
-      Update task_ref_exe:
-        parent: DbCommand
-        in:
-          interface:
-            const: TDM
-          sql:
-            const: |-
-              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
-               set batch_id=${batch_id}, interface_name=${interface_name}, schema_name = ${schema_name}
-               where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id} AND execution_action <> 'Delete' ;
-          TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
-            schema: any
-            mandatory: false
-            createdBy: sql
-          batch_id:
-            link:
-              path: Batch /result/Batch id
-              iterate: First
-            schema: any
-            mandatory: false
-            createdBy: sql
-          task_execution_id:
-            external: taskExeID
-            schema: any
-            mandatory: false
-            createdBy: sql
-          task_ref_table_id:
-            link: Get Table Ref ID/result
-            schema: any
-            mandatory: false
-            createdBy: sql
-          interface_name:
-            link: SplitIID/result/interface
-            schema: any
-            mandatory: false
-            createdBy: sql
-          schema_name:
-            link: SplitIID/result/schema
-            schema: any
-            mandatory: false
-            createdBy: sql
+    split: '--------------------'
+  No Rerunning:
+    else: true
+    dependsOn: Merge Stage
   'Get Batch IDs  ':
     last: 1
     actors:
-      'List Of Batch IIDs To Wait For: ArrayBuilder':
-        parent: ArrayBuilder
+      List Of Batch IIDs To Wait For:
+        parent: ArrayConcat
         in:
           input:
             link:
-              path: Batch /result/Batch id
-              iterate: First
+            - path: RunBatchForInstances1/batchId
               pos: 0
+            - path: Rerun BatchId/value
+              pos: 1
         out:
           array:
             schema: '#ref'
@@ -674,7 +298,7 @@ stages:
         in:
           value:
             const: null
-            link: 'List Of Batch IIDs To Wait For: ArrayBuilder/array'
+            link: List Of Batch IIDs To Wait For/array
             schema: '#ref'
         out:
           value:
@@ -704,6 +328,8 @@ schemas:
     items:
       type: object
       properties:
+        batch_id: {
+          }
         interface_name:
           type: string
         tables_list:
@@ -720,6 +346,8 @@ schemas:
   List Of Tables Per Interface.out.value:
     type: object
     properties:
+      batch_id: {
+        }
       interface_name:
         type: string
       tables_list:
@@ -733,67 +361,51 @@ schemas:
               type: string
             table_name:
               type: string
-  Generate Table Instances.out.instances:
+  Initiate List of Rerun Batches.out.result:
     type: array
-    items:
-      type: string
-  Aggregate IIDs To Run.out.array:
-    type: array
-    items:
-      type: string
-  Batch .out.result:
+    items: {
+      }
+  PrepareBatchForTable1.in.listOfOrderTables:
     type: array
     items:
       type: object
       properties:
-        Batch id:
+        interface_name:
           type: string
-        Execution id:
-          type: string
-        Notes:
-          type: string
-  IIDS List.out.value:
+        tables_list:
+          type: array
+          items:
+            type: object
+            properties:
+              interface_name:
+                type: string
+              schema_name:
+                type: string
+              table_name:
+                type: string
+  PrepareBatchForTable1.out.TablesInstanceList:
     type: array
     items:
       type: string
-  SplitIID.out.result:
-    type: object
-    properties:
-      environment:
-        type: string
-      interface:
-        type: string
-      schema:
-        type: string
-      table:
-        type: string
-      execution_id:
-        type: string
-      partition_no:
-        type: string
-  Update task_ref_partition.in.instance_id:
-    type: object
-    properties:
-      environment:
-        type: string
-      interface:
-        type: string
-      schema:
-        type: string
-      table:
-        type: string
-      execution_id:
-        type: string
-      partition_no:
-        type: string
-  'List Of Batch IIDs To Wait For: ArrayBuilder.out.array':
+  RunBatchForInstances1.in.TablesInstanceList:
+    type: array
+    items:
+      type: string
+  Retry Batch.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Result:
+          type: string
+  List Of Batch IIDs To Wait For.out.array:
     type: array
     items:
       type: string
   Batch IDs to Wait For.in.value:
     type: array
-    items: {
-      }
+    items:
+      type: string
   Batch IDs to Wait For.out.value:
     type: array
     items:
