@@ -1,0 +1,327 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "Get TDM_TASK_EXE_ID Value",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "set Customer.TDM_TASK_EXE_ID"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "getTDMDBSchema1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTDMDBSchema"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "Newline1",
+                            "actorType": {
+                                "parentType": "Newline",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "DbCommand1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select task_execution_id,task_title,task_created_by,lu_name,execution_status,end_execution_time\nfrom ${@schema}.task_execution_list l, ${@schema}.tasks t, ${@schema}.tasks_logical_units u\nwhere l.task_id=t.task_id and l.lu_id=u.lu_id and l.task_id=u.task_id and l.lu_id > 0 and task_execution_id=${task_execution_id}\n"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_execution_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "task_title": {
+                                                        "type": "string"
+                                                    },
+                                                    "task_created_by": {
+                                                        "type": "string"
+                                                    },
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "execution_status": {
+                                                        "type": "string"
+                                                    },
+                                                    "end_execution_time": {
+                                                        "type": "date"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "StringFormat1",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${0}${1},${2},${3},${4},${5},${6}"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "FileWrite1",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "file://"
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "/opt/apps/fabric/workspace/project/project-resources/taskCompletionReport.csv"
+                                    },
+                                    {
+                                        "name": "append",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "stream",
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get TDM_TASK_EXE_ID Value",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "getTDMDBSchema1",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Newline1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "task_execution_id"
+            ],
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "task_title"
+            ],
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "task_created_by"
+            ],
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "lu_name"
+            ],
+            "arrayPosition": 4
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "execution_status"
+            ],
+            "arrayPosition": 5
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "end_execution_time"
+            ],
+            "arrayPosition": 6
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "stream"
+            }
+        }
+    ]
+}
