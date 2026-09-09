@@ -69,6 +69,13 @@
    {
       "name": "TDM",
       "appId": "TDM",
-	  "hidden": false
+	   "hidden": false,
+      "showChat": false
+   },
+   { 
+      "name": "Reports",
+      "appId": "reports",
+      "disableFontInjection": true, 
+      "hidden": false 
    }
 ]

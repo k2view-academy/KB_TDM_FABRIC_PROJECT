@@ -24,16 +24,6 @@ stages:
         out:
           inputs:
             schema: '#ref'
-      Check executionAction:
-        parent: NotEquals
-        in:
-          a:
-            const: executionAction
-            external: executionAction
-            schema: string
-          b:
-            const: Delete
-            schema: string
   Create IID:
     dependsOn: Prepare the Data
     actors:
@@ -155,30 +145,17 @@ stages:
             const: 1000
           string:
             link: Get the Error Fields/message
-      IfElse:
-        parent: IfElse
-        in:
-          a:
-            const: execution_action = 'Delete'
-            schema: string
-          b:
-            const: execution_action <> 'Delete'
-            schema: string
-          test:
-            link: Check executionAction/result
-        out:
-          result:
-            schema: string
-      JavaScript1:
+      Prepare executionAction statement:
         parent: JavaScript
         in:
           script:
-            const: |-
+            const: |
               var result = "";
-              if (executionAction == null) {
+
+              if (executionAction === "Delete") {
+                  result = " and execution_action = 'Delete'";
+              } else {
                   result = " and execution_action <> 'Delete'";
-              } else if (executionAction == "Delete") {
-                  result = "and execution_action = 'Delete'";
               }
 
               result;
@@ -427,7 +404,7 @@ stages:
             mandatory: false
             createdBy: format
           executionAction:
-            link: JavaScript1/result
+            link: Prepare executionAction statement/result
             schema: string
             mandatory: false
             createdBy: format
@@ -466,7 +443,7 @@ stages:
             mandatory: false
             createdBy: format
           executionAction:
-            link: JavaScript1/result
+            link: Prepare executionAction statement/result
             schema: string
             mandatory: false
             createdBy: format

@@ -1,0 +1,55 @@
+tags: Concurrency
+stages:
+  TDMDB Schema:
+    actors:
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Get List of Resumed Batches:
+    actors:
+      Update status:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT distinct batch_id FROM ${@TDMDB_SCHEMA}.task_ref_exe_stats
+              WHERE task_execution_id=${task_execution_id} AND execution_status = 'running';
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+  Wait For Resumed Batches to Finish:
+    actors:
+      Wait For Each Bach to Finish:
+        parent: BatchWait
+        in:
+          batchId:
+            const: null
+            link:
+              path: Update status/result/batch_id
+              iterate: Iterate
+            default: false
+schemas:
+  Update status.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        batch_id:
+          type: string

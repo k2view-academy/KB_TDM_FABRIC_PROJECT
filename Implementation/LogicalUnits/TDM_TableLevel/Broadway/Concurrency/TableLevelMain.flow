@@ -22,12 +22,6 @@ stages:
         out:
           value:
             schema: string
-      Get Target Environment:
-        parent: FabricSetRead
-        in:
-          key:
-            const: TDM_TAR_ENV_NAME
-            default: false
       syncMode:
         parent: Const
         in:
@@ -135,16 +129,6 @@ stages:
         in:
           functionName:
             const: tablesOrderCleanUp
-      Set Target Env:
-        parent: FabricSet
-        in:
-          key:
-            const: environment
-            default: false
-          value:
-            const: null
-            link: Get Target Environment/result
-            default: false
       Prepare Tables' Order:
         parent: LuFunction
         in:
@@ -311,8 +295,66 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
-  Merge: {
-    }
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+      Get Max Order for Delete:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getMaxOrder
+          executionAction:
+            const: Delete
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  Merge:
+    actors:
+      Get Run Type:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT CASE
+                  WHEN EXISTS (
+                      SELECT 1
+                      FROM ${@schema}.task_execution_list
+                      WHERE task_execution_id = ${task_execution_id}
+                        AND run_type <> 'new'
+                  )
+                  THEN 'rerun'
+                  ELSE 'new'
+              END AS run_type
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: string
+      +1 For Delete:
+        parent: MathAdd
+        in:
+          b:
+            const: 1
+          a:
+            link: Get Max Order for Delete/result
   If Delete is Requested:
     dependsOn: Merge
     actors:
@@ -347,7 +389,7 @@ stages:
           flowName:
             const: DeleteMainFlow
           maxOrder:
-            link: Prepare Tables' Order/result
+            link: +1 For Delete/result
             schema: integer
             mandatory: false
             createdBy: flowName
@@ -409,6 +451,31 @@ stages:
             createdBy: flowName
   Clear the cache:
     actors:
+      Check if Task Has Failed Partitions:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT COUNT(1) AS CNT
+              FROM ${@schema}.task_ref_exe_stats s
+              WHERE task_execution_id = ${task_execution_id}
+              AND (execution_status = 'failed' OR (execution_status = 'completed' AND EXISTS
+                  (SELECT 1 FROM ${@schema}.task_ref_partition p WHERE p.task_execution_id = ${task_execution_id} and p.execution_status = 'failed')))
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: integer
       Run Clear cashe on all nodes:
         parent: FabricSet
         in:
@@ -427,6 +494,85 @@ stages:
             const: broadway TDM_TableLevel.ClearCache taskExecutionId = ${taskExecutionId}
           taskExecutionId:
             external: taskExecutionId
-            schema: any
+            schema: string
             mandatory: false
             createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+  Fail Main Batch if Task has Failed Partitions:
+    dependsOn: Clear the cache
+    actors:
+      Task Had Failed Partitions?:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Check if Task Has Failed Partitions/result
+      Fail Task To Allow Rerun:
+        parent: Fail
+        in:
+          message:
+            const: Task has Failed Partitions
+    split: '--------------------'
+  No Failed Partitions:
+    else: true
+    dependsOn: Clear the cache
+    actors:
+      Check If Task is Stopped:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT COUNT(1) CNT
+              FROM ${@schema}.task_ref_exe_stats
+              WHERE task_execution_id = ${task_execution_id}
+              AND execution_status = 'stopped'
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: integer
+  Do Nothing:
+    dependsOn: Fail Main Batch if Task has Failed Partitions
+    split: '--------------------'
+  Fail Main Batch if Task is Stopped:
+    dependsOn: No Failed Partitions
+    actors:
+      Task Stopped?:
+        parent: GreaterThan
+        condition: result
+        in:
+          b:
+            const: 0
+          a:
+            link: Check If Task is Stopped/result
+      Fail Task:
+        parent: Fail
+        in:
+          message:
+            const: Task is Stopped!
+schemas:
+  Clear Cache.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Node:
+          type: string
+        Status:
+          type: string
+        Value:
+          type: string

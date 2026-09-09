@@ -1,0 +1,42 @@
+tags: Concurrency
+stages:
+  Get input:
+    actors:
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Update:
+    actors:
+      Update status:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              update ${@TDMDB_SCHEMA}.task_ref_exe_stats
+               set execution_status='stopped',
+               end_time = NOW()
+               where task_execution_id=${task_execution_id} AND execution_action='Delete' and execution_status = 'running';
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+  Fail Main Batch:
+    actors:
+      Fail:
+        parent: Fail
+        in:
+          message:
+            const: The Batch Was Stopped

@@ -338,6 +338,12 @@ stages:
               is_file: false
               excluded_files: ''
               included_files: ''
+            - filename: PipelineLu
+              type: LogicalUnit
+              active: true
+              is_file: false
+              excluded_files: ''
+              included_files: ''
             schema: '#ref'
         out:
           table:
@@ -959,6 +965,8 @@ stages:
             - luname: aifusion
               active: true
             - luname: Vectors
+              active: true
+            - luname: PipelineLu
               active: true
             schema: '#ref'
         out:

@@ -30,6 +30,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnMigrateStatusWs;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnPostTaskLogicalUnits;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnResumeTaskExecution;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnRetryTaskWithFailures;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnSaveRefTablestoTask;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnStopTaskExecution;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnUpdateFailedLUsInTree;
@@ -3229,10 +3230,8 @@ public class Logic extends WebServiceUserCode {
                                             : "";
                                     String tdmStatus = null;
                                     if ("DONE".equals(rawBatchStatus)) {
-                                        Long total = levelRow.get("Total") != null 
-                                            ? (Long)levelRow.get("Total") : 0;
-                                        Long failed = levelRow.get("Failed") != null
-                                            ? (Long)levelRow.get("Failed") : 0;
+                                        long total = parseBatchCount(levelRow.get("Total"));
+                                        long failed = parseBatchCount(levelRow.get("Failed"));
                                         if (total > 0 && total == failed) {
                                             tdmStatus = "failed";
                                         } else {
@@ -3300,6 +3299,28 @@ public class Logic extends WebServiceUserCode {
         response.put("errorCode", errorCode);
         response.put("message", message);
         return response;
+    }
+
+    // fnBatchStatistics ("Total"/"Failed") may return a Long, or a String like ">100000"/"UNKNOWN" for large/edge-case batches
+    private static long parseBatchCount(Object value) {
+        if (value == null) {
+            return 0;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        String str = value.toString().trim();
+        if (str.isEmpty() || "UNKNOWN".equalsIgnoreCase(str)) {
+            return 0;
+        }
+        if (str.startsWith(">")) {
+            str = str.substring(1);
+        }
+        try {
+            return Long.parseLong(str);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     @desc("Gets the task execution summary report.")
@@ -3439,6 +3460,20 @@ public class Logic extends WebServiceUserCode {
         Object message = null;
         Object errorCode = "SUCCESS";
 
+        try {
+            Object data = fnRetryTaskWithFailures(taskExecutionId);
+            Map<String, Object> resultMap = (Map<String, Object>) data;
+            response.put("result", resultMap.get("result"));
+            message = resultMap.get("message");
+            errorCode = resultMap.get("errorCode");
+        } catch (Exception e) {
+            message = e.getMessage();
+            errorCode = "FAILED";
+            log.error(e.getMessage());
+
+        }
+        response.put("errorCode", errorCode);
+        response.put("message", message);
         return response;
     }
 
@@ -5608,59 +5643,292 @@ public class Logic extends WebServiceUserCode {
         return response;
     }
 
+        
+    private static void putOverrideEntry(Map<String, Object> paramsMap, Map<String, Object> overrideFields,
+            String overrideKey, Map<String, Object> taskDetails, String... responseKeys) {
+        Object node = overrideFields.get(overrideKey);
+        if (!(node instanceof Map)) {
+            return;
+        }
+        boolean isEditable = Boolean.TRUE.equals(((Map<String, Object>) node).get("is_editable"));
+        for (String key : responseKeys) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("is_editable", isEditable);
+            entry.put("value", taskDetails.get(key));
+            paramsMap.put(key, entry);
+        }
+    }
     
+    private static void addCanAddParams(Map<String, Object> paramsMap, Map<String, Object> overrideFields,
+            String selectionMethod) {
+        Object selectionMethodNode = overrideFields.get("selection_method");
+        if (!(selectionMethodNode instanceof Map)) {
+            return;
+        }
+        Map<String, Object> selectionMethodFields = (Map<String, Object>) selectionMethodNode;
+
+        Boolean canAddParams = null;
+        if ("P".equalsIgnoreCase(selectionMethod) || "PR".equalsIgnoreCase(selectionMethod)) {
+            Object businessParamsNode = selectionMethodFields.get("business_parameters");
+            if (businessParamsNode instanceof Map) {
+                canAddParams = Boolean.TRUE.equals(((Map<String, Object>) businessParamsNode).get("is_editable"));
+            }
+        } else if ("C".equalsIgnoreCase(selectionMethod)) {
+            Object customLogicNode = selectionMethodFields.get("custom_logic");
+            if (customLogicNode instanceof Map) {
+                Object canAddParamsNode = ((Map<String, Object>) customLogicNode).get("can_add_params");
+                if (canAddParamsNode instanceof Map) {
+                    canAddParams = Boolean.TRUE.equals(((Map<String, Object>) canAddParamsNode).get("is_editable"));
+                }
+            }
+        }
+
+        if (canAddParams == null) {
+            return;
+        }
+        Object selectionMethodEntry = paramsMap.get("selection_method");
+        if (selectionMethodEntry instanceof Map) {
+            ((Map<String, Object>) selectionMethodEntry).put("can_add_params", canAddParams);
+        }
+    }
+
+    private static void putNestedOverrideEntry(Map<String, Object> paramsMap, Map<String, Object> overrideFields,
+            Map<String, Object> taskDetails, String responseKey, String... path) {
+        Map<String, Object> node = overrideFields;
+        for (String p : path) {
+            Object next = node.get(p);
+            if (!(next instanceof Map)) {
+                return;
+            }
+            node = (Map<String, Object>) next;
+        }
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("is_editable", Boolean.TRUE.equals(node.get("is_editable")));
+        entry.put("value", taskDetails.get(responseKey));
+        paramsMap.put(responseKey, entry);
+    }
+
+    private static void addSelectionParamValueEntry(Map<String, Object> paramsMap, Map<String, Object> overrideFields,
+            Map<String, Object> taskDetails, String selectionMethod) {
+        String[] path;
+        if ("L".equalsIgnoreCase(selectionMethod)) {
+            path = new String[] { "selection_method", "entity_list" };
+        } else if ("C".equalsIgnoreCase(selectionMethod)) {
+            path = new String[] { "selection_method", "custom_logic" };
+        } else if ("P".equalsIgnoreCase(selectionMethod) || "PR".equalsIgnoreCase(selectionMethod)) {
+            path = new String[] { "selection_method", "business_parameters" };
+        } else {
+            path = null;
+        }
+
+        boolean isEditable = false;
+        if (path != null) {
+            Map<String, Object> node = overrideFields;
+            for (String p : path) {
+                Object next = node.get(p);
+                if (!(next instanceof Map)) {
+                    node = null;
+                    break;
+                }
+                node = (Map<String, Object>) next;
+            }
+            if (node != null) {
+                isEditable = Boolean.TRUE.equals(node.get("is_editable"));
+            }
+        }
+
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("is_editable", isEditable);
+        entry.put("value", taskDetails.get("selection_param_value"));
+        paramsMap.put("selection_param_value", entry);
+    }
+
+    private static void collectBpRules(Map<String, Object> node, Map<String, Map<String, Object>> out) {
+        if (node == null) {
+            return;
+        }
+        Object rules = node.get("rules");
+        if (rules instanceof List) {
+            for (Object r : (List<?>) rules) {
+                if (r instanceof Map) {
+                    Map<String, Object> rule = (Map<String, Object>) r;
+                    Object field = rule.get("field");
+                    if (field != null) {
+                        String key = field.toString();
+                        if (out.containsKey(key)) {
+                            int suffix = 2;
+                            while (out.containsKey(key + "_" + suffix)) {
+                                suffix++;
+                            }
+                            key = key + "_" + suffix;
+                        }
+                        out.put(key, rule);
+                    }
+                    Object nested = rule.get("group");
+                    if (nested instanceof Map) {
+                        collectBpRules((Map<String, Object>) nested, out);
+                    }
+                }
+            }
+        }
+        Object group = node.get("group");
+        if (group instanceof Map) {
+            collectBpRules((Map<String, Object>) group, out);
+        }
+    }
+
+    private static Map<String, Object> buildParamsMap(Map<String, Object> taskDetails, Object taskOverrideFieldsRaw,
+            Object parametersRaw, String selectionMethod) {
+        Map<String, Object> paramsMap = new LinkedHashMap<>();
+
+        try {
+            String overrideFieldsJson = taskOverrideFieldsRaw != null ? taskOverrideFieldsRaw.toString() : null;
+            if (overrideFieldsJson != null && !overrideFieldsJson.isBlank() && !overrideFieldsJson.equals("{}")) {
+                Map<String, Object> overrideFields = Json.get().fromJson(overrideFieldsJson);
+                putOverrideEntry(paramsMap, overrideFields, "business_entity", taskDetails, "be_name");
+                putOverrideEntry(paramsMap, overrideFields, "source_environment", taskDetails, "source_env_name");
+                putOverrideEntry(paramsMap, overrideFields, "target_environment", taskDetails, "environment_name");
+                putOverrideEntry(paramsMap, overrideFields, "selection_method", taskDetails, "selection_method");
+                addCanAddParams(paramsMap, overrideFields, selectionMethod);
+                putNestedOverrideEntry(paramsMap, overrideFields, taskDetails, "num_of_entities",
+                        "selection_method", "max_entities");
+                addSelectionParamValueEntry(paramsMap, overrideFields, taskDetails, selectionMethod);
+                putOverrideEntry(paramsMap, overrideFields, "reservation_period", taskDetails,
+                        "reserve_retention_period_type", "reserve_retention_period_value");
+                putOverrideEntry(paramsMap, overrideFields, "retention_period", taskDetails,
+                        "retention_period_type", "retention_period_value");
+                if (taskDetails.containsKey("data_version_name")) {
+                    putOverrideEntry(paramsMap, overrideFields, "data_version_name", taskDetails,
+                            "data_version_name");
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        try {
+            String parametersJson = parametersRaw != null ? parametersRaw.toString() : null;
+            if (parametersJson != null && !parametersJson.isBlank() && !"null".equalsIgnoreCase(parametersJson)) {
+                Map<String, Object> parsedParams = Json.get().fromJson(parametersJson);
+                if ("P".equalsIgnoreCase(selectionMethod) || "PR".equalsIgnoreCase(selectionMethod)) {
+                    Map<String, Map<String, Object>> ruleIndex = new LinkedHashMap<>();
+                    collectBpRules(parsedParams, ruleIndex);
+                    for (Map.Entry<String, Map<String, Object>> e : ruleIndex.entrySet()) {
+                        Map<String, Object> rule = e.getValue();
+                        Map<String, Object> entry = new LinkedHashMap<>();
+                        entry.put("is_editable", Boolean.TRUE.equals(rule.get("is_editable")));
+                        entry.put("value", rule.get("data"));
+                        paramsMap.put(e.getKey(), entry);
+                    }
+                } else if ("C".equalsIgnoreCase(selectionMethod)) {
+                    Object inputs = parsedParams.get("inputs");
+                    if (inputs instanceof List) {
+                        for (Object item : (List<?>) inputs) {
+                            if (item instanceof Map) {
+                                Map<String, Object> input = (Map<String, Object>) item;
+                                Object name = input.get("name");
+                                if (name != null) {
+                                    Map<String, Object> entry = new LinkedHashMap<>();
+                                    entry.put("is_editable", Boolean.TRUE.equals(input.get("is_editable")));
+                                    entry.put("value", input.get("value"));
+                                    paramsMap.put(name.toString(), entry);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        return paramsMap;
+    }
+
     @desc("Returns task details by task id.")
     @webService(path = "task/{taskId}", verb = {
             MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
                     Produce.JSON }, elevatedPermission = true)
     @resultMetaData(mediaType = Produce.JSON, example = """
-                                      {
+                                                 {
               "result": {
-                "task_id": 13,
-                "task_title": "extract and load max num",
-                "task_description": "extract and load max num",
+                "task_id": 2,
+                "task_title": "Extract and Load entities",
+                "task_description": "Extract and Load entities",
                 "task_override_fields": {
                   "type": "jsonb",
-                  "value": "{\"business_entity\": {\"is_editable\": false, \"field_connector\": \"be_name\"}, \"selection_method\": {\"random\": {\"is_editable\": false}, \"entity_list\": {\"is_editable\": false}, \"is_editable\": false, \"custom_logic\": {\"is_editable\": false, \"can_add_params\": {\"is_editable\": false}}, \"max_entities\": {\"is_editable\": false}, \"field_connector\": \"selection_method\", \"business_parameters\": {\"is_editable\": false}}, \"reservation_period\": {\"is_editable\": false, \"field_connector\": \"reservation_period\"}, \"source_environment\": {\"is_editable\": true, \"field_connector\": \"source_env_name\"}, \"target_environment\": {\"is_editable\": true, \"field_connector\": \"environment_name\"}}"
+                  "value": "{\"task_globals\": {\"is_editable\": true, \"field_connector\": \"task_globals\"}, \"business_entity\": {\"is_editable\": true, \"field_connector\": \"be_name\"}, \"retention_period\": {\"is_editable\": true, \"field_connector\": \"retention_period\"}, \"selection_method\": {\"random\": {\"is_editable\": true}, \"entity_list\": {\"is_editable\": true}, \"is_editable\": true, \"custom_logic\": {\"is_editable\": true, \"can_add_params\": {\"is_editable\": true}}, \"max_entities\": {\"is_editable\": true}, \"field_connector\": \"selection_method\", \"business_parameters\": {\"is_editable\": true}}, \"data_version_name\": {\"is_editable\": true, \"field_connector\": \"data_version_name\"}, \"reservation_period\": {\"is_editable\": false, \"field_connector\": \"reservation_period\"}, \"source_environment\": {\"is_editable\": true, \"field_connector\": \"source_env_name\"}, \"target_environment\": {\"is_editable\": true, \"field_connector\": \"environment_name\"}}"
                 },
                 "task_type": "Extract and load entities",
-                "be_id": 1,
-                "be_name": "Customer",
-                "selection_method": "Entity list",
-                "selection_param_value": "1,2,3,4",
+                "db_task_type": "LOAD",
+                "be_id": null,
+                "be_name": null,
+                "sync_mode": "ON",
+                "selection_method": "Business parameters",
+                "selection_param_value": null,
                 "parameters": null,
-                "num_of_entities": 4,
+                "num_of_entities": 0,
                 "reserve_retention_period_type": "Days",
                 "reserve_retention_period_value": 5,
-                "source_environment_id": 1,
-                "source_env_name": "Production",
-                "target_env_id": 2,
-                "environment_name": "UAT",
-                "base_prompt_text": "Copy data by <be_name> from <source_env_name> to <environment_name>.\nSubset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.",
-                "prompt_text": "Copy data by <be_name> from <source_env_name> to <environment_name>.\nSubset by <selection_method> using: <selection_param_value>.",
-                "prompt_text_with_params_replacment": "Copy data by Customer from Production to UAT.\nSubset by Entity list using: 1,2,3,4.",
-                "notes": [],
-                "logical_units_data": [
-                  {
-                    "lu_id": 2,
-                    "lu_name": "Billing",
-                    "source_affinity": "",
-                    "target_affinity": "",
-                    "max_no_of_workers": 5
+                "filterout_reserved": "OTHERS",
+                "retention_period_type": "Do Not Delete",
+                "retention_period_value": -1,
+                "source_environment_id": null,
+                "source_env_name": "",
+                "target_env_id": null,
+                "environment_name": null,
+                "selected_version_task_exe_id": 0,
+                "selected_subset_task_exe_id": 0,
+                "params_map": {
+                  "be_name": {
+                    "is_editable": true,
+                    "value": null
                   },
-                  {
-                    "lu_id": 1,
-                    "lu_name": "Customer",
-                    "source_affinity": "",
-                    "target_affinity": "",
-                    "max_no_of_workers": 6
+                  "source_env_name": {
+                    "is_editable": true,
+                    "value": ""
+                  },
+                  "environment_name": {
+                    "is_editable": true,
+                    "value": null
+                  },
+                  "selection_method": {
+                    "is_editable": true,
+                    "value": "Business parameters",
+                    "can_add_params": true
+                  },
+                  "num_of_entities": {
+                    "is_editable": true,
+                    "value": 0
+                  },
+                  "selection_param_value": {
+                    "is_editable": true,
+                    "value": null
+                  },
+                  "reserve_retention_period_type": {
+                    "is_editable": false,
+                    "value": "Days"
+                  },
+                  "reserve_retention_period_value": {
+                    "is_editable": false,
+                    "value": 5
+                  },
+                  "retention_period_type": {
+                    "is_editable": true,
+                    "value": "Do Not Delete"
+                  },
+                  "retention_period_value": {
+                    "is_editable": true,
+                    "value": -1
                   }
-                ]
+                },
+                "base_prompt_text": "Copy data by <be_name> from <source_env_name> to <environment_name>.\nSubset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.",
+                "prompt_text": "Copy data by <be_name> from <source_env_name> to <environment_name>.\nSubset by <selection_method> . Process up to <num_of_entities> matching entities.",
+                "prompt_text_with_params_replacment": "Copy data by null from  to null.\nSubset by Business parameters . Process up to 0 matching entities.",
+                "notes": []
               },
               "errorCode": "SUCCESS",
               "message": null
             }
-                                        """)
+                                                    """)
     public static Object wsGetTaskDetails(@param(required = true) Long taskId) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         String message = null;
@@ -5771,7 +6039,6 @@ public class Logic extends WebServiceUserCode {
                             String.valueOf(row.get("task_Type")), String.valueOf(row.get("sync_mode")), taskId,
                             String.valueOf(row.get("be_id")));
 
-            
             if (isSourceDisabled) {
                 taskDetails.put("source_environment_id", null);
                 taskDetails.put("source_env_name", null);
@@ -5796,17 +6063,16 @@ public class Logic extends WebServiceUserCode {
                 Object versionExeIdObj = row.get("selected_version_task_exe_id");
                 long selectedVersionExeId = (versionExeIdObj != null) ? Long.parseLong(versionExeIdObj.toString()) : 0L;
                 if (selectedVersionExeId > 0) {
-                    String versionInfoSql =
-                        "SELECT t.task_title AS data_version_name, tes.creation_date AS version_creation_date " +
-                        "FROM " + TDMDB_SCHEMA + ".task_execution_summary tes " +
-                        "JOIN " + TDMDB_SCHEMA + ".tasks t ON tes.task_id = t.task_id " +
-                        "WHERE tes.task_execution_id = ?";
+                    String versionInfoSql = "SELECT t.task_title AS data_version_name, tes.creation_date AS version_creation_date "
+                            + "FROM " + TDMDB_SCHEMA + ".task_execution_summary tes " +
+                            "JOIN " + TDMDB_SCHEMA + ".tasks t ON tes.task_id = t.task_id " +
+                            "WHERE tes.task_execution_id = ?";
                     Db.Row versionRow = db(TDM).fetch(versionInfoSql, selectedVersionExeId).firstRow();
                     if (versionRow != null && !versionRow.isEmpty()) {
                         taskDetails.put("data_version_name", versionRow.get("data_version_name"));
                         Object cd = versionRow.get("version_creation_date");
                         taskDetails.put("version_creation_date",
-                            cd != null ? new java.text.SimpleDateFormat("dd-MMM-yy HH:mm:ss").format(cd) : "");
+                                cd != null ? new java.text.SimpleDateFormat("dd-MMM-yy HH:mm:ss").format(cd) : "");
                     } else {
                         taskDetails.put("data_version_name", "");
                         taskDetails.put("version_creation_date", "");
@@ -5825,9 +6091,11 @@ public class Logic extends WebServiceUserCode {
                         Long beId = Long.parseLong(row.get("be_id").toString());
                         String sourceEnvName = (String) row.get("source_env_name");
                         List<String> luNames = new ArrayList<>();
-                        String luQuery = "SELECT lu_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = " + beId;
+                        String luQuery = "SELECT lu_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = "
+                                + beId;
                         db(TDM).fetch(luQuery).forEach(luRow -> luNames.add((String) luRow.get("lu_name")));
-                        Map<String, Object> genResponse = (Map<String, Object>) wsGetGenerationModels(null, null, sourceEnvName, beId, luNames);
+                        Map<String, Object> genResponse = (Map<String, Object>) wsGetGenerationModels(null, null,
+                                sourceEnvName, beId, luNames);
                         if ("SUCCESS".equals(genResponse.get("errorCode"))) {
                             List<Map<String, Object>> genList = (List<Map<String, Object>>) genResponse.get("result");
                             for (Map<String, Object> genModel : genList) {
@@ -5835,7 +6103,8 @@ public class Logic extends WebServiceUserCode {
                                 if (exeId != null && Long.parseLong(exeId.toString()) == selectedSubsetExeId) {
                                     taskDetails.put("generation_title", genModel.get("task_title"));
                                     taskDetails.put("generation_creation_date", genModel.get("creation_date"));
-                                    taskDetails.put("generation_number_of_entities", genModel.get("number_of_entities"));
+                                    taskDetails.put("generation_number_of_entities",
+                                            genModel.get("number_of_entities"));
                                     break;
                                 }
                             }
@@ -5843,6 +6112,9 @@ public class Logic extends WebServiceUserCode {
                     }
                 }
             }
+
+            taskDetails.put("params_map", buildParamsMap(taskDetails, row.get("task_override_fields"),
+                    row.get("parameters"), selectionMethod));
 
             String prompt = basePromptText(taskTypeDerived);
 
@@ -5855,7 +6127,8 @@ public class Logic extends WebServiceUserCode {
 
             boolean versionInd = Boolean.TRUE.equals(row.get("version_ind"));
             Object beIdValForSnapshot = row.get("be_id");
-            boolean isTablesOnlyTask = beIdValForSnapshot != null && Long.parseLong(beIdValForSnapshot.toString()) == -1L;
+            boolean isTablesOnlyTask = beIdValForSnapshot != null
+                    && Long.parseLong(beIdValForSnapshot.toString()) == -1L;
             if (versionInd && taskTypeDerived.startsWith("Extract") && !isTablesOnlyTask) {
                 String retentionType = (String) row.get("retention_period_type");
                 if (retentionType == null || "Do Not Delete".equalsIgnoreCase(retentionType)) {
@@ -5868,7 +6141,8 @@ public class Logic extends WebServiceUserCode {
 
             if (taskTypeDerived.startsWith("Rule-based Generate")
                     && shouldRemoveGenParamsSentence(taskId, row.get("task_override_fields"))) {
-                prompt = prompt.replaceAll("\nThe entities are generated based on the following parameters:\\s*", "").trim();
+                prompt = prompt.replaceAll("\nThe entities are generated based on the following parameters:\\s*", "")
+                        .trim();
             }
 
             String finalPrompt = createFinalPrompt(prompt, displayedSelectionMethod, num_of_entities);

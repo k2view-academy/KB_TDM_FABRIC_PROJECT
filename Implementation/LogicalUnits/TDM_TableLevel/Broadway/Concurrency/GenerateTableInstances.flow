@@ -11,7 +11,7 @@ stages:
         out:
           value:
             schema: string
-      getTDMDBSchema:
+      Get TDMDB Schema:
         parent: InnerFlow
         in:
           flowName:
@@ -158,7 +158,7 @@ stages:
               where task_execution_id=${version_task_execution_id} and ref_table_name
               = ${ref_table_name} and execution_status='completed'
           TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
             createdBy: sql
@@ -258,7 +258,7 @@ stages:
             schema: integer
   Return List Of IIDS:
     actors:
-      BuildListOfPartitionIIDS1:
+      Build List Of Partition IIDs:
         parent: InnerFlow
         in:
           flowName:
@@ -298,8 +298,8 @@ stages:
         out:
           instances:
             external: instances
-            schema: string
-      'Update task_ref_partition ':
+            schema: '#ref'
+      Update task_ref_exe_stats:
         parent: DbCommand
         in:
           interface:
@@ -310,7 +310,7 @@ stages:
                set number_of_partitions=${number_of_partitions}
                where task_execution_id=${task_execution_id} AND task_ref_table_id=${task_ref_table_id}
           TDMDB_SCHEMA:
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
             schema: string
             mandatory: false
             createdBy: sql
@@ -339,3 +339,7 @@ schemas:
       properties:
         number_of_partitions:
           type: integer
+  Build List Of Partition IIDs.out.instances:
+    type: array
+    items:
+      type: string

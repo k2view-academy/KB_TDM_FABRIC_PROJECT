@@ -14,6 +14,14 @@ stages:
         in:
           format:
             const: broadway TDM_TableLevel.CountTable iid=?
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Get Tables of Current Order:
     actors:
       Get Tables Of Order:
@@ -28,11 +36,48 @@ stages:
             schema: integer
             mandatory: false
             createdBy: functionName
+          executionAction:
+            const: Count
+            schema: string
+            mandatory: false
+            createdBy: functionName
         out:
           result:
             schema: '#ref'
+  Get Status if Stopped:
+    actors:
+      Check if the Task is Stopped:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT execution_status FROM ${@schema}.task_execution_list
+              WHERE task_execution_id = ${taskExecutionId}
+              AND execution_status = 'stopped'
+              LIMIT 1
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: string
   Interface's Tables Per Order:
     actors:
+      Task is not stopped?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Check if the Task is Stopped/result
       List Of Tables Per Interface:
         parent: Const
         in:

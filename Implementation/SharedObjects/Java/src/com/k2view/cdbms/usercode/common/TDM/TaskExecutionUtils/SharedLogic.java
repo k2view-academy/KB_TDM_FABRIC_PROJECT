@@ -304,66 +304,6 @@ public class SharedLogic {
 		    return null;
 	}
 
-
-	@out(name = "result", type = Object.class, desc = "")
-	public static Object fnStopTaskExecution(Long task_execution_id) throws Exception {
-		Db.Rows batchIdList = null;
-		//log.info("fnStopTaskExecution - task_execution_id: " + task_execution_id);
-        try {
-			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to stop task execution", null);
-            //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-            String sql = "select fabric_execution_id, execution_status, l.task_type " +
-            "from " + schema + ".task_execution_list l  where task_execution_id = ? " +
-            "and (fabric_execution_id is not null) and UPPER(execution_status) IN " +
-            "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED')" ;
-
-            batchIdList = db(TDM).fetch(sql, task_execution_id);
-
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
-                            " start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
-                            " WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
-                            task_execution_id);
-            // TDM 5.1- add a reference handling- update the status of the reference tables to 'stopped'.
-
-            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='stopped', end_time=current_timestamp at time zone 'utc', number_of_processed_records = 0," +
-					" start_time = CASE WHEN start_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_time END" +
-					" WHERE task_execution_id = ?" +
-                    " AND execution_status NOT IN ('completed', 'failed')", task_execution_id);
-
-            // TDM 7, set the execution summary to stopped also
-            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='stopped', end_execution_time=current_timestamp at time zone 'utc'," +
-							" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
-							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",task_execution_id);
-
-            // TDM 5.1- cancel the migrate only if the input migration id is not null
-            //TDM 6.0 - Loop over the list of migrate IDs
-            for (Db.Row batchInfo : batchIdList) {
-                String taskType = ("" + batchInfo.get("task_type")).toLowerCase();
-                String taskExecutionID = "" + task_execution_id;
-				//log.info("fabricExecID: <" + fabricExecID + ">");
-				if(batchInfo.get("fabric_execution_id") != null) {
-                    try {
-                        ludb().execute("batch_cancel '" + batchInfo.get("fabric_execution_id") + "'");
-                    } catch (Exception batchEx) {
-                        log.warn("fnStopTaskExecution - batch_cancel skipped for {}: {}", batchInfo.get("fabric_execution_id"), batchEx.getMessage());
-                    }
-				}
-                // TDM 7.1 Fix, stop execution of reference tables.
-                //log.info("fnStopTaskExecution - Stopping the reference Handling for task_execution_id: " + task_execution_id + ", task_type: " + taskType);
-                fnTdmReference(String.valueOf(task_execution_id), taskType);
-            }
-            return wrapWebServiceResults("SUCCESS", null, null);
-        } catch (Exception e) {
-            log.error("wsStopTaskExecution", e);
-            return wrapWebServiceResults("FAILED", e.getMessage(), null);
-
-        } finally {
-            if (batchIdList != null) {
-                batchIdList.close();
-            }
-        }
-	}
-
 	public static List<Map<String, Object>> fnGetTaskPostExecutionProcesses(Long taskId) throws Exception {
         String query = "SELECT * FROM " + schema + ".TASKS_EXE_PROCESS  WHERE status='Active' AND task_id =" + taskId;
         Db.Rows rows = db(TDM).fetch(query);
@@ -407,9 +347,9 @@ public class SharedLogic {
 		String executionAction = "EXTRACT".equalsIgnoreCase(taskType) ? "Extract" : "Extract & Load";
 
 		// Determine which environments to check for disabled systems:
-		// - EXTRACT           → source only
-		// - non-EXTRACT FORCE → source + target (data is freshly read from source then written to target)
-		// - non-EXTRACT       → target only
+	// - EXTRACT           → source only
+	// - non-EXTRACT FORCE → source + target (data is freshly read from source then written to target)
+	// - non-EXTRACT       → target only
 		boolean isExtract = "EXTRACT".equalsIgnoreCase(taskType);
 		String syncMode = taskRow.get("sync_mode") != null ? taskRow.get("sync_mode").toString() : "";
 		boolean isForce = "FORCE".equalsIgnoreCase(syncMode);
@@ -554,84 +494,183 @@ public class SharedLogic {
 
 
 	private static Object fnGetTaskExecSeqVal(String task_execution_id) throws Exception {
-		 //Sereen - fix : tdm_seq_mapping PG table is deleted so we fetch the data from tdm_seq_mapping fabric table
-        //DBExecute(DB_FABRIC, "set sync off", null);
-        //DBExecute(DB_FABRIC, "get TDM." + task_execution_id, null);
-        ludb().execute("get TDM." + task_execution_id);
+
+        fabric().execute("get TDM." + task_execution_id);
         String sql = "SELECT entity_target_id , lu_type, source_env, table_name, column_name, source_id, target_id, is_instance_id FROM tdm_seq_mapping";
         Db.Rows rows = db(DB_FABRIC).fetch(sql);
         return rows;
     }
 
-
-	public static Object fnResumeTaskExecution(Long task_execution_id) throws Exception {
-        Db.Rows batchIdList = null;
+	@out(name = "result", type = Object.class, desc = "")
+	public static Object fnStopTaskExecution(Long task_execution_id) throws Exception {
+		Db.Rows batchIdList = null;
+		//log.info("fnStopTaskExecution - task_execution_id: " + task_execution_id);
         try {
-			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to resume task execution", null);
-            // Get the selection_method for this task execution
-            Object selectionMethodObj = db(TDM).fetch(
-                "SELECT t.selection_method FROM " + schema + ".tasks t " +
-                "JOIN " + schema + ".task_execution_list l ON l.task_id = t.task_id " +
-                "WHERE l.task_execution_id = ? LIMIT 1", task_execution_id).firstValue();
-            String selectionMethod = selectionMethodObj != null ? selectionMethodObj.toString() : "";
+			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to stop task execution", null);
 
-            // Pure table-level tasks are not supported for resume
-            if ("TABLES".equalsIgnoreCase(selectionMethod)) {
-                return wrapWebServiceResults("FAILED", "Resume is not supported for table level tasks", null);
-            }
+			Db.Rows tableBatches = db(TDM).fetch("SELECT distinct batch_id FROM " + schema + ".task_ref_exe_stats WHERE " + 
+					"task_execution_id = ? AND batch_id is not null AND execution_status NOT IN ('completed', 'failed')", task_execution_id);
 
-            // Check if this is an entities+tables task (selection_method != 'TABLES' but has table entries)
-            boolean hasTableEntries = db(TDM).fetch(
-                "SELECT 1 FROM " + schema + ".task_ref_exe_stats WHERE task_execution_id = ? LIMIT 1",
-                task_execution_id).firstValue() != null;
 
-            //log.info("fnResumeTaskExecution - Starting");
-            //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-            batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, selection_method, l.task_type from " + 
-					schema + ".task_execution_list l, " + schema + ".tasks t " +
-                    "where task_execution_id = ? and l.task_id = t.task_id " +
-                    "and fabric_execution_id is not null and UPPER(execution_status)= 'STOPPED'", task_execution_id);
+			for (Db.Row tableBatch : tableBatches) {
+				try {
+					fabric().execute("batch_cancel '" + tableBatch.get("batch_id") + "'");
+				} catch (Exception batchEx) {
+					log.warn("fnStopTaskExecution - batch_cancel skipped for {}: {}", tableBatch.get("batch_id"), batchEx.getMessage());
+				}
+			}
+			
+			//TDM 10.0.1 - Stop Table Level Partitions - As some of the partitions be done and some as still pending
+			db(TDM).execute("UPDATE " + schema + ".task_ref_partition set execution_status='stopped', end_time=current_timestamp at time zone 'utc', number_of_processed_records = 0," +
+					" start_time = CASE WHEN start_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_time END" +
+					" WHERE task_execution_id = ?" +
+                    " AND execution_status NOT IN ('completed', 'failed', 'stopped')", task_execution_id);
 
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running', end_execution_time=null where " + 
-							"fabric_execution_id is not null " +
-                            "and lower(execution_status) = 'stopped' and task_execution_id = ?",
-                    task_execution_id);
+            // TDM 5.1- add a reference handling- update the status of the reference tables to 'stopped'.
+			db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats s set execution_status='stopped', end_time=current_timestamp at time zone 'utc'," +
+					" number_of_processed_records = COALESCE((SELECT SUM(COALESCE(p.number_of_processed_records, 0)) FROM " + schema + ".task_ref_partition p" +
+					" WHERE p.task_id = s.task_id AND p.task_execution_id = s.task_execution_id AND" +
+					" p.task_ref_table_id = s.task_ref_table_id AND p.execution_status = 'completed'), 0)," +
+					" number_of_failed_records = COALESCE((SELECT SUM(COALESCE(p.number_of_failed_records, 0)) FROM " + schema + ".task_ref_partition p" +
+					" WHERE p.task_id = s.task_id AND p.task_execution_id = s.task_execution_id AND" +
+					" p.task_ref_table_id = s.task_ref_table_id AND p.execution_status = 'completed'), 0)," +
+					" start_time = CASE WHEN s.start_time is NULL THEN current_timestamp at time zone 'utc' ELSE s.start_time END" +
+					" WHERE s.task_execution_id = ?" +
+					" AND s.execution_status NOT IN ('completed', 'failed', 'stopped')", task_execution_id);
 
-            // TDM 7, set the status in execution summary to running
-            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running', end_execution_time=null where task_execution_id = ? and execution_status = 'stopped'",
-                    task_execution_id);
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
-                            "and lower(execution_status) = 'stopped'",
-                    task_execution_id);
-
-            if (hasTableEntries) {
-                // Entities+tables task: fail the stopped table entries so only LU executions resume
-                db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='failed', end_time=current_timestamp at time zone 'utc' " +
-                    "where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
-            } else {
-                // TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
-                db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume', end_time=null " +
-                    "where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
-            }
+			//Get the list of BACH IDs based on task execution ID. 
+			// For Table Level there is not Need to stop the main batch, as it will end automatically when all inner batches are stopped.
+            String sql = "SELECT distinct fabric_execution_id as batch_id " +
+					"FROM " + schema + ".task_execution_list l  WHERE task_execution_id = ? " +
+					"AND fabric_execution_id is not null AND execution_status NOT IN ('completed', 'failed') " +
+					"AND NOT EXISTS (SELECT 1 FROM " +  schema + ".tasks t WHERE t.task_id = l.task_id and t.selection_method = 'TABLES')";
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
             //TDM 6.0 - Loop over the list of migrate IDs
-            for (Db.Row batchInfo : batchIdList) {
-                fabric().execute("delete instance TDM.?", task_execution_id);
-                db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
-				if(batchInfo.get("fabric_execution_id") != null) {
+			batchIdList = db(TDM).fetch(sql, task_execution_id);
+
+			db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
+				" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
+				" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
+				task_execution_id);
+
+			for (Db.Row batchInfo : batchIdList) {
+                //String taskType = ("" + batchInfo.get("task_type")).toLowerCase();
+                String taskExecutionID = "" + task_execution_id;
+				//log.info("fabricExecID: <" + fabricExecID + ">");
+				if(batchInfo.get("batch_id") != null) {
                     try {
-                        fabric().execute("batch_retry '" + batchInfo.get("fabric_execution_id") + "' allow_cancelled=true");
+                        fabric().execute("batch_cancel '" + batchInfo.get("batch_id") + "'");
                     } catch (Exception batchEx) {
-                        log.warn("fnResumeTaskExecution - batch_retry skipped for {}: {}", batchInfo.get("fabric_execution_id"), batchEx.getMessage());
+                        log.warn("fnStopTaskExecution - batch_cancel skipped for {}: {}", batchInfo.get("batch_id"), batchEx.getMessage());
                     }
 				}
-                // TDM 7.1 Fix, resume execution of reference tables.
-                //log.info("fnResumeTaskExecution - Resume Reference");
-                String taskType = ("" + batchInfo.get("task_type")).toLowerCase();
-                fnTdmReference(String.valueOf(task_execution_id), taskType);
+            }
+
+            // TDM 7, set the execution summary to stopped also
+            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='stopped', end_execution_time=current_timestamp at time zone 'utc'," +
+							" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
+							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",task_execution_id);
+            return wrapWebServiceResults("SUCCESS", null, null);
+        } catch (Exception e) {
+            log.error("wsStopTaskExecution", e);
+            return wrapWebServiceResults("FAILED", e.getMessage(), null);
+
+        } finally {
+            if (batchIdList != null) {
+                batchIdList.close();
+            }
+        }
+	}
+
+	public static Object fnResumeTaskExecution(Long task_execution_id) throws Exception {
+		// Statuses that indicate a batch has reached a final/terminal state
+		Set<String> finishedStatuses = new HashSet<>(Arrays.asList("DONE", "PAUSED", "CANCELLED", "FAILED"));
+
+        Db.Rows batchIdList = null;
+        try {
+			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to resume task execution", null);
+
+            //log.info("fnResumeTaskExecution - Starting");
+            //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
+            String sql ="SELECT fabric_execution_id as batch_id FROM " + 
+					schema + ".task_execution_list l " +
+                    "WHERE task_execution_id = ? " +
+                    "AND fabric_execution_id is not null AND execution_status= 'stopped' " + 
+					"UNION SELECT tables_batch_id as batch_id FROM " +
+					schema + ".task_execution_list l1 " +
+                    "WHERE task_execution_id = ? "+
+                    "AND tables_batch_id is not null AND execution_status= 'stopped'";
+			batchIdList = db(TDM).fetch(sql, task_execution_id, task_execution_id);
+			
+			// ----- Step 1: verify ALL batches are done (single check per batch) -----
+			boolean allDone = true;
+			String pendingBatchId = null;
+			String pendingStatus  = null;
+			Set<String> batches = new HashSet<>();
+
+			for (Db.Row batchInfo : batchIdList) {
+				Object batchId = batchInfo.get("batch_id");
+				batches.add(batchId.toString());
+				if(batchId == null) {
+					continue;
+				}
+				
+				// batch_summary returns multiple rows (one per node + a "Cluster" aggregate row)
+    			// -> take the status from the Cluster row
+    			String status = getClusterStatus(batchId);
+	
+				if (status == null || !finishedStatuses.contains(status)) {
+					allDone = false;
+					pendingBatchId = String.valueOf(batchId);
+					pendingStatus  = status;
+					break; // stop as soon as one non-finished batch is found
+    			}
 			}
-          return wrapWebServiceResults("SUCCESS", null, null);
+				
+			// ----- Step 2: if not all done, fail with a message -----
+			if (!allDone) {
+				String msg = "Cannot resume: the stop activity is not done yet (batch " + pendingBatchId
+						+ " status=" + pendingStatus + ")";
+				log.warn("fnResumeTaskExecution - {}", msg);
+				return wrapWebServiceResults("FAILED", msg, null);
+			}
+			
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list l SET execution_status='running', end_execution_time=null, run_type = 'resume' WHERE " + 
+							"fabric_execution_id is not null " +
+                            "AND execution_status = 'stopped' AND task_execution_id = ?",
+                    task_execution_id);
+
+            // TDM 7, set the status in execution summary to running
+            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running', end_execution_time=null WHERE task_execution_id = ? AND execution_status = 'stopped'",
+                    task_execution_id);
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='pending', run_type = 'resume' WHERE fabric_execution_id is null AND task_execution_id = ? " +
+                            "AND execution_status = 'stopped'",
+                    task_execution_id);
+
+			// TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
+			//TDM 10.1 - Resume Tables by changing status in both tables task_ref_exe_stats and task_ref_partition
+			db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats SET execution_status = CASE WHEN batch_id is null THEN 'pending' ELSE 'running' END, end_time=null " +
+				"WHERE task_execution_id = ? AND execution_status = 'stopped'", task_execution_id);
+
+			db(TDM).execute("UPDATE " + schema + ".task_ref_partition SET execution_status = CASE WHEN batch_id is null THEN 'pending' ELSE 'running' END, end_time=null " +
+				"where task_execution_id = ? AND execution_status = 'stopped'", task_execution_id);
+
+			fabric().execute("delete instance TDM.?", task_execution_id);
+			db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
+			
+			// ----- Step 3: all batches are done -> resume them -----
+			for (String batchId : batches) {
+				try {
+
+					fabric().execute("batch_retry '" + batchId + "' allow_cancelled=true");
+				} catch (Exception batchEx) {
+					log.warn("fnResumeTaskExecution - batch_retry skipped for {}: {}", batchId, batchEx.getMessage());
+				}
+			
+			}
+			
+        	return wrapWebServiceResults("SUCCESS", null, null);
         } catch (Exception e) {
             log.error("wsResumeTaskExecution", e);
             return wrapWebServiceResults("FAILED", e.getMessage(), null);
@@ -643,6 +682,86 @@ public class SharedLogic {
         }
 	}
 
+	private static String getClusterStatus(Object batchId) throws Exception {
+		String status = null;
+		try (Db.Rows summary = fabric().fetch("batch_summary '" + batchId + "'")) {
+			for (Db.Row row : summary) {
+				Object level = row.get("Level"); // column identifying the "Cluster" aggregate row
+				if (level != null && "Cluster".equalsIgnoreCase(String.valueOf(level).trim())) {
+					Object s = row.get("Status");
+					status = (s != null) ? String.valueOf(s).toUpperCase() : null;
+					break; // found the Cluster row
+				}
+			}
+		}
+		return status;
+	}
+	
+	@out(name = "result", type = Object.class, desc = "")
+	public static Object fnRetryTaskWithFailures(Long task_execution_id) throws Exception {
+		Db.Rows batchIdList = null;
+		//log.info("fnRetryTaskWithFailures - task_execution_id: " + task_execution_id);
+        try {
+			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to stop task execution", null);
+
+			// Get list of batch IDs of the given execution with failed instances (partitions)
+			String sql = "SELECT distinct fabric_execution_id as batch_id " +
+					"FROM " + schema + ".task_execution_list l  WHERE task_execution_id = ? " +
+					"AND fabric_execution_id is not null AND UPPER(execution_status) IN " +
+					"('FAILED','COMPLETED') AND EXISTS (SELECT 1 FROM " + schema + ".task_ref_exe_stats es " +
+					"WHERE l.task_execution_id = es.task_execution_id AND es.execution_status = 'failed' LIMIT 1) " +
+					"UNION SELECT tables_batch_id as batch_id " +
+					"FROM " + schema + ".task_execution_list l1  WHERE task_execution_id = ? " +
+					"AND (tables_batch_id is not null) AND UPPER(execution_status) IN " +
+					"('FAILED','COMPLETED') " +
+					"AND EXISTS (SELECT 1 FROM " + schema + ".task_ref_exe_stats es " +
+					"WHERE l1.task_execution_id = es.task_execution_id AND es.execution_status = 'failed' LIMIT 1)";
+
+			batchIdList = db(TDM).fetch(sql, task_execution_id, task_execution_id);
+
+			for (Db.Row batchInfo : batchIdList) {
+				String batchId = batchInfo.get("batch_id") != null ? batchInfo.get("batch_id").toString() : null;
+				log.info("fnRetryTaskWithFailures -  batchId: " + batchId);
+				if(batchId != null) {
+                    try {
+						fabric().execute("delete instance TDM.?", task_execution_id);
+						db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
+						db(TDM).execute("DELETE FROM " + schema + ".task_exe_error_detailed WHERE task_execution_id = ?", task_execution_id);
+                        fabric().execute("batch_retry '" + batchId + "' allow_cancelled=true");
+						db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running', end_execution_time=null " + 
+							"WHERE task_execution_id = ?",
+                    		task_execution_id);
+            			db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running', run_type = 'retry' WHERE task_execution_id = ? " +
+                    		"AND (fabric_execution_id = ? OR tables_batch_id = ?)",
+                			task_execution_id, batchId, batchId);
+                    } catch (Exception batchEx) {
+                        log.warn("fnRetryTaskWithFailures - batch_retry skipped for {}: {}", batchId, batchEx.getMessage());
+                    }
+				}
+            }
+			
+			//TDM 10.0.1 - Restore status of failed partitions to pending to rerun them.
+			db(TDM).execute("UPDATE " + schema + ".task_ref_partition set execution_status='pending', end_time=null, number_of_processed_records = 0" +
+					" WHERE task_execution_id = ?" +
+                    " AND execution_status = 'failed'", task_execution_id);
+
+            //TDM 10.0.1 - Restore status of failed tables to running to rerun them.
+			db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats s set execution_status='running', end_time=null, number_of_processed_records = 0," +
+					" start_time = current_timestamp at time zone 'utc'" +
+					" WHERE task_execution_id = ?" +
+                    " AND execution_status = 'failed'", task_execution_id);
+
+            return wrapWebServiceResults("SUCCESS", null, null);
+        } catch (Exception e) {
+            log.error("wsStopTaskExecution", e);
+            return wrapWebServiceResults("FAILED", e.getMessage(), null);
+
+        } finally {
+            if (batchIdList != null) {
+                batchIdList.close();
+            }
+        }
+	}
 
 	public static void fnStartTaskExecutions(List<Map<String, Object>> taskExecutions, Long taskExecutionId, String beId, String srcEnvName, Long tarEnvId, Long srcEnvId, String executionNote, String tarEnvName) throws Exception {
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")

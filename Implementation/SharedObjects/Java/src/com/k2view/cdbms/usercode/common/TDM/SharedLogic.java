@@ -21,6 +21,7 @@ import com.k2view.fabric.common.mtable.MTables;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 
 import javax.management.RuntimeErrorException;
 
@@ -955,6 +956,8 @@ public class SharedLogic {
 		Map<String, Map<String, Object>> batchIndex = new LinkedHashMap<>();
 		Map<String, Map<String, Map<String, Object>>> interfaceIndex = new LinkedHashMap<>();
 		Map<String, Map<String, Map<String, Map<String, Object>>>> schemaIndex = new LinkedHashMap<>();
+		Map<Map<String, Object>, String> batchSortAction = new IdentityHashMap<>();
+		Map<Map<String, Object>, Long> batchSortOrder = new IdentityHashMap<>();
 
 		Db.Rows summaryRows = db(TDM).fetch(getRefSchemaSummaryQuery().toString(), refTaskExecutionId);
 		try {
@@ -965,7 +968,7 @@ public class SharedLogic {
 				String batchKey = batchId + "|" + String.valueOf(row.get("execution_action")) + "|" + String.valueOf(row.get("table_order"));
 				Integer tableOrderVal = row.get("table_order") != null ? Integer.parseInt(row.get("table_order").toString()) : null;
 
-				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"));
+				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"), batchSortAction, batchSortOrder);
 				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchKey, interfaceName);
 				Map<String, Object> schema = getOrCreateSchema(schemaIndex, interfaceMap, batchKey, interfaceName, schemaName);
 
@@ -1026,7 +1029,7 @@ public class SharedLogic {
 				String schemaName = String.valueOf(row.get("schema_name"));
 				String batchKey = batchId + "|" + String.valueOf(row.get("execution_action")) + "|" + String.valueOf(row.get("table_order"));
 
-				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"));
+				Map<String, Object> batch = getOrCreateBatch(batchIndex, batches, batchKey, batchId, row.get("execution_action"),row.get("table_order"), batchSortAction, batchSortOrder);
 				Map<String, Object> interfaceMap = getOrCreateInterface(interfaceIndex, batch, batchKey, interfaceName);
 				Map<String, Object> schema = getOrCreateSchema(schemaIndex, interfaceMap, batchKey, interfaceName, schemaName);
 
@@ -1035,11 +1038,63 @@ public class SharedLogic {
 		} finally {
 			tableRows.close();
 		}
+
+		Comparator<Map<String, Object>> tableOrderComparator = byStatusThenName(t -> (String) t.get("status"), t -> t.get("table_name"));
+
+		Comparator<Map<String, Object>> interfaceOrderComparator = byStatusThenName(i -> (String) i.get("interface_status"), i -> i.get("interface_name"));
+
+		for (Map<String, Object> batch : batches) {
+			List<Map<String, Object>> interfaces = (List<Map<String, Object>>) batch.get("interfaces");
+			for (Map<String, Object> interfaceMap : interfaces) {
+				for (Map<String, Object> schema : (List<Map<String, Object>>) interfaceMap.get("schemas")) {
+					((List<Map<String, Object>>) schema.get("tables")).sort(tableOrderComparator);
+				}
+			}
+			interfaces.sort(interfaceOrderComparator);
+		}
+
+		Comparator<Map<String, Object>> batchOrderComparator = Comparator
+			.comparingInt((Map<String, Object> b) -> batchStatusBucket((List<Map<String, Object>>) b.get("interfaces")))
+			.thenComparing(batchSortAction::get, String.CASE_INSENSITIVE_ORDER)
+			.thenComparingLong(batchSortOrder::get);
+
+		batches.sort(batchOrderComparator);
+
 		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("batches", batches);
 		return result;
 	}
-	
+
+	private static Comparator<Map<String, Object>> byStatusThenName(Function<Map<String, Object>, String> statusFn, Function<Map<String, Object>, Object> nameFn) {
+		return Comparator
+			.<Map<String, Object>>comparingInt(t -> statusBucket(statusFn.apply(t)))
+			.thenComparing(t -> String.valueOf(nameFn.apply(t)), String.CASE_INSENSITIVE_ORDER);
+	}
+
+	private static int statusBucket(String status) {
+		if (status == null) return 0;
+		switch (status.toLowerCase()) {
+			case "pending": return 1;
+			case "completed":
+			case "failed":
+			case "stopped": return 2;
+			default: return 0;
+		}
+	}
+
+	private static int batchStatusBucket(List<Map<String, Object>> interfaces) {
+		boolean anyRunning = false;
+		boolean allPending = true;
+		for (Map<String, Object> interfaceMap : interfaces) {
+			int bucket = statusBucket((String) interfaceMap.get("interface_status"));
+			if (bucket == 0) anyRunning = true;
+			if (bucket != 1) allPending = false;
+		}
+		if (anyRunning) return 0;
+		if (allPending) return 2;
+		return 1;
+	}
+
 	private static StringBuilder getRefSchemaSummaryQuery() {
 		StringBuilder sql = new StringBuilder();
 
@@ -1064,7 +1119,6 @@ public class SharedLogic {
 		sql.append("st.interface_name, ");
 		sql.append("st.schema_name ");
 		sql.append("ORDER BY ");
-		sql.append("MIN(st.start_time) NULLS LAST, ");
 		sql.append("st.batch_id, ");
 		sql.append("st.execution_action, ");
 		sql.append("st.table_order, ");
@@ -1140,12 +1194,12 @@ public class SharedLogic {
 		sql.append("s.number_of_failed_records, ");
 		sql.append("s.number_of_partitions ");
 
-		sql.append("ORDER BY batch_id, start_time NULLS LAST, table_order, interface_name, schema_name, ref_table_name");
+		sql.append("ORDER BY batch_id, table_order, interface_name, schema_name, ref_table_name");
 
 		return sql;
 	}
 	
-	private static Map<String, Object> getOrCreateBatch(Map<String, Map<String, Object>> batchIndex,List<Map<String, Object>> batches,String batchKey,String batchId,Object executionAction,Object tableOrder) {
+	private static Map<String, Object> getOrCreateBatch(Map<String, Map<String, Object>> batchIndex,List<Map<String, Object>> batches,String batchKey,String batchId,Object executionAction,Object tableOrder,Map<Map<String, Object>, String> batchSortAction,Map<Map<String, Object>, Long> batchSortOrder) {
 		return batchIndex.computeIfAbsent(batchKey, k -> {
 			Map<String, Object> b = new LinkedHashMap<>();
 			b.put("batch_id", batchId);
@@ -1158,6 +1212,8 @@ public class SharedLogic {
 			}
 			b.put("process_type", action + " tables");
 			b.put("interfaces", new ArrayList<Map<String, Object>>());
+			batchSortAction.put(b, action);
+			batchSortOrder.put(b, orderVal == null ? -1L : orderVal);
 			batches.add(b);
 			return b;
 		});

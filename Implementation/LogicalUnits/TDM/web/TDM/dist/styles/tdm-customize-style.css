@@ -1,0 +1,16 @@
+:host {
+    --assistant-badge: url('../TDM/img/banking-mini-logo.png');
+
+    /* Whether the boxes inside an assistant message (tool card, sub-agent card,
+       reasoning card) fold themselves away once their step is done.
+       value should be true or false. false leaves every box expanded — the user
+       collapses the ones they don't want by clicking a box header. */
+    --assistant-cards-auto-collapse: false;
+
+    /* Whether the box wrapping one tool call — its name, its Input and its Result —
+       is drawn at all.
+       value should be true or false. false hides the wrapper and leaves only what ran
+       inside the call, e.g. the sub-agent card it spawned; a call that spawned nothing
+       then leaves no trace in the message. */
+    --assistant-tool-card-show: false;
+}

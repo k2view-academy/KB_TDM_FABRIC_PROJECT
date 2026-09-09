@@ -2,14 +2,12 @@ tags: Partition,Concurrency
 stages:
   Loop From Last to First:
     actors:
-      For Loop For Deleting Tables:
+      Loop On Tables:
         parent: ForLoop
         in:
-          to:
-            const: -1
-          step:
-            const: -1
           from:
+            const: 0
+          to:
             external: maxOrder
       Broadway Command:
         parent: StringFormat
@@ -21,6 +19,14 @@ stages:
         in:
           flowName:
             const: setTargetEnv
+      Get TDMDB Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
   Get Tables of Current Order:
     actors:
       Get Tables Of Order:
@@ -30,29 +36,92 @@ stages:
             const: getTablesByOrder
           order:
             link:
-              path: For Loop For Deleting Tables/i
+              path: Loop On Tables/i
               iterate: Iterate
             schema: integer
+            mandatory: false
+            createdBy: functionName
+          executionAction:
+            const: Delete
+            schema: string
             mandatory: false
             createdBy: functionName
         out:
           result:
             schema: '#ref'
+  Continue only if there are tables  For Delete:
+    actors:
+      Get Tables?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link:
+              path: Get Tables Of Order/result
+              iterate: First
+      List Of Tables:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Tables Of Order/result
+        out:
+          value:
+            schema: '#ref'
+  The Task is Stopped?:
+    actors:
+      Check if the Task is Stopped:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT execution_status FROM ${@schema}.task_execution_list
+              WHERE task_execution_id = ${taskExecutionId}
+              AND execution_status = 'stopped'
+              LIMIT 1
+          schema:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: string
   Interface's Tables Per Order:
     actors:
+      Task is not stopped?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: Check if the Task is Stopped/result
       List Of Tables Per Interface:
         parent: Const
         in:
           value:
             const: null
             link:
-              path: Get Tables Of Order/result
+              path: List Of Tables/value
               iterate: Iterate
         out:
           value:
             schema: '#ref'
   Build IIDs:
+    dependsOn: Interface's Tables Per Order
     actors:
+      First Run?:
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link: List Of Tables Per Interface/value/batch_id
       Build IID:
         parent: InnerFlow
         in:
@@ -94,29 +163,7 @@ stages:
         out:
           iid:
             schema: string
-  IIDs List:
-    last: 1
-    actors:
-      Aggregate IIDs:
-        parent: ArrayBuilder
-        in:
-          input:
-            link:
-              path: Build IID/iid
-              pos: 0
-        out:
-          array:
-            schema: '#ref'
-  Create List of IIDs:
-    actors:
-      Concat IIDs to Instance Group:
-        parent: Concat
-        in:
-          elements:
-            link: Aggregate IIDs/array
-  Get details before batch:
-    actors:
-      get task affinity:
+      Get Ref Table ID:
         parent: LuFunction
         in:
           functionName:
@@ -137,6 +184,120 @@ stages:
             link:
               path: List Of Tables Per Interface/value/tables_list/table_name
               iterate: Iterate
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: task_ref_table_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+    split: '--------------------'
+  Batch Exists:
+    else: true
+    dependsOn: Interface's Tables Per Order
+    actors:
+      Retry Batch:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch_retry ${batchId} allow_cancelled=true
+          batchId:
+            link: List Of Tables Per Interface/value/batch_id
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+      Rerun BatchId:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: List Of Tables Per Interface/value/batch_id
+            schema: string
+        out:
+          value:
+            schema: string
+  IIDs List:
+    last: 1
+    dependsOn: Build IIDs
+    actors:
+      Aggregate IIDs:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: Build IID/iid
+              pos: 0
+        out:
+          array:
+            schema: '#ref'
+    split: '--------------------'
+  Do Nothing:
+    last: 1
+    dependsOn: Batch Exists
+  Create List of IIDs:
+    dependsOn: IIDs List
+    actors:
+      Concat IIDs to Instance Group:
+        parent: Concat
+        in:
+          elements:
+            link: Aggregate IIDs/array
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: Do Nothing
+  Get details before batch:
+    dependsOn: Create List of IIDs
+    actors:
+      There Are Instances?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: Concat IIDs to Instance Group/string
+            schema: string
+          b:
+            const: ''
+            schema: string
+      get task affinity:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: List Of Tables Per Interface/value/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/schema_name
+              iterate: First
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link:
+              path: List Of Tables Per Interface/value/tables_list/table_name
+              iterate: First
             schema: string
             mandatory: false
             createdBy: functionName
@@ -171,14 +332,14 @@ stages:
           schemaName:
             link:
               path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
+              iterate: First
             schema: string
             mandatory: false
             createdBy: functionName
           tableName:
             link:
               path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
+              iterate: First
             schema: string
             mandatory: false
             createdBy: functionName
@@ -213,14 +374,14 @@ stages:
           schemaName:
             link:
               path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
+              iterate: First
             schema: string
             mandatory: false
             createdBy: functionName
           tableName:
             link:
               path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
+              iterate: First
             schema: string
             mandatory: false
             createdBy: functionName
@@ -255,14 +416,14 @@ stages:
           schemaName:
             link:
               path: List Of Tables Per Interface/value/tables_list/schema_name
-              iterate: Iterate
+              iterate: First
             schema: string
             mandatory: false
             createdBy: functionName
           tableName:
             link:
               path: List Of Tables Per Interface/value/tables_list/table_name
-              iterate: Iterate
+              iterate: First
             schema: string
             mandatory: false
             createdBy: functionName
@@ -284,7 +445,11 @@ stages:
         out:
           result:
             schema: string
+    split: '--------------------'
+  'Do Nothing   ':
+    dependsOn: 'Do Nothing  '
   Get affinity and max workers:
+    dependsOn: Get details before batch
     actors:
       GetAffinityAndMaxWorker1:
         parent: InnerFlow
@@ -316,7 +481,11 @@ stages:
             schema: string
           maxWorkers:
             schema: string
+    split: '--------------------'
+  'Do Nothing    ':
+    dependsOn: 'Do Nothing   '
   Run Batch Per Interface Per Order:
+    dependsOn: Get affinity and max workers
     actors:
       'Batch ':
         parent: DbCommand
@@ -349,7 +518,11 @@ stages:
         out:
           result:
             schema: '#ref'
+    split: '--------------------'
+  'Do Nothing     ':
+    dependsOn: 'Do Nothing    '
   Get Running IID:
+    dependsOn: Run Batch Per Interface Per Order
     actors:
       Get IIDS:
         parent: Const
@@ -366,7 +539,11 @@ stages:
           actorId:
             const:
             - Aggregate IIDs
+    split: '--------------------'
+  'Do Nothing      ':
+    dependsOn: 'Do Nothing     '
   Split IIDS:
+    dependsOn: Get Running IID
     actors:
       SplitIID:
         parent: InnerFlow
@@ -383,8 +560,12 @@ stages:
         out:
           result:
             schema: '#ref'
+    split: '--------------------'
+  'Do Nothing        ':
+    dependsOn: 'Do Nothing      '
   'Insert to ref exe stats  ':
     last: 1
+    dependsOn: Split IIDS
     actors:
       InsertIntoTaskRefExe1:
         parent: InnerFlow
@@ -424,16 +605,23 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
+    split: '--------------------'
+  'Do Nothing         ':
+    last: 1
+    dependsOn: 'Do Nothing        '
   'Aggregate Batch IDs  ':
+    last: 1
     actors:
-      List Of Batch IIDs:
-        parent: ArrayBuilder
+      List Of Batch IIDs To Wait For:
+        parent: ArrayConcat
         in:
           input:
             link:
-              path: Batch /result/Batch id
+            - path: Batch /result/Batch id
               iterate: First
               pos: 0
+            - path: Rerun BatchId/value
+              pos: 1
         out:
           array:
             schema: '#ref'
@@ -444,40 +632,42 @@ stages:
         in:
           value:
             const: null
-            link: List Of Batch IIDs/array
+            link: List Of Batch IIDs To Wait For/array
             schema: '#ref'
         out:
           value:
             schema: '#ref'
   Wait For Order's Batches to Finish:
+    last: 1
     actors:
+      Batch Cancelled - Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: Batch was cancelled
+              actions:
+                suppress: false
+                log: true
+                flowName: UpdateStoppedTask
+                number_of_retries: ''
+                retry_interval: ''
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
       Wait For Each Bach to Finish:
         parent: BatchWait
         in:
           batchId:
+            const: null
             link:
               path: Batch IDs to Wait For/value
               iterate: Iterate
-  Update status:
-    last: 1
-    actors:
-      UpdateTaskRefExe:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: UpdateTaskRefExe
-          taskExeID:
-            external: taskExecutionId
-            schema: any
-            mandatory: false
-            createdBy: flowName
-          batchID:
-            link:
-              path: Batch IDs to Wait For/value
-              iterate: Iterate
-            schema: any
-            mandatory: false
-            createdBy: flowName
+            default: false
   Clear Order's Batch IDs:
     actors:
       Reset List Of Batch IDs:
@@ -492,6 +682,28 @@ schemas:
     items:
       type: object
       properties:
+        batch_id: {
+          }
+        interface_name:
+          type: string
+        tables_list:
+          type: array
+          items:
+            type: object
+            properties:
+              interface_name:
+                type: string
+              schema_name:
+                type: string
+              table_name:
+                type: string
+  List Of Tables.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        batch_id: {
+          }
         interface_name:
           type: string
         tables_list:
@@ -508,6 +720,8 @@ schemas:
   List Of Tables Per Interface.out.value:
     type: object
     properties:
+      batch_id: {
+        }
       interface_name:
         type: string
       tables_list:
@@ -521,6 +735,13 @@ schemas:
               type: string
             table_name:
               type: string
+  Retry Batch.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Result:
+          type: string
   Aggregate IIDs.out.array:
     type: array
     items:
@@ -555,7 +776,7 @@ schemas:
         type: string
       partition_no:
         type: string
-  List Of Batch IIDs.out.array:
+  List Of Batch IIDs To Wait For.out.array:
     type: array
     items:
       type: string
