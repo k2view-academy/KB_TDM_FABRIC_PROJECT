@@ -87,6 +87,11 @@ stages:
             external: tableRefId
             schema: integer
             mandatory: false
+      NoTx:
+        parent: NoTx
+        in:
+          interface:
+            const: TDM
       FabricGet:
         parent: FabricGet
         in:
@@ -474,6 +479,9 @@ stages:
             schema: integer
             mandatory: false
             createdBy: flowName
+        out:
+          errors:
+            schema: integer
       Finish Loading To Traget Message:
         parent: Logger
         in:
@@ -601,6 +609,9 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
+        out:
+          errors:
+            schema: integer
     split: '--------------------'
   'Do Nothing ':
     dependsOn: Do Nothing
@@ -646,7 +657,7 @@ stages:
                 start_time       = a.start_time,
                 end_time         = a.end_time,
                 number_of_records_to_process = CASE
-                  WHEN a.number_of_records_to_process >= 0 THEN a.number_of_records_to_process
+                  WHEN s.number_of_records_to_process = -1 AND a.number_of_records_to_process >= 0 THEN a.number_of_records_to_process
                   ELSE s.number_of_records_to_process END,
                 number_of_processed_records  = a.number_of_processed_records,
                 number_of_failed_records  = a.number_of_failed_records,
@@ -654,7 +665,7 @@ stages:
               FROM agg a
               WHERE s.task_execution_id = a.task_execution_id
                 AND s.task_ref_table_id = a.task_ref_table_id
-                And s.execution_action <> 'Delete'
+                AND s.execution_action <> 'Delete'
           TDMDB_SCHEMA:
             link: Get TDMDB Schema/schema
             schema: string
@@ -689,6 +700,23 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
+  Fail Partition If it had errors:
+    transactional: false
+    actors:
+      If Errors Throw Exception:
+        parent: assertEquals
+        in:
+          expected:
+            const: null
+            link:
+            - LoadPartitionToTarget1/errors
+            - Update Partition In Target/errors
+            schema: integer
+          actual:
+            const: 0
+            schema: integer
+          message:
+            const: The Partition had failed records
 schemas:
   inputRecords.out.value:
     type: array

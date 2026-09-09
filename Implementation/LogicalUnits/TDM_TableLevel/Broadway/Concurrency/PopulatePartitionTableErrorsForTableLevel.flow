@@ -280,14 +280,12 @@ stages:
   Partition Is Found:
     dependsOn: Merge
     actors:
-      ALL_PARTITIONS?:
-        parent: Equals
+      Partition No is Given?:
+        parent: NotNull
         condition: result
         in:
-          a:
-            schema: string
-          b:
-            const: ALL_PARTITIONS
+          value:
+            link: Get partitionNumber/value
             schema: string
       ' Where clause for partition number':
         parent: StringFormat

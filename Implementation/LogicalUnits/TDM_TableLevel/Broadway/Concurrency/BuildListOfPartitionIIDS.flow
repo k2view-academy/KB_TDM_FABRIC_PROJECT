@@ -87,9 +87,61 @@ stages:
         out:
           iid:
             schema: string
-  'Do Nothing  ':
+  Already Ran?:
+    actors:
+      Check if Executed:
+        parent: DbFetchField
+        disabled: true
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT COUNT(1) as CNT
+              FROM ${@schema}.task_ref_partition
+              WHERE task_execution_id = ${task_execution_id}
+              AND task_ref_table_id = ${task_ref_table_id}
+              AND partition_no = ${partition_no}
+              AND execution_status in ('completed', 'failed')
+          schema:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+          task_ref_table_id:
+            external: taskTableId
+            schema: integer
+            mandatory: false
+            createdBy: sql
+          partition_no:
+            link:
+              path: ForLoop/i
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: integer
+  Build List Of IIDs:
     last: 1
     actors:
+      Not Executed?:
+        parent: Equals
+        condition: result
+        disabled: true
+        in:
+          a:
+            link: Check if Executed/result
+            schema: integer
+          b:
+            const: 0
+            schema: integer
       ArrayBuilder:
         parent: ArrayBuilder
         in:

@@ -4,7 +4,7 @@ stages:
     actors:
       Now:
         parent: Now
-      getTDMDBSchema:
+      Get TDMDB Schema:
         parent: InnerFlow
         in:
           flowName:
@@ -144,7 +144,7 @@ stages:
             mandatory: false
           schema:
             const: null
-            link: getTDMDBSchema/schema
+            link: Get TDMDB Schema/schema
           table:
             const: task_ref_exe_stats
           fields:

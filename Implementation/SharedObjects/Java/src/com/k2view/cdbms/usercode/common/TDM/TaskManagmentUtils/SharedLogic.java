@@ -1505,7 +1505,7 @@ public class SharedLogic {
 				.append(".task_execution_list where task_execution_id=?");
 		try {
 			for (Db.Row row : db(TDM).fetch(sql.toString(), taskExeId)) {
-				String executed_by = row.get("task_executed_by").toString().split("##")[0];;
+				String executed_by = row.get("task_executed_by").toString().split("##")[0];
 				if (executed_by.equalsIgnoreCase(currentUser)){
 					return true;
 				}

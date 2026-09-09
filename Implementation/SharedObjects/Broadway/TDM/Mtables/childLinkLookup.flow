@@ -100,6 +100,9 @@ stages:
                     case "Vectors" :
                         output = "true"
                         break;
+                    case "PipelineLu" :
+                        output = "true"
+                        break;
                     default :
                         output="false";
                         break;
@@ -131,6 +134,10 @@ stages:
                     break;
 
                   case "Vectors":
+                    output = "true";
+                    break;
+
+                  case "PipelineLu":
                     output = "true";
                     break;
 

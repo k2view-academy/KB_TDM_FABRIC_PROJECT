@@ -79,8 +79,10 @@ stages:
           interface:
             const: null
             external: interface
+          schema:
+            const: k2masking
           table:
-            const: k2masking.masking_cache
+            const: masking_cache
           fields:
             const:
             - name: environment
@@ -123,8 +125,10 @@ stages:
           interface:
             const: null
             external: interface
+          schema:
+            const: k2masking
           table:
-            const: k2masking.uniqueness
+            const: uniqueness
           fields:
             const:
             - name: environment
@@ -147,51 +151,6 @@ stages:
               type: BIGINT
               pk: false
               mandatory: false
-          dialect:
-            const: cassandra
-      Create Relations Table:
-        parent: DbCreateTable
-        disabled: true
-        in:
-          interface:
-            const: null
-            external: interface
-          table:
-            const: k2masking.tdm_seq_mapping
-          fields:
-            const:
-            - name: task_execution_id
-              type: TEXT
-              pk: true
-              mandatory: true
-            - name: lu_type
-              type: TEXT
-              pk: true
-              mandatory: false
-            - name: seq_name
-              type: TEXT
-              pk: true
-              mandatory: false
-            - name: table_name
-              type: TEXT
-              pk: true
-              mandatory: true
-            - name: column_name
-              type: TEXT
-              pk: false
-              mandatory: false
-            - name: source_value
-              type: TEXT
-              pk: false
-              mandatory: false
-            - name: target_value
-              type: TEXT
-              pk: true
-              mandatory: true
-            - name: iid
-              type: TEXT
-              pk: true
-              mandatory: true
           dialect:
             const: cassandra
       Create Cache Indexes:
