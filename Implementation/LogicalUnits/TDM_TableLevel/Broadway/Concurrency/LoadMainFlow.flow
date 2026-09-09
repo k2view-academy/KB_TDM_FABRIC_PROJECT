@@ -700,9 +700,18 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
-  Fail Partition If it had errors:
+  Fail Partition If it had errors and it is a load task:
     transactional: false
     actors:
+      Task Includes Load?:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: Load
+            schema: string
+          a:
+            external: taskType
       If Errors Throw Exception:
         parent: assertEquals
         in:

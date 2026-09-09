@@ -70,7 +70,7 @@
       "name": "TDM",
       "appId": "TDM",
 	   "hidden": false,
-      "showChat": false
+      "showChat": true
    },
    { 
       "name": "Reports",
