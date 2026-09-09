@@ -743,7 +743,7 @@ public class TdmExecuteTask {
 
             //log.info("executeTableLevelBatch - batchCommand: " + batchCommand);
             //log.info("executeTableLevelBatch - broadwayCommand: " + broadwayCommand);
-            db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_ref_exe_stats SET table_order = -1 WHERE task_execution_id = ?", "" + TASK_EXECUTION_ID.get(taskProperties));
+
             String batchID = (String)fabric().fetch(batchCommand, TABLE_LEVEL_LU + "_" + TASK_EXECUTION_ID.get(taskProperties), broadwayCommand).firstValue();
             ExecutionInfo.put("fabric_execution_id", batchID);
             return ExecutionInfo ;

@@ -184,7 +184,7 @@ public class Logic extends UserCode {
                     }
                 }
             }
-
+            
             return order;
         }
 
@@ -312,7 +312,7 @@ public class Logic extends UserCode {
                 TableMeta t = e.getKey();
 
                 maxOrder = Math.max(maxOrder, order);
-
+                
                 cache.computeIfAbsent(order, k -> new LinkedHashMap<>())
                      .computeIfAbsent(t.getInterface(), k -> new ArrayList<>())
                      .add(t);
@@ -433,9 +433,6 @@ public class Logic extends UserCode {
             Boolean rerunInd = null;
             for (Db.Row r : rows) {
 
-                // Each row carries its own batch_id — use it directly. (Previously this held a
-                // single "first batch_id seen" value shared across every row/interface, so every
-                // table ended up with the very first interface's batch id instead of its own.)
                 String rowBatchId = r.get("batch_id") != null ? r.get("batch_id").toString() : null;
 
                 if (rerunInd == null) {
@@ -460,19 +457,26 @@ public class Logic extends UserCode {
             } else {
 
                 if ("extract".equalsIgnoreCase(taskAction) || taskTables.size() == 1) {
-                    tablesOrder.put(0, buildInterfaceTablesList(taskTables));
-                    tablesOrderForDelete = tablesOrder;
+                    Map<String, TablesAndBatchId> tablesByOrder = buildInterfaceTablesList(taskTables);
+                    tablesOrder.put(0, tablesByOrder);
                     maxOrder = 0;
-                    delMaxOrder = 0;
+
+                    if ("load".equalsIgnoreCase(taskAction)) {
+                        tablesOrderForDelete.put(0, tablesByOrder);
+                        delMaxOrder = 0;
+                    }
+                    
                 } else {
                     TableLoadOrderResolver resolver =
                             new TableLoadOrderResolver(taskTables);
 
                     maxOrder = resolver.getMaxOrder();
                     delMaxOrder = maxOrder;
+
                     for (int i = 0; i <= maxOrder; i++) {
-                        tablesOrder.put(i, resolver.getTablesByOrder(i, interfaces));
-                        tablesOrderForDelete.put(maxOrder - i, resolver.getTablesByOrder(i, interfaces));
+                        Map<String, TablesAndBatchId> tablesByOrder = resolver.getTablesByOrder(i, interfaces);
+                        tablesOrder.put(i, tablesByOrder);
+                        tablesOrderForDelete.put(maxOrder - i, tablesByOrder);
                     }
                 }
 
@@ -539,6 +543,7 @@ public class Logic extends UserCode {
 
         for (TableMeta table : taskTables) {
             int order = table.getTableOrder();
+
             if (order > maxOrder) {
                 maxOrder = order;
             }
@@ -576,6 +581,7 @@ public class Logic extends UserCode {
             // Only tables still pending get a persisted order here — tables that already ran
             // (excluded from getPendingTables()) had their order persisted on the run that
             // actually processed them.
+            
             for (TablesAndBatchId info : orderEntry.getValue().values()) {
                 for (TableMeta t : info.getPendingTables()) {
                     db(TDM).execute(
@@ -587,7 +593,7 @@ public class Logic extends UserCode {
                         "AND ref_table_name = ? " +
                         "AND LOWER(execution_action) <> 'delete'",
                         order, taskExecutionId,
-                        t.getInterface(), t.getSchema(), t.getTableName()
+                        t.getInterface(), t.getSchema(), t.getTableName()                        
                     );
                     if (hasDeleteRows) {
                         db(TDM).execute(
