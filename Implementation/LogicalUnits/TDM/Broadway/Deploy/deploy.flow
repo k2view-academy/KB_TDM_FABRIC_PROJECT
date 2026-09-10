@@ -160,6 +160,13 @@ stages:
                 ]
               id: com.k2view.interface
             mandatory: false
+  Run Task Description Job For Agent:
+    actors:
+      Task Description Job For Agent:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: checkDescriptionFlowExists
   End:
     actors:
       Finished Deploy Activities:
@@ -169,10 +176,3 @@ stages:
             const: Finished Deploy Activities
           level:
             const: info
-  Stage 1:
-    actors:
-      checkAiFlows:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: checkDescriptionFlowExists
