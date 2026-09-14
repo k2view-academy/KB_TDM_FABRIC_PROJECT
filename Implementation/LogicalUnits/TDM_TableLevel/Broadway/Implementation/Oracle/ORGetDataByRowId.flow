@@ -4,7 +4,6 @@ stages:
     actors:
       Flow Inputs:
         parent: Const
-        remark: Flow inputs declared in the TableLevelPartitionFlow mtable.
         in:
           value:
             const: null

@@ -522,9 +522,11 @@ public class Logic extends WebServiceUserCode {
         Map<String,Object> interfaceInput = new HashMap<>();
         interfaceInput.put("dataPlatform", interfaceName);
         List<Map<String, Object>> interfaceTables =  MtableLookup("catalog_field_info",interfaceInput, MTable.Feature.caseInsensitive);
-        for (Map<String, Object> interf : interfaceTables) {
-            Object sc = interf.get("schema");
-            out.add(String.valueOf(sc));
+        if (interfaceTables != null && !interfaceTables.isEmpty()) {
+            for (Map<String, Object> interf : interfaceTables) {
+                Object sc = interf.get("schema");
+                out.add(String.valueOf(sc));
+            }
         }
         return out;
     }
@@ -562,9 +564,11 @@ public class Logic extends WebServiceUserCode {
         interfaceInput.put("dataPlatform", interfaceName);
         interfaceInput.put("schema", schemaName);
         List<Map<String, Object>> interfaceTables =  MtableLookup("catalog_field_info",interfaceInput, MTable.Feature.caseInsensitive);
-        for (Map<String, Object> interf : interfaceTables) {
-            Object tab = interf.get("dataset");
-            out.add(String.valueOf(tab));
+        if (interfaceTables != null && !interfaceTables.isEmpty()) {
+            for (Map<String, Object> interf : interfaceTables) {
+                Object tab = interf.get("dataset");
+                out.add(String.valueOf(tab));
+            }
         }
         return out;
     }
