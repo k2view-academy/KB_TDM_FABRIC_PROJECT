@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="AI_DB" type="genericdb" version="8.0.0">
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="AI_DB" type="genericdb" version="8.5.1">
     <JdbcDriverName>PostgreSQL</JdbcDriverName>
-    <Active>true</Active>
+    <Active>false</Active>
     <ConnectionProperties></ConnectionProperties>
     <ConnectionStringServerSide>jdbc:postgresql://local:5432/?stringtype=unspecified</ConnectionStringServerSide>
     <PortNum>5432</PortNum>
@@ -12,9 +12,11 @@
     <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
     <OfflineMode>true</OfflineMode>
     <DataSource>local</DataSource>
+    <CommandList></CommandList>
+    <AlwaysQuoteIdentifiers>false</AlwaysQuoteIdentifiers>
     <DataBase></DataBase>
     <UserId></UserId>
     <Password></Password>
+    <Certificate></Certificate>
     <SchemaFilter></SchemaFilter>
-    <CommandList></CommandList>
 </DBConn>

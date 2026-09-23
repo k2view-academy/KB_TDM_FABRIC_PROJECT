@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GenericInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="HTTP" displayName="" enabled="true" version="1.4">
+<GenericInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="HTTP" displayName="" enabled="false" version="1.4">
     <Name>AI_Execution</Name>
     <Properties>
         <Property name="ProtocolType">
@@ -11,41 +11,14 @@
         <Property name="PORT">
             <Value>443</Value>
         </Property>
-        <Property name="Path">
-            <Value></Value>
-        </Property>
         <Property name="AuthenticationType">
             <Value>Bearer</Value>
         </Property>
-        <Property name="User">
-            <Value></Value>
-        </Property>
-        <Property name="Password">
-            <Value></Value>
-        </Property>
         <Property name="Token">
-            <Value></Value>
-        </Property>
-        <Property name="AccessTokenUrl">
-            <Value></Value>
-        </Property>
-        <Property name="AccessTokenBodyParams">
-            <Value></Value>
-        </Property>
-        <Property name="ClientId">
-            <Value></Value>
-        </Property>
-        <Property name="ClientSecret">
-            <Value></Value>
-        </Property>
-        <Property name="Scope">
-            <Value></Value>
+            <Value>${secretmanager:AI_Execution.Token}</Value>
         </Property>
         <Property name="TokenTimeout">
             <Value>0</Value>
-        </Property>
-        <Property name="TestConnectionValidStatus">
-            <Value></Value>
         </Property>
     </Properties>
 </GenericInterface>
