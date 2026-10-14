@@ -1,1 +1,4 @@
 interface_name,interface_type,schema_name,table_name,count_indicator,record_count_flow,table_order,extract_flow,delete_flow,load_flow,partition_count_source,partition_records_flow,partition_flow_inputs,inplace_masking_update_flow,commit_size
+CRM_DB,,public,customer,,,,,,,5,PGGetDataByIdColumn,"{""columnName"" : ""customer_id""}",,200
+CRM_DB,,public,activity,,,,,,,8,PGGetDataByIdColumn,"{""columnName"" : ""activity_id""}",,500
+CRM_DB,,public,contract,,,,,,,11,PGGetDataByIdColumn,"{""columnName"" : ""contract_id""}",,500
