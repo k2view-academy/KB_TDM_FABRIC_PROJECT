@@ -1,0 +1,34 @@
+{
+  "name": "TDM_MASKING_CONFIGURATION_REPORT_ALL_DATA_GENERATORS_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "GetDataGeneratorsList",
+      "type": "sql",
+      "code": "broadway k2_ws.getPIIDetails",
+      "children": [
+        {
+          "name": "AddDataGeneratorDisplayToDataGeneratorsList",
+          "type": "function",
+          "code": "if (TotalNumberOfPIIClassificationsPerGeneratorList) {\n    TotalNumberOfPIIClassificationsPerGeneratorList.forEach(function(row) {\n        var dg = row['Data Generator'];\n        row['Data Generator Display'] = (dg && dg.length > 6 && dg.substring(dg.length - 6).toLowerCase() === '.actor') ? dg.substring(0, dg.length - 6) : dg;\n    });\n}"
+        },
+        {
+          "name": "DataGeneratorsList",
+          "type": "variable",
+          "code": "TotalNumberOfPIIClassificationsPerGeneratorList"
+        }
+      ]
+    }
+  ],
+  "params": [],
+  "description": "Returns the list of all masking data generators with their classification counts (drill-through target for the Data Generators summary tile).",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

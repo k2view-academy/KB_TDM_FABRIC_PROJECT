@@ -11,7 +11,9 @@ import static com.k2view.cdbms.shared.user.UserCode.getCustomProperties;
 import static com.k2view.cdbms.shared.user.UserCode.getLuType;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetGenerationModels;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isEditable;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
@@ -19,6 +21,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.ge
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +30,6 @@ import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.k2view.cdbms.lut.DbInterface;
 import com.k2view.cdbms.lut.InterfacesManager;
 import com.k2view.cdbms.lut.LUType;
@@ -67,7 +68,7 @@ public class SharedLogic {
             return -1 ;
         }
         String numberOfEntities_sql = "select " + columnName + " as number_of_entities from " +
-                TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA + ".environment_roles r where " +
+                getTDMDBSchema() + ".environments e, " + getTDMDBSchema() + ".environment_roles r where " +
                 "e.environment_name = ? and lower(e.environment_status) = 'active' and " +
                 "e.environment_id = r.environment_id and r.role_id = ? ";
         //log.info("numberOfEntities_sql: " + numberOfEntities_sql);
@@ -79,23 +80,34 @@ public class SharedLogic {
     public static Boolean fnValidateParallelExecutions(Long taskId, Map<String, Object> overrideParameters) throws Exception {
         // If overrideParameters is null and already exists an execution without override parameters -> don't add a new execution
         if (overrideParameters.isEmpty()) {
-            String sql = "select count(*) from " + TDMDB_SCHEMA + ".task_execution_list tl " +
+            String sql = "select count(*) from " + getTDMDBSchema() + ".task_execution_list tl " +
             "where tl.task_id = ? And UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and " +
-            "not exists (select 1 from " + TDMDB_SCHEMA + ".task_execution_override_attrs o where tl.task_execution_id = o.task_execution_id)";
+            "not exists (select 1 from " + getTDMDBSchema() + ".task_execution_override_attrs o where tl.task_execution_id = o.task_execution_id)";
             Object count = UserCode.db(TDM).fetch(sql, taskId).firstValue();
             if (Integer.parseInt(count.toString()) > 0) return false;
         } else {
             // If already exists an execution with the same override parameters -> don't add a new execution
             String leftSideContainmentTest_sql = "select array_to_string(array_agg(o.task_execution_id), ',') from " +
-                    TDMDB_SCHEMA + ".task_execution_list tl, " + TDMDB_SCHEMA + ".task_execution_override_attrs o where tl.task_id = ? " +
+                    getTDMDBSchema() + ".task_execution_list tl, " + getTDMDBSchema() + ".task_execution_override_attrs o where tl.task_id = ? " +
                     "and UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and " +
                     "tl.task_execution_id = o.task_execution_id " +
                     "and o.override_parameters::JSONB @> (?)::jsonb";
             String params_str = new JSONObject(overrideParameters).toString();
             String executionIds = (String) UserCode.db(TDM).fetch(leftSideContainmentTest_sql, taskId, params_str).firstValue();
-            String rightSideContainmentTest_sql = "select count(*) from " + TDMDB_SCHEMA + ".task_execution_override_attrs o " +
-                    "where o.task_id = (?) AND (?)::jsonb @> o.override_parameters::JSONB AND o.task_execution_id IN (" + executionIds + ")";
-            Object count = UserCode.db(TDM).fetch(rightSideContainmentTest_sql, taskId, params_str).firstValue();
+            List<Object> rightSideParams = new ArrayList<>();
+            rightSideParams.add(taskId);
+            rightSideParams.add(params_str);
+            String executionIdsPlaceholders = "NULL";
+            if (executionIds != null && !executionIds.isEmpty()) {
+                String[] ids = executionIds.split(",");
+                executionIdsPlaceholders = String.join(",", Collections.nCopies(ids.length, "?"));
+                for (String id : ids) {
+                    rightSideParams.add(Long.parseLong(id.trim()));
+                }
+            }
+            String rightSideContainmentTest_sql = "select count(*) from " + getTDMDBSchema() + ".task_execution_override_attrs o " +
+                    "where o.task_id = (?) AND (?)::jsonb @> o.override_parameters::JSONB AND o.task_execution_id IN (" + executionIdsPlaceholders + ")";
+            Object count = UserCode.db(TDM).fetch(rightSideContainmentTest_sql, rightSideParams.toArray()).firstValue();
             if (Integer.parseInt(count.toString()) > 0) {
                 return false;
             }
@@ -111,10 +123,10 @@ public class SharedLogic {
         // Only fail if ALL LUs for this task are disabled — if at least one enabled LU remains,
         // the disabled ones will be silently skipped at execution time.
         String enabledCheckQuery = "SELECT COUNT(1) " +
-                       "FROM " + TDMDB_SCHEMA + ".environments e " +
-                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON ep.product_id = pu.product_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".tasks_logical_units tu ON tu.lu_id = pu.lu_id " +
+                       "FROM " + getTDMDBSchema() + ".environments e " +
+                       "JOIN " + getTDMDBSchema() + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + getTDMDBSchema() + ".product_logical_units pu ON ep.product_id = pu.product_id " +
+                       "JOIN " + getTDMDBSchema() + ".tasks_logical_units tu ON tu.lu_id = pu.lu_id " +
                        "WHERE e.environment_status = 'Active' " +
                        "AND e.environment_id = ? " +
                        "AND e.environment_name = ? " +
@@ -130,11 +142,11 @@ public class SharedLogic {
         }
 
         String query = "SELECT p.product_name " +
-                       "FROM " + TDMDB_SCHEMA + ".environments e " +
-                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".products p ON p.product_id = ep.product_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON p.product_id = pu.product_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".tasks_logical_units tu ON tu.lu_id = pu.lu_id " +
+                       "FROM " + getTDMDBSchema() + ".environments e " +
+                       "JOIN " + getTDMDBSchema() + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + getTDMDBSchema() + ".products p ON p.product_id = ep.product_id " +
+                       "JOIN " + getTDMDBSchema() + ".product_logical_units pu ON p.product_id = pu.product_id " +
+                       "JOIN " + getTDMDBSchema() + ".tasks_logical_units tu ON tu.lu_id = pu.lu_id " +
                        "WHERE e.environment_status = ? " +
                        "AND e.environment_id = ? " +
                        "AND e.environment_name = ? " +
@@ -143,9 +155,10 @@ public class SharedLogic {
                        "AND ep.enable_product = ? " ;
 
         try {
-            Db.Rows results = db(TDM).fetch(query, "Active", env_id, env_name,"Active",task_id,false);
-            for (Db.Row row : results) {
-                inactiveProducts.add(row.get("product_name").toString());
+            try (Db.Rows results = db(TDM).fetch(query, "Active", env_id, env_name,"Active",task_id,false)) {
+                for (Db.Row row : results) {
+                    inactiveProducts.add(row.get("product_name").toString());
+                }
             }
             return inactiveProducts;
         } catch (Exception e) {
@@ -184,9 +197,9 @@ public class SharedLogic {
         // Only fail if ALL LUs are disabled — if at least one enabled LU remains,
         // the disabled ones will be silently skipped at execution time.
         String enabledCheckQuery = "SELECT COUNT(1) " +
-                       "FROM " + TDMDB_SCHEMA + ".environments e " +
-                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON ep.product_id = pu.product_id " +
+                       "FROM " + getTDMDBSchema() + ".environments e " +
+                       "JOIN " + getTDMDBSchema() + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + getTDMDBSchema() + ".product_logical_units pu ON ep.product_id = pu.product_id " +
                        "WHERE e.environment_status = 'Active' " +
                        "AND e.environment_id = ? " +
                        "AND e.environment_name = ? " +
@@ -206,10 +219,10 @@ public class SharedLogic {
         }
 
         String query = "SELECT DISTINCT p.product_name " +
-                       "FROM " + TDMDB_SCHEMA + ".environments e " +
-                       "JOIN " + TDMDB_SCHEMA + ".environment_products ep ON e.environment_id = ep.environment_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".products p ON p.product_id = ep.product_id " +
-                       "JOIN " + TDMDB_SCHEMA + ".product_logical_units pu ON p.product_id = pu.product_id " +
+                       "FROM " + getTDMDBSchema() + ".environments e " +
+                       "JOIN " + getTDMDBSchema() + ".environment_products ep ON e.environment_id = ep.environment_id " +
+                       "JOIN " + getTDMDBSchema() + ".products p ON p.product_id = ep.product_id " +
+                       "JOIN " + getTDMDBSchema() + ".product_logical_units pu ON p.product_id = pu.product_id " +
                        "WHERE e.environment_status = ? " +
                        "AND e.environment_id = ? " +
                        "AND e.environment_name = ? " +
@@ -224,9 +237,10 @@ public class SharedLogic {
         params.addAll(luIds);
         params.add(false);
         try {
-            Db.Rows results = db(TDM).fetch(query, params.toArray());
-            for (Db.Row row : results) {
-                inactiveProducts.add(row.get("product_name").toString());
+            try (Db.Rows results = db(TDM).fetch(query, params.toArray())) {
+                for (Db.Row row : results) {
+                    inactiveProducts.add(row.get("product_name").toString());
+                }
             }
             return inactiveProducts;
         } catch (Exception e) {
@@ -262,11 +276,11 @@ public class SharedLogic {
         String beId, env_name;
         Map<String, String> errorMessages = new HashMap<>();
         //log.info("fnValidateSourceEnvForTask - selection_method: " + selection_method);
-        String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + TDMDB_SCHEMA + ".environment_products ep Inner Join " + TDMDB_SCHEMA + ".product_logical_units p " +
+        String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + getTDMDBSchema() + ".environment_products ep Inner Join " + getTDMDBSchema() + ".product_logical_units p " +
                 "On ep.product_id = p.product_id Where p.be_id = (?) And ep.environment_id = (?) And Lower(ep.status) = 'active') lu Where 1 = 1 ";
-        String reference_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
-        String syncMode_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_request_of_fresh_data = true;";
-        String versioning_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_entity_versioning = true;";
+        String reference_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
+        String syncMode_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_request_of_fresh_data = true;";
+        String versioning_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_entity_versioning = true;";
         String role_id = "";
         String env_id = "";
         beId = (String) be_lus.get("be_id");
@@ -353,17 +367,17 @@ public class SharedLogic {
         String role_id = "";
         String env_id = "";
         //log.info("fnValidateTargetEnvForTask - selection_method: " + selection_method);
-        String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + TDMDB_SCHEMA + ".environment_products ep Inner Join " + TDMDB_SCHEMA + ".product_logical_units p " +
+        String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From " + getTDMDBSchema() + ".environment_products ep Inner Join " + getTDMDBSchema() + ".product_logical_units p " +
                 "On ep.product_id = p.product_id Where p.be_id = (?) And ep.environment_id = (?) And Lower(ep.status) = 'active') lu Where 1 = 1 ";
-        String reference_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
-        String cloningData_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_creation_of_synthetic_data = true;";
-        String randomSelection_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_random_entity_selection = true;";
-        String versioning_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_entity_versioning = true;";
-        String replaceSequence_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_replace_sequences = true;";
-        String deleteBeforeLoad_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and  allowed_delete_before_load = true;";
-        String reverseEntity_sql = "select environment_id from " + TDMDB_SCHEMA + ".environment_roles where role_id = ?  and allowed_number_of_reserved_entities > 0;";
-        String reserveLimit_sql = "select allowed_number_of_reserved_entities from " + TDMDB_SCHEMA + ".environment_roles where role_id = ? and environment_id = ?;";
-        String getUserReserveCnt_sql = "select count(1) from " + TDMDB_SCHEMA + ".tdm_reserved_entities where env_id = ? and be_id = ? and reserve_owner = ? and " +
+        String reference_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
+        String cloningData_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_creation_of_synthetic_data = true;";
+        String randomSelection_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_random_entity_selection = true;";
+        String versioning_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_entity_versioning = true;";
+        String replaceSequence_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_replace_sequences = true;";
+        String deleteBeforeLoad_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and  allowed_delete_before_load = true;";
+        String reverseEntity_sql = "select environment_id from " + getTDMDBSchema() + ".environment_roles where role_id = ?  and allowed_number_of_reserved_entities > 0;";
+        String reserveLimit_sql = "select allowed_number_of_reserved_entities from " + getTDMDBSchema() + ".environment_roles where role_id = ? and environment_id = ?;";
+        String getUserReserveCnt_sql = "select count(1) from " + getTDMDBSchema() + ".tdm_reserved_entities where env_id = ? and be_id = ? and reserve_owner = ? and " +
             "end_datetime > CURRENT_TIMESTAMP";
 
         beId = (String) be_lus.get("be_id");
@@ -479,6 +493,10 @@ public class SharedLogic {
             errorMessages.put(validation, "The input value is null");
             return errorMessages;
         }
+        if ("reserve".equals(validation) && inputValue <= 0) {
+            errorMessages.put("reservation", "The reservation period must be greater than zero");
+            return errorMessages;
+        }
 
         String retentionType = (validation.equals("reserve")) ? "reservationPeriodTypes" : "retentionPeriodTypes";
         String periodKey = (validation.equals("reserve")) ? (adminOrOwner ? null : "maxReservationPeriodForTesters") :(adminOrOwner ? null : "maxRetentionPeriodForTesters");
@@ -555,36 +573,33 @@ public class SharedLogic {
         Long beId = Long.parseLong("" + beLUs.get("be_id"));
         List<String> luList =(ArrayList<String>)beLUs.get("LU List");
 
-        Db.Rows taskList = db(TDM).fetch("SELECT t.task_title, to_char(l.creation_date, 'YYYYMMDDHH24MISS') as creation_date, l.execution_status, lu.lu_id " +
-                        "FROM " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".task_execution_list l, " +
-                        TDMDB_SCHEMA + ".tasks_logical_units lu, " + TDMDB_SCHEMA + ".environments e " +
+        try (Db.Rows taskList = db(TDM).fetch("SELECT t.task_title, to_char(l.creation_date, 'YYYYMMDDHH24MISS') as creation_date, l.execution_status, lu.lu_id " +
+                        "FROM " + getTDMDBSchema() + ".tasks t, " + getTDMDBSchema() + ".task_execution_list l, " +
+                        getTDMDBSchema() + ".tasks_logical_units lu, " + getTDMDBSchema() + ".environments e " +
                         "WHERE l.task_execution_id = ? AND l.task_id = t.task_id AND l.be_id = ? " +
                         "AND l.task_id = lu.task_id AND l.lu_id = lu.lu_id AND e.environment_name = ? and e.environment_status = 'Active' " +
                         "AND e.environment_id = l.source_environment_id",
-                dataVersionExecId, beId, sourceEnvName);
-        if (!taskList.resultSet().isBeforeFirst()) {
-            result.put("errorMessage", "Task Execution ID was not found or it was executed with different BE or Source Environment");
-            return result;
-        }
+                dataVersionExecId, beId, sourceEnvName)) {
+            if (!taskList.resultSet().isBeforeFirst()) {
+                result.put("errorMessage", "Task Execution ID was not found or it was executed with different BE or Source Environment");
+                return result;
+            }
 
-        for (Db.Row row : taskList) {
-            String luId = "" + row.get("lu_id");
+            for (Db.Row row : taskList) {
+                String luId = "" + row.get("lu_id");
 
-            if (luList.indexOf(luId) != -1) {
-                if ("completed".equalsIgnoreCase("" + row.get("execution_status"))) {
-                    luList.remove(luId);
-                    result.put("versionName", "" + row.get("task_title"));
-                    result.put("versionDatetime", "" + row.get("creation_date"));
-                } else {
-                    result.put("errorMessage", "Not ALL the requested LUs had passed successfully in given extract task");
-                    return result;
+                if (luList.indexOf(luId) != -1) {
+                    if ("completed".equalsIgnoreCase("" + row.get("execution_status"))) {
+                        luList.remove(luId);
+                        result.put("versionName", "" + row.get("task_title"));
+                        result.put("versionDatetime", "" + row.get("creation_date"));
+                    } else {
+                        result.put("errorMessage", "Not ALL the requested LUs had passed successfully in given extract task");
+                        return result;
+                    }
                 }
             }
         }
-		
-		if (taskList != null) {
-			taskList.close();
-		}
         if(luList.size() > 0) {
             result.put("errorMessage", "Not ALL the requested LUs were part of the given extract task");
             return result;
@@ -592,11 +607,26 @@ public class SharedLogic {
         return result;
     }
 
+    public static Map<String, String> fnValidateSubsetExecIdAndGetDetails(Long dataSubsetExecId,
+            Long beId, String sourceEnvName, List<String> luNames) throws Exception {
+        Map<String, String> result = new HashMap<>();
+        List<Map<String, Object>> genModels = fnGetGenerationModels(null, null, sourceEnvName, beId, luNames);
+        for (Map<String, Object> genModel : genModels) {
+            Object exeId = genModel.get("task_execution_id");
+            if (exeId != null && Long.parseLong(exeId.toString()) == dataSubsetExecId) {
+                return result;
+            }
+        }
+        result.put("errorMessage",
+                "Task Execution ID was not found or is not a valid subset generation execution for this Business Entity/Logical Units/Environment");
+        return result;
+    }
+
     public static String fnValidateVersionExecIdNotExpired(Long dataVersionExecId) throws Exception {
         if (dataVersionExecId == null) return "";
 
         Object expDate = db(TDM)
-                .fetch("SELECT expiration_date FROM " + TDMDB_SCHEMA + ".task_execution_list " +
+                .fetch("SELECT expiration_date FROM " + getTDMDBSchema() + ".task_execution_list " +
                        "WHERE task_execution_id = ? AND expiration_date IS NOT NULL " +
                        "AND expiration_date <= CURRENT_TIMESTAMP AT TIME ZONE 'UTC' LIMIT 1",
                        dataVersionExecId)
@@ -652,10 +682,8 @@ public class SharedLogic {
             return "";
         }
 
-        JsonObject jsonObject = JsonParser.parseString(editable_params).getAsJsonObject();
-
         // Check if BE is mandatory based on override settings
-        boolean isBeEditable = jsonObject.getAsJsonObject("business_entity").get("is_editable").getAsBoolean();
+        boolean isBeEditable = isEditable(editable_params, "business_entity");
         if (be_id == null && !isBeEditable) {
             return "Business entity is mandatory.";
         }
@@ -673,15 +701,13 @@ public class SharedLogic {
         }
 
         // Check if target environment is mandatory based on override settings
-        boolean isTargetEnvEditable = jsonObject.getAsJsonObject("target_environment").get("is_editable")
-                .getAsBoolean();
+        boolean isTargetEnvEditable = isEditable(editable_params, "target_environment");
         if (environment_id == null && !isTargetEnvEditable && !"EXTRACT".equals(task_type) && !"GENERATE".equals(task_type)) {
             return "Environment is mandatory.";
         }
 
         // Check if source environment is mandatory based on override settings
-        boolean isSourceEnvEditable = jsonObject.getAsJsonObject("source_environment").get("is_editable")
-                .getAsBoolean();
+        boolean isSourceEnvEditable = isEditable(editable_params, "source_environment");
         if (source_environment_id == null && !isSourceEnvEditable && !"DELETE".equalsIgnoreCase(task_type)
                 && !"RESERVE".equalsIgnoreCase(task_type)) {
             return "Source environment is mandatory.";
@@ -780,7 +806,7 @@ public class SharedLogic {
     
         if (sourceEnvName != null && !sourceEnvName.isEmpty() && !"".equalsIgnoreCase(sourceEnvName)) {
             String envSyncMode = db(TDM).fetch("SELECT e.sync_mode " +
-                                "FROM " + TDMDB_SCHEMA + ".environments e " +
+                                "FROM " + getTDMDBSchema() + ".environments e " +
                                 "WHERE e.environment_name = ? AND e.environment_status = 'Active' " +
                                 "AND e.environment_id = ?",
                                 sourceEnvName, envID).firstValue().toString();
@@ -935,45 +961,44 @@ public class SharedLogic {
         }
 
         final String finalLuName = luName;
-        Db.Rows rows = Util.rte(() -> fabric().fetch("list BF lu_name = '" + finalLuName + "' flow='" + flowName + "'"));
-        for (Db.Row row : rows) {
-            if (!"LU_NAME".equalsIgnoreCase("" + row.get("name"))
-                    && !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name"))
-                    && !"SESSION_GLOBALS".equalsIgnoreCase("" + row.get("name"))
-                    && "input".equalsIgnoreCase("" + row.get("param"))) {
-                HashMap<String, Object> map = new HashMap<>();
-                HashMap<Object, Object> editorMap = new HashMap<>();
-                Map<String, Object[]> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
-                Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
-                Object[] interfaces = new Object[0];
-                if ("com.k2view.interface".equalsIgnoreCase(String.valueOf(editor.get("id")))) {
-                    String broadwayCommand = "Broadway TDM.ListEditorInterfaces editor=" + row.get("editor");
-                    Db.Rows interfaceNames = fabric().fetch(broadwayCommand);
-                    for (Db.Row name : interfaceNames) {
-                        interfaces = ParamConvertor.toArray(name.get("array"));
+        try (Db.Rows rows = Util.rte(() -> fabric().fetch("list BF lu_name = ? flow=?", finalLuName, flowName))) {
+            for (Db.Row row : rows) {
+                if (!"LU_NAME".equalsIgnoreCase("" + row.get("name"))
+                        && !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name"))
+                        && !"SESSION_GLOBALS".equalsIgnoreCase("" + row.get("name"))
+                        && "input".equalsIgnoreCase("" + row.get("param"))) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    HashMap<Object, Object> editorMap = new HashMap<>();
+                    Map<String, Object[]> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
+                    Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
+                    Object[] interfaces = new Object[0];
+                    if ("com.k2view.interface".equalsIgnoreCase(String.valueOf(editor.get("id")))) {
+                        String broadwayCommand = "Broadway TDM.ListEditorInterfaces editor=?";
+                        try (Db.Rows interfaceNames = fabric().fetch(broadwayCommand, row.get("editor"))) {
+                            for (Db.Row name : interfaceNames) {
+                                interfaces = ParamConvertor.toArray(name.get("array"));
+                            }
+                        }
+                        editor.put("interfaces", interfaces);
                     }
-                    editor.put("interfaces", interfaces);
+                    if (editor.isEmpty()) {
+                        editorMap.put("id", "com.k2view.default");
+                    } else {
+                        editorMap.putAll(editor);
+                    }
+                    editorMap.put("name", row.get("name"));
+                    editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
+                    editorMap.put("mandatory", row.get("mandatory"));
+                    editorMap.put("context", context);
+                    map.put("editor", editorMap);
+                    map.put("default", row.get("default"));
+                    map.put("type", row.get("type"));
+                    map.put("mandatory", row.get("mandatory"));
+                    String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+                    map.put("description", description);
+                    result.add(map);
                 }
-                if (editor.isEmpty()) {
-                    editorMap.put("id", "com.k2view.default");
-                } else {
-                    editorMap.putAll(editor);
-                }
-                editorMap.put("name", row.get("name"));
-                editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
-                editorMap.put("mandatory", row.get("mandatory"));
-                editorMap.put("context", context);
-                map.put("editor", editorMap);
-                map.put("default", row.get("default"));
-                map.put("type", row.get("type"));
-                map.put("mandatory", row.get("mandatory"));
-                String description = ("" + row.get("remark")).replaceAll("/n", "\n");
-                map.put("description", description);
-                result.add(map);
             }
-        }
-        if (rows != null) {
-            rows.close();
         }
         return result;
     }
@@ -987,11 +1012,18 @@ public class SharedLogic {
         for (Map<String, String> processRec : processesList) {
             String processName =  processRec.get("processName");
             processInputs.put("Process_name", processName);
-            List<String> luNames = Pattern.compile(",").splitAsStream(processRec.get("luNames")).collect(Collectors.toList());
+            List<String> luNames = new ArrayList<>();
+            if (processRec.get("luNames") != null) {
+                luNames = Pattern.compile(",").splitAsStream(processRec.get("luNames")).collect(Collectors.toList());
+            } else {
+                luNames.add("");
+            }
+
             for (String luName : luNames) {
                 if (!"".equals(luName)) {
                     processInputs.put("Lu_name", luName);
                 }
+                
             
                 Boolean found = false;
                 List<Map<String, Object>> processList = MtableLookup("PostAndPreExecutionProcess", processInputs,

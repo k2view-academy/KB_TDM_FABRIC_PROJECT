@@ -1,4 +1,4 @@
-tags: Partition,Concurrency
+tags: Concurrency
 stages:
   Set Target Env:
     actors:
@@ -256,6 +256,22 @@ stages:
             external: commitSize
             schema: integer
             mandatory: false
+          task_execution_id:
+            external: taskExeId
+            schema: string
+            mandatory: false
+          task_ref_table_id:
+            external: refTableID
+            schema: integer
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+          partition_no:
+            external: partitionNumber
+            schema: string
+            mandatory: false
         out:
           okay:
             schema: integer
@@ -263,32 +279,70 @@ stages:
             schema: integer
           errors:
             schema: integer
+          result:
+            schema: any
   Records Count:
     transactional: false
     actors:
-      Total:
-        parent: Const
+      Set Total:
+        parent: JavaScript
+        height: 326
         in:
-          value:
-            const: null
+          script:
+            const:
+              userCode: "var result = -1;\r\n\r\nif (total != null) {\r\n    result\
+                \ = total;\r\n} else if (customResult != null && !isNaN(customResult))\
+                \ {\r\n    result = Number(customResult);\r\n}\r\n\r\nresult;"
+              script: |-
+                var result = -1;
+
+                if (total != null) {
+                  result = total;
+                } else if (customResult != null && !isNaN(customResult)) {
+                  result = Number(customResult);
+                }
+
+                result;
+          total:
             link:
             - load Table By Query/total
             - Run Custom Load Flow/total
-        out:
-          value:
             schema: integer
-      Processed:
-        parent: Const
-        height: 97
+            mandatory: false
+          customResult:
+            link: Run Custom Load Flow/result
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      Set Processed:
+        parent: JavaScript
+        height: 326
         in:
-          value:
-            const: null
+          script:
+            const: |-
+              var result = 0;
+
+              if (okay != null) {
+                  result = okay;
+              } else if (customResult != null && !isNaN(customResult)) {
+                  result = Number(customResult);
+              }
+
+              result;
+          okay:
             link:
             - load Table By Query/okay
             - Run Custom Load Flow/okay
             schema: integer
+            mandatory: false
+          customResult:
+            link: Run Custom Load Flow/result
+            schema: any
+            mandatory: false
         out:
-          value:
+          result:
             schema: integer
       Got Errors Count?:
         parent: IfElse
@@ -317,7 +371,7 @@ stages:
         condition: result
         in:
           a:
-            link: Total/value
+            link: Set Total/result
             schema: integer
           b:
             const: -1
@@ -375,7 +429,7 @@ stages:
             mandatory: false
             createdBy: sql
           number_of_processed_records:
-            link: Processed/value
+            link: Set Processed/result
             schema: integer
             mandatory: false
             createdBy: sql
@@ -385,7 +439,7 @@ stages:
             mandatory: false
             createdBy: sql
           number_of_records_to_process:
-            link: Total/value
+            link: Set Total/result
             schema: integer
             mandatory: false
             createdBy: sql

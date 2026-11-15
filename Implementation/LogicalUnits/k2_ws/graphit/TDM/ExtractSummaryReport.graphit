@@ -14,7 +14,13 @@
         {
           "name": "General Info",
           "type": "sql",
-          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  When (Exists(Select 1 From task_execution_link_entities\n    Where root_entity_status = 'completed' Limit 1)) Then 'completed'\n  Else 'failed' End AS execution_status,\n  IFNULL(NULLIF(json_extract(O.OVERRIDE_PARAMETERS, '$.SOURCE_ENVIRONMENT_NAME'), ''), T.SOURCE_ENV) AS source_env,\n  Case When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'TABLES' Then '' Else IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.BE_NAME'), T.BE_NAME) END AS be_name,\n  T.TASK_TYPE AS task_type,\n  Case When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'ALL' Then 'ALL'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'L' Then 'Entity List'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'R' Then 'Random Selection'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'TABLES' Then 'Table Level only'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'CLONE' Then 'Entity Clone'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'C' Then 'Custom Logic'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'GEN' Then 'Generate Synthetic'\n    Else 'Parameters'\n  End As selection_method,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_TASK_EXECUTION_ID AS version_task_execution_id,\n  L.SUBSET_TASK_EXECUTION_ID AS subset_task_execution_id,\n  IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.DATAFLUX_RETENTION_PARAMS.units'), T.RETENTION_PERIOD_TYPE) AS retention_period_type,\n  IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.DATAFLUX_RETENTION_PARAMS.value'), T.RETENTION_PERIOD_VALUE) AS retention_period_value,  \n  T.EXECUTION_MODE\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
+          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped'\n  When (Exists(Select 1 From task_execution_link_entities\n    Where root_entity_status = 'completed' Limit 1)) Then 'completed'\n  Else 'failed' End AS execution_status,\n  IFNULL(NULLIF(json_extract(O.OVERRIDE_PARAMETERS, '$.SOURCE_ENVIRONMENT_NAME'), ''), T.SOURCE_ENV) AS source_env,\n  Case When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'TABLES' Then '' Else IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.BE_NAME'), T.BE_NAME) END AS be_name,\n  T.TASK_TYPE AS task_type,\n  Case When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'ALL' Then 'ALL'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'L' Then 'Entity List'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'R' Then 'Random Selection'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'TABLES' Then 'Table Level only'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'CLONE' Then 'Entity Clone'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'C' Then 'Custom Logic'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'GEN' Then 'Generate Synthetic'\n    Else 'Parameters'\n  End As selection_method,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_TASK_EXECUTION_ID AS version_task_execution_id,\n  L.SUBSET_TASK_EXECUTION_ID AS subset_task_execution_id,\n  IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.DATAFLUX_RETENTION_PARAMS.units'), T.RETENTION_PERIOD_TYPE) AS retention_period_type,\n  IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.DATAFLUX_RETENTION_PARAMS.value'), T.RETENTION_PERIOD_VALUE) AS retention_period_value,\n  T.EXECUTION_MODE\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
+        },
+        {
+          "name": "Task Globals",
+          "type": "sql",
+          "code": "Select global_name, global_value from TDM.task_globals",
+          "sessionProvider": "fabric"
         },
         {
           "name": "Override parameters",
@@ -108,7 +114,7 @@
                         {
                           "name": "param_name",
                           "type": "function",
-                          "code": "var result = {};\nif (params) {\n    var parsedData = JSON.parse(params);\n    var par = parsedData.inputs;\n    for (var p in par) { \n        result[p] = par[p].name;\n    }\n}\nresult;\n",
+                          "code": "var result = {};\nif (params) {\n    var parsedData = JSON.parse(params);\n    var par = parsedData.inputs;\n    for (var p in par) { \n        result[p] = par[p].name;\n    }\n}\nresult;",
                           "one": true
                         },
                         {
@@ -214,7 +220,13 @@
                               ]
                             }
                           ]
-                        },
+                        }
+                      ]
+                    },
+                    {
+                      "type": "condition",
+                      "code": "process_type == \"post\"",
+                      "children": [
                         {
                           "name": "Post Execution Processes",
                           "children": [
@@ -280,7 +292,7 @@
             {
               "name": "List of Copied Tables",
               "type": "sql",
-              "code": "select ref_table_name , number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records, \nstart_time as start_execution_time, end_time as end_execution_time, table_filter, version_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'"
+              "code": "select ref_table_name , number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records,\nstart_time as start_execution_time, end_time as end_execution_time, table_filter, version_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'"
             },
             {
               "name": "Number of Failed Tables",
@@ -290,19 +302,39 @@
             {
               "name": "List of Failed Tables",
               "type": "sql",
-              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records, \nstart_time as start_execution_time, end_time as end_execution_time, error_msg, table_filter, version_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records,\nstart_time as start_execution_time, end_time as end_execution_time, error_msg, table_filter, version_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'"
+            }
+          ]
+        },
+        {
+          "name": "Masking Report",
+          "children": [
+            {
+              "name": "Masking Details",
+              "type": "sql",
+              "code": "Select TI.source_env AS source_env,\n  M.INTERFACE_NAME AS interface_name,\n  M.SCHEMA_NAME AS schema_name,\n  M.SYSTEM_NAME AS system_name,\n  M.DATASET AS dataset,\n  M.OBJECT_NAME AS object_name,\n  M.FIELD_NAME AS field_name,\n  M.DATA_TYPE AS data_type,\n  M.CLASSIFICATION AS classification,\n  Case When M.DATA_GENERATOR Like '%.actor' Then substr(M.DATA_GENERATOR, 1, length(M.DATA_GENERATOR) - 6) Else M.DATA_GENERATOR End AS data_generator,\n  M.DATA_CONSISTENCY AS data_consistency,\n  Case When TI.selection_method = 'TABLES' Then 'Tables' Else 'Entities' End AS processed_data,\n  Case When TI.selection_method = 'TABLES'\n    Then (SELECT count(1) From TDM.TASK_REF_EXE_STATS ES Where ES.EXECUTION_STATUS = 'completed'\n        \t\t\t\tAnd ES.INTERFACE_NAME = M.INTERFACE_NAME And ES.SCHEMA_NAME = M.SCHEMA_NAME And ES.REF_TABLE_NAME = M.DATASET )\n    Else (Select count(Distinct ENTITY_ID) From TDM.TASK_EXECUTION_LINK_ENTITIES Where LU_NAME = ROOT_LU_NAME And ROOT_ENTITY_STATUS = 'completed' And ID_TYPE = 'ENTITY')\n  End AS number_of_entities_or_tables,\n  M.NUMBER_OF_RECORDS AS total_no_of_records\nFrom TDM.TASK_EXE_MASKING_FIELDS M\n  LEFT JOIN (Select IFNULL(NULLIF(json_extract(O.OVERRIDE_PARAMETERS, '$.SOURCE_ENVIRONMENT_NAME'), ''), T.SOURCE_ENV) As source_env,\n      IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) As selection_method\n    From TDM.TASKS T\n      LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID\n    Limit 1) TI ON 1 = 1\nWhere M.CLASSIFICATION Is Not Null\nOrder By M.INTERFACE_NAME, M.SCHEMA_NAME, M.DATASET, M.FIELD_NAME"
+            },
+            {
+              "name": "Masked Tables",
+              "type": "sql",
+              "code": "Select M.INTERFACE_NAME AS interface_name,\n  M.SCHEMA_NAME AS schema_name,\n  M.DATASET AS table_name,\n  M.FIELD_NAME AS field_name,\n  IFNULL(M.SENSITIVE, 'N') AS sensitive\nFrom TDM.TASK_EXE_MASKING_FIELDS M\nOrder By M.INTERFACE_NAME, M.SCHEMA_NAME, M.DATASET, M.FIELD_NAME"
+            },
+            {
+              "name": "Masking Errors",
+              "type": "sql",
+              "code": "Select IFNULL(NULLIF(E.interface_name, ''), M.INTERFACE_NAME) AS interface_name,\n  M.SCHEMA_NAME AS schema_name,\n  M.SYSTEM_NAME AS system_name,\n  E.dataset AS dataset,\n  E.field_name AS field_name,\n  M.CLASSIFICATION AS classification,\n  IFNULL(NULLIF(E.data_generator, ''), M.DATA_GENERATOR) AS data_generator,\n  Case When E.lu_name = 'TDM_TableLevel' Then 'Tables' Else 'Entities' End AS processed_data,\n  Case When E.lu_name = 'TDM_TableLevel' Then 1 Else count(*) End AS number_of_failed_entities_or_tables,\n  substr(E.error_message, 1, 10000) AS error_message\nFrom (Select Case When instr(P.after_interface, ';') > 0 Then substr(P.after_interface, 1, instr(P.after_interface, ';') - 1) Else P.after_interface End As interface_name,\n    Case When instr(P.after_table, ';') > 0 Then substr(P.after_table, 1, instr(P.after_table, ';') - 1) Else P.after_table End As dataset,\n    Case When instr(P.after_field, ';') > 0 Then substr(P.after_field, 1, instr(P.after_field, ';') - 1) Else P.after_field End As field_name,\n    Case When instr(P.after_generator, ';') > 0 Then substr(P.after_generator, 1, instr(P.after_generator, ';') - 1) Else P.after_generator End As data_generator,\n    P.error_message As error_message,\n    P.lu_name As lu_name\n  From (Select Case When instr(IFNULL(D.ACTOR_PARAMETERS, ''), 'interface=') > 0 Then substr(D.ACTOR_PARAMETERS, instr(D.ACTOR_PARAMETERS, 'interface=') + 10) Else '' End As after_interface,\n      Case When instr(IFNULL(D.ACTOR_PARAMETERS, ''), 'table=') > 0 Then substr(D.ACTOR_PARAMETERS, instr(D.ACTOR_PARAMETERS, 'table=') + 6) Else '' End As after_table,\n      Case When instr(IFNULL(D.ACTOR_PARAMETERS, ''), 'field=') > 0 Then substr(D.ACTOR_PARAMETERS, instr(D.ACTOR_PARAMETERS, 'field=') + 6) Else '' End As after_field,\n      Case When instr(IFNULL(D.ACTOR_PARAMETERS, ''), 'data_generator=') > 0 Then substr(D.ACTOR_PARAMETERS, instr(D.ACTOR_PARAMETERS, 'data_generator=') + 15) Else '' End As after_generator,\n      D.ERROR_MESSAGE As error_message,\n\t  D.LU_NAME As lu_name\n    From TDM.TASK_EXE_ERROR_DETAILED D\n    Where D.ERROR_CATEGORY = 'Masking') P) E\n  LEFT JOIN TDM.TASK_EXE_MASKING_FIELDS M ON M.DATASET = E.dataset And M.FIELD_NAME = E.field_name\n    And (E.interface_name = '' Or M.INTERFACE_NAME = E.interface_name)\n  LEFT JOIN (Select IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) As selection_method\n    From TDM.TASKS T\n      LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID\n    Limit 1) TI ON 1 = 1\nGroup By E.interface_name, M.INTERFACE_NAME, M.SCHEMA_NAME, M.SYSTEM_NAME, E.dataset, E.field_name, M.CLASSIFICATION,\n  E.data_generator, M.DATA_GENERATOR, TI.selection_method, substr(E.error_message, 1, 10000), E.lu_name\nOrder By E.dataset, E.field_name"
             }
           ]
         },
         {
           "name": "Error Summary",
           "type": "sql",
-          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, substr(error_message, 1, 10000) AS error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
+          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, substr(error_message, 1, 10000) AS error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed\ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
         },
         {
           "name": "Statistics Report",
           "type": "sql",
-          "code": "select lu_name, table_name, target_count, source_count, suppressed_error_count, diff, results \nfrom task_exe_stats_summary"
+          "code": "select lu_name, table_name, target_count, source_count, suppressed_error_count, diff, results\nfrom task_exe_stats_summary"
         }
       ]
     },

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>task_globals</Name>
+  <ID>tbl_task_globals</ID>
+  <Columns>
+    <Column name="task_id" id="task_id" index="0" datatype="integer" />
+    <Column name="global_name" id="global_name" index="1" datatype="text" />
+    <Column name="global_value" id="global_value" index="2" datatype="text" />
+    <Column name="is_editable" id="is_editable" index="3" datatype="text" />
+  </Columns>
+  <IndexesList>
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+  <BasedOn>
+    <Source interface="TDM" catalog="TDMDB" schema="public" table="task_globals" timestamp="2026-08-06">
+      <ColumnsList>task_id,global_name,global_value,is_editable</ColumnsList>
+    </Source>
+  </BasedOn>
+</TableObject>

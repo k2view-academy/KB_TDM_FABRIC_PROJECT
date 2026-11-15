@@ -1,0 +1,33 @@
+description: Gets all task groups available to the connected user, each with its id, name and description.
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetTaskGroups:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetTaskGroups
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      task_groups:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetTaskGroups/result/task_groups
+        out:
+          value:
+            external: task_groups
+            schema: string
+schemas:
+  Call GetTaskGroups.out.result:
+    type: object
+    properties:
+      task_groups:
+        type: string

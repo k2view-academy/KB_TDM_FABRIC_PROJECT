@@ -1,0 +1,192 @@
+{
+    "tags": [
+        "Masking"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "PIIClassificationList",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "buildPIIClassificationList",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "buildPIIClassificationList"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Classification": {
+                                                        "type": "string"
+                                                    },
+                                                    "Data Generator": {
+                                                        "type": "string"
+                                                    },
+                                                    "Generator Parameters": {
+                                                        "type": "string"
+                                                    },
+                                                    "Data Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Cross-Environment Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Cross-Execution Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Cross-Entity Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Empty Value Behavior": {
+                                                        "type": "string"
+                                                    },
+                                                    "Preserve Original Format": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Filter By Generator",
+                    "dependsOnList": [],
+                    "actors": [
+                        {
+                            "name": "FilterPIIClassificationListByGenerator",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "var arr = [].concat(list);\nvar cls = (classificationName || '').toUpperCase();\nvar gen = dataGenerator || '';\nvar result = [];\n\nif (cls) {\n  for (var i = 0; i < arr.length; i++) {\n    if (arr[i] && String(arr[i]['Classification'] || '').toUpperCase() === cls) {\n      result.push(arr[i]);\n    }\n  }\n} else if (gen) {\n  for (var j = 0; j < arr.length; j++) {\n    if (arr[j] && arr[j]['Data Generator'] === gen) {\n      result.push(arr[j]);\n    }\n  }\n} else {\n  result = arr;\n}\nresult;"
+                                    },
+                                    {
+                                        "name": "list",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "dataGenerator",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "classificationName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Classification": {
+                                                        "type": "string"
+                                                    },
+                                                    "Data Generator": {
+                                                        "type": "string"
+                                                    },
+                                                    "Generator Parameters": {
+                                                        "type": "string"
+                                                    },
+                                                    "Data Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Cross-Environment Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Cross-Execution Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Cross-Entity Consistency": {
+                                                        "type": "string"
+                                                    },
+                                                    "Empty Value Behavior": {
+                                                        "type": "string"
+                                                    },
+                                                    "Preserve Original Format": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "buildPIIClassificationList",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FilterPIIClassificationListByGenerator",
+                "name": "list"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FilterPIIClassificationListByGenerator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "PIIClassificationList"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "dataGenerator"
+            },
+            "rightPort": {
+                "actor": "FilterPIIClassificationListByGenerator",
+                "name": "dataGenerator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "classificationName"
+            },
+            "rightPort": {
+                "actor": "FilterPIIClassificationListByGenerator",
+                "name": "classificationName"
+            }
+        }
+    ]
+}

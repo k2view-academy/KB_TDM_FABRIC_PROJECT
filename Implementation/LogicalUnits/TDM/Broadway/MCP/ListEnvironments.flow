@@ -1,0 +1,32 @@
+description: Lists all available TDM environments with their names, IDs, and types. Use this to discover
+  available source and target environments and resolve their IDs.
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call ListEnvironments:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.ListEnvironments
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      environments:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call ListEnvironments/result/environments
+        out:
+          value:
+            external: environments
+schemas:
+  Call ListEnvironments.out.result:
+    type: object
+    properties:
+      environments: {}

@@ -94,6 +94,12 @@ stages:
             const: null
             external: iid
             default: false
+      Get MASKING_REPORT_FLAG:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_REPORT_FLAG
+            default: false
   Get Status if Exists:
     actors:
       Check If instance already ran:
@@ -130,6 +136,54 @@ stages:
         out:
           result:
             schema: string
+      Set Masking Globals:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SetMaskingGlobals
+          TDM_USING_CATALOG_SEQUENCES:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          TDM_SEQ_REPORT:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          enable_sequences:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          TDM_TASK_EXE_ID:
+            external: taskExeID
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          TDM_SOURCE_ENVIRONMENT_NAME:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          TARGET_ENTITY_ID:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          LU_TYPE:
+            const: TDM_TableLevel
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          ROOT_TABLE_NAME:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          ROOT_COLUMN_NAME:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          MASKING_REPORT_FLAG:
+            link: Get MASKING_REPORT_FLAG/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
   Get and Set Parameters:
     actors:
       Did not Run Or Failed?:

@@ -207,6 +207,10 @@ schemas:
               }
             count_ind: {
               }
+            records_limit:
+              type: integer
+            partitions_limit:
+              type: integer
             table_filter: {
               }
             gui_filter: {

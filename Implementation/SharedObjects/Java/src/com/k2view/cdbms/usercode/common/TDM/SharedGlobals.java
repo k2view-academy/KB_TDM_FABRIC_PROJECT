@@ -117,5 +117,9 @@ public class SharedGlobals {
 	@category("TDM")
 	public static final String SUPPRESS_TABLE_LEVEL_SUPPRESS_FILE_SYSTEMS = "true";
 
+    @desc ("Used to allow reporting Masking Inforation")
+	@category("TDM")
+	public static final String MASKING_REPORT_FLAG = "false";
+
 
 }

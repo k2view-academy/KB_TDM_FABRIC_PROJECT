@@ -32,6 +32,12 @@ stages:
           key:
             const: ROOT_COLUMN_NAME
             default: false
+      Get MASKING_REPORT_FLAG:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_REPORT_FLAG
+            default: false
   Enable Sequencing:
     dependsOn: Get Inputs
     actors:
@@ -52,6 +58,16 @@ stages:
           value:
             const: 'true'
             default: false
+      'true':
+        parent: Const
+        in:
+          value:
+            const: true
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean
     split: '--------------------'
   Disable Sequences:
     else: true
@@ -66,7 +82,17 @@ stages:
           value:
             const: 'false'
             default: false
-  Stage 1:
+      'false':
+        parent: Const
+        in:
+          value:
+            const: false
+            schema: boolean
+        out:
+          value:
+            external: result
+            schema: boolean
+  Set Globals For Sequences:
     dependsOn: Enable Sequencing
     actors:
       Enable Sequences At Load?1:
@@ -81,12 +107,11 @@ stages:
               }
               result;
           usingCatalog:
-            link:
-            - Get TDM_USING_CATALOG_SEQUENCES/result
-            - Get TDM_SEQ_REPORT/result
+            link: Get TDM_USING_CATALOG_SEQUENCES/result
             schema: string
             mandatory: false
           seqReport:
+            link: Get TDM_SEQ_REPORT/result
             schema: string
             mandatory: false
         out:
@@ -106,7 +131,7 @@ stages:
             schema: string
             mandatory: false
           enable_sequences:
-            const: 'true'
+            link: true/value
             schema: string
             mandatory: false
           TDM_TASK_EXE_ID:
@@ -133,8 +158,13 @@ stages:
             link: Get ROOT_COLUMN_NAME/result
             schema: string
             mandatory: false
+          MASKING_REPORT_FLAG:
+            link: Get MASKING_REPORT_FLAG/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
     split: '--------------------'
-  Stage 3:
+  'No Sequence Report ':
     else: true
     dependsOn: Enable Sequencing
     actors:
@@ -154,6 +184,7 @@ stages:
             schema: string
             mandatory: false
           TDM_TASK_EXE_ID:
+            external: TDM_TASK_EXE_ID
             schema: string
             mandatory: false
           TDM_SOURCE_ENVIRONMENT_NAME:
@@ -163,6 +194,7 @@ stages:
             schema: string
             mandatory: false
           LU_TYPE:
+            external: LU_TYPE
             schema: string
             mandatory: false
           ROOT_TABLE_NAME:
@@ -171,8 +203,13 @@ stages:
           ROOT_COLUMN_NAME:
             schema: string
             mandatory: false
+          MASKING_REPORT_FLAG:
+            link: Get MASKING_REPORT_FLAG/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
     split: '--------------------'
-  Stage 2:
+  No Sequence Report:
     dependsOn: Disable Sequences
     actors:
       Disable Sequence Report:
@@ -191,6 +228,7 @@ stages:
             schema: string
             mandatory: false
           TDM_TASK_EXE_ID:
+            external: TDM_TASK_EXE_ID
             schema: string
             mandatory: false
           TDM_SOURCE_ENVIRONMENT_NAME:
@@ -200,6 +238,7 @@ stages:
             schema: string
             mandatory: false
           LU_TYPE:
+            external: LU_TYPE
             schema: string
             mandatory: false
           ROOT_TABLE_NAME:
@@ -208,3 +247,8 @@ stages:
           ROOT_COLUMN_NAME:
             schema: string
             mandatory: false
+          MASKING_REPORT_FLAG:
+            link: Get MASKING_REPORT_FLAG/result
+            schema: string
+            mandatory: false
+            createdBy: flowName

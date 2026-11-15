@@ -39,16 +39,15 @@ blocked_by_pre AS (
     WHERE tt2.process_id > 0
       AND UPPER(tt2.execution_status) IN ('PENDING', 'RUNNING')
 ),
-running_pre_process AS (
+blocked_by_running_executions AS (
     SELECT DISTINCT
         tt2.task_execution_id,
-        tt2.process_id
+        ep.process_type
     FROM ${@TDMDB_SCHEMA}.task_execution_list tt2
-    JOIN ${@TDMDB_SCHEMA}.tasks_exe_process ep2
-      ON ep2.task_id = tt2.task_id
-     AND ep2.process_id = tt2.process_id
-     AND ep2.process_type = 'pre'
-    WHERE UPPER(tt2.execution_status) IN ('PENDING', 'RUNNING')
+    JOIN ${@TDMDB_SCHEMA}.tasks_exe_process ep
+      ON ep.task_id = tt2.task_id
+     AND ep.process_id = tt2.process_id
+    WHERE UPPER(tt2.execution_status) = 'RUNNING'
 )
 
 SELECT
@@ -79,6 +78,7 @@ SELECT
     tt.user_roles
 FROM base_tt tt
 WHERE tt.selection_method = 'TABLES'
+  AND tt.process_id = 0
   AND NOT EXISTS (
       SELECT 1
       FROM blocked_by_pre bp
@@ -210,9 +210,35 @@ WHERE tt.process_id != 0
             ep.process_type = 'post'
             AND NOT EXISTS (
                 SELECT 1
-                FROM running_pre_process rpp
-                WHERE rpp.task_execution_id = tt.task_execution_id
-                  AND rpp.process_id != ep.process_id
+                FROM blocked_by_pre bp
+                WHERE bp.task_execution_id = tt.task_execution_id
+            )
+            -- post processes start only after all LUs are done (same check as luCount in TdmExecuteTask)
+            AND NOT EXISTS (
+                SELECT 1
+                FROM ${@TDMDB_SCHEMA}.task_execution_list lu
+                WHERE lu.task_execution_id = tt.task_execution_id
+                  AND lu.lu_id != 0
+                  AND lu.process_id = 0
+                  AND lu.execution_status NOT IN ('stopped', 'completed', 'failed', 'killed')
             )
         )
-      );
+      )
+  AND NOT EXISTS (
+    SELECT 1
+    FROM blocked_by_running_executions bre
+    WHERE bre.task_execution_id = tt.task_execution_id
+    AND bre.process_type = ep.process_type 
+  )
+  -- pick the lowest-order pending process of this type in this execution
+  -- (tdmProcessExecution then runs the rest of them in order)
+  AND ep.execution_order = (
+      SELECT min(ep2.execution_order)
+      FROM ${@TDMDB_SCHEMA}.tasks_exe_process ep2
+      JOIN ${@TDMDB_SCHEMA}.task_execution_list l2
+        ON l2.task_id = ep2.task_id
+       AND l2.process_id = ep2.process_id
+      WHERE l2.task_execution_id = tt.task_execution_id
+        AND ep2.process_type = ep.process_type
+        AND UPPER(l2.execution_status) = 'PENDING'
+  );

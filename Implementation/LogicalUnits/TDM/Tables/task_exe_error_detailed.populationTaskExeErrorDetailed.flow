@@ -86,7 +86,7 @@ stages:
             const: "select distinct task_execution_id,lu_name,entity_id,iid,target_entity_id,\
               \ error_category, error_code,\r\nerror_message, creation_date, flow_name,\
               \ stage_name, actor_name, actor_parameters\r\nfrom ${TDMDB_SCHEMA}.TASK_EXE_ERROR_DETAILED\
-              \ where lu_name in ('${LU_LIST}') and task_execution_id = ${TASK_EXECUTION_ID}"
+              \ where task_execution_id = ${TASK_EXECUTION_ID}\r\nand lu_name in ('${LU_LIST}')"
           TASK_EXECUTION_ID:
             link: PopulationArgs/iid
             schema: string

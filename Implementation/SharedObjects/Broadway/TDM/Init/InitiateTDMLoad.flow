@@ -450,7 +450,7 @@ stages:
             mandatory: false
           luID:
             link: get LU_ID/result
-            schema: any
+            schema: string
             mandatory: false
             createdBy: sql
         out:
@@ -481,6 +481,15 @@ stages:
             external: luName
             schema: string
             mandatory: false
+        out:
+          result:
+            schema: boolean
+      Get Masking Flag:
+        parent: FabricSetRead
+        in:
+          key:
+            const: enable_masking
+            default: false
       Cloning?:
         parent: IfElse
         height: 424
@@ -496,6 +505,42 @@ stages:
         out:
           result:
             schema: string
+  Set enable_masking_uniqueness For Get:
+    transactional: false
+    dependsOn: Set iid based on clone_no
+    actors:
+      Sequence or masking are enabled?:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: Set enable_sequences For Extract/result
+          b:
+            link: Get Masking Flag/result
+      Set Enable_Masking_uniqueness to true For Get:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_masking_uniqueness
+            default: false
+          value:
+            const: 'true'
+            default: false
+    split: '--------------------'
+  Sequences & Masking are off:
+    else: true
+    transactional: false
+    dependsOn: Set iid based on clone_no
+    actors:
+      Set Enable_Masking_uniqueness to false For Get:
+        parent: FabricSet
+        in:
+          key:
+            const: enable_masking_uniqueness
+            default: false
+          value:
+            const: 'false'
+            default: false
   Condition for get instance:
     transactional: false
     actors:

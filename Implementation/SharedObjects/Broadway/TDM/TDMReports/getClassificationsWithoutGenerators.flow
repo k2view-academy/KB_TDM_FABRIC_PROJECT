@@ -1,0 +1,210 @@
+tags: TDM,Masking
+stages:
+  Get Classifications And Fields:
+    actors:
+      buildPIIClassificationList:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: buildPIIClassificationList
+        out:
+          result:
+            schema: '#ref'
+      getInterfacesTableFieldsList:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfacesTableFieldsList
+        out:
+          result:
+            schema: '#ref'
+  Fields Assigned To Classifications Without Generators:
+    actors:
+      ClassificationsWithoutGeneratorsFieldsList:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var classificationArr = [].concat(classifications);
+              var fieldArr = [].concat(fields);
+
+              // display names of the classifications configured without a data generator
+              var names = {};
+              for (var i = 0; i < classificationArr.length; i++) {
+                var c = classificationArr[i];
+                if (c && c['Classification'] && !c['Data Generator']) {
+                  var cls = String(c['Classification']).trim();
+                  names[cls.toUpperCase()] = cls;
+                }
+              }
+
+              // classified fields that have no data generator (also covers classifications missing from the MTable)
+              var result = [];
+              for (var j = 0; j < fieldArr.length; j++) {
+                var f = fieldArr[j];
+                if (!f || !f['Classification'] || f['Data Generator']) {
+                  continue;
+                }
+                var key = String(f['Classification']).trim().toUpperCase();
+                result.push({
+                  'Classification': names[key] || String(f['Classification']).trim(),
+                  'Interface': f['Interface Name'],
+                  'Schema': f['Schema'],
+                  'Source System': f['System'],
+                  'Dataset': f['Dataset'],
+                  'Field': f['Field']
+                });
+              }
+
+              result.sort(function(a, b) {
+                return a['Classification'].localeCompare(b['Classification'])
+                  || String(a['Interface']).localeCompare(String(b['Interface']))
+                  || String(a['Schema']).localeCompare(String(b['Schema']))
+                  || String(a['Dataset']).localeCompare(String(b['Dataset']))
+                  || String(a['Field']).localeCompare(String(b['Field']));
+              });
+              result;
+          classifications:
+            link: buildPIIClassificationList/result
+            schema: '#ref'
+            mandatory: false
+          fields:
+            link: getInterfacesTableFieldsList/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: ClassificationsWithoutGeneratorsFieldsList
+            schema: '#ref'
+  Classifications Without Generators Summary:
+    actors:
+      ClassificationsWithoutGeneratorsSummary:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var classificationArr = [].concat(classifications);
+              var fieldArr = [].concat(fieldsList);
+
+              // every classification configured without a data generator, with 0 fields by default
+              var counts = {};
+              var order = [];
+              for (var i = 0; i < classificationArr.length; i++) {
+                var c = classificationArr[i];
+                if (c && c['Classification'] && !c['Data Generator']) {
+                  var cls = String(c['Classification']).trim();
+                  if (!counts.hasOwnProperty(cls)) {
+                    counts[cls] = 0;
+                    order.push(cls);
+                  }
+                }
+              }
+
+              // number of classified fields per classification
+              for (var j = 0; j < fieldArr.length; j++) {
+                var name = fieldArr[j]['Classification'];
+                if (!counts.hasOwnProperty(name)) {
+                  counts[name] = 0;
+                  order.push(name);
+                }
+                counts[name] = counts[name] + 1;
+              }
+
+              var result = [];
+              for (var k = 0; k < order.length; k++) {
+                result.push({ 'Classification': order[k], 'Total Classified Fields': counts[order[k]] });
+              }
+              result.sort(function(a, b) {
+                return (b['Total Classified Fields'] - a['Total Classified Fields'])
+                  || a['Classification'].localeCompare(b['Classification']);
+              });
+              result;
+          classifications:
+            link: buildPIIClassificationList/result
+            schema: '#ref'
+            mandatory: false
+          fieldsList:
+            link: ClassificationsWithoutGeneratorsFieldsList/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: ClassificationsWithoutGeneratorsSummary
+            schema: '#ref'
+schemas:
+  buildPIIClassificationList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string
+  getInterfacesTableFieldsList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System:
+          type: string
+        Dataset:
+          type: string
+        Object Name:
+          type: string
+        Field:
+          type: string
+        Data Type:
+          type: string
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Data Consistency:
+          type: string
+        Description:
+          type: string
+  ClassificationsWithoutGeneratorsFieldsList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Interface:
+          type: string
+        Schema:
+          type: string
+        Source System:
+          type: string
+        Dataset:
+          type: string
+        Field:
+          type: string
+  ClassificationsWithoutGeneratorsSummary.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Total Classified Fields:
+          type: integer

@@ -6,6 +6,9 @@ ALTER TABLE ${@schema}.tasks
 ALTER COLUMN filterout_reserved TYPE TEXT;
 
 ALTER TABLE ${@schema}.tasks 
+ALTER COLUMN filterout_reserved SET DEFAULT 'OTHERS';
+
+ALTER TABLE ${@schema}.tasks 
 ALTER COLUMN task_created_by TYPE TEXT;
 
 ALTER TABLE ${@schema}.tasks 

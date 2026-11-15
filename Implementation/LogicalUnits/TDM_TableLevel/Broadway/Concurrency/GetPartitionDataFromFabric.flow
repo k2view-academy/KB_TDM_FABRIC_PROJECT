@@ -157,8 +157,90 @@ stages:
             link: Add  Wherer Clause to Select Statement/paramters
         out:
           result:
+            schema: '#ref'
+  Prepare Data For Deserialize:
+    transactional: false
+    actors:
+      Get Table Fields:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetTableFields
+          dbInterfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+          schemaName:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Deserialize Row Data:
+    transactional: false
+    dependsOn: Prepare Data For Deserialize
+    actors:
+      Has Complex Field ?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = false;
+              for (var i = 0; i < fields.length; i++) {
+                if (fields[i].column_type === 'COMPLEX') {
+                  result = true;
+                  break;
+                }
+              }
+              result;
+          fields:
+            link: Get Table Fields/result
+            schema: any
+            mandatory: false
+      Deserialize Complex Fields:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: DeserializeComplexFields
+          rows:
+            link: Get Data From Fabric/result
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          fields:
+            link: Get Table Fields/result
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+        out:
+          DeserializedRows:
             external: result
             schema: '#ref'
+    split: '--------------------'
+  No Deserialize - Pass Through:
+    else: true
+    transactional: false
+    dependsOn: Prepare Data For Deserialize
+    actors:
+      Raw Result:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Get Data From Fabric/result
+        out:
+          value:
+            external: result
   Update Count:
     transactional: false
     actors:
@@ -238,6 +320,34 @@ schemas:
           type: string
         note_text:
           type: string
+  Get Table Fields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Deserialize Complex Fields.in.fields:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Deserialize Complex Fields.out.DeserializedRows:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
   Get Data From Fabric1.out.result:
     type: array
     items:

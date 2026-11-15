@@ -38,7 +38,7 @@ stages:
             mandatory: false
           columnType:
             link:
-              path: List of Fields/value/column_type
+              path: List of Fields/value/column_sqlite_type
               iterate: Iterate
             schema: string
             mandatory: false
@@ -211,6 +211,8 @@ schemas:
         column_name:
           type: string
         column_type:
+          type: string
+        column_sqlite_type:
           type: string
   List of Fields.out.value:
     type: array

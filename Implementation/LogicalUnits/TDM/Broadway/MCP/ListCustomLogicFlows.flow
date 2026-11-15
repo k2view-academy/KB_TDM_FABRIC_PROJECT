@@ -1,0 +1,48 @@
+description: |-
+  Returns all available Custom Logic flows for a given Business Entity and source environment. Custom Logic flows are Broadway flows that programmatically determine which entities to select for a task (selection method code C).
+
+  Each result includes the LU name the flow belongs to, the flow name to pass as CUSTOM_LOGIC_FLOW, and a description of what the flow does. luName and flowName are a pair: always take both from the same row.
+
+  Output: JSON array of { luName, flowName, Description }
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetCustomLogicFlows:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetCustomLogicFlows 'beName'=${beName} 'sourceEnvName'=${sourceEnvName}
+          beName:
+            external: beName
+            schema: string
+            remark: Business Entity name (not id), as returned by ListBusinessEntities (be_name).
+            mandatory: true
+          sourceEnvName:
+            external: sourceEnvName
+            schema: string
+            remark: Source environment name, as returned by ListEnvironments (environment_name).
+            mandatory: true
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      flows:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetCustomLogicFlows/result/flows
+        out:
+          value:
+            external: flows
+            schema: string
+schemas:
+  Call GetCustomLogicFlows.out.result:
+    type: object
+    properties:
+      flows:
+        type: string

@@ -331,6 +331,58 @@ stages:
             schema: integer
             mandatory: false
             createdBy: sql
+      Get Partition Limit:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: partitions_limit
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExecutionID
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  Apply Limit:
+    actors:
+      Limit:
+        parent: Limit
+        in:
+          limit:
+            link: Get Partition Limit/result
+            default: true
+          values:
+            link: Build List Of Partition IIDs/instances
+        out:
+          values:
+            external: instances
+            schema: '#ref'
 schemas:
   Get Partition Number From Table.out.result:
     type: array
@@ -339,7 +391,7 @@ schemas:
       properties:
         number_of_partitions:
           type: integer
-  Build List Of Partition IIDs.out.instances:
+  Limit.out.values:
     type: array
-    items:
-      type: string
+    items: {
+      }

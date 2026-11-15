@@ -1,0 +1,66 @@
+tags: TDM,Masking
+stages:
+  Get Interfaces Table Fields List By Interface:
+    actors:
+      getInterfacesTableFieldsListByInterface:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfacesTableFieldsListByInterface
+          datasetName:
+            external: datasetName
+            schema: any
+            mandatory: false
+          interfaceName:
+            external: interfaceName
+            schema: any
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            external: InterfacesTableFieldsList
+            schema: '#ref'
+  Get Number Of Total PII Fields:
+    actors:
+      TotalNumberOfTotalPIIFields:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              list == null ? 0 : [].concat(list).length;
+          list:
+            link: getInterfacesTableFieldsListByInterface/result
+            schema: any
+            mandatory: false
+        out:
+          result:
+            external: TotalNumberOfTotalPIIFields
+            schema: integer
+schemas:
+  getInterfacesTableFieldsListByInterface.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System:
+          type: string
+        Dataset:
+          type: string
+        Object Name:
+          type: string
+        Field:
+          type: string
+        Data Type:
+          type: string
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Data Consistency:
+          type: string
+        Description:
+          type: string

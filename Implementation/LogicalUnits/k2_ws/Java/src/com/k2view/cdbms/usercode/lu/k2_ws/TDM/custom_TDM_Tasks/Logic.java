@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
@@ -113,7 +113,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String permissionGroup = fnGetUserPermissionGroup("");
 			
-			String sql = "select * from " + TDMDB_SCHEMA + ".tasks where lower(task_status) = 'active' and lower(task_execution_status) = 'active' and version_ind = ?";
+			String sql = "select * from " + getTDMDBSchema() + ".tasks where lower(task_status) = 'active' and lower(task_execution_status) = 'active' and version_ind = ?";
 			Db.Rows rows = db(TDM).fetch(sql, versionInd);
 			List<String> columnNames = rows.getColumnNames();
 			
@@ -135,9 +135,9 @@ public class Logic extends WebServiceUserCode {
 					String taskID = "" + row.get("task_id");
 					String taskTitle = "" + row.get("task_title");
 					String beID = "" + row.get("be_id");
-					String luList = "" + db(TDM).fetch("select string_agg( distinct lu_id::text, ',') from " + TDMDB_SCHEMA + ".tasks_logical_units where task_id = ?", taskID).firstValue();
+					String luList = "" + db(TDM).fetch("select string_agg( distinct lu_id::text, ',') from " + getTDMDBSchema() + ".tasks_logical_units where task_id = ?", taskID).firstValue();
 					//log.info("wsRegularTasksByUser - luList: " + luList); 	
-					String refCnt = "" + db(TDM).fetch("select count(1) as cnt from " + TDMDB_SCHEMA + ".task_ref_tables where task_id = ?", taskID).firstValue();
+					String refCnt = "" + db(TDM).fetch("select count(1) as cnt from " + getTDMDBSchema() + ".task_ref_tables where task_id = ?", taskID).firstValue();
 					String selectionMethod = "" + row.get("selection_method");
 					String syncMode = "" + row.get("sync_mode");
 					Boolean replaceSequences = (Boolean)row.get("replace_sequences");

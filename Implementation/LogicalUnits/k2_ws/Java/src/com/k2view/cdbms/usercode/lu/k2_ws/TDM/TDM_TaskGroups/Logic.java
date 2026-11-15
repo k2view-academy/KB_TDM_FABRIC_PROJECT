@@ -1,6 +1,6 @@
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_TaskGroups;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.existAnotherMapping;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getAdminTasks;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getFavoriteThenByKeyComparator;
@@ -34,19 +34,30 @@ public class Logic extends WebServiceUserCode {
 
 	private static final String favorite_item_type = "Group";
 	private static final String noPermissionError = "You don’t have permissions";
+	private static final String systemGroupError = "System task groups cannot be deleted";
 	private static final String TDM = "TDM";
 
-	private static boolean isPermittedUser(String username, long task_group_id) {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		String created_by;
+	private static String fetchCreatedBy(long task_group_id) {
 		try {
-			created_by = "" + db(TDM).fetch(
-					"SELECT created_by FROM " + TDMDB_SCHEMA + ".task_groups WHERE task_group_id=?",
+			return "" + db(TDM).fetch(
+					"SELECT created_by FROM " + getTDMDBSchema() + ".task_groups WHERE task_group_id=?",
 					task_group_id).firstValue();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static boolean isPermittedUser(String username, long task_group_id) {
+		return isPermittedUser(username, fetchCreatedBy(task_group_id));
+	}
+
+	private static boolean isPermittedUser(String username, String created_by) {
+		String permissionGroup = fnGetUserPermissionGroup("");
 		return ("admin".equals(permissionGroup) || username.equals(created_by)) && !"system".equals(created_by);
+	}
+
+	private static boolean isSystemCreated(String created_by) {
+		return "system".equals(created_by);
 	}
 
 	@desc("""
@@ -81,7 +92,7 @@ public class Logic extends WebServiceUserCode {
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username = sessionUser().name();
-			String insertSQL = "INSERT INTO " + TDMDB_SCHEMA + ".task_groups" +
+			String insertSQL = "INSERT INTO " + getTDMDBSchema() + ".task_groups" +
 					"(task_group_name, task_group_desc, creation_date, created_by) " +
 					"VALUES (?, ?, ?, ?) RETURNING task_group_id";
 			Db.Row row = db(TDM).fetch(insertSQL, task_group_name, task_group_desc, now, username)
@@ -140,7 +151,7 @@ public class Logic extends WebServiceUserCode {
 
 		try {
 
-			String updateSQL = "UPDATE " + TDMDB_SCHEMA + ".task_groups SET " +
+			String updateSQL = "UPDATE " + getTDMDBSchema() + ".task_groups SET " +
 					"task_group_name = ?, task_group_desc = ?" + " WHERE task_group_id = ?";
 			db(TDM).execute(updateSQL, task_group_name, task_group_desc, task_group_id);
 
@@ -280,15 +291,15 @@ public class Logic extends WebServiceUserCode {
 
 		try {
 			String sql = "SELECT tg.* , CASE WHEN tuf.favorite_item_id IS NULL THEN FALSE ELSE TRUE END AS favorite, "
-					+ "EXISTS ( SELECT 1 FROM " + TDMDB_SCHEMA + ".tasks t INNER JOIN " + TDMDB_SCHEMA
+					+ "EXISTS ( SELECT 1 FROM " + getTDMDBSchema() + ".tasks t INNER JOIN " + getTDMDBSchema()
 					+ ".task_group_mapping tgm ON t.task_id = tgm.task_id"
 					+ " WHERE tgm.task_group_id = tg.task_group_id AND split_part(t.task_created_by, '##', 1) = ? ) AS has_task_created_by_the_user"
-					+ " FROM " + TDMDB_SCHEMA + ".task_groups tg "
-					+ "LEFT JOIN " + TDMDB_SCHEMA
-					+ ".task_user_favorites tuf ON (tg.task_group_id = tuf.favorite_item_id AND tuf.favorite_item_type ='"
-					+ favorite_item_type + "'" + "AND tuf.user_id = ?)";
+					+ " FROM " + getTDMDBSchema() + ".task_groups tg "
+					+ "LEFT JOIN " + getTDMDBSchema()
+					+ ".task_user_favorites tuf ON (tg.task_group_id = tuf.favorite_item_id AND tuf.favorite_item_type = ?"
+					+ " AND tuf.user_id = ?)";
 
-			Db.Rows rows = db(TDM).fetch(sql, userName, userName);
+			Db.Rows rows = db(TDM).fetch(sql, userName, favorite_item_type, userName);
 
 			Map<String, List<Map<String, Object>>> result = new LinkedHashMap<>();
 			List<Map<String, Object>> allTaskGroups = new ArrayList<>();
@@ -364,19 +375,23 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String status = "";
 		String username = sessionUser().name();
+		String created_by = fetchCreatedBy(task_group_id);
 
-		if (!isPermittedUser(username, task_group_id)) {
+		if (isSystemCreated(created_by)) {
+			return wrapWebServiceResults("FAILED", systemGroupError, null);
+		}
+		if (!isPermittedUser(username, created_by)) {
 			return wrapWebServiceResults("FAILED", noPermissionError, null);
 		}
 
 		try {
-			String deleteFavoritesSQL = "DELETE FROM " + TDMDB_SCHEMA + ".task_user_favorites" +
+			String deleteFavoritesSQL = "DELETE FROM " + getTDMDBSchema() + ".task_user_favorites" +
 					" WHERE favorite_item_type = ? AND favorite_item_id = ?";
 
 			db(TDM).execute(deleteFavoritesSQL, favorite_item_type, task_group_id);
 
 			handleTasksGroupMapping(task_group_id);
-			String deleteSQL = "DELETE FROM " + TDMDB_SCHEMA + ".task_groups" +
+			String deleteSQL = "DELETE FROM " + getTDMDBSchema() + ".task_groups" +
 					" WHERE task_group_id = ?";
 
 			db(TDM).execute(deleteSQL, task_group_id);
@@ -410,7 +425,7 @@ public class Logic extends WebServiceUserCode {
 			wsMoveTasksToGroups(taskIdsToGeneral, task_group_id, Arrays.asList(1L), false);
 		}
 
-		String deleteMappingSQL = "DELETE FROM " + TDMDB_SCHEMA + ".task_group_mapping WHERE task_group_id = ?";
+		String deleteMappingSQL = "DELETE FROM " + getTDMDBSchema() + ".task_group_mapping WHERE task_group_id = ?";
 		db(TDM).execute(deleteMappingSQL, task_group_id);
 	}
 
@@ -442,7 +457,7 @@ public class Logic extends WebServiceUserCode {
 		}
 
 		try {
-			String insertSQL = "INSERT INTO " + TDMDB_SCHEMA + ".task_user_favorites" +
+			String insertSQL = "INSERT INTO " + getTDMDBSchema() + ".task_user_favorites" +
 					"(user_id, favorite_item_type, favorite_item_id) " +
 					"VALUES (?, ?, ?)";
 			String username = sessionUser().name();
@@ -485,7 +500,7 @@ public class Logic extends WebServiceUserCode {
 		String status = "";
 
 		try {
-			String sql = "DELETE FROM " + TDMDB_SCHEMA + ".task_user_favorites" +
+			String sql = "DELETE FROM " + getTDMDBSchema() + ".task_user_favorites" +
 					" WHERE user_id= ? AND favorite_item_type = ? AND favorite_item_id = ?";
 			String username = sessionUser().name();
 			db(TDM).execute(sql, username, favorite_item_type, task_group_id);

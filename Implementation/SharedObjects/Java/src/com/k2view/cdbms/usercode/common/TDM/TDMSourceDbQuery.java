@@ -11,10 +11,10 @@ import com.k2view.fabric.common.io.IoSession;
 import com.k2view.fabric.session.broadway.sourcedbquery.SourceDbQuery;
 import java.util.*;
 
-import static com.k2view.fabric.common.Util.safeClose;
 import static com.k2view.cdbms.shared.user.UserCode.fabric;
 import static com.k2view.cdbms.shared.user.UserCode.getGlobal;
 import static com.k2view.cdbms.shared.user.UserCode.ludb;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
 
 
 
@@ -49,11 +49,11 @@ public class TDMSourceDbQuery extends SourceDbQuery {
 
     private Object tdmSourceDbQuery(Data input, Data output, Context ctx) throws Exception {
 
+        // Don't close the session: it is the flow's shared "fabric" session, Broadway closes it at the end of the flow
         IoSession fabricSession = ctx.ioProvider().createSession("fabric");
-        List<String> mainTables = new ArrayList<String>(Arrays.asList((""
-                + fabricSession.prepareStatement("set " + ctx.externals().get("schema").toString() + ".ROOT_TABLE_NAME")
-                        .execute().iterator().next().get("value"))
-                .toLowerCase()));
+        String schema = sanitizeDslToken(ctx.externals().get("schema").toString());
+        List<String> mainTables = new ArrayList<String>(Arrays.asList(
+                getSetValue(fabricSession, "set " + schema + ".ROOT_TABLE_NAME").toLowerCase()));
 
         Object tableName = ctx.externals().get("table");
         if (tableName == null) {
@@ -66,25 +66,26 @@ public class TDMSourceDbQuery extends SourceDbQuery {
                 ctx.externals().get("table").toString().toLowerCase() + "_number_of_records";
         Object noOfRecsVal = ctx.globals().get(globalName);
         if (noOfRecsVal == null) {
-            String minDist = "" + fabricSession
-                    .prepareStatement(
-                            "set " + ctx.externals().get("schema").toString() + ".TABLE_DEFAULT_DISTRIBUTION_MIN")
-                    .execute().iterator().next().get("value");
-            String maxDist = "" + fabricSession
-                    .prepareStatement(
-                            "set " + ctx.externals().get("schema").toString() + ".TABLE_DEFAULT_DISTRIBUTION_MAX")
-                    .execute().iterator().next().get("value");
+            String minDist = getSetValue(fabricSession, "set " + schema + ".TABLE_DEFAULT_DISTRIBUTION_MIN");
+            String maxDist = getSetValue(fabricSession, "set " + schema + ".TABLE_DEFAULT_DISTRIBUTION_MAX");
 
             String distJson = "{distribution=uniform,round=true,type=integer,minimum=" + minDist + ",maximum=" + maxDist
                     + "}";
             noOfRecsVal = Json.get().fromJson(distJson);
         }
-        safeClose(fabricSession);
         return noOfRecsVal;
 
     }
 
+    static String getSetValue(IoSession fabricSession, String command) throws Exception {
+        try (IoCommand.Statement statement = fabricSession.prepareStatement(command);
+             IoCommand.Result result = statement.execute()) {
+            return "" + result.iterator().next().get("value");
+        }
+    }
+
     private String getQueryFirstResult(Context ctx, String query, String columnName, String defaultValue) throws Exception {
+        // Don't close the session: it is the flow's shared "fabric" session, Broadway closes it at the end of the flow
         IoSession fabricSession = ctx.ioProvider().createSession("fabric");
         String value = defaultValue;
         try (IoCommand.Statement statement = fabricSession.prepareStatement(query)) {
@@ -105,7 +106,6 @@ public class TDMSourceDbQuery extends SourceDbQuery {
                 }
             }
         }
-        safeClose(fabricSession);
         return value;
     }
 }

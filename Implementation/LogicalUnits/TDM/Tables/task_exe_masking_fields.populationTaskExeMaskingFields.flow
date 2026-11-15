@@ -1,0 +1,323 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+      getTDMDBSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  Source:
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              -- The fields of every table masked by the task execution, parsed from the catalog CSVs stored for the execution:
+              -- tdm_exe_catalog_field_info (per catalog hash) and tdm_exe_catalog_classification_generators.
+              -- Only tables with at least one sensitive (PII) field are returned. A field is masked when it is PII and its
+              -- classification has an enable_masking / enable_masking_uniqueness generator - classification, data_generator, data_consistency and
+              -- masking_description are set only for the masked fields, sensitive is Y for every PII field.
+              WITH execution AS (
+                  SELECT CAST(${iid} AS bigint) AS task_execution_id
+              ),
+              -- the tables of the execution; entity level tasks hold a record per entity and table - the records are summed
+              masking_info_tables AS (
+                  SELECT mi.interface_name, mi.schema_name, mi.table_name, mi.catalog_hash, sum(mi.number_of_records) AS number_of_records
+                  FROM ${@schema}.task_execution_masking_info mi
+                  JOIN execution e ON e.task_execution_id = mi.task_execution_id
+                  GROUP BY mi.interface_name, mi.schema_name, mi.table_name, mi.catalog_hash
+              ),
+              -- CSV lines of each catalog_field_info copy used by the execution, cells as an array
+              catalog_field_lines AS (
+                  SELECT c.interface_name, c.schema_name, c.catalog_hash, r.line_no,
+                      -- lines without quotes are split directly, quoted values (that may hold commas) are split with a regex
+                      CASE WHEN strpos(r.rec[1], '"') = 0 THEN array_replace(string_to_array(r.rec[1], ','), '', NULL)
+                      ELSE ARRAY(SELECT NULLIF(CASE WHEN v.val[1] LIKE '"%' THEN replace(substr(v.val[1], 2, length(v.val[1]) - 2), '""', '"') ELSE v.val[1] END, '')
+                                 FROM regexp_matches(r.rec[1], '(?:^|,)("(?:[^"]|"")*"|[^,]*)', 'g') WITH ORDINALITY v(val, col_no) ORDER BY v.col_no)
+                      END AS cells
+                  FROM ${@schema}.tdm_exe_catalog_field_info c
+                  CROSS JOIN LATERAL regexp_matches(replace(c.csv_file, chr(65279), '') || chr(10), '((?:"(?:[^"]|"")*"|[^"\r\n])*)\r?\n', 'g') WITH ORDINALITY r(rec, line_no)
+                  WHERE r.rec[1] <> ''
+                  AND EXISTS (SELECT 1 FROM masking_info_tables mi WHERE mi.interface_name = c.interface_name AND mi.schema_name = c.schema_name AND mi.catalog_hash = c.catalog_hash)
+              ),
+              -- column positions of each catalog_field_info copy, by header name
+              catalog_field_columns AS MATERIALIZED (
+                  SELECT interface_name, schema_name, catalog_hash,
+                      array_position(header, 'dataset') AS dataset_pos, array_position(header, 'class') AS class_pos,
+                      array_position(header, 'field') AS field_pos, array_position(header, 'sqldatatype') AS sql_data_type_pos,
+                      array_position(header, 'sourcedatatype') AS source_data_type_pos, array_position(header, 'definedby') AS defined_by_pos,
+                      array_position(header, 'pii') AS pii_pos, array_position(header, 'classification') AS classification_pos
+                  FROM (SELECT interface_name, schema_name, catalog_hash, ARRAY(SELECT lower(h) FROM unnest(cells) h) AS header
+                        FROM catalog_field_lines WHERE line_no = 1) hdr
+              ),
+              -- fields of each catalog_field_info copy
+              catalog_fields AS MATERIALIZED (
+                  SELECT d.interface_name, d.schema_name, d.catalog_hash,
+                      d.cells[h.dataset_pos] AS dataset,
+                      d.cells[h.class_pos] AS object_name,
+                      d.cells[h.field_pos] AS field_name,
+                      d.cells[h.sql_data_type_pos] AS sql_data_type,
+                      d.cells[h.source_data_type_pos] AS source_data_type,
+                      d.cells[h.defined_by_pos] AS defined_by,
+                      d.cells[h.classification_pos] AS classification,
+                      COALESCE(lower(d.cells[h.pii_pos]) = 'true', false) AS pii
+                  FROM catalog_field_lines d
+                  JOIN catalog_field_columns h ON h.interface_name = d.interface_name AND h.schema_name = d.schema_name AND h.catalog_hash = d.catalog_hash
+                  WHERE d.line_no > 1
+              ),
+              -- CSV lines of the execution's catalog_classification_generators (the header and the masking generator lines), cells as an array
+              generator_lines AS (
+                  SELECT r.line_no,
+                      CASE WHEN strpos(r.rec[1], '"') = 0 THEN array_replace(string_to_array(r.rec[1], ','), '', NULL)
+                      ELSE ARRAY(SELECT NULLIF(CASE WHEN v.val[1] LIKE '"%' THEN replace(substr(v.val[1], 2, length(v.val[1]) - 2), '""', '"') ELSE v.val[1] END, '')
+                                 FROM regexp_matches(r.rec[1], '(?:^|,)("(?:[^"]|"")*"|[^,]*)', 'g') WITH ORDINALITY v(val, col_no) ORDER BY v.col_no)
+                      END AS cells
+                  FROM ${@schema}.tdm_exe_catalog_classification_generators g
+                  JOIN execution e ON e.task_execution_id = g.task_execution_id
+                  CROSS JOIN LATERAL regexp_matches(replace(g.csv_file, chr(65279), '') || chr(10), '((?:"(?:[^"]|"")*"|[^"\r\n])*)\r?\n', 'g') WITH ORDINALITY r(rec, line_no)
+                  WHERE r.line_no = 1 OR r.rec[1] ~* 'enable_masking'
+              ),
+              -- column positions of the generators CSV, by header name
+              generator_columns AS MATERIALIZED (
+                  SELECT array_position(header, 'classification') AS classification_pos, array_position(header, 'generator') AS generator_pos,
+                      array_position(header, 'consistent') AS consistent_pos, array_position(header, 'unique') AS unique_pos,
+                      array_position(header, 'seed') AS seed_pos, array_position(header, 'description') AS description_pos,
+                      array_position(header, 'category') AS category_pos
+                  FROM (SELECT ARRAY(SELECT lower(h) FROM unnest(cells) h) AS header FROM generator_lines WHERE line_no = 1) hdr
+              ),
+              -- the masking generator of each classification: enable_masking first, then enable_masking_uniqueness
+              masking_generators AS MATERIALIZED (
+                  SELECT DISTINCT ON (upper(d.cells[h.classification_pos]))
+                      upper(d.cells[h.classification_pos]) AS classification_key,
+                      d.cells[h.generator_pos] AS generator,
+                      lower(d.cells[h.consistent_pos]) AS consistent,
+                      lower(d.cells[h.unique_pos]) AS is_unique,
+                      lower(d.cells[h.seed_pos]) AS seed,
+                      d.cells[h.description_pos] AS description
+                  FROM generator_lines d
+                  CROSS JOIN generator_columns h
+                  WHERE d.line_no > 1
+                  AND d.cells[h.classification_pos] IS NOT NULL
+                  AND lower(d.cells[h.category_pos]) IN ('enable_masking', 'enable_masking_uniqueness')
+                  ORDER BY upper(d.cells[h.classification_pos]), CASE lower(d.cells[h.category_pos]) WHEN 'enable_masking' THEN 1 ELSE 2 END, d.line_no
+              ),
+              table_fields AS (
+                  SELECT t.interface_name, t.schema_name, t.number_of_records, fi.dataset, fi.object_name, fi.field_name,
+                      fi.sql_data_type, fi.source_data_type, fi.defined_by, fi.classification, fi.pii,
+                      bool_or(fi.pii) OVER (PARTITION BY t.interface_name, t.schema_name, lower(t.table_name)) AS table_has_pii
+                  FROM masking_info_tables t
+                  JOIN catalog_fields fi ON fi.interface_name = t.interface_name AND fi.schema_name = t.schema_name AND fi.catalog_hash = t.catalog_hash
+                      AND lower(fi.dataset) = lower(t.table_name)
+              )
+              SELECT
+                  e.task_execution_id,
+                  f.interface_name,
+                  f.schema_name,
+                  (SELECT p.product_name FROM ${@schema}.products p
+                   WHERE p.product_status = 'Active' AND EXISTS (SELECT 1 FROM unnest(p.related_interfaces) ri WHERE upper(trim(ri)) = upper(f.interface_name))
+                   LIMIT 1) AS system_name,
+                  f.dataset,
+                  f.object_name,
+                  f.field_name,
+                  -- same type mapping as SharedLogic.getFieldDataType
+                  CASE
+                      WHEN lower(f.source_data_type) IN ('object', 'array') OR f.defined_by LIKE '%Class' OR f.defined_by LIKE 'Collection(%'
+                          THEN COALESCE(f.defined_by, 'COMPLEX')
+                      WHEN f.sql_data_type IS NOT NULL THEN
+                          CASE
+                              WHEN f.sql_data_type::int IN (-7, -6, 5, 4, -5, 16) THEN 'INTEGER'
+                              WHEN f.sql_data_type::int IN (6, 7, 8, 2, 3) THEN 'REAL'
+                              WHEN f.sql_data_type::int = 12 THEN
+                                  CASE
+                                      WHEN upper(f.source_data_type) IN ('DATETIME', 'DATE') THEN upper(f.source_data_type)
+                                      WHEN upper(f.source_data_type) LIKE 'TIMESTAMP%' THEN 'DATETIME'
+                                      WHEN upper(f.source_data_type) LIKE 'TIME%' THEN 'TIME'
+                                      ELSE 'TEXT'
+                                  END
+                              WHEN f.sql_data_type::int = 91 THEN 'DATE'
+                              WHEN f.sql_data_type::int IN (92, 2013) THEN 'TIME'
+                              WHEN f.sql_data_type::int IN (93, 2014) THEN 'DATETIME'
+                              WHEN f.sql_data_type::int IN (-2, -3, -4, 1111, 2000, 2001, 2002, 2003, 2004, 2005, 2006, -8, 2011, 2012) THEN 'BLOB'
+                              ELSE 'TEXT'
+                          END
+                      WHEN f.defined_by IN ('STRING', 'COLLECTION', 'UNKNOWN') THEN 'TEXT'
+                      WHEN f.defined_by = 'BYTES' THEN 'BLOB'
+                      WHEN f.defined_by = 'BOOLEAN' THEN 'INTEGER'
+                      ELSE f.defined_by
+                  END AS data_type,
+                  CASE WHEN g.classification_key IS NOT NULL THEN f.classification END AS classification,
+                  CASE WHEN g.generator LIKE '%.actor' THEN LEFT(g.generator, LENGTH(g.generator) - 6) ELSE g.generator END AS data_generator,
+                  -- same rules as SharedLogic.deriveDataConsistency
+                  CASE
+                      WHEN g.classification_key IS NULL THEN NULL
+                      WHEN g.consistent = 'false' THEN 'Random'
+                      WHEN g.is_unique = 'true' THEN 'Consistent & Unique'
+                      WHEN g.seed = 'true' THEN 'Consistent Using Seed'
+                      ELSE 'Consistent Using Table'
+                  END AS data_consistency,
+                  g.description AS masking_description,
+                  CASE WHEN f.pii THEN 'Y' ELSE 'N' END AS sensitive,
+                  f.number_of_records
+              FROM table_fields f
+              CROSS JOIN execution e
+              LEFT JOIN masking_generators g ON g.classification_key = upper(f.classification) AND f.pii
+              WHERE f.table_has_pii
+              ORDER BY f.interface_name, f.schema_name, f.dataset, f.field_name
+          iid:
+            link: PopulationArgs/iid
+            schema: string
+          schema:
+            link: getTDMDBSchema/schema
+            schema: string
+            mandatory: false
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+  Load to Fabric:
+    transactional: false
+    actors:
+      task_exe_masking_fields:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXE_MASKING_FIELDS
+          fields:
+            const:
+            - task_execution_id
+            - interface_name
+            - schema_name
+            - system_name
+            - dataset
+            - object_name
+            - field_name
+            - data_type
+            - classification
+            - data_generator
+            - data_consistency
+            - masking_description
+            - sensitive
+            - number_of_records
+          keys:
+            const:
+            - TASK_EXECUTION_ID
+            - INTERFACE_NAME
+            - SCHEMA_NAME
+            - DATASET
+            - FIELD_NAME
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            link:
+              path: Query/result/task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          INTERFACE_NAME:
+            link:
+              path: Query/result/interface_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          SCHEMA_NAME:
+            link:
+              path: Query/result/schema_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          SYSTEM_NAME:
+            link:
+              path: Query/result/system_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          DATASET:
+            link:
+              path: Query/result/dataset
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          OBJECT_NAME:
+            link:
+              path: Query/result/object_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          FIELD_NAME:
+            link:
+              path: Query/result/field_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          DATA_TYPE:
+            link:
+              path: Query/result/data_type
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          CLASSIFICATION:
+            link:
+              path: Query/result/classification
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          DATA_GENERATOR:
+            link:
+              path: Query/result/data_generator
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          DATA_CONSISTENCY:
+            link:
+              path: Query/result/data_consistency
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          MASKING_DESCRIPTION:
+            link:
+              path: Query/result/masking_description
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          SENSITIVE:
+            link:
+              path: Query/result/sensitive
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          NUMBER_OF_RECORDS:
+            link:
+              path: Query/result/number_of_records
+              iterate: Iterate
+            schema: integer
+            mandatory: false

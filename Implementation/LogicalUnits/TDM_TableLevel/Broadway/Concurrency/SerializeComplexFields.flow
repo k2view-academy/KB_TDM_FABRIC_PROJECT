@@ -1,0 +1,123 @@
+tags: Concurrency
+stages:
+  Flatten:
+    actors:
+      Flatten Complex Fields:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnFlattenComplexFields
+          rows:
+            external: rows
+            schema: any
+            mandatory: false
+          fields:
+            external: fields
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Wrap:
+    actors:
+      Wrap Value:
+        parent: MapCreate
+        in:
+          value:
+            link:
+              path: Flatten Complex Fields/result/value
+              iterate: Iterate
+            schema: any
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+  Serialize:
+    actors:
+      Serialize Value:
+        parent: ObjectSerialize
+        in:
+          object:
+            link: Wrap Value/map
+            mandatory: false
+  To Buffer:
+    actors:
+      Materialize Blob:
+        parent: ToBuffer
+        in:
+          value:
+            link: Serialize Value/stream
+            mandatory: false
+  Return Statement:
+    transactional: false
+    actors:
+      Scatter One Field:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnScatterOneField
+          entry:
+            link: Flatten Complex Fields/result
+            schema: '#ref'
+            mandatory: false
+          value:
+            link: Materialize Blob/buffer
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: any
+  Build Result:
+    last: 1
+    actors:
+      Build Serialized Rows:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: Scatter One Field/result
+            schema: any
+        out:
+          array:
+            external: SerializedRows
+            schema: '#ref'
+schemas:
+  Flatten Complex Fields.in.fields:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Flatten Complex Fields.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        row: {
+          }
+        fieldName:
+          type: string
+        value: {
+          }
+  Wrap Value.out.map:
+    type: object
+    properties:
+      value: {
+        }
+  Scatter One Field.in.entry:
+    type: object
+    properties:
+      row: {
+        }
+      fieldName:
+        type: string
+      value: {
+        }
+  Build Serialized Rows.out.array:
+    type: array
+    items:
+      type: object

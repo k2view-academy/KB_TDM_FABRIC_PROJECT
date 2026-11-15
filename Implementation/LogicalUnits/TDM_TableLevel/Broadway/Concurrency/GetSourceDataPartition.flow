@@ -233,6 +233,21 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
+          sourceInterfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceSchemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          catalogSchema:
+            external: catalogSchema
+            schema: string
+            mandatory: false
+            createdBy: flowName
           tableFilter:
             external: tableFilter
             schema: string
@@ -345,8 +360,59 @@ stages:
             - Records From Fabric/value
         out:
           values:
-            external: result
             schema: '#ref'
+      Get Partition Limit:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: records_limit
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            external: taskExeId
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+  'Limit  ':
+    actors:
+      Limit:
+        parent: Limit
+        in:
+          limit:
+            link: Get Partition Limit/result
+            default: true
+            mandatory: false
+          values:
+            link: Catalog Masking/values
+        out:
+          values:
+            external: result
 schemas:
   Get Partition Records.in.filterParametersInfo:
     type: array

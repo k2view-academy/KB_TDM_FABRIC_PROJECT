@@ -1,7 +1,7 @@
 [
     {
         "id": "k2view.tdm",
-        "version": "10.0.1",
+        "version": "10.1.1",
         "artifacts": [
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/AIFlows/checkDescriptionFlowExists.flow",
@@ -72,6 +72,58 @@
                 "sha256": "b46456bc20b4dfcdf4d4e82ea20249a23832fbfae371fd1ffc17227e315203ab"
             },
             {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/CreateExecutionDraft.flow",
+                "sha256": "e0f7d5987ddf0d1f8698a10d40c9c49c5feb8d835e492f94be5fa032fb30501e"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/GetBEParameters.flow",
+                "sha256": "602d77c02e84b7df24f3494a4be59388c7288f50b140b32adca3e8a18b91b1c6"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/GetCustomLogicParams.flow",
+                "sha256": "fd224cf3259b4b5f246497585125c06d0268cbfefc0df119bd4047c0a6494cf5"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/GetLUsForBE.flow",
+                "sha256": "e9207a406aa5a36b6dfaa87b8d9a248339a726fedaaf3aa7bd69bb3ae1040c14"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/GetTaskDetails.flow",
+                "sha256": "30cb5e85b2195e534ccf36f9c82e144dfe92f6228d574da281f3013c4204b3a1"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/GetTaskExecutionStatus.flow",
+                "sha256": "14e60ccf7a18f80bc04bf99aa52e7150c0e35adbf3e69bb3e1c9249508211b0f"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/GetTaskGroups.flow",
+                "sha256": "17fc21dec2b39c97403dc94d6ca76fd1ea5b740199edfd10ab9fd5f4ae053302"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/GetTasksPerTaskGroup.flow",
+                "sha256": "2cf6d14a8e730ae22a82cb414c6c8f753f25aab08b8d11f2b0c422a604457e1c"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/ListBusinessEntities.flow",
+                "sha256": "9700ff912eacab97cf51aebaf725d83478b5a573f45cfd02ad9a311ea3f2dc19"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/ListCustomLogicFlows.flow",
+                "sha256": "ab7890366a436c876b1b4caea988f18091459a99fdd9a7b96d7d6237ac686ad8"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/ListEnvironments.flow",
+                "sha256": "09242e7b462414c2ef5e6ab8f04a76cdef64dbe859512ed838ea959b9304ef93"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/SearchTasks.flow",
+                "sha256": "f98f5d2ee7e40212cce6cb5032a9fd44fba0ec3199749a039c0ffe8741d91ccc"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/MCP/StartTaskExecution.flow",
+                "sha256": "7153ca6ffe95a36a4fd6b8f831ea0c76d587335f46fcd6efed8a8139647b4804"
+            },
+            {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/AddMissingSharedFiles.flow",
                 "sha256": "8328080b17298d48e34ce8ef5494cad7d9f516d71f7399e7cac046fd0b066fa3"
             },
@@ -97,7 +149,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/RemoveRelationTables.flow",
-                "sha256": "1ae7363b172b6f55d2ef77756471395a1b1d772cd16a06f322cd0d82f223c6b5"
+                "sha256": "95299844756d1292760fded85d0bad6ab5fd879198679d2f841521030481a727"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/RemoveSchemaGlobal.flow",
@@ -117,11 +169,11 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/RenameLoadAndDeleteFlows.flow",
-                "sha256": "1766ab8fd08a6579a12f810a4b11a48862067ce472f4bd849221f1d1e6fcd9d2"
+                "sha256": "14df51b46894bb177ffb229b55f3f6b71f2d1bc10b64959f6660044ac1401479"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/TDMDBUpgradeScripts.actor",
-                "sha256": "0cbc5e116a079e0ed622c4dab8552d5f9c750463eb915cd172d28a068c276175"
+                "sha256": "17775eaf67ee5da246371b366e360366be648b428c2d2210f914804a059fb19d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/TDMDBUpgradeScripts.flow",
@@ -154,6 +206,10 @@
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpdateTaskOverrideFields.flow",
                 "sha256": "a70cb6f17d46d36cd1662d8ddb93e0cf53f0acd93eac6b22d3b0482bf6d6913a"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/Upgrade10_to_101.flow",
+                "sha256": "bdd85d04107e9947f27ec7018c8cd56b2e13fafcd4afd811a8e3237518f62894"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/Upgrade80_to_81.flow",
@@ -200,6 +256,10 @@
                 "sha256": "754c140fdf8e65eb84d7a55b9ad487de0377042838422ecfba427e8c8d4f8517"
             },
             {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeCleanupAddMaskingTables.flow",
+                "sha256": "fa95ba37a7cb9d86f8aa8003eacc8c4c2bd0df61dde19abedf4dd4c4a7abccf7"
+            },
+            {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeCleanupAddNewTables.flow",
                 "sha256": "a1f84bd7e600b4dbe18d81d3bc133130547e5f7d395e78e76037f73e0b6a47cb"
             },
@@ -217,7 +277,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeGlobals.flow",
-                "sha256": "43edd0b7ee83ee699de5d728e5cc55d0f0e9b07fd03bf49dd4b03ab38cb3887a"
+                "sha256": "eb479ad413f38a139032f36323df97a8c118ac57b17a782116132c267963a1ef"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeParamsAddDescription.flow",
@@ -238,6 +298,10 @@
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeTDMTables.flow",
                 "sha256": "a678a1b64248f7797537ec51f6eaa8c0dd465793d75ae6bb301f2a17dd6873b7"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeTableLevelDefinitions10_1.flow",
+                "sha256": "c88f66d6420d26698cf88135aaa107054f1ea69a7f27c2396cbce85f6e27e164"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeTableLevelDefinitions9_1.flow",
@@ -265,7 +329,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeToParamsCouplingMode.flow",
-                "sha256": "b281e6d60cfe9c6bbf25775247d0532486e156d563ce84d1ac9c5aa69725eee2"
+                "sha256": "ce520b03f24cc39c2c25c4500445272527f4baf5472bd89a68a8e59c66367f12"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/Upgrade/UpgradeVaryingChars.flow",
@@ -317,7 +381,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/UpgradeTDMProject/UpgradeProjectLUs.flow",
-                "sha256": "d7612255976689742107af30156a8a99f13fe1a7d8e38b86ea8def883bb1b1d9"
+                "sha256": "5d152bbf73c5c9d84bb3c4110cfb7a65a19b807546aff29c1ca2412f86e9d155"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Broadway/UpgradeTDMProject/UpgradeTDMProjectToTDM9.flow",
@@ -337,11 +401,19 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB/k2vtdm3.sql",
-                "sha256": "50f03519bcc0b5a79e2447ffff79f0ca49c4c58c7b04fa09eac8c4609fd70bb2"
+                "sha256": "80ce201dd907a3ab31aed15429e079c66b21582ec0d20123a5489e140c0eb29f"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v10.0.1_to_v10.1.0.sql",
+                "sha256": "228f7e88ad74fdbc4c6e257029322945dc306e3769e8bd046f09812b0b2764fa"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v10.0_to_v10.0.1.sql",
-                "sha256": "d57d21822643f6f39e4229206619dfca48225e0c41bb1df0af0a03ab7f84b80f"
+                "sha256": "b257d85ff071f9393dac92933f08f234f3a8aa37049275018b22438ac5e9f2f2"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v10.1.0_to_v10.1.1.sql",
+                "sha256": "92b89e1ea952243eb0d85f95f4ce44f7ed531b655239539e702ec7aff509c395"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v4.1_to_v4.2.sql",
@@ -433,7 +505,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v9.1_to_v9.2.sql",
-                "sha256": "c09faa630ca656e8e7894c10816892b32aeb7440df3978142987c0b8618e9184"
+                "sha256": "5e49e972ecb96c53b31769206a1967353434ab2c83c3d1b03f209d46dcd3765d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v9.2_to_v9.3.0.sql",
@@ -453,11 +525,11 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v9.4.2_to_v9.5.0.sql",
-                "sha256": "070d831e8dad9eaa41096766b4d504f5126e8f862edd82733aaa8a2bd12b5141"
+                "sha256": "963014cfc10c22aae69b7b12f30bbbbb31f9d46beb4ee19c7804744f8885b710"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/TDMDB_Upgrade/update_tdmdb_from_v9.5.1_to_v10.0.sql",
-                "sha256": "bfb03630d0226e0bec4f7c00fd0ba7ee27014f2cb4536d3d59dcdab68e08ec10"
+                "sha256": "0ee3708ef7959fb51d81c3eb24a48c5c4500ad91ab92aec2c62f10c0d9c34d8e"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/fnTdmExecuteTask/query_get_extract_globals.sql",
@@ -469,7 +541,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/fnTdmExecuteTask/query_get_tasks.sql",
-                "sha256": "2b9235912109aad0320b791c6095bec07d5228414f3a95e69117551ecb5cdb2c"
+                "sha256": "922484d9cf7eb352f7e26979c188999eebf3dc483deba21baea514166d30c2df"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/resources/TDM/fnTdmExecuteTask/query_get_tasks_properties.sql",
@@ -477,47 +549,47 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/Globals.java",
-                "sha256": "a0fa7eab1104b73fb63b7978de5b7c3965c36e8885061ca59c2d801bcdeeb4b4"
+                "sha256": "751d284183d373e40897a6f8ddf2f5290f96c3347c2d2e50e7ef7371450489d0"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/ParentChildLink/Logic.java",
-                "sha256": "9a4c529ff5a84ec89b06e1bf38aabe6600cb2ef42e1189572af02055a424dfdc"
+                "sha256": "a2b6b109c85962b13e4cf42a2a85c662ed30c82dff0b62fecce09a7532465c58"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/TASK_DELETE/Logic.java",
-                "sha256": "69c7d8a57e48435e92d3754bff4e3e563a3c67d1aa207929a93e8ab05cd12436"
+                "sha256": "7b32a2e2ba48a06e7094ab92cd616448bda03a865ffd0ff224dc49e344baa572"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/TDM/Logic.java",
-                "sha256": "b06be3ed3de950531c27f291bbd036e44b236e7b0e1ce7615ec202fc9f00033b"
+                "sha256": "7f54fad1efb9226f9afe1dce81fedd2cc1e9347b5d7c37a9ae507707aac8ee83"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/TDM/TdmExecuteTask.java",
-                "sha256": "8269b9048318169c038515e9957359664951498f5d06a5125e6aae947e45b10d"
+                "sha256": "aecaacde83f46990890353b37401c3e57a6f3ea49448d090f7b0986972a31be4"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/TDMDB_CleanUp/Logic.java",
-                "sha256": "23fa0ea2df9a1c9dac3d6143424d8cb13c6e0f2841eecda825602e70192bc0cc"
+                "sha256": "4ae1d91ed99b8e6f57cd6635876a1f119a5653ad9f9f71ed2fcab858c36d0f7c"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/TDMUpgrade/Logic.java",
-                "sha256": "c4c923335bf92b52856acfca6f4fdbcaffdd3fec5a5be47f57e22768f745c68a"
+                "sha256": "dcd2e9c8e2f41c49af085f9d276071e8af2b24ccc8297aeab642fb5cdc8a7b2d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/TDM_Stats/Logic.java",
-                "sha256": "57472d5abf9f43f6b2dddad86e1d9fe8e8b50d3099de741e80edab7b0ff1a8ee"
+                "sha256": "0f60f254412f0a095875e76a5f8050337aeae12b330009f3ca97a704a8ef5be5"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/TdmTaskScheduler.java",
-                "sha256": "415cfa61429a653daa74cff1ecae75a80815a5c7247a3198aded370c8a8d2957"
+                "sha256": "54f073b4a6b6449a60a4780989202355c0c30f783e5dbe8915b32cac826db911"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Java/src/com/k2view/cdbms/usercode/lu/TDM/tdmProcessExecution/Logic.java",
-                "sha256": "e97795f41f18ded674b134511324aace08fb273ada0cc6881dc232a7edf2176d"
+                "sha256": "d6f8b1d5a320d071fa4cf2c1802dc67fd99abdd24cf933d356944248ef1f3634"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Jobs/Jobs.k2job.xml",
-                "sha256": "b906becb792428de446b11a726df607775ad8fba2e905ce8577b0d10ab7e1fc4"
+                "sha256": "71875bfe8d367cdb123a28456d48d2e339e0225d6721d5924edfff9f6033daf3"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Mtable/TDMInitTemplates.csv",
@@ -557,7 +629,15 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Tables/task_exe_error_detailed.populationTaskExeErrorDetailed.flow",
-                "sha256": "a896144d8929d4fcab006608e311691bc20a7bf2902854727f62099da724bae0"
+                "sha256": "c8105dd4e260c3fc77b0782edc0a2f8b474fd2142841ca3df559f93f960c4e12"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Tables/task_exe_masking_fields.k2table.xml",
+                "sha256": "27db476f5d9ce6dfc2d43325d17723d1578e8a53bbdff6b18cc1b36479145345"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Tables/task_exe_masking_fields.populationTaskExeMaskingFields.flow",
+                "sha256": "c3c452fefc65f21f0a71c4eeec9a64bc0531c33595973e81971d98f6fd779f8b"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Tables/task_exe_stats_detailed.k2table.xml",
@@ -581,7 +661,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Tables/task_execution_list.populationTaskExecutionList.flow",
-                "sha256": "1757c74f4a723be081096ef73eea2ca72b7a80fa9608066f432bb807bd98e4aa"
+                "sha256": "f99cbaf4e806eeacb870f180d4188d7f9026a15953003acf7168c1bf1b0c55a5"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Tables/task_execution_override_attrs.k2table.xml",
@@ -590,6 +670,14 @@
             {
                 "path": "/Implementation/LogicalUnits/TDM/Tables/task_execution_override_attrs.populationExecutionOverrideAttrs.flow",
                 "sha256": "fd68307e6c378c078dca9f30c467b9d84803004d81836b232489d7b186e7ea35"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Tables/task_globals.k2table.xml",
+                "sha256": "6f22eb6c819db1a102fe658de269661467e771b5f01b4e0ed61e96c5c8bad5a1"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM/Tables/task_globals.population.flow",
+                "sha256": "e094580baa7c7a0be2df02eeb4234ce6f3336bcdd7950712a0ea289ca73f321a"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/Tables/task_ref_exe_stats.k2table.xml",
@@ -617,7 +705,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/vdb.k2vdb.xml",
-                "sha256": "1b690ff2b93ce6b3318c37a71a3a3d84cef4be2abdc49544bd0d5bf02f53b55c"
+                "sha256": "f67bda703131260346735d8b31ff8784ea1fb46fa2de1d33e3f155893c4dae16"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/assets/fontawesome-webfont-BBOCxDGX.woff2",
@@ -640,8 +728,8 @@
                 "sha256": "9e540a087924a6e64790149d735cac022640e4fa6bff6bd65f5e9f41529bf0b3"
             },
             {
-                "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/assets/index-DIj7Ny9J.js",
-                "sha256": "50bdb3bad7cc85e4e5cb0b6b64d54ffc0d3cda40102b7c32568a7955d11b8c43"
+                "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/assets/index-BnmyEB8w.js",
+                "sha256": "d529a0956cdbcae202b680a6a3f3c2ec50a5ede23e22790826eacd7b2dcc233d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/assets/index-DMQ9rL1O.css",
@@ -656,12 +744,8 @@
                 "sha256": "3d10f7da6c603178340081668c4ac5b3ae9743ca9a262ab0fcd312fbb9f48bdd"
             },
             {
-                "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/img/banking-mini-logo.png",
-                "sha256": "7de3e318f08ec694153e1a691eb98503d97343862f1fb22e341eafcb85852058"
-            },
-            {
                 "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/index.html",
-                "sha256": "6aba67e2f77c9b8d589c50c6be960281bcefa762755a9abf2c61d93260259c1a"
+                "sha256": "115b33873b5d458b40e16e14f86c9506758a400bce0e8fcbb4dfefaf76545e5f"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/logo192.png",
@@ -680,20 +764,12 @@
                 "sha256": "90d24bc3bf698ac1e173739502298ccca72adf1f564fab05f484b8c48d1cadd2"
             },
             {
-                "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/styles/tdm-customize-style.css",
-                "sha256": "5ba6c4d67bc23de2bd9da644fcc078652b451848a687df6b4cdc7aff171ad42b"
-            },
-            {
                 "path": "/Implementation/LogicalUnits/TDM/web/TDM/dist/translations.json",
-                "sha256": "a98a61d19ba9f1d4066a175179555b68a219b89c7ff956d48d676f3581c19d80"
+                "sha256": "5396f2438d62016131803a5945cfc353be29a719d4297b823ae310a9ff1f5e10"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM/web/TDM/package.json",
                 "sha256": "19a447bd02755d0952e0b6e0283b4e6b97fe3eeb8122309b18e9d769d37538df"
-            },
-            {
-                "path": "/Implementation/LogicalUnits/TDM/web/apps.json",
-                "sha256": "da1418db5cccb3f34e44e22ef88e442c52047af9d089d77fabe3559c7a092e7d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_LIBRARY/Broadway/deploy.flow",
@@ -753,7 +829,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/BuildListOfPartitionIIDS.flow",
-                "sha256": "dfbd3a19381390d9d7549aff30eca6695469ea3fdb9e0fd865ca7f51795d089f"
+                "sha256": "d40b4c9ba23256fd23358430ee141745d7b77846677f72bfee17c82366414ddd"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/BuildSelectClauseForQuery.flow",
@@ -789,19 +865,23 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/CountMainFlow.flow",
-                "sha256": "b72db79566b8eeeadf00074c506c7373e3a68b3e32f2dbdf42306db704db01f8"
+                "sha256": "119b5fe7f0e5478f54747e83f01ba1265bdbcead7207cef5c165858cae67f761"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/CountTable.flow",
-                "sha256": "d071a3affbdef89d5f73b6ad5c27901adbb298a9ffee5ca4aab5438da1c433c2"
+                "sha256": "6c7d238448e6824ad3d144ba444fce28cc5d75fc2e262c5ab952afc2916fc734"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/CreateSqliteTable.flow",
-                "sha256": "1682c0287a6c95e976b6a4ecc983ea92de6c304d444d9843e0327de9f01edab6"
+                "sha256": "b1d52d8461d4f02cac8a4590097920ae2a1e5eb328946b805d0855e1f4e18229"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/DefaultSourceTargetMappingData.flow",
+                "sha256": "69e635915feb2a4f597b901978276bec3b1edf4d1af57ccfd68f07f388d2b3ff"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/DeleteMainFlow.flow",
-                "sha256": "039845db2c83369a2a246036f7cf2c470abbe6b0a53a9cd8e1f3aed568cb3dc9"
+                "sha256": "30e2fcbe725585083d1b7360641bc33d53325e2d499bee079b9817b47097a888"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/DeleteTable.flow",
@@ -812,12 +892,16 @@
                 "sha256": "5ab769a6e0be7c83052543565ecae8d2ee8b47c11694cc224696d0ae26f930a3"
             },
             {
+                "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/DeserializeComplexFields.flow",
+                "sha256": "26f2412262ad303618342cbe2b301f5f9799753b656cc519aeffebd9d1d15897"
+            },
+            {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/ExtractAndLoadMainFlow.flow",
                 "sha256": "0bf89e8f5929488c643a81fea1bffbfac8fdb3e602d1e28cfe73efb942f37b8a"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GenerateTableInstances.flow",
-                "sha256": "14504997209a4b1e54a8859f73dfc87b5df443033dc938b2e003b93aeb90a59a"
+                "sha256": "6bf9c2a8f6105e20a628275dae8238c17b9b6dea2dc79595e7ad6fc6847acccf"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GetAffinityAndMaxWorker.flow",
@@ -833,7 +917,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GetPartitionDataFromFabric.flow",
-                "sha256": "a3378b4b5006519b75d18bf978096a1acecc2d97560c2414971169df89664be3"
+                "sha256": "4f9780f3e8aa38b0519ffbc48f77630389f94f13131b078cca34b4234f6e462d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GetPartitionRecords.flow",
@@ -853,7 +937,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GetSourceDataPartition.flow",
-                "sha256": "73cabb088627e071408a08680b24015a74973ded1490bf27e098f07d83a2f911"
+                "sha256": "a8fbe5128f0bd0e528be2022da1687fe212351afa881487772f632679efde1ec"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GetTableColumns.flow",
@@ -869,7 +953,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GetTableInformation.flow",
-                "sha256": "a27822d1f0c60d6da4a65737bdb0709d89ef63bb1bf673078445a7b1441d1652"
+                "sha256": "13f69934f8d59633cde69b6d54e94a8b4564e2198e17e16cc9178aa18dd662a0"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/GetTableInstanceFields.flow",
@@ -881,11 +965,11 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/InsertIntoTaskRefPartitions.flow",
-                "sha256": "49040274f3a64dc64af655802d7d6c37c691729535368ccada6c57d5d1317012"
+                "sha256": "9915cdd0e9aa75104ce2ecd0131c2bcfcb1b01ef483598ff398a501f6cdf7b6b"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/LoadMainFlow.flow",
-                "sha256": "d474037468dd139e0f5d63a5c95eed7e0ee91ac6f8e2e7ee0392509c3d458505"
+                "sha256": "368c094ef8f3699a6ce1ed771c2c0f8f09c2b9c16203d9bbf0d2821c55adc3bd"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/LoadPartitionToFabric.flow",
@@ -893,11 +977,15 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/LoadPartitionToTarget.flow",
-                "sha256": "b2f9bd497c86aba027a43efb639236c8341a8755773be1c7603131080f52cf92"
+                "sha256": "bca269f01fecd1aee43007bbe0000844d1fbc128554bcc25eb1d3f073dd09e27"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/LoadTableByQuery.flow",
                 "sha256": "0e9bcb05c85fd01ac56834af904507a7c5f75258a45942dba42c30186312301a"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/LoadTableLevelMaskingData.flow",
+                "sha256": "4cc7ad1383dad62b83ffce9b300f307b677bee093784d55c2678fef73889e1f1"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/LoadTablesDataToCache.flow",
@@ -913,7 +1001,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/PopulateTableErrorsForTableLevel.flow",
-                "sha256": "2ecab69db0bbf8913404625b950ef9a709981f3f084977ef976e288707756e75"
+                "sha256": "5b00cef6c1154ad98a7bc00d9e9b4669af54a825741e14ceb1296bce7c583ef7"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/PopulateTaskExecutionEntitiesForTables.flow",
@@ -925,7 +1013,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/PrepareSqliteTable.flow",
-                "sha256": "b17807ac6b209b54bcfd8465d74590c742f0efe9872d0187f0f139945a8781be"
+                "sha256": "1959ebd85cfd619f58b9a11e2fff3e79fc7eec52a62ee67c9743c1a87b2faf71"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/ResumeStoppedTables.flow",
@@ -933,7 +1021,11 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/RunBatchForInstances.flow",
-                "sha256": "ba92f7ff3f2b545892dcef19bb5035e515dccfbd03e52218c0019b2f8d8577ec"
+                "sha256": "4ae3af69d54e8b35b773736643f8fd8288d74a9004c880a257685ee6b666073b"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/SerializeComplexFields.flow",
+                "sha256": "3cbeb62b0cde56bb61d521be808eca87f46b212a631077da8e953cec86b55bb7"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/SplitIID.flow",
@@ -941,11 +1033,11 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/TDMTableLevelOrchestrator.flow",
-                "sha256": "ffd94ff47a0327d50f3a70e3bf1c24ecebb2434cb86b6ecf0dea832fad6f32f9"
+                "sha256": "0e4a21a273a490c0a39c5811dc185973e6b1c400ab7a6ee0e352bc9c479ec28d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/TableLevelMain.flow",
-                "sha256": "ee5cab96165bcc4c07fa57ae41b6ca963218bd93f588d0dac8b57da5ff1f194f"
+                "sha256": "2f6035e7ee175a8f5769f0f6a13ad91954170b9bb69efbda0c51c977b5bc019d"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Concurrency/UpdatePartitionInTarget.flow",
@@ -1017,7 +1109,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Implementation/PostgreSQL/PGGetDataByRowId.flow",
-                "sha256": "50020b9b65f330d77668b64c39d803e55a030d5546a83c980fb0b9e91bb8f688"
+                "sha256": "774ae4bdaf353d8aea1c9a2eec0b880d8c8f54cb1999aa5ead4dba7e90dd8228"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Broadway/Implementation/PostgreSQL/PGGetPhyiscalPartitionsNumber.flow",
@@ -1037,15 +1129,19 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Java/src/com/k2view/cdbms/usercode/lu/TDM_TableLevel/TableLevelUtils/Logic.java",
-                "sha256": "42ce9089522f2a601e2ba5751626c32c6461b868897d4eaecd5bec0a0e9d4b08"
+                "sha256": "e55675b75acd3ef8909286846ccbbdb9bef126dc7e2b536246626c9528144a16"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Java/src/com/k2view/cdbms/usercode/lu/TDM_TableLevel/TablesOrder/Logic.java",
-                "sha256": "84a57a0851c655e6e11fb95babbe207f140958b65525176b0a8f8b9e3377d976"
+                "sha256": "f40979a3c10dafbc1daf0cf00c6f13d8122dec641845bddc439803e28d1656f6"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/Jobs/Jobs.k2job.xml",
                 "sha256": "116b57f6d02cb7605367d6a6140c6df7fb8de7332f90c3ac44136ed484232fdb"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/TDM_TableLevel/Mtable/TableLevelDefinitionsInterfacesTypesDefaults.csv",
+                "sha256": "3a3e37f4a8c8bb25aff2ec3a70969554c8532f091528bfe39cd26b3490e99648"
             },
             {
                 "path": "/Implementation/LogicalUnits/TDM_TableLevel/SecurityProfiles/SecurityProfiles.k2secProfiles.xml",
@@ -1065,7 +1161,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_BusinessEntities/Logic.java",
-                "sha256": "eeb413cbf59ef040f85bc80fa0db7c00199497afc63cd1e56e2d25130074def4"
+                "sha256": "5f47429c888280887bcacbce5af5bd3c1f6eee45502346c67142e0764ef4e748"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_DataCenters/Logic.java",
@@ -1073,99 +1169,183 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_Environments/EnvironmentUtils.java",
-                "sha256": "0a340051aec6d991132a1d8501f44631cf75eda21f51559b0d8d2e28926b4fc3"
+                "sha256": "9e6335c8ab318e9643e9c3aa6df6a530ce78652d64b468cbb5729720d2b82ae2"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_Environments/Logic.java",
-                "sha256": "146ea0dcbdd4b277764399d0d39c0425338d8088cf257258af1e2b54b355bf42"
+                "sha256": "d5c1fc9976689826cab88a1828f6dc8958852ea5f26f9502696fb0ea7c43bb92"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_ExecutionMonitor/Logic.java",
+                "sha256": "d3fe28fcf8ee93358888d145409e2ea549f7393a11fce3e62c12b7a233a69aab"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_Permissions/Logic.java",
-                "sha256": "bfd397066d444c341040c2f3d871e66c93f6a2e3dee1178eba2328f9b0d13033"
+                "sha256": "29281d8cb7ffe0e580e9e38a820d8b40a5d4ea708e4b67226b799bf8481c026a"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_Products/Logic.java",
-                "sha256": "d032a528db2a8d06f45ad9bf7792cbc5df0075bddcb6e9e747ce2304a9a6883d"
+                "sha256": "ab504a1b9ba1c7167baa254e57fca0bf82ba92a067dfc49ae8e4efae949be6aa"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_ReserveEntities/Logic.java",
-                "sha256": "5619cd25ed9b2e06fef32d943ec886f57cb15e91616a7be6334baca3920fe6af"
+                "sha256": "6f52e1f8be98469914bc74defcfa946ccf2cb6ee94406de6edddf431a8aaff9c"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_TableLevel/Logic.java",
-                "sha256": "4b1c6e4ca2da13b8b5290eb1e579bd6bd4df202a1414cf17c6de4a0b6bcc3c1f"
+                "sha256": "e6142c999a18d21adc6f10f2c58026f927590911411b8dba45e6cefff52d0671"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_TaskGroups/Logic.java",
-                "sha256": "34ce1464e8e383ee72b07478f2b1f2e88f34d3ce4098a1f91d9f5c3a9b29c5a2"
+                "sha256": "c5c2195803a40677720b049b46cce1240e60a91ad36a9768a8a7bc81d50c05fe"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_Tasks/Logic.java",
-                "sha256": "0e6d498f8b78c92c7fdb9ca5ba245ac6dd5b0da9e00843bf28a28d54da4e4a69"
+                "sha256": "b9b214589059e6aaad3b0e3d77652b2183eb0f3498797205189114be3f045453"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_TasksManagment/Logic.java",
-                "sha256": "f826f84c40e3e258aac9caef18c23616080a12c23c2bb172c2b3fe5fb4335964"
+                "sha256": "f92bdbebc64d26b9d32acc9b0badccc77f6a01cd3606c3263cfac0ee5ca94804"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/TDM_utils/Logic.java",
-                "sha256": "cc61f6ead33770612e6aca1c212ea9f4d8dfa1eeadf744ca1f065c61ed3adc81"
+                "sha256": "b37a4724105516de783d6272f29609cdb26759e2ce56dfd2a6f22d9f57feaf6e"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/Java/src/com/k2view/cdbms/usercode/lu/k2_ws/TDM/custom_TDM_Tasks/Logic.java",
-                "sha256": "09dd46b5a7df07043f4178c6b0ea34956d970698d97e34ad87afa1aa1507f3d5"
+                "sha256": "34e289e9ab5a214c04bce6544a6cb894d95e76ee163377ac6894368dd22a9a1f"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/ExtractSummaryReport.graphit",
-                "sha256": "96745d99b5c40b4c800deaca1f7de58d671cee3895534ba559876a7497f8feee"
+                "sha256": "980c68f19a813b9f8edeaf7068fc63f6122378defcef6720b85b3b326b2b88f5"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/ExtractSummaryReportPerLu.graphit",
-                "sha256": "f5731b971041245106bd075b04070f381c9caed55672360d1a4c7ed9e286e653"
+                "sha256": "cf9d00e2a3acd44ec9ea37ab61777d379cdea19e3e5873ca183751d67579f919"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/LoadSummaryReport.graphit",
-                "sha256": "cd2d631e5aeefe28b73b9d907f7ad05c2895bf3e4fc33685c13c078d14ac13da"
+                "sha256": "48e055612a80dced406e20e5c8fc84bc053d1380e96a8ad9d37d3090468023f7"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/LoadSummaryReportPerLu.graphit",
-                "sha256": "04569c5d691211ee6d3ad4359a88bbc1747d5b341d481e915607889048e1ee9b"
+                "sha256": "1ecd9b0535c73e2ae507716b45dcaac5f3a84390794f2a8bada87d2a7ca1e03e"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/MaskingExecution.graphit",
+                "sha256": "4ac23499df065b03632fb937ad0903e8bac96af3c4809c2f33b3fc44348af56b"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_AllDataGenerators_level_2.graphit",
+                "sha256": "e5dd46e48c4c3e9d29c608ee7739126ff8a76b96704780c4b6899735d708c3b8"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_AllEnvironments_level_2.graphit",
+                "sha256": "d44d5ba3eb1fa36111843a73eb8327ebae8734a4f4ef853d56a901cf003a9f5a"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_AllInterfacesWithPII_level_2.graphit",
+                "sha256": "a93ffad97415f1fc7cdc9b92f9722c28bac447969682df1b63c8bdc2e395ee6f"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_AllPIIClassifications_level_2.graphit",
+                "sha256": "cb7b4ccf97295831596be7d9db6f5170bb59a5b26fb7f57a6abfc52df7265913"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_AllPIIFields_level_2.graphit",
+                "sha256": "997b536b932c49f9327f03eb6f2e4e543788ec4a3bf5bcc086aa044eacc64f56"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_ClassificationsWithoutGenerators_level_2.graphit",
+                "sha256": "48ccafe44608a0f7d6b7c7a3122da802f48e56a3462106adf81a1a36e254ae48"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_Interfaces_level_2.graphit",
+                "sha256": "542ce0d8b428990e19af700a86e51810f15e4d3bab1dc0d70404d532c4e414bd"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_PIIClassifications_level_2.graphit",
+                "sha256": "ecbb7f567e373fbf73984f8d0b38306b40fd11283e39dde72fadbd7acc7c3725"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingConfigurationReport_level_1.graphit",
+                "sha256": "2761441fa21f8b3bf765ccff742854870984f09fd01dca358c33d49f2ed1b66e"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionDataGeneratorsSummaryReport_level_1.graphit",
+                "sha256": "7c66f907212bf8156658a0f6af06fe9a7a0726ffdaad4148ee3a323b7a80f193"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionReport_AllInterfacesWithPII_level_2.graphit",
+                "sha256": "f2a8bb83c6322fbeb13afcc64c5d500a24e40abb71ae26d274bb864f60abb022"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionReport_AllPIIFields_level_2.graphit",
+                "sha256": "426233aca798ed4c9fb5ab0ee2fec3949313933017bb9b65c6b86bc426db3dba"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionReport_DataGenerator_level_2.graphit",
+                "sha256": "b1e5f8867c2dadba06238bcb446260f762fc7320d9b4a5a4d188be7bca118793"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionReport_ExtractWithoutMasking_level_2.graphit",
+                "sha256": "220779450a2ff99da30f8f4ee30a964256fdfc34336395ca4ad5172ec241b5ff"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionReport_PIIClassification_level_2.graphit",
+                "sha256": "5868a975be2c5732599b5c602e6872432b0ded623fb0868480d6d68cfd817e7c"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionReport_level_1.graphit",
+                "sha256": "0ee3c2ee51f6fc199353b192ee2d1cb82ae513366250217b38d2a8b9093a4e3e"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionReport_level_2.graphit",
+                "sha256": "7bf07a4001a417995f2291242357bdcfae1910cbf05ee6279ff37c5bc7858355"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/Masking/TDM_MaskingExecutionsListReport_level_1.graphit",
+                "sha256": "190db3a996b2baba8fbf26c0918bcf6b76542032e5ec139635f5bfd45b4819ec"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_Environments_level_1.graphit",
-                "sha256": "0052246d52ae38b31fda8fb23725d581eb5c74f8d365ffebb0c6dc36b8f3319b"
+                "sha256": "9f5c6083ecd4444a4210d2752e1ee8e7e64966e9e6a99b123dee04a298a64cf8"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_InterfaceTablesReport.graphit",
+                "sha256": "aa49d4cb315ede482431addc4021641e2e87e0ad4b11d2841d832c8e64f6db34"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_MainDashboardReport.graphit",
-                "sha256": "e92c51e93156dbf18a82bfe450eb3419c68dbe1bcc9ac6b583d6386bf411760b"
+                "sha256": "3a1db2e703462421bf5fe4f1a2b37c75fa13bf00a14f0488b52fb814a0f270ab"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_SystemsBesAndLus_level_1.graphit",
-                "sha256": "7a4fef816981eb16ecb120c01c5ff9126eae4f697e2559293e32a4a43c706895"
+                "sha256": "d3b8a970f5a9bf8f610a0a9a77853dba8e3f6b4cf0183c36792f8eb55d048bbf"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_TaskCreationStatisticsReport_level_1.graphit",
-                "sha256": "3c7f3e46b28154514bd09405a5701efd966c9f7d86decd6dc8ac82ae4ed7fc3e"
+                "sha256": "57ba5c3f0184fbff1daff3d6886c5035936a48eb74ecd696ba16b3b96c10d7b3"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_TaskCreationStatisticsReport_level_2.graphit",
-                "sha256": "bc95b82f15f122ca0046e73b9184410bc730ba25472a6bb86c8f1bd571009746"
+                "sha256": "013bcc357030d5a04dae6fa82c109e30774174f66af96106f46050a57c385e3b"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_Task_ExecutionDetailedReport_level_1.graphit",
-                "sha256": "4f17f00ebaf5c494981cba4b04365d4e2158f66bc02574477cc3cd0b633fd022"
+                "sha256": "1c673c34bced57ab6fa3f36260b1034296f765654006a59dc1ba6ec292e6f9b0"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_Task_ExecutionDetailedReport_level_2.graphit",
-                "sha256": "72980e8dd526f3534199f2dbc1446299abbbc90588ae45314ace58cd03d71282"
+                "sha256": "195772bcdf7ec4a95e5437614fab4adbae2417ed96b11e6c606b0a00c24595e9"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_UserLoginReport_level_1.graphit",
-                "sha256": "4faef6f6dd23544d4669c92ecdb1e9e4b45eef3e1c4e7e367f34f0409f2ee732"
+                "sha256": "257deca1a04a1a9e301845ded7b9ec4cb73af3940229b51c3b731a406724357a"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/graphit/TDM/TDM_UserLoginReport_level_2.graphit",
-                "sha256": "dd855cd91003fdb025d1c8dc2f4d2de9a78ae99cc1cbc048488e650b55e8bb23"
+                "sha256": "5b4245e6fa4577c4a21f450b4bdcef630d70d4b33348b23fb670a6f1dfef6283"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/EnvEntityExecutionStats.report",
@@ -1188,12 +1368,92 @@
                 "sha256": "00bf40e9536c35d9eb7ae73d8b91a67ab575978cfea37c568a94cc500fea7c51"
             },
             {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/MaskingExecution.report",
+                "sha256": "b33ca519294e1b55669d4b283548bdea9319d9e13825042aa28cfea04ad2fffd"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/MaskingPolicy.report",
+                "sha256": "c4a24897fd65f422d6aa6ece3903dca5324bfa755037a30b9cc0aa10019964e0"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_AllDataGenerators_level_2.report",
+                "sha256": "41dc91efd533430686ac38a0e6f169e25e95d9c362b07be0d5ce1c97f875a2d0"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_AllEnvironments_level_2.report",
+                "sha256": "0e56028efd3ea131a7c3700bcd1e29a44c8455627332ccf4448e27cd699ec435"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_AllInterfacesWithPII_level_2.report",
+                "sha256": "2b47f795e161dabe48b9ce5d8d3c13ee3e90bafd266d69552be3636d3b33c663"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_AllPIIClassifications_level_2.report",
+                "sha256": "522b7a1d99e763d8b3afb770b1144241d1bbd0af5b5d47c9ab76c0e45195d804"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_AllPIIFields_level_2.report",
+                "sha256": "0e0505fce0ab4824d8877c34e5abab0d36aa103d84e5c31a3dcce312fa9aaf82"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_ClassificationsWithoutGenerators_level_2.report",
+                "sha256": "cf5510b510f73d0a0281c2e4801c0a9d5e66a14be9a4a15a65cbdb490f226a86"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                "sha256": "1992589009f6030b860920f4a3318d8359934f1f0d2b5d10b7e91e3bc6da6502"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_PIIClassifications_level_2.report",
+                "sha256": "f9dacc2c69c2c9fc296bf81619645bbea1d36eab7fca2c34ab9c22151940e2b7"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingConfigurationReport_level_1.report",
+                "sha256": "4cd104053ee6b059dc53f22d6fa8da8a68bbbc88a32857ebd1f5aac4b80f8db6"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionDataGeneratorsSummaryReport_level_1.report",
+                "sha256": "6043bede4eeeb5ddff75dccc55f699847f9a3a93a0e67f8198af70d378160a69"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionReport_AllInterfacesWithPII_level_2.report",
+                "sha256": "b636769a8da6bf7381f572513340b7704cf48b74eeb71fe6d2063f5e71b7c603"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionReport_AllPIIFields_level_2.report",
+                "sha256": "e828bde69ffdea001679d65120551e90b0129532ccd38762be4137d1083caa43"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionReport_DataGenerator_level_2.report",
+                "sha256": "8bf49e13d408d9296059e8bb487658eea50a3a33efb22176aa248b43dcf15199"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionReport_ExtractWithoutMasking_level_2.report",
+                "sha256": "69ee5c739d8d693408849fa422ae069f16b9de7608018d08918c304d03e3381b"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionReport_PIIClassification_level_2.report",
+                "sha256": "65bd7fd0b00f2b229b9eb1506d02a15f6e9b7bac3a1c3a4a631a96cca358b242"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionReport_level_1.report",
+                "sha256": "1a3113819e08d4cdcd7c17ffd5a69954f0a93cca24facda149b5591cc60bd773"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionReport_level_2.report",
+                "sha256": "74116e562b18125a371c571991497e137131b6e1ec80f1e70dd170dd1b0f6491"
+            },
+            {
+                "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/Masking/TDM_MaskingExecutionsListReport_level_1.report",
+                "sha256": "deea9efe815c07e20fe49eefd222a2f727ee7a1d7a1511bfde884ab8d75e2085"
+            },
+            {
                 "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/SystemsBEsLUs.report",
                 "sha256": "3accc71cd0427b82bbe0109c0a6ba6f4d8df58ea3cce7bb4c1bf4c5f1147ce82"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/TDMDashboard.report",
-                "sha256": "d7f024825a96da96ee9d9293e8ff26a4c1ec87a0d9ea23fd1f2142bbbaeddb10"
+                "sha256": "ee57c795685bc4570728193d1dd0d6eb3671d7c04cbc9732d1b2ac45edd21264"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/TaskCreationStatsLevel1.report",
@@ -1221,7 +1481,7 @@
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/UserActivitiesReport.report",
-                "sha256": "6d8ea13d4759e1767bcb552ef09be15877a52edf20f38b18743b0fcb379f1da7"
+                "sha256": "3d65080c210dbc49c698d99dab5fe54229a67743516e496c88d561e1271ab69a"
             },
             {
                 "path": "/Implementation/LogicalUnits/k2_ws/reports/TDM/UserLoginStats.report",
@@ -1257,7 +1517,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/AI/Generation/ImportDataSubset.flow",
-                "sha256": "46c741994a741a186c54946a080ac1d341c336985334616d349d9b6518c72ff0"
+                "sha256": "91b8e2a4207f2f0a0c01ad93aa0acad6c3c261551984972ef03461ce49962c74"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/AI/Generation/addNewGenerateTask.flow",
@@ -1417,7 +1677,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/AI/Training/prepareTrainingTask.flow",
-                "sha256": "0cda7d4c45d357db69a501feef52324c5af0dc1de40cc2ee3cd04d6eeb7e8d78"
+                "sha256": "4a75aa392f623d175d161f8fac0408485d448510c9f9af2d163904718f6799f2"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/AI/Training/saveTrainingArtifacts.flow",
@@ -1777,7 +2037,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Init/InitiateTDMLoad.flow",
-                "sha256": "a8ef5a7154721c2e18d7e308384b15a08b3bdffcb9e81871438feba6f3d1acbb"
+                "sha256": "a2262bb9cdaf04ddd9adf72dbb37354e26719494aa1c7cafaab3568df4da5e22"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Init/InitiateTDMLoad_Actor.actor",
@@ -1785,7 +2045,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Init/SetMaskingGlobals.flow",
-                "sha256": "6c8d333a661329dde12d8fbe5b6286d5bff819461f8ab1e758a3ecb8be2eae41"
+                "sha256": "30df1190cd4c2c4dde33cad3ed0c5a42b1a2263ba71d956aa1c4208a1ff5dd18"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Init/SetRootIIDIfEmpty.flow",
@@ -1793,11 +2053,11 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Init/SetSeqFlagForExtract.flow",
-                "sha256": "56e1ad7c3f337562f7d65428aaf40746088fa8dda542b68c1a95a7f34f7e7f73"
+                "sha256": "223c4ef45ee0ee217bb1e728b126cbd754d9d2aa7fb8119b718ce4cb1208c242"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Init/SetSeqFlagForLoad.flow",
-                "sha256": "baf5a861c83dd6084e8ed2aaa22eb744cfbbcbf5f0e85bb500eed6284f3acacc"
+                "sha256": "77c3435012d3e79bd6d8205ac9442289a93efbd0a2230fd9433b77b7dce9ac74"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Init/initaiteTaskExecutionEntities.flow",
@@ -1845,7 +2105,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Orchestrators/TDMExtractOrchestrator.flow",
-                "sha256": "50711e266c0585bd28c8e6bdac71ef3aba73c915516a8ddb870e49f0c38bb64d"
+                "sha256": "c58f6e0d43740fd91936a25a3968a9563af7962617d0c0399820c05ce6399c03"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Orchestrators/TDMGenerateOrchestrator.flow",
@@ -1853,7 +2113,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Orchestrators/TDMOrchestrator.flow",
-                "sha256": "28189cf464a0fd06cbd23cfd154e0d926acf952e9dbee5e366acfed3fd4a74a1"
+                "sha256": "a195975521a94d718d2c0353c08544682bfd0c105df58367e399ba0f9646a610"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/Orchestrators/TDMReserveOrchestrator.flow",
@@ -2040,6 +2300,10 @@
                 "sha256": "13c1a0d89aef18ee3f4f31977e132ffd36724825f187b2956463d6ec6cb52b64"
             },
             {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMDBTables/PopulateTableExecutionMaskingInfo.flow",
+                "sha256": "20d1f1d930d59020956c90955c7c861e991d14bf3e3114e76fabe6ed59978609"
+            },
+            {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMDBTables/PopulateTaskExecutionEntities.flow",
                 "sha256": "c23cccc35dfb3b983bc6095ee8f680297feb3c44334d9014c6c35fa0e1a63fea"
             },
@@ -2049,7 +2313,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMDBTables/PopulateTaskExecutionEntitiesForChildren.flow",
-                "sha256": "3c09ce31fa8a77720dd7054bbcf806de2b49bbaecd68f47535c737e3e1462859"
+                "sha256": "0d9ddb4a4e543f6d2f3d215c1957971ccafa3cf8d66e744388fba9291869b29c"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMDBTables/PopulateTaskExecutionEntitiesForFailed.flow",
@@ -2089,7 +2353,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMLUInit/TDMLUInitBasedOnFabric.flow",
-                "sha256": "8d0c94c2564b56cb6059cbdc230640f329d673d8974da2c81d31916fff08d358"
+                "sha256": "e02423a5dc927f8d629310cca17816a8df63085fcc2be2ffea030520616788e5"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMLUInit/TDMLUInitFirstRun.flow",
@@ -2153,7 +2417,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMLUInit/updateLUSchema.flow",
-                "sha256": "85b1fd51f51eab97138fa4327a32ddb437fbba2c4b61fd143795fe22e412daba"
+                "sha256": "2e234d1e13640ff5a5c7ddc4cfed2c43847e09ce6b28cc23220d6ffa46033fe3"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMLUInit/updateLoadRootTableFlow.flow",
@@ -2168,8 +2432,56 @@
                 "sha256": "8d45ef130004079f607100d63994477901d78618a680d9599eab63eced35adc8"
             },
             {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/buildPIIClassificationList.flow",
+                "sha256": "ce609b336af4ef2a83751d36a2d377b8bfc169c480e900a702e1c8af3842dc06"
+            },
+            {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/calcActivityInterval.flow",
                 "sha256": "3882a2b50e7832c37d58a86adfc47a60e4d8bb5da45970439421b4a9a522deb7"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getClassificationsWithoutGenerators.flow",
+                "sha256": "1c2e5a8d75b49a442c3026119827c277b43920ff6479512ba94436f41d28b2e5"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getEnvironmentSummary.flow",
+                "sha256": "a663d679c0dbbb0ca027cfca501f48c60fed32d93431c1cdc663c196b8459f86"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getInterfacesPIISummary.flow",
+                "sha256": "e0fa18fcbf4433a895a4142d126dcfa07fe4f604b19df722d662fb22cfc1f53f"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getInterfacesTableFieldsList.flow",
+                "sha256": "3434d81b35ddc688b75403d35af4f6c6470d5b20cdd1b0ad6e4cc71da8457fce"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getInterfacesTableFieldsListByGenerator.flow",
+                "sha256": "bf4e262b6c62176a108e23a9d105461667487a9d0cbbbdc23da1d9cb231ad087"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getInterfacesTableFieldsListByInterface.flow",
+                "sha256": "20f82e1b432159088e0426307cb6842a9081cf6a41f721bbba747f6f8a18e34c"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getInterfacesTablesSummary.flow",
+                "sha256": "9805fcd8245906d6e429a0241c91111aca6cc3ef84e94ffe5f469c217bb6088b"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getInterfacesTablesSummaryByInterface.flow",
+                "sha256": "20aae6e8d686f1d4834d36843e9597b3626414229e09fe45e18bd6ebfd309db7"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getPIIClassificationListByGenerator.flow",
+                "sha256": "691720035708e6b0ec1c27ea54c912c1a700d9e81dda487b1e8c7dfd1e4e2a03"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getPIIClassifications.flow",
+                "sha256": "e99ede029f1cbb96b7024544587243762fa57b56722f200e7815aea12d8f1938"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Broadway/TDM/TDMReports/getPIIDetails.flow",
+                "sha256": "453d2aff14bcba4357f4c40473e3d88d49a4eaa6d9b7fbcff28030b839e9f7e7"
             },
             {
                 "path": "/Implementation/SharedObjects/Broadway/TDM/TDMTemplates/AddDeleteTablesToSchema.flow",
@@ -2441,71 +2753,79 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/CoreGlobals/SharedGlobals.java",
-                "sha256": "028d500ca45b63b0846fa208917b40e0020ca0bd24345d40fae6dd245076121d"
+                "sha256": "ef5485cf58784e4121a80f27fc00bef91e1b248441c0fe38594271bb0408c8ee"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/SharedLogic.java",
-                "sha256": "8e3b41729c51e227159c9d1c4884899310b680b5be3c053e1cdbc1187df7254b"
+                "sha256": "1d3be80ce83b2ef1b45fda7a2248090c1a90aad150addd03f41eba70dd20da8d"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/StatsLoader.java",
-                "sha256": "b0df8a5755a971c605bd3328062c7f4a9390e1d1c631ba2c8fe9f8df6f016d9a"
+                "sha256": "3ffaaa1d2c1bc87fe4cae1ced1e992e055cf3ca6cde89c85af86e039cf59f346"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMAudit/SharedLogic.java",
+                "sha256": "bfda0f7cbb872843f57b50e785c828e7d33cca0169be70b5a4d7f23ac387ba71"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMDocumentQuery.java",
-                "sha256": "ab55b5eff5ab23c233bf9023b579a1229bd6ad095efbe6b8d7bcdc2b7fc1a277"
+                "sha256": "5d9f4162c82583dceeb673e5d70035da2ffa5fc29931aa38df96804b43fa7a66"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMMasking.java",
-                "sha256": "f943472a42c908a7b2368b439cccbbcac59f4cbd7599ba4484237352b87a7768"
+                "sha256": "71554980deaebf8b0525e4ede6e8bcdcad2bb049a934812abd4bf5d1e2138eb3"
+            },
+            {
+                "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMMaskingReportLogic.java",
+                "sha256": "b76a41c616ef13f09a48e0ea22eba31719e0edfa01bcbec3a608ec3c9dcc2672"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMPopulationArgs.java",
-                "sha256": "6dd86a0e2072e42c2044cba588d81e8f520bc88b5c03968ff14e539d7ba2006f"
+                "sha256": "570076dbda685281c26000cd6aaf2ae20ebfd1152c1dfdc10cec1a03530a1577"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMRef/SharedLogic.java",
-                "sha256": "a972f77ccaf3a0c52ee8b6bdbdc73899bfe6f890fbda3473fdc0aa41cfd2a9d4"
+                "sha256": "15748945beab5a3d50e2f1574cd1fbb072991bfada59daa5693d39e746696b94"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMSetBroadwayGlobals.java",
-                "sha256": "8eb29ed27cca8c3538bda39f1fe626a5c3dc81fa238b6c2a5e78f1d755f992ec"
+                "sha256": "f4aca94105bf306bc636ae18cdd9bbb895883c9a19abfa309928057fc2b547d3"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMSetSessionGlobals.java",
-                "sha256": "21cf4eb71c325d75b064e3cfdd734d40734df99ae21bffbe1c71dc26106a59d7"
+                "sha256": "2bb02a6d5bd187b7b185845edb99cdcee5f4105c1adc993f967af852b8c3b2e6"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TDMSourceDbQuery.java",
-                "sha256": "e972ada20460bcb03ee010b56b1c54e1fbd6eaa2d2d77a25c63064b8483a8900"
+                "sha256": "e0378a1799fa7bf5eea91798c3a37ffa7dcec575358641dd5e485a1150625ebb"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TaskExecutionUtils/SharedLogic.java",
-                "sha256": "58b4d1f65b27b6471aea96469b1a1cba580b832d19e192e2861b26c1f42f9fe3"
+                "sha256": "f86967c2b5ce1eea6efd38b203c60d0fe563131c144b5e221f68bb6a7bfd941d"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TaskManagmentUtils/SharedLogic.java",
-                "sha256": "18b0322cde5a6463ec6f57d13b762abb5afd4d58b38e3f60b7300b3f6ab179dd"
+                "sha256": "136ce8abd55189fa433ed13e7417f90cb6aa14237142e9b4a193fcb2abcf3afe"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TaskValidationsUtils/SharedLogic.java",
-                "sha256": "5fdb97ab9d24ad4a672eb3526159c793b81f3fee41b8f77a36ec0207ee40ea77"
+                "sha256": "c0d7b44a065b9d8dfb7fcce62c7919cc32533cede8a5039adb902474ecf06469"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TdmSharedUtils/SharedLogic.java",
-                "sha256": "8ac9d1181ea364926389fde2a60651484d32bf6359c7a84edb48fd0d50afd6c2"
+                "sha256": "3768d617c0cbdda6d83e719830e1b1ef7467d61dac3895f8d5631e73cf82f53d"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TdmSharedUtils/StartTask.java",
-                "sha256": "92298fdb5e6e553fe6903776d6788356cb2b29f8e8fe6973ce154fa98fa61973"
+                "sha256": "0fbd2a9e637efa89ef4a7314915df2b5c2cd64084a43c2558a231ac80200a5ed"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TdmSharedUtils/StartTaskValidator.java",
-                "sha256": "bac021d31ae2f0454543059c0489808d42fe5cdba20eec8dd9c78e0f42351b0b"
+                "sha256": "98b252fae6ff59e809b563d8ddc18db865f3d14e2165a30c9a11877fbc7a47f6"
             },
             {
                 "path": "/Implementation/SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM/TemplateUtils/SharedLogic.java",
-                "sha256": "67e781680927da7d39249414132d0e0979dda58bd878e0f5bfc1485b6a66504b"
+                "sha256": "c7bce281620c2e6281d21440a5bf2057d42bacf385710b37c170e20c827bb3b4"
             },
             {
                 "path": "/Implementation/SharedObjects/Templates/TDM/DeleteFromTarget.flow.template",
@@ -2545,7 +2865,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Templates/TDM/tdmDeleteTable.flow.template",
-                "sha256": "652cebb4905ea9181d30a2f6fc8a22d9abfce3638e718094090a230dff0d3590"
+                "sha256": "9f967ce4ed2046068f6b0eeccc2ceea905fee2eac57966a46a30dba5cc7a5ea4"
             },
             {
                 "path": "/Implementation/SharedObjects/Templates/TDM/tdmLoadTable.flow.template",
@@ -2565,7 +2885,7 @@
             },
             {
                 "path": "/Implementation/SharedObjects/Templates/TDMGlobals/SharedGlobals.java.temp",
-                "sha256": "6e328f2476f711188a2ae3ef3b123118043d74dd7407f683615269a8fe15748d"
+                "sha256": "0766d490968f5bde4ded7ab10b25bcb0c1478818e40732f4defa7a649331f144"
             },
             {
                 "path": "/Implementation/SharedObjects/Templates/tableLU.population.flow.template",
@@ -2598,10 +2918,6 @@
             {
                 "path": "/lib/json-20231013.jar",
                 "sha256": "0f18192df289114e17aa1a0d0a7f8372cc9f5c7e4f7e39adcf8906fe714fa7d3"
-            },
-            {
-                "path": "/Implementation/LogicalUnits/TDM_TableLevel/Mtable/TableLevelDefinitionsInterfacesTypesDefaults.csv",
-                "sha256": "2b153f75a71971297137dcc0f67d149cad4aaaa7bb7d9d59fce5d8957b246529"
             }
         ]
     }

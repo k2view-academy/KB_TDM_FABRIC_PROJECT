@@ -308,6 +308,11 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
+          KEEP_MAIN_POPULATION:
+            external: KEEP_MAIN_POPULATION
+            schema: boolean
+            mandatory: false
+            createdBy: flowName
         out:
           rootInfo:
             schema: '#ref'

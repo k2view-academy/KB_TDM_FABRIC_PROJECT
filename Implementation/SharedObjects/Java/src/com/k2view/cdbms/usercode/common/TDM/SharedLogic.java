@@ -17,11 +17,12 @@ import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
 import com.k2view.fabric.common.mtable.MTables;
+import java.util.function.Function;
+
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
 
 import javax.management.RuntimeErrorException;
 
@@ -34,15 +35,26 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
- public static String TDMDB_SCHEMA;
-    static {
-        try {
-			String luName = getLuType().luName == null ? "TDM" : getLuType().luName;
-            TDMDB_SCHEMA = fabric().fetch("Broadway "+ luName + ".getTDMDBSchema").firstValue().toString();
-        } catch (Exception e) {
-            log.error("Failed to fetch TDMDB schema", e);
+ private static volatile String tdmdbSchema;
+
+    public static String getTDMDBSchema() {
+        String result = tdmdbSchema;
+        if (result == null || result.isBlank()) {
+            synchronized (SharedLogic.class) {
+                result = tdmdbSchema;
+                if (result == null || result.isBlank()) {
+                    try {
+                        String luName = sanitizeDslToken(getLuType().luName == null ? "TDM" : getLuType().luName);
+                        result = fabric().fetch("Broadway "+ luName + ".getTDMDBSchema").firstValue().toString();
+                        tdmdbSchema = result;
+                    } catch (Exception e) {
+                        log.error("Failed to fetch TDMDB schema", e);
+                    }
+                }
+            }
         }
-    }	
+        return result;
+    }
 	public static final String TDM = "TDM";
 	public static final String TASKS = "TASKS";
 	public static final String TASK_EXECUTION_LIST = "task_execution_list";
@@ -177,20 +189,7 @@ public class SharedLogic {
 		//TDM 8.1 transaltion trnLuParams is coverted to Mtable {LuName}LuParams
 		// Reading the mTable data and gettig the queries
 
-		String broadwayCommand = "broadway TDM.luParamsLookup" + " luName=" + luName + " RESULT_STRUCTURE=CURSOR";
-		Db.Rows paramData = fabric().fetch(broadwayCommand);
-
-		boolean tdmLuParamAltered = false;
-		ciTDM.beginTransaction();
-
-        StringBuilder sqlUpdateTDM = new StringBuilder().append(" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey Do update set ");
-		StringBuilder sqlInsertTDM = new StringBuilder().append("insert into " + TDMDB_SCHEMA + "." + tblName + "(");
-		StringBuilder sqlInsertTDMBind = new StringBuilder().append(" values (");
-		ArrayList params = new ArrayList<>();
-		ArrayList<String> luColsArray = new ArrayList<>();
-		Object[] insRs;
-		int i = 0;
-
+		String broadwayCommand = "broadway TDM.luParamsLookup" + " luName=" + sanitizeDslToken(luName) + " RESULT_STRUCTURE=CURSOR";
         //TDM 9.1 - Params Coupling
         Boolean isVersionTask = Boolean.parseBoolean(fabric().fetch("set TDM_DATAFLUX_TASK").firstValue().toString());
 
@@ -198,121 +197,132 @@ public class SharedLogic {
             return;
         }
 
-		if(!isGenAITask){
-			iid = getInstanceID();
-		}else{
-            fabric().execute("set sync off");
-			fabric().execute("get ?.?",luName,iid);
-		}
+		boolean tdmLuParamAltered = false;
+		ciTDM.beginTransaction();
+		try (Db.Rows paramData = fabric().fetch(broadwayCommand)) {
+            StringBuilder sqlUpdateTDM = new StringBuilder().append(" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey Do update set ");
+			StringBuilder sqlInsertTDM = new StringBuilder().append("insert into " + getTDMDBSchema() + "." + tblName + "(");
+			StringBuilder sqlInsertTDMBind = new StringBuilder().append(" values (");
+			ArrayList params = new ArrayList<>();
+			ArrayList<String> luColsArray = new ArrayList<>();
+			Object[] insRs;
+			int i = 0;
 
-		insRs = fnSplitUID(iid);
-        Object entityId = insRs[0];
-        Object sourceEnv = insRs[1];
+			if(!isGenAITask){
+				iid = getInstanceID();
+			}else{
+                fabric().execute("set sync off");
+				fabric().execute("get ?.?",luName,iid);
+			}
 
-        if (paramData.resultSet() != null) {
+			insRs = fnSplitUID(iid);
+            Object entityId = insRs[0];
+            Object sourceEnv = insRs[1];
 
-            prefix = "";
+            if (paramData.resultSet() != null) {
 
-            for (Db.Row indx : paramData) {
-                String luParamColName = indx.get("COLUMN_NAME").toString().trim();
-                String s = luName.toUpperCase() + "." + luParamColName.toUpperCase();
-                luColsList.add(s);
-                luColsArray.add(i, s);
-                String columnName = "\"" + luName.toUpperCase() + "." + luParamColName.toUpperCase() + "\"";
+                prefix = "";
 
-                //Building the update statement +Execution of the query
-                sqlUpdateTDM.append(prefix + columnName + " = ?");
-                sqlInsertTDM.append(prefix + columnName);
-                sqlInsertTDMBind.append(prefix + " ? ");
+                for (Db.Row indx : paramData) {
+                    String luParamColName = indx.get("COLUMN_NAME").toString().trim();
+                    String s = luName.toUpperCase() + "." + luParamColName.toUpperCase();
+                    luColsList.add(s);
+                    luColsArray.add(i, s);
+                    String columnName = "\"" + luName.toUpperCase() + "." + luParamColName.toUpperCase() + "\"";
 
-                StringBuilder values = new StringBuilder();
-                String sql = indx.get("SQL").toString();
+                    //Building the update statement +Execution of the query
+                    sqlUpdateTDM.append(prefix + columnName + " = ?");
+                    sqlInsertTDM.append(prefix + columnName);
+                    sqlInsertTDMBind.append(prefix + " ? ");
 
-                //Check if SQL query contains distinct and add it if not
-                if (!sql.contains("distinct")) {
-                    sql = sql.replace("select", "select distinct");
-                }
-                Object[] valuesArr = null;
-                Db.Rows rs1 = null;
-                rs1 = ludb().fetch(sql);
-                values.append("{");
-                for (Db.Row row : rs1) {
-                    //Skip null values
-                    if (row.cell(0) != null) {
-                        String val = "" + row.cell(0);
-                        val = val.replaceAll("[\\\\\"\'\n\r\t\0\f\b]", "\\\\$0");
-                        values.append("\"" + val + "\",");
+                    StringBuilder values = new StringBuilder();
+                    String sql = indx.get("SQL").toString();
+
+                    //Check if SQL query contains distinct and add it if not
+                    if (!sql.contains("distinct")) {
+                        sql = sql.replace("select", "select distinct");
                     }
+                    Object[] valuesArr = null;
+                    Db.Rows rs1 = null;
+                    rs1 = ludb().fetch(sql);
+                    values.append("{");
+                    for (Db.Row row : rs1) {
+                        //Skip null values
+                        if (row.cell(0) != null) {
+                            String val = "" + row.cell(0);
+                            val = val.replaceAll("[\\\\\"\'\n\r\t\0\f\b]", "\\\\$0");
+                            values.append("\"" + val + "\",");
+                        }
+                    }
+
+                    //Check if the last element is a comma and remove it
+                    if (values.lastIndexOf(",") == values.length() - 1) {
+                        values.deleteCharAt(values.lastIndexOf(","));
+                    }
+                    values.append("}");
+
+                    //If no values, set NULL
+                    if (values.toString().equals("{}")) {
+                        params.add(i, null);
+                    } else {
+                        params.add(i, values.toString());
+                    }
+                    i++;
+                    prefix = ",";
+                    rs1.close();
+                }
+            }
+
+            //TDM 8.1 - Get the ROOT_IID
+            String rootIid = "" + fabric().fetch("set ROOT_IID").firstValue();
+            String rootLuName = "" + fabric().fetch("set ROOT_LU_NAME").firstValue();
+
+            if (luColsList.size() > 0) {
+                Object[] finParams = new Object[params.size() * 2 + 4];
+
+                for (int j = 0; j < params.size(); j++) {
+                    finParams[j] = params.get(j);
+                }
+                finParams[params.size()] = rootLuName;
+                finParams[params.size() + 1] = rootIid;
+                finParams[params.size() + 2] = entityId;
+                finParams[params.size() + 3] = sourceEnv;
+
+
+                for (i = 0; i < params.size(); i++) {
+                    finParams[params.size() + 4 + i] = params.get(i);
                 }
 
-                //Check if the last element is a comma and remove it
-                if (values.lastIndexOf(",") == values.length() - 1) {
-                    values.deleteCharAt(values.lastIndexOf(","));
+                // add a stringInsertFabricLuParam to insert the columns without the concatenation of the lu name
+                sqlInsertTDM.append(", root_lu_name, root_iid, entity_id, source_environment) ");
+                sqlInsertTDMBind.append(", ?, ?, ?, ?) ");
+                //log.info("sqlInsertTDM: " + sqlInsertTDM);
+                if(!paramCoupling){
+                    ciTDM.execute(sqlInsertTDM.toString() + sqlInsertTDMBind.toString() + sqlUpdateTDM.toString(), finParams);
                 }
-                values.append("}");
-
-                //If no values, set NULL
-                if (values.toString().equals("{}")) {
-                    params.add(i, null);
-                } else {
-                    params.add(i, values.toString());
+                //TDM 8.1 - The LU Param Table will hold all the fields in one Json field
+                String paramsJson = fabric().fetch("broadway TDM.CreateJson fieldsNames=?, fieldsValues=?", luColsArray, params).firstValue().toString();
+                fabric().execute(stringInsertFabricLuParam, rootLuName, rootIid,  sourceEnv, entityId, paramsJson);
+            } else {//no parameters defined - inserting only key fields
+                Object[] bind_for_no_params = new Object[4];
+                bind_for_no_params[0] = entityId;
+                bind_for_no_params[1] = sourceEnv;
+                bind_for_no_params[2] = rootIid;
+                bind_for_no_params[3] = rootLuName;
+                // TALI- fix- 2-Dec-18- add on conflict on constraint do nothing to avoid a violation of a PK if the entity already exists in the params table
+                if(!paramCoupling){
+                ciTDM.execute("insert into " + getTDMDBSchema() + "." + tblName + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)" +
+                        " ON CONFLICT ON CONSTRAINT " + tblName + "_pkey DO NOTHING", bind_for_no_params);
                 }
-                i++;
-                prefix = ",";
-                rs1.close();
-            }
-        }
-
-        if (paramData != null) {
-            paramData.close();
-        }
-
-        //TDM 8.1 - Get the ROOT_IID
-        String rootIid = "" + fabric().fetch("set ROOT_IID").firstValue();
-        String rootLuName = "" + fabric().fetch("set ROOT_LU_NAME").firstValue();
-
-        if (luColsList.size() > 0) {
-            Object[] finParams = new Object[params.size() * 2 + 4];
-
-            for (int j = 0; j < params.size(); j++) {
-                finParams[j] = params.get(j);
-            }
-            finParams[params.size()] = rootLuName;
-            finParams[params.size() + 1] = rootIid;
-            finParams[params.size() + 2] = entityId;
-            finParams[params.size() + 3] = sourceEnv;
-
-
-            for (i = 0; i < params.size(); i++) {
-                finParams[params.size() + 4 + i] = params.get(i);
+                // Tali- TDM 5.5- fix- add concatenate the lu_name to the table name
+                fabric().execute("insert or replace into " + tblNameFabric + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)", bind_for_no_params);
             }
 
-            // add a stringInsertFabricLuParam to insert the columns without the concatenation of the lu name
-            sqlInsertTDM.append(", root_lu_name, root_iid, entity_id, source_environment) ");
-            sqlInsertTDMBind.append(", ?, ?, ?, ?) ");
-            //log.info("sqlInsertTDM: " + sqlInsertTDM);
-            if(!paramCoupling){
-                ciTDM.execute(sqlInsertTDM.toString() + sqlInsertTDMBind.toString() + sqlUpdateTDM.toString(), finParams);
-            }
-            //TDM 8.1 - The LU Param Table will hold all the fields in one Json field
-            String paramsJson = fabric().fetch("broadway TDM.CreateJson fieldsNames=?, fieldsValues=?", luColsArray, params).firstValue().toString();
-            fabric().execute(stringInsertFabricLuParam, rootLuName, rootIid,  sourceEnv, entityId, paramsJson);
-        } else {//no parameters defined - inserting only key fields
-            Object[] bind_for_no_params = new Object[4];
-            bind_for_no_params[0] = entityId;
-            bind_for_no_params[1] = sourceEnv;
-            bind_for_no_params[2] = rootIid;
-            bind_for_no_params[3] = rootLuName;
-            // TALI- fix- 2-Dec-18- add on conflict on constraint do nothing to avoid a violation of a PK if the entity already exists in the params table
-            if(!paramCoupling){
-            ciTDM.execute("insert into " + TDMDB_SCHEMA + "." + tblName + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)" +
-                    " ON CONFLICT ON CONSTRAINT " + tblName + "_pkey DO NOTHING", bind_for_no_params);
-            }
-            // Tali- TDM 5.5- fix- add concatenate the lu_name to the table name
-            fabric().execute("insert or replace into " + tblNameFabric + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)", bind_for_no_params);
-        }
-
-        ciTDM.commit();
+            ciTDM.commit();
+		} catch (Throwable t) {
+			Util.safeExecution(ciTDM::rollback);
+			throw t;
+		}
 
         //log.info("fnEnrichmentLuParams IS DONE");
     
@@ -512,13 +522,11 @@ public class SharedLogic {
 		String verExeID = "" + splitUID[2];
 		String taskExecID = "" + fabric().fetch("set TDM_TASK_EXE_ID").firstValue();
 
-		//String versionExeID = "" + ciTDM.fetch("select version_task_execution_id from " +TDMDB_SCHEMA +".task_execution_list where task_execution_id=?", taskExecID).firstValue();
+		//String versionExeID = "" + ciTDM.fetch("select version_task_execution_id from " +getTDMDBSchema() +".task_execution_list where task_execution_id=?", taskExecID).firstValue();
         String versionExeID = "" + fabric().fetch("set TDM_VERSION_TASK_EXECUTION_ID").firstValue();
 
 		//log.info("fnEnrichmentChildLink - srcEnv: " + srcEnv + ", instanceId: "  + instanceId + ", verName: " + verName + ", verDateTime: " + verDateTime);
 		String parentLU = getLuType().luName;
-		Db.Rows childEIDs = null;
-		Db.Rows childTarEIDs = null;
 		//Get the LU Name, as the tdm_lu_type_relation_eid is part of more than one LU
 		String tableName = parentLU + ".tdm_lu_type_relation_eid";
 		String tableNameTar = parentLU + ".tdm_lu_type_rel_tar_eid";
@@ -529,10 +537,10 @@ public class SharedLogic {
 			ciTDM.beginTransaction();
 			//TALI- Fix ticket #9523- delete the parent IID records, if exist, before the insert
 			// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
-			String DELETE_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ? and version_task_execution_id = ? " ;
+			String DELETE_SQL = "delete from " + getTDMDBSchema() + ".tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ? and version_task_execution_id = ? " ;
 
 			//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table
-			String DELETE_TAR_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
+			String DELETE_TAR_SQL = "delete from " + getTDMDBSchema() + ".tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
 			String targetEnv = "" + ludb().fetch("SET TDM_TAR_ENV_NAME").firstValue();
 
 			Map<String,Object> childLuInputs = new HashMap<>();
@@ -546,8 +554,8 @@ public class SharedLogic {
                 // TDM 7.3 - 17/01/22 - Check if the child LU is part of the task, if it is not part of the task no need to populate its data
 
                 String validateLuSql = "SELECT count(1) " +
-                        "FROM " + TDMDB_SCHEMA + ".task_execution_list t, " +
-                        TDMDB_SCHEMA + ".product_logical_units parent, " + TDMDB_SCHEMA + ".product_logical_units child " +
+                        "FROM " + getTDMDBSchema() + ".task_execution_list t, " +
+                        getTDMDBSchema() + ".product_logical_units parent, " + getTDMDBSchema() + ".product_logical_units child " +
                         "WHERE t.task_Execution_id = ? and t.be_id  = parent.be_id and parent.lu_id = t.parent_lu_id " +
                         "and parent.lu_name = ? and t.be_id = child.be_id and child.lu_id = t.lu_id and child.lu_name = ?";
 
@@ -562,65 +570,63 @@ public class SharedLogic {
                 // For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
                 ciTDM.execute(DELETE_SQL, srcEnv, parentLU, instanceId, key, versionExeID);
 
-                childEIDs = ludb().fetch(sqlSrc);
+                try (Db.Rows childEIDs = ludb().fetch(sqlSrc)) {
 
-                //TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning)
-                // or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
-                // be done only once.
-                // For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
+                    //TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning)
+                    // or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
+                    // be done only once.
+                    // For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
 
-                for (Db.Row row : childEIDs) {
-                    String childId = row.cell(0).toString();
+                    for (Db.Row row : childEIDs) {
+                        String childId = row.cell(0).toString();
 
-                    //log.info("Adding child record for instance: " + uid + " and LU Type: " + key + ". child instance: " + row.cell(0));
+                        //log.info("Adding child record for instance: " + uid + " and LU Type: " + key + ". child instance: " + row.cell(0));
 
-                    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
-                    Object[] values;
-                    Object[] valuesLUDB;
-                    values = new Object[]{srcEnv, parentLU, key, instanceId, childId, "now()", versionExeID, "now()"};
+                        // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+                        Object[] values;
+                        Object[] valuesLUDB;
+                        values = new Object[]{srcEnv, parentLU, key, instanceId, childId, "now()", versionExeID, "now()"};
 
-                    String currDatetime = "" + fabric().fetch("select datetime()").firstValue();
-                    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
-                    String query = "";
-                    valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, childId, currDatetime, versionExeID};
-                    query = "insert or replace into " + tableName + "(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_task_execution_id) values(?,?,?,?,?,?,?)";
+                        String currDatetime = "" + fabric().fetch("select datetime()").firstValue();
+                        // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+                        String query = "";
+                        valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, childId, currDatetime, versionExeID};
+                        query = "insert or replace into " + tableName + "(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_task_execution_id) values(?,?,?,?,?,?,?)";
 
-                    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
-                    //log.info("Inserting into Fabric to tdm_lu_type_relation_eid table for lu type: " + key);
-                    //TDM9.0 replacing VERSION_NAME and VERSION_DATETIME with VERSION_TASK_EXECUTION_ID
-                    ludb().execute(query, valuesLUDB);
+                        // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+                        //log.info("Inserting into Fabric to tdm_lu_type_relation_eid table for lu type: " + key);
+                        //TDM9.0 replacing VERSION_NAME and VERSION_DATETIME with VERSION_TASK_EXECUTION_ID
+                        ludb().execute(query, valuesLUDB);
 
-                    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+                        // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
 
-                    //log.info("Inserting into TDM - tdm_lu_type_relation_eid table with version Data for lu type: " + key);
-                    ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_task_execution_id) " +
-                            "values(?,?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
+                        //log.info("Inserting into TDM - tdm_lu_type_relation_eid table with version Data for lu type: " + key);
+                        ciTDM.execute("insert into " + getTDMDBSchema() + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_task_execution_id) " +
+                                "values(?,?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
                     
+                    }
                 }
                 //TDM 7 - In case of delete from target, the TDM_LU_TYPE_REL_TAR_EID table should be updated
                 if (fnDecisionDeleteFromTarget()) {
                     //log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
                     ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId, key);
-                    childTarEIDs = ludb().fetch(sqlTar);
-                    for (Db.Row row : childTarEIDs) {
-                        String currDatetime = "" + fabric().fetch("select datetime()").firstValue();
-                        Object[] values = new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), "now()"};
-                        Object[] valuesLUDB = new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDatetime};
-                        ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", valuesLUDB);
-                        ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
+                    try (Db.Rows childTarEIDs = ludb().fetch(sqlTar)) {
+                        for (Db.Row row : childTarEIDs) {
+                            String currDatetime = "" + fabric().fetch("select datetime()").firstValue();
+                            Object[] values = new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), "now()"};
+                            Object[] valuesLUDB = new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDatetime};
+                            ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", valuesLUDB);
+                            ciTDM.execute("insert into " + getTDMDBSchema() + ".tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
+                        }
                     }
                 }
             }
 
-			if (childEIDs != null) {
-				childEIDs.close();
-			}
-
-			if (childTarEIDs != null) {
-				childTarEIDs.close();
-			}
 			ciTDM.commit();
 			
+		} catch (Throwable t) {
+			Util.safeExecution(ciTDM::rollback);
+			throw t;
 		} finally {
 			if (rows != null) rows.close();
 			//log.info("fnEnrichmentChildLink IS DONE");
@@ -640,16 +646,17 @@ public class SharedLogic {
 		String versionExeID = "";
 		String iidSeparator = "";
 		String broadwayCommand= "Broadway TDM.getTDMSeparators RESULT_STRUCTURE=ROW";
-		Db.Rows rows = fabric().fetch(broadwayCommand);
-		for(Db.Row row:rows){
-			if ("IID_SEPARATOR".equals(row.get("column"))) {
-				iidSeparator = "" + row.get("value");
-			}
-			if ("IID_OPEN_SEPARATOR".equals(row.get("column"))) {
-				iidOpenSeparator = "" + row.get("value");
-			}
-			if ("IID_CLOSE_SEPARATOR".equals(row.get("column"))) {
-				iidCloseSeparator = "" + row.get("value");
+		try (Db.Rows rows = fabric().fetch(broadwayCommand)) {
+			for(Db.Row row:rows){
+				if ("IID_SEPARATOR".equals(row.get("column"))) {
+					iidSeparator = "" + row.get("value");
+				}
+				if ("IID_OPEN_SEPARATOR".equals(row.get("column"))) {
+					iidOpenSeparator = "" + row.get("value");
+				}
+				if ("IID_CLOSE_SEPARATOR".equals(row.get("column"))) {
+					iidCloseSeparator = "" + row.get("value");
+				}
 			}
 		}
         //log.info("fnSplitUID - uid: " + uid);
@@ -724,8 +731,8 @@ public class SharedLogic {
 										"  to_char(MAX(st.end_time),   'YYYY-MM-DD HH24:MI:SS') AS end_time, " +
 										"  st.execution_status, " +
 										"  rt.lu_name " +
-										"FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats st " +
-										"JOIN " + TDMDB_SCHEMA + ".task_ref_tables rt " +
+										"FROM " + getTDMDBSchema() + ".task_ref_exe_stats st " +
+										"JOIN " + getTDMDBSchema() + ".task_ref_tables rt " +
 										"  ON rt.task_ref_table_id = st.task_ref_table_id " +
 										" AND rt.task_id = st.task_id " +
 										"WHERE st.task_execution_id = ? " +
@@ -887,7 +894,7 @@ public class SharedLogic {
 		List <Object> Failed_entities_list =  new ArrayList<Object>();
 		List <Object> Failed_UID_list =  new ArrayList<Object>();
 
-		Db.Rows batch_details_completed  = fabric().fetch("batch_details '" + fabricExecutionId + "' lIMIT = " + TDM_BATCH_LIMIT);
+		Db.Rows batch_details_completed  = fabric().fetch("batch_details ? lIMIT = ?", fabricExecutionId, TDM_BATCH_LIMIT);
 		for (Db.Row row : batch_details_completed) {
 			Map <Object, Object> innerCopiedEntitiesMap = new HashMap <Object, Object>();
 			Map <Object, Object> innerCopiedUIDMap = new HashMap <Object, Object>();
@@ -1038,7 +1045,6 @@ public class SharedLogic {
 		} finally {
 			tableRows.close();
 		}
-
 		Comparator<Map<String, Object>> tableOrderComparator = byStatusThenName(t -> (String) t.get("status"), t -> t.get("table_name"));
 
 		Comparator<Map<String, Object>> interfaceOrderComparator = byStatusThenName(i -> (String) i.get("interface_status"), i -> i.get("interface_name"));
@@ -1064,7 +1070,113 @@ public class SharedLogic {
 		result.put("batches", batches);
 		return result;
 	}
+	
+	private static StringBuilder getRefSchemaSummaryQuery() {
+		StringBuilder sql = new StringBuilder();
 
+		sql.append("SELECT ");
+		sql.append("st.batch_id, ");
+		sql.append("st.execution_action, ");
+		sql.append("st.table_order, ");
+		sql.append("st.interface_name, ");
+		sql.append("st.schema_name, ");
+		sql.append("COUNT(DISTINCT st.task_ref_table_id) AS number_of_tables, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'pending' THEN 1 ELSE 0 END) AS pending, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'stopped' THEN 1 ELSE 0 END) AS stopped, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'completed' THEN 1 ELSE 0 END) AS completed, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'failed' THEN 1 ELSE 0 END) AS failed, ");
+		sql.append("SUM(CASE WHEN LOWER(st.execution_status) NOT IN ('pending','stopped','completed','failed') THEN 1 ELSE 0 END) AS running ");
+		sql.append("FROM ").append(getTDMDBSchema()).append(".task_ref_exe_stats st ");
+		sql.append("WHERE st.task_execution_id = ? ");
+		sql.append("GROUP BY ");
+		sql.append("st.batch_id, ");
+		sql.append("st.execution_action, ");
+		sql.append("st.table_order, ");
+		sql.append("st.interface_name, ");
+		sql.append("st.schema_name ");
+		sql.append("ORDER BY ");
+		sql.append("MIN(st.start_time) NULLS LAST, ");
+		sql.append("st.batch_id, ");
+		sql.append("st.execution_action, ");
+		sql.append("st.table_order, ");
+		sql.append("st.interface_name, ");
+		sql.append("st.schema_name ");
+
+		return sql;
+	}
+
+	private static StringBuilder getRefTableDetailsQuery() {
+		StringBuilder sql = new StringBuilder();
+
+		sql.append("SELECT ");
+		sql.append("s.batch_id, ");
+		sql.append("s.execution_action, ");
+		sql.append("s.table_order, ");
+		sql.append("s.interface_name, ");
+		sql.append("s.schema_name, ");
+		sql.append("s.ref_table_name, ");
+		sql.append("COALESCE(s.execution_status, 'pending') AS execution_status, ");
+		sql.append("s.start_time, ");
+		sql.append("s.end_time, ");
+		sql.append("NULL AS total, ");
+		sql.append("NULL AS processed, ");
+		sql.append("NULL AS failed, ");
+		sql.append("COALESCE(s.number_of_partitions, 1) AS partitions, ");
+		sql.append("COALESCE(NULLIF(s.error_msg, ''), '') AS error_msg ");
+		sql.append("FROM ").append(getTDMDBSchema()).append(".task_ref_exe_stats s ");
+		sql.append("WHERE s.task_execution_id = ? ");
+		sql.append("AND LOWER(COALESCE(s.execution_action, '')) = 'delete' ");
+
+		sql.append("UNION ALL ");
+
+		sql.append("SELECT ");
+		sql.append("s.batch_id, ");
+		sql.append("COALESCE(s.execution_action, '') AS execution_action, ");
+		sql.append("s.table_order, ");
+		sql.append("s.interface_name, ");
+		sql.append("s.schema_name, ");
+		sql.append("s.ref_table_name, ");
+		sql.append("COALESCE(s.execution_status, ");
+		sql.append("CASE ");
+		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'failed') THEN 'failed' ");
+		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'stopped') THEN 'stopped' ");
+		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'pending') THEN 'pending' ");
+		sql.append("WHEN BOOL_AND(LOWER(p.execution_status) = 'completed') THEN 'completed' ");
+		sql.append("ELSE 'running' ");
+		sql.append("END) AS execution_status, ");
+		sql.append("MIN(COALESCE(s.start_time, p.start_time)) AS start_time, ");
+		sql.append("MAX(COALESCE(s.end_time, p.end_time)) AS end_time, ");
+		sql.append("COALESCE(s.number_of_records_to_process, SUM(COALESCE(p.number_of_records_to_process, 0))) AS total, ");
+		sql.append("CASE WHEN s.number_of_processed_records != null AND s.number_of_processed_records > 0 THEN s.number_of_processed_records ");
+		sql.append("ELSE SUM(COALESCE(p.number_of_processed_records, 0)) END AS processed, ");
+		sql.append("COALESCE(s.number_of_failed_records, SUM(COALESCE(p.number_of_failed_records, 0))) AS failed, ");
+		sql.append("COALESCE(s.number_of_partitions, COUNT(p.partition_no)) AS partitions, ");
+		sql.append("COALESCE(MAX(NULLIF(s.error_msg, '')), MAX(NULLIF(p.error_msg, '')), '') AS error_msg ");
+		sql.append("FROM ").append(getTDMDBSchema()).append(".task_ref_exe_stats s ");
+		sql.append("LEFT JOIN ").append(getTDMDBSchema()).append(".task_ref_partition p ");
+		sql.append("ON p.task_execution_id = s.task_execution_id ");
+		sql.append("AND p.task_ref_table_id = s.task_ref_table_id ");
+		sql.append("AND COALESCE(p.batch_id, '') = COALESCE(s.batch_id, '') ");
+		sql.append("WHERE s.task_execution_id = ? ");
+		sql.append("AND LOWER(COALESCE(s.execution_action, '')) <> 'delete' ");
+		sql.append("GROUP BY ");
+		sql.append("s.batch_id, ");
+		sql.append("s.execution_action, ");
+		sql.append("s.table_order, ");
+		sql.append("s.interface_name, ");
+		sql.append("s.schema_name, ");
+		sql.append("s.ref_table_name, ");
+		sql.append("s.execution_status, ");
+		sql.append("s.number_of_records_to_process, ");
+		sql.append("s.number_of_processed_records, ");
+		sql.append("s.number_of_failed_records, ");
+		sql.append("s.number_of_partitions ");
+
+		sql.append("ORDER BY batch_id, start_time NULLS LAST, table_order, interface_name, schema_name, ref_table_name");
+
+		return sql;
+	}
+	
 	private static Comparator<Map<String, Object>> byStatusThenName(Function<Map<String, Object>, String> statusFn, Function<Map<String, Object>, Object> nameFn) {
 		return Comparator
 			.<Map<String, Object>>comparingInt(t -> statusBucket(statusFn.apply(t)))
@@ -1095,110 +1207,6 @@ public class SharedLogic {
 		return 1;
 	}
 
-	private static StringBuilder getRefSchemaSummaryQuery() {
-		StringBuilder sql = new StringBuilder();
-
-		sql.append("SELECT ");
-		sql.append("st.batch_id, ");
-		sql.append("st.execution_action, ");
-		sql.append("st.table_order, ");
-		sql.append("st.interface_name, ");
-		sql.append("st.schema_name, ");
-		sql.append("COUNT(DISTINCT st.task_ref_table_id) AS number_of_tables, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'pending' THEN 1 ELSE 0 END) AS pending, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'stopped' THEN 1 ELSE 0 END) AS stopped, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'completed' THEN 1 ELSE 0 END) AS completed, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) = 'failed' THEN 1 ELSE 0 END) AS failed, ");
-		sql.append("SUM(CASE WHEN LOWER(st.execution_status) NOT IN ('pending','stopped','completed','failed') THEN 1 ELSE 0 END) AS running ");
-		sql.append("FROM ").append(TDMDB_SCHEMA).append(".task_ref_exe_stats st ");
-		sql.append("WHERE st.task_execution_id = ? ");
-		sql.append("GROUP BY ");
-		sql.append("st.batch_id, ");
-		sql.append("st.execution_action, ");
-		sql.append("st.table_order, ");
-		sql.append("st.interface_name, ");
-		sql.append("st.schema_name ");
-		sql.append("ORDER BY ");
-		sql.append("st.batch_id, ");
-		sql.append("st.execution_action, ");
-		sql.append("st.table_order, ");
-		sql.append("st.interface_name, ");
-		sql.append("st.schema_name ");
-
-		return sql;
-	}
-
-	private static StringBuilder getRefTableDetailsQuery() {
-		StringBuilder sql = new StringBuilder();
-
-		sql.append("SELECT ");
-		sql.append("s.batch_id, ");
-		sql.append("s.execution_action, ");
-		sql.append("s.table_order, ");
-		sql.append("s.interface_name, ");
-		sql.append("s.schema_name, ");
-		sql.append("s.ref_table_name, ");
-		sql.append("COALESCE(s.execution_status, 'pending') AS execution_status, ");
-		sql.append("s.start_time, ");
-		sql.append("s.end_time, ");
-		sql.append("NULL AS total, ");
-		sql.append("NULL AS processed, ");
-		sql.append("NULL AS failed, ");
-		sql.append("COALESCE(s.number_of_partitions, 1) AS partitions, ");
-		sql.append("COALESCE(NULLIF(s.error_msg, ''), '') AS error_msg ");
-		sql.append("FROM ").append(TDMDB_SCHEMA).append(".task_ref_exe_stats s ");
-		sql.append("WHERE s.task_execution_id = ? ");
-		sql.append("AND LOWER(COALESCE(s.execution_action, '')) = 'delete' ");
-
-		sql.append("UNION ALL ");
-
-		sql.append("SELECT ");
-		sql.append("s.batch_id, ");
-		sql.append("COALESCE(s.execution_action, '') AS execution_action, ");
-		sql.append("s.table_order, ");
-		sql.append("s.interface_name, ");
-		sql.append("s.schema_name, ");
-		sql.append("s.ref_table_name, ");
-		sql.append("COALESCE(s.execution_status, ");
-		sql.append("CASE ");
-		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'failed') THEN 'failed' ");
-		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'stopped') THEN 'stopped' ");
-		sql.append("WHEN BOOL_OR(LOWER(p.execution_status) = 'pending') THEN 'pending' ");
-		sql.append("WHEN BOOL_AND(LOWER(p.execution_status) = 'completed') THEN 'completed' ");
-		sql.append("ELSE 'running' ");
-		sql.append("END) AS execution_status, ");
-		sql.append("MIN(COALESCE(s.start_time, p.start_time)) AS start_time, ");
-		sql.append("MAX(COALESCE(s.end_time, p.end_time)) AS end_time, ");
-		sql.append("COALESCE(s.number_of_records_to_process, SUM(COALESCE(p.number_of_records_to_process, 0))) AS total, ");
-		sql.append("COALESCE(s.number_of_processed_records, SUM(COALESCE(p.number_of_processed_records, 0))) AS processed, ");
-		sql.append("COALESCE(s.number_of_failed_records, SUM(COALESCE(p.number_of_failed_records, 0))) AS failed, ");
-		sql.append("COALESCE(s.number_of_partitions, COUNT(p.partition_no)) AS partitions, ");
-		sql.append("COALESCE(MAX(NULLIF(s.error_msg, '')), MAX(NULLIF(p.error_msg, '')), '') AS error_msg ");
-		sql.append("FROM ").append(TDMDB_SCHEMA).append(".task_ref_exe_stats s ");
-		sql.append("LEFT JOIN ").append(TDMDB_SCHEMA).append(".task_ref_partition p ");
-		sql.append("ON p.task_execution_id = s.task_execution_id ");
-		sql.append("AND p.task_ref_table_id = s.task_ref_table_id ");
-		sql.append("AND COALESCE(p.batch_id, '') = COALESCE(s.batch_id, '') ");
-		sql.append("WHERE s.task_execution_id = ? ");
-		sql.append("AND LOWER(COALESCE(s.execution_action, '')) <> 'delete' ");
-		sql.append("GROUP BY ");
-		sql.append("s.batch_id, ");
-		sql.append("s.execution_action, ");
-		sql.append("s.table_order, ");
-		sql.append("s.interface_name, ");
-		sql.append("s.schema_name, ");
-		sql.append("s.ref_table_name, ");
-		sql.append("s.execution_status, ");
-		sql.append("s.number_of_records_to_process, ");
-		sql.append("s.number_of_processed_records, ");
-		sql.append("s.number_of_failed_records, ");
-		sql.append("s.number_of_partitions ");
-
-		sql.append("ORDER BY batch_id, table_order, interface_name, schema_name, ref_table_name");
-
-		return sql;
-	}
-	
 	private static Map<String, Object> getOrCreateBatch(Map<String, Map<String, Object>> batchIndex,List<Map<String, Object>> batches,String batchKey,String batchId,Object executionAction,Object tableOrder,Map<Map<String, Object>, String> batchSortAction,Map<Map<String, Object>, Long> batchSortOrder) {
 		return batchIndex.computeIfAbsent(batchKey, k -> {
 			Map<String, Object> b = new LinkedHashMap<>();
@@ -1305,7 +1313,7 @@ public class SharedLogic {
 		// TDM 5.1- get open and close separators for the instanceId. If they exist- get the instanceId according the open and close separators
 		//Set the SQL parameter
 
-		String sql = "SELECT UPPER(param_name) as param_name, param_value FROM " + TDMDB_SCHEMA + ".tdm_general_parameters where UPPER(param_name) in ('IID_OPEN_SEPARATOR', 'IID_CLOSE_SEPARATOR')";
+		String sql = "SELECT UPPER(param_name) as param_name, param_value FROM " + getTDMDBSchema() + ".tdm_general_parameters where UPPER(param_name) in ('IID_OPEN_SEPARATOR', 'IID_CLOSE_SEPARATOR')";
 		Db.Rows rows = db(TDM).fetch(sql);
 		for (Db.Row row:rows){
 			if(row.cells()[0].toString().equals("IID_OPEN_SEPARATOR")&& row.cells()[1]!= null && !row.cells()[1].toString().isEmpty() )
@@ -1339,16 +1347,17 @@ public class SharedLogic {
 		String versionExeID = "";
 		String iidSeparator = "";
 		String broadwayCommand= "Broadway TDM.getTDMSeparators RESULT_STRUCTURE=ROW";
-		Db.Rows rows = fabric().fetch(broadwayCommand);
-		for(Db.Row row:rows){
-			if ("IID_SEPARATOR".equals(row.get("column"))) {
-				iidSeparator = "" + row.get("value");
-			}
-			if ("IID_OPEN_SEPARATOR".equals(row.get("column"))) {
-				iidOpenSeparator = "" + row.get("value");
-			}
-			if ("IID_CLOSE_SEPARATOR".equals(row.get("column"))) {
-				iidCloseSeparator = "" + row.get("value");
+		try (Db.Rows rows = fabric().fetch(broadwayCommand)) {
+			for(Db.Row row:rows){
+				if ("IID_SEPARATOR".equals(row.get("column"))) {
+					iidSeparator = "" + row.get("value");
+				}
+				if ("IID_OPEN_SEPARATOR".equals(row.get("column"))) {
+					iidOpenSeparator = "" + row.get("value");
+				}
+				if ("IID_CLOSE_SEPARATOR".equals(row.get("column"))) {
+					iidCloseSeparator = "" + row.get("value");
+				}
 			}
 		}
         //log.info("fnSplitUID2 - uid: " + uid);
@@ -1469,7 +1478,7 @@ public class SharedLogic {
 
 	public static void fnCheckInsFound() throws Exception {
 		// Fix- TDM 7.0.1 - Check the main source LU tables only if the TDM_INSERT_TO_TARGET is true
-		String luName = getLuType().luName;
+		String luName = sanitizeDslToken(getLuType().luName);
 
 		if (("" + ludb().fetch("SET TDM_INSERT_TO_TARGET").firstValue()).equals("true")) {
 
@@ -1481,8 +1490,14 @@ public class SharedLogic {
 
 			// For every possible root table
 			for (String rootTable : rootTables) {
+				String trimmedRootTable = rootTable.trim();
+				// Table name ends up spliced into a live SELECT below (identifiers can't be bind
+				// variables), so reject anything that isn't a plain schema-qualified identifier.
+				if (!trimmedRootTable.matches("[A-Za-z0-9_.]+")) {
+					throw new IllegalStateException("Invalid root table name returned from ROOT_TABLE_NAME global: " + trimmedRootTable);
+				}
 				// If that table has data
-				if (!ludb().fetch(String.format("SELECT 1 FROM %s LIMIT 1", rootTable.trim())).firstRow().isEmpty())
+				if (!ludb().fetch(String.format("SELECT 1 FROM %s LIMIT 1", trimmedRootTable)).firstRow().isEmpty())
 					// Indicate the LU is found
 					instanceExists = true;
 			}
@@ -1507,7 +1522,11 @@ public class SharedLogic {
 				statusData.forEach((key, value) -> {
 					try {
 						//log.info("setGlobals - setting "+key+"='"+value+ "'");
-						fabric().execute("set " + key + "='" + String.valueOf(value).replace("'", "''") + "'");
+						String keyStr = String.valueOf(key);
+						if (!keyStr.matches("[A-Za-z0-9_.]+")) {
+							throw new RuntimeException("Invalid global name: " + keyStr);
+						}
+						fabric().execute("set " + keyStr + "=?", String.valueOf(value));
 					} catch (SQLException e) {
                         log.error("Failed to set Globals due to: " + e.getMessage());
 						e.printStackTrace();
@@ -1559,7 +1578,7 @@ public class SharedLogic {
 		}
 		String permissionGroup = fnGetUserPermissionGroup(userName);
 
-		String deleteSql = "DELETE FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =? ";
+		String deleteSql = "DELETE FROM " + getTDMDBSchema() + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =? ";
 
 		//Sort input list based on Environment
 		//log.info("listOfEntities: " + listOfEntities);
@@ -1608,7 +1627,7 @@ public class SharedLogic {
 			//log.info("fnReleaseReservedEntity - entity is not deleted");
 			//In case of a tester, check if the entity is reserved for a different user
 			String reserveOwner = "" + db(TDM).fetch(
-					"SELECT reserve_owner FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =?",
+					"SELECT reserve_owner FROM " + getTDMDBSchema() + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =?",
 					entityID, beID, envID).firstValue();
 			if (reserveOwner == null || "".equals(reserveOwner) ||"null".equals(reserveOwner) ) {
 				ErrorMessage = "Entity already Released";
@@ -1759,15 +1778,16 @@ public class SharedLogic {
 	@out(name = "taskStatus", type = String.class, desc = "")
 	public static Map<String,String> fnUpdateAIProcess( String task_exe_id , String process_id) throws Exception {
 		String sql = "Select Distinct num_of_processed_entities as total, num_of_copied_entities as copied, " +
-				"num_of_failed_entities as failed from " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id=? and process_id=?";
+				"num_of_failed_entities as failed from " + getTDMDBSchema() + ".task_execution_list where task_execution_id=? and process_id=?";
 		Map<String, String> num;
 		try {
 			num = new HashMap<>();
-			Db.Rows rows = db(TDM).fetch(sql, task_exe_id,process_id);
-			for (Db.Row row : rows) {
-				num.put("total", "" + row.get("total"));
-				num.put("copied", "" + row.get("copied"));
-				num.put("failed", "" + row.get("failed"));
+			try (Db.Rows rows = db(TDM).fetch(sql, task_exe_id,process_id)) {
+				for (Db.Row row : rows) {
+					num.put("total", "" + row.get("total"));
+					num.put("copied", "" + row.get("copied"));
+					num.put("failed", "" + row.get("failed"));
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
@@ -1782,21 +1802,21 @@ public class SharedLogic {
 		String tblName = luName.toLowerCase() + "_params";
 		String tblNameFabric = luName + ".LU_PARAMS";
 		String tblInfoSql = "select column_name from INFORMATION_SCHEMA.COLUMNS where table_name = ? and table_schema = ?";
-		StringBuilder sbCreStmt = new StringBuilder().append("CREATE TABLE IF NOT EXISTS " + TDMDB_SCHEMA + "." + tblName + "(");
-		StringBuilder sbAltStmtAdd = new StringBuilder().append("ALTER TABLE " + TDMDB_SCHEMA + "." + tblName + " ADD COLUMN IF NOT EXISTS ");
-		StringBuilder sbAltStmtRem = new StringBuilder().append("ALTER TABLE " + TDMDB_SCHEMA + "." + tblName + " DROP COLUMN IF EXISTS ");
+		StringBuilder sbCreStmt = new StringBuilder().append("CREATE TABLE IF NOT EXISTS " + getTDMDBSchema() + "." + tblName + "(");
+		StringBuilder sbAltStmtAdd = new StringBuilder().append("ALTER TABLE " + getTDMDBSchema() + "." + tblName + " ADD COLUMN IF NOT EXISTS ");
+		StringBuilder sbAltStmtRem = new StringBuilder().append("ALTER TABLE " + getTDMDBSchema() + "." + tblName + " DROP COLUMN IF EXISTS ");
 		String prefix = "";
 		
-		String deleteDistinctValuesSql = "DELETE FROM " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
+		String deleteDistinctValuesSql = "DELETE FROM " + getTDMDBSchema() + ".TDM_PARAMS_DISTINCT_VALUES " +
 				"WHERE lu_name = ? AND field_name = ANY (string_to_array(?, ','))";
 		//log.info("fnCreateUpdateLUParams is Starting - " +  luName);
 
 		//TDM 8.1 transaltion trnLuParams is coverted to Mtable {LuName}LuParams
 		// Reading the mTable data and gettig the queries
-		String broadwayCommand = "broadway TDM.luParamsLookup" + " luName=" + luName + " RESULT_STRUCTURE=CURSOR";
+		String broadwayCommand = "broadway TDM.luParamsLookup" + " luName=" + sanitizeDslToken(luName) + " RESULT_STRUCTURE=CURSOR";
 		Db.Rows paramData = fabric().fetch(broadwayCommand);
 
-		Db.Rows cols = ciTDM.fetch(tblInfoSql, tblName, TDMDB_SCHEMA);
+		Db.Rows cols = ciTDM.fetch(tblInfoSql, tblName, getTDMDBSchema());
 		for (Db.Row row : cols) {
 			if (row.get("column_name") != null)
 				pgColsList.add((row.get("column_name") + ""));
@@ -1833,8 +1853,13 @@ public class SharedLogic {
 
         if (pgColsList.size() == 0) {//If its first time
             ciTDM.beginTransaction();// Use transaction to make sure the table is created before trying to load data into it
-            ciTDM.execute(sbCreStmt.toString());
-            ciTDM.commit();
+            try {
+                ciTDM.execute(sbCreStmt.toString());
+                ciTDM.commit();
+            } catch (Throwable t) {
+                Util.safeExecution(ciTDM::rollback);
+                throw t;
+            }
 
         } else {
             //Check if PG params table has all the params table columns  - if not --> ADD columns to the PG params table
@@ -1850,8 +1875,13 @@ public class SharedLogic {
 
             if (runCmnd) {
                 ciTDM.beginTransaction();// Use transaction to make sure the table is created before trying to load data into it
-                ciTDM.execute(sbAltStmtAdd.toString());
-                ciTDM.commit();
+                try {
+                    ciTDM.execute(sbAltStmtAdd.toString());
+                    ciTDM.commit();
+                } catch (Throwable t) {
+                    Util.safeExecution(ciTDM::rollback);
+                    throw t;
+                }
             }
             //Check if params table is missing columns that PG params table has  - if yes --> drop those PG columns
             prefix = "";
@@ -1869,10 +1899,15 @@ public class SharedLogic {
 
             if (runCmnd) {
                 ciTDM.beginTransaction();// Use transaction to make sure the table is created before trying to load data into it
-                ciTDM.execute(sbAltStmtRem.toString());
-                //log.info("deleteDistinctValuesSql: " + deleteDistinctValuesSql + ", dropFields: " + dropFields);
-                ciTDM.execute(deleteDistinctValuesSql, luName, dropFields);
-                ciTDM.commit();
+                try {
+                    ciTDM.execute(sbAltStmtRem.toString());
+                    //log.info("deleteDistinctValuesSql: " + deleteDistinctValuesSql + ", dropFields: " + dropFields);
+                    ciTDM.execute(deleteDistinctValuesSql, luName, dropFields);
+                    ciTDM.commit();
+                } catch (Throwable t) {
+                    Util.safeExecution(ciTDM::rollback);
+                    throw t;
+                }
             }
         }
     }
@@ -1882,7 +1917,7 @@ public class SharedLogic {
             Object paramsCouplingGlobal = fabric().fetch("set PARAMS_COUPLING").firstValue();
             if(paramsCouplingGlobal==null){
                 paramCoupling = Boolean.parseBoolean(db(TDM).fetch("SELECT PARAM_VALUE FROM " +
-                TDMDB_SCHEMA + ".TDM_GENERAL_PARAMETERS WHERE PARAM_NAME = 'PARAMS_COUPLING'").firstValue().toString());
+                getTDMDBSchema() + ".TDM_GENERAL_PARAMETERS WHERE PARAM_NAME = 'PARAMS_COUPLING'").firstValue().toString());
             }else{
                 paramCoupling=Boolean.parseBoolean(paramsCouplingGlobal.toString());
             }
@@ -1894,7 +1929,15 @@ public class SharedLogic {
         return paramCoupling ;
     }
 
-   public static void fnRunVerticalChildren(String taskExecutionId, String iid, String syncMode) throws Exception {
+	@desc("Populates the TDM DB table task_execution_masking_info for the LU instance processed by the TDMOrchestrator flow. " +
+		"For every masked source table of the LU, the number of records loaded for the current instance is taken from the " +
+		"instance _k2_objects_info table - summing the records of all the population flows that mask the table - and added " +
+		"to the number_of_records of the task execution row. Relevant only when MASKING_REPORT_FLAG is on. Never throws.")
+	public static void fnPopulateTaskExecutionMaskingInfo(String luName, String taskExecutionId) {
+	TDMMaskingReportLogic.populateTaskExecutionMaskingInfo(luName, taskExecutionId);
+	}
+
+   	public static void fnRunVerticalChildren(String taskExecutionId, String iid, String syncMode) throws Exception {
         String parentLU = getLuType().luName;
 
         // TDM 9.2 - support Vertical Execution
@@ -1912,7 +1955,7 @@ public class SharedLogic {
     
         String separator = TDM_PARAMETERS_SEPARATOR;
             
-		String sql = "select distinct lu_name, iid from " + TDMDB_SCHEMA + ".task_execution_entities " +
+		String sql = "select distinct lu_name, iid from " + getTDMDBSchema() + ".task_execution_entities " +
 		"where task_execution_id = ? and  parent_lu_name = ? and parent_entity_id = ? order by lu_name";
         rows = db(TDM).fetch(sql, Integer.parseInt(taskExecutionId), parentLU, entityId);
         processRows(rows, luChildrenMap, separator);//Build a map with current child and its IIDS
@@ -1933,12 +1976,13 @@ public class SharedLogic {
                     fabric().execute("set root_iid = ?", entityId);
                 }
                 //log.info("Calling ExecuteChildInstances flow");
-                String broadwayCommand = "broadway " + luName + ".ExecuteChildInstances instanceList='" + childrenList +
-                        "', luName=" + luName + ", taskAction='" + taskAction + "', syncMode='" + syncMode + "', srcEnv=" + srcEnv +
-                        ", versionInd=" + versionInd + ", isParamCoupling=" + couplingInd +
-                        ", separator='" + separator + "', taskExecutionId=" + taskExecutionId;
+                String broadwayCommand = "broadway " + sanitizeDslToken(luName) + ".ExecuteChildInstances instanceList=?" +
+                        ", luName=?, taskAction=?, syncMode=?, srcEnv=?" +
+                        ", versionInd=?, isParamCoupling=?" +
+                        ", separator=?, taskExecutionId=?";
                 //log.info("Calling ExecuteChildInstances flow - " + broadwayCommand) ;
-                fabric().execute(broadwayCommand);
+                fabric().execute(broadwayCommand, childrenList, luName, taskAction, syncMode, srcEnv,
+                        versionInd, couplingInd, separator, taskExecutionId);
             }
         }
     }

@@ -17,9 +17,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.PermissionErrorMsg;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_Permissions.Logic.wsGetFabricRolesByUser;
+import static com.k2view.cdbms.usercode.common.TDM.TDMAudit.SharedLogic.tdmAudit;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -38,9 +40,18 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.*;
 public class Logic extends WebServiceUserCode {
 
 	public static final String TDM = "TDM";
-	static final String schema = TDMDB_SCHEMA;
 	static final String admin = "admin";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
+
+	private static String validateEnvModifyAuthorization(Long envId) throws Exception {
+		return validateEnvModifyAuthorization(envId, fnGetUserPermissionGroup(""));
+	}
+
+	private static String validateEnvModifyAuthorization(Long envId, String permissionGroup) throws Exception {
+		return fnValidateEnvModifyPermission(envId, permissionGroup,
+				"You have a Tester permission group and therefore cannot update the environment",
+				"You are not the owner of the environment and therefore you are not allowed to update the environment");
+	}
 	static final String adi_only = "false";
 	private static final Set<String> EXCLUDED_GLOBALS = Set.of(
 			"TDM_DELETE_BEFORE_LOAD",
@@ -72,13 +83,13 @@ public class Logic extends WebServiceUserCode {
 			"TASK_TYPE",
 			"enable_masking",
 			"enable_sequences",
-			"clone_id",
-			"TDMDB_SCHEMA",
+			"clone_id",			
 			"TDM_PARAMETERS_SEPARATOR",
 			"SEQ_CACHE_INTERFACE",
 			"TDM_POPULATE_JMX_STATS",
 			"TDM_SEQ_REPORT",
 			"STATISTICS_REPORT_FLAG",
+			"MASKING_REPORT_FLAG",
 			"TDM_BATCH_LIMIT",
 			"TDM_DELETE_TABLES_PREFIX",
 			"TDM_SUMMARY_REPORT_LIMIT",
@@ -94,7 +105,20 @@ public class Logic extends WebServiceUserCode {
 			"POP_FULL_LU_HIERARCHY_IN_TDM_LU",
 			"CREATE_PHYSICAL_FK_IN_MDB_EXPORT_SCHEMA",
 			"REPLACE_SEQ_BY_LUI_SYNC",
-			"TDM_USING_CATALOG_SEQUENCES");
+			"TDM_USING_CATALOG_SEQUENCES",
+			"TDM_TASK_EXE_SCHEMA",
+			// AI globals
+			"INSIGHTS_INTERFACE_TYPE",
+			"INSIGHTS_INTERFACE",
+			"INSIGHTS_SCHEMA",
+			"SNAPSHOT_STORAGE_INTERFACE",
+			"EVALUATION_STORAGE_INTERFACE",
+			"RETENTION_DAYS",
+			"EVALUATION_STORAGE_RETENTION_DAYS",
+			// Pipeline globals
+			"PIPELINE_INTERFACE",
+			"PIPELINE_SCHEMA",
+			"PIPELINE_DIALECT");
 
 	@desc("Gets Environments")
 	@webService(path = "environments", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -145,8 +169,8 @@ public class Logic extends WebServiceUserCode {
                 "e.sync_mode, " +
                 "e.mask_sensitive_data, " +
                 "o.user_name " +
-                "FROM " + schema + ".environments e " +
-                "LEFT JOIN " + schema + ".environment_owners o ON (e.environment_id = o.environment_id )";
+                "FROM " + getTDMDBSchema() + ".environments e " +
+                "LEFT JOIN " + getTDMDBSchema() + ".environment_owners o ON (e.environment_id = o.environment_id )";
 			Db.Rows rows = db(TDM).fetch(sql);
 
 			List<Map<String, Object>> result = new ArrayList<>();
@@ -254,103 +278,139 @@ public class Logic extends WebServiceUserCode {
                                             @param(description="Can be populated by eaither of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
                                             @param(description="List of owners attached to the environment") List<Map<String,String>> owners,
                                             @param(description="Will be populated by true if this source environment must be masked.") Boolean mask_sensitive_data) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
-		
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
+
 		String errorCode = "";
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("envId", envId);
+		in.put("environment_name", environment_name);
+		in.put("environment_description", environment_description);
+		in.put("environment_point_of_contact_first_name", environment_point_of_contact_first_name);
+		in.put("environment_point_of_contact_last_name", environment_point_of_contact_last_name);
+		in.put("environment_point_of_contact_phone1", environment_point_of_contact_phone1);
+		in.put("environment_point_of_contact_phone2", environment_point_of_contact_phone2);
+		in.put("environment_point_of_contact_email", environment_point_of_contact_email);
+		in.put("allow_write", allow_write);
+		in.put("allow_read", allow_read);
+		in.put("sync_mode", sync_mode);
+		in.put("owners", owners);
+		in.put("mask_sensitive_data", mask_sensitive_data);
+
 		try {
-			String sql = "UPDATE " + schema + ".environments SET " +
-					"environment_name=(?)," +
-					"environment_description=(?)," +
-					"environment_point_of_contact_first_name=(?)," +
-					"environment_point_of_contact_last_name=(?)," +
-					"environment_point_of_contact_phone1=(?)," +
-					"environment_point_of_contact_phone2=(?)," +
-					"environment_point_of_contact_email=(?)," +
-					"environment_last_updated_date=(?)," +
-					"environment_last_updated_by=(?), " +
-					"allow_write=(?) ," +
-					"allow_read=(?) ," +
-					"sync_mode=(?) ," +
-                    "mask_sensitive_data=(?) " +
-					"WHERE environment_id = " + envId;
-			db(TDM).execute(sql,
-					environment_name, environment_description, environment_point_of_contact_first_name,
-					environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2,
-					environment_point_of_contact_email, now,
-					sessionUser().name(),
-					allow_write, (allow_read != null ? allow_read : false), 
-                    (sync_mode != null ? sync_mode : "ON"),
-                    (mask_sensitive_data != null ? mask_sensitive_data : "true"));
-		
-			String activityDesc = "Environment " + environment_name + " was updated";
-			try {
-				EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
-			} catch (Exception e) {
-				log.error(e.getMessage());
-			}
-			try {
-				if (allow_read != true) {
-					EnvironmentUtils.fnUpdateEnvironmentRolesPermissions(envId, "allow_read", false);
-				}
-				if (allow_write != true) {
-					EnvironmentUtils.fnUpdateEnvironmentRolesPermissions(envId, "allow_write", false);
-				}
-			} catch (Exception e) {
-				log.error(e.getMessage());
-			}
-		
-		
-			if ("admin".equals(permissionGroup)) {
-				String updateEnvironmentOwners = "DELETE FROM " + schema + ".environment_owners WHERE environment_id = (?)";
-				db(TDM).execute(updateEnvironmentOwners, envId);
-		
-				String userNameSubQuery = "";
-				String ownersTemp = "";
-		
-				for (Map<String, String> owner : owners) {
-					if (ownersTemp != "")
-						ownersTemp += ",'" + (owner.get("username") != null ? owner.get("username") : owner.get("user_name")) + "'";
-					else
-						ownersTemp += "'" + (owner.get("username") != null ? owner.get("username") : owner.get("user_name")) + "'";
-				}
-		
-				if (ownersTemp.length() > 0) {
-					userNameSubQuery = " AND username IN (" + ownersTemp + ")";
-					db(TDM).execute("DELETE FROM " + schema + ".environment_role_users WHERE environment_id = (?)" + userNameSubQuery, envId);
-				}
-		
-				for (Map<String, String> owner : owners) {
-					db(TDM).execute("INSERT INTO " + schema + ".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
-							envId, owner.get("user_id"), owner.get("username") != null ? owner.get("username") : owner.get("user_name"),
-							owner.get("user_type"));
-				}
-			} else if (owners!=null&&!owners.isEmpty()){
-				message="The sent owners list was ignored, you need administrative permissions to add or remove owners.";
+			String permissionGroup = fnGetUserPermissionGroup("");
+			String envAuthError = validateEnvModifyAuthorization(envId, permissionGroup);
+			if (envAuthError != null) {
+				errorCode = "FAILED";
+				message = envAuthError;
+				return wrapWebServiceResults(errorCode, message, null);
 			}
 
-			errorCode = "SUCCESS";
-		
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
+			HashMap<String, Object> response = new HashMap<>();
+
+			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+					.withZone(ZoneOffset.UTC)
+					.format(Instant.now());
+			try {
+				Db.Row beforeRow = db(TDM).fetch(
+						"SELECT mask_sensitive_data FROM " + getTDMDBSchema() + ".environments WHERE environment_id = ?", envId).firstRow();
+				Boolean oldMaskSensitiveData = beforeRow != null ? (Boolean) beforeRow.get("mask_sensitive_data") : null;
+
+				String sql = "UPDATE " + getTDMDBSchema() + ".environments SET " +
+						"environment_name=(?)," +
+						"environment_description=(?)," +
+						"environment_point_of_contact_first_name=(?)," +
+						"environment_point_of_contact_last_name=(?)," +
+						"environment_point_of_contact_phone1=(?)," +
+						"environment_point_of_contact_phone2=(?)," +
+						"environment_point_of_contact_email=(?)," +
+						"environment_last_updated_date=(?)," +
+						"environment_last_updated_by=(?), " +
+						"allow_write=(?) ," +
+						"allow_read=(?) ," +
+						"sync_mode=(?) ," +
+						"mask_sensitive_data=(?) " +
+						"WHERE environment_id = ?";
+				db(TDM).execute(sql,
+						environment_name, environment_description, environment_point_of_contact_first_name,
+						environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2,
+						environment_point_of_contact_email, now,
+						sessionUser().name(),
+						allow_write, (allow_read != null ? allow_read : false),
+						(sync_mode != null ? sync_mode : "ON"),
+						(mask_sensitive_data != null ? mask_sensitive_data : "true"),
+						envId);
+			
+				String activityDesc = "Environment " + environment_name + " was updated";
+				try {
+					EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
+
+				Boolean newMaskSensitiveData = (mask_sensitive_data != null ? mask_sensitive_data : true);
+				if (oldMaskSensitiveData == null || !oldMaskSensitiveData.equals(newMaskSensitiveData)) {
+					try {
+						String sensitivityDesc = "Environment " + environment_name + " sensitivity changed to "
+								+ (newMaskSensitiveData ? "Sensitive" : "Non-sensitive");
+						EnvironmentUtils.fnInsertActivity("update", "Environment", sensitivityDesc);
+					} catch (Exception e) {
+						log.error(e.getMessage());
+					}
+				}
+				try {
+					if (allow_read != true) {
+						EnvironmentUtils.fnUpdateEnvironmentRolesPermissions(envId, "allow_read", false);
+					}
+					if (allow_write != true) {
+						EnvironmentUtils.fnUpdateEnvironmentRolesPermissions(envId, "allow_write", false);
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
+			
+			
+				if ("admin".equals(permissionGroup)) {
+					String updateEnvironmentOwners = "DELETE FROM " + getTDMDBSchema() + ".environment_owners WHERE environment_id = (?)";
+					db(TDM).execute(updateEnvironmentOwners, envId);
+			
+					String userNameSubQuery = "";
+					List<Object> ownerUsernames = new ArrayList<>();
+
+					for (Map<String, String> owner : owners) {
+						ownerUsernames.add(owner.get("username") != null ? owner.get("username") : owner.get("user_name"));
+					}
+
+					if (!ownerUsernames.isEmpty()) {
+						String placeholders = String.join(",", Collections.nCopies(ownerUsernames.size(), "?"));
+						userNameSubQuery = " AND username IN (" + placeholders + ")";
+						List<Object> args = new ArrayList<>();
+						args.add(envId);
+						args.addAll(ownerUsernames);
+						db(TDM).execute("DELETE FROM " + getTDMDBSchema() + ".environment_role_users WHERE environment_id = (?)" + userNameSubQuery, args.toArray());
+					}
+			
+					for (Map<String, String> owner : owners) {
+						db(TDM).execute("INSERT INTO " + getTDMDBSchema() + ".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
+								envId, owner.get("user_id"), owner.get("username") != null ? owner.get("username") : owner.get("user_name"),
+								owner.get("user_type"));
+					}
+				} else if (owners!=null&&!owners.isEmpty()){
+					message="The sent owners list was ignored, you need administrative permissions to add or remove owners.";
+				}
+
+				errorCode = "SUCCESS";
+			
+			} catch (Exception e) {
+				errorCode = "FAILED";
+				message = e.getMessage();
+				log.error(message);
+			}
+			response.put("errorCode", errorCode);
+			response.put("message", message);
+			return response;
+		} finally {
+			tdmAudit("wsModifyEnvironment", in, errorCode, message);
 		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
 	}
 
 
@@ -361,52 +421,68 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteEnvironment(@param(required=true) Long envId, @param(required=true) String envName) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
-		HashMap<String, Object> response = new HashMap<>();
+			
 		String message = null;
 		String errorCode = "";
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("envId", envId);
+		in.put("envName", envName);
+
 		try {
-			String sql = "UPDATE " + schema + ".environments SET " +
-					"environment_status=(?) " + "WHERE environment_id = " + envId;
-			db(TDM).execute(sql, "Inactive");
-		
-			{
-				String updateTasks = "UPDATE " + schema + ".tasks " +
-						"SET task_status = \'Inactive\'" +
-						"WHERE environment_id = " + envId;
-				db(TDM).execute(updateTasks);
+
+			String permissionGroup = fnGetUserPermissionGroup("");
+			if (!"admin".equals(permissionGroup)) {
+				errorCode = "FAILED";
+				message = admin_pg_access_denied_msg;
+				return wrapWebServiceResults(errorCode, message,null);
 			}
-			{
-				String updateEnvironmentProducts = "UPDATE " + schema + ".environment_products " +
-						"SET status = \'Inactive\'" +
-						"WHERE environment_id = \'" + envId + "\'";
-				db(TDM).execute(updateEnvironmentProducts);
-			}
-			{
-				String updateEnvironmentRoles = "UPDATE " + schema + ".environment_roles " +
-						"SET role_status = \'Inactive\'" +
-						"WHERE environment_id = \'" + envId + "\'";
-				db(TDM).execute(updateEnvironmentRoles);
-			}
-		
-			String activityDesc = "'Environment " + envName + " was deleted";
+
+			HashMap<String, Object> response = new HashMap<>();
+
 			try {
-				EnvironmentUtils.fnInsertActivity("delete", "Environment", activityDesc);
+				String sql = "UPDATE " + getTDMDBSchema() + ".environments SET " +
+						"environment_status=(?) " + "WHERE environment_id = ?";
+				db(TDM).execute(sql, "Inactive", envId);
+
+				{
+					String updateTasks = "UPDATE " + getTDMDBSchema() + ".tasks " +
+							"SET task_status = \'Inactive\'" +
+							"WHERE environment_id = ?";
+					db(TDM).execute(updateTasks, envId);
+				}
+				{
+					String updateEnvironmentProducts = "UPDATE " + getTDMDBSchema() + ".environment_products " +
+							"SET status = \'Inactive\'" +
+							"WHERE environment_id = ?";
+					db(TDM).execute(updateEnvironmentProducts, envId);
+				}
+				{
+					String updateEnvironmentRoles = "UPDATE " + getTDMDBSchema() + ".environment_roles " +
+							"SET role_status = \'Inactive\'" +
+							"WHERE environment_id = ?";
+					db(TDM).execute(updateEnvironmentRoles, envId);
+				}
+			
+				String activityDesc = "'Environment " + envName + " was deleted";
+				try {
+					EnvironmentUtils.fnInsertActivity("delete", "Environment", activityDesc);
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
+			
+				errorCode = "SUCCESS";
+			
 			} catch (Exception e) {
-				log.error(e.getMessage());
-			}
-		
-			errorCode = "SUCCESS";
-		
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
+				errorCode = "FAILED";
+				message = e.getMessage();
+				log.error(message);
+			} 
+			response.put("errorCode", errorCode);
+			response.put("message", message);
+			return response;
+		} finally {
+			tdmAudit("wsDeleteEnvironment", in, errorCode, message);
 		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
 	}
 
 
@@ -492,15 +568,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateEnvironmentExclusionList(@param(required=true) Long envId, Long be_id, @param(description="Populated by the list of entities separtated by a comma") String exclusion_list, String requested_by) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -511,7 +580,7 @@ public class Logic extends WebServiceUserCode {
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
-			String sql = "INSERT INTO " + schema + ".tdm_be_env_exclusion_list " +
+			String sql = "INSERT INTO " + getTDMDBSchema() + ".tdm_be_env_exclusion_list " +
 					"(be_id, environment_id, exclusion_list, requested_by, update_date, created_by, updated_by, creation_date) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING be_env_exclusion_list_id";
 			Db.Row row = db(TDM).fetch(sql,be_id, envId, exclusion_list, requested_by, now, username,
@@ -566,9 +635,9 @@ public class Logic extends WebServiceUserCode {
 			List<Map<String, Object>> result = new ArrayList<>();
 			String sql = "SELECT el.be_id, el.environment_id, el.exclusion_list, el.requested_by, el.update_date," +
 					" el.created_by, el.updated_by, el.be_env_exclusion_list_id, el.creation_date, be.be_name " +
-					"FROM " + schema + ".tdm_be_env_exclusion_list el " +
-					"INNER JOIN " + schema + ".business_entities be ON el.be_id = be.be_id WHERE el.environment_id = " + envId;
-			Db.Rows rows = db(TDM).fetch(sql);
+					"FROM " + getTDMDBSchema() + ".tdm_be_env_exclusion_list el " +
+					"INNER JOIN " + getTDMDBSchema() + ".business_entities be ON el.be_id = be.be_id WHERE el.environment_id = ?";
+			Db.Rows rows = db(TDM).fetch(sql, envId);
 		
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -603,15 +672,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, String luName, String global_name, String global_value) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -624,7 +686,7 @@ public class Logic extends WebServiceUserCode {
 			if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
 				global_name = luName + "." + global_name;
 			}
-			String sql = "INSERT INTO " + schema + ".tdm_env_globals (environment_id, global_name, global_value, update_date, updated_by) VALUES (?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO " + getTDMDBSchema() + ".tdm_env_globals (environment_id, global_name, global_value, update_date, updated_by) VALUES (?, ?, ?, ?, ?)";
 			String username=sessionUser().name();
 			db(TDM).execute(sql, envId, global_name, global_value, now, username);
 		
@@ -657,78 +719,102 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data, Boolean allowed_random_entity_selection, Boolean allowed_request_of_fresh_data, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_refresh_reference_data, Boolean allowed_replace_sequences, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning, Boolean allowed_test_conn_failure, Integer allowed_number_of_reserved_entities) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
 		
-		HashMap<String, Object> response = new HashMap<>();
-		HashMap<String, Object> result = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("envId", envId);
+		in.put("envName", envName);
+		in.put("role_name", role_name);
+		in.put("role_description", role_description);
+		in.put("allowed_delete_before_load", allowed_delete_before_load);
+		in.put("allowed_creation_of_synthetic_data", allowed_creation_of_synthetic_data);
+		in.put("allowed_random_entity_selection", allowed_random_entity_selection);
+		in.put("allowed_request_of_fresh_data", allowed_request_of_fresh_data);
+		in.put("allowed_task_scheduling", allowed_task_scheduling);
+		in.put("allowed_number_of_entities_to_copy", allowed_number_of_entities_to_copy);
+		in.put("allowed_refresh_reference_data", allowed_refresh_reference_data);
+		in.put("allowed_replace_sequences", allowed_replace_sequences);
+		in.put("allowed_number_of_entities_to_read", allowed_number_of_entities_to_read);
+		in.put("allow_read", allow_read);
+		in.put("allow_write", allow_write);
+		in.put("allowed_entity_versioning", allowed_entity_versioning);
+		in.put("allowed_test_conn_failure", allowed_test_conn_failure);
+		in.put("allowed_number_of_reserved_entities", allowed_number_of_reserved_entities);
+
 		try {
-			String sql = "INSERT INTO " + schema + ".environment_roles (environment_id, role_name," +
-					"role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, " +
-					"allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, " +
-					"allowed_number_of_entities_to_copy, allowed_refresh_reference_data, role_created_by," +
-					" role_creation_date, role_last_updated_date," +
-					"role_expiration_date,role_last_updated_by,role_status,allowed_replace_sequences," +
-					" allowed_number_of_entities_to_read, allow_read, allow_write, allowed_entity_versioning, allowed_test_conn_failure, allowed_number_of_reserved_entities) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING role_id";
-			String username=sessionUser().name();
-			Db.Row row = db(TDM).fetch(sql,
-					envId,
-					role_name,
-					role_description,
-					allowed_delete_before_load,
-					allowed_creation_of_synthetic_data,
-					allowed_random_entity_selection,
-					allowed_request_of_fresh_data,
-					allowed_task_scheduling,
-					allowed_number_of_entities_to_copy,
-					allowed_refresh_reference_data,
-					username,
-					now,
-					now,
-					null,
-					username,
-					"Active",
-					allowed_replace_sequences,
-					allowed_number_of_entities_to_read,
-					allow_read != null ? allow_read : false,
-					allow_write,
-					allowed_entity_versioning,
-					allowed_test_conn_failure,
-					allowed_number_of_reserved_entities).firstRow();
-		
-			Long roleId = Long.parseLong(row.get("role_id").toString());
-			result.put("id", roleId);
-			response.put("result", result);
-		
-			String activityDesc = "Role " + role_name + " was added to environment " + envName;
-			try {
-				EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
-			} catch (Exception e) {
-				log.error(e.getMessage());
+			String envAuthError = validateEnvModifyAuthorization(envId);
+			if (envAuthError != null) {
+				errorCode = "FAILED";
+				message = envAuthError;
+				return wrapWebServiceResults(errorCode, message, null);
 			}
-		
-			errorCode = "SUCCESS";
-		} catch (Exception e) {
-			message = e.getMessage();
-			log.error(message);
-			errorCode = "FAILED";
+			
+
+			HashMap<String, Object> response = new HashMap<>();
+			HashMap<String, Object> result = new HashMap<>();
+
+			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+					.withZone(ZoneOffset.UTC)
+					.format(Instant.now());
+			try {
+				String sql = "INSERT INTO " + getTDMDBSchema() + ".environment_roles (environment_id, role_name," +
+						"role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, " +
+						"allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, " +
+						"allowed_number_of_entities_to_copy, allowed_refresh_reference_data, role_created_by," +
+						" role_creation_date, role_last_updated_date," +
+						"role_expiration_date,role_last_updated_by,role_status,allowed_replace_sequences," +
+						" allowed_number_of_entities_to_read, allow_read, allow_write, allowed_entity_versioning, allowed_test_conn_failure, allowed_number_of_reserved_entities) " +
+						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING role_id";
+				String username=sessionUser().name();
+				Db.Row row = db(TDM).fetch(sql,
+						envId,
+						role_name,
+						role_description,
+						allowed_delete_before_load,
+						allowed_creation_of_synthetic_data,
+						allowed_random_entity_selection,
+						allowed_request_of_fresh_data,
+						allowed_task_scheduling,
+						allowed_number_of_entities_to_copy,
+						allowed_refresh_reference_data,
+						username,
+						now,
+						now,
+						null,
+						username,
+						"Active",
+						allowed_replace_sequences,
+						allowed_number_of_entities_to_read,
+						allow_read != null ? allow_read : false,
+						allow_write,
+						allowed_entity_versioning,
+						allowed_test_conn_failure,
+						allowed_number_of_reserved_entities).firstRow();
+			
+				Long roleId = Long.parseLong(row.get("role_id").toString());
+				result.put("id", roleId);
+				response.put("result", result);
+			
+				String activityDesc = "Role " + role_name + " was added to environment " + envName;
+				try {
+					EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
+			
+				errorCode = "SUCCESS";
+			} catch (Exception e) {
+				message = e.getMessage();
+				log.error(message);
+				errorCode = "FAILED";
+			}
+			response.put("errorCode", errorCode);
+			response.put("message", message);
+			return response;
+		} finally {
+			tdmAudit("wsCreateEnvironmentRole", in, errorCode, message);
 		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
 	}
 
 
@@ -768,18 +854,40 @@ public class Logic extends WebServiceUserCode {
 											@param(description="Can be populated by one of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
 											@param(description="List of owners attached to the environment") List<Map<String,String>> owners,
                                             @param(description="Will be populated by true if this source environment must be masked.") String mask_sensitive_data) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
-		HashMap<String, Object> response = new HashMap<>();
-		HashMap<String, Object> result = new HashMap<>();
-		String message = null;
+
 		String errorCode = "";
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("environment_name", environment_name);
+		in.put("environment_description", environment_description);
+		in.put("environment_point_of_contact_fist_name", environment_point_of_contact_fist_name);
+		in.put("environment_point_of_contact_last_name", environment_point_of_contact_last_name);
+		in.put("environment_point_of_contact_phone1", environment_point_of_contact_phone1);
+		in.put("environment_point_of_contact_phone2", environment_point_of_contact_phone2);
+		in.put("environment_point_of_contact_email", environment_point_of_contact_email);
+		in.put("allow_write", allow_write);
+		in.put("allow_read", allow_read);
+		in.put("sync_mode", sync_mode);
+		in.put("owners", owners);
+		in.put("mask_sensitive_data", mask_sensitive_data);
+
+		try {
+			String permissionGroup = fnGetUserPermissionGroup("");
+			if (!"admin".equals(permissionGroup)) {
+				errorCode = "FAILED";
+				message = admin_pg_access_denied_msg;
+				return wrapWebServiceResults(errorCode, message, null);
+			}
+
+			HashMap<String, Object> response = new HashMap<>();
+			HashMap<String, Object> result = new HashMap<>();
+
 			try {
-				String sql = "INSERT INTO " + schema + ".environments (environment_name, environment_description, " +
+				String sql = "INSERT INTO " + getTDMDBSchema() + ".environments (environment_name, environment_description, " +
 						"environment_point_of_contact_first_name, environment_point_of_contact_last_name, " +
 						"environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, " +
-                        "environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, " +
-                        "environment_status, allow_write, allow_read, sync_mode,mask_sensitive_data) " +
+						"environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, " +
+						"environment_status, allow_write, allow_read, sync_mode,mask_sensitive_data) " +
 						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING environment_id";
 				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 						.withZone(ZoneOffset.UTC)
@@ -800,13 +908,13 @@ public class Logic extends WebServiceUserCode {
 						allow_write,
 						allow_read != null ? allow_read : false,
 						sync_mode != null ? sync_mode : "ON",
-                        mask_sensitive_data != null ? mask_sensitive_data : true
+						mask_sensitive_data != null ? mask_sensitive_data : true
 				).firstRow();
 				long environmentId = Long.parseLong(row.get("environment_id").toString());
 				result.put("id", environmentId);
 				try {
 					for (Map owner : owners) {
-						db(TDM).execute("INSERT INTO " + schema + ".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
+						db(TDM).execute("INSERT INTO " + getTDMDBSchema() + ".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
 								environmentId,
 								owner.get("user_id"),
 								owner.get("username") != null ? owner.get("username") : owner.get("user_name"), 
@@ -829,11 +937,13 @@ public class Logic extends WebServiceUserCode {
 				message = e.getMessage();
 				log.error(message);
 			}
-		
-		
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
+			
+			response.put("errorCode", errorCode);
+			response.put("message", message);
+			return response;
+		} finally {
+			tdmAudit("wsCreateEnvironment", in, errorCode, message);
+		}
 	}
 
 
@@ -849,9 +959,9 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "SELECT COUNT (environment_id) as cnt FROM " + schema + ".tasks " +
-					"WHERE environment_id = " + envId;
-			Db.Row row = db(TDM).fetch(sql).firstRow();
+			String sql = "SELECT COUNT (environment_id) as cnt FROM " + getTDMDBSchema() + ".tasks " +
+					"WHERE environment_id = ?";
+			Db.Row row = db(TDM).fetch(sql, envId).firstRow();
 			if (!row.isEmpty()) {
 				response.put("result", row.get("cnt"));
 			}
@@ -890,8 +1000,8 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		try {
 			String sql = "SELECT user_id, user_name, user_type " +
-					"FROM " + schema + ".environment_owners WHERE environment_id = " + envId;
-			Db.Rows rows = db(TDM).fetch(sql);
+					"FROM " + getTDMDBSchema() + ".environment_owners WHERE environment_id = ?";
+			Db.Rows rows = db(TDM).fetch(sql, envId);
 			errorCode = "SUCCESS";
 			HashMap<String, Object> owner;
 			for (Db.Row row : rows) {
@@ -982,9 +1092,9 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "SELECT * FROM " + schema + ".environment_roles " +
-					"WHERE environment_id = " + envId;
-			Db.Rows rows = db(TDM).fetch(sql);
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".environment_roles " +
+					"WHERE environment_id = ?";
+			Db.Rows rows = db(TDM).fetch(sql, envId);
 			HashMap<String, Object> role;
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -1053,7 +1163,7 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "SELECT * FROM " + schema + ".tdm_env_globals " +
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".tdm_env_globals " +
 					"WHERE environment_id = ?";
 			Db.Rows rows = db(TDM).fetch(sql, envId);
 		
@@ -1098,82 +1208,107 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsModifyEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long roleId, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data, Boolean allowed_random_entity_selection, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_replace_sequences, Boolean allowed_refresh_reference_data, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning, Boolean allowed_test_conn_failure, Boolean allowed_request_of_fresh_data, Integer allowed_number_of_reserved_entities) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
 		
-		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
-		HashMap<String, Object> response = new HashMap<>();
-		List<HashMap<String, Object>> result = new ArrayList<>();
-		String message = null;
 		String errorCode = "";
-				
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-		.withZone(ZoneOffset.UTC)
-		.format(Instant.now());
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("envId", envId);
+		in.put("envName", envName);
+		in.put("roleId", roleId);
+		in.put("role_name", role_name);
+		in.put("role_description", role_description);
+		in.put("allowed_delete_before_load", allowed_delete_before_load);
+		in.put("allowed_creation_of_synthetic_data", allowed_creation_of_synthetic_data);
+		in.put("allowed_random_entity_selection", allowed_random_entity_selection);
+		in.put("allowed_request_of_fresh_data", allowed_request_of_fresh_data);
+		in.put("allowed_task_scheduling", allowed_task_scheduling);
+		in.put("allowed_number_of_entities_to_copy", allowed_number_of_entities_to_copy);
+		in.put("allowed_refresh_reference_data", allowed_refresh_reference_data);
+		in.put("allowed_replace_sequences", allowed_replace_sequences);
+		in.put("allowed_number_of_entities_to_read", allowed_number_of_entities_to_read);
+		in.put("allow_read", allow_read);
+		in.put("allow_write", allow_write);
+		in.put("allowed_entity_versioning", allowed_entity_versioning);
+		in.put("allowed_test_conn_failure", allowed_test_conn_failure);
+		in.put("allowed_number_of_reserved_entities", allowed_number_of_reserved_entities);
+
+		try {
+			String envAuthError = validateEnvModifyAuthorization(envId);
+			if (envAuthError != null) {
+				errorCode = "FAILED";
+				message = envAuthError;
+				return wrapWebServiceResults(errorCode, message, null);
+			}
 			
-		try {
-		String sql = "UPDATE " + schema + ".environment_roles SET " +
-			"role_name=(?)," +
-			"role_description=(?)," +
-			"allowed_delete_before_load=(?)," +
-			"allowed_creation_of_synthetic_data=(?)," +
-			"allowed_random_entity_selection=(?)," +
-			"allowed_task_scheduling=(?)," +
-			"allowed_number_of_entities_to_copy=(?)," +
-			"allowed_replace_sequences=(?)," +
-			"allowed_refresh_reference_data=(?)," +
-			"role_last_updated_date=(?)," +
-			"role_last_updated_by=(?)," +
-			"allowed_number_of_entities_to_read=(?)," +
-			"allow_read=(?)," +
-			"allow_write=(?)," +
-			"allowed_entity_versioning=(?)," +
-			"allowed_test_conn_failure=(?)," +
-			"allowed_request_of_fresh_data=(?)," +
-			"allowed_number_of_reserved_entities=(?) " +
-			"WHERE environment_id = " + envId + " AND role_id = \'" + roleId + "\'";
-		String username=sessionUser().name();
-		db(TDM).execute(sql,
-			role_name,
-			role_description,
-			allowed_delete_before_load,
-			allowed_creation_of_synthetic_data,
-			allowed_random_entity_selection,
-			allowed_task_scheduling,
-			allowed_number_of_entities_to_copy,
-			allowed_replace_sequences,
-			allowed_refresh_reference_data,
-			now,
-			username,
-			allowed_number_of_entities_to_read,
-			allow_read != null ? allow_read : false,
-			allow_write,
-			allowed_entity_versioning,
-			allowed_test_conn_failure,
-			allowed_request_of_fresh_data,
-			allowed_number_of_reserved_entities);
-		String activityDesc = "Role " + role_name + " of environment " + envName + " was updated";
-		try {
-		EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
-		} catch (Exception e) {
-		log.error(e.getMessage());
+			EnvironmentUtils.fnUpdateEnvironmentDate(envId);
+			HashMap<String, Object> response = new HashMap<>();
+			List<HashMap<String, Object>> result = new ArrayList<>();
+			
+			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+			.withZone(ZoneOffset.UTC)
+			.format(Instant.now());
+				
+			try {
+			String sql = "UPDATE " + getTDMDBSchema() + ".environment_roles SET " +
+				"role_name=(?)," +
+				"role_description=(?)," +
+				"allowed_delete_before_load=(?)," +
+				"allowed_creation_of_synthetic_data=(?)," +
+				"allowed_random_entity_selection=(?)," +
+				"allowed_task_scheduling=(?)," +
+				"allowed_number_of_entities_to_copy=(?)," +
+				"allowed_replace_sequences=(?)," +
+				"allowed_refresh_reference_data=(?)," +
+				"role_last_updated_date=(?)," +
+				"role_last_updated_by=(?)," +
+				"allowed_number_of_entities_to_read=(?)," +
+				"allow_read=(?)," +
+				"allow_write=(?)," +
+				"allowed_entity_versioning=(?)," +
+				"allowed_test_conn_failure=(?)," +
+				"allowed_request_of_fresh_data=(?)," +
+				"allowed_number_of_reserved_entities=(?) " +
+				"WHERE environment_id = ? AND role_id = ?";
+			String username=sessionUser().name();
+			db(TDM).execute(sql,
+				role_name,
+				role_description,
+				allowed_delete_before_load,
+				allowed_creation_of_synthetic_data,
+				allowed_random_entity_selection,
+				allowed_task_scheduling,
+				allowed_number_of_entities_to_copy,
+				allowed_replace_sequences,
+				allowed_refresh_reference_data,
+				now,
+				username,
+				allowed_number_of_entities_to_read,
+				allow_read != null ? allow_read : false,
+				allow_write,
+				allowed_entity_versioning,
+				allowed_test_conn_failure,
+				allowed_request_of_fresh_data,
+				allowed_number_of_reserved_entities,
+				envId,
+				roleId);
+			String activityDesc = "Role " + role_name + " of environment " + envName + " was updated";
+			try {
+			EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
+			} catch (Exception e) {
+			log.error(e.getMessage());
+			}
+			errorCode = "SUCCESS";
+			} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error(message);
+					}
+			response.put("errorCode", errorCode);
+			response.put("message", message);
+			return response;
+		} finally {
+			tdmAudit("wsModifyEnvironmentRole", in, errorCode, message);
 		}
-		errorCode = "SUCCESS";
-		} catch (Exception e) {
-		errorCode = "FAILED";
-		message = e.getMessage();
-		log.error(message);
-				}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
 	}
 
 
@@ -1184,48 +1319,59 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long roleId, @param(required=true) String roleName) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
 		
-		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
-		HashMap<String, Object> response = new HashMap<>();
-		List<HashMap<String, Object>> result = new ArrayList<>();
-		String message = null;
 		String errorCode = "";
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("envId", envId);
+		in.put("envName", envName);
+		in.put("roleId", roleId);
+		in.put("roleName", roleName);
+
 		try {
-			String sql = "UPDATE " + schema + ".environment_roles SET " +
-					"role_status=(?),role_expiration_date=(?) " +
-					"WHERE environment_id = " + envId + " AND role_id = \'" + roleId + "\'";
-			db(TDM).execute(sql,
-					"Inactive",DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-							.withZone(ZoneOffset.UTC)
-							.format(Instant.now()));
-		
-			// cleanup environment_role_users table
-			db(TDM).execute("DELETE from " + schema + ".environment_role_users WHERE environment_id=" + envId + " AND role_id=" + roleId);
-		
-			String activityDesc = "Role " + roleName + " of environment " + envName + " was deleted";
-			try {
-				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
-			} catch (Exception e) {
-				log.error(e.getMessage());
+			String envAuthError = validateEnvModifyAuthorization(envId);
+			if (envAuthError != null) {
+				errorCode = "FAILED";
+				message = envAuthError;
+				return wrapWebServiceResults(errorCode, message, null);
 			}
-			errorCode = "SUCCESS";
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
+			
+			EnvironmentUtils.fnUpdateEnvironmentDate(envId);
+			HashMap<String, Object> response = new HashMap<>();
+			List<HashMap<String, Object>> result = new ArrayList<>();
+
+			try {
+				String sql = "UPDATE " + getTDMDBSchema() + ".environment_roles SET " +
+						"role_status=(?),role_expiration_date=(?) " +
+						"WHERE environment_id = ? AND role_id = ?";
+				db(TDM).execute(sql,
+						"Inactive",DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+								.withZone(ZoneOffset.UTC)
+								.format(Instant.now()),
+						envId,
+						roleId);
+
+				// cleanup environment_role_users table
+				db(TDM).execute("DELETE from " + getTDMDBSchema() + ".environment_role_users WHERE environment_id=? AND role_id=?", envId, roleId);
+			
+				String activityDesc = "Role " + roleName + " of environment " + envName + " was deleted";
+				try {
+					EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
+				errorCode = "SUCCESS";
+			} catch (Exception e) {
+				errorCode = "FAILED";
+				message = e.getMessage();
+				log.error(message);
+			}
+			response.put("errorCode", errorCode);
+			response.put("message", message);
+			return response;
+		} finally {
+			tdmAudit("wsDeleteEnvironmentRole", in, errorCode, message);
 		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
 	}
 
 
@@ -1252,9 +1398,9 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		
 		try {
-			String sql = "SELECT * FROM " + schema + ".environment_role_users " +
-					"WHERE environment_id = " + envId + " AND role_id = " + roleId;
-			Db.Rows rows = db(TDM).fetch(sql);
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".environment_role_users " +
+					"WHERE environment_id = ? AND role_id = ?";
+			Db.Rows rows = db(TDM).fetch(sql, envId, roleId);
 		
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -1291,45 +1437,89 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateEnvironmentRoleTesters(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long roleId, @param(required=true) String roleName, List<Map<String,Object>> users) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
 		
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
 		String errorCode = "";
-		
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("envId", envId);
+		in.put("envName", envName);
+		in.put("roleId", roleId);
+		in.put("roleName", roleName);
+		in.put("users", users);
+
 		try {
-			String sql = "DELETE FROM " + schema + ".environment_role_users WHERE environment_id = " + envId + " AND role_id = " + roleId;
-			db(TDM).execute(sql);
-			for (Map<String, Object> user : users) {
-				sql = "INSERT INTO " + schema + ".environment_role_users (environment_id, role_id, user_id, username, user_type) VALUES (?, ?, ?, ?, ?)";
-				db(TDM).execute(sql,
-						envId, roleId,
-						user.get("user_id"), user.get("username"), user.get("user_type"));
+			String envAuthError = validateEnvModifyAuthorization(envId);
+			if (envAuthError != null) {
+				errorCode = "FAILED";
+				message = envAuthError;
+				return wrapWebServiceResults(errorCode, message, null);
 			}
-		
-			String activityDesc = "Testers of role " + roleName + " of environment " + envName + " were updated";
+			
+			// A user/group can be assigned to one role only per environment (ENV_ROLE_USER_IX)
+			if (users != null && !users.isEmpty()) {
+				List<Object> checkArgs = new ArrayList<>();
+				checkArgs.add(envId);
+				checkArgs.add(roleId);
+				StringBuilder placeholders = new StringBuilder();
+				for (Map<String, Object> user : users) {
+					if (placeholders.length() > 0) placeholders.append(",");
+					placeholders.append("?");
+					checkArgs.add(user.get("user_id") == null ? null : user.get("user_id").toString());
+				}
+				String checkSql = "SELECT u.user_id, u.username, u.user_type, r.role_name FROM " + getTDMDBSchema() + ".environment_role_users u " +
+						"INNER JOIN " + getTDMDBSchema() + ".environment_roles r ON (u.role_id = r.role_id) " +
+						"WHERE u.environment_id = ? AND u.role_id <> ? AND u.user_id IN (" + placeholders + ")";
+				List<String> conflicts = new ArrayList<>();
+				try (Db.Rows conflictRows = db(TDM).fetch(checkSql, checkArgs.toArray())) {
+					for (Db.Row row : conflictRows) {
+						String userDesc;
+						if ("-1".equals(String.valueOf(row.get("user_id")))) {
+							userDesc = "All Users";
+						} else if ("GROUP".equals(String.valueOf(row.get("user_type")))) {
+							userDesc = "User group " + row.get("username");
+						} else {
+							userDesc = "User " + row.get("username");
+						}
+						conflicts.add(userDesc + " role is already assigned to permission set " + row.get("role_name"));
+					}
+				}
+				if (!conflicts.isEmpty()) {
+					errorCode = "FAILED";
+					message = String.join("; ", conflicts) + ". A user can be assigned to one permission set only per environment.";
+					return wrapWebServiceResults(errorCode, message, null);
+				}
+			}
+
+			HashMap<String, Object> response = new HashMap<>();
+			
 			try {
-				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
+				String sql = "DELETE FROM " + getTDMDBSchema() + ".environment_role_users WHERE environment_id = ? AND role_id = ?";
+				db(TDM).execute(sql, envId, roleId);
+				for (Map<String, Object> user : users) {
+					sql = "INSERT INTO " + getTDMDBSchema() + ".environment_role_users (environment_id, role_id, user_id, username, user_type) VALUES (?, ?, ?, ?, ?)";
+					db(TDM).execute(sql,
+							envId, roleId,
+							user.get("user_id"), user.get("username"), user.get("user_type"));
+				}
+			
+				String activityDesc = "Testers of role " + roleName + " of environment " + envName + " were updated";
+				try {
+					EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
+				errorCode = "SUCCESS";
 			} catch (Exception e) {
-				log.error(e.getMessage());
+				errorCode = "FAILED";
+				message = e.getMessage();
+				log.error(message);
 			}
-			errorCode = "SUCCESS";
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
+			response.put("errorCode", errorCode);
+			response.put("message", message);
+			return response;
+		} finally {
+			tdmAudit("wsCreateEnvironmentRoleTesters", in, errorCode, message);
 		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
 	}
 
 
@@ -1340,15 +1530,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="A unique identifier of the product in Products TDM DB table") long product_id, @param(description="Optional parameter") String data_center_name, @param(description="Populated by one of the product's versions as populated in Products TDM DB table") String product_version, Integer max_number_of_workers) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -1385,15 +1568,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="The unique identifier of the product in environment_products TDM DB table") Long environment_product_id, String data_center_name, @param(description="Populated by one of the product's versions") String product_version, @param(description="A unique identifier of the product in products TDM DB table") long product_id, Integer max_number_of_workers) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -1430,15 +1606,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteProductFromEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long prodId) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -1448,13 +1617,13 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 			{
-				String queryString = "UPDATE " + schema + ".environment_products SET " +
+				String queryString = "UPDATE " + getTDMDBSchema() + ".environment_products SET " +
 						"status=(?) " +
-						"WHERE environment_id = " + envId + " AND product_id = " + prodId;
-				db(TDM).execute(queryString, "Inactive");
+						"WHERE environment_id = ? AND product_id = ?";
+				db(TDM).execute(queryString, "Inactive", envId, prodId);
 			}
 			{
-				String queryString = "UPDATE " + schema + ".tasks t SET task_status = 'Inactive' " +
+				String queryString = "UPDATE " + getTDMDBSchema() + ".tasks t SET task_status = 'Inactive' " +
 					"WHERE t.task_status = 'Active' " +
 					"AND (t.environment_id = ? OR t.source_environment_id = ?) " +
 
@@ -1468,8 +1637,8 @@ public class Logic extends WebServiceUserCode {
 					// delete the task ONLY if removing the system breaks the LU hierarchy
 					"AND EXISTS ( " +
 					"   SELECT 1 " +
-					"   FROM " + schema + ".tasks_logical_units tlu " +
-					"   INNER JOIN " + schema + ".product_logical_units removed_plu " +
+					"   FROM " + getTDMDBSchema() + ".tasks_logical_units tlu " +
+					"   INNER JOIN " + getTDMDBSchema() + ".product_logical_units removed_plu " +
 					"       ON removed_plu.lu_id = tlu.lu_id " +
 					"      AND removed_plu.be_id = t.be_id " +
 					"   WHERE tlu.task_id = t.task_id " +
@@ -1478,8 +1647,8 @@ public class Logic extends WebServiceUserCode {
 					"          removed_plu.lu_parent_id IS NULL " +
 					"          OR EXISTS ( " +
 					"              SELECT 1 " +
-					"              FROM " + schema + ".tasks_logical_units child_tlu " +
-					"              INNER JOIN " + schema + ".product_logical_units child_plu " +
+					"              FROM " + getTDMDBSchema() + ".tasks_logical_units child_tlu " +
+					"              INNER JOIN " + getTDMDBSchema() + ".product_logical_units child_plu " +
 					"                  ON child_plu.lu_id = child_tlu.lu_id " +
 					"                 AND child_plu.be_id = t.be_id " +
 					"              WHERE child_tlu.task_id = t.task_id " +
@@ -1586,7 +1755,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 		
-			String sqlUser = "SELECT * FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
+			String sqlUser = "SELECT * FROM " + getTDMDBSchema() + ".environment_role_users u INNER JOIN " + getTDMDBSchema() + ".environment_roles r " +
 					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
 					"WHERE u.environment_id = ? " + 
 					"AND  u.user_id = ? AND u.user_type = 'ID' ";	
@@ -1600,7 +1769,7 @@ public class Logic extends WebServiceUserCode {
 		
 				String fabricRoles = String.join(TDM_PARAMETERS_SEPARATOR, (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result"));
 				//log.info("fabricRoles: " + fabricRoles);
-				String sqlUserGRoup = "SELECT * FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
+				String sqlUserGRoup = "SELECT * FROM " + getTDMDBSchema() + ".environment_role_users u INNER JOIN " + getTDMDBSchema() + ".environment_roles r " +
 					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
 					"WHERE u.environment_id = ? " + 
 					"AND  u.user_id = ANY(string_to_array(?, ?)) AND u.user_type = 'GROUP' ";	
@@ -1610,7 +1779,7 @@ public class Logic extends WebServiceUserCode {
 				Db.Rows rows2 = db(TDM).fetch(sqlUserGRoup, envId, fabricRoles,TDM_PARAMETERS_SEPARATOR);
 				row = rows2.firstRow();
 				if (row == null || row.isEmpty()) {
-					String sqlAll = "SELECT * FROM " + schema + ".environment_role_users u INNER JOIN " + schema + ".environment_roles r " +
+					String sqlAll = "SELECT * FROM " + getTDMDBSchema() + ".environment_role_users u INNER JOIN " + getTDMDBSchema() + ".environment_roles r " +
 					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
 					"WHERE u.environment_id = ? " + 
 					"AND  u.user_id = '-1' AND u.username = 'ALL' ";
@@ -1942,15 +2111,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateEnvironmentGlobal(@param(required=true) String envName, @param(required=true) Long envId, String lu_name, String global_name, String global_value) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -1963,7 +2125,7 @@ public class Logic extends WebServiceUserCode {
 				global_name = lu_name + "." + global_name;
 			}
 			
-			String updateQuery= "UPDATE " + schema + ".tdm_env_globals SET " +
+			String updateQuery= "UPDATE " + getTDMDBSchema() + ".tdm_env_globals SET " +
 					"environment_id=(?)," +
 					"global_name=CAST(? AS VARCHAR)," +
 					"global_value=(?)," +
@@ -2002,15 +2164,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) String luName, @param(required=true) String globalName) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -2022,8 +2177,8 @@ public class Logic extends WebServiceUserCode {
 			if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
 				globalName = luName + "." + globalName;
 			}
-			String sql= "DELETE FROM " + schema + ".tdm_env_globals WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
-			db(TDM).execute(sql);
+			String sql= "DELETE FROM " + getTDMDBSchema() + ".tdm_env_globals WHERE environment_id = ? AND global_name = ?";
+			db(TDM).execute(sql, envId, globalName);
 		
 			String activityDesc = "Global : " + globalName + " of environment " + envName + " was deleted";
 			try {
@@ -2069,10 +2224,10 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		
 		try {
-			String sql= "SELECT * FROM " + schema + ".tdm_be_env_exclusion_list " +
-					"WHERE environment_id = " + envId + " AND be_id = " + be_id +
-					"AND requested_by = " + "\'" + requested_by + "\'";
-			Db.Rows rows = db(TDM).fetch(sql);
+			String sql= "SELECT * FROM " + getTDMDBSchema() + ".tdm_be_env_exclusion_list " +
+					"WHERE environment_id = ? AND be_id = ? " +
+					"AND requested_by = ?";
+			Db.Rows rows = db(TDM).fetch(sql, envId, be_id, requested_by);
 		
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -2127,10 +2282,10 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		
 		try {
-			String sql = "select unnest(string_to_array(replace('" + exclusion_list + "', ' ', ''), ',')) " +
+			String sql = "select unnest(string_to_array(replace(?, ' ', ''), ',')) " +
 					"INTERSECT select unnest(string_to_array(replace(string_agg(exclusion_list, ','), ' ', ''), ',')) " +
-					"from " + schema + ".TDM_BE_ENV_EXCLUSION_LIST where be_id=" + be_id + " and environment_id=" + envId;
-			Db.Rows rows = db(TDM).fetch(sql);
+					"from " + getTDMDBSchema() + ".TDM_BE_ENV_EXCLUSION_LIST where be_id=? and environment_id=?";
+			Db.Rows rows = db(TDM).fetch(sql, exclusion_list, be_id, envId);
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -2176,11 +2331,11 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		
 		try {
-			String sql= "select unnest(string_to_array(replace('" + exclusion_list + "', ' ', ''), ',')) " +
+			String sql= "select unnest(string_to_array(replace(?, ' ', ''), ',')) " +
 					"INTERSECT select unnest(string_to_array(replace(string_agg(exclusion_list, ','), ' ', ''), ',')) " +
-					"from " + schema + ".TDM_BE_ENV_EXCLUSION_LIST where be_id=" + be_id + " and environment_id=" +  envId
-					+ "and be_env_exclusion_list_id != " +  be_env_exclusion_list_id;
-			Db.Rows rows = db(TDM).fetch(sql);
+					"from " + getTDMDBSchema() + ".TDM_BE_ENV_EXCLUSION_LIST where be_id=? and environment_id=?"
+					+ "and be_env_exclusion_list_id != ?";
+			Db.Rows rows = db(TDM).fetch(sql, exclusion_list, be_id, envId, be_env_exclusion_list_id);
 			List<Map<String,Object>> result=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -2214,15 +2369,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateEnvironmentExclusionList(@param(required=true) Long envId, @param(description="The unique identifier of the exclusion list in tdm_be_env_exclusion_list TDM DB table", required=true) Long elId, Long be_id, @param(description="A list of entities separated by a comma") String exclusion_list, @param(description="The user identifier of the user who requsted for the exclusion list") String requested_by) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -2231,14 +2379,14 @@ public class Logic extends WebServiceUserCode {
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
-			String sql= "UPDATE " + schema + ".tdm_be_env_exclusion_list SET be_id=(?), exclusion_list=(?), requested_by=(?), update_date=(?), updated_by=(?) " +
-					"WHERE be_env_exclusion_list_id = " + elId;
+			String sql= "UPDATE " + getTDMDBSchema() + ".tdm_be_env_exclusion_list SET be_id=(?), exclusion_list=(?), requested_by=(?), update_date=(?), updated_by=(?) " +
+					"WHERE be_env_exclusion_list_id = ?";
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
 			db(TDM).execute(sql,be_id, exclusion_list,
-					requested_by, now, username);
+					requested_by, now, username, elId);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was updated.";
 			try {
 				EnvironmentUtils.fnInsertActivity("Update", "Environments", activityDesc);
@@ -2264,15 +2412,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteEnvironmentExclusionList(@param(required=true) Long envId, @param(required=true) Long elId) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-			}
-		}
+		String envAuthError = validateEnvModifyAuthorization(envId);
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -2281,8 +2422,8 @@ public class Logic extends WebServiceUserCode {
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
-			String sql = "DELETE FROM " + schema + ".tdm_be_env_exclusion_list WHERE be_env_exclusion_list_id = " + elId;
-			db(TDM).execute(sql);
+			String sql = "DELETE FROM " + getTDMDBSchema() + ".tdm_be_env_exclusion_list WHERE be_env_exclusion_list_id = ?";
+			db(TDM).execute(sql, elId);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was deleted.";
 			try {
 				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
@@ -2332,8 +2473,8 @@ public class Logic extends WebServiceUserCode {
 				testers.add(tester);
 			}
 		
-			String sql = "SELECT * FROM " + schema + ".environment_role_users u " +
-					"INNER JOIN " + schema + ".environment_roles r " +
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".environment_role_users u " +
+					"INNER JOIN " + getTDMDBSchema() + ".environment_roles r " +
 					"ON (u.role_id = r.role_id) " +
 					"WHERE r.role_status = 'Active' " +
 					"AND u.user_type = 'ID'";
@@ -2483,8 +2624,8 @@ public class Logic extends WebServiceUserCode {
 			t.put("username","ALL");
 			testers.add(0,t);
 
-			String sql = "SELECT * FROM " + schema + ".environment_role_users " +
-					"INNER JOIN " + schema + ".environment_roles " +
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".environment_role_users " +
+					"INNER JOIN " + getTDMDBSchema() + ".environment_roles " +
 					"ON (environment_role_users.role_id = environment_roles.role_id) " +
 					"WHERE environment_roles.role_status = \'Active\'";
 			Db.Rows rows = db(TDM).fetch(sql);
@@ -2570,8 +2711,8 @@ public class Logic extends WebServiceUserCode {
 		
 		
 		try {
-			String sql = "SELECT * FROM " + schema + ".environments WHERE environment_id = " + envId;
-			Db.Rows rows = db(TDM).fetch(sql);
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".environments WHERE environment_id = ?";
+			Db.Rows rows = db(TDM).fetch(sql, envId);
 			errorCode = "SUCCESS";
 			List<Map<String, Object>> result = new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -2643,8 +2784,8 @@ public class Logic extends WebServiceUserCode {
 		data.put("Interval", interval);
 		try {
 			{
-				String numberOfTestersQuery = "SELECT count(*) as numberOfTesters FROM  " + schema + ".environment_role_users u " +
-						"INNER JOIN " + schema + ".environment_roles r ON (u.role_id = r.role_id)" +
+				String numberOfTestersQuery = "SELECT count(*) as numberOfTesters FROM  " + getTDMDBSchema() + ".environment_role_users u " +
+						"INNER JOIN " + getTDMDBSchema() + ".environment_roles r ON (u.role_id = r.role_id)" +
 						"WHERE r.role_status = 'Active' and r.environment_id = ? " + 
 						"and u.user_type = 'ID'";
 				String index = "numberOfTesters";
@@ -2653,8 +2794,8 @@ public class Logic extends WebServiceUserCode {
 			}
 		
 			{
-				String numberOfUserGroupQuery = "SELECT count(*) as numberOfGroups FROM  " + schema + ".environment_role_users u " +
-						"INNER JOIN " + schema + ".environment_roles r ON (u.role_id = r.role_id)" +
+				String numberOfUserGroupQuery = "SELECT count(*) as numberOfGroups FROM  " + getTDMDBSchema() + ".environment_role_users u " +
+						"INNER JOIN " + getTDMDBSchema() + ".environment_roles r ON (u.role_id = r.role_id)" +
 						"WHERE r.role_status = 'Active' and r.environment_id = ? " + 
 						"and u.user_type = 'GROUP'";
 				String index = "numberOfGroups";
@@ -2663,8 +2804,8 @@ public class Logic extends WebServiceUserCode {
 			}
 			
 			{
-				String numberOfALLTestersQuery = "SELECT count(*) as value FROM  " + schema + ".environment_role_users u " +
-						"INNER JOIN " + schema + ".environment_roles r ON (u.role_id = r.role_id)" +
+				String numberOfALLTestersQuery = "SELECT count(*) as value FROM  " + getTDMDBSchema() + ".environment_role_users u " +
+						"INNER JOIN " + getTDMDBSchema() + ".environment_roles r ON (u.role_id = r.role_id)" +
 						" WHERE r.role_status = 'Active' and " +
 						"r.environment_id = ? AND u.user_id = '-1'";
 				String index = "numberOfALLTesters";
@@ -2674,7 +2815,7 @@ public class Logic extends WebServiceUserCode {
 			{
 				String tasksQuery = "SELECT COUNT(case when t.task_execution_status = 'Active' then 1 end) as active ," +
 						"COUNT(case when t.task_execution_status = 'onHold' then 1 end  )  as onHold" +
-						" FROM " + schema + ".tasks t " +
+						" FROM " + getTDMDBSchema() + ".tasks t " +
 						" where (t.environment_id = ? OR t.source_environment_id=?) AND t.task_status = 'Active' " +
 						" AND (select now() - interval \'" + EnvironmentUtils.fnGetInterval(interval) + "\')  <= t.task_creation_date";
 				String index = "tasks";
@@ -2683,7 +2824,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			{
 		
-				String taskExecutionStatusQuery = "SELECT DISTINCT l.task_execution_id, l.execution_status FROM " + schema + ".task_execution_list l " +
+				String taskExecutionStatusQuery = "SELECT DISTINCT l.task_execution_id, l.execution_status FROM " + getTDMDBSchema() + ".task_execution_list l " +
 						" WHERE (l.environment_id= ? OR l.source_environment_id=? ) AND (select now() - interval \'" + EnvironmentUtils.fnGetInterval(interval) + "\')  <= l.creation_date";
 				String index = "taskExecutionStatus";
 				Db.Rows rows = db(TDM).fetch(taskExecutionStatusQuery, envId,envId);
@@ -2726,7 +2867,7 @@ public class Logic extends WebServiceUserCode {
 			{
 				String processedEntitiesQuery = "Select sum(num_of_processed_entities) from " +
 						"(select distinct COALESCE(l.num_of_processed_entities,0) num_of_processed_entities , l.task_execution_id " +
-						"from " + schema + ".task_execution_list l, " + schema + ".product_logical_units p " +
+						"from " + getTDMDBSchema() + ".task_execution_list l, " + getTDMDBSchema() + ".product_logical_units p " +
 						"Where p.lu_id = l.lu_id And (l.environment_id = ? OR l.source_environment_id=?) " +
 						"And  l.creation_date >= (select now() - interval \'" + EnvironmentUtils.fnGetInterval(interval) + "\') ) t";
 				String index = "processedEntities";
@@ -2879,6 +3020,9 @@ public class Logic extends WebServiceUserCode {
         String errorCode="SUCCESS";
         String userId = sessionUser().name();
         String permissionGroup = fnGetUserPermissionGroup("");
+        if (!isKnownPermissionGroup(permissionGroup)) {
+            return wrapWebServiceResults("FAILED", PermissionErrorMsg.PERMISSION_GROUP_NOT_FOUND.getMsg(), null);
+        }
         Boolean hasSyntheticEnvironment = false ;
         Boolean hasAIEnvironment = false ;
         Set<Map<String, Object>> userEnvs = new HashSet<>();
@@ -2891,7 +3035,7 @@ public class Logic extends WebServiceUserCode {
                                 "  'admin' As assignment_type," +
                                 " env.mask_sensitive_data," +
                                 " sync_mode" +
-                                " From " + schema + ".environments env" +
+                                " From " + getTDMDBSchema() + ".environments env" +
                                 " Where env.environment_status = 'Active'";
             if (admin.equalsIgnoreCase(permissionGroup)){
                 Db.Rows rows= db(TDM).fetch(allEnvs);
@@ -2915,8 +3059,8 @@ public class Logic extends WebServiceUserCode {
             for (Map<String, Object> env : userEnvs) {
                 String envID = "" + env.get("environment_id");
                 //log.info("Checking env: "  + envID);
-                String sql = "SELECT environment_id FROM " + schema + ".environment_products ep, " + 
-                        schema + ".product_logical_units plu, " + schema + ".business_entities be " +
+                String sql = "SELECT environment_id FROM " + getTDMDBSchema() + ".environment_products ep, " + 
+                        getTDMDBSchema() + ".product_logical_units plu, " + getTDMDBSchema() + ".business_entities be " +
                         "WHERE ep.environment_id = ? AND be.be_name = ? AND be.be_id = plu.be_id AND plu.lu_parent_id is null " +
                         "AND ep.product_id = plu.product_id AND be.be_status = 'Active'";
                 
@@ -2995,16 +3139,17 @@ public class Logic extends WebServiceUserCode {
                     Map<String, Object> specialEnvs = new HashMap<>();
                     specialEnvs.put("synthetic_indicator", "RuleBased");
                     specialEnvs.put("permission", "");
-                    Db.Rows rows = db(TDM).fetch(query);
-                    List<String> columnNames = rows.getColumnNames();
+                    try (Db.Rows rows = db(TDM).fetch(query)) {
+                        List<String> columnNames = rows.getColumnNames();
             
-                    for (Db.Row row : rows) {
-                        ResultSet resultSet = row.resultSet();
-                        Map<String, Object> rowMap = new HashMap<>();
-                        for (String columnName : columnNames) {
-                            specialEnvs.put(columnName, resultSet.getObject(columnName));
+                        for (Db.Row row : rows) {
+                            ResultSet resultSet = row.resultSet();
+                            Map<String, Object> rowMap = new HashMap<>();
+                            for (String columnName : columnNames) {
+                                specialEnvs.put(columnName, resultSet.getObject(columnName));
+                            }
+                            result.add(specialEnvs);
                         }
-                        result.add(specialEnvs);
                     }
                 }
             
@@ -3014,15 +3159,16 @@ public class Logic extends WebServiceUserCode {
                     specialEnvs.put("synthetic_indicator", "AI");
                     specialEnvs.put("permission", "");
             
-                    Db.Rows rows = db(TDM).fetch(query);
-                    List<String> columnNames = rows.getColumnNames();
+                    try (Db.Rows rows = db(TDM).fetch(query)) {
+                        List<String> columnNames = rows.getColumnNames();
             
-                    for (Db.Row row : rows) {
-                        ResultSet resultSet = row.resultSet();
-                        for (String columnName : columnNames) {
-                            specialEnvs.put(columnName, resultSet.getObject(columnName));
+                        for (Db.Row row : rows) {
+                            ResultSet resultSet = row.resultSet();
+                            for (String columnName : columnNames) {
+                                specialEnvs.put(columnName, resultSet.getObject(columnName));
+                            }
+                            result.add(specialEnvs);
                         }
-                        result.add(specialEnvs);
                     }
                 }
             }
@@ -3097,6 +3243,9 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "SUCCESS";
 		String userId = sessionUser().name();
 		String permissionGroup = fnGetUserPermissionGroup("");
+		if (!isKnownPermissionGroup(permissionGroup)) {
+			return wrapWebServiceResults("FAILED", PermissionErrorMsg.PERMISSION_GROUP_NOT_FOUND.getMsg(), null);
+		}
 		Set<Map<String, Object>> userEnvs = new HashSet<>();
 		Set<Long> productIds = null;
 		boolean inPlaceMasking = false;
@@ -3104,7 +3253,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			if (taskId != null) {
 				Object flag = db(TDM).fetch(
-						"SELECT in_place_masking_ind FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id = ?",
+						"SELECT in_place_masking_ind FROM " + getTDMDBSchema() + ".tasks WHERE task_id = ?",
 						taskId).firstValue();
 				inPlaceMasking = Boolean.TRUE.equals(flag) || "true".equalsIgnoreCase("" + flag);
 			}
@@ -3115,15 +3264,16 @@ public class Logic extends WebServiceUserCode {
 					" WHEN env.allow_write = TRUE THEN 'TARGET' ELSE 'SOURCE' END AS environment_type," +
 					" 'admin' AS role_id, 'admin' AS assignment_type," +
 					" env.mask_sensitive_data, env.sync_mode " +
-					" FROM " + TDMDB_SCHEMA + ".environments env";
+					" FROM " + getTDMDBSchema() + ".environments env";
 
 			String finalQuery;
+			List<Object> finalQueryParams = new ArrayList<>();
 
 			if (be_name != null && !be_name.trim().isEmpty()) {
 				// Logic for when a business entity is specified
-				String productIdsSql = "SELECT DISTINCT plu.product_id FROM " + TDMDB_SCHEMA + ".business_entities be "
+				String productIdsSql = "SELECT DISTINCT plu.product_id FROM " + getTDMDBSchema() + ".business_entities be "
 						+
-						"JOIN " + TDMDB_SCHEMA + ".product_logical_units plu ON be.be_id = plu.be_id " +
+						"JOIN " + getTDMDBSchema() + ".product_logical_units plu ON be.be_id = plu.be_id " +
 						"WHERE be.be_name = ? AND plu.lu_parent_name IS NULL";
 
 				Db.Rows productRows = db(TDM).fetch(productIdsSql, be_name);
@@ -3139,21 +3289,20 @@ public class Logic extends WebServiceUserCode {
 							new ArrayList<>());
 				}
 
-				String productIdsString = productIds.stream()
-						.map(String::valueOf)
-						.collect(Collectors.joining(","));
+				String productIdsPlaceholders = String.join(",", Collections.nCopies(productIds.size(), "?"));
+				finalQueryParams.addAll(productIds);
 
-				finalQuery = baseQuery + " JOIN " + TDMDB_SCHEMA
+				finalQuery = baseQuery + " JOIN " + getTDMDBSchema()
 						+ ".environment_products ep ON env.environment_id = ep.environment_id " +
 						" WHERE env.environment_status = 'Active' AND ep.status = 'Active' AND ep.enable_product = TRUE AND ep.product_id IN ("
-						+ productIdsString + ")";
+						+ productIdsPlaceholders + ")";
 			} else {
 				// Original logic for no business entity specified
 				finalQuery = baseQuery + " WHERE env.environment_status = 'Active'";
 			}
 
 			if (admin.equalsIgnoreCase(permissionGroup)) {
-				Db.Rows rows = db(TDM).fetch(finalQuery);
+				Db.Rows rows = db(TDM).fetch(finalQuery, finalQueryParams.toArray());
 				List<String> columnNames = rows.getColumnNames();
 				userEnvs = new HashSet<>();
 				for (Db.Row row : rows) {
@@ -3174,6 +3323,7 @@ public class Logic extends WebServiceUserCode {
 
 				String environment_id = "" + env.get("environment_id");
 				String env_type = "" + env.get("environment_type");
+				Object envSyncMode = env.get("sync_mode");
 				Map<String, Object> map = new HashMap<>();
 				if ("tester".equalsIgnoreCase(permissionGroup)) {
 					int num_of_reserved = env.get("allowed_number_of_reserved_entities") != null
@@ -3191,7 +3341,15 @@ public class Logic extends WebServiceUserCode {
 					String permission;
 					switch (env_type) {
 						case "SOURCE":
-							permission = (num_of_read != 0) ? "read" : "error";
+							// TDM 9.3 - the user can select a source environment without read permissions
+							// (e.g. an environment the user has no role on). The entities are then taken
+							// only from the Test Data Store, so the sync policy is forced to OFF.
+							if (num_of_read != 0) {
+								permission = "read";
+							} else {
+								permission = "none";
+								envSyncMode = "OFF";
+							}
 							break;
 						case "TARGET":
 							if (num_of_write == 0) {
@@ -3204,12 +3362,14 @@ public class Logic extends WebServiceUserCode {
 							if (num_of_write == 0 && num_of_read == 0) {
 								permission = (num_of_reserved > 0) ? "reserve" : "error";
 								env_type = "TARGET";
+								envSyncMode = "OFF";
 							} else if (num_of_write != 0) {
 								if (num_of_read != 0) {
 									permission = (num_of_reserved > 0) ? "read + write + reserve" : "read + write";
 								} else {
 									permission = (num_of_reserved > 0) ? "write + reserve" : "write";
 									env_type="TARGET";
+									envSyncMode = "OFF";
 								}
 							} else if (num_of_read != 0) {
 								 
@@ -3245,11 +3405,11 @@ public class Logic extends WebServiceUserCode {
 
 				map.put("environment_id", env.get("environment_id"));
 				map.put("environment_name", env.get("environment_name"));
-				map.put("environment_type", env.get("environment_type"));
+				map.put("environment_type", env_type);
 				map.put("role_id", env.get("role_id"));
 				map.put("assignment_type", env.get("assignment_type"));
 				map.put("mask_sensitive_data", env.get("mask_sensitive_data"));
-				map.put("environment_sync_mode", env.get("sync_mode"));
+				map.put("environment_sync_mode", envSyncMode);
 				result.add(map);
 			}
 			// After processing userEnvs, manually add AI and Synthetic environments if they

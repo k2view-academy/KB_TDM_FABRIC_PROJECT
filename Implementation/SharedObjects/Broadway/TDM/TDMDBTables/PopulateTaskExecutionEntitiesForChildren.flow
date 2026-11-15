@@ -63,6 +63,7 @@ stages:
               and plu.lu_parent_id = l.parent_lu_id
               and plu.product_id = l.product_id
               and plu.lu_name = ${childLuName}
+              and l.lu_id = plu.lu_id
           taskExecutionId:
             external: taskExecutionId
             schema: string

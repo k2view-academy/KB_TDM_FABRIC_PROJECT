@@ -592,7 +592,7 @@ schemas:
         num_of_copied_entities:
           type: integer
         num_of_failed_entities:
-          type: integer        
+          type: integer
         lu_id:
           type: integer
         num_of_processed_ref_tables:

@@ -1,0 +1,52 @@
+tags: TDM,Masking
+stages:
+  Get Interfaces Tables Summary By Interface:
+    actors:
+      getInterfacesTablesSummaryByInterface:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfacesTablesSummaryByInterface
+          interfaceName:
+            external: interfaceName
+            schema: any
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            external: InterfacesTablesSummaryList
+            schema: '#ref'
+  Get Number Of Tables Profiled:
+    actors:
+      TotalNumberOfTablesProfiled:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              list == null ? 0 : [].concat(list).length;
+          list:
+            link: getInterfacesTablesSummaryByInterface/result
+            schema: any
+            mandatory: false
+        out:
+          result:
+            external: TotalNumberOfTablesProfiled
+            schema: integer
+schemas:
+  getInterfacesTablesSummaryByInterface.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System:
+          type: string
+        Dataset:
+          type: string
+        Number Of Fields:
+          type: integer
+        Number Of Sensitive Fields:
+          type: integer

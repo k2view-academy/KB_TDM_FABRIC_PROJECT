@@ -25,8 +25,9 @@ import com.k2view.fabric.common.mtable.MTables;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetDisabledInterfaces;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTableVersions;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetVersionsForTables;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetTableFields;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getAllSuppressedInterfaces;
@@ -56,6 +57,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.*;
 public class Logic extends WebServiceUserCode {
 
     private static final String TDM = "TDM";
+    private static final String TABLE_LEVEL_LU_NAME = "TDM_TableLevel";
 
     @desc("Get Tables By Business Entity And Environment")
     @webService(path = "getTableByBeAndEnv", verb = {
@@ -109,7 +111,8 @@ public class Logic extends WebServiceUserCode {
               "message": null
             }
                                                 """)
-    public static Object wsGetTableByBeAndEnv(String be_name, String source_env, Long envId) throws Exception {
+    public static Object wsGetTableByBeAndEnv(String be_name, String source_env, Long envId,
+            Long tarEnvId, String taskType, String syncMode) throws Exception {
         Map<String, Object> response = new LinkedHashMap<>();
         List<Map<String, Object>> result = new ArrayList<>();
         String message = null;
@@ -123,8 +126,9 @@ public class Logic extends WebServiceUserCode {
             List<Map<String, Object>> flatTableList = new ArrayList<>();
 
             if (be_name == null || be_name.isEmpty()) {
-                // --- BRANCH A: Logic (Table level) ---                
+                // --- BRANCH A: Logic (Table level) ---
                 List<Map<String, Object>> envData = getTableByEnv(source_env, configLookup);
+                Set<String> tablesInLogicalUnits = getTablesAssignedToLogicalUnits();
 
                 for (Map<String, Object> interfaceNode : envData) {
                     String intfName = (String) interfaceNode.get("interfaceName");
@@ -136,11 +140,16 @@ public class Logic extends WebServiceUserCode {
                             List<Map<String, Object>> tables = (List<Map<String, Object>>) entry.getValue();
 
                             for (Map<String, Object> t : tables) {
+                                String tableName = String.valueOf(t.get("tableName"));
+                                if (tablesInLogicalUnits.contains(buildTableKey(intfName, schemaName, tableName))) {
+                                    // Table is already part of a Logical Unit - exclude it from the table-level list
+                                    continue;
+                                }
                                 Map<String, Object> norm = new HashMap<>();
                                 norm.put("interface_name", intfName);
                                 norm.put("schema_name", schemaName);
                                 norm.put("table_name", t.get("tableName"));
-                                norm.put("lu_name", "TDM_TableLevel"); 
+                                norm.put("lu_name", TABLE_LEVEL_LU_NAME);
                                 norm.put("count_indicator", t.get("countIndicator"));
                                 flatTableList.add(norm);
                             }
@@ -150,8 +159,8 @@ public class Logic extends WebServiceUserCode {
             } else {
                 // --- BRANCH B: Logic (Business Entity level) ---
                 List<String> logicalUnits = new ArrayList<>();
-                String luSql = "SELECT pl.lu_name FROM " + TDMDB_SCHEMA + ".BUSINESS_ENTITIES be, " +
-                        TDMDB_SCHEMA + ".PRODUCT_LOGICAL_UNITS pl " +
+                String luSql = "SELECT pl.lu_name FROM " + getTDMDBSchema() + ".BUSINESS_ENTITIES be, " +
+                        getTDMDBSchema() + ".PRODUCT_LOGICAL_UNITS pl " +
                         "WHERE be.be_name = ? AND be.be_status = 'Active' AND be.be_id = pl.be_id";
 
                 try (Db.Rows luRows = db(TDM).fetch(luSql, be_name)) {
@@ -171,6 +180,12 @@ public class Logic extends WebServiceUserCode {
                         }
                     }
                 }
+            }
+
+            // Drop tables whose interface belongs to a system disabled in the relevant env(s)
+            Set<String> disabledInterfaces = fnGetDisabledInterfaces(taskType, syncMode, envId, tarEnvId);
+            if (!disabledInterfaces.isEmpty()) {
+                flatTableList.removeIf(row -> disabledInterfaces.contains(String.valueOf(row.get("interface_name"))));
             }
 
             // --- FINAL STEP: Group everything into Interface > Schema > Table hierarchy
@@ -255,8 +270,38 @@ public class Logic extends WebServiceUserCode {
         norm.put("count_indicator", (ciValue == null || ciValue.toString().isEmpty()) ? "true" : ciValue.toString());
         return norm;
     }
-            
-	@desc("Get Table's Versions. If fromDate and toDate are not provided, all versions are returned.")
+
+    private static String buildTableKey(String interfaceName, String schemaName, String tableName) {
+        return String.valueOf(interfaceName).toUpperCase() + "|" + String.valueOf(schemaName).toUpperCase() + "|" +
+                String.valueOf(tableName).toUpperCase();
+    }
+
+    // Tables already assigned to a real Logical Unit in RefList, so they can be excluded from the generic
+    // table-level list (TABLE_LEVEL_LU_NAME entries are not real Logical Units and are kept as-is).
+    private static Set<String> getTablesAssignedToLogicalUnits() throws Exception {
+        Set<String> assigned = new HashSet<>();
+        try (Db.Rows rows = fabric().fetch("broadway TDM.refListLookup;")) {
+            for (Db.Row row : rows) {
+                Iterable<? extends Map<?, ?>> maps = ParamConvertor.toIterableOf(row.get("result"),
+                        ParamConvertor::toMap);
+                for (Map<?, ?> map : maps) {
+                    String luName = String.valueOf(map.get("lu_name"));
+                    if (TABLE_LEVEL_LU_NAME.equalsIgnoreCase(luName)) {
+                        continue;
+                    }
+                    String schema = String.valueOf(map.get("schema_name"));
+                    if (schema.startsWith("@")) {
+                        schema = getGlobal(schema.substring(1, schema.length() - 1), luName);
+                    }
+                    assigned.add(buildTableKey(String.valueOf(map.get("interface_name")), schema,
+                            String.valueOf(map.get("reference_table_name"))));
+                }
+            }
+        }
+        return assigned;
+    }
+
+	@desc("Get Table's Versions")
 	@webService(path = "getTableVersions", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -273,57 +318,30 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 
-	public static Object wsGetTableVersions(String table_name, String env_name, String fromDate, String toDate) throws Exception {
+	public static Object wsGetTableVersions(
+			String interface_name,
+			String schema_name,
+			String table_name,
+			String env_name,
+			@param(required = false, description = "Optional. Only include versions executed on/after this timestamp. ISO 8601 format.") String fromDate,
+			@param(required = false, description = "Optional. Only include versions executed on/before this timestamp. ISO 8601 format.") String toDate) throws Exception {
         HashMap<String, Object> response = new HashMap<>();
         List<HashMap<String, Object>> result = new ArrayList<>();
         String errorCode = "SUCCESS";
         String message = null;
 
-        List<Object> params = new ArrayList<>();
-        params.add(table_name);
-        params.add(env_name);
-
-        String sql = "Select distinct t.task_title, exe.task_execution_id, split_part(l.task_executed_by, '##', 1) as task_executed_by, "
-                +
-                "exe.start_time, t.task_description, exe.number_of_processed_records " +
-                "from " + TDMDB_SCHEMA + ".task_ref_tables ref, " + TDMDB_SCHEMA + ".task_ref_exe_stats exe , " +
-                TDMDB_SCHEMA + ".task_execution_list l, " + TDMDB_SCHEMA + ".tasks t " +
-                "Where ref.ref_table_name  = exe.ref_table_name and ref.schema_name = exe.schema_name and ref.interface_name = exe.interface_name " +
-                "And ref.ref_table_name = ? " +
-                "And exe.execution_status = 'completed' " +
-                "AND LOWER(exe.execution_action) <> 'delete' " +
-                "and exe.task_execution_id = l.task_execution_id " +
-                "and lower(l.execution_status) = 'completed' " +
-                "and l.source_env_name = ? " +
-                "and (l.expiration_date is null OR l.expiration_date ='1970-01-01 00:00:00.0' OR l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC')"
-                +
-                "and l.task_id = t.task_id " +
-                "and ref.task_id = t.task_id " +
-                "and t.sync_mode != 'OFF' " +
-                "and t.retention_period_value != 0 ";
-
-        if (fromDate != null && !fromDate.trim().isEmpty() && toDate != null && !toDate.trim().isEmpty()) {
-            sql += "and exe.start_time::date >= ? and exe.start_time::date <= ? ";
-            params.add(fromDate);
-            params.add(toDate);
-        }
-
-        sql += "order by exe.task_execution_id desc";
-
-        try (Db.Rows rows = db(TDM).fetch(sql, params.toArray())) {
-            for (Db.Row row : rows) {
+        try {
+            List<Map<String, Object>> versions = fnGetTableVersions(interface_name, schema_name, table_name, env_name, fromDate, toDate);
+            for (Map<String, Object> version : versions) {
                 HashMap<String, Object> map = new HashMap<>();
-                map.put("task_name", row.get("task_title"));
-                map.put("task_execution_id", row.get("task_execution_id"));
-                map.put("execution_datetime", row.get("start_time"));
+                map.put("task_name", version.get("task_name"));
+                map.put("task_execution_id", version.get("task_execution_id"));
+                map.put("execution_datetime", version.get("execution_datetime"));
+                map.put("executed_by", version.get("executed_by"));
+                map.put("task_description", version.get("task_description"));
 
-                Object executedByObj = row.get("task_executed_by");
-                String[] executeBy = (executedByObj != null) ? executedByObj.toString().split("##")
-                        : new String[] { "" };
-
-                map.put("executed_by", executeBy[0]);
-                map.put("task_description", row.get("task_description"));
-                map.put("number_of_records", row.get("number_of_processed_records"));
+                List<Map<String, Object>> inputTables = (List<Map<String, Object>>) version.get("input_tables");
+                map.put("number_of_records", inputTables.isEmpty() ? null : inputTables.get(0).get("number_of_records"));
 
                 result.add(map);
             }
@@ -339,10 +357,58 @@ public class Logic extends WebServiceUserCode {
         return response;
     }
 
+    @desc("Get available data versions (task executions) for a list of input tables. Each returned version includes at least one of the given tables, along with the subset of requested tables it contains and their count.")
+    @webService(path = "getVersionsForTables", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+    @resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+            "  \"result\": [\r\n" +
+            "    {\r\n" +
+            "      \"task_name\": \"task1\",\r\n" +
+            "      \"task_description\": \"\",\r\n" +
+            "      \"executed_by\": \"John.Doe@k2view.com\",\r\n" +
+            "      \"execution_datetime\": \"2024-02-13 07:46:01.232883\",\r\n" +
+            "      \"task_execution_id\": 1,\r\n" +
+            "      \"input_tables\": [\r\n" +
+            "        { \"interface_name\": \"SRC1\", \"schema_name\": \"public\", \"table_name\": \"CUSTOMER\", \"number_of_records\": 10 }\r\n" +
+            "      ],\r\n" +
+            "      \"number_of_input_tables\": 1\r\n" +
+            "    }\r\n" +
+            "  ],\r\n" +
+            "  \"errorCode\": \"\",\r\n" +
+            "  \"message\": null\r\n" +
+            "}")
+    public static Object wsGetVersionsForTables(
+            List<Map<String, Object>> tableList,
+            String env_name,
+            @param(required = false, description = "Optional. Only include versions executed on/after this timestamp. ISO 8601 format.") String fromDate,
+            @param(required = false, description = "Optional. Only include versions executed on/before this timestamp. ISO 8601 format.") String toDate) throws Exception {
+        HashMap<String, Object> response = new HashMap<>();
+        String errorCode = "SUCCESS";
+        String message = null;
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        try {
+            if (tableList == null || tableList.isEmpty()) {
+                errorCode = "FAILED";
+                message = "tableList must contain at least one table (interface_name, schema_name, table_name).";
+            } else {
+                result = fnGetVersionsForTables(tableList, env_name, fromDate, toDate);
+            }
+        } catch (Exception e) {
+            errorCode = "FAILED";
+            message = e.getMessage();
+            log.error("Error in wsGetVersionsForTables: " + message, e);
+        }
+
+        response.put("errorCode", errorCode);
+        response.put("message", message);
+        response.put("result", result);
+        return response;
+    }
+
     @webService(path = "getTableFields", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
     public static Object wsGetTableFields(String dbInterfaceName, String SchemaName, String tableName) throws Exception {
         HashMap<String,Object> response=new HashMap<>();
-		List<HashMap<String, String>> result = new ArrayList<>();
+		List<HashMap<String, Object>> result = new ArrayList<>();
 		String errorCode="SUCCESS";
 		String message=null;
 
@@ -359,7 +425,94 @@ public class Logic extends WebServiceUserCode {
 
        return response;
     }
-    
+
+    @desc("Given the current table (interface/schema/table), the list of tables marked/chosen for the task, and " +
+          "the recordsSampling/sharedFilter flags, returns the other chosen tables (excluding the current one) " +
+          "that qualify to receive the shared criteria. When sharedFilter is true (regardless of recordsSampling), " +
+          "tables are matched by field aliases used by the filter conditions being shared (fieldAliases): a table " +
+          "qualifies if it carries at least one of those aliases in the interface catalog, and the matched aliases " +
+          "are returned per table. When only recordsSampling is true, tables are matched by the partition limit " +
+          "being shared (limitToShare): a table qualifies if limitToShare is null, or its own partition_num is " +
+          "null or less than or equal to limitToShare. When both flags are false, no tables qualify.")
+    @webService(path = "getTablesWithSharedCriteria", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
+    public static Object wsGetTablesWithSharedCriteria(
+            @param(required = true) String interfaceName,
+            @param(required = true) String schemaName,
+            @param(required = true) String tableName,
+            @param(required = true) Boolean recordsSampling,
+            @param(required = true) Boolean sharedFilter,
+            @param(required = false) List<String> fieldAliases,
+            @param(required = false) Integer limitToShare,
+            @param(required = true) List<Map<String, Object>> chosenTables) throws Exception {
+        HashMap<String, Object> response = new HashMap<>();
+        String errorCode = "SUCCESS";
+        String message = null;
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        boolean matchByFieldAliases = Boolean.TRUE.equals(sharedFilter);
+        boolean matchByShareLimit = !matchByFieldAliases && Boolean.TRUE.equals(recordsSampling);
+
+        try {
+            if (matchByFieldAliases || matchByShareLimit) {
+                List<String> aliasesToMatch = fieldAliases != null ? fieldAliases : Collections.emptyList();
+
+                for (Map<String, Object> table : chosenTables) {
+                    String otherInterface = table.get("interface_name") != null ? table.get("interface_name").toString() : null;
+                    String otherSchema = table.get("schema_name") != null ? table.get("schema_name").toString() : null;
+                    String otherTable = table.get("reference_table_name") != null ? table.get("reference_table_name").toString()
+                            : table.get("ref_table_name") != null ? table.get("ref_table_name").toString() : null;
+                    if (otherInterface == null || otherSchema == null || otherTable == null) continue;
+
+                    boolean isCurrentTable = Objects.equals(interfaceName, otherInterface)
+                            && Objects.equals(schemaName, otherSchema)
+                            && Objects.equals(tableName, otherTable);
+                    if (isCurrentTable) continue;
+
+                    if (matchByFieldAliases) {
+                        List<HashMap<String, Object>> fields = fnGetTableFields(otherInterface, otherSchema, otherTable, otherSchema);
+                        List<String> matchedFieldAliases = new ArrayList<>();
+                        for (String alias : aliasesToMatch) {
+                            boolean hasAlias = fields.stream().anyMatch(field -> alias.equals(field.get("field_alias")));
+                            if (hasAlias) matchedFieldAliases.add(alias);
+                        }
+                        if (!matchedFieldAliases.isEmpty()) {
+                            Map<String, Object> match = new HashMap<>();
+                            match.put("interface_name", otherInterface);
+                            match.put("schema_name", otherSchema);
+                            match.put("ref_table_name", otherTable);
+                            match.put("matched_field_aliases", matchedFieldAliases);
+                            result.add(match);
+                        }
+                    } else {
+                        Integer otherPartitionNum = fnGetTablePartitionNum(otherInterface, otherSchema, otherTable,
+                                "TableLevelDefinitions", "TDM_TableLevel");
+
+                        boolean qualifies = limitToShare == null
+                                || otherPartitionNum == null
+                                || otherPartitionNum >= limitToShare;
+
+                        if (qualifies) {
+                            Map<String, Object> match = new HashMap<>();
+                            match.put("interface_name", otherInterface);
+                            match.put("schema_name", otherSchema);
+                            match.put("ref_table_name", otherTable);
+                            match.put("partition_num", otherPartitionNum);
+                            result.add(match);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            errorCode = "FAILED";
+            message = e.getMessage();
+        }
+
+        response.put("errorCode", errorCode);
+        response.put("message", message);
+        response.put("result", result);
+        return response;
+    }
+
     /* API #2: Get Schemas / Catalogs schmeas List – wsGetInterfaceSchemaList */
     @desc("Get Schemas/Catalogs list for a given interface in an environment")
     @webService(path = "getInterfaceSchemaList", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
@@ -384,7 +537,7 @@ public class Logic extends WebServiceUserCode {
             if (interfaceName == null || interfaceName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Missing 'Interface' input.");
             }
-            fabric().execute("set environment='" + environment + "';");
+            fabric().execute("set environment=?;", environment);
 
             // 1) Try to get schemas from catalog mtable
             Set<String> schemasFromCatalog = getSchemasFromCatalog(interfaceName);
@@ -421,7 +574,8 @@ public class Logic extends WebServiceUserCode {
                 "  \"message\": null\n" +
                 "}"
     )
-    public static Object wsGetSchemaTableList(String environment, String interfaceName, String schemaName) throws Exception {
+    public static Object wsGetSchemaTableList(String environment, String interfaceName, String schemaName,
+            Long envId, Long tarEnvId, String taskType, String syncMode) throws Exception {
         Map<String, Object> response = new LinkedHashMap<>();
         List<Map<String, Object>> result = new ArrayList<>();
         String errorCode = "SUCCESS";
@@ -437,7 +591,16 @@ public class Logic extends WebServiceUserCode {
             if (schemaName == null || schemaName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Missing 'Schema' input.");
             }
-            fabric().execute("set environment='" + environment + "';");
+
+            // Interface belongs to a system disabled in the relevant env(s) — no tables to show
+            if (fnGetDisabledInterfaces(taskType, syncMode, envId, tarEnvId).contains(interfaceName)) {
+                response.put("result", result);
+                response.put("errorCode", errorCode);
+                response.put("message", message);
+                return response;
+            }
+
+            fabric().execute("set environment=?;", environment);
 
             // 1) Catalog : Get table from Catalog
             Set<String> tables = getTablesFromCatalog(interfaceName, schemaName);
@@ -470,10 +633,10 @@ public class Logic extends WebServiceUserCode {
         try {
             String sql =
                 "SELECT s.task_execution_id, t.task_title " +
-                "FROM " + TDMDB_SCHEMA + ".task_ref_tables rt " +
-                "JOIN " + TDMDB_SCHEMA + ".tasks t               ON t.task_id = rt.task_id " +
-                "JOIN " + TDMDB_SCHEMA + ".task_ref_exe_stats s  ON s.task_id = rt.task_id AND s.ref_table_name = rt.ref_table_name AND s.schema_name = rt.schema_name AND s.interface_name = rt.interface_name " +
-                "JOIN " + TDMDB_SCHEMA + ".task_execution_list l ON l.task_execution_id = s.task_execution_id " +
+                "FROM " + getTDMDBSchema() + ".task_ref_tables rt " +
+                "JOIN " + getTDMDBSchema() + ".tasks t               ON t.task_id = rt.task_id " +
+                "JOIN " + getTDMDBSchema() + ".task_ref_exe_stats s  ON s.task_id = rt.task_id AND s.ref_table_name = rt.ref_table_name AND s.schema_name = rt.schema_name AND s.interface_name = rt.interface_name " +
+                "JOIN " + getTDMDBSchema() + ".task_execution_list l ON l.task_execution_id = s.task_execution_id " +
                 "WHERE rt.interface_name = ? " +
                 "  AND rt.schema_name = ? " +
                 "  AND rt.ref_table_name = ? " +
@@ -490,13 +653,19 @@ public class Logic extends WebServiceUserCode {
             result.put("interface_name", interfaceName);
             result.put("schema_name", schemaName);
             result.put("table_name", tableName);
-            result.put("count_ind", fnGetTableCountIndicator(interfaceName, schemaName, tableName, "count_ind",
-                    "TableLevelDefinitions", "TDM_TableLevel"));
-
             if (r != null && !r.isEmpty()) {
                 result.put("task_name", r.get("task_title"));
                 result.put("task_execution_id", r.get("task_execution_id"));
             }
+            result.put("count_ind", fnGetTableCountIndicator(interfaceName, schemaName, tableName, "count_ind",
+                    "TableLevelDefinitions", "TDM_TableLevel"));
+            Boolean partitionInd = fnGetTablePartitionIndicator(interfaceName, schemaName, tableName,
+                    "TableLevelDefinitions", "TDM_TableLevel");
+            result.put("partition_ind", partitionInd);
+            result.put("partition_num", Boolean.FALSE.equals(partitionInd) ? Integer.valueOf(1)
+                    : fnGetTablePartitionNum(interfaceName, schemaName, tableName,
+                            "TableLevelDefinitions", "TDM_TableLevel"));
+
         } catch (Exception e) {
             message = e.getMessage();
             log.error(message, e);
@@ -671,12 +840,12 @@ public class Logic extends WebServiceUserCode {
     private static SortedMap<String, Object> getTableLastExecution(String tableName, String schemaName, String interfaceName, String envName) throws Exception {
         SortedMap<String, Object > tableVersion = new TreeMap<>();
         String sql = "SELECT s.task_execution_id AS taskExecutionId, t.task_title AS taskName " +
-            "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s, " + TDMDB_SCHEMA + ".task_ref_tables rt, " + TDMDB_SCHEMA + ".tasks t " +
+            "FROM " + getTDMDBSchema() + ".task_ref_exe_stats s, " + getTDMDBSchema() + ".task_ref_tables rt, " + getTDMDBSchema() + ".tasks t " +
             "WHERE rt.ref_table_name = ? AND s.task_id = rt.task_id AND s.ref_table_name = rt.ref_table_name AND s.schema_name = rt.schema_name AND s.interface_name = rt.interface_name " +
             "AND rt.schema_name = ? AND rt.interface_name = ? AND rt.task_id = t.task_id " +
             "AND t.source_env_name = ? AND s.task_execution_id = (select MAX(s2.task_execution_id) " +
-            "FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats s2, " + TDMDB_SCHEMA + ".task_execution_list l, " +
-            TDMDB_SCHEMA + ".tasks t2, " + TDMDB_SCHEMA + ".task_ref_tables rt2 " +
+            "FROM " + getTDMDBSchema() + ".task_ref_exe_stats s2, " + getTDMDBSchema() + ".task_execution_list l, " +
+            getTDMDBSchema() + ".tasks t2, " + getTDMDBSchema() + ".task_ref_tables rt2 " +
             "WHERE rt2.ref_table_name = ? " +
             "AND rt2.schema_name = ? AND rt2.interface_name = ? " +
             "AND s2.task_id = rt2.task_id AND s2.ref_table_name = rt2.ref_table_name AND s2.schema_name = rt2.schema_name AND s2.interface_name = rt2.interface_name " +
@@ -919,7 +1088,8 @@ public class Logic extends WebServiceUserCode {
 
     public static Object wsGetEnvInterfaceListWithConfig(
             @param(required = true) String environment,
-            @param(required = true) Long envId) throws Exception {
+            @param(required = true) Long envId,
+            Long tarEnvId, String taskType, String syncMode) throws Exception {
 
         Map<String, Object> response = new LinkedHashMap<>();
         List<Map<String, Object>> resultList = new ArrayList<>();
@@ -946,6 +1116,7 @@ public class Logic extends WebServiceUserCode {
             Set<FabricInterface> interfaces = InterfacesManager.getInstance().getAllInterfaces(envName);
             Set<String> suppressed = getAllSuppressedInterfaces();
             Set<String> withCatalog = discoverInterfacesWithCatalog(suppressed);
+            Set<String> disabledInterfaces = fnGetDisabledInterfaces(taskType, syncMode, envId, tarEnvId);
 
             for (FabricInterface iface : interfaces) {
                 String interfaceName = iface.getName();
@@ -954,9 +1125,10 @@ public class Logic extends WebServiceUserCode {
                        continue;
                     }
                 }
-        
+
                 if (iface.getActiveMode()
-                        && (!suppressed.contains(interfaceName) || withCatalog.contains(interfaceName))) {
+                        && (!suppressed.contains(interfaceName) || withCatalog.contains(interfaceName))
+                        && !disabledInterfaces.contains(interfaceName)) {
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("interfaceName", interfaceName);
                     item.put("config", configLookup.getOrDefault(interfaceName, createDefaultConfig()));
@@ -984,7 +1156,7 @@ public class Logic extends WebServiceUserCode {
 
     private static void validateEnvironmentMatch(Long envId, String envName) throws Exception {
         // Query to check if the ID exists and if the name matches
-        String sql = "SELECT environment_name FROM " + TDMDB_SCHEMA + ".environments WHERE environment_id = ?";
+        String sql = "SELECT environment_name FROM " + getTDMDBSchema() + ".environments WHERE environment_id = ?";
         Db.Row row = db("TDM").fetch(sql, envId).firstRow();
 
         if (row.isEmpty()) {

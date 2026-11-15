@@ -14,7 +14,7 @@ stages:
         parent: Const
         in:
           value:
-            const: SharedObjects/Java/src/com/k2view/cdbms/usercode/common
+            const: SharedObjects/Java/src/com/k2view/cdbms/usercode/common/TDM
             schema: string
         out:
           value:
@@ -95,13 +95,13 @@ stages:
             link: Implementation Folder/string
             schema: string
             editor:
-              id: com.k2view.interface
               interfaceType:
               - LOCAL
               - SFTP
               - filesystem
               interfaces:
               - file:///
+              id: com.k2view.interface
             mandatory: false
           pattern:
             const: SharedGlobals.java

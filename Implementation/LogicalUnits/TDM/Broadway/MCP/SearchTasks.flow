@@ -1,0 +1,165 @@
+description: |-
+  Searches for TDM tasks by free text, with optional filters on task type, source / target environment, business entity, selection method, scheduled status, data type, and creator. Wraps the canonical wsSearch web service via the AI-side wsSearchAi endpoint.
+
+  Returns a flat array of { task_id, task_title, display_task_type } across all groups the calling user is permitted to see.
+
+  ## Search inputs
+
+  - **text** (string) — free-text search across task title, task description, task group name, and task group description (case-insensitive). Pass `%` to match everything. Default: `%`.
+
+  - **taskTypes** (string array, dropdown) — restrict to specific task types. Multiple values are OR'd. Omit / empty for all task types. Valid values:
+      * `IN_PLACE_MASKING` — in-place masking (modifies entities in target without extraction)
+      * `EXTRACT` — extract only (no load)
+      * `EXTRACT_AND_LOAD` — extract from source and load to target (sync mode ON / FORCE)
+      * `LOAD_AND_RESERVE` — load with reservation, no delete-before-load
+      * `DELETE_AND_LOAD_AND_RESERVE` — load with reserve and delete-before-load
+      * `DELETE_AND_LOAD` — load with delete-before-load, no reserve
+      * `LOAD` — plain load (no reserve, no delete-before-load)
+      * `DELETE` — delete only (removes from target)
+      * `RESERVE` — reserve only (locks entities without loading)
+      * `AI_TRAINING` — AI training task (trains a synthetic-data model)
+      * `RULE_BASED_SDG` — rule-based synthetic data generation (no load)
+      * `AI_BASED_SDG` — AI-based synthetic data generation (no load)
+      * `RULE_BASED_GENERATE_AND_LOAD` — rule-based generate & load to target
+      * `AI_BASED_GENERATE_AND_LOAD` — AI-based generate & load to target
+      * `LOAD_RULE_BASED_GENERATED_ENTITIES` — load previously rule-generated entities
+      * `LOAD_AI_BASED_GENERATED_ENTITIES` — load previously AI-generated entities
+
+  - **sourceEnvironmentIds** (long array) — restrict to tasks whose source environment is one of these IDs (OR'd). Note: `-1` is the legitimate ID for the Synthetic environment and `-2` is AI; pass them as real values, NOT as a "no filter" sentinel. To skip this filter, omit the field entirely or pass `null`.
+
+  - **targetEnvironmentIds** (long array) — same semantics as sourceEnvironmentIds, applied to the target side.
+
+  - **beIds** (long array) — restrict to tasks for these business entity IDs (OR'd). Omit / null for all BEs.
+
+  - **selectionMethods** (string array, dropdown) — restrict to tasks using these entity selection methods (OR'd). Ignored when dataType = `tables`. Valid values:
+      * `PREDEFINED_ENTITY_LIST` — fixed entity list defined at task creation (selection method "ALL")
+      * `CUSTOM_LOGIC` — entity selection by a custom Broadway flow (code C)
+      * `ENTITY_LIST` — explicit entity IDs supplied by the user (code L)
+      * `BUSINESS_PARAMETERS` — selection by attribute conditions (codes P / PR) — most common for parameter-based requests
+      * `LOAD_PRE_GENERATED_SUBSET` — load a previously generated subset
+      * `RANDOM_LIST` — random entity selection (code R)
+      * `SYNTHETIC_GENERATION` — synthetic data generation
+
+  - **creator** (string) — partial, case-insensitive match against the task creator's username.
+
+  - **isScheduled** (boolean) — `true` returns scheduled tasks only (scheduler != IMMEDIATE); `false` returns immediate-only; `null` returns both.
+
+  - **dataType** (string, dropdown) — filter by the type of data the task processes. Single value (NOT an array). Valid values:
+      * `entities` — entity-based tasks (excludes table-level tasks and tasks that also process reference tables)
+      * `tables` — table-level tasks only
+      * `both` — entity tasks that also include reference tables
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call SearchTasks:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.SearchTasks 'text'=${text} 'taskTypes'=${taskTypes} 'sourceEnvironmentIds'=${sourceEnvironmentIds}
+              'targetEnvironmentIds'=${targetEnvironmentIds} 'beIds'=${beIds} 'selectionMethods'=${selectionMethods}
+              'creator'=${creator} 'isScheduled'=${isScheduled} 'dataType'=${dataType}
+          text:
+            external: text
+            const: '%'
+            schema: string
+            remark: Free text matched case-insensitively against task title, task description, task group
+              name and task group description. Omit or pass % to match every task.
+            mandatory: false
+          taskTypes:
+            external: taskTypes
+            schema:
+              type: array
+              items:
+                type: string
+            remark: Optional. Task type codes, OR-ed, spelled exactly as listed in the description (e.g.
+              EXTRACT_AND_LOAD, LOAD, DELETE). Omit for all task types.
+            mandatory: false
+          sourceEnvironmentIds:
+            external: sourceEnvironmentIds
+            schema:
+              type: array
+              items:
+                type: integer
+            remark: Optional. Source environment ids (environment_id from ListEnvironments), OR-ed. -1
+              (Synthetic) and -2 (AI) are real ids, not a no-filter value; omit the field to skip the
+              filter.
+            mandatory: false
+          targetEnvironmentIds:
+            external: targetEnvironmentIds
+            schema:
+              type: array
+              items:
+                type: integer
+            remark: Optional. Target environment ids (environment_id from ListEnvironments), OR-ed. Same
+              rules as sourceEnvironmentIds.
+            mandatory: false
+          beIds:
+            external: beIds
+            schema:
+              type: array
+              items:
+                type: integer
+            remark: Optional. Business Entity ids (be_id from ListBusinessEntities), OR-ed. Omit for all
+              BEs.
+            mandatory: false
+          selectionMethods:
+            external: selectionMethods
+            schema:
+              type: array
+              items:
+                type: string
+            remark: Optional. Selection method names, OR-ed, e.g. BUSINESS_PARAMETERS, ENTITY_LIST, CUSTOM_LOGIC
+              (full list in the description). Never the single-letter codes P, L or C. Ignored when dataType
+              is tables.
+            mandatory: false
+          creator:
+            external: creator
+            schema: string
+            remark: Optional. Partial, case-insensitive match on the task creator user name.
+            mandatory: false
+          isScheduled:
+            external: isScheduled
+            schema: boolean
+            remark: Optional. true for scheduled tasks only, false for immediate tasks only; omit for
+              both.
+            mandatory: false
+          dataType:
+            external: dataType
+            schema: string
+            remark: Optional. One of entities, tables or both (a single value, not an array). Omit for
+              all.
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      tasks:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call SearchTasks/result/tasks
+        out:
+          value:
+            external: tasks
+            schema: '#ref'
+schemas:
+  Call SearchTasks.out.result:
+    type: object
+    properties:
+      tasks: &id001
+        type: array
+        items:
+          type: object
+          properties:
+            task_id:
+              type: integer
+            task_title:
+              type: string
+            display_task_type:
+              type: string
+  tasks.out.value: *id001

@@ -1,0 +1,426 @@
+tags: Upgrade
+stages:
+  Get Project Path:
+    actors:
+      PROJECT_DIR:
+        parent: SysEnv
+        in:
+          name:
+            const: PROJECT_DIR
+        out:
+          value:
+            schema: string
+  Get Mtable:
+    actors:
+      Studio Present?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: PROJECT_DIR/value
+      MTableLookup:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: TDMCleanUp
+        out:
+          result:
+            schema: '#ref'
+      JavaScript:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                const cleanupStatements = [
+                  {
+                    TABLE_NAME: "TASK_EXECUTION_MASKING_INFO",
+                    CLEANUP_ORDER: 1,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_MASKING_INFO WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME < ${TRUNC_DATE} AND EXPIRATION_DATE < ${TRUNC_DATE})",
+                    CLEANUP_LOGIC: "Clean records which belong to task executions that need to be cleaned",
+                    SEQ: 46,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                  },
+                  {
+                    TABLE_NAME: "TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS",
+                    CLEANUP_ORDER: 1,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME < ${TRUNC_DATE} AND EXPIRATION_DATE < ${TRUNC_DATE})",
+                    CLEANUP_LOGIC: "Clean records which belong to task executions that need to be cleaned",
+                    SEQ: 47,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                  },
+                  {
+                    TABLE_NAME: "TASK_EXECUTION_MASKING_INFO",
+                    CLEANUP_ORDER: 2,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_MASKING_INFO s WHERE NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST l WHERE l.task_execution_id = s.task_execution_id)",
+                    CLEANUP_LOGIC: "Clean records whose task execution was already cleaned",
+                    SEQ: 48,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                  },
+                  {
+                    TABLE_NAME: "TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS",
+                    CLEANUP_ORDER: 2,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS s WHERE NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST l WHERE l.task_execution_id = s.task_execution_id)",
+                    CLEANUP_LOGIC: "Clean records whose task execution was already cleaned",
+                    SEQ: 49,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                  },
+                  {
+                    TABLE_NAME: "TDM_EXE_CATALOG_FIELD_INFO",
+                    CLEANUP_ORDER: 3,
+                    CLEANUP_IND: true,
+                    CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TDM_EXE_CATALOG_FIELD_INFO c WHERE c.UPDATE_DATE < ${TRUNC_DATE} AND NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_MASKING_INFO m WHERE m.interface_name = c.interface_name AND m.schema_name = c.schema_name AND m.catalog_hash = c.catalog_hash)",
+                    CLEANUP_LOGIC: "Catalog copies that are no longer used by any task execution",
+                    SEQ: 50,
+                    OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                  }
+                ];
+
+                cleanupStatements;
+              script: |-
+                var cleanupStatements = [{
+                  TABLE_NAME: "TASK_EXECUTION_MASKING_INFO",
+                  CLEANUP_ORDER: 1,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_MASKING_INFO WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME < ${TRUNC_DATE} AND EXPIRATION_DATE < ${TRUNC_DATE})",
+                  CLEANUP_LOGIC: "Clean records which belong to task executions that need to be cleaned",
+                  SEQ: 46,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                }, {
+                  TABLE_NAME: "TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS",
+                  CLEANUP_ORDER: 1,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME < ${TRUNC_DATE} AND EXPIRATION_DATE < ${TRUNC_DATE})",
+                  CLEANUP_LOGIC: "Clean records which belong to task executions that need to be cleaned",
+                  SEQ: 47,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                }, {
+                  TABLE_NAME: "TASK_EXECUTION_MASKING_INFO",
+                  CLEANUP_ORDER: 2,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_MASKING_INFO s WHERE NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST l WHERE l.task_execution_id = s.task_execution_id)",
+                  CLEANUP_LOGIC: "Clean records whose task execution was already cleaned",
+                  SEQ: 48,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                }, {
+                  TABLE_NAME: "TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS",
+                  CLEANUP_ORDER: 2,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TDM_EXE_CATALOG_CLASSIFICATION_GENERATORS s WHERE NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_LIST l WHERE l.task_execution_id = s.task_execution_id)",
+                  CLEANUP_LOGIC: "Clean records whose task execution was already cleaned",
+                  SEQ: 49,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                }, {
+                  TABLE_NAME: "TDM_EXE_CATALOG_FIELD_INFO",
+                  CLEANUP_ORDER: 3,
+                  CLEANUP_IND: true,
+                  CLEANUP_STATEMENT: "DELETE FROM ${@TDMDB_SCHEMA}.TDM_EXE_CATALOG_FIELD_INFO c WHERE c.UPDATE_DATE < ${TRUNC_DATE} AND NOT EXISTS (SELECT 1 FROM ${@TDMDB_SCHEMA}.TASK_EXECUTION_MASKING_INFO m WHERE m.interface_name = c.interface_name AND m.schema_name = c.schema_name AND m.catalog_hash = c.catalog_hash)",
+                  CLEANUP_LOGIC: "Catalog copies that are no longer used by any task execution",
+                  SEQ: 50,
+                  OVERRIDE_CLEANUP_RETENTION_PERIOD: 12
+                }];
+                cleanupStatements;
+        out:
+          result:
+            schema: '#ref'
+      File Name And Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/Implementation/LogicalUnits/k2_ref/Mtable/TDMCleanUp.csv
+          projDir:
+            link: PROJECT_DIR/value
+            schema: string
+            mandatory: false
+            createdBy: format
+  Convert to Array:
+    actors:
+      ArrayBuilder1:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: MTableLookup/result
+        out:
+          array:
+            schema: '#ref'
+      ArrayBuilder2:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: JavaScript/result
+        out:
+          array:
+            schema: '#ref'
+  Merge:
+    actors:
+      'JavaScript ':
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                // TASK_EXECUTION_MASKING was dropped from the TDM DB - remove its cleanup statements
+                var existingCleanupStatements = [...oldArr].filter(r => String(r.TABLE_NAME).toUpperCase() !== 'TASK_EXECUTION_MASKING');
+                var newCleanupStatements = [...newArr];
+                // Skip statements that already exist, so the upgrade can run more than once
+                var existingKeys = existingCleanupStatements.map(r => r.TABLE_NAME + '|' + r.SEQ);
+
+                for (var i = 0; i < newCleanupStatements.length; i++) {
+                    var row = newCleanupStatements[i];
+                    var pos = existingKeys.indexOf(row.TABLE_NAME + '|' + row.SEQ);
+                    if (pos < 0) {
+                        existingCleanupStatements.push(row);
+                    } else if (/catalog_version|creation_date/i.test(String(existingCleanupStatements[pos].CLEANUP_STATEMENT))) {
+                        // TDM 10.1.1 - replace the old statement (catalog_version / creation_date)
+                        existingCleanupStatements[pos].CLEANUP_STATEMENT = row.CLEANUP_STATEMENT;
+                        existingCleanupStatements[pos].CLEANUP_LOGIC = row.CLEANUP_LOGIC;
+                    }
+                }
+
+                existingCleanupStatements;
+              script: |-
+                // TASK_EXECUTION_MASKING was dropped from the TDM DB - remove its cleanup statements
+                var existingCleanupStatements = [].concat(oldArr).filter(function (r) {
+                  return String(r.TABLE_NAME).toUpperCase() !== 'TASK_EXECUTION_MASKING';
+                });
+                var newCleanupStatements = [].concat(newArr); // Skip statements that already exist, so the upgrade can run more than once
+
+                var existingKeys = existingCleanupStatements.map(function (r) {
+                  return r.TABLE_NAME + '|' + r.SEQ;
+                });
+
+                for (var i = 0; i < newCleanupStatements.length; i++) {
+                  var row = newCleanupStatements[i];
+                  var pos = existingKeys.indexOf(row.TABLE_NAME + '|' + row.SEQ);
+
+                  if (pos < 0) {
+                    existingCleanupStatements.push(row);
+                  } else if (/catalog_version|creation_date/i.test(String(existingCleanupStatements[pos].CLEANUP_STATEMENT))) {
+                    // TDM 10.1.1 - replace the old statement (catalog_version / creation_date)
+                    existingCleanupStatements[pos].CLEANUP_STATEMENT = row.CLEANUP_STATEMENT;
+                    existingCleanupStatements[pos].CLEANUP_LOGIC = row.CLEANUP_LOGIC;
+                  }
+                }
+
+                existingCleanupStatements;
+          oldArr:
+            link: ArrayBuilder1/array
+            schema: '#ref'
+            mandatory: false
+          newArr:
+            link: ArrayBuilder2/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  'Convert to CSV ':
+    actors:
+      CsvBuilder:
+        parent: CsvBuilder
+        in:
+          columns:
+            const:
+            - TABLE_NAME
+            - CLEANUP_ORDER
+            - CLEANUP_IND
+            - CLEANUP_STATEMENT
+            - CLEANUP_LOGIC
+            - SEQ
+            - OVERRIDE_CLEANUP_RETENTION_PERIOD
+          maps:
+            link: JavaScript /result
+      ArrayBuilder3:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: JavaScript /result
+        out:
+          array:
+            schema: '#ref'
+  Write To File:
+    actors:
+      FileWrite:
+        parent: FileWrite
+        in:
+          interface:
+            const: file://
+          path:
+            link: File Name And Location/string
+          stream:
+            link: CsvBuilder/csv
+      MTableLoad:
+        parent: MTableLoad
+        in:
+          mtable:
+            const: TDMCleanUp
+          data:
+            const: ''
+            link: ArrayBuilder3/array
+            default: true
+          columns:
+            const:
+            - TABLE_NAME
+            - CLEANUP_ORDER
+            - CLEANUP_IND
+            - CLEANUP_STATEMENT
+            - CLEANUP_LOGIC
+            - SEQ
+            - OVERRIDE_CLEANUP_RETENTION_PERIOD
+schemas:
+  MTableLookup.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  JavaScript.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: integer
+        CLEANUP_IND:
+          type: boolean
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: integer
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  ArrayBuilder1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  ArrayBuilder2.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: integer
+        CLEANUP_IND:
+          type: boolean
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: integer
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  JavaScript .in.oldArr:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  JavaScript .in.newArr:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: integer
+        CLEANUP_IND:
+          type: boolean
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: integer
+        OVERRIDE_CLEANUP_RETENTION_PERIOD: {
+          }
+  JavaScript .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
+  ArrayBuilder3.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        TABLE_NAME:
+          type: string
+        CLEANUP_ORDER:
+          type: string
+        CLEANUP_IND:
+          type: string
+        CLEANUP_STATEMENT:
+          type: string
+        CLEANUP_LOGIC:
+          type: string
+        SEQ:
+          type: string
+        OVERRIDE_CLEANUP_RETENTION_PERIOD:
+          type: string
