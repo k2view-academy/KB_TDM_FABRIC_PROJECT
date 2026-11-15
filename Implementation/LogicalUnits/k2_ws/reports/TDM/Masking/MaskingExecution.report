@@ -1,0 +1,2245 @@
+{
+    "Name": "MaskingExecution11111111",
+    "Width": "0in",
+    "ReportParameters": [
+        {
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    "=Format(AddMonths(Now(), -1), \"yyyy-MM-dd\")"
+                ]
+            },
+            "Name": "FROM_DATE",
+            "Prompt": "From date (YYYY-MM-DD)",
+            "ValidValues": {
+                "OrderBy": {
+                    "Condition": "None"
+                }
+            }
+        },
+        {
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    "=Format(Now(), \"yyyy-MM-dd\")"
+                ]
+            },
+            "Name": "END_DATE",
+            "Prompt": "End date (YYYY-MM-DD)",
+            "ValidValues": {
+                "OrderBy": {
+                    "Condition": "None"
+                }
+            }
+        },
+        {
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    "public"
+                ]
+            },
+            "Hidden": true,
+            "Name": "TDMDB_SCHEMA",
+            "Prompt": "TDMDB_SCHEMA",
+            "ValidValues": {
+                "OrderBy": {
+                    "Condition": "None"
+                }
+            }
+        }
+    ],
+    "EmbeddedImages": [
+        {
+            "Name": "k2view",
+            "ImageData": "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgAGsDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9G/jT8QZ/hb8NtW8TWtpHfT2RhCwTMVVt8qR8kc8Bs/hUnwb8ez/E74baN4mubSOxnvhKWgiYsq7JXj4J552Z/GuQ/a8/5N88T/71p/6VRVm/s8+LtJ8DfsveHNZ1u8Sx0+3S5LyPySftU2FUDkk9gK+qhgadTI44iEL1XW5E1e7XJe1vXyufNyxlSnnDoTnamqXN0tfmte/oe60V4H4H/arj8Wafr2v3vhW40XwZpIbdrUt15jSvuASNYhGMu2RkBiFyMnkZ5Zv26bRZDdHwLqo0PdtW/M4yT6bdm3PtvrKPDeaznKnGjdx31ju9bXva9um/kaSz/LYQjOVWyltpLba+23nt5n1LRXzn8cv2x7D4UfCrw58QtF8MzeMPDuq3Zs55I7wWr2Mm0kLIpR+cq47DIHJ3Ln3LwX4t07x74R0bxJpMwn0zVbSK8t3HdHUMAfQjOCOxBFfPVKc6M3TqKzTs0+jR7lOpCrFTg7p6p+RtUV8on9vWyvvEnxXtNH8GT6rongCxmup9ZXUVSO7kjkWMRKvlnbubzMNluIycc103gv8AbT8Kax+zp/wt3xLZyeF9M+1S2a6eJhdTSzKxVUjIVd7NjOMDABJOATUWND6Ior4Tl/4KhyrD/bCfBjxG3g7eV/txrkquMgZx5JjzyOPN7jmvQviD/wAFBPCfhTwV4F8aaJotx4l8I+I7ySxu75LkQTaTNHsLRSxbWJk2uzbQQCEyCQyklhH1VRXNePfH2mfD74e634wvpVl0vS7CS/Zo3BEqqm5Qp5yW4A9yK8n/AGTP2t9L/ap0nxBNbaJJ4d1HRpoknsZLr7RujkDGOQPsTqUcEY42j1FIZ77RXhfjD9qW18PftLeGPg5pvh6XW9U1WAXF5fR3YjXT0Ku/zJsO4hELHleGX1r3SgDxz9rz/k3zxP8A71p/6VRV8UL4Z+IHjH4TxamILq58F+HC6QqMKib3ZpHVOr4LHc/OBxnAOP0E+Mvw9l+Kfw41XwxDepp8t6YSLiSMuF2SpJ0BGc7MfjT/AISfD0/DX4baT4VuLpNTNmkqvMI9qyb5XcjaSePnx+FfoeT8QUsnytRhFSq+1vZp6R5Um09k9HH57Hwua5HUzXMnKTcafs7XVtZczaTXVbP5bmB+z34w8MePfhRpsOiWlraQWtuLS90hQCIHxhgyn7yvywY53AnPOQOJ/au+Jmi+FPAE3gLTbeC61vVoo7WHTbeMEW0RYYYoOh4AQDnOCOlZvir9iy3/ALfn1XwT4ru/CfnEk2iIzKmeoR1dWVf9k7vrXKL+wt4hTUhqK+PkGoLIJhdi2k80PnO7f5mc575zW+Ep5CsasdLFvlvzKDjK6lulJq97Pqt+5jiZ508H9TjhVzW5XNSjZx20Wlrro9jt9J/ZjbXv2S9U+G+t+XFqus28l1l/u2l2SHhyR/cZI92OuGHQ18l/Ab9ryb4L/sl/EPwRrF0LDx34YuJNP0WyuXAm/wBIdlZVXOWMEgmduwBQV9U+H/2ZviNoWvadqJ+LF9dLaXEc5gma4dJQrAlGUy4IIGCD1BrgvjJ/wTY0z4qfHe68cReJItK0TUruG81LRlsiXlYEefskDjBkwTnHDOTzXymceyniZV4YhVXNtuyas77a/gfS5U6kcOqM6LpqCSV2ndfI4z4a/Blvhb/wTc8favfQsmu+LNKk1a5L/eEJwLdD/wAAO/nvK1fI3jyfUU/Zb+DEZG7Rv7W1t2V93lGYSwY34/2Scc5wXxX7EfGP4Zj4n/CHxH4Hs7uPR11SwaxiuPJ3pAOMfICMgYxjIrx/wZ+w74dtv2aE+EfjC/8A7fjjvJr6HVrSH7PLazOxKvFuLYYAkHOQQSCMGvCue1Y4nTb/APa11Dwpa2Nj4Q+FFx4cnslhgtoCz2klqyYVFUTFGjKEAAfKQfSvIvCX7EHxA0H9mv4y6H4qg01XuRba5oVtYXfniO7tfOaUKBwpeNvKySeo9K7iy/4J1fEvQbSbw9on7QWtab4Obcq2ESXMahCeVMK3ATnJzjAPcc4H1f8AAH4KWPwB+GOn+DLDVb7Wre2Z5WudQYEl3O5wijhELZIQZxuOSSSSXA/OTxn+0tdfF79j34YfCXSLz7X421XUo9D1C2DneYbd1FsH74kL253dzFJ1wcdv4X8P6Z/wT9/bM0OwutTkt/AHifQkgn1C6JKI+3DMxxjIuIQ3H3UnFey/CP8A4J26X8K/2im+IkfiGK90W1urm70zQxYlDbNJuEamTzCGEYc4OBkqp46V6L+2D+yjb/tTeFtDso9Xj0DV9Iu3mgv5LbzwYnXEkRUMp5KxtnP8HTnguB4j+wRp1z8aPjT8Vfjxq0DFb28bTNIMoJMaHDMBnukS26ZHqwr7urzn9nz4NWXwD+EmheC7OdbxrFGe5vBHs+0zuxeSTGTjk4AycAAdq9GpMZ//2Q==",
+            "MIMEType": "image/jpeg"
+        }
+    ],
+    "Layers": [
+        {
+            "Name": "default"
+        }
+    ],
+    "CustomProperties": [
+        {
+            "Name": "DisplayType",
+            "Value": "Page"
+        },
+        {
+            "Name": "SizeType",
+            "Value": "Default"
+        },
+        {
+            "Name": "PaperOrientation",
+            "Value": "Landscape"
+        },
+        {
+            "Name": "CollapseWhiteSpace",
+            "Value": "True"
+        }
+    ],
+    "Version": "10.0.2",
+    "Page": {
+        "PageWidth": "8.5in",
+        "PageHeight": "11in",
+        "RightMargin": "0in",
+        "LeftMargin": "0in",
+        "TopMargin": "0in",
+        "BottomMargin": "0in",
+        "Columns": 1,
+        "ColumnSpacing": "0.5in",
+        "PaperOrientation": "Portrait"
+    },
+    "DataSources": [
+        {
+            "Name": "fabricApi",
+            "ConnectionProperties": {
+                "DataProvider": "JSON",
+                "ConnectString": "endpoint=/api/"
+            }
+        }
+    ],
+    "ReportSections": [
+        {
+            "Type": "Continuous",
+            "Name": "ContinuousSection1",
+            "Page": {
+                "PageWidth": "15.6in",
+                "PageHeight": "8.5in",
+                "RightMargin": "0in",
+                "LeftMargin": "0in",
+                "TopMargin": "0in",
+                "BottomMargin": "0in",
+                "Columns": 1,
+                "ColumnSpacing": "0.5in",
+                "PaperOrientation": "Portrait"
+            },
+            "Width": "15.2in",
+            "Body": {
+                "Height": "8.4in",
+                "ReportItems": [
+                    {
+                        "Type": "rectangle",
+                        "Name": "ExecTop10ChartContainer",
+                        "ZIndex": 2,
+                        "KeepTogether": true,
+                        "RoundingRadius": {
+                            "Default": "8pt"
+                        },
+                        "Style": {
+                            "Border": {
+                                "Color": "#cccccc",
+                                "Style": "Solid"
+                            },
+                            "BackgroundColor": "White"
+                        },
+                        "ReportItems": [
+                            {
+                                "Type": "textbox",
+                                "Name": "ExecTop10ChartTitle",
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Top 10 Used Masking Classifications",
+                                "Style": {
+                                    "FontSize": "12pt",
+                                    "FontWeight": "Bold",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "Left": "0.2in",
+                                "Top": "0.1in",
+                                "Width": "3.32in",
+                                "Height": "0.3in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ExecTop10ViewAllLink",
+                                "Action": {
+                                    "Drillthrough": {
+                                        "ReportName": "TDM_MaskingExecutionReport_PIIClassification_level_2.report",
+                                        "Parameters": [
+                                            {
+                                                "ParameterName": "CLASSIFICATION"
+                                            },
+                                            {
+                                                "ParameterName": "FROM_DATE",
+                                                "Value": "=Parameters!FROM_DATE.Value"
+                                            },
+                                            {
+                                                "ParameterName": "END_DATE",
+                                                "Value": "=Parameters!END_DATE.Value"
+                                            },
+                                            {
+                                                "ParameterName": "TDMDB_SCHEMA",
+                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "View All...",
+                                "Style": {
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Right",
+                                    "TextDecoration": "Underline"
+                                },
+                                "Left": "11.5in",
+                                "Top": "0.11in",
+                                "Width": "3.2in",
+                                "Height": "0.24in"
+                            },
+                            {
+                                "Type": "chart",
+                                "Name": "ExecTop10Chart",
+                                "NoRowsMessage": "There is no available data",
+                                "DataSetName": "Top10PIIClassificationsList",
+                                "Style": {
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#2e2e2e",
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "Header": {
+                                    "Style": {
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt"
+                                    }
+                                },
+                                "Footer": {
+                                    "Style": {
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "4pt"
+                                    }
+                                },
+                                "Palette": "BlueWarm",
+                                "PlotArea": {
+                                    "Axes": [
+                                        {
+                                            "LabelStyle": {
+                                                "FontSize": "9pt",
+                                                "Color": "#2e2e2e",
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Color": "#aaaaaa",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "Gray",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Position": "None",
+                                            "TitleStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        },
+                                        {
+                                            "AxisType": "Y",
+                                            "Format": "n0",
+                                            "LabelStyle": {
+                                                "Color": "#2e2e2e",
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Color": "#aaaaaa",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGrid": true,
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "#aaaaaa"
+                                                }
+                                            },
+                                            "Min": "0",
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Title": "Occurrences in Executions",
+                                            "TitleStyle": {
+                                                "Color": "#2e2e2e",
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        }
+                                    ],
+                                    "Style": {
+                                        "BackgroundColor": "#f7f7f7"
+                                    }
+                                },
+                                "Plots": [
+                                    {
+                                        "Name": "Plot 1",
+                                        "Config": {
+                                            "Bar": {
+                                                "BottomWidth": 0.55,
+                                                "NeckHeight": 1,
+                                                "Overlap": 0,
+                                                "TopWidth": 0.55,
+                                                "Width": 0.55
+                                            },
+                                            "SeriesArrangement": "Stack"
+                                        },
+                                        "SeriesGroupings": [
+                                            {
+                                                "Grouping": {
+                                                    "Name": "Plot 1_Classification_Group",
+                                                    "GroupExpressions": [
+                                                        "=Fields!Classification.Value"
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "CategoryGroupings": [
+                                            {
+                                                "Grouping": {
+                                                    "Name": "Plot 1_Classification_Group",
+                                                    "GroupExpressions": [
+                                                        "=Fields!Classification.Value"
+                                                    ]
+                                                },
+                                                "Sorting": [
+                                                    {
+                                                        "Value": "=Fields!Count.Value",
+                                                        "Direction": "Descending"
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        "DataSeries": [
+                                            {
+                                                "Name": "Series1",
+                                                "Values": [
+                                                    {
+                                                        "Value": "=Sum(Fields!Count.Value)"
+                                                    }
+                                                ],
+                                                "Label": {
+                                                    "Value": "=Sum(Fields!Count.Value)",
+                                                    "Style": {
+                                                        "FontWeight": "SemiBold",
+                                                        "Color": "White"
+                                                    },
+                                                    "TextPosition": "Center"
+                                                },
+                                                "ToolTip": {
+                                                    "Value": "=Fields!Classification.Value & \", \" & Sum(Fields!Count.Value) & \" usage(s)\""
+                                                },
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": ""
+                                                    }
+                                                },
+                                                "Action": {
+                                                    "Drillthrough": {
+                                                        "ReportName": "TDM_MaskingExecutionReport_PIIClassification_level_2.report",
+                                                        "Parameters": [
+                                                            {
+                                                                "ParameterName": "CLASSIFICATION",
+                                                                "Value": "=Fields!Classification.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "FROM_DATE",
+                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "END_DATE",
+                                                                "Value": "=Parameters!END_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "ColorSeries": {
+                                            "Orientation": "Horizontal",
+                                            "Position": "Bottom",
+                                            "Style": {
+                                                "PaddingRight": "10pt",
+                                                "PaddingTop": "6pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "TextStyle": {
+                                                "FontSize": "9pt",
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "TitleStyle": {
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "Mode": "SeriesGroups"
+                                        },
+                                        "SizeSeries": {
+                                            "Orientation": "Horizontal"
+                                        },
+                                        "ShapeSeries": {
+                                            "Orientation": "Horizontal"
+                                        }
+                                    }
+                                ],
+                                "Left": "0.2in",
+                                "Top": "0.45in",
+                                "Width": "14.5in",
+                                "Height": "2.8in"
+                            }
+                        ],
+                        "Left": "0.2in",
+                        "Top": "4.8in",
+                        "Width": "15in",
+                        "Height": "3.35in"
+                    },
+                    {
+                        "Type": "rectangle",
+                        "Name": "Container1",
+                        "ZIndex": 7,
+                        "KeepTogether": true,
+                        "RoundingRadius": {
+                            "Default": "8pt"
+                        },
+                        "Style": {
+                            "Border": {
+                                "Color": "#cccccc",
+                                "Style": "Solid"
+                            },
+                            "BackgroundColor": "White"
+                        },
+                        "ReportItems": [
+                            {
+                                "Type": "textbox",
+                                "Name": "TextBox3",
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Masking Execution Report",
+                                "Style": {
+                                    "FontSize": "16pt",
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "Left": "1.73in",
+                                "Top": "0.11in",
+                                "Width": "6in",
+                                "Height": "0.4in"
+                            },
+                            {
+                                "Type": "line",
+                                "Name": "Line1",
+                                "StartPoint": {
+                                    "X": "1.6in",
+                                    "Y": "0.12in"
+                                },
+                                "EndPoint": {
+                                    "X": "1.6in",
+                                    "Y": "0.5in"
+                                },
+                                "LineColor": "#aaaaaa"
+                            },
+                            {
+                                "Type": "image",
+                                "Name": "Image1",
+                                "Source": "Embedded",
+                                "Value": "k2view",
+                                "MIMEType": "image/svg+xml",
+                                "Sizing": "FitProportional",
+                                "HorizontalAlignment": "Center",
+                                "Left": "0.3in",
+                                "Top": "0.1in",
+                                "Width": "1.2in",
+                                "Height": "0.4in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "SubtitleTextBox",
+                                "ZIndex": 2,
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "=\"Period: \" & Parameters!FROM_DATE.Value & \" to \" & Parameters!END_DATE.Value",
+                                "Style": {
+                                    "FontSize": "11pt",
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "TextAlign": "Right",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "Left": "11.5in",
+                                "Top": "0.2in",
+                                "Width": "3.2in",
+                                "Height": "0.1979in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ExecPageLink",
+                                "ZIndex": 3,
+                                "Action": {
+                                    "Drillthrough": {
+                                        "ReportName": "TDM_MaskingExecutionReport_level_1.report",
+                                        "Parameters": [
+                                            {
+                                                "ParameterName": "FROM_DATE",
+                                                "Value": "=Parameters!FROM_DATE.Value"
+                                            },
+                                            {
+                                                "ParameterName": "END_DATE",
+                                                "Value": "=Parameters!END_DATE.Value"
+                                            },
+                                            {
+                                                "ParameterName": "TDMDB_SCHEMA",
+                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "View Full Execution Report...",
+                                "Style": {
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Right",
+                                    "TextDecoration": "Underline"
+                                },
+                                "Left": "11.5in",
+                                "Top": "0.45in",
+                                "Width": "3.2in",
+                                "Height": "0.22in"
+                            },
+                            {
+                                "Type": "table",
+                                "Name": "NoDataMessageTable",
+                                "ZIndex": 4,
+                                "DataSetName": "ReportStatus",
+                                "Style": {
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "TableColumns": [
+                                    {
+                                        "Width": "9.6in"
+                                    }
+                                ],
+                                "Details": {
+                                    "TableRows": [
+                                        {
+                                            "Height": "0.24in",
+                                            "TableCells": [
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "NoDataMessageTextBox",
+                                                        "DataElementName": "Message",
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!Message.Value",
+                                                        "Style": {
+                                                            "FontSize": "11pt",
+                                                            "FontWeight": "Bold",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "#c0392b",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle"
+                                                        },
+                                                        "Width": "9.6in",
+                                                        "Height": "0.24in"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "Left": "1.73in",
+                                "Top": "0.5in",
+                                "Width": "9.6in",
+                                "Height": "0.24in"
+                            }
+                        ],
+                        "Left": "0.2in",
+                        "Top": "0.15in",
+                        "Width": "15in",
+                        "Height": "0.7625in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "Footer2",
+                        "ZIndex": 10,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "=\"Generated by K2reports on: \" & Now()",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.3in",
+                        "Top": "8.2in",
+                        "Width": "4in",
+                        "Height": "0.2in"
+                    },
+                    {
+                        "Type": "rectangle",
+                        "Name": "Container9",
+                        "ZIndex": 1,
+                        "KeepTogether": true,
+                        "RoundingRadius": {
+                            "Default": "8pt"
+                        },
+                        "Style": {
+                            "Border": {
+                                "Color": "#cccccc",
+                                "Style": "Solid"
+                            },
+                            "BackgroundColor": "White"
+                        },
+                        "ReportItems": [
+                            {
+                                "Type": "chart",
+                                "Name": "ExecMaskingCompletionChart",
+                                "ZIndex": 1,
+                                "NoRowsMessage": "There is no available data",
+                                "DataSetName": "MaskingExecutionCompletionList",
+                                "Style": {
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#2e2e2e",
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "Header": {
+                                    "Style": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt",
+                                        "FontWeight": "Bold",
+                                        "Color": "#2e2e2e"
+                                    },
+                                    "HAlign": "Left"
+                                },
+                                "Footer": {
+                                    "Style": {
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "4pt"
+                                    }
+                                },
+                                "Palette": "BlueGreen",
+                                "PlotArea": {
+                                    "Axes": [
+                                        {
+                                            "LabelStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "Gray",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Position": "None",
+                                            "Title": "Category",
+                                            "TitleStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        },
+                                        {
+                                            "AxisType": "Y",
+                                            "Format": "p0",
+                                            "LabelStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGrid": true,
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "Gray",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Position": "None",
+                                            "Scale": "Percentage",
+                                            "Title": "no_of_executions",
+                                            "TitleStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Plots": [
+                                    {
+                                        "Name": "Plot 1",
+                                        "PlotType": "Pie",
+                                        "Config": {
+                                            "AxisMode": "Radial",
+                                            "Bar": {
+                                                "BottomWidth": 0.55,
+                                                "NeckHeight": 1,
+                                                "Overlap": 0,
+                                                "TopWidth": 0.55,
+                                                "Width": 1
+                                            },
+                                            "InnerRadius": 0.45,
+                                            "SeriesArrangement": "Stack"
+                                        },
+                                        "SeriesGroupings": [
+                                            {
+                                                "Grouping": {
+                                                    "Name": "Plot 1_CompletionStatus_Group",
+                                                    "GroupExpressions": [
+                                                        "=Fields!CompletionStatus.Value"
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "DataSeries": [
+                                            {
+                                                "Name": "Series1",
+                                                "Values": [
+                                                    {
+                                                        "Value": "=Sum(Fields!Count.Value)"
+                                                    }
+                                                ],
+                                                "Label": {
+                                                    "Value": "=Sum(Fields!Count.Value) / Sum(Fields!Count.Value, \"MaskingExecutionCompletionList\")",
+                                                    "Style": {
+                                                        "FontSize": "8pt",
+                                                        "FontWeight": "Bold",
+                                                        "Color": "White",
+                                                        "Format": "p0"
+                                                    },
+                                                    "TextPosition": "Center"
+                                                },
+                                                "ToolTip": {
+                                                    "Value": "=Fields!CompletionStatus.Value & \": \" & Sum(Fields!Count.Value) & \" execution(s)\""
+                                                },
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": ""
+                                                    }
+                                                },
+                                                "Action": {
+                                                    "Drillthrough": {
+                                                        "ReportName": "TDM_MaskingExecutionsListReport_level_1.report",
+                                                        "Parameters": [
+                                                            {
+                                                                "ParameterName": "COMPLETION_STATUS",
+                                                                "Value": "=Fields!CompletionStatus.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "FROM_DATE",
+                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "END_DATE",
+                                                                "Value": "=Parameters!END_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "ColorSeries": {
+                                            "Field": "=Fields!CompletionStatus.Value",
+                                            "Orientation": "Horizontal",
+                                            "Position": "Bottom",
+                                            "Style": {
+                                                "PaddingTop": "3pt"
+                                            },
+                                            "TextStyle": {
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "TitleStyle": {
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "MaxHeight": 0.22,
+                                            "Mode": "Custom"
+                                        },
+                                        "SizeSeries": {
+                                            "Orientation": "Horizontal"
+                                        },
+                                        "ShapeSeries": {
+                                            "Orientation": "Horizontal"
+                                        }
+                                    }
+                                ],
+                                "Left": "10.5in",
+                                "Top": "0.55in",
+                                "Width": "3.8in",
+                                "Height": "1.8in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ExecExtractVizLabel",
+                                "ZIndex": 2,
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Executions Accessing Source Data",
+                                "Style": {
+                                    "FontSize": "12pt",
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Center"
+                                },
+                                "Left": "0.75in",
+                                "Top": "0.15in",
+                                "Width": "3.4in",
+                                "Height": "0.22in"
+                            },
+                            {
+                                "Type": "chart",
+                                "Name": "ExecExtractExecutionTypeChart",
+                                "ZIndex": 3,
+                                "NoRowsMessage": "There is no available data",
+                                "DataSetName": "ExtractExecutionTypeList",
+                                "Style": {
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#2e2e2e",
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "Header": {
+                                    "Style": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt",
+                                        "FontWeight": "Bold",
+                                        "Color": "#2e2e2e"
+                                    },
+                                    "HAlign": "Left"
+                                },
+                                "Footer": {
+                                    "Style": {
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "4pt"
+                                    }
+                                },
+                                "Palette": "BlueGreen",
+                                "PlotArea": {
+                                    "Axes": [
+                                        {
+                                            "LabelStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "Gray",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Position": "None",
+                                            "Title": "Category",
+                                            "TitleStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        },
+                                        {
+                                            "AxisType": "Y",
+                                            "Format": "p0",
+                                            "LabelStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGrid": true,
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "Gray",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Position": "None",
+                                            "Scale": "Percentage",
+                                            "Title": "no_of_executions",
+                                            "TitleStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Plots": [
+                                    {
+                                        "Name": "Plot 1",
+                                        "PlotType": "Pie",
+                                        "Config": {
+                                            "AxisMode": "Radial",
+                                            "Bar": {
+                                                "BottomWidth": 0.55,
+                                                "NeckHeight": 1,
+                                                "Overlap": 0,
+                                                "TopWidth": 0.55,
+                                                "Width": 1
+                                            },
+                                            "InnerRadius": 0.45,
+                                            "SeriesArrangement": "Stack"
+                                        },
+                                        "SeriesGroupings": [
+                                            {
+                                                "Grouping": {
+                                                    "Name": "Plot 1_ExecutionType_Group",
+                                                    "GroupExpressions": [
+                                                        "=Fields!ExecutionType.Value"
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "DataSeries": [
+                                            {
+                                                "Name": "Series1",
+                                                "Values": [
+                                                    {
+                                                        "Value": "=Sum(Fields!Count.Value)"
+                                                    }
+                                                ],
+                                                "Label": {
+                                                    "Value": "=Sum(Fields!Count.Value) / Sum(Fields!Count.Value, \"ExtractExecutionTypeList\")",
+                                                    "Style": {
+                                                        "FontSize": "8pt",
+                                                        "FontWeight": "Bold",
+                                                        "Color": "White",
+                                                        "Format": "p0"
+                                                    },
+                                                    "TextPosition": "Center"
+                                                },
+                                                "ToolTip": {
+                                                    "Value": "=Fields!ExecutionType.Value & \": \" & Sum(Fields!Count.Value) & \" execution(s)\""
+                                                },
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": ""
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "ColorSeries": {
+                                            "Field": "=Fields!ExecutionType.Value",
+                                            "Orientation": "Horizontal",
+                                            "Position": "Bottom",
+                                            "Style": {
+                                                "PaddingTop": "3pt"
+                                            },
+                                            "TextStyle": {
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "TitleStyle": {
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "MaxHeight": 0.22,
+                                            "Mode": "Custom"
+                                        },
+                                        "SizeSeries": {
+                                            "Orientation": "Horizontal"
+                                        },
+                                        "ShapeSeries": {
+                                            "Orientation": "Horizontal"
+                                        }
+                                    }
+                                ],
+                                "Left": "0.5in",
+                                "Top": "0.5in",
+                                "Width": "3.8in",
+                                "Height": "1.8in"
+                            },
+                            {
+                                "Type": "chart",
+                                "Name": "ExecExtractMaskingStatusChart",
+                                "ZIndex": 5,
+                                "NoRowsMessage": "There is no available data",
+                                "DataSetName": "ExtractMaskingStatusList",
+                                "Style": {
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#2e2e2e",
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "Header": {
+                                    "Style": {
+                                        "PaddingLeft": "2pt",
+                                        "PaddingRight": "2pt",
+                                        "PaddingTop": "4pt",
+                                        "PaddingBottom": "2pt",
+                                        "FontWeight": "Bold",
+                                        "Color": "#2e2e2e"
+                                    },
+                                    "HAlign": "Left"
+                                },
+                                "Footer": {
+                                    "Style": {
+                                        "PaddingTop": "2pt",
+                                        "PaddingBottom": "4pt"
+                                    }
+                                },
+                                "Palette": "BlueGreen",
+                                "PlotArea": {
+                                    "Axes": [
+                                        {
+                                            "LabelStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "Gray",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Position": "None",
+                                            "Title": "Category",
+                                            "TitleStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        },
+                                        {
+                                            "AxisType": "Y",
+                                            "Format": "p0",
+                                            "LabelStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            },
+                                            "LineStyle": {
+                                                "Border": {
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "MajorGrid": true,
+                                            "MajorGridStyle": {
+                                                "Border": {
+                                                    "Color": "Gray",
+                                                    "Style": "Solid"
+                                                }
+                                            },
+                                            "Plots": [
+                                                "Plot 1"
+                                            ],
+                                            "Position": "None",
+                                            "Scale": "Percentage",
+                                            "Title": "no_of_executions",
+                                            "TitleStyle": {
+                                                "PaddingLeft": "2pt",
+                                                "PaddingRight": "2pt",
+                                                "PaddingTop": "2pt",
+                                                "PaddingBottom": "2pt"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Plots": [
+                                    {
+                                        "Name": "Plot 1",
+                                        "PlotType": "Pie",
+                                        "Config": {
+                                            "AxisMode": "Radial",
+                                            "Bar": {
+                                                "BottomWidth": 0.55,
+                                                "NeckHeight": 1,
+                                                "Overlap": 0,
+                                                "TopWidth": 0.55,
+                                                "Width": 1
+                                            },
+                                            "InnerRadius": 0.45,
+                                            "SeriesArrangement": "Stack"
+                                        },
+                                        "SeriesGroupings": [
+                                            {
+                                                "Grouping": {
+                                                    "Name": "Plot 1_MaskingStatus_Group",
+                                                    "GroupExpressions": [
+                                                        "=Fields!MaskingStatus.Value"
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "DataSeries": [
+                                            {
+                                                "Name": "Series1",
+                                                "Values": [
+                                                    {
+                                                        "Value": "=Sum(Fields!Count.Value)"
+                                                    }
+                                                ],
+                                                "Label": {
+                                                    "Value": "=Sum(Fields!Count.Value) / Sum(Fields!Count.Value, \"ExtractMaskingStatusList\")",
+                                                    "Style": {
+                                                        "FontSize": "8pt",
+                                                        "FontWeight": "Bold",
+                                                        "Color": "White",
+                                                        "Format": "p0"
+                                                    },
+                                                    "TextPosition": "Center"
+                                                },
+                                                "ToolTip": {
+                                                    "Value": "=Fields!MaskingStatus.Value & \": \" & Sum(Fields!Count.Value) & \" execution(s)\""
+                                                },
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": ""
+                                                    }
+                                                },
+                                                "Action": {
+                                                    "Drillthrough": {
+                                                        "ReportName": "=IIF(Fields!MaskingStatus.Value = \"Masked\", \"TDM_MaskingExecutionsListReport_level_1.report\", \"TDM_MaskingExecutionReport_ExtractWithoutMasking_level_2.report\")",
+                                                        "Parameters": [
+                                                            {
+                                                                "ParameterName": "FROM_DATE",
+                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "END_DATE",
+                                                                "Value": "=Parameters!END_DATE.Value"
+                                                            },
+                                                            {
+                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "ColorSeries": {
+                                            "Field": "=Fields!MaskingStatus.Value",
+                                            "Orientation": "Horizontal",
+                                            "Position": "Bottom",
+                                            "Style": {
+                                                "PaddingTop": "3pt"
+                                            },
+                                            "TextStyle": {
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "TitleStyle": {
+                                                "Color": "#2e2e2e"
+                                            },
+                                            "MaxHeight": 0.22,
+                                            "Mode": "Custom"
+                                        },
+                                        "SizeSeries": {
+                                            "Orientation": "Horizontal"
+                                        },
+                                        "ShapeSeries": {
+                                            "Orientation": "Horizontal"
+                                        }
+                                    }
+                                ],
+                                "Left": "5.5in",
+                                "Top": "0.55in",
+                                "Width": "3.8in",
+                                "Height": "1.8in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "TextBox5",
+                                "ZIndex": 7,
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Masking Coverage of Source Executions",
+                                "Style": {
+                                    "FontSize": "12pt",
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Center"
+                                },
+                                "Left": "5.5in",
+                                "Top": "0.15in",
+                                "Width": "3.4in",
+                                "Height": "0.22in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "TextBox17",
+                                "ZIndex": 8,
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Masked Executions by Status",
+                                "Style": {
+                                    "FontSize": "12pt",
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Center"
+                                },
+                                "Left": "10.75in",
+                                "Top": "0.15in",
+                                "Width": "3.4in",
+                                "Height": "0.22in"
+                            },
+                            {
+                                "Type": "line",
+                                "Name": "Line2",
+                                "ZIndex": 9,
+                                "StartPoint": {
+                                    "X": "4.9in",
+                                    "Y": "0.25in"
+                                },
+                                "EndPoint": {
+                                    "X": "4.9in",
+                                    "Y": "2.3in"
+                                },
+                                "LineColor": "#aaaaaa"
+                            },
+                            {
+                                "Type": "line",
+                                "Name": "Line3",
+                                "ZIndex": 10,
+                                "StartPoint": {
+                                    "X": "9.9in",
+                                    "Y": "0.25in"
+                                },
+                                "EndPoint": {
+                                    "X": "9.9in",
+                                    "Y": "2.3in"
+                                },
+                                "LineColor": "#aaaaaa"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ExecMaskingCompletionHint",
+                                "ZIndex": 11,
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Click a slice for details.",
+                                "Style": {
+                                    "FontSize": "8pt",
+                                    "FontWeight": "Normal",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "0pt",
+                                    "PaddingBottom": "0pt",
+                                    "Color": "#6b6b6b",
+                                    "TextAlign": "Center",
+                                    "FontStyle": "Italic"
+                                },
+                                "Left": "10.75in",
+                                "Top": "0.37in",
+                                "Width": "3.4in",
+                                "Height": "0.17in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ExecExtractMaskingStatusHint",
+                                "ZIndex": 12,
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Click a slice for details.",
+                                "Style": {
+                                    "FontSize": "8pt",
+                                    "FontWeight": "Normal",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "0pt",
+                                    "PaddingBottom": "0pt",
+                                    "Color": "#6b6b6b",
+                                    "TextAlign": "Center",
+                                    "FontStyle": "Italic"
+                                },
+                                "Left": "5.5in",
+                                "Top": "0.37in",
+                                "Width": "3.4in",
+                                "Height": "0.17in"
+                            }
+                        ],
+                        "Left": "0.2in",
+                        "Top": "2.2in",
+                        "Width": "15in",
+                        "Height": "2.51in"
+                    },
+                    {
+                        "Type": "rectangle",
+                        "Name": "Container3",
+                        "ZIndex": 18,
+                        "KeepTogether": true,
+                        "RoundingRadius": {
+                            "Default": "8pt"
+                        },
+                        "Style": {
+                            "Border": {
+                                "Color": "#cccccc",
+                                "Style": "Solid"
+                            },
+                            "BackgroundColor": "White"
+                        },
+                        "ReportItems": [
+                            {
+                                "Type": "rectangle",
+                                "Name": "Container4",
+                                "KeepTogether": true,
+                                "RoundingRadius": {
+                                    "Default": "8pt"
+                                },
+                                "Style": {
+                                    "Border": {
+                                        "Color": "#e3e3e3",
+                                        "Style": "Solid"
+                                    },
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "ReportItems": [
+                                    {
+                                        "Type": "table",
+                                        "Name": "Table1",
+                                        "DataSetName": "TaskExecutionCoreStats",
+                                        "Style": {
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "TableColumns": [
+                                            {
+                                                "Width": "2in"
+                                            }
+                                        ],
+                                        "Details": {
+                                            "TableRows": [
+                                                {
+                                                    "Height": "0.35in",
+                                                    "TableCells": [
+                                                        {
+                                                            "Item": {
+                                                                "Type": "textbox",
+                                                                "Name": "TextBox6",
+                                                                "DataElementName": "TotalNumberOfExtractExecutionsWithMasking",
+                                                                "Action": {
+                                                                    "Drillthrough": {
+                                                                        "ReportName": "TDM_MaskingExecutionsListReport_level_1.report",
+                                                                        "Parameters": [
+                                                                            {
+                                                                                "ParameterName": "FROM_DATE",
+                                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "END_DATE",
+                                                                                "Value": "=Parameters!END_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "CanGrow": true,
+                                                                "KeepTogether": true,
+                                                                "Value": "=Fields!TotalNumberOfExtractExecutionsWithMasking.Value",
+                                                                "Style": {
+                                                                    "FontSize": "14pt",
+                                                                    "FontWeight": "SemiBold",
+                                                                    "PaddingLeft": "2pt",
+                                                                    "PaddingRight": "2pt",
+                                                                    "PaddingTop": "2pt",
+                                                                    "PaddingBottom": "2pt",
+                                                                    "Color": "#1483f3",
+                                                                    "TextAlign": "Center",
+                                                                    "TextDecoration": "Underline",
+                                                                    "VerticalAlign": "Middle",
+                                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                                },
+                                                                "Width": "2in",
+                                                                "Height": "0.35in"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "Top": "0.05in",
+                                        "Width": "2in",
+                                        "Height": "0.35in"
+                                    },
+                                    {
+                                        "Type": "textbox",
+                                        "Name": "TextBox7",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Masking Executions",
+                                        "Style": {
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#2e2e2e",
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Top": "0.42in",
+                                        "Width": "2in",
+                                        "Height": "0.38in"
+                                    }
+                                ],
+                                "Left": "0.45in",
+                                "Top": "0.12in",
+                                "Width": "2in",
+                                "Height": "0.9in"
+                            },
+                            {
+                                "Type": "rectangle",
+                                "Name": "Container5",
+                                "KeepTogether": true,
+                                "RoundingRadius": {
+                                    "Default": "8pt"
+                                },
+                                "Style": {
+                                    "Border": {
+                                        "Color": "#e3e3e3",
+                                        "Style": "Solid"
+                                    },
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "ReportItems": [
+                                    {
+                                        "Type": "table",
+                                        "Name": "Table2",
+                                        "DataSetName": "PIIClassificationsUsedTotal",
+                                        "Style": {
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "TableColumns": [
+                                            {
+                                                "Width": "2in"
+                                            }
+                                        ],
+                                        "Details": {
+                                            "TableRows": [
+                                                {
+                                                    "Height": "0.35in",
+                                                    "TableCells": [
+                                                        {
+                                                            "Item": {
+                                                                "Type": "textbox",
+                                                                "Name": "TextBox8",
+                                                                "DataElementName": "TotalNumberOfPIIClassificationsUsed",
+                                                                "Action": {
+                                                                    "Drillthrough": {
+                                                                        "ReportName": "TDM_MaskingExecutionReport_PIIClassification_level_2.report",
+                                                                        "Parameters": [
+                                                                            {
+                                                                                "ParameterName": "CLASSIFICATION"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "FROM_DATE",
+                                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "END_DATE",
+                                                                                "Value": "=Parameters!END_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "CanGrow": true,
+                                                                "KeepTogether": true,
+                                                                "Value": "=Fields!TotalNumberOfPIIClassificationsUsed.Value",
+                                                                "Style": {
+                                                                    "FontSize": "14pt",
+                                                                    "FontWeight": "SemiBold",
+                                                                    "PaddingLeft": "2pt",
+                                                                    "PaddingRight": "2pt",
+                                                                    "PaddingTop": "2pt",
+                                                                    "PaddingBottom": "2pt",
+                                                                    "Color": "#1483f3",
+                                                                    "TextAlign": "Center",
+                                                                    "TextDecoration": "Underline",
+                                                                    "VerticalAlign": "Middle",
+                                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                                },
+                                                                "Width": "2in",
+                                                                "Height": "0.35in"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "Top": "0.05in",
+                                        "Width": "2in",
+                                        "Height": "0.35in"
+                                    },
+                                    {
+                                        "Type": "textbox",
+                                        "Name": "TextBox9",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Sensitive Data \nClassifications Applied",
+                                        "Style": {
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#2e2e2e",
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Top": "0.42in",
+                                        "Width": "2in",
+                                        "Height": "0.38in"
+                                    }
+                                ],
+                                "Left": "3.45in",
+                                "Top": "0.12in",
+                                "Width": "2in",
+                                "Height": "0.9in"
+                            },
+                            {
+                                "Type": "rectangle",
+                                "Name": "Container6",
+                                "KeepTogether": true,
+                                "RoundingRadius": {
+                                    "Default": "8pt"
+                                },
+                                "Style": {
+                                    "Border": {
+                                        "Color": "#e3e3e3",
+                                        "Style": "Solid"
+                                    },
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "ReportItems": [
+                                    {
+                                        "Type": "table",
+                                        "Name": "Table3",
+                                        "DataSetName": "DataGeneratorsUsedTotal",
+                                        "Style": {
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "TableColumns": [
+                                            {
+                                                "Width": "2in"
+                                            }
+                                        ],
+                                        "Details": {
+                                            "TableRows": [
+                                                {
+                                                    "Height": "0.35in",
+                                                    "TableCells": [
+                                                        {
+                                                            "Item": {
+                                                                "Type": "textbox",
+                                                                "Name": "TextBox10",
+                                                                "DataElementName": "TotalNumberOfDataGeneratorsUsed",
+                                                                "Action": {
+                                                                    "Drillthrough": {
+                                                                        "ReportName": "TDM_MaskingExecutionDataGeneratorsSummaryReport_level_1.report",
+                                                                        "Parameters": [
+                                                                            {
+                                                                                "ParameterName": "FROM_DATE",
+                                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "END_DATE",
+                                                                                "Value": "=Parameters!END_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "CanGrow": true,
+                                                                "KeepTogether": true,
+                                                                "Value": "=Fields!TotalNumberOfDataGeneratorsUsed.Value",
+                                                                "Style": {
+                                                                    "FontSize": "14pt",
+                                                                    "FontWeight": "SemiBold",
+                                                                    "PaddingLeft": "2pt",
+                                                                    "PaddingRight": "2pt",
+                                                                    "PaddingTop": "2pt",
+                                                                    "PaddingBottom": "2pt",
+                                                                    "Color": "#1483f3",
+                                                                    "TextAlign": "Center",
+                                                                    "TextDecoration": "Underline",
+                                                                    "VerticalAlign": "Middle",
+                                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                                },
+                                                                "Width": "2in",
+                                                                "Height": "0.35in"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "Top": "0.05in",
+                                        "Width": "2in",
+                                        "Height": "0.35in"
+                                    },
+                                    {
+                                        "Type": "textbox",
+                                        "Name": "TextBox11",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Data Generators Applied",
+                                        "Style": {
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#2e2e2e",
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Top": "0.42in",
+                                        "Width": "2in",
+                                        "Height": "0.38in"
+                                    }
+                                ],
+                                "Left": "6.45in",
+                                "Top": "0.12in",
+                                "Width": "2in",
+                                "Height": "0.9in"
+                            },
+                            {
+                                "Type": "rectangle",
+                                "Name": "Container7",
+                                "KeepTogether": true,
+                                "RoundingRadius": {
+                                    "Default": "8pt"
+                                },
+                                "Style": {
+                                    "Border": {
+                                        "Color": "#e3e3e3",
+                                        "Style": "Solid"
+                                    },
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "ReportItems": [
+                                    {
+                                        "Type": "table",
+                                        "Name": "Table4",
+                                        "DataSetName": "InterfacesWithPIIFieldsTotal",
+                                        "Style": {
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "TableColumns": [
+                                            {
+                                                "Width": "2in"
+                                            }
+                                        ],
+                                        "Details": {
+                                            "TableRows": [
+                                                {
+                                                    "Height": "0.35in",
+                                                    "TableCells": [
+                                                        {
+                                                            "Item": {
+                                                                "Type": "textbox",
+                                                                "Name": "TextBox12",
+                                                                "DataElementName": "TotalNumberOfInterfacesWithPIIFields",
+                                                                "Action": {
+                                                                    "Drillthrough": {
+                                                                        "ReportName": "TDM_MaskingExecutionReport_AllInterfacesWithPII_level_2.report",
+                                                                        "Parameters": [
+                                                                            {
+                                                                                "ParameterName": "FROM_DATE",
+                                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "END_DATE",
+                                                                                "Value": "=Parameters!END_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "CanGrow": true,
+                                                                "KeepTogether": true,
+                                                                "Value": "=Fields!TotalNumberOfInterfacesWithPIIFields.Value",
+                                                                "Style": {
+                                                                    "FontSize": "14pt",
+                                                                    "FontWeight": "SemiBold",
+                                                                    "PaddingLeft": "2pt",
+                                                                    "PaddingRight": "2pt",
+                                                                    "PaddingTop": "2pt",
+                                                                    "PaddingBottom": "2pt",
+                                                                    "Color": "#1483f3",
+                                                                    "TextAlign": "Center",
+                                                                    "TextDecoration": "Underline",
+                                                                    "VerticalAlign": "Middle",
+                                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                                },
+                                                                "Width": "2in",
+                                                                "Height": "0.35in"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "Top": "0.05in",
+                                        "Width": "2in",
+                                        "Height": "0.35in"
+                                    },
+                                    {
+                                        "Type": "textbox",
+                                        "Name": "TextBox13",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Interfaces with \nSensitive Fields",
+                                        "Style": {
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#2e2e2e",
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Top": "0.42in",
+                                        "Width": "2in",
+                                        "Height": "0.38in"
+                                    }
+                                ],
+                                "Left": "9.45in",
+                                "Top": "0.12in",
+                                "Width": "2in",
+                                "Height": "0.9in"
+                            },
+                            {
+                                "Type": "rectangle",
+                                "Name": "Container8",
+                                "KeepTogether": true,
+                                "RoundingRadius": {
+                                    "Default": "8pt"
+                                },
+                                "Style": {
+                                    "Border": {
+                                        "Color": "#e3e3e3",
+                                        "Style": "Solid"
+                                    },
+                                    "BackgroundColor": "#f7f7f7"
+                                },
+                                "ReportItems": [
+                                    {
+                                        "Type": "table",
+                                        "Name": "Table5",
+                                        "DataSetName": "PIIFieldsUsedTotal",
+                                        "Style": {
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "TableColumns": [
+                                            {
+                                                "Width": "2in"
+                                            }
+                                        ],
+                                        "Details": {
+                                            "TableRows": [
+                                                {
+                                                    "Height": "0.35in",
+                                                    "TableCells": [
+                                                        {
+                                                            "Item": {
+                                                                "Type": "textbox",
+                                                                "Name": "TextBox14",
+                                                                "DataElementName": "TotalNumberOfPIIFieldsUsed",
+                                                                "Action": {
+                                                                    "Drillthrough": {
+                                                                        "ReportName": "TDM_MaskingExecutionReport_AllPIIFields_level_2.report",
+                                                                        "Parameters": [
+                                                                            {
+                                                                                "ParameterName": "FROM_DATE",
+                                                                                "Value": "=Parameters!FROM_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "END_DATE",
+                                                                                "Value": "=Parameters!END_DATE.Value"
+                                                                            },
+                                                                            {
+                                                                                "ParameterName": "TDMDB_SCHEMA",
+                                                                                "Value": "=Parameters!TDMDB_SCHEMA.Value"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "CanGrow": true,
+                                                                "KeepTogether": true,
+                                                                "Value": "=Fields!TotalNumberOfPIIFieldsUsed.Value",
+                                                                "Style": {
+                                                                    "FontSize": "14pt",
+                                                                    "FontWeight": "SemiBold",
+                                                                    "PaddingLeft": "2pt",
+                                                                    "PaddingRight": "2pt",
+                                                                    "PaddingTop": "2pt",
+                                                                    "PaddingBottom": "2pt",
+                                                                    "Color": "#1483f3",
+                                                                    "TextAlign": "Center",
+                                                                    "TextDecoration": "Underline",
+                                                                    "VerticalAlign": "Middle",
+                                                                    "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors!Accent6, Theme.Colors!Light1)"
+                                                                },
+                                                                "Width": "2in",
+                                                                "Height": "0.35in"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "Top": "0.05in",
+                                        "Width": "2in",
+                                        "Height": "0.35in"
+                                    },
+                                    {
+                                        "Type": "textbox",
+                                        "Name": "TextBox15",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Masked Fields",
+                                        "Style": {
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#2e2e2e",
+                                            "TextAlign": "Center",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Top": "0.42in",
+                                        "Width": "2in",
+                                        "Height": "0.38in"
+                                    }
+                                ],
+                                "Left": "12.45in",
+                                "Top": "0.12in",
+                                "Width": "2in",
+                                "Height": "0.9in"
+                            }
+                        ],
+                        "Left": "0.2in",
+                        "Top": "1in",
+                        "Width": "15in",
+                        "Height": "1.13in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox22",
+                        "ZIndex": 20,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "=\"Page \" & Globals!PageNumber & \" of \" & Globals!TotalPages",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Right",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "12in",
+                        "Top": "8.2in",
+                        "Width": "2.8in",
+                        "Height": "0.2in"
+                    }
+                ],
+                "Style": {
+                    "Border": {
+                        "Color": "#4caf50"
+                    },
+                    "TopBorder": {
+                        "Color": "#4caf50"
+                    },
+                    "BottomBorder": {
+                        "Color": "#4caf50"
+                    },
+                    "LeftBorder": {
+                        "Color": "#4caf50"
+                    },
+                    "RightBorder": {
+                        "Color": "#4caf50"
+                    },
+                    "BackgroundColor": "#f2f2f2"
+                }
+            }
+        }
+    ],
+    "DataSets": [
+        {
+            "Name": "ExecutionData",
+            "Fields": [
+                {
+                    "Name": "TaskExecutionCoreStats",
+                    "DataField": "TaskExecutionCoreStats"
+                },
+                {
+                    "Name": "PIIClassificationsUsedTotal",
+                    "DataField": "PIIClassificationsUsedTotal"
+                },
+                {
+                    "Name": "TotalNumberOfDataGeneratorsUsed",
+                    "DataField": "TotalNumberOfDataGeneratorsUsed"
+                },
+                {
+                    "Name": "Top10PIIClassificationsList",
+                    "DataField": "Top10PIIClassificationsList"
+                },
+                {
+                    "Name": "ExtractExecutionTypeList",
+                    "DataField": "ExtractExecutionTypeList"
+                },
+                {
+                    "Name": "ExtractMaskingStatusList",
+                    "DataField": "ExtractMaskingStatusList"
+                },
+                {
+                    "Name": "TotalNumberOfInterfacesWithPIIFields",
+                    "DataField": "TotalNumberOfInterfacesWithPIIFields"
+                },
+                {
+                    "Name": "TotalNumberOfPIIFieldsUsed",
+                    "DataField": "TotalNumberOfPIIFieldsUsed"
+                },
+                {
+                    "Name": "MaskingExecutionCompletionList",
+                    "DataField": "MaskingExecutionCompletionList"
+                },
+                {
+                    "Name": "ReportStatus",
+                    "DataField": "ReportStatus"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=MaskingExecution?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \"&TDMDB_SCHEMA=\" & Parameters!TDMDB_SCHEMA.Value & \";jpath=$\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TaskExecutionCoreStats",
+            "Fields": [
+                {
+                    "Name": "TotalNumberOfTaskExecutions",
+                    "DataField": "Total Number Of Task Executions"
+                },
+                {
+                    "Name": "TotalNumberOfExtractExecutions",
+                    "DataField": "Total Number Of Extract Executions"
+                },
+                {
+                    "Name": "PercentageOfExtractExecutions",
+                    "DataField": "Percentage Of Extract Executions"
+                },
+                {
+                    "Name": "TotalNumberOfExtractExecutionsWithMasking",
+                    "DataField": "Total Number Of Extract Executions With Masking"
+                },
+                {
+                    "Name": "PercentageOfExtractExecutionsWithMasking",
+                    "DataField": "Percentage Of Extract Executions With Masking"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/TaskExecutionCoreStats"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "PIIClassificationsUsedTotal",
+            "Fields": [
+                {
+                    "Name": "TotalNumberOfPIIClassificationsUsed",
+                    "DataField": "Total Number Of PII Classifications Used"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/PIIClassificationsUsedTotal"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "DataGeneratorsUsedTotal",
+            "Fields": [
+                {
+                    "Name": "TotalNumberOfDataGeneratorsUsed",
+                    "DataField": "Total Number Of Data Generators Used"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/TotalNumberOfDataGeneratorsUsed"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "InterfacesWithPIIFieldsTotal",
+            "Fields": [
+                {
+                    "Name": "TotalNumberOfInterfacesWithPIIFields",
+                    "DataField": "Total Number Of Interfaces With PII Fields"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/TotalNumberOfInterfacesWithPIIFields"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "PIIFieldsUsedTotal",
+            "Fields": [
+                {
+                    "Name": "TotalNumberOfPIIFieldsUsed",
+                    "DataField": "Total Number Of PII Fields Used"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/TotalNumberOfPIIFieldsUsed"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "Top10PIIClassificationsList",
+            "Fields": [
+                {
+                    "Name": "Classification",
+                    "DataField": "Classification"
+                },
+                {
+                    "Name": "Count",
+                    "DataField": "Count"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/Top10PIIClassificationsList"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "ExtractExecutionTypeList",
+            "Fields": [
+                {
+                    "Name": "ExecutionType",
+                    "DataField": "Execution Type"
+                },
+                {
+                    "Name": "Count",
+                    "DataField": "Count"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/ExtractExecutionTypeList"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "ExtractMaskingStatusList",
+            "Fields": [
+                {
+                    "Name": "MaskingStatus",
+                    "DataField": "Masking Status"
+                },
+                {
+                    "Name": "Count",
+                    "DataField": "Count"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/ExtractMaskingStatusList"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "MaskingExecutionCompletionList",
+            "Fields": [
+                {
+                    "Name": "CompletionStatus",
+                    "DataField": "Completion Status"
+                },
+                {
+                    "Name": "Count",
+                    "DataField": "Count"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/MaskingExecutionCompletionList"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "ReportStatus",
+            "Fields": [
+                {
+                    "Name": "Message",
+                    "DataField": "message"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:ExecutionData/ReportStatus"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        }
+    ]
+}

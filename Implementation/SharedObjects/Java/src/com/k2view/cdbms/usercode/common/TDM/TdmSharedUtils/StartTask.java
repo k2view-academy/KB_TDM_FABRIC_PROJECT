@@ -1,12 +1,18 @@
 package com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 
 import static com.k2view.cdbms.shared.user.UserCode.db;
+import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
+import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.SYNTHETIC_ENVIRONMENT;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.filterAndPruneExecutionLus;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnCreateSummaryRecord;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnDescribeSkippedTables;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnFindDisabledSystemTables;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetActiveTaskForActivation;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetNextTaskExecution;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTaskExecutionOwnerTaskId;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTaskReferenceTable;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTasks;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnInsertActivity;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnIsTaskActive;
@@ -19,14 +25,19 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.sourceEnvSystemsDisabled;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.targetEnvSystemsDisabled;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.validateEnvTypeForUser;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.coerceStoredOverrideParams;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetLogicalUnitsByEnvironmentAndBusinessentity;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetTaskExecOverrideAttrs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.reduceGenerateDataParams;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,10 +62,14 @@ public class StartTask {
 	}
 
 	public static Object perform(Long taskId, Boolean forced, Map<OverrideParamKey, Object> inputOverrides,
-			Long draftExecutionId) throws Exception {
+			Long taskExecutionId) throws Exception {
 		try {
 			StartTaskValidator.checkSystemHealth();
 			Db.Row taskRow = fetchTaskData(taskId);
+
+			if (taskExecutionId != null)
+				inputOverrides = mergeBaselineOverrides(taskId, taskExecutionId, taskRow, inputOverrides);
+
 			StartTaskValidator.validateExecutionInputs(taskId, taskRow, inputOverrides);
 
 			Map<String, Object> overrideParams = new HashMap<>();
@@ -111,9 +126,8 @@ public class StartTask {
 			StartTaskValidator.validateReservedEntityList(forced, taskRow, context, overrideParams);
 			StartTaskValidator.validateEnvsForTaskWithDelete(taskRow, context);
 
-			Long taskExecutionId = initiateExecution(taskId, taskRow, context, overrideParams, inputOverrides,
-					draftExecutionId);
-			return buildSuccessResponse(taskExecutionId);
+			Long newTaskExecutionId = initiateExecution(taskId, taskRow, context, overrideParams, inputOverrides);
+			return buildSuccessResponse(newTaskExecutionId);
 
 		} catch (TdmWarningException e) {
 			return wrapWebServiceResults("WARNING",e.getErrorDetails(),e.getCategory());
@@ -131,6 +145,118 @@ public class StartTask {
 		if (!fnIsTaskActive(taskId))
 			throw new TdmValidationException("Task Validation","Task is not active");
 		return taskRow;
+	}
+
+	// Selection-method-specific override keys: each of these is only meaningful together with
+	// the selection method it's listed under. Used by mergeBaselineOverrides to drop stale
+	// baseline values that belonged to a different method than the one now in effect.
+	private static final Map<String, Set<OverrideParamKey>> METHOD_SCOPED_OVERRIDE_KEYS = new HashMap<>();
+	private static final Set<OverrideParamKey> ALL_METHOD_SCOPED_OVERRIDE_KEYS;
+	static {
+		METHOD_SCOPED_OVERRIDE_KEYS.put("L", Set.of(OverrideParamKey.ENTITY_LIST));
+		METHOD_SCOPED_OVERRIDE_KEYS.put("C", Set.of(OverrideParamKey.CUSTOM_LOGIC_FLOW,
+				OverrideParamKey.CUSTOM_LOGIC_LU_NAME, OverrideParamKey.PARAMETERS));
+		METHOD_SCOPED_OVERRIDE_KEYS.put("P", Set.of(OverrideParamKey.BP_QUERY, OverrideParamKey.PARAMETERS));
+		METHOD_SCOPED_OVERRIDE_KEYS.put("PR", Set.of(OverrideParamKey.BP_QUERY, OverrideParamKey.PARAMETERS));
+		METHOD_SCOPED_OVERRIDE_KEYS.put("GENERATE", Set.of(OverrideParamKey.GENERATE_DATA_PARAMS));
+		METHOD_SCOPED_OVERRIDE_KEYS.put("GENERATE_SUBSET", Set.of(OverrideParamKey.SELECTED_SUBSET_TASK_EXE_ID));
+		Set<OverrideParamKey> all = new HashSet<>();
+		METHOD_SCOPED_OVERRIDE_KEYS.values().forEach(all::addAll);
+		ALL_METHOD_SCOPED_OVERRIDE_KEYS = Collections.unmodifiableSet(all);
+	}
+
+	// Builds the effective override map for a wsStartTaskV2 call that references an existing
+	// taskExecutionId: the referenced execution's stored overrides act as a baseline, and any
+	// explicitly-supplied overrideParameters take precedence over that baseline (per-key, not a
+	// deep per-field merge). taskExecutionId is only ever a source of default values here — it
+	// never reuses that execution's ID and never touches its draft flag.
+	//
+	// Several override keys are only meaningful together with a particular SELECTION_METHOD
+	// (e.g. ENTITY_LIST for 'L', GENERATE_DATA_PARAMS for 'GENERATE'). If the caller's explicit
+	// overrides change the effective method relative to what the baseline execution used, the
+	// baseline's now-irrelevant method-scoped keys are dropped before the merge — otherwise they
+	// leak in unchanged and get validated/applied against the new method (e.g. a stale ENTITY_LIST
+	// surviving a switch to 'R' incorrectly triggers "method is not 'Entity list'").
+	private static Map<OverrideParamKey, Object> mergeBaselineOverrides(Long taskId, Long taskExecutionId,
+			Db.Row taskRow, Map<OverrideParamKey, Object> explicitOverrides) throws Exception {
+		Long ownerTaskId = fnGetTaskExecutionOwnerTaskId(taskExecutionId);
+		if (ownerTaskId == null)
+			throw new TdmValidationException("Task Execution Validation",
+					"Task execution " + taskExecutionId + " was not found.");
+		if (!ownerTaskId.equals(taskId))
+			throw new TdmValidationException("Task Execution Validation",
+					"Task execution " + taskExecutionId + " does not belong to task " + taskId + ".");
+
+		Map<String, Object> storedParams = fnGetTaskExecOverrideAttrs(taskId, taskExecutionId);
+		if (storedParams == null)
+			throw new TdmValidationException("Task Execution Validation",
+					"Failed to load override parameters for task execution " + taskExecutionId + ".");
+
+		Map<OverrideParamKey, Object> baseline = new HashMap<>(coerceStoredOverrideParams(storedParams));
+
+		String nativeMethod = "" + taskRow.get("selection_method");
+		String baselineMethod = baseline.containsKey(OverrideParamKey.SELECTION_METHOD)
+				? (String) baseline.get(OverrideParamKey.SELECTION_METHOD)
+				: baseline.containsKey(OverrideParamKey.ENTITY_LIST) ? "L" : nativeMethod;
+		String explicitMethod = explicitOverrides.containsKey(OverrideParamKey.SELECTION_METHOD)
+				? (String) explicitOverrides.get(OverrideParamKey.SELECTION_METHOD)
+				: explicitOverrides.containsKey(OverrideParamKey.ENTITY_LIST) ? "L" : null;
+		String effectiveMethod = explicitMethod != null ? explicitMethod : baselineMethod;
+
+		if (effectiveMethod != null && !effectiveMethod.equalsIgnoreCase(baselineMethod)) {
+			Set<OverrideParamKey> keysForEffectiveMethod = METHOD_SCOPED_OVERRIDE_KEYS
+					.getOrDefault(effectiveMethod.toUpperCase(), Collections.emptySet());
+			for (OverrideParamKey scopedKey : ALL_METHOD_SCOPED_OVERRIDE_KEYS)
+				if (!keysForEffectiveMethod.contains(scopedKey))
+					baseline.remove(scopedKey);
+
+			// NO_OF_ENTITIES' valid range/meaning differs per method (e.g. -1 means "all" only under
+			// 'ALL'); for clone tasks it means "clones per entity" instead, independent of method.
+			if (!Boolean.TRUE.equals(taskRow.get("clone_ind")))
+				baseline.remove(OverrideParamKey.NO_OF_ENTITIES);
+
+			// Drop the stale method discriminator itself. If explicitOverrides supplied
+			// SELECTION_METHOD, the putAll below overwrites it anyway; if the new method was only
+			// implied (e.g. via ENTITY_LIST), leaving the old value behind here would make it win
+			// over the implicit rule in resolveSelectionAndEntities.
+			baseline.remove(OverrideParamKey.SELECTION_METHOD);
+		}
+
+		// PARAMETERS is tied to whichever CUSTOM_LOGIC_FLOW/CUSTOM_LOGIC_LU_NAME it was captured
+		// with, even when the method stays 'C' throughout (so the block above never runs). If the
+		// caller explicitly points at a different flow/LU than the baseline used and doesn't also
+		// supply new PARAMETERS, the baseline's PARAMETERS belongs to the old flow — drop it so
+		// handleSpecialParams falls back to its own "flow changed" reset instead of misapplying it.
+		if (!explicitOverrides.containsKey(OverrideParamKey.PARAMETERS)
+				&& (differsFromBaseline(explicitOverrides, baseline, OverrideParamKey.CUSTOM_LOGIC_FLOW)
+						|| differsFromBaseline(explicitOverrides, baseline, OverrideParamKey.CUSTOM_LOGIC_LU_NAME)))
+			baseline.remove(OverrideParamKey.PARAMETERS);
+
+		// Stored GENERATE_DATA_PARAMS is the flat/reduced shape ({"field": value}), but the raw-input
+		// validator (StartTaskValidator.validateGenerateParamsOverride) and reduceGenerateDataParams
+		// both require the GUI's wrapped shape ({"field": {"value": value}}) — re-wrap before reuse.
+		Object generateParams = baseline.get(OverrideParamKey.GENERATE_DATA_PARAMS);
+		if (generateParams instanceof Map) {
+			Map<String, Object> wrapped = new HashMap<>();
+			for (Map.Entry<?, ?> e : ((Map<?, ?>) generateParams).entrySet())
+				wrapped.put(e.getKey().toString(), Collections.singletonMap("value", e.getValue()));
+			baseline.put(OverrideParamKey.GENERATE_DATA_PARAMS, wrapped);
+		}
+
+		Map<OverrideParamKey, Object> merged = new HashMap<>(baseline);
+		merged.putAll(explicitOverrides);
+		return merged;
+	}
+
+	// True if explicitOverrides names a non-null value for key that differs from what baseline has
+	// stored for that same key (used to detect an explicit CUSTOM_LOGIC_FLOW/CUSTOM_LOGIC_LU_NAME
+	// change that makes baseline's PARAMETERS stale even when the method itself didn't change).
+	private static boolean differsFromBaseline(Map<OverrideParamKey, Object> explicitOverrides,
+			Map<OverrideParamKey, Object> baseline, OverrideParamKey key) {
+		if (!explicitOverrides.containsKey(key))
+			return false;
+		Object explicitVal = explicitOverrides.get(key);
+		return explicitVal != null && !explicitVal.equals(baseline.get(key));
 	}
 
 	private static Map<String, Object> resolveTaskContext(Db.Row taskRow, Map<OverrideParamKey, Object> inputOverrides,
@@ -217,6 +343,9 @@ public class StartTask {
 		if (overrideMethod != null) {
 			switch (finalMethod.toUpperCase()) {
 				case "L":
+					if (isPartialPreGeneratedSyntheticLoad(taskRow))
+						throw new TdmValidationException("Selection Method Validation",
+								"Selection method 'Entity list' is not allowed as an override for this task type. Only Custom logic and Random are allowed.");
 					if (entitiesList == null || entitiesList.isBlank())
 						throw new TdmValidationException("Selection Method Validation","Entities list must be provided for 'Entity list' selection method override.");
 					String[] trimmedEntries = Arrays.stream(entitiesList.split(","))
@@ -227,6 +356,9 @@ public class StartTask {
 					overrideParams.put(OverrideParamKey.ENTITY_LIST.name(), String.join(",", trimmedEntries));
 					break;
 				case "ALL":
+					if (isPartialPreGeneratedSyntheticLoad(taskRow))
+						throw new TdmValidationException("Selection Method Validation",
+								"Selection method 'Predefined entity list' is not allowed as an override for this task type. Only Custom logic and Random are allowed.");
 					if (numEntitiesOverride != null && numEntitiesOverride != -1)
 						throw new TdmValidationException("Selection Method Validation","Number of entities must be 'all' for 'Predefined entity list' selection.");
 					finalCount = -1;
@@ -262,8 +394,17 @@ public class StartTask {
 		}
 
 		if (finalCount == null || (Boolean) taskRow.get("clone_ind")) {
-			finalCount = (numEntitiesOverride != null) ? numEntitiesOverride
-					: Integer.parseInt(taskRow.get("num_of_entities").toString());
+			if (numEntitiesOverride != null) {
+				finalCount = numEntitiesOverride;
+			} else {
+				// The task may be saved without num_of_entities when it is editable at runtime,
+				// in which case it must be provided when the task is executed.
+				Object taskCount = taskRow.get("num_of_entities");
+				if (taskCount == null)
+					throw new TdmValidationException("Selection Method Validation",
+							"Number of entities must be provided when executing the task.");
+				finalCount = Integer.parseInt(taskCount.toString());
+			}
 		}
 
 		// For clone tasks, finalCount is "number of clones per entity" — 0 or -1 (ALL)
@@ -293,6 +434,22 @@ public class StartTask {
 		handleSpecialParams(finalMethod, taskRow, inputOverrides, overrideParams);
 		context.put("finalSelectionMethod", finalMethod);
 		context.put("finalCount", finalCount);
+	}
+
+	// Matches deriveTaskType's "Load generated entities (AI/rule based)" / "Load and reserve
+	// generated entities (AI/rule based)" derived types (TDM_Tasks/Logic.java) — for these task
+	// types, 'Entity list'/'Predefined entity list' are not valid override selection methods.
+	private static boolean isPartialPreGeneratedSyntheticLoad(Db.Row taskRow) {
+		String taskType = "" + taskRow.get("task_type");
+		Object beIdObj = taskRow.get("be_id");
+		Long beId = beIdObj == null ? null : Long.parseLong(beIdObj.toString());
+		boolean isEntityTask = beId == null || beId > 0;
+		boolean cloneInd = Boolean.TRUE.equals(taskRow.get("clone_ind"));
+		String sourceEnv = "" + taskRow.get("source_env_name");
+		String nativeMethod = "" + taskRow.get("selection_method");
+		return "LOAD".equals(taskType) && isEntityTask && !cloneInd
+				&& (SYNTHETIC_ENVIRONMENT.equalsIgnoreCase(sourceEnv) || AI_ENVIRONMENT.equalsIgnoreCase(sourceEnv))
+				&& !"GENERATE_SUBSET".equalsIgnoreCase(nativeMethod);
 	}
 
 	private static String selectionMethodDisplayName(String code) {
@@ -330,12 +487,9 @@ public class StartTask {
 			if (paramsOverride != null && !paramsOverride.toString().isBlank()) {
 				overrideParams.put(OverrideParamKey.PARAMETERS.name(), paramsOverride);
 			} else if (!effectiveFlow.equalsIgnoreCase(taskFlow)) {
-				// Flow changed and no new PARAMETERS were supplied — the task's stored
-				// parameters belong
-				// to the old flow/method. Persist an explicit empty-inputs value so
-				// PARAMETERS.get
-				// (taskProperties) at execution time doesn't silently fall back to that stale
-				// JSON.
+				// Flow changed and no new PARAMETERS were supplied — the task's stored parameters belong
+				// to the old flow/method. Persist an explicit empty-inputs value so PARAMETERS.get
+				// (taskProperties) at execution time doesn't silently fall back to that stale JSON.
 				overrideParams.put(OverrideParamKey.PARAMETERS.name(), "{\"inputs\":[]}");
 			}
 
@@ -349,14 +503,7 @@ public class StartTask {
 			Map<String, Object> genData = (Map<String, Object>) inputOverrides
 					.get(OverrideParamKey.GENERATE_DATA_PARAMS);
 			if (genData != null) {
-				Map<String, Object> processedGenParams = new HashMap<>();
-				for (String key : genData.keySet()) {
-					Map<String, Object> entry = (Map<String, Object>) genData.get(key);
-					if (entry != null && entry.containsKey("value")) {
-						processedGenParams.put(key, entry.get("value"));
-					}
-				}
-				overrideParams.put(OverrideParamKey.GENERATE_DATA_PARAMS.name(), processedGenParams);
+				overrideParams.put(OverrideParamKey.GENERATE_DATA_PARAMS.name(), reduceGenerateDataParams(genData));
 			}
 		}
 	}
@@ -382,12 +529,12 @@ public class StartTask {
 
 		if (isNullOrEmpty(finalBeId)) {
 			throw new TdmValidationException("Task Configuration Validation",
-				"Business entity is not configured for this task.");
+					"Business entity is not configured for this task.");
 		}
 
 		if (beId != null) {
 			if (taskRow.get("be_id") != null && !"null".equals("" + taskRow.get("be_id")))
-				throw new TdmValidationException("Business Entity Validation","BE cannot be overridden.");
+				throw new TdmValidationException("Business Entity Validation", "BE cannot be overridden.");
 			if (lus == null) {
 				String taskTypeForEnv = "" + taskRow.get("task_type");
 				Long envId = ("load".equalsIgnoreCase(taskTypeForEnv) || "reserve".equalsIgnoreCase(taskTypeForEnv))
@@ -396,21 +543,27 @@ public class StartTask {
 				Map<String, Object> r = (Map<String, Object>) fnGetLogicalUnitsByEnvironmentAndBusinessentity(
 						Long.parseLong(beId), envId);
 				if ("FAILED".equals(r.get("errorCode")))
-					throw new TdmValidationException("Business Entity Validation","Failed to fetch logical units for BE " + beId + ": " + r.get("message"));
+					throw new TdmValidationException("Business Entity Validation",
+							"Failed to fetch logical units for BE " + beId + ": " + r.get("message"));
 				lus = (List<Map<String, Object>>) r.get("result");
 			}
 			if (lus == null || lus.isEmpty())
-				throw new TdmValidationException("Business Entity Validation","Logical units cannot be empty.");
+				throw new TdmValidationException("Business Entity Validation", "Logical units cannot be empty.");
 			context.put("overrideBeId", beId);
 			overrideParams.put(OverrideParamKey.BE_ID.name(), beId);
-			Db.Row beRow = db("TDM").fetch("SELECT be_name FROM " + TDMDB_SCHEMA + ".business_entities WHERE be_id = ?", Long.parseLong(beId)).firstRow();
+			Db.Row beRow = db("TDM")
+					.fetch("SELECT be_name FROM " + getTDMDBSchema() + ".business_entities WHERE be_id = ?",
+							Long.parseLong(beId))
+					.firstRow();
 			if (beRow != null && beRow.get("be_name") != null)
 				overrideParams.put(OverrideParamKey.BE_NAME.name(), beRow.get("be_name").toString());
 		}
 
-		// When env is overridden (no BE override), LOGICAL_UNITS carries workers/affinity
+		// When env is overridden (no BE override), LOGICAL_UNITS carries
+		// workers/affinity
 		// values only — not the LU scope. Clear lus so the env-override branch below
-		// builds the scope from the new environment. inputOverrides.get(LOGICAL_UNITS) is
+		// builds the scope from the new environment. inputOverrides.get(LOGICAL_UNITS)
+		// is
 		// untouched, so per-LU workers/affinity overrides are still applied in step 4,
 		// but only to LUs that exist in the new env's executions.
 		String taskTypeForEnvCheck = ("" + taskRow.get("task_type")).toUpperCase();
@@ -422,8 +575,10 @@ public class StartTask {
 		if (beId == null && lus != null) {
 			Long newSrcEnvId = (Long) context.get("srcEnvId");
 			Long newTarEnvId = (Long) context.get("tarEnvId");
-			boolean srcChanged = !isTargetOnlyType && newSrcEnvId != null && !newSrcEnvId.equals(toLong(taskRow.get("source_environment_id")));
-			boolean tarChanged = !isExtractType   && newTarEnvId != null && !newTarEnvId.equals(toLong(taskRow.get("environment_id")));
+			boolean srcChanged = !isTargetOnlyType && newSrcEnvId != null
+					&& !newSrcEnvId.equals(toLong(taskRow.get("source_environment_id")));
+			boolean tarChanged = !isExtractType && newTarEnvId != null
+					&& !newTarEnvId.equals(toLong(taskRow.get("environment_id")));
 			if (srcChanged || tarChanged)
 				lus = null;
 		}
@@ -434,26 +589,28 @@ public class StartTask {
 
 			Long origSrcEnvId = toLong(taskRow.get("source_environment_id"));
 			Long origTarEnvId = toLong(taskRow.get("environment_id"));
-			Long newSrcEnvId  = (Long) context.get("srcEnvId");
-			Long newTarEnvId  = (Long) context.get("tarEnvId");
+			Long newSrcEnvId = (Long) context.get("srcEnvId");
+			Long newTarEnvId = (Long) context.get("tarEnvId");
 			boolean srcChanged = !isTargetOnlyType && newSrcEnvId != null && !newSrcEnvId.equals(origSrcEnvId);
-			boolean tarChanged = !isExtractType   && newTarEnvId != null && !newTarEnvId.equals(origTarEnvId);
+			boolean tarChanged = !isExtractType && newTarEnvId != null && !newTarEnvId.equals(origTarEnvId);
 
 			if (beId == null && (srcChanged || tarChanged) && finalBeId != null && !"null".equals(finalBeId)) {
 				// Env is overridden — derive LU list from the new environment for this BE.
 				boolean isSourceTask = isExtractType;
 
 				Long primaryEnvId = isSourceTask ? newSrcEnvId : newTarEnvId;
-				Map<String, Object> envResult = (Map<String, Object>)
-						fnGetLogicalUnitsByEnvironmentAndBusinessentity(Long.parseLong(finalBeId), primaryEnvId);
+				Map<String, Object> envResult = (Map<String, Object>) fnGetLogicalUnitsByEnvironmentAndBusinessentity(
+						Long.parseLong(finalBeId), primaryEnvId);
 				if ("FAILED".equals(envResult.get("errorCode")))
-					throw new TdmValidationException("Environment Validation","Failed to fetch LUs for override environment: " + envResult.get("message"));
+					throw new TdmValidationException("Environment Validation",
+							"Failed to fetch LUs for override environment: " + envResult.get("message"));
 				lus = new ArrayList<>((List<Map<String, Object>>) envResult.get("result"));
 
-				// LOAD tasks: if the opposite side also changed, keep only LUs present in both envs.
+				// LOAD tasks: if the opposite side also changed, keep only LUs present in both
+				// envs.
 				if (!isSourceTask && srcChanged && tarChanged) {
-					Map<String, Object> srcResult = (Map<String, Object>)
-							fnGetLogicalUnitsByEnvironmentAndBusinessentity(Long.parseLong(finalBeId), newSrcEnvId);
+					Map<String, Object> srcResult = (Map<String, Object>) fnGetLogicalUnitsByEnvironmentAndBusinessentity(
+							Long.parseLong(finalBeId), newSrcEnvId);
 					if ("SUCCESS".equals(srcResult.get("errorCode"))) {
 						Set<String> srcLuIds = ((List<Map<String, Object>>) srcResult.get("result"))
 								.stream().map(l -> "" + l.get("lu_id")).collect(Collectors.toSet());
@@ -463,8 +620,23 @@ public class StartTask {
 					}
 				}
 
+				// The task's configured LUs are the ground truth for what this task runs — only
+				// keep
+				// the ones still valid in the override environment (applies to all task types).
+				Set<String> taskLuIds = new HashSet<>();
+				try (Db.Rows rows = db(TDM).fetch(
+						"SELECT lu_id FROM " + getTDMDBSchema() + ".tasks_logical_units WHERE task_id = ?",
+						taskRow.get("task_id"))) {
+					for (Db.Row r : rows)
+						taskLuIds.add("" + r.get("lu_id"));
+				}
+				lus = lus.stream()
+						.filter(l -> taskLuIds.contains("" + l.get("lu_id")))
+						.collect(Collectors.toList());
+
 				if (lus == null || lus.isEmpty())
-					throw new TdmValidationException("Environment Validation","No logical units are available in the override environment");
+					throw new TdmValidationException("Environment Validation",
+							"No logical units are available in the override environment");
 
 				for (Map<String, Object> lu : lus)
 					luIds.add("" + lu.get("lu_id"));
@@ -472,8 +644,8 @@ public class StartTask {
 			} else {
 				try (Db.Rows rows = db(TDM).fetch(
 						"SELECT tlu.lu_id, plu.lu_name, plu.lu_parent_id" +
-								" FROM " + TDMDB_SCHEMA + ".tasks_logical_units tlu" +
-								" JOIN " + TDMDB_SCHEMA + ".product_logical_units plu ON plu.lu_id = tlu.lu_id" +
+								" FROM " + getTDMDBSchema() + ".tasks_logical_units tlu" +
+								" JOIN " + getTDMDBSchema() + ".product_logical_units plu ON plu.lu_id = tlu.lu_id" +
 								" WHERE tlu.task_id = ?",
 						taskRow.get("task_id"))) {
 					for (Db.Row r : rows) {
@@ -501,8 +673,7 @@ public class StartTask {
 	}
 
 	private static Long initiateExecution(Long taskId, Db.Row taskRow, Map<String, Object> context,
-			Map<String, Object> overrideParams, Map<OverrideParamKey, Object> inputOverrides,
-			Long draftExecutionId) throws Exception {
+			Map<String, Object> overrideParams, Map<OverrideParamKey, Object> inputOverrides) throws Exception {
 
 		List<Map<String, Object>> executions = fnGetActiveTaskForActivation(taskId,
 				(String) context.get("finalSelectionMethod"),
@@ -532,8 +703,8 @@ public class StartTask {
 					: toLong(execution.get("source_environment_id"));
 			if (executionEnvId != null && !executionEnvId.equals(originalEnvId)) {
 				String q = "SELECT ep.max_number_of_workers, ep.data_center_name " +
-						"FROM " + TDMDB_SCHEMA + ".environment_products ep " +
-						"JOIN " + TDMDB_SCHEMA + ".product_logical_units plu ON ep.product_id = plu.product_id " +
+						"FROM " + getTDMDBSchema() + ".environment_products ep " +
+						"JOIN " + getTDMDBSchema() + ".product_logical_units plu ON ep.product_id = plu.product_id " +
 						"WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active'";
 				Db.Row envDefaults = db(TDM).fetch(q, execution.get("lu_id"), executionEnvId).firstRow();
 				if (envDefaults != null && !envDefaults.isEmpty()) {
@@ -625,7 +796,7 @@ public class StartTask {
 			}
 		}
 
-		Long taskExecId = draftExecutionId != null ? draftExecutionId : (Long) fnGetNextTaskExecution(taskId);
+		Long taskExecId = (Long) fnGetNextTaskExecution(taskId);
 		if (taskExecId == null)
 			throw new TdmValidationException("Task Validation","Failed to generate task execution ID.");
 		Object refcountVal = executions.get(0).get("refcount");
@@ -640,19 +811,28 @@ public class StartTask {
 				overrideParams.put(OverrideParamKey.TABLE_FILTERS.name(), tableFilterOverrides);
 			Long overrideBeId = (Long) inputOverrides.get(OverrideParamKey.BE_ID);
 			Long finalBeId = overrideBeId != null ? overrideBeId: (Long) taskRow.get("be_id");
-			int savedTables = fnSaveRefExeTablestoTask((Long) executions.get(0).get("task_id"), finalBeId, taskExecId, resolvedTableFilters, taskType,
+			if (isTablesSelection) {
+				List<Map<String, Object>> refTables = (List<Map<String, Object>>) fnGetTaskReferenceTable((Long) executions.get(0).get("task_id"));
+				List<Map<String, String>> disabledTables = fnFindDisabledSystemTables(refTables, taskType,
+						String.valueOf(taskRow.get("sync_mode")), (Long) context.get("srcEnvId"), (Long) context.get("tarEnvId"),
+						(String) context.get("sourceEnvName"), (String) context.get("targetEnvName"));
+				if (!disabledTables.isEmpty())
+					throw new TdmValidationException("Table Level Validation",
+							"The task cannot be executed. The following table(s) belong to system(s) that are currently disabled in the relevant environment(s): "
+									+ fnDescribeSkippedTables(disabledTables) + ".");
+			}
+			Map<String, Map<String, Object>> resolvedTableSampling =
+					(Map<String, Map<String, Object>>) context.get("resolvedTableSampling");
+			fnSaveRefExeTablestoTask((Long) executions.get(0).get("task_id"), finalBeId, taskExecId,
+						resolvedTableFilters, resolvedTableSampling, taskType,
 						(Long) context.get("srcEnvId"), (Long) context.get("tarEnvId"));
-			if (isTablesSelection && savedTables == 0)
-				throw new TdmValidationException("Table Level Validation",
-						"The task cannot be executed. All tables interfaces are disabled in the relevant environment(s).");
 		}
 
 		fnStartTaskExecutions(executions, taskExecId, (String) inputOverrides.get(OverrideParamKey.BE_ID),
 				(String) context.get("sourceEnvName"), (Long) context.get("tarEnvId"), (Long) context.get("srcEnvId"),
 				(String) inputOverrides.get(OverrideParamKey.EXECUTION_NOTE), (String) context.get("targetEnvName"));
-		boolean createdByAi = draftExecutionId != null;
-		if (!overrideParams.isEmpty() || createdByAi)
-			fnSaveTaskOverrideParameters(taskId, overrideParams, taskExecId, createdByAi);
+		if (!overrideParams.isEmpty())
+			fnSaveTaskOverrideParameters(taskId, overrideParams, taskExecId, false);
 		fnCreateSummaryRecord(executions.get(0), taskExecId, (String) inputOverrides.get(OverrideParamKey.BE_ID),
 				(String) context.get("sourceEnvName"), (Long) context.get("tarEnvId"), (Long) context.get("srcEnvId"),
 				(String) context.get("targetEnvName"));
@@ -672,7 +852,7 @@ public class StartTask {
 
 	private static Long fetchEnvId(String name) throws Exception {
 		Long id = (Long) db(TDM)
-				.fetch("select environment_id from " + TDMDB_SCHEMA
+				.fetch("select environment_id from " + getTDMDBSchema()
 						+ ".environments where environment_name=(?) and environment_status = 'Active'", name)
 				.firstValue();
 		if (id == null)
@@ -695,7 +875,7 @@ public class StartTask {
 			if (fields == null || fields.isEmpty())
 				continue;
 			StringBuilder queryBuilder = new StringBuilder(
-					"SELECT gui_filter, filter_type FROM " + TDMDB_SCHEMA + ".task_ref_tables " +
+					"SELECT gui_filter, filter_type FROM " + getTDMDBSchema() + ".task_ref_tables " +
 					"WHERE task_id = ? AND ref_table_name = ?");
 			List<Object> queryParams = new ArrayList<>();
 			queryParams.add(taskId);
@@ -762,7 +942,10 @@ public class StartTask {
 		}
 	}
 
-	private static void buildSqlFromGroup(Map<String, Object> group, StringBuilder sb, List<String> params) {
+	private static final Set<String> ALLOWED_TABLE_FILTER_CONDITIONS = new HashSet<>(Arrays.asList(
+			"=", "!=", "<>", "<", ">", "<=", ">=", "LIKE", "IN", "NOT IN", "IS NULL", "IS NOT NULL"));
+
+	private static void buildSqlFromGroup(Map<String, Object> group, StringBuilder sb, List<String> params) throws TdmValidationException {
 		if (group == null) return;
 		List<Map<String, Object>> rules = (List<Map<String, Object>>) group.get("rules");
 		if (rules == null || rules.isEmpty()) return;
@@ -779,6 +962,8 @@ public class StartTask {
 				String field = (String) rule.get("field");
 				String condition = rule.get("condition") != null ? rule.get("condition").toString().toUpperCase() : "=";
 				String data = rule.get("data") != null ? rule.get("data").toString() : null;
+				if (!ALLOWED_TABLE_FILTER_CONDITIONS.contains(condition))
+					throw new TdmValidationException("Table Level Validation", "Unsupported filter condition '" + condition + "' for field '" + field + "'.");
 				switch (condition) {
 					case "IS NULL":
 						sb.append(field).append(" IS NULL");
@@ -831,12 +1016,12 @@ public class StartTask {
 		return res;
 	}
 
-	private static Long toLong(Object v) {
+	static Long toLong(Object v) {
 		return v == null ? null : Long.valueOf(v.toString());
 	}
 
 	private static String fnGetTaskCreatedBy(long taskID) throws SQLException {
-        String createdBy = "" + db(TDM).fetch("SELECT task_created_by FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id=?", taskID).firstValue();
+        String createdBy = "" + db(TDM).fetch("SELECT task_created_by FROM " + getTDMDBSchema() + ".tasks WHERE task_id=?", taskID).firstValue();
 		return createdBy;
     }
 

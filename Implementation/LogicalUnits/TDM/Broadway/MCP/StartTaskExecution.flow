@@ -1,0 +1,95 @@
+description: |-
+  Starts an execution of a TDM task. This runs the task for real: it provisions data into the target environment. Without draftExecutionId the task runs with its own saved settings. With a draft from CreateExecutionDraft, it runs with that draft's overrides; a new execution is created each time, and the draft is not consumed.
+
+  Before starting, TDM validates the execution: the task's environments, permissions, business entity and LUs, reservation limits and retention periods, and that the same execution is not already running. If any check fails, nothing starts and status is FAILED.
+
+  Track a started execution with GetTaskExecutionStatus, using the returned taskExecutionId.
+
+  Outputs: taskExecutionId (integer, null when nothing started), status (SUCCESS, FAILED or WARNING), message (the reason when it did not start), details (JSON of the API's result object: on failure, the validation errors by validation code, such as BEandLUs, Reference, selectionMethod or totalNumberOfReservedEntities).
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call StartTaskExecution:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.StartTaskExecution 'taskId'=${taskId} 'forced'=${forced} 'draftExecutionId'=${draftExecutionId}
+          taskId:
+            external: taskId
+            schema: integer
+            remark: Id of the TDM task to start. When draftExecutionId is given, this must be the task
+              the draft was created for.
+            mandatory: true
+          forced:
+            external: forced
+            const: false
+            schema: boolean
+            remark: Optional, default false. true skips the connection tests of the source and target
+              environments; every other validation still runs.
+            mandatory: false
+          draftExecutionId:
+            external: draftExecutionId
+            schema: integer
+            remark: Optional. The draftExecutionId returned by CreateExecutionDraft for this task. Its
+              overrides are used for the execution. Leave it out to run the task with its own saved settings.
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      taskExecutionId:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call StartTaskExecution/result/taskExecutionId
+        out:
+          value:
+            external: taskExecutionId
+            schema: integer
+      status:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call StartTaskExecution/result/status
+        out:
+          value:
+            external: status
+            schema: string
+      message:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call StartTaskExecution/result/message
+        out:
+          value:
+            external: message
+            schema: string
+      details:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call StartTaskExecution/result/details
+        out:
+          value:
+            external: details
+            schema: string
+schemas:
+  Call StartTaskExecution.out.result:
+    type: object
+    properties:
+      taskExecutionId:
+        type: integer
+      status:
+        type: string
+      message:
+        type: string
+      details:
+        type: string

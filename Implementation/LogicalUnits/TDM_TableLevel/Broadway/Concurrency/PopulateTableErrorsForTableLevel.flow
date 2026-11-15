@@ -149,7 +149,7 @@ stages:
         parent: JavaScript
         in:
           script:
-            const: |
+            const: |-
               var result = "";
 
               if (executionAction === "Delete") {

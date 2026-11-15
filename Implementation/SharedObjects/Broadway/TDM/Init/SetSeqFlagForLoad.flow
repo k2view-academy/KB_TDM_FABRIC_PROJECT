@@ -44,6 +44,24 @@ stages:
           key:
             const: ROOT_COLUMN_NAME
             default: false
+      MASKING_REPORT_FLAG - false:
+        parent: Const
+        in:
+          value:
+            const: 'false'
+            schema: string
+        out:
+          value:
+            schema: string
+      Set MASKING_REPORT_FLAG to false:
+        parent: FabricSet
+        in:
+          key:
+            const: 'MASKING_REPORT_FLAG '
+            default: false
+          value:
+            const: 'false'
+            default: false
   Enable Sequence:
     dependsOn: Get Inputs
     actors:
@@ -205,6 +223,11 @@ stages:
             link: Get ROOT_COLUMN_NAME/result
             schema: string
             mandatory: false
+          MASKING_REPORT_FLAG:
+            link: MASKING_REPORT_FLAG - false/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
     split: '--------------------'
   'No Sequence Report ':
     else: true
@@ -226,6 +249,7 @@ stages:
             schema: string
             mandatory: false
           TDM_TASK_EXE_ID:
+            external: TDM_TASK_EXE_ID
             schema: string
             mandatory: false
           TDM_SOURCE_ENVIRONMENT_NAME:
@@ -235,6 +259,7 @@ stages:
             schema: string
             mandatory: false
           LU_TYPE:
+            external: LU_TYPE
             schema: string
             mandatory: false
           ROOT_TABLE_NAME:
@@ -243,6 +268,11 @@ stages:
           ROOT_COLUMN_NAME:
             schema: string
             mandatory: false
+          MASKING_REPORT_FLAG:
+            link: MASKING_REPORT_FLAG - false/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
     split: '--------------------'
   No Sequence Report:
     dependsOn: Set To False
@@ -263,6 +293,7 @@ stages:
             schema: string
             mandatory: false
           TDM_TASK_EXE_ID:
+            external: TDM_TASK_EXE_ID
             schema: string
             mandatory: false
           TDM_SOURCE_ENVIRONMENT_NAME:
@@ -272,6 +303,7 @@ stages:
             schema: string
             mandatory: false
           LU_TYPE:
+            external: LU_TYPE
             schema: string
             mandatory: false
           ROOT_TABLE_NAME:
@@ -280,3 +312,8 @@ stages:
           ROOT_COLUMN_NAME:
             schema: string
             mandatory: false
+          MASKING_REPORT_FLAG:
+            link: MASKING_REPORT_FLAG - false/value
+            schema: string
+            mandatory: false
+            createdBy: flowName

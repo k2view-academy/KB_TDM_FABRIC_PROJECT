@@ -1,0 +1,1891 @@
+{
+    "Name": "TDM_MaskingConfigurationReport_Interfaces_level_211111111",
+    "Width": "0in",
+    "ReportParameters": [
+        {
+            "AllowBlank": true,
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    ""
+                ]
+            },
+            "Name": "INTERFACE_NAME",
+            "Nullable": true,
+            "Prompt": "Interface Name",
+            "ValidValues": {
+                "OrderBy": {
+                    "Condition": "None"
+                }
+            }
+        },
+        {
+            "AllowBlank": true,
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    ""
+                ]
+            },
+            "Hidden": true,
+            "Name": "SCHEMA_NAME",
+            "Nullable": true,
+            "Prompt": "Schema Name",
+            "ValidValues": {
+                "OrderBy": {
+                    "Condition": "None"
+                }
+            }
+        },
+        {
+            "AllowBlank": true,
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    ""
+                ]
+            },
+            "Hidden": true,
+            "Name": "DATASET_NAME",
+            "Nullable": true,
+            "Prompt": "Dataset Name",
+            "ValidValues": {
+                "OrderBy": {
+                    "Condition": "None"
+                }
+            }
+        },
+        {
+            "AllowBlank": true,
+            "DataType": "String",
+            "DefaultValue": {
+                "Values": [
+                    ""
+                ]
+            },
+            "Hidden": true,
+            "Name": "SYSTEM",
+            "Nullable": true,
+            "Prompt": "System",
+            "ValidValues": {
+                "OrderBy": {
+                    "Condition": "None"
+                }
+            }
+        }
+    ],
+    "EmbeddedImages": [
+        {
+            "Name": "k2view",
+            "ImageData": "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgAGsDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9G/jT8QZ/hb8NtW8TWtpHfT2RhCwTMVVt8qR8kc8Bs/hUnwb8ez/E74baN4mubSOxnvhKWgiYsq7JXj4J552Z/GuQ/a8/5N88T/71p/6VRVm/s8+LtJ8DfsveHNZ1u8Sx0+3S5LyPySftU2FUDkk9gK+qhgadTI44iEL1XW5E1e7XJe1vXyufNyxlSnnDoTnamqXN0tfmte/oe60V4H4H/arj8Wafr2v3vhW40XwZpIbdrUt15jSvuASNYhGMu2RkBiFyMnkZ5Zv26bRZDdHwLqo0PdtW/M4yT6bdm3PtvrKPDeaznKnGjdx31ju9bXva9um/kaSz/LYQjOVWyltpLba+23nt5n1LRXzn8cv2x7D4UfCrw58QtF8MzeMPDuq3Zs55I7wWr2Mm0kLIpR+cq47DIHJ3Ln3LwX4t07x74R0bxJpMwn0zVbSK8t3HdHUMAfQjOCOxBFfPVKc6M3TqKzTs0+jR7lOpCrFTg7p6p+RtUV8on9vWyvvEnxXtNH8GT6rongCxmup9ZXUVSO7kjkWMRKvlnbubzMNluIycc103gv8AbT8Kax+zp/wt3xLZyeF9M+1S2a6eJhdTSzKxVUjIVd7NjOMDABJOATUWND6Ior4Tl/4KhyrD/bCfBjxG3g7eV/txrkquMgZx5JjzyOPN7jmvQviD/wAFBPCfhTwV4F8aaJotx4l8I+I7ySxu75LkQTaTNHsLRSxbWJk2uzbQQCEyCQyklhH1VRXNePfH2mfD74e634wvpVl0vS7CS/Zo3BEqqm5Qp5yW4A9yK8n/AGTP2t9L/ap0nxBNbaJJ4d1HRpoknsZLr7RujkDGOQPsTqUcEY42j1FIZ77RXhfjD9qW18PftLeGPg5pvh6XW9U1WAXF5fR3YjXT0Ku/zJsO4hELHleGX1r3SgDxz9rz/k3zxP8A71p/6VRV8UL4Z+IHjH4TxamILq58F+HC6QqMKib3ZpHVOr4LHc/OBxnAOP0E+Mvw9l+Kfw41XwxDepp8t6YSLiSMuF2SpJ0BGc7MfjT/AISfD0/DX4baT4VuLpNTNmkqvMI9qyb5XcjaSePnx+FfoeT8QUsnytRhFSq+1vZp6R5Um09k9HH57Hwua5HUzXMnKTcafs7XVtZczaTXVbP5bmB+z34w8MePfhRpsOiWlraQWtuLS90hQCIHxhgyn7yvywY53AnPOQOJ/au+Jmi+FPAE3gLTbeC61vVoo7WHTbeMEW0RYYYoOh4AQDnOCOlZvir9iy3/ALfn1XwT4ru/CfnEk2iIzKmeoR1dWVf9k7vrXKL+wt4hTUhqK+PkGoLIJhdi2k80PnO7f5mc575zW+Ep5CsasdLFvlvzKDjK6lulJq97Pqt+5jiZ508H9TjhVzW5XNSjZx20Wlrro9jt9J/ZjbXv2S9U+G+t+XFqus28l1l/u2l2SHhyR/cZI92OuGHQ18l/Ab9ryb4L/sl/EPwRrF0LDx34YuJNP0WyuXAm/wBIdlZVXOWMEgmduwBQV9U+H/2ZviNoWvadqJ+LF9dLaXEc5gma4dJQrAlGUy4IIGCD1BrgvjJ/wTY0z4qfHe68cReJItK0TUruG81LRlsiXlYEefskDjBkwTnHDOTzXymceyniZV4YhVXNtuyas77a/gfS5U6kcOqM6LpqCSV2ndfI4z4a/Blvhb/wTc8favfQsmu+LNKk1a5L/eEJwLdD/wAAO/nvK1fI3jyfUU/Zb+DEZG7Rv7W1t2V93lGYSwY34/2Scc5wXxX7EfGP4Zj4n/CHxH4Hs7uPR11SwaxiuPJ3pAOMfICMgYxjIrx/wZ+w74dtv2aE+EfjC/8A7fjjvJr6HVrSH7PLazOxKvFuLYYAkHOQQSCMGvCue1Y4nTb/APa11Dwpa2Nj4Q+FFx4cnslhgtoCz2klqyYVFUTFGjKEAAfKQfSvIvCX7EHxA0H9mv4y6H4qg01XuRba5oVtYXfniO7tfOaUKBwpeNvKySeo9K7iy/4J1fEvQbSbw9on7QWtab4Obcq2ESXMahCeVMK3ATnJzjAPcc4H1f8AAH4KWPwB+GOn+DLDVb7Wre2Z5WudQYEl3O5wijhELZIQZxuOSSSSXA/OTxn+0tdfF79j34YfCXSLz7X421XUo9D1C2DneYbd1FsH74kL253dzFJ1wcdv4X8P6Z/wT9/bM0OwutTkt/AHifQkgn1C6JKI+3DMxxjIuIQ3H3UnFey/CP8A4J26X8K/2im+IkfiGK90W1urm70zQxYlDbNJuEamTzCGEYc4OBkqp46V6L+2D+yjb/tTeFtDso9Xj0DV9Iu3mgv5LbzwYnXEkRUMp5KxtnP8HTnguB4j+wRp1z8aPjT8Vfjxq0DFb28bTNIMoJMaHDMBnukS26ZHqwr7urzn9nz4NWXwD+EmheC7OdbxrFGe5vBHs+0zuxeSTGTjk4AycAAdq9GpMZ//2Q==",
+            "MIMEType": "image/jpeg"
+        }
+    ],
+    "Layers": [
+        {
+            "Name": "default"
+        }
+    ],
+    "CustomProperties": [
+        {
+            "Name": "DisplayType",
+            "Value": "Page"
+        },
+        {
+            "Name": "SizeType",
+            "Value": "Default"
+        },
+        {
+            "Name": "PaperOrientation",
+            "Value": "Landscape"
+        },
+        {
+            "Name": "CollapseWhiteSpace",
+            "Value": "True"
+        },
+        {
+            "Name": "InterfacesTablesSummaryList_Data_Set_Fields",
+            "Value": "{\"Dataset\":{\"dataType\":\"String\"},\"NumberOfFields\":{\"aggregate\":\"Sum\",\"dataType\":\"Float\"},\"NumberOfPIIFields\":{\"aggregate\":\"Sum\",\"dataType\":\"Float\"}}"
+        },
+        {
+            "Name": "InterfacesTableFieldsList_Data_Set_Fields",
+            "Value": "{\"Field\":{\"dataType\":\"String\"}}"
+        }
+    ],
+    "Version": "10.0.2",
+    "Page": {
+        "PageWidth": "8.5in",
+        "PageHeight": "11in",
+        "RightMargin": "0in",
+        "LeftMargin": "0in",
+        "TopMargin": "0in",
+        "BottomMargin": "0in",
+        "Columns": 1,
+        "ColumnSpacing": "0.5in",
+        "PaperOrientation": "Portrait"
+    },
+    "DataSources": [
+        {
+            "Name": "fabricApi",
+            "ConnectionProperties": {
+                "DataProvider": "JSON",
+                "ConnectString": "endpoint=/api/"
+            }
+        }
+    ],
+    "ReportSections": [
+        {
+            "Type": "Continuous",
+            "Name": "ContinuousSection1",
+            "Page": {
+                "PageWidth": "15.6in",
+                "PageHeight": "8.5in",
+                "RightMargin": "0in",
+                "LeftMargin": "0in",
+                "TopMargin": "0in",
+                "BottomMargin": "0in",
+                "Columns": 1,
+                "ColumnSpacing": "0.5in",
+                "PaperOrientation": "Portrait"
+            },
+            "Width": "15in",
+            "Body": {
+                "Height": "5.0688in",
+                "ReportItems": [
+                    {
+                        "Type": "rectangle",
+                        "Name": "HeaderContainer",
+                        "KeepTogether": true,
+                        "RoundingRadius": {
+                            "Default": "8pt"
+                        },
+                        "Style": {
+                            "Border": {
+                                "Color": "#cccccc",
+                                "Style": "Solid"
+                            },
+                            "BackgroundColor": "White"
+                        },
+                        "ReportItems": [
+                            {
+                                "Type": "textbox",
+                                "Name": "TitleTextBox",
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Interfaces - Policy Details",
+                                "Style": {
+                                    "FontSize": "16pt",
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "Left": "1.73in",
+                                "Top": "0.11in",
+                                "Width": "5in",
+                                "Height": "0.4in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "SubtitleTextBox",
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "=\"Masking Policy Report > Full Masking Policy Report > Interfaces - Policy Details\"",
+                                "Style": {
+                                    "Border": {
+                                        "Color": "#cccccc",
+                                        "Style": "Dotted"
+                                    },
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#2e2e2e",
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle",
+                                    "BackgroundColor": "#f2f2f2"
+                                },
+                                "Left": "0.3in",
+                                "Top": "0.9in",
+                                "Width": "6in",
+                                "Height": "0.25in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "FilterContextTextBox",
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "=\"Interface: \" & IIF(IsNothing(Parameters!INTERFACE_NAME.Value) Or Parameters!INTERFACE_NAME.Value = \"\", \"All Interfaces\", Parameters!INTERFACE_NAME.Value) & IIF(IsNothing(Parameters!SYSTEM.Value) Or Parameters!SYSTEM.Value = \"\", \"\", \" | System: \" & Parameters!SYSTEM.Value)",
+                                "Style": {
+                                    "FontSize": "11pt",
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "Black",
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "Left": "0.3in",
+                                "Top": "0.55in",
+                                "Width": "6.5in",
+                                "Height": "0.25in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "GoUpTextBox",
+                                "Action": {
+                                    "Drillthrough": {
+                                        "ReportName": "TDM_MaskingConfigurationReport_level_1.report"
+                                    }
+                                },
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Go up...",
+                                "Style": {
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Right",
+                                    "TextDecoration": "Underline"
+                                },
+                                "Left": "11.5in",
+                                "Top": "0.2896in",
+                                "Width": "3in",
+                                "Height": "0.25in"
+                            },
+                            {
+                                "Type": "line",
+                                "Name": "Split",
+                                "StartPoint": {
+                                    "X": "1.6in",
+                                    "Y": "0.12in"
+                                },
+                                "EndPoint": {
+                                    "X": "1.6in",
+                                    "Y": "0.5in"
+                                },
+                                "LineColor": "#aaaaaa"
+                            },
+                            {
+                                "Type": "image",
+                                "Name": "Logo",
+                                "Source": "Embedded",
+                                "Value": "k2view",
+                                "MIMEType": "image/svg+xml",
+                                "Sizing": "FitProportional",
+                                "HorizontalAlignment": "Center",
+                                "Left": "0.3in",
+                                "Top": "0.1in",
+                                "Width": "1.2in",
+                                "Height": "0.4in"
+                            }
+                        ],
+                        "Left": "0.2in",
+                        "Top": "0.15in",
+                        "Width": "14.8in",
+                        "Height": "1.3in"
+                    },
+                    {
+                        "Type": "rectangle",
+                        "Name": "TablesSummaryContainer",
+                        "Visibility": {
+                            "Hidden": "=IIF(IsNothing(Parameters!SCHEMA_NAME.Value) Or Parameters!SCHEMA_NAME.Value = \"\", false, true) Or IIF(IsNothing(Parameters!DATASET_NAME.Value) Or Parameters!DATASET_NAME.Value = \"\", false, true)"
+                        },
+                        "KeepTogether": false,
+                        "RoundingRadius": {
+                            "Default": "8pt"
+                        },
+                        "Style": {
+                            "Border": {
+                                "Color": "#cccccc",
+                                "Style": "Solid"
+                            },
+                            "BackgroundColor": "White"
+                        },
+                        "ReportItems": [
+                            {
+                                "Type": "textbox",
+                                "Name": "TablesSummaryTitle",
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Interface Summary List",
+                                "Style": {
+                                    "FontSize": "13pt",
+                                    "FontWeight": "Bold",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "Left": "0.3208in",
+                                "Top": "0.1604in",
+                                "Width": "6in",
+                                "Height": "0.3in"
+                            },
+                            {
+                                "Type": "table",
+                                "Name": "TablesSummaryTable",
+                                "CustomProperties": [
+                                    {
+                                        "Name": "ReportStyleId",
+                                        "Value": "bac1137f-9811-45da-bc69-0f581b240356"
+                                    },
+                                    {
+                                        "Name": "ReportStyleName",
+                                        "Value": "Light Style 1 Accent 2"
+                                    }
+                                ],
+                                "DataSetName": "InterfacesTablesSummaryList",
+                                "Style": {
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "TableColumns": [
+                                    {
+                                        "Width": "2.6in"
+                                    },
+                                    {
+                                        "Width": "2.3in"
+                                    },
+                                    {
+                                        "Width": "2.1in"
+                                    },
+                                    {
+                                        "Width": "2.6in"
+                                    },
+                                    {
+                                        "Width": "2.3in"
+                                    },
+                                    {
+                                        "Width": "2.3in"
+                                    }
+                                ],
+                                "Header": {
+                                    "TableRows": [
+                                        {
+                                            "Height": "0.35in",
+                                            "TableCells": [
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSHeaderInterfaceName",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Interface Name",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "2.6in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSHeaderSchema",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Schema",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "2.3in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSHeaderSystem",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "System",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "2.1in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSHeaderDataset",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Dataset",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "2.6in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSHeaderNumberOfFields",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Number of Fields",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "2.3in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSHeaderNumberOfPIIFields",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Number of Sensitive Fields",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "2.3in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "RepeatOnNewPage": true
+                                },
+                                "Details": {
+                                    "TableRows": [
+                                        {
+                                            "Height": "0.25in",
+                                            "TableCells": [
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSDetailInterfaceName",
+                                                        "DataElementName": "InterfaceName",
+                                                        "Action": {
+                                                            "Drillthrough": {
+                                                                "ReportName": "TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                                                                "Parameters": [
+                                                                    {
+                                                                        "ParameterName": "INTERFACE_NAME",
+                                                                        "Value": "=Fields!InterfaceName.Value"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "SCHEMA_NAME"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "DATASET_NAME"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!InterfaceName.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=IIF(Len(Parameters!INTERFACE_NAME.Value & \"\") = 0, \"#1483f3\", \"#2e2e2e\")",
+                                                            "TextAlign": "Left",
+                                                            "TextDecoration": "=IIF(Len(Parameters!INTERFACE_NAME.Value & \"\") = 0, \"Underline\", \"None\")",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "2.6in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSDetailSchema",
+                                                        "DataElementName": "Schema",
+                                                        "Action": {
+                                                            "Drillthrough": {
+                                                                "ReportName": "TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                                                                "Parameters": [
+                                                                    {
+                                                                        "ParameterName": "INTERFACE_NAME",
+                                                                        "Value": "=Fields!InterfaceName.Value"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "SCHEMA_NAME",
+                                                                        "Value": "=Fields!Schema.Value"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!Schema.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "#1483f3",
+                                                            "TextAlign": "Left",
+                                                            "TextDecoration": "Underline",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "2.3in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSDetailSystem",
+                                                        "DataElementName": "System",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!System.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "2.1in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSDetailDataset",
+                                                        "DataElementName": "Dataset",
+                                                        "Action": {
+                                                            "Drillthrough": {
+                                                                "ReportName": "TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                                                                "Parameters": [
+                                                                    {
+                                                                        "ParameterName": "INTERFACE_NAME",
+                                                                        "Value": "=Fields!InterfaceName.Value"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "SCHEMA_NAME",
+                                                                        "Value": "=Fields!Schema.Value"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "DATASET_NAME",
+                                                                        "Value": "=Fields!Dataset.Value"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!Dataset.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "#1483f3",
+                                                            "TextAlign": "Left",
+                                                            "TextDecoration": "Underline",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "2.6in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSDetailNumberOfFields",
+                                                        "DataElementName": "NumberOfFields",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!NumberOfFields.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "2.3in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "TSDetailNumberOfPIIFields",
+                                                        "DataElementName": "NumberOfPIIFields",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!NumberOfPIIFields.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "2.3in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "Left": "0.3in",
+                                "Top": "0.55in",
+                                "Width": "14.2in",
+                                "Height": "0.6in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ShowAllInterfacesTextBox",
+                                "ZIndex": 1,
+                                "Action": {
+                                    "Drillthrough": {
+                                        "ReportName": "TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                                        "Parameters": [
+                                            {
+                                                "ParameterName": "INTERFACE_NAME"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Show all interfaces...",
+                                "Style": {
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Right",
+                                    "TextDecoration": "Underline"
+                                },
+                                "Left": "11.5104in",
+                                "Top": "0.1229in",
+                                "Width": "3in",
+                                "Height": "0.25in"
+                            }
+                        ],
+                        "Left": "0.2in",
+                        "Top": "1.65in",
+                        "Width": "14.8in",
+                        "Height": "1.3in"
+                    },
+                    {
+                        "Type": "rectangle",
+                        "Name": "FieldListContainer",
+                        "KeepTogether": false,
+                        "RoundingRadius": {
+                            "Default": "8pt"
+                        },
+                        "Style": {
+                            "Border": {
+                                "Color": "#cccccc",
+                                "Style": "Solid"
+                            },
+                            "BackgroundColor": "White"
+                        },
+                        "ReportItems": [
+                            {
+                                "Type": "textbox",
+                                "Name": "FieldListTitle",
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "=\"Interface Detailed List (Sensitive Fields Only)\" & IIF((Not (IsNothing(Parameters!SCHEMA_NAME.Value) Or Parameters!SCHEMA_NAME.Value = \"\")) And (Not (IsNothing(Parameters!DATASET_NAME.Value) Or Parameters!DATASET_NAME.Value = \"\")), \" — Filtered by Schema: \" & Parameters!SCHEMA_NAME.Value & \" and Dataset: \" & Parameters!DATASET_NAME.Value, IIF(IsNothing(Parameters!SCHEMA_NAME.Value) Or Parameters!SCHEMA_NAME.Value = \"\", \"\", \" — Filtered by Schema: \" & Parameters!SCHEMA_NAME.Value) & IIF(IsNothing(Parameters!DATASET_NAME.Value) Or Parameters!DATASET_NAME.Value = \"\", \"\", \" — Filtered by Dataset: \" & Parameters!DATASET_NAME.Value)) & IIF(IsNothing(Parameters!SYSTEM.Value) Or Parameters!SYSTEM.Value = \"\", \"\", \" — Filtered by System: \" & Parameters!SYSTEM.Value)",
+                                "Style": {
+                                    "FontSize": "13pt",
+                                    "FontWeight": "Bold",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "Left": "0.3in",
+                                "Top": "0.15in",
+                                "Width": "10in",
+                                "Height": "0.3in"
+                            },
+                            {
+                                "Type": "table",
+                                "Name": "FieldListTable",
+                                "CustomProperties": [
+                                    {
+                                        "Name": "ReportStyleId",
+                                        "Value": "bac1137f-9811-45da-bc69-0f581b240356"
+                                    },
+                                    {
+                                        "Name": "ReportStyleName",
+                                        "Value": "Light Style 1 Accent 2"
+                                    }
+                                ],
+                                "DataSetName": "InterfacesTableFieldsList",
+                                "Filters": [
+                                    {
+                                        "FilterExpression": "=IIF(IsNothing(Parameters!SCHEMA_NAME.Value) Or Parameters!SCHEMA_NAME.Value = \"\", \"1\", Fields!Schema.Value)",
+                                        "Operator": "Equal",
+                                        "FilterValues": [
+                                            "=IIF(IsNothing(Parameters!SCHEMA_NAME.Value) Or Parameters!SCHEMA_NAME.Value = \"\", \"1\", Parameters!SCHEMA_NAME.Value)"
+                                        ]
+                                    },
+                                    {
+                                        "FilterExpression": "=IIF(IsNothing(Parameters!DATASET_NAME.Value) Or Parameters!DATASET_NAME.Value = \"\", \"1\", Fields!Dataset.Value)",
+                                        "Operator": "Equal",
+                                        "FilterValues": [
+                                            "=IIF(IsNothing(Parameters!DATASET_NAME.Value) Or Parameters!DATASET_NAME.Value = \"\", \"1\", Parameters!DATASET_NAME.Value)"
+                                        ]
+                                    },
+                                    {
+                                        "FilterExpression": "=IIF(IsNothing(Parameters!SYSTEM.Value) Or Parameters!SYSTEM.Value = \"\", \"1\", Fields!System.Value)",
+                                        "Operator": "Equal",
+                                        "FilterValues": [
+                                            "=IIF(IsNothing(Parameters!SYSTEM.Value) Or Parameters!SYSTEM.Value = \"\", \"1\", Parameters!SYSTEM.Value)"
+                                        ]
+                                    }
+                                ],
+                                "Style": {
+                                    "TextAlign": "Left",
+                                    "VerticalAlign": "Middle"
+                                },
+                                "TableColumns": [
+                                    {
+                                        "Width": "1.5513in"
+                                    },
+                                    {
+                                        "Width": "1.3126in"
+                                    },
+                                    {
+                                        "Width": "1.1933in"
+                                    },
+                                    {
+                                        "Width": "1.4319in"
+                                    },
+                                    {
+                                        "Width": "1.4319in"
+                                    },
+                                    {
+                                        "Width": "1.3126in"
+                                    },
+                                    {
+                                        "Width": "1.1933in"
+                                    },
+                                    {
+                                        "Width": "1.5513in"
+                                    },
+                                    {
+                                        "Width": "1.5513in"
+                                    },
+                                    {
+                                        "Width": "1.6706in"
+                                    }
+                                ],
+                                "Header": {
+                                    "TableRows": [
+                                        {
+                                            "Height": "0.35in",
+                                            "TableCells": [
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderInterfaceName",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Interface Name",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.5513in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderSchema",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Schema",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.3126in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderSystem",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "System",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.1933in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderDataset",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Dataset",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.4319in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderObjectName",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Object Name",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.4319in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderField",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Field",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.3126in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderDataType",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Data Type",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.1933in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderClassification",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Classification",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.5513in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderDataGenerator",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Data Generator",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.5513in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLHeaderDataConsistency",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "Data Consistency",
+                                                        "Style": {
+                                                            "TopBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "BottomBorder": {
+                                                                "Color": "=Theme.Colors!Accent2",
+                                                                "Style": "Solid",
+                                                                "Width": "2pt"
+                                                            },
+                                                            "FontFamily": "=Theme.Fonts!MajorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MajorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MajorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MajorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=Theme.Colors!Light1"
+                                                        },
+                                                        "Width": "1.6706in",
+                                                        "Height": "0.35in"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "RepeatOnNewPage": true
+                                },
+                                "Details": {
+                                    "TableRows": [
+                                        {
+                                            "Height": "0.25in",
+                                            "TableCells": [
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailInterfaceName",
+                                                        "DataElementName": "InterfaceName",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!InterfaceName.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.5513in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailSchema",
+                                                        "DataElementName": "Schema",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!Schema.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.3126in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailSystem",
+                                                        "DataElementName": "System",
+                                                        "Action": {
+                                                            "Drillthrough": {
+                                                                "ReportName": "TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                                                                "Parameters": [
+                                                                    {
+                                                                        "ParameterName": "SYSTEM",
+                                                                        "Value": "=Fields!System.Value"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "INTERFACE_NAME"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "SCHEMA_NAME"
+                                                                    },
+                                                                    {
+                                                                        "ParameterName": "DATASET_NAME"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!System.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "#1483f3",
+                                                            "TextAlign": "Left",
+                                                            "TextDecoration": "Underline",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.1933in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailDataset",
+                                                        "DataElementName": "Dataset",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!Dataset.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.4319in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailObjectName",
+                                                        "DataElementName": "ObjectName",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!ObjectName.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.4319in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailField",
+                                                        "DataElementName": "Field",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!Field.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.3126in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailDataType",
+                                                        "DataElementName": "DataType",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!DataType.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.1933in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailClassification",
+                                                        "DataElementName": "Classification",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!Classification.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.5513in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailDataGenerator",
+                                                        "DataElementName": "DataGenerator",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=Fields!DataGenerator.Value",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.5513in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                },
+                                                {
+                                                    "Item": {
+                                                        "Type": "textbox",
+                                                        "Name": "FLDetailDataConsistency",
+                                                        "DataElementName": "DataConsistency",
+                                                        "CanGrow": true,
+                                                        "KeepTogether": true,
+                                                        "Value": "=IIF(Len(Trim(Fields!DataGenerator.Value & \"\")) = 0, \"N/A\", Fields!DataConsistency.Value)",
+                                                        "Style": {
+                                                            "FontFamily": "=Theme.Fonts!MinorFont.Family",
+                                                            "FontSize": "=Theme.Fonts!MinorFont.Size",
+                                                            "FontStyle": "=Theme.Fonts!MinorFont.Style",
+                                                            "FontWeight": "=Theme.Fonts!MinorFont.Weight",
+                                                            "PaddingLeft": "2pt",
+                                                            "PaddingRight": "2pt",
+                                                            "PaddingTop": "2pt",
+                                                            "PaddingBottom": "2pt",
+                                                            "Color": "=Theme.Colors!Dark1",
+                                                            "TextAlign": "Left",
+                                                            "VerticalAlign": "Middle",
+                                                            "BackgroundColor": "=IIF(RowNumber(Nothing) Mod 2, Theme.Colors(1,5), Theme.Colors!Light1)"
+                                                        },
+                                                        "Width": "1.6706in",
+                                                        "Height": "0.25in"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "Left": "0.2792in",
+                                "Top": "0.7688in",
+                                "Width": "14.2in",
+                                "Height": "0.6in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ShowAllInInterfaceTextBox",
+                                "ZIndex": 1,
+                                "Action": {
+                                    "Drillthrough": {
+                                        "ReportName": "TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                                        "Parameters": [
+                                            {
+                                                "ParameterName": "INTERFACE_NAME",
+                                                "Value": "=Parameters!INTERFACE_NAME.Value"
+                                            },
+                                            {
+                                                "ParameterName": "SCHEMA_NAME"
+                                            },
+                                            {
+                                                "ParameterName": "DATASET_NAME"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Show all datasets in this interface...",
+                                "Style": {
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Right",
+                                    "TextDecoration": "Underline"
+                                },
+                                "Left": "11.5in",
+                                "Top": "0.0643in",
+                                "Width": "3in",
+                                "Height": "0.25in"
+                            },
+                            {
+                                "Type": "textbox",
+                                "Name": "ShowAllInSchemaTextBox",
+                                "ZIndex": 2,
+                                "Action": {
+                                    "Drillthrough": {
+                                        "ReportName": "TDM_MaskingConfigurationReport_Interfaces_level_2.report",
+                                        "Parameters": [
+                                            {
+                                                "ParameterName": "INTERFACE_NAME",
+                                                "Value": "=Parameters!INTERFACE_NAME.Value"
+                                            },
+                                            {
+                                                "ParameterName": "SCHEMA_NAME",
+                                                "Value": "=Parameters!SCHEMA_NAME.Value"
+                                            },
+                                            {
+                                                "ParameterName": "DATASET_NAME"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "CanGrow": true,
+                                "KeepTogether": true,
+                                "Value": "Show all datasets in this schema...",
+                                "Style": {
+                                    "FontWeight": "Bold",
+                                    "PaddingLeft": "2pt",
+                                    "PaddingRight": "2pt",
+                                    "PaddingTop": "2pt",
+                                    "PaddingBottom": "2pt",
+                                    "Color": "#1483f3",
+                                    "TextAlign": "Right",
+                                    "TextDecoration": "Underline"
+                                },
+                                "Left": "11.5in",
+                                "Top": "0.3895in",
+                                "Width": "3in",
+                                "Height": "0.25in"
+                            }
+                        ],
+                        "Left": "0.2in",
+                        "Top": "3.15in",
+                        "Width": "14.8in",
+                        "Height": "1.5188in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "Footer",
+                        "ZIndex": 50,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "=\"Generated by K2reports on: \" & Now()",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Left",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "0.3in",
+                        "Top": "4.8688in",
+                        "Width": "4in",
+                        "Height": "0.2in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "PageNumber",
+                        "ZIndex": 50,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "=\"Page \" & Globals!PageNumber & \" of \" & Globals!TotalPages",
+                        "Style": {
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#2e2e2e",
+                            "TextAlign": "Right",
+                            "VerticalAlign": "Middle"
+                        },
+                        "Left": "12in",
+                        "Top": "4.8688in",
+                        "Width": "2.8in",
+                        "Height": "0.2in"
+                    }
+                ],
+                "Style": {
+                    "BackgroundColor": "#f2f2f2"
+                }
+            }
+        }
+    ],
+    "DataSets": [
+        {
+            "Name": "TDM_MaskingConfigurationReport_Interfaces_level_2",
+            "Fields": [
+                {
+                    "Name": "GetInterfacesTablesSummary",
+                    "DataField": "GetInterfacesTablesSummary"
+                },
+                {
+                    "Name": "GetInterfacesTableFieldsList",
+                    "DataField": "GetInterfacesTableFieldsList"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MaskingConfigurationReport_Interfaces_level_2?INTERFACE_NAME=\" & Replace(Replace(Parameters!INTERFACE_NAME.Value, \"&\", \"%26\"), \" \", \"%20\") & \";jpath=$\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "GetInterfacesTablesSummary",
+            "Fields": [
+                {
+                    "Name": "InterfacesTablesSummaryList",
+                    "DataField": "InterfacesTablesSummaryList"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TDM_MaskingConfigurationReport_Interfaces_level_2/GetInterfacesTablesSummary"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "InterfacesTablesSummaryList",
+            "Fields": [
+                {
+                    "Name": "InterfaceName",
+                    "DataField": "Interface Name"
+                },
+                {
+                    "Name": "Schema",
+                    "DataField": "Schema"
+                },
+                {
+                    "Name": "System",
+                    "DataField": "System"
+                },
+                {
+                    "Name": "Dataset",
+                    "DataField": "Dataset"
+                },
+                {
+                    "Name": "NumberOfFields",
+                    "DataField": "Number Of Fields"
+                },
+                {
+                    "Name": "NumberOfPIIFields",
+                    "DataField": "Number Of Sensitive Fields"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:GetInterfacesTablesSummary/InterfacesTablesSummaryList"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "GetInterfacesTableFieldsList",
+            "Fields": [
+                {
+                    "Name": "InterfacesTableFieldsList",
+                    "DataField": "InterfacesTableFieldsList"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TDM_MaskingConfigurationReport_Interfaces_level_2/GetInterfacesTableFieldsList"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "InterfacesTableFieldsList",
+            "Fields": [
+                {
+                    "Name": "InterfaceName",
+                    "DataField": "Interface Name"
+                },
+                {
+                    "Name": "Schema",
+                    "DataField": "Schema"
+                },
+                {
+                    "Name": "System",
+                    "DataField": "System"
+                },
+                {
+                    "Name": "Dataset",
+                    "DataField": "Dataset"
+                },
+                {
+                    "Name": "ObjectName",
+                    "DataField": "Object Name"
+                },
+                {
+                    "Name": "Field",
+                    "DataField": "Field"
+                },
+                {
+                    "Name": "DataType",
+                    "DataField": "Data Type"
+                },
+                {
+                    "Name": "Classification",
+                    "DataField": "Classification"
+                },
+                {
+                    "Name": "DataGenerator",
+                    "DataField": "Data Generator"
+                },
+                {
+                    "Name": "DataConsistency",
+                    "DataField": "Data Consistency"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:GetInterfacesTableFieldsList/InterfacesTableFieldsList"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        }
+    ]
+}

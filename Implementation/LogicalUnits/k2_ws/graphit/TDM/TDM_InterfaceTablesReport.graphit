@@ -1,0 +1,59 @@
+{
+  "name": "TDM_INTERFACE_TABLES",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "GetInterfacesTablesSummary",
+      "type": "sql",
+      "code": "broadway k2_ws.getInterfacesTablesSummaryByInterface 'interfaceName'=${INTERFACE_NAME}",
+      "children": [
+        {
+          "name": "InterfacesTablesSummaryList",
+          "type": "variable",
+          "code": "InterfacesTablesSummaryList"
+        },
+        {
+          "name": "TotalNumberOfTablesProfiled",
+          "type": "variable",
+          "code": "TotalNumberOfTablesProfiled"
+        }
+      ]
+    },
+    {
+      "name": "GetInterfacesTableFieldsList",
+      "type": "sql",
+      "code": "broadway k2_ws.getInterfacesTableFieldsListByInterface 'interfaceName'=${INTERFACE_NAME}",
+      "collapsed": true,
+      "children": [
+        {
+          "name": "InterfacesTableFieldsList",
+          "type": "variable",
+          "code": "InterfacesTableFieldsList"
+        },
+        {
+          "name": "TotalNumberOfTotalPIIFields",
+          "type": "variable",
+          "code": "TotalNumberOfTotalPIIFields"
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "INTERFACE_NAME",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "description": "",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

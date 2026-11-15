@@ -33,6 +33,10 @@ public class SharedGlobals {
     @category("TDM")
     public static String TDM_TASK_EXE_ID = "0";
 
+    @desc("Populated by the task execution process with the tdm schema.")
+    @category("TDM")
+    public static String TDM_TASK_EXE_SCHEMA = "";
+
     @desc("Populated by the task execution process with the source environment name")
     @category("TDM")
     public static String TDM_SOURCE_ENVIRONMENT_NAME = "";
@@ -71,11 +75,11 @@ public class SharedGlobals {
 
     @desc("This Global is set to enable running the TDM flows from thr Studio for debug purpose.")
     @category("TDM_DEBUG")
-    public static String USER_NAME = "admin";
+    public static String USER_NAME = "";
 
     @desc("This Global is set to enable running the TDM flows from thr Studio for debug purpose.")
     @category("TDM_DEBUG")
-    public static String USER_FABRIC_ROLES = "admin";
+    public static String USER_FABRIC_ROLES = "";
 
     @desc("This Global is set to enable running the TDM flows from thr Studio for debug purpose.")
     @category("TDM_DEBUG")

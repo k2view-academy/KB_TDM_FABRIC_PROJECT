@@ -9,12 +9,15 @@ import com.k2view.fabric.common.Log;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.validateMaxWorkers;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getGlobalMaxWorkersLimit;
 
@@ -22,7 +25,6 @@ import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.ge
 public class EnvironmentUtils {
     private static final Log log = Log.a(UserCode.class);
     private static final String TDM = "TDM";
-    private static final String schema = TDMDB_SCHEMA;
 
     public static String fnGetInterval(String interval) {
         if ("Day".equals(interval)) {
@@ -104,12 +106,12 @@ public class EnvironmentUtils {
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
         try {
-            String sql = "UPDATE " + schema + ".environments SET " +
+            String sql = "UPDATE " + getTDMDBSchema() + ".environments SET " +
                     "environment_last_updated_date=(?)," +
                     "environment_last_updated_by=(?) " +
-                    "WHERE environment_id = " + envId;
+                    "WHERE environment_id = ?";
             String username = sessionUser().name();
-            db(TDM).execute(sql, now, username);
+            db(TDM).execute(sql, now, username, envId);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -122,7 +124,7 @@ public class EnvironmentUtils {
         if (!"".equalsIgnoreCase(msg)) {
             throw new RuntimeException(msg);
         }
-        String sql = "INSERT INTO " + schema + ".environment_products " +
+        String sql = "INSERT INTO " + getTDMDBSchema() + ".environment_products " +
                 "(environment_id, product_id, data_center_name, product_version, created_by, creation_date, last_updated_date, last_updated_by, status, max_number_of_workers) "
                 +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING environment_product_id";
@@ -155,23 +157,28 @@ public class EnvironmentUtils {
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
-        String sql = "UPDATE " + schema + ".environment_products SET " +
+        String sql = "UPDATE " + getTDMDBSchema() + ".environment_products SET " +
                 "data_center_name=(?)," +
                 "product_version=(?)," +
                 "last_updated_date=(?)," +
                 "last_updated_by=(?)," +
                 "max_number_of_workers=(?) " +
-                "WHERE environment_product_id = " + environment_product_id;
+                "WHERE environment_product_id = ?";
         String username = sessionUser().name();
-        db(TDM).execute(sql, data_center_name, product_version, now, username, max_number_of_workers);
+        db(TDM).execute(sql, data_center_name, product_version, now, username, max_number_of_workers, environment_product_id);
     }
+
+    private static final Set<String> ENVIRONMENT_ROLES_PERMISSION_COLUMNS = new HashSet<>(Arrays.asList("allow_read", "allow_write"));
 
     public static void fnUpdateEnvironmentRolesPermissions(Long environment_id, String type, boolean value) {
         try {
-            String sql = "UPDATE " + schema + ".environment_roles SET " +
+            if (!ENVIRONMENT_ROLES_PERMISSION_COLUMNS.contains(type)) {
+                throw new IllegalArgumentException("Invalid environment_roles column: " + type);
+            }
+            String sql = "UPDATE " + getTDMDBSchema() + ".environment_roles SET " +
                     "" + type + "=(?)" +
-                    "WHERE environment_id = " + environment_id;
-            db(TDM).execute(sql, value);
+                    "WHERE environment_id = ?";
+            db(TDM).execute(sql, value, environment_id);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -183,7 +190,7 @@ public class EnvironmentUtils {
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
-        String sql = "INSERT INTO " + schema + ".activities " +
+        String sql = "INSERT INTO " + getTDMDBSchema() + ".activities " +
                 "(date, action, entity, user_id, username, description) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         db(TDM).execute(sql, now, action, entity, userId, username, description);

@@ -1,0 +1,138 @@
+tags: TDM,Masking
+stages:
+  Get Interfaces Table Fields List:
+    actors:
+      getInterfacesTableFieldsList:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfacesTableFieldsList
+        out:
+          result:
+            schema: '#ref'
+  Filter By Generator:
+    actors:
+      InterfacesTableFieldsList:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var arr = [].concat(list);
+              var cls = (classificationName || '').toUpperCase();
+              var gen = dataGenerator || '';
+              var result = [];
+
+              if (cls) {
+                for (var i = 0; i < arr.length; i++) {
+                  if (arr[i] && String(arr[i]['Classification'] || '').toUpperCase() === cls) {
+                    result.push(arr[i]);
+                  }
+                }
+              } else if (gen) {
+                for (var j = 0; j < arr.length; j++) {
+                  if (arr[j] && arr[j]['Data Generator'] === gen) {
+                    result.push(arr[j]);
+                  }
+                }
+              } else {
+                result = arr;
+              }
+              result;
+          list:
+            link: getInterfacesTableFieldsList/result
+            schema: '#ref'
+            mandatory: false
+          dataGenerator:
+            external: dataGenerator
+            schema: string
+            mandatory: false
+          classificationName:
+            external: classificationName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            external: InterfacesTableFieldsList
+            schema: '#ref'
+schemas:
+  getInterfacesTableFieldsList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System: {
+          }
+        Dataset:
+          type: string
+        Object Name:
+          type: string
+        Field:
+          type: string
+        Data Type:
+          type: string
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Data Consistency:
+          type: string
+        Description:
+          type: string
+  InterfacesTableFieldsList.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System: {
+          }
+        Dataset:
+          type: string
+        Object Name:
+          type: string
+        Field:
+          type: string
+        Data Type:
+          type: string
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Data Consistency:
+          type: string
+        Description:
+          type: string
+  InterfacesTableFieldsList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System:
+          type: string
+        Dataset:
+          type: string
+        Object Name:
+          type: string
+        Field:
+          type: string
+        Data Type:
+          type: string
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Data Consistency:
+          type: string
+        Description:
+          type: string

@@ -4,8 +4,9 @@ import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.fabric;
 import static com.k2view.cdbms.shared.user.UserCode.getGlobal;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
+import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.fnGetTablePartitionNum;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetNumberOfMatchingEntities;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnTestInterfacesForEnvProduct;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnValidateReservedEntities;
@@ -20,6 +21,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLo
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateParallelExecutions;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateRetentionPeriodParams;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateSourceEnvForTask;
+import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateSubsetExecIdAndGetDetails;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateTargetEnvForTask;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateVersionExecIdAndGetDetails;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateVersionExecIdNotExpired;
@@ -27,6 +29,8 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLo
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetReservedEntitiesNumber;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.validateNoLimitOnFkRelatedTables;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.validateTablesNotInLuSchema;
 import static java.lang.Math.min;
 
 import java.util.ArrayList;
@@ -38,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.k2view.cdbms.lut.LUType;
 import com.k2view.cdbms.lut.LudbJobs;
@@ -73,7 +78,7 @@ public class StartTaskValidator {
 				String uid = Util.rte(() -> "" + job.uid);
 
 				Db.Row jobDetails = fabric()
-						.fetch("jobstatus user_job 'TDM." + functionName + "' WITH UID='" + uid + "'").firstRow();
+						.fetch("jobstatus user_job ? WITH UID=?", "TDM." + functionName, uid).firstRow();
 				String jobStatus = "" + jobDetails.get("Status");
 
 				boolean isJobDown = !"IN_PROCESS".equalsIgnoreCase(jobStatus) &&
@@ -82,7 +87,7 @@ public class StartTaskValidator {
 
 				if (isJobDown) {
 					if ("tdmExecuteTask".equalsIgnoreCase(functionName)
-							|| "fnCheckMigrateAndUpdateTDMDB".equalsIgnoreCase(functionName)) {
+							|| "tdmMonitorAndUpdateTaskExecution".equalsIgnoreCase(functionName)) {
 						if (downJobsBuilder.length() > 0)
 							downJobsBuilder.append(", ");
 						downJobsBuilder.append(functionName);
@@ -98,8 +103,7 @@ public class StartTaskValidator {
 		}
 	}
 
-	public static void validateExecutionInputs(Long taskId, Db.Row taskRow,
-			Map<OverrideParamKey, Object> inputOverrides) throws Exception {
+	public static void validateExecutionInputs(Long taskId, Db.Row taskRow, Map<OverrideParamKey, Object> inputOverrides) throws Exception {
 		Map<String, Boolean> taskGlobalsEditability = loadTaskGlobalsEditability(taskId, inputOverrides);
 		Map<String, Boolean> generateParamsEditability = new HashMap<>();
 		Set<String> nullEditableParams = new HashSet<>();
@@ -113,7 +117,7 @@ public class StartTaskValidator {
 		Map<String, Boolean> result = new HashMap<>();
 		if (inputOverrides.containsKey(OverrideParamKey.TASK_GLOBALS)) {
 			try (Db.Rows rows = db(TDM).fetch(
-					"SELECT global_name, is_editable FROM " + TDMDB_SCHEMA + ".task_globals WHERE task_id = ?", taskId)) {
+					"SELECT global_name, is_editable FROM " + getTDMDBSchema() + ".task_globals WHERE task_id = ?", taskId)) {
 				for (Db.Row r : rows)
 					result.put(r.get("global_name").toString(), Boolean.TRUE.equals(r.get("is_editable")));
 			}
@@ -127,7 +131,7 @@ public class StartTaskValidator {
 		boolean isGenerate = "GENERATE".equalsIgnoreCase("" + taskRow.get("selection_method"));
 		if (!isGenerate && !inputOverrides.containsKey(OverrideParamKey.GENERATE_DATA_PARAMS)) return;
 		try (Db.Rows rows = db(TDM).fetch(
-				"SELECT param_name, is_editable, param_value FROM " + TDMDB_SCHEMA
+				"SELECT param_name, is_editable, param_value FROM " + getTDMDBSchema()
 				+ ".tdm_generate_task_field_mappings WHERE task_id = ?", taskId)) {
 			for (Db.Row r : rows) {
 				boolean editable = Boolean.TRUE.equals(r.get("is_editable"));
@@ -204,6 +208,8 @@ public class StartTaskValidator {
 				"Reservation period", "reservation_period");
 		checkEditable(fields, inputOverrides, OverrideParamKey.RESERVE_RETENTION_PARAMS,
 				"Reservation period", "reservation_period");
+		checkEditable(fields, inputOverrides, OverrideParamKey.SELECTED_SUBSET_TASK_EXE_ID,
+				"Generation subset", "generation_title");
 
 		if (inputOverrides.containsKey(OverrideParamKey.NO_OF_ENTITIES)) {
 			String effectiveMethod = inputOverrides.containsKey(OverrideParamKey.SELECTION_METHOD)
@@ -567,7 +573,7 @@ public class StartTaskValidator {
 			String procName = null;
 			String luName = null;
 			try {
-				String sql = "SELECT process_name, lu_name, parameters FROM " + TDMDB_SCHEMA
+				String sql = "SELECT process_name, lu_name, parameters FROM " + getTDMDBSchema()
 						+ ".tasks_exe_process WHERE task_id = ? AND process_id = ? AND process_type = ?";
 				try (Db.Rows dbRows = db(TDM).fetch(sql, taskId, processId, processType)) {
 					for (Db.Row dbRow : dbRows) {
@@ -928,7 +934,7 @@ public class StartTaskValidator {
 			throw new TdmValidationException("Invalid Task Configuration", extractError);
 
 		// 2. Validate data version execution ID
-		Long dataVersionExecId = (Long) inputOverrides.get(OverrideParamKey.SELECTED_VERSION_TASK_EXE_ID);
+		Long dataVersionExecId = StartTask.toLong(inputOverrides.get(OverrideParamKey.SELECTED_VERSION_TASK_EXE_ID));
 		if (dataVersionExecId != null) {
 			Map<String, String> versionValidation = fnValidateVersionExecIdAndGetDetails(dataVersionExecId,
 					(Map<String, Object>) context.get("beScope"), (String) context.get("sourceEnvName"));
@@ -940,14 +946,34 @@ public class StartTaskValidator {
 			overrideParams.put(OverrideParamKey.SELECTED_VERSION_TASK_EXE_ID.name(), dataVersionExecId);
 		}
 
+		// 2b. Validate data subset execution ID
+		Long dataSubsetExecId = StartTask.toLong(inputOverrides.get(OverrideParamKey.SELECTED_SUBSET_TASK_EXE_ID));
+		if (dataSubsetExecId != null) {
+			if (!"GENERATE_SUBSET".equalsIgnoreCase((String) context.get("finalSelectionMethod")))
+				throw new TdmValidationException("Data Subset Validation",
+						"Data subset execution override is only applicable to tasks with a Generate-Subset selection method.");
+			List<String> subsetLuNames = ((List<Map<String, Object>>) context.get("logicalUnits")).stream()
+					.map(lu -> (String) lu.get("lu_name")).collect(Collectors.toList());
+			Map<String, String> subsetValidation = fnValidateSubsetExecIdAndGetDetails(dataSubsetExecId,
+					StartTask.toLong(context.get("finalBeId")), (String) context.get("sourceEnvName"), subsetLuNames);
+			if (subsetValidation.get("errorMessage") != null)
+				throw new TdmValidationException("Data Subset Validation", subsetValidation.get("errorMessage"));
+			String subsetExpiryMsg = fnValidateVersionExecIdNotExpired(dataSubsetExecId);
+			if (!subsetExpiryMsg.isEmpty())
+				throw new TdmValidationException("Data Subset Validation",
+						"The selected data subset (execution ID " + dataSubsetExecId + ") has expired.");
+			overrideParams.put(OverrideParamKey.SELECTED_SUBSET_TASK_EXE_ID.name(), dataSubsetExecId);
+		}
+
 		// 3. Validate retention period params
 		String taskType = "" + taskRow.get("task_type");
 		boolean versionInd = (Boolean) taskRow.get("version_ind");
 		String createdBy = "" + taskRow.get("task_created_by");
-		String targetEnvName = (String) context.get("targetEnvName");
+		// fnIsAdminOrOwner checks the ownership by the environment id
+		String targetEnvId = context.get("tarEnvId") == null ? null : String.valueOf(context.get("tarEnvId"));
 		if (dataVersionRetentionPeriod != null) {
 			Map<String, String> msgs = fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, "retention",
-					targetEnvName, versionInd, createdBy);
+					targetEnvId, versionInd, createdBy);
 			if (msgs != null && !msgs.isEmpty())
 				throw new TdmValidationException("Retention Period Validation", msgs.get("retention"));
 			overrideParams.put(OverrideParamKey.DATAFLUX_RETENTION_PARAMS.name(), dataVersionRetentionPeriod);
@@ -957,7 +983,7 @@ public class StartTaskValidator {
 			dataRetentionPeriod.put("units", (String) taskRow.get("retention_period_type"));
 			dataRetentionPeriod.put("value", String.valueOf(taskRow.get("retention_period_value")));
 			Map<String, String> msgs = fnValidateRetentionPeriodParams(dataRetentionPeriod, "retention",
-					targetEnvName, versionInd, createdBy);
+					targetEnvId, versionInd, createdBy);
 			if (msgs != null && !msgs.isEmpty())
 				throw new TdmValidationException("Retention Period Validation", msgs.get("retention"));
 		}
@@ -969,7 +995,7 @@ public class StartTaskValidator {
 					.get(OverrideParamKey.RESERVE_RETENTION_PARAMS);
 			if (reserveRetention != null) {
 				Map<String, String> msgs = fnValidateRetentionPeriodParams(reserveRetention, "reserve",
-						targetEnvName, false, createdBy);
+						targetEnvId, false, createdBy);
 				if (msgs != null && !msgs.isEmpty())
 					throw new TdmValidationException("Reservation Period Validation", msgs.get("reservation"));
 				overrideParams.put(OverrideParamKey.RESERVE_RETENTION_PARAMS.name(), reserveRetention);
@@ -978,7 +1004,7 @@ public class StartTaskValidator {
 				dataReservePeriod.put("units", (String) taskRow.get("reserve_retention_period_type"));
 				dataReservePeriod.put("value", String.valueOf(taskRow.get("reserve_retention_period_value")));
 				Map<String, String> msgs = fnValidateRetentionPeriodParams(dataReservePeriod, "reserve",
-						targetEnvName, false, createdBy);
+						targetEnvId, false, createdBy);
 				if (msgs != null && !msgs.isEmpty())
 					throw new TdmValidationException("Reservation Period Validation", msgs.get("reservation"));
 			}
@@ -998,7 +1024,7 @@ public class StartTaskValidator {
 
 		// 5. Validate effective version is set when in load-data-version mode
 		if (versionInd && "OFF".equalsIgnoreCase("" + taskRow.get("sync_mode")) && !"TABLES".equalsIgnoreCase(finalMethod)) {
-			Long effectiveVersionId = (Long) inputOverrides.get(OverrideParamKey.SELECTED_VERSION_TASK_EXE_ID);
+			Long effectiveVersionId = StartTask.toLong(inputOverrides.get(OverrideParamKey.SELECTED_VERSION_TASK_EXE_ID));
 			boolean isOverrideVersion = effectiveVersionId != null;
 			if (!isOverrideVersion) {
 				Object savedVersionId = taskRow.get("selected_version_task_exe_id");
@@ -1014,6 +1040,171 @@ public class StartTaskValidator {
 					throw new TdmValidationException("Data Version Validation", expiryMsg);
 			}
 		}
+
+		// 5b. Validate effective subset execution id is set when in Generate-Subset mode
+		if ("GENERATE_SUBSET".equalsIgnoreCase(finalMethod)) {
+			Long effectiveSubsetId = StartTask.toLong(inputOverrides.get(OverrideParamKey.SELECTED_SUBSET_TASK_EXE_ID));
+			boolean isOverrideSubset = effectiveSubsetId != null;
+			if (!isOverrideSubset) {
+				Object savedSubsetId = taskRow.get("selected_subset_task_exe_id");
+				effectiveSubsetId = savedSubsetId != null ? Long.parseLong("" + savedSubsetId) : null;
+			}
+			if (effectiveSubsetId == null || effectiveSubsetId == 0) {
+				throw new TdmValidationException("Data Subset Validation", "Data subset selection is mandatory.");
+			}
+			if (!isOverrideSubset) {
+				String expiryMsg = fnValidateVersionExecIdNotExpired(effectiveSubsetId);
+				if (!expiryMsg.isEmpty())
+					throw new TdmValidationException("Data Subset Validation",
+							"The selected data subset (execution ID " + effectiveSubsetId + ") has expired.");
+			}
+		}
+
+		// 6. Validate the task's selected tables do not belong to a selected Logical Unit's schema,
+		// and that no records/partitions limit is requested for tables that have a FK relation between them
+		List<Map<String, Object>> effectiveLus = (List<Map<String, Object>>) context.get("logicalUnits");
+		List<Map<String, Object>> taskTables = new ArrayList<>();
+		try (Db.Rows rows = db(TDM).fetch(
+				"SELECT ref_table_name, interface_name, schema_name, records_limit, partitions_limit " +
+						"FROM " + getTDMDBSchema() + ".task_ref_tables WHERE task_id = ?",
+				taskRow.get("task_id"))) {
+			for (Db.Row r : rows) {
+				Map<String, Object> table = new HashMap<>();
+				table.put("reference_table_name", r.get("ref_table_name"));
+				table.put("interface_name", r.get("interface_name"));
+				table.put("schema_name", r.get("schema_name"));
+				table.put("records_limit", r.get("records_limit"));
+				table.put("partitions_limit", r.get("partitions_limit"));
+				taskTables.add(table);
+			}
+		}
+
+		// 6a. Resolve TABLE_SAMPLING overrides and apply them to the task tables, so the FK limit
+		// check below runs against the limits this execution will actually use
+		List<Map<String, Object>> tableSamplingOverrides =
+				(List<Map<String, Object>>) inputOverrides.get(OverrideParamKey.TABLE_SAMPLING);
+		// with sync mode OFF the partitions come from the data version, not from the source environment
+		boolean checkPartitionMax = !"OFF".equalsIgnoreCase("" + taskRow.get("sync_mode"));
+		Map<String, Map<String, Object>> resolvedTableSampling = resolveTableSamplingOverrides(tableSamplingOverrides,
+				taskTables, (String) context.get("sourceEnvName"), checkPartitionMax);
+		if (resolvedTableSampling != null) {
+			context.put("resolvedTableSampling", resolvedTableSampling);
+			overrideParams.put(OverrideParamKey.TABLE_SAMPLING.name(), tableSamplingOverrides);
+		}
+
+		if (!"EXTRACT".equalsIgnoreCase("" + taskRow.get("task_type"))
+				&& effectiveLus != null && !effectiveLus.isEmpty()) {
+			List<String> taskTableNames = new ArrayList<>();
+			for (Map<String, Object> table : taskTables) {
+				if (table.get("reference_table_name") != null)
+					taskTableNames.add(table.get("reference_table_name").toString());
+			}
+			if (!taskTableNames.isEmpty()) {
+				for (Map<String, Object> lu : effectiveLus) {
+					String luName = lu.get("lu_name") != null ? lu.get("lu_name").toString() : null;
+					String msg = validateTablesNotInLuSchema(luName, taskTableNames);
+					if (!"".equalsIgnoreCase(msg))
+						throw new TdmValidationException("Table Level Validation", msg);
+				}
+			}
+		}
+
+		if (!"EXTRACT".equalsIgnoreCase("" + taskRow.get("task_type"))) {
+			String fkLimitMsg = validateNoLimitOnFkRelatedTables(taskTables);
+			if (!"".equalsIgnoreCase(fkLimitMsg))
+				throw new TdmValidationException("Table Level Validation", fkLimitMsg);
+		}
+	}
+
+	/**
+	 * Validates the TABLE_SAMPLING overrides against the task's tables and returns them keyed by
+	 * interface|schema|table, holding the records_limit / partitions_limit to save for this execution
+	 * (-1 = no limit, null = keep the task's value). The matched entries of taskTables are updated
+	 * in place with the effective limits. Partition counts are taken from the execution's source environment;
+	 * the maximum is not checked for sync mode OFF, where the partitions come from the data version.
+	 */
+	private static Map<String, Map<String, Object>> resolveTableSamplingOverrides(
+			List<Map<String, Object>> samplingOverrides, List<Map<String, Object>> taskTables,
+			String sourceEnvName, boolean checkPartitionMax) throws Exception {
+		if (samplingOverrides == null || samplingOverrides.isEmpty())
+			return null;
+		Map<String, Map<String, Object>> result = new HashMap<>();
+		boolean envSet = false;
+		for (Map<String, Object> tableOverride : samplingOverrides) {
+			Object refTableName = tableOverride.get("ref_table_name");
+			if (refTableName == null)
+				throw new TdmValidationException("Table Level Validation", "TABLE_SAMPLING entry is missing 'ref_table_name'.");
+			Object interfaceName = tableOverride.get("interface_name");
+			Object schemaName = tableOverride.get("schema_name");
+
+			List<Map<String, Object>> matches = new ArrayList<>();
+			for (Map<String, Object> table : taskTables) {
+				if (refTableName.toString().equals("" + table.get("reference_table_name"))
+						&& (interfaceName == null || interfaceName.toString().equals("" + table.get("interface_name")))
+						&& (schemaName == null || schemaName.toString().equals("" + table.get("schema_name"))))
+					matches.add(table);
+			}
+			if (matches.isEmpty())
+				throw new TdmValidationException("Table Level Validation", "TABLE_SAMPLING table '" + refTableName + "' is not part of the task.");
+			if (matches.size() > 1)
+				throw new TdmValidationException("Table Level Validation", "TABLE_SAMPLING table '" + refTableName
+						+ "' matches more than one task table. Add 'interface_name' and 'schema_name' to the entry.");
+			Map<String, Object> table = matches.get(0);
+			String key = table.get("interface_name") + "|" + table.get("schema_name") + "|" + table.get("reference_table_name");
+			if (result.containsKey(key))
+				throw new TdmValidationException("Table Level Validation", "TABLE_SAMPLING table '" + refTableName + "' is overridden more than once.");
+
+			Long recordsLimit = parseSamplingLimit(tableOverride, "records_limit", refTableName);
+			Long partitionsLimit = parseSamplingLimit(tableOverride, "partitions_limit", refTableName);
+			if (checkPartitionMax && partitionsLimit != null && partitionsLimit > 0) {
+				// a partition count computed by a flow reads the source DB of the session's environment
+				if (!envSet && sourceEnvName != null) {
+					fabric().execute("set environment=?;", sourceEnvName);
+					envSet = true;
+				}
+				Integer partitionNum = fnGetTablePartitionNum("" + table.get("interface_name"), "" + table.get("schema_name"),
+						"" + table.get("reference_table_name"), "TableLevelDefinitions", "TDM_TableLevel");
+				if (partitionNum != null && partitionsLimit > partitionNum)
+					throw new TdmValidationException("Table Level Validation", "TABLE_SAMPLING partitions_limit " + partitionsLimit
+							+ " for table '" + refTableName + "' exceeds its number of partitions (" + partitionNum + ").");
+			}
+
+			if (recordsLimit != null)
+				table.put("records_limit", recordsLimit);
+			if (partitionsLimit != null)
+				table.put("partitions_limit", partitionsLimit);
+			Map<String, Object> resolved = new HashMap<>();
+			resolved.put("records_limit", recordsLimit);
+			resolved.put("partitions_limit", partitionsLimit);
+			result.put(key, resolved);
+		}
+		return result;
+	}
+
+	/** null when the attribute is not sent (keep the task's value), -1 when sent as null or -1 (no limit), else a positive whole number */
+	private static Long parseSamplingLimit(Map<String, Object> tableOverride, String attr, Object refTableName)
+			throws TdmValidationException {
+		if (!tableOverride.containsKey(attr))
+			return null;
+		Object value = tableOverride.get(attr);
+		if (value == null)
+			return -1L;
+		long limit;
+		try {
+			double parsed = Double.parseDouble(value.toString().trim());
+			if (parsed != Math.floor(parsed))
+				throw new NumberFormatException();
+			limit = (long) parsed;
+		} catch (NumberFormatException e) {
+			throw new TdmValidationException("Table Level Validation", "TABLE_SAMPLING " + attr + " for table '" + refTableName
+					+ "' must be a whole number.");
+		}
+		if (limit == -1)
+			return -1L;
+		if (limit < 1)
+			throw new TdmValidationException("Table Level Validation", "TABLE_SAMPLING " + attr + " for table '" + refTableName
+					+ "' must be at least 1, or -1/null for no limit.");
+		return limit;
 	}
 
 	private static void verifyRandomDataAvailability(Db.Row taskRow, Map<String, Object> context) throws Exception {
@@ -1038,11 +1229,13 @@ public class StartTaskValidator {
 		}
 
 		String luName = (String) rootLu.get("lu_name");
+		if (luName == null || !luName.matches("[A-Za-z0-9_]+"))
+			throw new TdmValidationException("Selection Method Validation", "Invalid logical unit name '" + luName + "'.");
 
 		// Resolve table and column names per LU
 		String luParamsTable = isParamCoupling
 				? luName.toLowerCase() + ".fabric_tdm_root"
-				: TDMDB_SCHEMA + "." + luName.toLowerCase() + "_params";
+				: getTDMDBSchema() + "." + luName.toLowerCase() + "_params";
 		String envColumn = isParamCoupling ? "source_env" : "source_environment";
 
 		String checkSql = "SELECT 1 FROM " + luParamsTable + " WHERE " + envColumn + " = ? LIMIT 1";
@@ -1247,7 +1440,7 @@ public class StartTaskValidator {
 			Map<OverrideParamKey, Object> inputOverrides) throws TdmValidationException {
 		long taskId = ((Number) taskRow.get("task_id")).longValue();
 		String sql = "SELECT process_id, process_name, process_type, lu_name, parameters FROM "
-				+ TDMDB_SCHEMA + ".tasks_exe_process WHERE task_id = ?";
+				+ getTDMDBSchema() + ".tasks_exe_process WHERE task_id = ?";
 		try (Db.Rows rows = db(TDM).fetch(sql, taskId)) {
 			for (Db.Row row : rows) {
 				String processName = row.get("process_name") != null

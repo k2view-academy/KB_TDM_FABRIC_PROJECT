@@ -1,7 +1,11 @@
 package com.k2view.cdbms.usercode.lu.TDM_TableLevel.TablesOrder;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getCatalogFkRelations;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getJdbcFkRelations;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
+import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.TableLevelUtils.Logic.fnGetAllTableDefinitions;
 import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.TableLevelUtils.Logic.fnLoadTargetInfoFromRefList;
 
@@ -176,15 +180,15 @@ public class Logic extends UserCode {
             } else {
                 // Run flow to get order
                 if (!Util.isEmpty(tableOrder)) {
-                    Object calculatedOrder = fabric().fetch("broadway TDM_TableLevel." + tableOrder +
-                        " interface_name = '" + iface + "', schema_name = '" + schema + "', table_name = '" + table + "'").firstValue();
+                    Object calculatedOrder = fabric().fetch("broadway TDM_TableLevel." + sanitizeDslToken(tableOrder) +
+                        " interface_name = ?, schema_name = ?, table_name = ?", iface, schema, table).firstValue();
 
                     if (calculatedOrder != null && orderIsDigit(calculatedOrder.toString())) {
                         return Integer.parseInt(calculatedOrder.toString());
                     }
                 }
             }
-            
+
             return order;
         }
 
@@ -418,9 +422,9 @@ public class Logic extends UserCode {
             Set<String> interfaces = new HashSet<>();
             String sql =
                     "SELECT rt.interface_name, rt.schema_name, es.ref_table_name, rt.lu_name, es.table_order, es.batch_id " +
-                    "FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " +
-                    TDMDB_SCHEMA + ".TASK_REF_TABLES rt, " +
-                    TDMDB_SCHEMA + ".tasks t " +
+                    "FROM " + getTDMDBSchema() + ".TASK_REF_EXE_STATS es, " +
+                    getTDMDBSchema() + ".TASK_REF_TABLES rt, " +
+                    getTDMDBSchema() + ".tasks t " +
                     "WHERE rt.task_id = t.task_id " +
                     "AND rt.task_id = es.task_id " +
                     "AND rt.task_ref_table_id = es.task_ref_table_id " +
@@ -428,25 +432,26 @@ public class Logic extends UserCode {
                     "AND es.execution_status != 'completed' " +
                     "ORDER BY rt.interface_name";
 
-            Db.Rows rows = db(TDM).fetch(sql, taskExecutionId);
-
             Boolean rerunInd = null;
-            for (Db.Row r : rows) {
 
-                String rowBatchId = r.get("batch_id") != null ? r.get("batch_id").toString() : null;
+            try (Db.Rows rows = db(TDM).fetch(sql, taskExecutionId)) {
+                for (Db.Row r : rows) {
 
-                if (rerunInd == null) {
-                    rerunInd = (Integer.parseInt(r.get("table_order").toString()) == -1 ? false : true);
+                    String rowBatchId = r.get("batch_id") != null ? r.get("batch_id").toString() : null;
+
+                    if (rerunInd == null) {
+                        rerunInd = (Integer.parseInt(r.get("table_order").toString()) == -1 ? false : true);
+                    }
+                    taskTables.add(new TablesMeta(
+                            r.get("interface_name").toString(),
+                            r.get("schema_name").toString(),
+                            r.get("ref_table_name").toString(),
+                            r.get("lu_name").toString(),
+                            Integer.parseInt(r.get("table_order").toString()),
+                            rowBatchId));
+
+                    interfaces.add(r.get("interface_name").toString());
                 }
-                taskTables.add(new TablesMeta(
-                        r.get("interface_name").toString(),
-                        r.get("schema_name").toString(),
-                        r.get("ref_table_name").toString(),
-                        r.get("lu_name").toString(),
-                        Integer.parseInt(r.get("table_order").toString()),
-                        rowBatchId));
-
-                interfaces.add(r.get("interface_name").toString());
             }
 
             if (rerunInd) {
@@ -501,9 +506,9 @@ public class Logic extends UserCode {
          Set<String> interfaces = new HashSet<>();
             String sql =
                     "SELECT rt.interface_name, rt.schema_name, es.ref_table_name, rt.lu_name, es.table_order, es.batch_id " +
-                    "FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " +
-                    TDMDB_SCHEMA + ".TASK_REF_TABLES rt, " +
-                    TDMDB_SCHEMA + ".tasks t " +
+                    "FROM " + getTDMDBSchema() + ".TASK_REF_EXE_STATS es, " +
+                    getTDMDBSchema() + ".TASK_REF_TABLES rt, " +
+                    getTDMDBSchema() + ".tasks t " +
                     "WHERE rt.task_id = t.task_id " +
                     "AND rt.task_id = es.task_id " +
                     "AND rt.task_ref_table_id = es.task_ref_table_id " +
@@ -511,24 +516,25 @@ public class Logic extends UserCode {
                     "AND es.execution_status != 'completed' " +
                     "ORDER BY rt.interface_name";
 
-            Db.Rows rows = db(TDM).fetch(sql, taskExecutionId);
+            try (Db.Rows rows = db(TDM).fetch(sql, taskExecutionId)) {
             
-            for (Db.Row r : rows) {
+                for (Db.Row r : rows) {
 
-                // Each row carries its own batch_id — use it directly. (Previously this held a
-                // single "first batch_id seen" value shared across every row/interface, so every
-                // table ended up with the very first interface's batch id instead of its own.)
-                String rowBatchId = r.get("batch_id") != null ? r.get("batch_id").toString() : null;
+                    // Each row carries its own batch_id — use it directly. (Previously this held a
+                    // single "first batch_id seen" value shared across every row/interface, so every
+                    // table ended up with the very first interface's batch id instead of its own.)
+                    String rowBatchId = r.get("batch_id") != null ? r.get("batch_id").toString() : null;
 
-                deleteTaskTables.add(new TablesMeta(
-                        r.get("interface_name").toString(),
-                        r.get("schema_name").toString(),
-                        r.get("ref_table_name").toString(),
-                        r.get("lu_name").toString(),
-                        Integer.parseInt(r.get("table_order").toString()),
-                        rowBatchId));
+                    deleteTaskTables.add(new TablesMeta(
+                            r.get("interface_name").toString(),
+                            r.get("schema_name").toString(),
+                            r.get("ref_table_name").toString(),
+                            r.get("lu_name").toString(),
+                            Integer.parseInt(r.get("table_order").toString()),
+                            rowBatchId));
 
-                interfaces.add(r.get("interface_name").toString());
+                    interfaces.add(r.get("interface_name").toString());
+                }
             }
 
             Map<String, Object> result = buildTablesOrderForRerun(deleteTaskTables);
@@ -570,7 +576,7 @@ public class Logic extends UserCode {
 
     private static void persistTableOrder(String taskExecutionId) throws Exception {
         boolean hasDeleteRows = db(TDM).fetch(
-            "SELECT 1 FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+            "SELECT 1 FROM " + getTDMDBSchema() + ".task_ref_exe_stats " +
             "WHERE task_execution_id = ? AND LOWER(execution_action) = 'delete' LIMIT 1",
             taskExecutionId
         ).firstValue() != null;
@@ -585,7 +591,7 @@ public class Logic extends UserCode {
             for (TablesAndBatchId info : orderEntry.getValue().values()) {
                 for (TableMeta t : info.getPendingTables()) {
                     db(TDM).execute(
-                        "UPDATE " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+                        "UPDATE " + getTDMDBSchema() + ".task_ref_exe_stats " +
                         "SET table_order = ? " +
                         "WHERE task_execution_id = ? " +
                         "AND interface_name = ? " +
@@ -597,7 +603,7 @@ public class Logic extends UserCode {
                     );
                     if (hasDeleteRows) {
                         db(TDM).execute(
-                            "UPDATE " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+                            "UPDATE " + getTDMDBSchema() + ".task_ref_exe_stats " +
                             "SET table_order = ? " +
                             "WHERE task_execution_id = ? " +
                             "AND interface_name = ? " +

@@ -1,0 +1,37 @@
+description: Gets the current execution status of a TDM task by its task execution ID. Returns per-LU
+  execution status and entity counts. Use after starting a task to confirm it is running or has completed.
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetTaskExecutionStatus:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetTaskExecutionStatus 'taskExecutionId'=${taskExecutionId}
+          taskExecutionId:
+            external: taskExecutionId
+            schema: integer
+            remark: The task execution id returned when the task was started. This is not the task id.
+            mandatory: true
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      status_summary:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetTaskExecutionStatus/result/status_summary
+        out:
+          value:
+            external: status_summary
+schemas:
+  Call GetTaskExecutionStatus.out.result:
+    type: object
+    properties:
+      status_summary: {}

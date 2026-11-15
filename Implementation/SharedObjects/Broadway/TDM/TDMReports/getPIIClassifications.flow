@@ -1,0 +1,454 @@
+tags: TDM,Masking
+stages:
+  Stage 1:
+    actors:
+      MTableLookup- enable_masking category:
+        parent: MTableLookup
+        in:
+          mtable:
+            const: catalog_classification_generators
+          category:
+            external: category
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: mtable
+        out:
+          result:
+            schema: '#ref'
+  'Consistent   ':
+    dependsOn: Stage 1
+    actors:
+      'False':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'false'
+            schema: string
+          a:
+            link:
+              path: MTableLookup- enable_masking category/result/consistent
+              iterate: Iterate
+    split: '--------------------'
+  Unique:
+    else: true
+    dependsOn: Stage 1
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link:
+              path: MTableLookup- enable_masking category/result/unique
+              iterate: Iterate
+    split: '--------------------'
+  'Seed  ':
+    else: true
+    dependsOn: Stage 1
+    actors:
+      'True   ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link:
+              path: MTableLookup- enable_masking category/result/seed
+              iterate: Iterate
+    split: '--------------------'
+  'Consistent using table ':
+    else: true
+    dependsOn: Stage 1
+  Category:
+    dependsOn: 'Consistent   '
+    actors:
+      Random:
+        parent: Const
+        in:
+          value:
+            const: Random
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Category ':
+    dependsOn: Unique
+    actors:
+      Consistent and unique:
+        parent: Const
+        in:
+          value:
+            const: Consistent & Unique
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Category   ':
+    dependsOn: 'Seed  '
+    actors:
+      Seed:
+        parent: Const
+        in:
+          value:
+            const: Consistent Using Seed
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Category    ':
+    dependsOn: 'Consistent using table '
+    actors:
+      Consistent using table:
+        parent: Const
+        in:
+          value:
+            const: Consistent Using Table
+            schema: string
+        out:
+          value:
+            schema: string
+  Set cross env/entity/exec consistency ind:
+    actors:
+      Use Environment:
+        parent: JavaScript
+        in:
+          script:
+            const: 'value.toLowerCase() === "true" ? "false" : "true";'
+          value:
+            link:
+              path: MTableLookup- enable_masking category/result/useEnvironment
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Use Execution ID:
+        parent: JavaScript
+        in:
+          script:
+            const: 'value.toLowerCase() === "true" ? "false" : "true";'
+          value:
+            link:
+              path: MTableLookup- enable_masking category/result/useExecutionId
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Use Instance ID:
+        parent: JavaScript
+        in:
+          script:
+            const: 'value.toLowerCase() === "true" ? "false" : "true";'
+          value:
+            link:
+              path: MTableLookup- enable_masking category/result/useInstanceId
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+  Empty value behavior:
+    dependsOn: Set cross env/entity/exec consistency ind
+    actors:
+      'MASK_NO_CACHE ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: MASK_NO_CACHE
+            schema: string
+          a:
+            link:
+              path: MTableLookup- enable_masking category/result/onEmpty
+              iterate: Iterate
+    split: '--------------------'
+  'Empty value behavior  ':
+    else: true
+    dependsOn: Set cross env/entity/exec consistency ind
+    actors:
+      'LEAVE_EMPTY ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: LEAVE_EMPTY
+            schema: string
+          a:
+            link:
+              path: MTableLookup- enable_masking category/result/onEmpty
+              iterate: Iterate
+    split: '--------------------'
+  'Empty value behavior       ':
+    else: true
+    dependsOn: Set cross env/entity/exec consistency ind
+    actors:
+      'MASK_AND_CACHE ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: MASK_AND_CACHE
+            schema: string
+          a:
+            link:
+              path: MTableLookup- enable_masking category/result/onEmpty
+              iterate: Iterate
+  On empty values:
+    dependsOn: Empty value behavior
+    actors:
+      Mask without cache:
+        parent: Const
+        in:
+          value:
+            const: Mask without cache
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'On empty values  ':
+    dependsOn: 'Empty value behavior  '
+    actors:
+      Leave empty:
+        parent: Const
+        in:
+          value:
+            const: Leave empty
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'On empty values ':
+    dependsOn: 'Empty value behavior       '
+    actors:
+      Mask and cache:
+        parent: Const
+        in:
+          value:
+            const: Mask and cache
+            schema: string
+        out:
+          value:
+            schema: string
+  Formatter:
+    dependsOn: On empty values
+    actors:
+      'False   ':
+        parent: IsNull
+        condition: result
+        in:
+          value:
+            link:
+              path: MTableLookup- enable_masking category/result/formatterName
+              iterate: Iterate
+    split: '--------------------'
+  'Formatter   ':
+    else: true
+    dependsOn: On empty values
+    split: '--------------------'
+  Do Nothing:
+    else: false
+    dependsOn: 'On empty values  '
+    split: '--------------------'
+  'Do Nothing ':
+    dependsOn: 'On empty values '
+  Formatter Value:
+    dependsOn: Formatter
+    actors:
+      'false':
+        parent: Const
+        in:
+          value:
+            const: 'false'
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Formatter Value ':
+    dependsOn: 'Formatter   '
+    actors:
+      'true':
+        parent: Const
+        in:
+          value:
+            const: 'true'
+            schema: string
+        out:
+          value:
+            schema: string
+    split: '--------------------'
+  'Do Nothing  ':
+    dependsOn: Do Nothing
+    split: '--------------------'
+  'Do Nothing   ':
+    dependsOn: 'Do Nothing '
+  Create Result:
+    actors:
+      MapCreate:
+        parent: MapCreate
+        in:
+          Classification:
+            link:
+              path: MTableLookup- enable_masking category/result/classification
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          Data Generator:
+            link:
+              path: MTableLookup- enable_masking category/result/generator
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          Generator Parameters:
+            link:
+              path: MTableLookup- enable_masking category/result/params
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          Data Consistency:
+            link:
+            - Random/value
+            - Consistent and unique/value
+            - Seed/value
+            - Consistent using table/value
+            schema: string
+            mandatory: false
+          Cross-Environment Consistency:
+            link: Use Environment/result
+            schema: boolean
+            mandatory: false
+          Cross-Execution Consistency:
+            link: Use Execution ID/result
+            schema: string
+            mandatory: false
+          Cross-Entity Consistency:
+            link: Use Instance ID/result
+            schema: string
+            mandatory: false
+          Empty Value Behavior:
+            link:
+            - Mask without cache/value
+            - Leave empty/value
+            - Mask and cache/value
+            schema: string
+            mandatory: false
+          Preserve Original Format:
+            link:
+            - false/value
+            - true/value
+            schema: string
+            mandatory: false
+        out:
+          map:
+            schema: '#ref'
+  Output:
+    last: 1
+    actors:
+      'ArrayBuilder ':
+        parent: ArrayBuilder
+        in:
+          input:
+            link: MapCreate/map
+        out:
+          array:
+            external: array
+            schema: '#ref'
+schemas:
+  MTableLookup- enable_masking category.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        classification:
+          type: string
+        generator:
+          type: string
+        params:
+          type: string
+        consistent:
+          type: string
+        unique:
+          type: string
+        seed:
+          type: string
+        useEnvironment:
+          type: string
+        useExecutionId:
+          type: string
+        useInstanceId:
+          type: string
+        onEmpty:
+          type: string
+        formatterName: {
+          }
+        formatterParams:
+          type: string
+        category:
+          type: string
+        preExecution: {
+          }
+        preExecutionParams:
+          type: string
+        propertyAliasMap: {
+          }
+  MapCreate.out.map:
+    type: object
+    properties:
+      Classification:
+        type: string
+      Data Generator:
+        type: string
+      Generator Parameters:
+        type: string
+      Data Consistency:
+        type: string
+      Cross-Environment Consistency:
+        type: boolean
+      Cross-Execution Consistency: {
+        }
+      Cross-Entity Consistency: {
+        }
+      Empty Value Behavior: {
+        }
+      Preserve Original Format: {
+        }
+  ArrayBuilder .out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string

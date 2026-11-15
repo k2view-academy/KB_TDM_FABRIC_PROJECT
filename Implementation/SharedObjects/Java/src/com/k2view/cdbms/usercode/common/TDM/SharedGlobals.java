@@ -108,5 +108,9 @@ public class SharedGlobals {
 	@category("TDM_DEBUG")
 	public static String enable_sequences = "false";
 
+    @desc ("Used to allow reporting Masking Inforation")
+	@category("TDM")
+	public static final String MASKING_REPORT_FLAG = "false";
+
 
 }

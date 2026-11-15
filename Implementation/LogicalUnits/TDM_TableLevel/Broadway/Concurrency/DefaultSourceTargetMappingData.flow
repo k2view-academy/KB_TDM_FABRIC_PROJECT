@@ -1,0 +1,147 @@
+tags: Implementation
+stages:
+  Get Inputs:
+    actors:
+      Interface:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interfaceName
+        out:
+          value:
+            schema: string
+      Schema:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schemaName
+        out:
+          value:
+            schema: string
+      Table:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+        out:
+          value:
+            schema: string
+      LuName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: luName
+        out:
+          value:
+            schema: string
+  Load Target And Source Info:
+    actors:
+      Load Target Info:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnLoadTargetInfoFromRefList
+          interfaceName:
+            link: Interface/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Schema/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Table/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          luName:
+            link: LuName/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+      Load Source Info:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnLoadSourceInfoFromRefList
+          interfaceName:
+            link: Interface/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Schema/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Table/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          luName:
+            link: LuName/value
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: '#ref'
+  Merge Info:
+    actors:
+      MapMerge1:
+        parent: MapMerge
+        in:
+          maps:
+            link:
+            - path: Load Target Info/result
+              pos: 0
+            - path: Load Source Info/result
+              pos: 1
+        out:
+          map:
+            external: result
+            schema: '#ref'
+schemas:
+  Load Target Info.out.result:
+    type: object
+    properties:
+      target_ref_table_name:
+        type: string
+      target_interface_name:
+        type: string
+      target_schema_name:
+        type: string
+  Load Source Info.out.result:
+    type: object
+    properties:
+      source_ref_table_name:
+        type: string
+      source_interface_name:
+        type: string
+      source_schema_name:
+        type: string
+  MapMerge1.out.map:
+    type: object
+    properties:
+      target_ref_table_name:
+        type: string
+      target_interface_name:
+        type: string
+      target_schema_name:
+        type: string
+      source_ref_table_name:
+        type: string
+      source_interface_name:
+        type: string
+      source_schema_name:
+        type: string

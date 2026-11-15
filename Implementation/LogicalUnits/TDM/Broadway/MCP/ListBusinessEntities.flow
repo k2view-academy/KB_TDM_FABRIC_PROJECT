@@ -1,0 +1,34 @@
+description: Lists all Business Entities (BEs) in TDM with their id, name, description and status. Use
+  it to resolve the BE id (beId) or name (beName) other tools take.
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call ListBusinessEntities:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.ListBusinessEntities
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      business_entities:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call ListBusinessEntities/result/business_entities
+        out:
+          value:
+            external: business_entities
+            schema: string
+schemas:
+  Call ListBusinessEntities.out.result:
+    type: object
+    properties:
+      business_entities:
+        type: string

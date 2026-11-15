@@ -22,17 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsOwner;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getAllSuppressedInterfaces;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsOwner;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnValidateEnvModifyPermission;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 @SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends WebServiceUserCode {
 	public static final String TDM = "TDM";
-	final static String schema = TDMDB_SCHEMA;
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 
 	@desc("Gets all TDM System (products), Active and Inactive, to populate Systems window")
@@ -68,7 +66,7 @@ public class Logic extends WebServiceUserCode {
 		try {			
 			String sql = """
 					SELECT * FROM %s.products
-					""".formatted(schema);
+					""".formatted(getTDMDBSchema());
 
 			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String, Object>> result = new ArrayList<>();
@@ -144,7 +142,7 @@ public class Logic extends WebServiceUserCode {
 			String sql = """
 					SELECT * FROM %s.products
 					WHERE product_id = (?)
-					""".formatted(schema);
+					""".formatted(getTDMDBSchema());
 
 			Db.Row row = db(TDM).fetch(sql, prodId).firstRow();
 
@@ -232,7 +230,7 @@ public class Logic extends WebServiceUserCode {
 					)
 					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 					RETURNING product_id
-					""".formatted(schema);
+					""".formatted(getTDMDBSchema());
 
 			String username = sessionUser().name();
 			
@@ -311,7 +309,7 @@ public class Logic extends WebServiceUserCode {
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 		try {
-			String sql = "UPDATE " + schema + ".products SET " +
+			String sql = "UPDATE " + getTDMDBSchema() + ".products SET " +
 					"product_name=(?)," +
 					"product_description=(?)," +
 					"product_vendor=(?)," +
@@ -376,10 +374,10 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM " + schema + ".product_logical_units p " +
-			"INNER JOIN " + schema + ".business_entities b ON (p.be_id = b.be_id) " +
-					"WHERE p.product_id = " + prodId;
-			Db.Rows rows = db(TDM).fetch(sql);
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".product_logical_units p " +
+			"INNER JOIN " + getTDMDBSchema() + ".business_entities b ON (p.be_id = b.be_id) " +
+					"WHERE p.product_id = ?";
+			Db.Rows rows = db(TDM).fetch(sql, prodId);
 		
 			List<Map<String,Object>> productLogicalUnits=new ArrayList<>();
 			Map<String,Object> productLogicalUnit;
@@ -455,8 +453,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM " + schema + ".product_logical_units p " +
-			"INNER JOIN " + schema + ".business_entities b ON (p.be_id = b.be_id) " +
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".product_logical_units p " +
+			"INNER JOIN " + getTDMDBSchema() + ".business_entities b ON (p.be_id = b.be_id) " +
 					"WHERE product_id = -1 AND be_status = 'Active'";
 			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> productLogicalUnits=new ArrayList<>();
@@ -523,24 +521,24 @@ public class Logic extends WebServiceUserCode {
 		}
 		
 		try {
-			String sql= "UPDATE " + schema + ".products  SET " +
+			String sql= "UPDATE " + getTDMDBSchema() + ".products  SET " +
 					"product_status=(?) " +
-					"WHERE product_id = " + prodId + " RETURNING product_name";
-			Db.Row row = db(TDM).fetch(sql,"Inactive").firstRow();
+					"WHERE product_id = ? RETURNING product_name";
+			Db.Row row = db(TDM).fetch(sql,"Inactive",prodId).firstRow();
 			String prodName = row.get("product_name").toString();
-		
+
 			{
-				String updateProductLogicalUnits = "UPDATE " + schema + ".product_logical_units " +
+				String updateProductLogicalUnits = "UPDATE " + getTDMDBSchema() + ".product_logical_units " +
 						"SET product_id=(?), product_name=(?) " +
-						"WHERE product_id = " + prodId;
-				db(TDM).execute(updateProductLogicalUnits,-1,"");
+						"WHERE product_id = ?";
+				db(TDM).execute(updateProductLogicalUnits,-1,"",prodId);
 			}
-		
+
 			{
-				String updateEnvironmentProducts = "UPDATE " + schema + ".environment_products " +
+				String updateEnvironmentProducts = "UPDATE " + getTDMDBSchema() + ".environment_products " +
 						"SET status=(?) " +
-						"WHERE product_id = " + prodId ;
-				db(TDM).execute(updateEnvironmentProducts,"Inactive");
+						"WHERE product_id = ?";
+				db(TDM).execute(updateEnvironmentProducts,"Inactive",prodId);
 			}
 		
 			try {
@@ -605,12 +603,12 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM " + schema + ".environment_products p " +
-			"INNER JOIN " + schema + ".environments e " +
+			String sql = "SELECT * FROM " + getTDMDBSchema() + ".environment_products p " +
+			"INNER JOIN " + getTDMDBSchema() + ".environments e " +
 					"ON (e.environment_id = p.environment_id AND e.environment_status = \'Active\' )" +
-					"WHERE p.product_id = " +  productId +
+					"WHERE p.product_id = ?" +
 					" AND p.status = 'Active'";
-			Db.Rows rows = db(TDM).fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql, productId);
 		
 			HashMap<String,Object> env;
 			List<HashMap<String,Object>> result=new ArrayList<>();
@@ -701,7 +699,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "SUCCESS";
 		String message = null;
 
-		String checkEnvSql = "SELECT 1 FROM " + schema + ".environments WHERE environment_id = ?";
+		String checkEnvSql = "SELECT 1 FROM " + getTDMDBSchema() + ".environments WHERE environment_id = ?";
 		Db.Row envRow = db(TDM).fetch(checkEnvSql, envId).firstRow();
 
 		if (envRow.isEmpty()) {
@@ -711,8 +709,8 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "SELECT p.product_id, p.product_versions, p.product_name, p.related_interfaces, " +
 					"COUNT(lu.lu_id) as lu_count " +
-					"FROM " + schema + ".products p " +
-					"LEFT JOIN " + schema + ".product_logical_units lu ON p.product_id = lu.product_id " +
+					"FROM " + getTDMDBSchema() + ".products p " +
+					"LEFT JOIN " + getTDMDBSchema() + ".product_logical_units lu ON p.product_id = lu.product_id " +
 					"WHERE p.product_status = 'Active' " +
 					"GROUP BY p.product_id, p.product_versions, p.product_name, p.related_interfaces";
 
@@ -769,11 +767,11 @@ public class Logic extends WebServiceUserCode {
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 
-		String sql = "UPDATE " + schema + ".products SET " +
+		String sql = "UPDATE " + getTDMDBSchema() + ".products SET " +
 				"product_last_updated_date=(?)," +
 				"product_last_updated_by=(?) " +
-				"WHERE product_id = " + prodId;
-		db(TDM).execute(sql,now,username);
+				"WHERE product_id = ?";
+		db(TDM).execute(sql,now,username,prodId);
 	}
 
 	static void fnInsertActivity(String action,String entity, String description) throws Exception{
@@ -782,7 +780,7 @@ public class Logic extends WebServiceUserCode {
 				.format(Instant.now());
 		String username = sessionUser().name();
 		String userId = username;
-		String sql= "INSERT INTO " + schema + ".activities " +
+		String sql= "INSERT INTO " + getTDMDBSchema() + ".activities " +
 				"(date, action, entity, user_id, username, description) " +
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);
@@ -790,21 +788,15 @@ public class Logic extends WebServiceUserCode {
 	
 	@webService(path = "product/{envId}/{productId}/DisableEnvironmentProduct", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsDisableEnvironmentProduct(@param(required=true) Long productId,Long envId,Long envProdcutID,String envName) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore are not allowed to disable environment products.", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) 	
-					return wrapWebServiceResults("FAILED", "You are not the owner of this environment and therefore are not allowed to disable its products.", null);
-			}
-		}		
+		String envAuthError = fnValidateEnvModifyPermission(envId, fnGetUserPermissionGroup(""),
+				"You have a Tester permission group and therefore are not allowed to disable environment products.",
+				"You are not the owner of this environment and therefore are not allowed to disable its products.");
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "UPDATE " + schema + ".environment_products SET " +
+			String sql = "UPDATE " + getTDMDBSchema() + ".environment_products SET " +
 					"enable_product=? WHERE environment_product_id = ? ";
 			db(TDM).execute(sql, "false",envProdcutID);
 
@@ -830,21 +822,15 @@ public class Logic extends WebServiceUserCode {
 	
 	@webService(path = "product/{envId}/{productId}/EnableEnvironmentProduct", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsEnableEnvironmentProduct(@param(required=true) Long productId,Long envId,Long envProdcutID,String envName) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
-		if (!"admin".equals(permissionGroup)) {
-			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore are not allowed to disable environment products.", null);
-			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) 	
-					return wrapWebServiceResults("FAILED", "You are not the owner of this environment and therefore are not allowed to disable its products.", null);
-			}
-		}
+		String envAuthError = fnValidateEnvModifyPermission(envId, fnGetUserPermissionGroup(""),
+				"You have a Tester permission group and therefore are not allowed to enable environment products.",
+				"You are not the owner of this environment and therefore are not allowed to enable its products.");
+		if (envAuthError != null) return wrapWebServiceResults("FAILED", envAuthError, null);
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "UPDATE " + schema + ".environment_products SET " +
+			String sql = "UPDATE " + getTDMDBSchema() + ".environment_products SET " +
 					"enable_product=? WHERE environment_product_id = ?";
 			db(TDM).execute(sql, "true",envProdcutID);
 

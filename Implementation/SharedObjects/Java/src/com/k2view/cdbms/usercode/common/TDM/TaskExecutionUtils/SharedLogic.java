@@ -13,20 +13,24 @@ import org.json.JSONObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.user.WebServiceUserCode.graphit;
+import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.AI_ENVIRONMENT;
+import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.SYNTHETIC_ENVIRONMENT;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.fnTdmReference;
 import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.validateLUMaxWorkers;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isPermittedUserForStopResume;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.requiresSourceCheck;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.requiresTargetCheck;
@@ -37,10 +41,9 @@ public class SharedLogic {
 
     public static final String TDM = "TDM";
     private static final String DB_FABRIC = "fabric";
-    public static String schema = TDMDB_SCHEMA;
 
     public static void fnAddTaskExecutionProcess(List<Map<String, Object>> postExecutionProcesses, Long taskId, String processType) throws Exception {
-        String sql = "DELETE FROM " + schema + ".TASKS_EXE_PROCESS WHERE process_type = ? AND task_id = ? ";
+        String sql = "DELETE FROM " + getTDMDBSchema() + ".TASKS_EXE_PROCESS WHERE process_type = ? AND task_id = ? ";
         db(TDM).execute(sql,processType,taskId);
         if (postExecutionProcesses == null) return;
 
@@ -52,7 +55,7 @@ public class SharedLogic {
             }
             
 			String luName  = postExecutionProcess.containsKey("lu_name") ? postExecutionProcess.get("lu_name").toString() : "TDM_TableLevel";
-            db(TDM).execute("INSERT INTO " + schema + 
+            db(TDM).execute("INSERT INTO " + getTDMDBSchema() + 
 				".TASKS_EXE_PROCESS (task_id, process_id,process_name, lu_name, execution_order,process_type, parameters) VALUES (?,?,?,?,?,?,?)",
                     taskId,
                     postExecutionProcess.get("process_id"),
@@ -71,7 +74,7 @@ public class SharedLogic {
         String message=null;
 
         try {
-            String sql= "UPDATE " + schema + ".TDM_BE_EXE_PROCESS " +
+            String sql= "UPDATE " + getTDMDBSchema() + ".TDM_BE_EXE_PROCESS " +
                     "SET process_name=(?), execution_order=(?), process_description=(?), process_type=(?), lu_name=(?)" +
                     "WHERE process_id = ?";
             db(TDM).execute(sql, process_name, execution_order, process_description, process_type, lu_name, process_id);
@@ -148,7 +151,7 @@ public class SharedLogic {
         String message=null;
         String errorCode="";
         try{
-            String sql= "INSERT INTO " + schema + ".TDM_BE_EXE_PROCESS " +
+            String sql= "INSERT INTO " + getTDMDBSchema() + ".TDM_BE_EXE_PROCESS " +
                     "(process_name, be_id, execution_order, process_description, process_type, lu_name) " +
                     "VALUES (?, ?, ?, ?, ?, ?) RETURNING process_id";
             Db.Row row= db(TDM).fetch(sql, process_name, beId, execution_order, process_description, process_type, lu_name).firstRow();
@@ -179,7 +182,7 @@ public class SharedLogic {
         String errorCode="";
 
         try{
-            String sql= "DELETE FROM " + schema + ".TDM_BE_EXE_PROCESS WHERE process_id = (?) And process_name = (?) And process_type= (?) And be_id =(?) " +
+            String sql= "DELETE FROM " + getTDMDBSchema() + ".TDM_BE_EXE_PROCESS WHERE process_id = (?) And process_name = (?) And process_type= (?) And be_id =(?) " +
                     " RETURNING process_id";
             db(TDM).execute(sql, process_id, process_name, process_type, beId);
 
@@ -192,8 +195,8 @@ public class SharedLogic {
             }
 
             try{
-				String updateTasksSql = "WITH ids AS ( SELECT task_id FROM " + schema + ".tasks WHERE be_id = ? ) " +
-					"UPDATE " + schema + ".tasks_exe_process tep SET status= 'Inactive' " +
+				String updateTasksSql = "WITH ids AS ( SELECT task_id FROM " + getTDMDBSchema() + ".tasks WHERE be_id = ? ) " +
+					"UPDATE " + getTDMDBSchema() + ".tasks_exe_process tep SET status= 'Inactive' " +
 					"FROM ids " +
 					"WHERE tep.task_id = ids.task_id " +
 					"AND tep.process_id = ? " +
@@ -224,8 +227,8 @@ public class SharedLogic {
         String message = null;
         String errorCode = "";
         try {
-            String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".TASKS_EXE_PROCESS  WHERE process_id > 0 And status='Active' AND process_type = '" + process_type +"' AND task_id =" + taskId;
-            Db.Rows rows = db(TDM).fetch(sql);
+            String sql = "SELECT * FROM " + getTDMDBSchema() + ".TASKS_EXE_PROCESS  WHERE process_id > 0 And status='Active' AND process_type = ? AND task_id = ?";
+            Db.Rows rows = db(TDM).fetch(sql, process_type, taskId);
             List<Map<String, Object>> result = new ArrayList<>();
             List<String> columnNames = rows.getColumnNames();
             for (Db.Row row : rows) {
@@ -251,8 +254,25 @@ public class SharedLogic {
         return response;
     }
 
+	public static boolean fnGetInProgressSyncBatchId(String taskExecutionId) throws Exception {
+		Db.Row row = db(TDM).fetch("select synced_to_fabric from " + getTDMDBSchema() + ".task_execution_summary where task_execution_id = ?",
+				taskExecutionId).firstRow();
+		if (row == null) {
+			return false;
+		}
+		Object syncedToFabric = row.get("synced_to_fabric");
+		boolean isSynced = syncedToFabric != null && Boolean.parseBoolean(syncedToFabric.toString());
+		return !isSynced;
+    }
+
 	@out(name = "result", type = Object.class, desc = "")
 	public static Object fnExecutionSummaryReport(String i_taskExecutionId, String i_luName) throws Exception {
+		boolean syncInProgress = fnGetInProgressSyncBatchId(i_taskExecutionId);
+		if (syncInProgress) {
+			return wrapWebServiceResults("SYNC_IN_PROGRESS",
+					"Task execution " + i_taskExecutionId + " is still being synced into the TDM LU. Please try again in a few seconds.",
+					null);
+		}
 		fabric().execute("get TDM.?", i_taskExecutionId);
 		
 		String taskType = "" + fabric().fetch("select task_type from tasks limit 1").firstValue();
@@ -292,11 +312,11 @@ public class SharedLogic {
 
 
 	public static Object fnGetNextTaskExecution(Long taskId) throws Exception {
-		String query = "SELECT nextval('" + schema + ".tasks_task_execution_id_seq')";
+		String query = "SELECT nextval('" + getTDMDBSchema() + ".tasks_task_execution_id_seq')";
 		    Db.Rows rows = db(TDM).fetch(query);
 		    List<String> columnNames = rows.getColumnNames();
 		    Db.Row row = rows.firstRow();
-			
+
 		    if (!row.isEmpty()) {
 				rows.close();
 		        return row.cell(0);
@@ -304,9 +324,127 @@ public class SharedLogic {
 		    return null;
 	}
 
+	// Looks up the owning task_id for a given task_execution_id, checking task_execution_summary
+	// first (real/started executions) and falling back to task_execution_override_attrs (covers
+	// not-yet-promoted draft rows). Returns null if the execution id is not found in either.
+	public static Long fnGetTaskExecutionOwnerTaskId(Long taskExecutionId) throws Exception {
+		Object taskId = db(TDM).fetch(
+				"SELECT task_id FROM " + getTDMDBSchema() + ".task_execution_summary WHERE task_execution_id = ?",
+				taskExecutionId).firstValue();
+		if (taskId == null) {
+			taskId = db(TDM).fetch(
+					"SELECT task_id FROM " + getTDMDBSchema() + ".task_execution_override_attrs WHERE task_execution_id = ?",
+					taskExecutionId).firstValue();
+		}
+		return taskId == null ? null : Long.parseLong(taskId.toString());
+	}
+
+	// Determine which environment(s) are relevant for a disabled-systems check:
+	// - non-EXTRACT, sync OFF → no sync happening at all, so no env is "relevant" — skip filtering
+	// - EXTRACT           → source only
+	// - non-EXTRACT FORCE → source + target (data is freshly read from source then written to target)
+	// - non-EXTRACT       → target only
+	// then collect every interface belonging to a disabled system (enable_product = false)
+	// in those env(s). One query per env — no per-row cost for callers that loop over tables.
+	public static Set<String> fnGetDisabledInterfaces(String taskType, String syncMode, Long srcEnvId, Long tarEnvId) throws Exception {
+		List<Long> envsToCheck = resolveDisabledSystemsEnvsToCheck(taskType, syncMode, srcEnvId, tarEnvId);
+		Set<String> disabledInterfaces = new HashSet<>();
+		for (Map<String, Object> row : fetchDisabledProducts(envsToCheck)) {
+			disabledInterfaces.addAll(relatedInterfacesOf(row));
+		}
+		return disabledInterfaces;
+	}
+
+	// Same disabled-systems check as fnGetDisabledInterfaces, but keyed by interface name so callers
+	// can name the specific disabled system (and environment) in a message instead of just the
+	// internal interface name. srcEnvName/tarEnvName are the already-resolved display names for
+	// srcEnvId/tarEnvId - passed in by the caller so no extra id->name lookup is needed here.
+	public static Map<String, Map<String, Object>> fnGetDisabledInterfaceProducts(String taskType, String syncMode,
+			Long srcEnvId, Long tarEnvId, String srcEnvName, String tarEnvName) throws Exception {
+		Map<Long, String> envNameById = new HashMap<>();
+		if (srcEnvId != null) envNameById.put(srcEnvId, srcEnvName);
+		if (tarEnvId != null) envNameById.put(tarEnvId, tarEnvName);
+
+		List<Long> envsToCheck = resolveDisabledSystemsEnvsToCheck(taskType, syncMode, srcEnvId, tarEnvId);
+		Map<String, Map<String, Object>> disabledInterfaceProducts = new HashMap<>();
+		for (Map<String, Object> row : fetchDisabledProducts(envsToCheck)) {
+			String productName = (String) row.get("product_name");
+			String environmentName = envNameById.get((Long) row.get("environment_id"));
+			for (String interfaceName : relatedInterfacesOf(row)) {
+				Map<String, Object> entry = disabledInterfaceProducts.computeIfAbsent(interfaceName, k -> {
+					Map<String, Object> newEntry = new HashMap<>();
+					newEntry.put("productName", productName);
+					newEntry.put("environmentNames", new LinkedHashSet<String>());
+					return newEntry;
+				});
+				if (environmentName != null) {
+					((Set<String>) entry.get("environmentNames")).add(environmentName);
+				}
+			}
+		}
+		return disabledInterfaceProducts;
+	}
+
+	private static List<Long> resolveDisabledSystemsEnvsToCheck(String taskType, String syncMode, Long srcEnvId, Long tarEnvId) {
+		boolean isExtract = "EXTRACT".equalsIgnoreCase(taskType);
+
+		// Sync is off for a non-EXTRACT task — mirrors sourceEnvSystemsDisabled()/targetEnvSystemsDisabled()
+		// in TaskManagmentUtils, which likewise skip the disabled-systems check when sync_mode is OFF.
+		if (!isExtract && "OFF".equalsIgnoreCase(syncMode)) {
+			return Collections.emptyList();
+		}
+
+		// No target env chosen yet (e.g. still being picked in the create/update form, or a real
+		// EXTRACT task where target always mirrors source) — fall back to checking source only.
+		isExtract = isExtract || tarEnvId == null;
+		boolean isForce = "FORCE".equalsIgnoreCase(syncMode);
+
+		List<Long> envsToCheck = new ArrayList<>();
+		if (isExtract) {
+			if (srcEnvId != null) envsToCheck.add(srcEnvId);
+		} else if (isForce) {
+			if (srcEnvId != null) envsToCheck.add(srcEnvId);
+			if (tarEnvId != null) envsToCheck.add(tarEnvId);
+		} else {
+			if (tarEnvId != null) envsToCheck.add(tarEnvId);
+		}
+		return envsToCheck;
+	}
+
+	private static List<Map<String, Object>> fetchDisabledProducts(List<Long> envsToCheck) throws Exception {
+		List<Map<String, Object>> rows = new ArrayList<>();
+		for (Long envId : envsToCheck) {
+			try (Db.Rows disRows = db(TDM).fetch(
+					"SELECT p.product_name, p.related_interfaces " +
+					"FROM " + getTDMDBSchema() + ".environment_products ep " +
+					"JOIN " + getTDMDBSchema() + ".products p ON p.product_id = ep.product_id " +
+					"WHERE ep.environment_id = ? AND ep.status = 'Active' AND ep.enable_product = false",
+					envId)) {
+				for (Db.Row r : disRows) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("product_name", r.get("product_name"));
+					row.put("related_interfaces", r.get("related_interfaces"));
+					row.put("environment_id", envId);
+					rows.add(row);
+				}
+			}
+		}
+		return rows;
+	}
+	
+	private static List<String> relatedInterfacesOf(Map<String, Object> row) throws SQLException {
+		Object rawInterfaces = row.get("related_interfaces");
+		if (rawInterfaces instanceof java.sql.Array) {
+			String[] interfaceArray = (String[]) ((java.sql.Array) rawInterfaces).getArray();
+			return java.util.Arrays.asList(interfaceArray);
+		} else if (rawInterfaces instanceof List) {
+			return (List<String>) rawInterfaces;
+		}
+		return Collections.emptyList();
+	}
 	public static List<Map<String, Object>> fnGetTaskPostExecutionProcesses(Long taskId) throws Exception {
-        String query = "SELECT * FROM " + schema + ".TASKS_EXE_PROCESS  WHERE status='Active' AND task_id =" + taskId;
-        Db.Rows rows = db(TDM).fetch(query);
+        String query = "SELECT * FROM " + getTDMDBSchema() + ".TASKS_EXE_PROCESS  WHERE status='Active' AND task_id =?";
+        Db.Rows rows = db(TDM).fetch(query, taskId);
 
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -327,7 +465,8 @@ public class SharedLogic {
 
 
 	public static int fnSaveRefExeTablestoTask(Long taskID, Long beID, Long taskExecutionId,
-        Map<String, Map<String, Object>> resolvedTableFilters, String taskType,
+        Map<String, Map<String, Object>> resolvedTableFilters,
+        Map<String, Map<String, Object>> resolvedTableSampling, String taskType,
         Long srcEnvId, Long tarEnvId) throws Exception {
 
 		List<Map<String, Object>> refs = (List<Map<String, Object>>) fnGetTaskReferenceTable(taskID);
@@ -336,7 +475,7 @@ public class SharedLogic {
 		}
 
 		Db.Row taskRow = db(TDM).fetch(
-				"SELECT delete_before_load, sync_mode FROM " + schema + ".tasks WHERE task_id = ?",
+				"SELECT delete_before_load, sync_mode FROM " + getTDMDBSchema() + ".tasks WHERE task_id = ?",
 				taskID
 		).firstRow();
 
@@ -346,40 +485,8 @@ public class SharedLogic {
 
 		String executionAction = "EXTRACT".equalsIgnoreCase(taskType) ? "Extract" : "Extract & Load";
 
-		// Determine which environments to check for disabled systems:
-	// - EXTRACT           → source only
-	// - non-EXTRACT FORCE → source + target (data is freshly read from source then written to target)
-	// - non-EXTRACT       → target only
-		boolean isExtract = "EXTRACT".equalsIgnoreCase(taskType);
 		String syncMode = taskRow.get("sync_mode") != null ? taskRow.get("sync_mode").toString() : "";
-		boolean isForce = "FORCE".equalsIgnoreCase(syncMode);
-
-		List<Long> envsToCheck = new ArrayList<>();
-		if (isExtract) {
-			if (srcEnvId != null) envsToCheck.add(srcEnvId);
-		} else if (isForce) {
-			if (srcEnvId != null) envsToCheck.add(srcEnvId);
-			if (tarEnvId != null) envsToCheck.add(tarEnvId);
-		} else {
-			if (tarEnvId != null) envsToCheck.add(tarEnvId);
-		}
-
-		// Build the set of interfaces that belong to a disabled system in the relevant env(s).
-		// One query per env up-front — no per-row cost inside the loop.
-		Set<String> disabledInterfaces = new HashSet<>();
-		for (Long envId : envsToCheck) {
-			try (Db.Rows disRows = db(TDM).fetch(
-					"SELECT UNNEST(p.related_interfaces) AS iface " +
-					"FROM " + schema + ".environment_products ep " +
-					"JOIN " + schema + ".products p ON p.product_id = ep.product_id " +
-					"WHERE ep.environment_id = ? AND ep.status = 'Active' AND ep.enable_product = false",
-					envId)) {
-				for (Db.Row r : disRows) {
-					Object iface = r.get("iface");
-					if (iface != null) disabledInterfaces.add(iface.toString());
-				}
-			}
-		}
+		Set<String> disabledInterfaces = fnGetDisabledInterfaces(taskType, syncMode, srcEnvId, tarEnvId);
 
 		int savedCount = 0;
 		for (Map<String, Object> ref : refs) {
@@ -389,23 +496,24 @@ public class SharedLogic {
 			// Skip tables whose interface belongs to a disabled system — mirrors the
 			// INNER JOIN on environment_products that silently drops disabled LUs for BE tasks.
 			if (interfaceName != null && disabledInterfaces.contains(interfaceName)) {
-				log.info("Skipping table '{}' (interface '{}') — system is disabled in one of envs {}",
-						tableName, interfaceName, envsToCheck);
+				log.info("Skipping table '{}' (interface '{}') — system is disabled in the relevant environment(s)",
+						tableName, interfaceName);
 				continue;
 			}
 
 			String tableKey = interfaceName + "|" + (ref.get("schema_name").toString()) + "|" + tableName;
 			Map<String, Object> ov = resolvedTableFilters != null ? resolvedTableFilters.get(tableKey) : null;
+			Map<String, Object> sampling = resolvedTableSampling != null ? resolvedTableSampling.get(tableKey) : null;
 
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 
-			insertTaskRefExeStats(taskID, taskExecutionId, ref, tableName, ov, now, executionAction);
+			insertTaskRefExeStats(taskID, taskExecutionId, ref, tableName, ov, sampling, now, executionAction);
 			savedCount++;
 
 			if (shouldAddDeleteAction) {
-				insertTaskRefExeStats(taskID, taskExecutionId, ref, tableName, ov, now, "Delete");
+				insertTaskRefExeStats(taskID, taskExecutionId, ref, tableName, ov, sampling, now, "Delete");
 			}
 		}
 		return savedCount;
@@ -413,14 +521,14 @@ public class SharedLogic {
 
 	private static void insertTaskRefExeStats(Long taskID, Long taskExecutionId,
 			Map<String, Object> ref, String tableName, Map<String, Object> ov,
-			String now, String executionAction) throws Exception {
+			Map<String, Object> sampling, String now, String executionAction) throws Exception {
 
 		db(TDM).execute(
-				"INSERT INTO " + schema + ".task_ref_exe_stats " +
+				"INSERT INTO " + getTDMDBSchema() + ".task_ref_exe_stats " +
 				"(task_id, task_execution_id, task_ref_table_id, ref_table_name, interface_name, schema_name, " +
-				" table_filter, filter_type, filter_parameters, " +
+				" table_filter, filter_type, filter_parameters, records_limit, partitions_limit, " +
 				" update_date, execution_status, number_of_processed_records, execution_action,table_order) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				taskID,
 				taskExecutionId,
 				ref.get("task_ref_table_id"),
@@ -430,6 +538,8 @@ public class SharedLogic {
 				ov != null ? ov.get("table_filter") : null,
 				ov != null ? ov.get("filter_type") : null,
 				ov != null ? ov.get("filter_parameters") : null,
+				sampling != null ? sampling.get("records_limit") : null,
+				sampling != null ? sampling.get("partitions_limit") : null,
 				now,
 				"pending",
 				0,
@@ -440,8 +550,8 @@ public class SharedLogic {
 
 
 	public static Object fnGetTaskReferenceTable(Long task_id) throws Exception {
-		String query = "SELECT * FROM " + schema + ".task_ref_tables where task_id = " + task_id;
-        Db.Rows rows = db(TDM).fetch(query);
+		String query = "SELECT * FROM " + getTDMDBSchema() + ".task_ref_tables where task_id = ?";
+        Db.Rows rows = db(TDM).fetch(query, task_id);
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
         for (Db.Row row : rows) {
@@ -470,10 +580,12 @@ public class SharedLogic {
 				"trt.gui_filter, trt.filter_fields, " +
 				"trt.source_max_no_of_workers, trt.target_max_no_of_workers, " +
 				"trt.source_affinity, trt.target_affinity, trt.count_ind, " +
+				"COALESCE(e.records_limit, trt.records_limit) AS records_limit, " +
+				"COALESCE(e.partitions_limit, trt.partitions_limit) AS partitions_limit, " +
 				"trt.target_table_prefix, trt.target_table_suffix, " +
 				"COALESCE(trt.version_task_execution_id, 0) as version_task_execution_id, trt.version_task_name " +
-				"FROM " + schema + ".task_ref_tables trt " +
-				"JOIN " + schema + ".task_ref_exe_stats e ON e.task_id = trt.task_id AND e.ref_table_name = trt.ref_table_name AND e.schema_name = trt.schema_name AND e.interface_name = trt.interface_name " +
+				"FROM " + getTDMDBSchema() + ".task_ref_tables trt " +
+				"JOIN " + getTDMDBSchema() + ".task_ref_exe_stats e ON e.task_id = trt.task_id AND e.ref_table_name = trt.ref_table_name AND e.schema_name = trt.schema_name AND e.interface_name = trt.interface_name " +
 				"WHERE e.task_execution_id = ? AND trt.interface_name = ? AND trt.schema_name = ? AND trt.ref_table_name = ?";
 		Db.Rows rows = db(TDM).fetch(query, taskExecutionId, interfaceName, schemaName, tableName);
 		List<Map<String, Object>> result = new ArrayList<>();
@@ -495,7 +607,7 @@ public class SharedLogic {
 
 	private static Object fnGetTaskExecSeqVal(String task_execution_id) throws Exception {
 
-        fabric().execute("get TDM." + task_execution_id);
+        fabric().execute("get TDM.?", task_execution_id);
         String sql = "SELECT entity_target_id , lu_type, source_env, table_name, column_name, source_id, target_id, is_instance_id FROM tdm_seq_mapping";
         Db.Rows rows = db(DB_FABRIC).fetch(sql);
         return rows;
@@ -508,30 +620,31 @@ public class SharedLogic {
         try {
 			if(!isPermittedUserForStopResume(task_execution_id)) return wrapWebServiceResults("FAILED", "User is not permitted to stop task execution", null);
 
-			Db.Rows tableBatches = db(TDM).fetch("SELECT distinct batch_id FROM " + schema + ".task_ref_exe_stats WHERE " + 
-					"task_execution_id = ? AND batch_id is not null AND execution_status NOT IN ('completed', 'failed')", task_execution_id);
+			try (Db.Rows tableBatches = db(TDM).fetch("SELECT distinct batch_id FROM " + getTDMDBSchema() + ".task_ref_exe_stats WHERE " + 
+					"task_execution_id = ? AND batch_id is not null AND execution_status NOT IN ('completed', 'failed')", task_execution_id)) {
 
 
-			for (Db.Row tableBatch : tableBatches) {
-				try {
-					fabric().execute("batch_cancel '" + tableBatch.get("batch_id") + "'");
-				} catch (Exception batchEx) {
-					log.warn("fnStopTaskExecution - batch_cancel skipped for {}: {}", tableBatch.get("batch_id"), batchEx.getMessage());
+				for (Db.Row tableBatch : tableBatches) {
+					try {
+						fabric().execute("batch_cancel ?", tableBatch.get("batch_id"));
+					} catch (Exception batchEx) {
+						log.warn("fnStopTaskExecution - batch_cancel skipped for {}: {}", tableBatch.get("batch_id"), batchEx.getMessage());
+					}
 				}
 			}
 			
 			//TDM 10.0.1 - Stop Table Level Partitions - As some of the partitions be done and some as still pending
-			db(TDM).execute("UPDATE " + schema + ".task_ref_partition set execution_status='stopped', end_time=current_timestamp at time zone 'utc', number_of_processed_records = 0," +
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_ref_partition set execution_status='stopped', end_time=current_timestamp at time zone 'utc', number_of_processed_records = 0," +
 					" start_time = CASE WHEN start_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_time END" +
 					" WHERE task_execution_id = ?" +
                     " AND execution_status NOT IN ('completed', 'failed', 'stopped')", task_execution_id);
 
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'stopped'.
-			db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats s set execution_status='stopped', end_time=current_timestamp at time zone 'utc'," +
-					" number_of_processed_records = COALESCE((SELECT SUM(COALESCE(p.number_of_processed_records, 0)) FROM " + schema + ".task_ref_partition p" +
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_ref_exe_stats s set execution_status='stopped', end_time=current_timestamp at time zone 'utc'," +
+					" number_of_processed_records = COALESCE((SELECT SUM(COALESCE(p.number_of_processed_records, 0)) FROM " + getTDMDBSchema() + ".task_ref_partition p" +
 					" WHERE p.task_id = s.task_id AND p.task_execution_id = s.task_execution_id AND" +
 					" p.task_ref_table_id = s.task_ref_table_id AND p.execution_status = 'completed'), 0)," +
-					" number_of_failed_records = COALESCE((SELECT SUM(COALESCE(p.number_of_failed_records, 0)) FROM " + schema + ".task_ref_partition p" +
+					" number_of_failed_records = COALESCE((SELECT SUM(COALESCE(p.number_of_failed_records, 0)) FROM " + getTDMDBSchema() + ".task_ref_partition p" +
 					" WHERE p.task_id = s.task_id AND p.task_execution_id = s.task_execution_id AND" +
 					" p.task_ref_table_id = s.task_ref_table_id AND p.execution_status = 'completed'), 0)," +
 					" start_time = CASE WHEN s.start_time is NULL THEN current_timestamp at time zone 'utc' ELSE s.start_time END" +
@@ -541,15 +654,15 @@ public class SharedLogic {
 			//Get the list of BACH IDs based on task execution ID. 
 			// For Table Level there is not Need to stop the main batch, as it will end automatically when all inner batches are stopped.
             String sql = "SELECT distinct fabric_execution_id as batch_id " +
-					"FROM " + schema + ".task_execution_list l  WHERE task_execution_id = ? " +
+					"FROM " + getTDMDBSchema() + ".task_execution_list l  WHERE task_execution_id = ? " +
 					"AND fabric_execution_id is not null AND execution_status NOT IN ('completed', 'failed') " +
-					"AND NOT EXISTS (SELECT 1 FROM " +  schema + ".tasks t WHERE t.task_id = l.task_id and t.selection_method = 'TABLES')";
+					"AND NOT EXISTS (SELECT 1 FROM " +  getTDMDBSchema() + ".tasks t WHERE t.task_id = l.task_id and t.selection_method = 'TABLES')";
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
             //TDM 6.0 - Loop over the list of migrate IDs
 			batchIdList = db(TDM).fetch(sql, task_execution_id);
 
-			db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
 				" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
 				" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
 				task_execution_id);
@@ -560,7 +673,7 @@ public class SharedLogic {
 				//log.info("fabricExecID: <" + fabricExecID + ">");
 				if(batchInfo.get("batch_id") != null) {
                     try {
-                        fabric().execute("batch_cancel '" + batchInfo.get("batch_id") + "'");
+                        fabric().execute("batch_cancel ?", batchInfo.get("batch_id"));
                     } catch (Exception batchEx) {
                         log.warn("fnStopTaskExecution - batch_cancel skipped for {}: {}", batchInfo.get("batch_id"), batchEx.getMessage());
                     }
@@ -568,7 +681,7 @@ public class SharedLogic {
             }
 
             // TDM 7, set the execution summary to stopped also
-            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='stopped', end_execution_time=current_timestamp at time zone 'utc'," +
+            db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_summary SET execution_status='stopped', end_execution_time=current_timestamp at time zone 'utc'," +
 							" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
 							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",task_execution_id);
             return wrapWebServiceResults("SUCCESS", null, null);
@@ -594,11 +707,11 @@ public class SharedLogic {
             //log.info("fnResumeTaskExecution - Starting");
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
             String sql ="SELECT fabric_execution_id as batch_id FROM " + 
-					schema + ".task_execution_list l " +
+					getTDMDBSchema() + ".task_execution_list l " +
                     "WHERE task_execution_id = ? " +
                     "AND fabric_execution_id is not null AND execution_status= 'stopped' " + 
 					"UNION SELECT tables_batch_id as batch_id FROM " +
-					schema + ".task_execution_list l1 " +
+					getTDMDBSchema() + ".task_execution_list l1 " +
                     "WHERE task_execution_id = ? "+
                     "AND tables_batch_id is not null AND execution_status= 'stopped'";
 			batchIdList = db(TDM).fetch(sql, task_execution_id, task_execution_id);
@@ -636,40 +749,40 @@ public class SharedLogic {
 				return wrapWebServiceResults("FAILED", msg, null);
 			}
 			
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list l SET execution_status='running', end_execution_time=null, run_type = 'resume' WHERE " + 
+            db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_list l SET execution_status='running', end_execution_time=null, run_type = 'resume' WHERE " + 
 							"fabric_execution_id is not null " +
                             "AND execution_status = 'stopped' AND task_execution_id = ?",
                     task_execution_id);
 
             // TDM 7, set the status in execution summary to running
-            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running', end_execution_time=null WHERE task_execution_id = ? AND execution_status = 'stopped'",
+            db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_summary SET execution_status='running', end_execution_time=null WHERE task_execution_id = ? AND execution_status = 'stopped'",
                     task_execution_id);
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='pending', run_type = 'resume' WHERE fabric_execution_id is null AND task_execution_id = ? " +
+            db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_list SET execution_status='pending', run_type = 'resume' WHERE fabric_execution_id is null AND task_execution_id = ? " +
                             "AND execution_status = 'stopped'",
                     task_execution_id);
 
 			// TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
 			//TDM 10.1 - Resume Tables by changing status in both tables task_ref_exe_stats and task_ref_partition
-			db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats SET execution_status = CASE WHEN batch_id is null THEN 'pending' ELSE 'running' END, end_time=null " +
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_ref_exe_stats SET execution_status = CASE WHEN batch_id is null THEN 'pending' ELSE 'running' END, end_time=null " +
 				"WHERE task_execution_id = ? AND execution_status = 'stopped'", task_execution_id);
 
-			db(TDM).execute("UPDATE " + schema + ".task_ref_partition SET execution_status = CASE WHEN batch_id is null THEN 'pending' ELSE 'running' END, end_time=null " +
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_ref_partition SET execution_status = CASE WHEN batch_id is null THEN 'pending' ELSE 'running' END, end_time=null " +
 				"where task_execution_id = ? AND execution_status = 'stopped'", task_execution_id);
 
 			fabric().execute("delete instance TDM.?", task_execution_id);
-			db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_summary SET synced_to_fabric = FALSE, sync_batch_id=null WHERE task_execution_id = ?", task_execution_id);
 			
 			// ----- Step 3: all batches are done -> resume them -----
 			for (String batchId : batches) {
 				try {
 
-					fabric().execute("batch_retry '" + batchId + "' allow_cancelled=true");
+					fabric().execute("batch_retry ? allow_cancelled=true", batchId);
 				} catch (Exception batchEx) {
 					log.warn("fnResumeTaskExecution - batch_retry skipped for {}: {}", batchId, batchEx.getMessage());
 				}
-			
+
 			}
-			
+
         	return wrapWebServiceResults("SUCCESS", null, null);
         } catch (Exception e) {
             log.error("wsResumeTaskExecution", e);
@@ -684,7 +797,7 @@ public class SharedLogic {
 
 	private static String getClusterStatus(Object batchId) throws Exception {
 		String status = null;
-		try (Db.Rows summary = fabric().fetch("batch_summary '" + batchId + "'")) {
+		try (Db.Rows summary = fabric().fetch("batch_summary ?", batchId)) {
 			for (Db.Row row : summary) {
 				Object level = row.get("Level"); // column identifying the "Cluster" aggregate row
 				if (level != null && "Cluster".equalsIgnoreCase(String.valueOf(level).trim())) {
@@ -706,15 +819,15 @@ public class SharedLogic {
 
 			// Get list of batch IDs of the given execution with failed instances (partitions)
 			String sql = "SELECT distinct fabric_execution_id as batch_id " +
-					"FROM " + schema + ".task_execution_list l  WHERE task_execution_id = ? " +
+					"FROM " + getTDMDBSchema() + ".task_execution_list l  WHERE task_execution_id = ? " +
 					"AND fabric_execution_id is not null AND UPPER(execution_status) IN " +
-					"('FAILED','COMPLETED') AND EXISTS (SELECT 1 FROM " + schema + ".task_ref_exe_stats es " +
+					"('FAILED','COMPLETED') AND EXISTS (SELECT 1 FROM " + getTDMDBSchema() + ".task_ref_exe_stats es " +
 					"WHERE l.task_execution_id = es.task_execution_id AND es.execution_status = 'failed' LIMIT 1) " +
 					"UNION SELECT tables_batch_id as batch_id " +
-					"FROM " + schema + ".task_execution_list l1  WHERE task_execution_id = ? " +
+					"FROM " + getTDMDBSchema() + ".task_execution_list l1  WHERE task_execution_id = ? " +
 					"AND (tables_batch_id is not null) AND UPPER(execution_status) IN " +
 					"('FAILED','COMPLETED') " +
-					"AND EXISTS (SELECT 1 FROM " + schema + ".task_ref_exe_stats es " +
+					"AND EXISTS (SELECT 1 FROM " + getTDMDBSchema() + ".task_ref_exe_stats es " +
 					"WHERE l1.task_execution_id = es.task_execution_id AND es.execution_status = 'failed' LIMIT 1)";
 
 			batchIdList = db(TDM).fetch(sql, task_execution_id, task_execution_id);
@@ -725,13 +838,13 @@ public class SharedLogic {
 				if(batchId != null) {
                     try {
 						fabric().execute("delete instance TDM.?", task_execution_id);
-						db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
-						db(TDM).execute("DELETE FROM " + schema + ".task_exe_error_detailed WHERE task_execution_id = ?", task_execution_id);
-                        fabric().execute("batch_retry '" + batchId + "' allow_cancelled=true");
-						db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running', end_execution_time=null " + 
+						//db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_summary SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
+						db(TDM).execute("DELETE FROM " + getTDMDBSchema() + ".task_exe_error_detailed WHERE task_execution_id = ?", task_execution_id);
+                        fabric().execute("batch_retry ? allow_cancelled=true", batchId);
+						db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_summary SET synced_to_fabric = FALSE, execution_status='running', end_execution_time=null, sync_batch_id=null " + 
 							"WHERE task_execution_id = ?",
                     		task_execution_id);
-            			db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running', run_type = 'retry' WHERE task_execution_id = ? " +
+            			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_execution_list SET execution_status='running', run_type = 'retry' WHERE task_execution_id = ? " +
                     		"AND (fabric_execution_id = ? OR tables_batch_id = ?)",
                 			task_execution_id, batchId, batchId);
                     } catch (Exception batchEx) {
@@ -741,12 +854,12 @@ public class SharedLogic {
             }
 			
 			//TDM 10.0.1 - Restore status of failed partitions to pending to rerun them.
-			db(TDM).execute("UPDATE " + schema + ".task_ref_partition set execution_status='pending', end_time=null, number_of_processed_records = 0" +
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_ref_partition set execution_status='pending', end_time=null, number_of_processed_records = 0" +
 					" WHERE task_execution_id = ?" +
                     " AND execution_status = 'failed'", task_execution_id);
 
             //TDM 10.0.1 - Restore status of failed tables to running to rerun them.
-			db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats s set execution_status='running', end_time=null, number_of_processed_records = 0," +
+			db(TDM).execute("UPDATE " + getTDMDBSchema() + ".task_ref_exe_stats s set execution_status='running', end_time=null, number_of_processed_records = 0," +
 					" start_time = current_timestamp at time zone 'utc'" +
 					" WHERE task_execution_id = ?" +
                     " AND execution_status = 'failed'", task_execution_id);
@@ -771,7 +884,7 @@ public class SharedLogic {
             Long version_task_execution_id = 0L ;
             Long selected_ref_version_id = Long.parseLong("" +entry.get("selected_ref_version_task_exe_id")) ; 
             Long selected_version_id = Long.parseLong("" +entry.get("selected_version_task_exe_id")) ; 
-            String query = "INSERT INTO " + schema + ".task_execution_list " +
+            String query = "INSERT INTO " + getTDMDBSchema() + ".task_execution_list " +
                     "(task_id, task_execution_id, creation_date, be_id, environment_id,env_name, product_id, product_version, lu_id, " +
                     "execution_status,parent_lu_id,source_env_name, task_executed_by, task_type, version_task_execution_id, " +
 					"subset_task_execution_id, source_environment_id, process_id, execution_note, source_max_no_of_workers, target_max_no_of_workers, source_affinity, target_affinity) " +
@@ -843,50 +956,61 @@ public class SharedLogic {
         String paramsQuery = "";
         String iidFieldName = "root_iid";
         Boolean paramCoupling = isParamsCoupling();
+        List<Object> paramsQueryParams = new ArrayList<>();
         //TDM 9.1 - Params Coupling
         if (paramCoupling) {
             paramsQuery = generateListOfMatchingEntitiesQuery(beID, paramCoupling, queryJson, whereStmt, sourceEnvName, false,analysisCount);
             iidFieldName = "iid";
         } else {
             //String getEntitiesSql = generateListOfMatchingEntitiesQuery(beID, whereStmt, sourceEnv);
-            String rootLUsList = db(TDM).fetch("select ARRAY_AGG(lu_name) from " + TDMDB_SCHEMA +
-                ".product_logical_units where lu_parent_id is null and be_id = ?", beID).firstValue().toString();
-            paramsQuery = whereStmt.replaceAll("WHERE ", "WHERE root_lu_name = ANY('" + rootLUsList + "') AND source_environment = '" +
-                    sourceEnvName + "' AND (");
-            paramsQuery = paramsQuery.replaceAll("FROM " , "FROM " + TDMDB_SCHEMA + ".");
+            String rootLUsList = sanitizeDslToken(db(TDM).fetch("select ARRAY_AGG(lu_name) from " + getTDMDBSchema() +
+                ".product_logical_units where lu_parent_id is null and be_id = ?", beID).firstValue().toString());
+            paramsQuery = whereStmt.replaceAll("WHERE ", "WHERE root_lu_name = ANY('" + rootLUsList + "') AND source_environment = ? AND (");
+            int whereMatchCount = 0;
+            for (int idx = whereStmt.indexOf("WHERE "); idx != -1; idx = whereStmt.indexOf("WHERE ", idx + "WHERE ".length())) {
+                whereMatchCount++;
+            }
+            for (int i = 0; i < whereMatchCount; i++) {
+                paramsQueryParams.add(sourceEnvName);
+            }
+            paramsQuery = paramsQuery.replaceAll("FROM " , "FROM " + getTDMDBSchema() + ".");
             paramsQuery = paramsQuery.replaceAll("INTERSECT ", ") INTERSECT ");
             paramsQuery = paramsQuery.replaceAll("UNION ", ") UNION ");
             paramsQuery += ")";
         }
 
         String userID = sessionUser().name();
-        String tarEnvID = "" + db(TDM).fetch("SELECT environment_id FROM " + TDMDB_SCHEMA + ".environments WHERE environment_name = ? AND environment_status = 'Active'", targetEnvName).firstValue();
+        String tarEnvID = "" + db(TDM).fetch("SELECT environment_id FROM " + getTDMDBSchema() + ".environments WHERE environment_name = ? AND environment_status = 'Active'", targetEnvName).firstValue();
         Db.Rows rows =  null;
         String countClause = paramCoupling ? "COUNT(*)" : "COUNT(distinct " + iidFieldName + ")";
 		String ExceptClause = paramCoupling ? "iid": "root_iid";
 		String query = "WITH params_condition AS (" + paramsQuery + ") "
 					+ "SELECT " + countClause + " FROM params_condition "
 					+ "WHERE " + ExceptClause + " NOT IN ("
-					+ "SELECT entity_id FROM " + TDMDB_SCHEMA + ".tdm_reserved_entities tr "
+					+ "SELECT entity_id FROM " + getTDMDBSchema() + ".tdm_reserved_entities tr "
 					+ "WHERE tr.env_id = ? "
 					+ "AND tr.be_id = ? "
 					+ "AND (tr.end_datetime IS NULL OR tr.end_datetime > CURRENT_TIMESTAMP)"
 					+ ")";
-        //log.info("fnGetNumberOfMatchingEntities1 - query: " + query);													
+        //log.info("fnGetNumberOfMatchingEntities1 - query: " + query);
         if ("OTHERS".equalsIgnoreCase(filteroutReserved)) {
-        	query = query.replace(" WHERE tr.env_id = ?", 
+        	query = query.replace(" WHERE tr.env_id = ?",
                         " WHERE tr.env_id = ? and tr.reserve_owner != ?");
-			//log.info("fnGetNumberOfMatchingEntities2 - query: " + query);	
-            rows = db(TDM).fetch(query, tarEnvID, userID, beID);
+			//log.info("fnGetNumberOfMatchingEntities2 - query: " + query);
+            List<Object> args = new ArrayList<>(paramsQueryParams);
+            args.add(tarEnvID); args.add(userID); args.add(beID);
+            rows = db(TDM).fetch(query, args.toArray());
         } else if ("ALL".equalsIgnoreCase(filteroutReserved)) {
 			//log.info("fnGetNumberOfMatchingEntities3 - query: " + query);
-            rows = db(TDM).fetch(query, tarEnvID, beID);
+            List<Object> args = new ArrayList<>(paramsQueryParams);
+            args.add(tarEnvID); args.add(beID);
+            rows = db(TDM).fetch(query, args.toArray());
         } else {
-            query = paramCoupling 
-					? "SELECT COUNT(*) FROM (" + paramsQuery + ") AS final_count" 
+            query = paramCoupling
+					? "SELECT COUNT(*) FROM (" + paramsQuery + ") AS final_count"
 					: "SELECT COUNT(distinct " + iidFieldName + ") FROM (" + paramsQuery + ") AS final_count";
-        	//log.info("fnGetNumberOfMatchingEntities4 - query: " + query);													
-            rows = db(TDM).fetch(query);
+        	//log.info("fnGetNumberOfMatchingEntities4 - query: " + query);
+            rows = db(TDM).fetch(query, paramsQueryParams.toArray());
         }
 		Object numberOfMatches = rows.firstValue();
 		if (rows != null) {
@@ -948,37 +1072,37 @@ public class SharedLogic {
         Map<String, Object> entity_mig_status = new LinkedHashMap<String, Object>();
         String[] entities_list_arr = entities_list.split(",");
         String[] lu_list_arr = lu_list.split(",");
-        String entities_list_for_qry = "";
-        String lu_list_for_qry = "";
 		String getStatusesSql = "";
 
-        //create a string with added single quotes to each entity in the entities list + preliminary mark every entity in the list as exists,
+        //preliminary mark every entity in the list as exists,
         //since the entity was already validated against the root LU in the GUI
+        List<Object> entityParams = new ArrayList<>();
         for (int i = 0; i < entities_list_arr.length; i++) {
-            entity_mig_status.put(entities_list_arr[i].trim(), "true");
-            entities_list_for_qry += "'" + entities_list_arr[i].trim() + "',";
+            String entity = entities_list_arr[i].trim();
+            entity_mig_status.put(entity, "true");
+            entityParams.add(entity);
         }
-        // remove last ,
-        entities_list_for_qry = entities_list_for_qry.substring(0, entities_list_for_qry.length() - 1);
+        String entitiesPlaceholders = String.join(",", Collections.nCopies(entityParams.size(), "?"));
 
+        List<Object> luParams = new ArrayList<>();
         for (int i = 0; i < lu_list_arr.length; i++) {
-            lu_list_for_qry += "'" + lu_list_arr[i].trim() + "',";
+            luParams.add(lu_list_arr[i].trim());
         }
-		
-        // remove last ,
-        lu_list_for_qry = lu_list_for_qry.substring(0, lu_list_for_qry.length() - 1);
+        String luPlaceholders = String.join(",", Collections.nCopies(luParams.size(), "?"));
 
         fabric().execute("GET TDM.?", task_execution_id);
 
         boolean isFullHierarchyEnabled = "true".equalsIgnoreCase(fabric().fetch("Set POP_FULL_LU_HIERARCHY_IN_TDM_LU").firstValue().toString());
+        List<Object> statusParams = new ArrayList<>(entityParams);
         if(isFullHierarchyEnabled){
              getStatusesSql = "select distinct be_root_entity_id from task_execution_link_entities " +
-                "where be_root_entity_id in (" + entities_list_for_qry + ") and lu_name in (" + lu_list_for_qry + ") and execution_status <> 'completed'";
+                "where be_root_entity_id in (" + entitiesPlaceholders + ") and lu_name in (" + luPlaceholders + ") and execution_status <> 'completed'";
+             statusParams.addAll(luParams);
 		}else{
              getStatusesSql = "select distinct be_root_entity_id from task_execution_link_entities " +
-            "where be_root_entity_id in (" + entities_list_for_qry + ") and root_entity_status  <> 'completed'";
+            "where be_root_entity_id in (" + entitiesPlaceholders + ") and root_entity_status  <> 'completed'";
         }
-        Db.Rows getStatuses = fabric().fetch(getStatusesSql);
+        Db.Rows getStatuses = fabric().fetch(getStatusesSql, statusParams.toArray());
         //Only entities that failed on any of the LUs will be returned, therefore for all the returned entities set the status to false
         for (Db.Row entityStatus : getStatuses) {
             entity_mig_status.put("" + entityStatus.cell(0), "false");
@@ -1013,23 +1137,27 @@ public class SharedLogic {
 
 	private static List<Map<String, Object>> fnGetTaskEnvData(Long task_id, Long envId, Boolean source) throws Exception {
         //log.info("fnGetTaskEnvData - task_id: " + task_id + ", env_id: " + envId +  ", source: " + source);
-		String sql = "SELECT environments.environment_name, * FROM " + schema + ".tasks " +
-				"INNER JOIN " + schema + ".tasks_logical_units " +
+		List<Object> params = new ArrayList<>();
+		String envJoinCond = envId != null ? "?) " : (source ? "tasks.source_environment_id ) " : "tasks.environment_id ) ");
+		String envProductCond = envId != null ? "?)) " : (source ? "tasks.source_environment_id )) " : "tasks.environment_id )) ");
+		String sql = "SELECT environments.environment_name, * FROM " + getTDMDBSchema() + ".tasks " +
+				"INNER JOIN " + getTDMDBSchema() + ".tasks_logical_units " +
 				"ON (tasks.task_id = tasks_logical_units.task_id) " +
-				"INNER JOIN " + schema + ".product_logical_units " +
+				"INNER JOIN " + getTDMDBSchema() + ".product_logical_units " +
 				"ON (product_logical_units.lu_id = tasks_logical_units.lu_id ) " +
-				"INNER JOIN " + schema + ".environments " +
-				(source ?
-						"ON (environments.environment_id =" + (envId != null ? envId + ") " : "tasks.source_environment_id ) ") :
-						"ON (environments.environment_id =" + (envId != null ? envId + ") " : "tasks.environment_id ) ")) +
-				"INNER JOIN " + schema + ".environment_products " +
+				"INNER JOIN " + getTDMDBSchema() + ".environments " +
+				"ON (environments.environment_id =" + envJoinCond +
+				"INNER JOIN " + getTDMDBSchema() + ".environment_products " +
 				"ON (environment_products.status = \'Active\' " +
 				"AND environment_products.product_id = product_logical_units.product_id " +
-				(source ?
-						"AND (environment_products.environment_id =" + (envId != null ? envId + ")) " : "tasks.source_environment_id )) ") :
-						"AND (environment_products.environment_id =" + (envId != null ? envId + ")) " : "tasks.environment_id )) ")) +
-				"WHERE tasks.task_id = " + task_id;
-		Db.Rows rows = db(TDM).fetch(sql);
+				"AND (environment_products.environment_id =" + envProductCond +
+				"WHERE tasks.task_id = ?";
+		if (envId != null) {
+			params.add(envId);
+			params.add(envId);
+		}
+		params.add(task_id);
+		Db.Rows rows = db(TDM).fetch(sql, params.toArray());
 
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<String> columnNames = rows.getColumnNames();
@@ -1049,11 +1177,11 @@ public class SharedLogic {
 	}
 
 	public static Object fnIsTaskRunning(Long taskId) throws Exception {
-		String sql = "SELECT count(*) FROM " + schema + ".task_execution_list " +
-				"WHERE task_id = " + taskId + " AND " +
+		String sql = "SELECT count(*) FROM " + getTDMDBSchema() + ".task_execution_list " +
+				"WHERE task_id = ? AND " +
 				"(lower(execution_status) <> \'failed\' AND lower(execution_status) <> \'completed\' AND " +
 				"lower(execution_status) <> \'stopped\' AND lower(execution_status) <> \'killed\')";
-		Db.Rows rows = db(TDM).fetch(sql);
+		Db.Rows rows = db(TDM).fetch(sql, taskId);
 		Object result = rows.firstRow().cell(0);
 		if (rows != null) {
 			rows.close();
@@ -1063,10 +1191,10 @@ public class SharedLogic {
 
 
 	public static Boolean fnIsTaskActive(Long taskId) throws Exception {
-		String query = "SELECT * FROM " + schema + ".tasks " +
-				"WHERE task_id = " + taskId + " AND " +
+		String query = "SELECT * FROM " + getTDMDBSchema() + ".tasks " +
+				"WHERE task_id = ? AND " +
 				"task_status = \'Active\'";
-		Db.Rows rows = db(TDM).fetch(query);
+		Db.Rows rows = db(TDM).fetch(query, taskId);
 		if (!rows.firstRow().isEmpty()) {
 			rows.close();
 			return true;
@@ -1079,16 +1207,17 @@ public class SharedLogic {
 		{
 			return false;
 		}
-        String query =  "Select lu_name , lu_id , lu_parent_name from " + schema + ".product_logical_units where be_id=?" ; 
-        Db.Rows rows = db("TDM").fetch(query, be_id);
+        String query =  "Select lu_name , lu_id , lu_parent_name from " + getTDMDBSchema() + ".product_logical_units where be_id=?" ; 
         List<Map<String, Object>> BElogicalUnits=new ArrayList<>();
-        for ( Db.Row row : rows){
-            Map<String, Object> map = new HashMap<>();
-            map.put("lu_name", row.get("lu_name")); 
-            map.put("lu_id",row.get("lu_id"));
-            map.put("lu_parent_name",row.get("lu_parent_name"));
-            BElogicalUnits.add(map);
-        }  
+        try (Db.Rows rows = db("TDM").fetch(query, be_id)) {
+            for ( Db.Row row : rows){
+                Map<String, Object> map = new HashMap<>();
+                map.put("lu_name", row.get("lu_name")); 
+                map.put("lu_id",row.get("lu_id"));
+                map.put("lu_parent_name",row.get("lu_parent_name"));
+                BElogicalUnits.add(map);
+            }  
+        }
         return checkParentExists(logicalUnits,BElogicalUnits);
     }
 
@@ -1121,42 +1250,44 @@ public class SharedLogic {
 
 		if ("TABLES".equals(selectionMethod) || (logicalUnits != null && !logicalUnits.isEmpty())) {
 			clientQuery = "SELECT *, " +
-					"(SELECT COUNT(*) FROM " + schema
+					"(SELECT COUNT(*) FROM " + getTDMDBSchema()
 					+ ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id) AS refcount, '-1' AS lu_id, " +
 					"null AS source_max_workers_per_node, " +
 					"null AS target_max_workers_per_node, " +
 					"null AS final_source_affinity, " +
 					"null AS final_target_affinity, " +
 					"null AS override_fields " +
-					"FROM " + schema + ".tasks " +
+					"FROM " + getTDMDBSchema() + ".tasks " +
 					"WHERE tasks.task_id = ?";
 		} else {
 			clientQuery = "SELECT *, " +
-					"(SELECT COUNT(*) FROM " + schema
+					"(SELECT COUNT(*) FROM " + getTDMDBSchema()
 					+ ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id) AS refcount, " +
 					"COALESCE(tasks_logical_units.source_max_no_of_workers, " +
-					"(SELECT ep_source.max_number_of_workers FROM " + schema + ".environment_products ep_source " +
+					"(SELECT ep_source.max_number_of_workers FROM " + getTDMDBSchema()
+					+ ".environment_products ep_source " +
 					"WHERE ep_source.product_id = product_logical_units.product_id AND ep_source.environment_id = tasks.source_environment_id AND ep_source.status = 'Active')) AS source_max_workers_per_node, "
 					+
 					"COALESCE(tasks_logical_units.target_max_no_of_workers, " +
-					"(SELECT ep_target.max_number_of_workers FROM " + schema + ".environment_products ep_target " +
+					"(SELECT ep_target.max_number_of_workers FROM " + getTDMDBSchema()
+					+ ".environment_products ep_target " +
 					"WHERE ep_target.product_id = product_logical_units.product_id AND ep_target.environment_id = tasks.environment_id AND ep_target.status = 'Active')) AS target_max_workers_per_node, "
 					+
 					"COALESCE(tasks_logical_units.source_affinity, " +
-					"(SELECT ep_source.data_center_name FROM " + schema + ".environment_products ep_source " +
+					"(SELECT ep_source.data_center_name FROM " + getTDMDBSchema() + ".environment_products ep_source " +
 					"WHERE ep_source.product_id = product_logical_units.product_id AND ep_source.environment_id = tasks.source_environment_id AND ep_source.status = 'Active')) AS final_source_affinity, "
 					+
 					"COALESCE(tasks_logical_units.target_affinity, " +
-					"(SELECT ep_target.data_center_name FROM " + schema + ".environment_products ep_target " +
+					"(SELECT ep_target.data_center_name FROM " + getTDMDBSchema() + ".environment_products ep_target " +
 					"WHERE ep_target.product_id = product_logical_units.product_id AND ep_target.environment_id = tasks.environment_id AND ep_target.status = 'Active')) AS final_target_affinity, "
 					+
 					"tasks_logical_units.override_fields " +
-					"FROM " + schema + ".tasks " +
-					"INNER JOIN " + schema + ".tasks_logical_units " +
+					"FROM " + getTDMDBSchema() + ".tasks " +
+					"INNER JOIN " + getTDMDBSchema() + ".tasks_logical_units " +
 					"ON (tasks.task_id = tasks_logical_units.task_id) " +
-					"INNER JOIN " + schema + ".product_logical_units " +
+					"INNER JOIN " + getTDMDBSchema() + ".product_logical_units " +
 					"ON (product_logical_units.lu_id = tasks_logical_units.lu_id ) " +
-					"INNER JOIN " + schema + ".environment_products " +
+					"INNER JOIN " + getTDMDBSchema() + ".environment_products " +
 					"ON (environment_products.status = \'Active\' " +
 					"AND environment_products.product_id = product_logical_units.product_id " +
 					"AND (environment_products.environment_id = tasks.environment_id " +
@@ -1165,7 +1296,7 @@ public class SharedLogic {
 					"WHERE tasks.task_id = ?";
 		}
 
-		//log.info(clientQuery);
+		// log.info(clientQuery);
 		Db.Rows rows = db(TDM).fetch(clientQuery, taskId);
 
 		List<Map<String, Object>> executions = new ArrayList<>();
@@ -1195,7 +1326,7 @@ public class SharedLogic {
 				luExecution.put("lu_id", lu.get("lu_id"));
 				luExecution.put("lu_name", lu.get("lu_name"));
 				luExecution.put("lu_parent_id", lu.get("lu_parent_id"));
-				
+
 				String query = """
 						SELECT
 							ep.product_id as product_id,
@@ -1209,15 +1340,16 @@ public class SharedLogic {
 							ON ep.product_id = plu.product_id
 						WHERE
 							plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active';
-						""".formatted(schema, schema);
+						""".formatted(getTDMDBSchema(), getTDMDBSchema());
 
 				Long tarEnvIDToUse = tarEnvId != null ? tarEnvId : (Long) luExecution.get("environment_id");
 				Db.Row tgtRow = db(TDM).fetch(query, luExecution.get("lu_id"), tarEnvIDToUse).firstRow();
-				if (tgtRow == null) continue; // LU not present in override target env — skip
+				if (tgtRow == null)
+					continue; // LU not present in override target env — skip
 				luExecution.put("product_id", tgtRow.get("product_id"));
 				luExecution.put("product_version", tgtRow.get("product_version"));
 				luExecution.put("data_center_name", tgtRow.get("data_center_name"));
-				
+
 				Long srcEnvIDToUse = srcEnvId != null ? srcEnvId : (Long) luExecution.get("source_environment_id");
 				Db.Row srcRow = null;
 				if (srcEnvId != null) {
@@ -1226,7 +1358,7 @@ public class SharedLogic {
 							FROM %s.environment_products AS ep
 							INNER JOIN %s.product_logical_units AS plu ON ep.product_id = plu.product_id
 							WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active';
-							""".formatted(schema, schema);
+							""".formatted(getTDMDBSchema(), getTDMDBSchema());
 					srcRow = db(TDM).fetch(srcQuery, lu.get("lu_id"), srcEnvIDToUse).firstRow();
 				}
 
@@ -1248,46 +1380,69 @@ public class SharedLogic {
 
 				executions.add(luExecution);
 			}
-		} else {
-			try {
-				if (executions.isEmpty()) return executions;
-				List<Map<String, Object>> data = fnGetTaskPostExecutionProcesses(taskId);
-				Map<String, Object> execution = new HashMap(executions.get(0));
-				Set<String> subsetProcesses = new HashSet<String>(Arrays.asList("Training Data Subset",
-						"Exporting Data Subset", "Generating Data Subset", "Importing Data Subset"));
-				for (Map<String, Object> item : data) {
-					Map<String, Object> newItem = new HashMap<String, Object>(execution);
-					if (subsetProcesses.contains(item.get("process_name"))) {
-						newItem.put("lu_id", lu_id);
-					} else {
-						newItem.put("lu_id", 0);
-
-					}
-					newItem.put("process_id", item.get("process_id"));
-					newItem.put("process_name", item.get("process_name"));
-					newItem.put("execution_order", item.get("execution_order"));
-					newItem.put("lu_name", null);
-					executions.add(newItem);
+			// Subset processes run against the root LU of the rebuilt LU list (not the '-1'
+			// placeholder).
+			lu_id = null;
+			for (Map<String, Object> e : executions) {
+				Object parentId = e.get("lu_parent_id");
+				if (parentId == null || "null".equals("" + parentId)) {
+					lu_id = Long.valueOf("" + e.get("lu_id"));
+					break;
 				}
-				execution.put("product_id", 0);
-				execution.put("product_version", 0);
-
-			} catch (Exception e) {
-				log.error(e.getMessage());
 			}
+			if (lu_id == null && !executions.isEmpty())
+				lu_id = Long.valueOf("" + executions.get(0).get("lu_id"));
+		}
+
+		// Pre/post execution processes (TASKS_EXE_PROCESS holds both types) are added
+		// on every path,
+		// including env/BE overrides where the LU list is passed in by the caller.
+		try {
+			if (executions.isEmpty())
+				return executions;
+			List<Map<String, Object>> data = fnGetTaskPostExecutionProcesses(taskId);
+			Map<String, Object> execution = new HashMap(executions.get(0));
+			Set<String> subsetProcesses = new HashSet<String>(Arrays.asList("Training Data Subset",
+					"Exporting Data Subset", "Generating Data Subset", "Importing Data Subset"));
+			for (Map<String, Object> item : data) {
+				Map<String, Object> newItem = new HashMap<String, Object>(execution);
+				if (subsetProcesses.contains(item.get("process_name"))) {
+					newItem.put("lu_id", lu_id);
+				} else {
+					newItem.put("lu_id", 0);
+
+				}
+				newItem.put("process_id", item.get("process_id"));
+				newItem.put("process_name", item.get("process_name"));
+				newItem.put("execution_order", item.get("execution_order"));
+				newItem.put("lu_name", null);
+				// Process rows are not part of the LU hierarchy — keep them out of orphan
+				// pruning.
+				newItem.put("lu_parent_id", null);
+				executions.add(newItem);
+			}
+			execution.put("product_id", 0);
+			execution.put("product_version", 0);
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
 		}
 
 		return executions;
 	}
 
 	/**
-	 * Applies disabled-product filtering and orphan pruning to an execution list built by
-	 * fnGetActiveTaskForActivation. srcEnvId / tarEnvId from the caller's context override
-	 * the env IDs stored on the execution rows so runtime env overrides are respected.
+	 * Applies disabled-product filtering and orphan pruning to an execution list
+	 * built by
+	 * fnGetActiveTaskForActivation. srcEnvId / tarEnvId from the caller's context
+	 * override
+	 * the env IDs stored on the execution rows so runtime env overrides are
+	 * respected.
 	 */
 	public static List<Map<String, Object>> filterAndPruneExecutionLus(
 			List<Map<String, Object>> executions, Long srcEnvId, Long tarEnvId) throws Exception {
-		if (executions == null || executions.isEmpty()) return executions;
+		if (executions == null || executions.isEmpty())
+			return executions;
 		executions = filterDisabledProductLus(executions, srcEnvId, tarEnvId);
 		executions = pruneOrphanedLuEntries(executions);
 		return executions;
@@ -1328,8 +1483,8 @@ public class SharedLogic {
 
 			if (checkSource && srcEnvId != null) {
 				Db.Row row = db(TDM).fetch(
-						"SELECT ep.enable_product FROM " + schema + ".environment_products ep " +
-						"JOIN " + schema + ".product_logical_units plu ON ep.product_id = plu.product_id " +
+						"SELECT ep.enable_product FROM " + getTDMDBSchema() + ".environment_products ep " +
+						"JOIN " + getTDMDBSchema() + ".product_logical_units plu ON ep.product_id = plu.product_id " +
 						"WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active'",
 						luId, Long.valueOf(srcEnvId)).firstRow();
 				if (row != null && Boolean.FALSE.equals(row.get("enable_product"))) {
@@ -1341,8 +1496,8 @@ public class SharedLogic {
 
 			if (checkTarget && tarEnvId != null) {
 				Db.Row row = db(TDM).fetch(
-						"SELECT ep.enable_product FROM " + schema + ".environment_products ep " +
-						"JOIN " + schema + ".product_logical_units plu ON ep.product_id = plu.product_id " +
+						"SELECT ep.enable_product FROM " + getTDMDBSchema() + ".environment_products ep " +
+						"JOIN " + getTDMDBSchema() + ".product_logical_units plu ON ep.product_id = plu.product_id " +
 						"WHERE plu.lu_id = ? AND ep.environment_id = ? AND ep.status = 'Active'",
 						luId, Long.valueOf(tarEnvId)).firstRow();
 				if (row != null && Boolean.FALSE.equals(row.get("enable_product"))) {
@@ -1400,7 +1555,7 @@ public class SharedLogic {
         Long selected_ref_version_id = Long.parseLong("" +entry.get("selected_ref_version_task_exe_id")) ; 
         Long selected_version_id = Long.parseLong("" +entry.get("selected_version_task_exe_id")) ; 
 
-		String query = "INSERT INTO " + schema + ".task_execution_summary " +
+		String query = "INSERT INTO " + getTDMDBSchema() + ".task_execution_summary " +
 			"(task_execution_id, task_id, task_type, creation_date, be_id, environment_id, env_name, execution_status, start_execution_time, end_execution_time," +
 			" tot_num_of_processed_root_entities, tot_num_of_copied_root_entities, tot_num_of_failed_root_entities, tot_num_of_processed_ref_tables, tot_num_of_copied_ref_tables," +
 			" tot_num_of_failed_ref_tables, source_env_name, source_environment_id, task_executed_by, version_task_execution_id, subset_task_execution_id, expiration_date, update_date, permission_group, fabric_roles, task_type_label) " +
@@ -1470,7 +1625,7 @@ public class SharedLogic {
 				.format(Instant.now());
 		String username = sessionUser().name();
 		String userId = username;
-		String sql = "INSERT INTO " + schema + ".activities " +
+		String sql = "INSERT INTO " + getTDMDBSchema() + ".activities " +
 				"(date, action, entity, user_id, username, description) " +
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql, now, action, entity, userId, username, description);
@@ -1478,8 +1633,8 @@ public class SharedLogic {
 
 
 	public static void fnPostTaskLogicalUnits(Long taskId, List<Map<String, Object>> logicalUnits) throws Exception {
-        String sql = "DELETE FROM " + schema + ".tasks_logical_units WHERE task_id = " + taskId;
-		db(TDM).execute(sql);
+        String sql = "DELETE FROM " + getTDMDBSchema() + ".tasks_logical_units WHERE task_id = ?";
+		db(TDM).execute(sql, taskId);
 		if (logicalUnits != null) {
 			String msg = validateLUMaxWorkers(logicalUnits);
 			if (!"".equalsIgnoreCase(msg)) {
@@ -1487,7 +1642,7 @@ public class SharedLogic {
 			}
 			            
 			for (Map<String, Object> logicalUnit : logicalUnits) {				
-				db(TDM).execute("INSERT INTO " + schema
+				db(TDM).execute("INSERT INTO " + getTDMDBSchema()
 						+ ".tasks_logical_units (task_id, lu_id, lu_name, source_max_no_of_workers, target_max_no_of_workers, source_affinity, target_affinity, override_fields) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
 						taskId,
 						logicalUnit.get("lu_id"),
@@ -1502,17 +1657,40 @@ public class SharedLogic {
 	}
 
 
-	public static void fnSaveRefTablestoTask(Long taskId, List<Map<String, Object>> tableList, boolean inplaceMasking) throws SQLException{
+	public static List<Map<String, String>> fnFindDisabledSystemTables(List<Map<String, Object>> tableList,
+			String taskType, String syncMode, Long srcEnvId, Long tarEnvId, String srcEnvName, String tarEnvName) throws Exception {
+		Map<String, Map<String, Object>> disabledInterfaceProducts =
+				fnGetDisabledInterfaceProducts(taskType, syncMode, srcEnvId, tarEnvId, srcEnvName, tarEnvName);
+		List<Map<String, String>> disabledTables = new ArrayList<>();
+		for (Map<String, Object> ref : tableList) {
+			String interfaceName = ref.get("interface_name") != null ? ref.get("interface_name").toString() : null;
+			String rawTableName = ref.get("reference_table_name") != null ? ref.get("reference_table_name").toString()
+							: ref.get("ref_table_name").toString();
+			Map<String, Object> disabledInfo = interfaceName != null ? disabledInterfaceProducts.get(interfaceName) : null;
+			if (disabledInfo != null) {
+				Map<String, String> disabled = new HashMap<>();
+				disabled.put("tableName", rawTableName);
+				disabled.put("interfaceName", interfaceName);
+				disabled.put("systemName", (String) disabledInfo.get("productName"));
+				disabled.put("environmentName", String.join(", ", (Set<String>) disabledInfo.get("environmentNames")));
+				disabledTables.add(disabled);
+			}
+		}
+		return disabledTables;
+	}
+
+	public static Map<String, Object> fnSaveRefTablestoTask(Long taskId, List<Map<String, Object>> tableList, boolean inplaceMasking,
+			String taskType, String syncMode, Long srcEnvId, Long tarEnvId) throws Exception{
 		//try {
             //log.info("fnSaveRefTablestoTask - tableList: " + tableList);
+			int savedCount = 0;
 			for (Map<String, Object> ref : tableList) {
+				String rawTableName = ref.get("reference_table_name") != null ? ref.get("reference_table_name").toString()
+								: ref.get("ref_table_name").toString();
                 String filterParamsStr = null;
                 List<Object> filterParams = new ArrayList<>();
 				String filterFieldsStr = null;
-				String tableName = ref.get("reference_table_name") != null ? ref.get("reference_table_name").toString()
-								: ref.get("ref_table_name").toString();
-				
-				tableName = fnCheckSpecialChars(tableName) ? "\"" + tableName + "\"" : tableName;
+				String tableName = fnCheckSpecialChars(rawTableName) ? "\"" + rawTableName + "\"" : rawTableName;
 
 				if (!inplaceMasking) {
 					if ( ref.get("filter_parameters") != null) {
@@ -1532,12 +1710,12 @@ public class SharedLogic {
 					}
 				}
 						
-				String sql = "INSERT INTO " + schema + ".task_ref_tables " +
+				String sql = "INSERT INTO " + getTDMDBSchema() + ".task_ref_tables " +
 						"(task_id, ref_table_name, lu_name, schema_name, interface_name, update_date, table_filter, filter_type, "
 						+
-						"target_table_prefix, target_table_suffix, version_task_execution_id, version_task_name, gui_filter, filter_parameters, filter_fields, source_max_no_of_workers, target_max_no_of_workers, source_affinity, target_affinity, count_ind) "
+						"target_table_prefix, target_table_suffix, version_task_execution_id, version_task_name, gui_filter, filter_parameters, filter_fields, source_max_no_of_workers, target_max_no_of_workers, source_affinity, target_affinity, count_ind, records_limit, partitions_limit) "
 						+
-						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				db(TDM).execute(sql,
 						taskId,
 						tableName,
@@ -1560,44 +1738,53 @@ public class SharedLogic {
 						ref.get("target_max_no_of_workers"),
 						ref.get("source_affinity"),
 						ref.get("target_affinity"),
-						String.valueOf(ref.getOrDefault("count_ind", "true")));
+						String.valueOf(ref.getOrDefault("count_ind", "true")),
+						ref.get("records_limit") != null ? ref.get("records_limit") : -1,
+						ref.get("partitions_limit") != null ? ref.get("partitions_limit") : -1);
+				savedCount++;
 			}
 		//} catch (Exception e) {
 		//	log.error(e.getMessage());
 		//}
+		Map<String, Object> result = new HashMap<>();
+		result.put("savedCount", savedCount);
+		return result;
+	}
+
+	public static String fnDescribeSkippedTables(List<Map<String, String>> skippedTables) {
+		return skippedTables.stream()
+				.map(t -> t.get("tableName") + " (system: " + t.getOrDefault("systemName", t.get("interfaceName"))
+						+ ", environment: " + t.get("environmentName") + ")")
+				.collect(Collectors.joining(", "));
 	}
 
 
 	public static Db.Rows fnGetRefTableForLoadWithoutVersion(List<String> logicalUnits) throws Exception {
-		String lus = "";
-		for (String lu : logicalUnits) lus += "'" + lu + "',";
-		lus = lus.substring(0, lus.length() - 1);
+		String lus = String.join(",", Collections.nCopies(logicalUnits.size(), "?"));
 		String sql = "Select distinct ref.lu_name, ref.ref_table_name, ref.schema_name, ref.interface_name " +
-				"from " + schema + ".TASK_REF_TABLES ref, " + schema + ".TASK_REF_EXE_STATS exe, " + schema + ".task_execution_list l " +
+				"from " + getTDMDBSchema() + ".TASK_REF_TABLES ref, " + getTDMDBSchema() + ".TASK_REF_EXE_STATS exe, " + getTDMDBSchema() + ".task_execution_list l " +
 				"Where ref.task_ref_table_id  = exe.task_ref_table_id " +
 				"And ref.lu_name in (" + lus + ") " +
 				"And exe.execution_status = \'completed\' " +
 				"and exe.task_execution_id = l.task_execution_id " +
 				"and lower(l.execution_status) = \'completed\' " +
 				"and l.expiration_date is null;";
-		Db.Rows rows = db(TDM).fetch(sql);
+		Db.Rows rows = db(TDM).fetch(sql, logicalUnits.toArray());
 		return rows;
 	}
 
 
 	public static List<Map<String, Object>> fnGetRefTableForLoadWithVersion(List<String> logicalUnits) throws Exception {
-		String lus = "";
-		for (String lu : logicalUnits) lus += "'" + lu + "',";
-		lus = lus.substring(0, lus.length() - 1);
+		String lus = String.join(",", Collections.nCopies(logicalUnits.size(), "?"));
 		String sql = "Select distinct ref.lu_name, ref.ref_table_name, ref.schema_name, ref.interface_name , exe.execution_status , exe.task_execution_id " +
-				"from " + schema + ".task_ref_tables ref, " + schema + ".task_ref_exe_stats exe , " + schema + ".task_execution_list l " +
+				"from " + getTDMDBSchema() + ".task_ref_tables ref, " + getTDMDBSchema() + ".task_ref_exe_stats exe , " + getTDMDBSchema() + ".task_execution_list l " +
 				"Where ref.ref_table_name  = exe.ref_table_name " +
 				"And ref.lu_name in (" + lus + ") " +
 				"And exe.execution_status = \'completed\' " +
 				"and exe.task_execution_id = l.task_execution_id " +
 				"and lower(l.execution_status) = \'completed\' " +
 				"and l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE \'UTC\'";
-		Db.Rows rows = db(TDM).fetch(sql);
+		Db.Rows rows = db(TDM).fetch(sql, logicalUnits.toArray());
 
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<String> columnNames = rows.getColumnNames();
@@ -1636,33 +1823,38 @@ public class SharedLogic {
 
 	public static List<Map<String, Object>> fnGetVersionForLoadRef(List<String> refList, String source_env_name, String fromDate, String toDate) throws Exception {
 
-		String versionDatesCond = "";
-		if (fromDate != null && !"".equals(fromDate) && toDate != null && "".equals(toDate)) {
-			versionDatesCond = "and l.version_datetime::date >= '" + fromDate + "' and l.version_datetime::date <= '" + toDate + "' ";
-		}
+		List<Object> params = new ArrayList<>();
+		boolean hasVersionDates = fromDate != null && !"".equals(fromDate) && toDate != null && "".equals(toDate);
+		String versionDatesCond = hasVersionDates ? "and l.version_datetime::date >= ? and l.version_datetime::date <= ? " : "";
 
 		String query = "SELECT t.task_title version_name, t.task_id, l.task_execution_id, t.task_last_updated_by, l.task_execution_id, l.fabric_execution_id,  " +
-				"CASE when t.selection_method= \'ALL\' then  \'ALL\' " +
-				"when t.selection_method= \'REF\' then \'REF\' " +
-				"else \'Selected Entities\' END version_Type, " +
+				"CASE when t.selection_method= 'ALL' then  'ALL' " +
+				"when t.selection_method= 'REF' then 'REF' " +
+				"else 'Selected Entities' END version_Type, " +
 				"l.version_datetime, lu.lu_name, l.num_of_copied_entities as num_of_succeeded_entities, l.num_of_failed_entities, l.execution_note " +
-				"FROM " + schema + ".tasks t, " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units lu, " +
+				"FROM " + getTDMDBSchema() + ".tasks t, " + getTDMDBSchema() + ".task_execution_list l, " + getTDMDBSchema() + ".tasks_logical_units lu, " +
 				"(select  array_agg(lower(e.ref_table_name)) ref_list, array_agg(distinct lower(t.lu_name))  lu_list, task_execution_id " +
-				"from " + schema + ".task_ref_exe_stats e, " + schema + ".task_ref_tables t where e.task_id = t.task_id and e.ref_table_name = t.ref_table_name and e.schema_name = t.schema_name and e.interface_name = t.interface_name and e.execution_status = \'completed\' " +
+				"from " + getTDMDBSchema() + ".task_ref_exe_stats e, " + getTDMDBSchema() + ".task_ref_tables t where e.task_id = t.task_id and e.ref_table_name = t.ref_table_name and e.schema_name = t.schema_name and e.interface_name = t.interface_name and e.execution_status = 'completed' " +
 				"group by task_execution_id) ref " +
-				"where lower(t.task_Type) = \'extract\'  " +
+				"where lower(t.task_Type) = 'extract'  " +
 				"and t.task_id = l.task_id " +
-				"and t.source_env_name = \'" + source_env_name + "\' " +
-				"and lower(l.execution_status) = \'completed\' " +
-				versionDatesCond +
-				"and l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE \'UTC\' " +
+				"and t.source_env_name = ? ";
+		params.add(source_env_name);
+		query += "and lower(l.execution_status) = 'completed' " +
+				versionDatesCond;
+		if (hasVersionDates) {
+			params.add(fromDate);
+			params.add(toDate);
+		}
+		query += "and l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC' " +
 				"and l.task_execution_id = ref.task_execution_id " +
 				"and l.lu_id = lu.lu_id and l.task_id = lu.task_id ";
 
 		for (String ref : refList) {
-			query = query + "and lower(\'" + ref.toLowerCase() + "\') = ANY(ref_list) ";
+			query += "and lower(?) = ANY(ref_list) ";
+			params.add(ref.toLowerCase());
 		}
-		Db.Rows rows = db(TDM).fetch(query);
+		Db.Rows rows = db(TDM).fetch(query, params.toArray());
 
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<String> columnNames = rows.getColumnNames();
@@ -1681,17 +1873,147 @@ public class SharedLogic {
 		return result;
 	}
 
+	/**
+	 * Returns every data version (task execution) that includes at least one of the given tables.
+	 * Each returned version carries its version details plus the subset of the requested tables
+	 * that were part of that version, and how many of them were included.
+	 */
+	public static List<Map<String, Object>> fnGetVersionsForTables(List<Map<String, Object>> tableList, String source_env_name, String fromDate, String toDate) throws Exception {
+		if (tableList == null || tableList.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		StringBuilder tableMatchCond = new StringBuilder();
+		List<Object> tableParams = new ArrayList<>();
+		for (Map<String, Object> table : tableList) {
+			Object interfaceNameObj = table.get("interface_name");
+			Object schemaNameObj = table.get("schema_name");
+			Object tableNameObj = table.get("table_name") != null ? table.get("table_name")
+					: table.get("reference_table_name") != null ? table.get("reference_table_name") : table.get("ref_table_name");
+			if (interfaceNameObj == null || schemaNameObj == null || tableNameObj == null) {
+				continue;
+			}
+			if (tableMatchCond.length() > 0) {
+				tableMatchCond.append(" OR ");
+			}
+			tableMatchCond.append("(lower(ref.interface_name) = lower(?) AND lower(ref.schema_name) = lower(?) AND lower(ref.ref_table_name) = lower(?))");
+			tableParams.add(interfaceNameObj.toString());
+			tableParams.add(schemaNameObj.toString());
+			tableParams.add(tableNameObj.toString());
+		}
+
+		if (tableMatchCond.length() == 0) {
+			throw new Exception("tableList must contain at least one table with interface_name, schema_name and table_name.");
+		}
+
+		return fnGetVersionsForTableMatch(tableMatchCond.toString(), tableParams, source_env_name, fromDate, toDate);
+	}
+
+	/**
+	 * Returns every data version (task execution) for a single table, identified by interface_name,
+	 * schema_name and table_name, optionally restricted to a fromDate/toDate execution window.
+	 */
+	public static List<Map<String, Object>> fnGetTableVersions(String interface_name, String schema_name, String table_name, String source_env_name, String fromDate, String toDate) throws Exception {
+		String tableMatchCond = "(lower(ref.interface_name) = lower(?) AND lower(ref.schema_name) = lower(?) AND lower(ref.ref_table_name) = lower(?))";
+		List<Object> tableParams = Arrays.asList(interface_name, schema_name, table_name);
+		return fnGetVersionsForTableMatch(tableMatchCond, tableParams, source_env_name, fromDate, toDate);
+	}
+
+	/**
+	 * Shared query + grouping logic behind fnGetVersionsForTables and fnGetTableVersions: runs the
+	 * task-execution join for the given table-match condition/params, then groups the resulting rows
+	 * by task_execution_id into version records with a nested, deduplicated input_tables list.
+	 */
+	private static List<Map<String, Object>> fnGetVersionsForTableMatch(String tableMatchCond, List<Object> tableParams, String source_env_name, String fromDate, String toDate) throws Exception {
+		Timestamp fromTimestamp = fromDate != null && !fromDate.trim().isEmpty() ? parseDateToTimestamp(fromDate, "fromDate") : null;
+		Timestamp toTimestamp = toDate != null && !toDate.trim().isEmpty() ? parseDateToTimestamp(toDate, "toDate") : null;
+
+		String sql = "SELECT t.task_title, t.task_description, exe.task_execution_id, exe.start_time, " +
+				"split_part(l.task_executed_by, '##', 1) as task_executed_by, exe.number_of_processed_records, " +
+				"ref.interface_name, ref.schema_name, ref.ref_table_name " +
+				"FROM " + getTDMDBSchema() + ".task_ref_tables ref, " + getTDMDBSchema() + ".task_ref_exe_stats exe, " +
+				getTDMDBSchema() + ".task_execution_list l, " + getTDMDBSchema() + ".tasks t " +
+				"WHERE ref.ref_table_name = exe.ref_table_name AND ref.schema_name = exe.schema_name AND ref.interface_name = exe.interface_name " +
+				"AND (" + tableMatchCond + ") " +
+				"AND exe.execution_status = 'completed' " +
+				"AND LOWER(exe.execution_action) <> 'delete' " +
+				"AND exe.task_execution_id = l.task_execution_id " +
+				"AND lower(l.execution_status) = 'completed' " +
+				"AND l.source_env_name = ? " +
+				"AND (l.expiration_date is null OR l.expiration_date = '1970-01-01 00:00:00.0' OR l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC') " +
+				"AND l.task_id = t.task_id " +
+				"AND ref.task_id = t.task_id " +
+				"AND t.sync_mode != 'OFF' " +
+				"AND t.retention_period_value != 0 " +
+				(fromTimestamp != null ? "AND exe.start_time >= ? " : "") +
+				(toTimestamp != null ? "AND exe.start_time <= ? " : "") +
+				"ORDER BY exe.task_execution_id DESC";
+
+		List<Object> params = new ArrayList<>(tableParams);
+		params.add(source_env_name);
+		if (fromTimestamp != null) {
+			params.add(fromTimestamp);
+		}
+		if (toTimestamp != null) {
+			params.add(toTimestamp);
+		}
+
+		LinkedHashMap<Long, Map<String, Object>> versionsByExecId = new LinkedHashMap<>();
+		try (Db.Rows rows = db(TDM).fetch(sql, params.toArray())) {
+			for (Db.Row row : rows) {
+				Long taskExecutionId = ((Number) row.get("task_execution_id")).longValue();
+				Map<String, Object> version = versionsByExecId.get(taskExecutionId);
+				if (version == null) {
+					version = new LinkedHashMap<>();
+					version.put("task_name", row.get("task_title"));
+					version.put("task_execution_id", row.get("task_execution_id"));
+					version.put("execution_datetime", row.get("start_time"));
+
+					Object executedByObj = row.get("task_executed_by");
+					String[] executedBy = executedByObj != null ? executedByObj.toString().split("##") : new String[]{""};
+					version.put("executed_by", executedBy[0]);
+					version.put("task_description", row.get("task_description"));
+					version.put("input_tables", new ArrayList<Map<String, Object>>());
+					versionsByExecId.put(taskExecutionId, version);
+				}
+
+				Map<String, Object> inputTable = new LinkedHashMap<>();
+				inputTable.put("interface_name", row.get("interface_name"));
+				inputTable.put("schema_name", row.get("schema_name"));
+				inputTable.put("table_name", row.get("ref_table_name"));
+				inputTable.put("number_of_records", row.get("number_of_processed_records"));
+				((List<Map<String, Object>>) version.get("input_tables")).add(inputTable);
+			}
+		}
+
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Map<String, Object> version : versionsByExecId.values()) {
+			List<Map<String, Object>> inputTables = (List<Map<String, Object>>) version.get("input_tables");
+			version.put("number_of_input_tables", inputTables.size());
+			result.add(version);
+		}
+		return result;
+	}
+
+	private static Timestamp parseDateToTimestamp(String date, String fieldName) throws Exception {
+		try {
+			return Timestamp.from(OffsetDateTime.parse(date).withOffsetSameInstant(ZoneOffset.UTC).toInstant());
+		} catch (DateTimeParseException e) {
+			throw new Exception("Invalid " + fieldName + " format (ISO 8601): " + date + ".  " + e.getMessage());
+		}
+	}
+
 
 	public static List<Map<String, Object>> fnGetLogicalUnitsForSourceAndTargetEnv(Long targetEnvId, Long srcEnvId) throws Exception {
 
 		List<Map<String, Object>> result = new ArrayList<>();
-		String query = "SELECT * FROM " + schema + ".product_logical_units " +
-				"INNER JOIN " + schema + ".products " +
+		String query = "SELECT * FROM " + getTDMDBSchema() + ".product_logical_units " +
+				"INNER JOIN " + getTDMDBSchema() + ".products " +
 				"ON (product_logical_units.product_id = products.product_id AND products.product_status = \'Active\') " +
-				"INNER JOIN " + schema + ".environment_products " +
+				"INNER JOIN " + getTDMDBSchema() + ".environment_products " +
 				"ON (product_logical_units.product_id = environment_products.product_id AND environment_products.status = \'Active\') " +
-				"WHERE environment_id = " + srcEnvId + " OR environment_id = " + targetEnvId;
-		Db.Rows rows = db(TDM).fetch(query);
+				"WHERE environment_id = ? OR environment_id = ?";
+		Db.Rows rows = db(TDM).fetch(query, srcEnvId, targetEnvId);
 
 		List<String> columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
@@ -1733,30 +2055,20 @@ public class SharedLogic {
 	@out(name = "result", type = Map.class, desc = "")
 	public static Map<String,Object> fnGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<String> lu_list, String target_env_name,String filterout_reserved) throws Exception {
 		Map<String, Object> result = new HashMap<>();
-		String clientQuery = "";
-		String logicalUnitList = "";
-		
-		for (String lu : lu_list) {
-			logicalUnitList += ("'" + lu + "',");
-		}
-		if (logicalUnitList != "") logicalUnitList = logicalUnitList.substring(0, logicalUnitList.length() - 1);
-		
-		String logicalUnitListEqual = "";
-		for (String lu : lu_list) {
-			logicalUnitListEqual = logicalUnitListEqual + " and lower('" + lu + "') = any(lu_list) ";
-		}
-		
-		String versionDatesCond = "";
-		if (fromDate != null && !"".equals(fromDate) && toDate != null && !"".equals(toDate)) {
-			versionDatesCond = "and l.creation_date::date >= '" + fromDate + "' and l.creation_date::date <= '" + toDate + "' ";
-		}
-		
-		clientQuery = "with lu_list as (select l.task_execution_id, array_agg(lower(lu.lu_name)) lu_list " +
-				"from " + schema + ".task_execution_list l, " +
-				schema + ".product_logical_units lu " +
+		List<Object> params = new ArrayList<>();
+
+		String logicalUnitList = String.join(",", Collections.nCopies(lu_list.size(), "?"));
+
+		boolean hasVersionDates = fromDate != null && !"".equals(fromDate) && toDate != null && !"".equals(toDate);
+		String versionDatesCond = hasVersionDates ? "and l.creation_date::date >= ? and l.creation_date::date <= ? " : "";
+
+		String query = "with lu_list as (select l.task_execution_id, array_agg(lower(lu.lu_name)) lu_list " +
+				"from " + getTDMDBSchema() + ".task_execution_list l, " +
+				getTDMDBSchema() + ".product_logical_units lu " +
 				"where l.lu_id = lu.lu_id " +
-				"and lu.be_id = " + be_id + " " +
-				"and lower(l.execution_status) = 'completed' " +
+				"and lu.be_id = ? ";
+		params.add(be_id);
+		query += "and lower(l.execution_status) = 'completed' " +
 				"group by task_execution_id) " +
 
 				"select distinct t1.task_title version_name, t1.task_id, l1.task_execution_id, t1.task_last_updated_by, " +
@@ -1768,60 +2080,72 @@ public class SharedLogic {
 				"l1.num_of_failed_entities, l1.execution_note, " +
 				"ROW_NUMBER() OVER (PARTITION BY t1.task_title, l1.lu_id ORDER BY l1.task_execution_id) version_no " +
 
-				"from " + schema + ".task_execution_list l1, " +
-				schema + ".tasks t1, " +
-				schema + ".tasks_logical_units tlu, " +
-				schema + ".product_logical_units plu " +
+				"from " + getTDMDBSchema() + ".task_execution_list l1, " +
+				getTDMDBSchema() + ".tasks t1, " +
+				getTDMDBSchema() + ".tasks_logical_units tlu, " +
+				getTDMDBSchema() + ".product_logical_units plu " +
 
 				"where (t1.task_title, t1.task_id, l1.creation_date, l1.task_execution_id, l1.lu_id) in " +
 				"(SELECT distinct t.task_title as version_name, t.task_id, l.creation_date as version_datetime, " +
 				"l.task_execution_id, l.lu_id " +
 
-				"from " + schema + ".tasks t, " +
-				schema + ".task_execution_list l, lu_list " +
+				"from " + getTDMDBSchema() + ".tasks t, " +
+				getTDMDBSchema() + ".task_execution_list l, lu_list " +
 
 				"where lower(l.task_type) = 'extract' " +
 				"and t.task_id = l.task_id " +
-				"and l.be_id = " + be_id + " " +
-				"and l.source_env_name = '" + source_env_name + "' " +
-				"and lower(l.execution_status) = 'completed' " +
+				"and l.be_id = ? ";
+		params.add(be_id);
+		query += "and l.source_env_name = ? ";
+		params.add(source_env_name);
+		query += "and lower(l.execution_status) = 'completed' " +
 				"and t.version_ind = true " +
-				versionDatesCond +
-
-				"and l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC' " +
+				versionDatesCond;
+		if (hasVersionDates) {
+			params.add(fromDate);
+			params.add(toDate);
+		}
+		query += "and l.expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC' " +
 				"and l.lu_id in (select lu_id " +
-					"from " + schema + ".tasks_logical_units u " +
-					"where l.task_id = u.task_id " +
-					"and u.lu_name in (" + logicalUnitList + ")) " +
+				"from " + getTDMDBSchema() + ".tasks_logical_units u " +
+				"where l.task_id = u.task_id " +
+				"and u.lu_name in (" + logicalUnitList + ")) ";
+		params.addAll(lu_list);
 
-				"and l.task_execution_id = lu_list.task_execution_id " +
-				logicalUnitListEqual +
-				") " +
+		query += "and l.task_execution_id = lu_list.task_execution_id ";
+		for (String lu : lu_list) {
+			query += " and lower(?) = any(lu_list) ";
+			params.add(lu);
+		}
+		query += ") " +
 
 				"and t1.task_id = l1.task_id " +
 				"and lower(l1.execution_status) = 'completed' " +
 				"and l1.task_id = tlu.task_id " +
 				"and l1.lu_id = tlu.lu_id " +
 				"and l1.lu_id = plu.lu_id " +
-				"and plu.be_id = " + be_id + " " +
-				"and (plu.lu_parent_id is not null or l1.num_of_copied_entities > 0 ";
-		
+				"and plu.be_id = ? ";
+		params.add(be_id);
+		query += "and (plu.lu_parent_id is not null or l1.num_of_copied_entities > 0 ";
+
 		if (entitiesList != null && entitiesList.length() > 0) {
             int  numOfEntities = entitiesList.length() - entitiesList.replace(",", "").length() + 1;
 
-			clientQuery +=
-					" and (" + be_id + " != plu.be_id or (";
-			clientQuery += numOfEntities + " = (select count(1) from " + schema + ".task_execution_entities te " +
+			query += " and (? != plu.be_id or (";
+			params.add(be_id);
+			query += numOfEntities + " = (select count(1) from " + getTDMDBSchema() + ".task_execution_entities te " +
 					"where te.task_execution_id = l1.task_execution_id and te.lu_name = plu.lu_name and plu.lu_parent_id is null " +
-					"and te.iid = ANY(string_to_array('" + entitiesList + "', ',')) and execution_status = 'completed'))) ) ";
+					"and te.iid = ANY(string_to_array(?, ',')) and execution_status = 'completed'))) ) ";
+			params.add(entitiesList);
 		} else {
-			clientQuery += ")";
+			query += ")";
 		}
 		// End of TDM 7.4 change
-		
-		clientQuery += " order by l1.creation_date DESC ;";
+
+		query += " order by l1.creation_date DESC ;";
+		String clientQuery = query;
 		//log.info("fnGetVersionsForLoad - clientQuery: " + clientQuery);
-		Db.Rows rows = db(TDM).fetch(clientQuery);
+		Db.Rows rows = db(TDM).fetch(clientQuery, params.toArray());
 		      List<String> columnNames = rows.getColumnNames();
 		      List<Map<String, Object>> rowsList = new ArrayList<>();
 		
@@ -1839,7 +2163,7 @@ public class SharedLogic {
 		Map<String, Object> validation = new HashMap<>();
 		if (entitiesList != null && entitiesList.length() > 0) {
 			//log.info("target_env_name: " + target_env_name);
-			String envID = "" + db(TDM).fetch("SELECT environment_id from " + schema + ".environments where environment_name = ? and environment_status = 'Active'",
+			String envID = "" + db(TDM).fetch("SELECT environment_id from " + getTDMDBSchema() + ".environments where environment_name = ? and environment_status = 'Active'",
 					target_env_name).firstValue();
 			String[] strings = entitiesList.split(",");
 			ArrayList<String> entities = new ArrayList<>();
@@ -1859,17 +2183,245 @@ public class SharedLogic {
 		return result;
 	}
 
+	public static List<Map<String, Object>> fnGetGenerationModels(String fromDate, String toDate, String envName, Long beID, List<String> selectedLogicalUnits) throws Exception {
+		if (selectedLogicalUnits == null || selectedLogicalUnits.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<String> matchedLuNames = new ArrayList<>();
+		List<String> matchedLuNamesLower = new ArrayList<>();
+		String luQuery = "SELECT lu_name FROM " + getTDMDBSchema() + ".product_logical_units WHERE be_id= ?";
+		try (Db.Rows lus = db(TDM).fetch(luQuery, beID)) {
+			for (Db.Row lu : lus) {
+				String luName = (String) lu.get("lu_name");
+				if (selectedLogicalUnits.contains(luName)) {
+					matchedLuNames.add(luName);
+					matchedLuNamesLower.add(luName.toLowerCase());
+				}
+			}
+		}
+
+		if (matchedLuNames.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		String logicalUnitList = "'" + String.join("','", matchedLuNames) + "'";
+		String luSubsetCondition = " AND ARRAY['" + String.join("','", matchedLuNamesLower) + "'] <@ lu_list";
+
+		String generationDatesCond = "";
+		boolean hasDateCond = fromDate != null && !"".equals(fromDate) && toDate != null && !"".equals(toDate);
+		if (hasDateCond) {
+			generationDatesCond = "AND l.creation_date::date >= ? AND l.creation_date::date <= ? ";
+		}
+
+		String taskTypeCondition = " = 'AI_GENERATED'";
+		String processIdCondition = " AND (SELECT COUNT(DISTINCT process_id) FROM " + getTDMDBSchema() + ".task_execution_list p1 WHERE p1.task_execution_id = l1.task_execution_id" +
+									" AND execution_status = 'completed' AND process_id IN (-2, 0)) = 2 AND l1.process_id = -2";
+		String processIdConditionSimple = " AND (SELECT COUNT(DISTINCT process_id) FROM " + getTDMDBSchema() + ".task_execution_list p WHERE p.task_execution_id = l.task_execution_id" +
+										  " AND execution_status = 'completed' AND process_id IN (-2, 0)) = 2 AND l.process_id = -2";
+		String unionQuery = "";
+
+		if (SYNTHETIC_ENVIRONMENT.equalsIgnoreCase(envName)) {
+			taskTypeCondition = " = 'GENERATE' OR (t.task_Type = 'LOAD' AND t.selection_method = 'GENERATE') ";
+			processIdCondition = "";
+			processIdConditionSimple = "";
+		} else {
+			unionQuery = buildAiLoadUnionQuery(logicalUnitList, luSubsetCondition, generationDatesCond);
+		}
+
+		List<Object> sqlParams = new ArrayList<>();
+		String sql = buildGenerationModelsSql(envName, logicalUnitList, luSubsetCondition, generationDatesCond,
+			hasDateCond, fromDate, toDate, taskTypeCondition, processIdCondition, processIdConditionSimple, unionQuery, sqlParams);
+
+		List<Map<String, Object>> rowsList = new ArrayList<>();
+		try (Db.Rows rows = db(TDM).fetch(sql, sqlParams.toArray())) {
+			List<String> columnNames = rows.getColumnNames();
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				Map<String, Object> rowMap = new HashMap<>();
+				for (String columnName : columnNames) {
+					rowMap.put(columnName, resultSet.getObject(columnName));
+				}
+				rowsList.add(rowMap);
+			}
+		}
+
+		return rowsList;
+	}
+
+	private static String buildAiLoadUnionQuery(String logicalUnitList, String luSubsetCondition, String generationDatesCond) {
+		return "UNION " +
+			"SELECT DISTINCT " +
+			"    t2.task_title, " +
+			"    t2.task_id, " +
+			"    tlu2.lu_name, " +
+			"    l2.task_execution_id, " +
+			"    l2.start_execution_time, " +
+			"    t2.task_last_updated_by AS task_executed_by, " +
+			"    l2.num_of_processed_entities AS number_of_entities, " +
+			"    l2.execution_note, " +
+			"    l2.creation_date, " +
+			"    l2.fabric_execution_id, " +
+			"    CASE WHEN plu2.lu_parent_id IS NULL THEN 'Y' ELSE 'N' END root_indicator, " +
+			"    l2.num_of_copied_entities AS num_of_succeeded_entities, " +
+			"    l2.num_of_failed_entities, " +
+			"    plu2.lu_parent_name, " +
+			"    ROW_NUMBER() OVER (PARTITION BY t2.task_title, l2.lu_id ORDER BY l2.task_execution_id) AS row_number " +
+			"FROM " +
+			getTDMDBSchema() + ".task_execution_list l2 " +
+			"JOIN " + getTDMDBSchema() + ".tasks t2 ON t2.task_id = l2.task_id " +
+			"JOIN " + getTDMDBSchema() + ".tasks_logical_units tlu2 ON l2.task_id = tlu2.task_id AND l2.lu_id = tlu2.lu_id " +
+			"JOIN " + getTDMDBSchema() + ".product_logical_units plu2 ON l2.lu_id = plu2.lu_id " +
+			"WHERE " +
+			"    (t2.task_title, t2.task_id, l2.creation_date, l2.task_execution_id, l2.lu_id) IN " +
+			"    ( " +
+			"        SELECT DISTINCT t.task_title, t.task_id, l.creation_date, l.task_execution_id, l.lu_id " +
+			"        FROM " + getTDMDBSchema() + ".tasks t " +
+			"        JOIN " + getTDMDBSchema() + ".task_execution_list l ON t.task_id = l.task_id " +
+			"        JOIN lu_list ON l2.task_execution_id = lu_list.task_execution_id " +
+			"        WHERE t.task_Type = 'LOAD' " +
+			"            AND t.selection_method = 'AI_GENERATED' " +
+			"            AND t.task_id = l.task_id " +
+			"            AND lower(l.execution_status) = 'completed' " + generationDatesCond +
+			"            AND l.lu_id IN (" +
+			"                SELECT lu_id FROM " + getTDMDBSchema() + ".tasks_logical_units u " +
+			"                WHERE l.task_id = u.task_id AND u.lu_name IN (" + logicalUnitList + "))" +
+			"            AND l.task_execution_id = lu_list.task_execution_id" + luSubsetCondition +
+			"            AND t2.task_id = l2.task_id " +
+			"            AND lower(l2.execution_status) = 'completed' " +
+			"            AND l2.task_id = tlu2.task_id " +
+			"            AND l2.lu_id = tlu2.lu_id " +
+			"            AND l2.lu_id = plu2.lu_id " +
+			"            AND (plu2.lu_parent_id IS NOT NULL OR l2.num_of_copied_entities > 0) " +
+			"    ) " +
+			"    AND (SELECT COUNT(DISTINCT process_id) " +
+			"         FROM " + getTDMDBSchema() + ".task_execution_list p2 " +
+			"         WHERE p2.task_execution_id = l2.task_execution_id " +
+			"             AND execution_status = 'completed' AND process_id IN (-2, -1)) = 2 " +
+			"    AND l2.process_id = -1 ";
+	}
+
+	private static String buildGenerationModelsSql(
+			String envName,
+			String logicalUnitList,
+			String luSubsetCondition,
+			String generationDatesCond,
+			boolean hasDateCond,
+			String fromDate,
+			String toDate,
+			String taskTypeCondition,
+			String processIdCondition,
+			String processIdConditionSimple,
+			String unionQuery,
+			List<Object> params) {
+
+		String sql = "WITH lu_list AS (" +
+			"    SELECT l.task_execution_id, array_agg(lower(lu.lu_name)) lu_list" +
+			"    FROM " + getTDMDBSchema() + ".task_execution_list l" +
+			"    JOIN " + getTDMDBSchema() + ".product_logical_units lu ON l.lu_id = lu.lu_id" +
+			"    WHERE l.lu_id = lu.lu_id AND lower(l.execution_status) = 'completed'" +
+			"    GROUP BY task_execution_id" +
+			") " +
+			"(SELECT DISTINCT" +
+			"    t1.task_title," +
+			"    t1.task_id," +
+			"    tlu.lu_name," +
+			"    l1.task_execution_id," +
+			"    l1.start_execution_time," +
+			"    t1.task_last_updated_by AS task_executed_by," +
+			"    l1.num_of_processed_entities AS number_of_entities," +
+			"    l1.execution_note," +
+			"    l1.creation_date," +
+			"    l1.fabric_execution_id," +
+			"    CASE WHEN plu.lu_parent_id IS NULL THEN 'Y' ELSE 'N' END root_indicator," +
+			"    l1.num_of_copied_entities AS num_of_succeeded_entities," +
+			"    l1.num_of_failed_entities," +
+			"    plu.lu_parent_name," +
+			"    ROW_NUMBER() OVER (PARTITION BY t1.task_title, l1.lu_id ORDER BY l1.task_execution_id) AS row_number" +
+			" FROM " + getTDMDBSchema() + ".task_execution_list l1" +
+			" JOIN " + getTDMDBSchema() + ".tasks t1 ON t1.task_id = l1.task_id" +
+			" JOIN " + getTDMDBSchema() + ".tasks_logical_units tlu ON l1.task_id = tlu.task_id AND l1.lu_id = tlu.lu_id" +
+			" JOIN " + getTDMDBSchema() + ".product_logical_units plu ON l1.lu_id = plu.lu_id" +
+			" WHERE (t1.task_title, t1.task_id, l1.creation_date, l1.task_execution_id, l1.lu_id) IN (" +
+			"    SELECT DISTINCT t.task_title, t.task_id, l.creation_date, l.task_execution_id, l.lu_id" +
+			"    FROM " + getTDMDBSchema() + ".tasks t" +
+			"    JOIN " + getTDMDBSchema() + ".task_execution_list l ON t.task_id = l.task_id" +
+			"    JOIN lu_list ON l1.task_execution_id = lu_list.task_execution_id" +
+			"    WHERE (t.task_Type" + taskTypeCondition + ")" +
+			"        AND t.task_id = l.task_id" +
+			"        AND t.source_env_name = ?" +
+			"        AND lower(l.execution_status) = 'completed' " + generationDatesCond +
+			"        AND l.lu_id IN (" +
+			"            SELECT lu_id FROM " + getTDMDBSchema() + ".tasks_logical_units u" +
+			"            WHERE l.task_id = u.task_id AND u.lu_name IN (" + logicalUnitList + "))" +
+			"        AND l.task_execution_id = lu_list.task_execution_id" + luSubsetCondition +
+			"        AND t1.task_id = l1.task_id" +
+			"        AND lower(l1.execution_status) = 'completed'" +
+			"        AND l1.task_id = tlu.task_id" +
+			"        AND l1.lu_id = tlu.lu_id" +
+			"        AND l1.lu_id = plu.lu_id" +
+			"        AND (plu.lu_parent_id IS NOT NULL OR l1.num_of_copied_entities > 0))" +
+			processIdCondition + " ORDER BY l1.creation_date ASC)";
+		params.add(envName);
+		if (hasDateCond) {
+			params.add(fromDate);
+			params.add(toDate);
+		}
+
+		if (AI_ENVIRONMENT.equalsIgnoreCase(envName)) {
+			sql += " " + unionQuery;
+			if (hasDateCond) {
+				params.add(fromDate);
+				params.add(toDate);
+			}
+		}
+
+		// Also include template tasks (no BE/LUs defined) that match the same task type and env
+		sql += " UNION " +
+			"SELECT DISTINCT" +
+			"    t.task_title," +
+			"    t.task_id," +
+			"    plu.lu_name," +
+			"    l.task_execution_id," +
+			"    l.start_execution_time," +
+			"    t.task_last_updated_by AS task_executed_by," +
+			"    l.num_of_processed_entities AS number_of_entities," +
+			"    l.execution_note," +
+			"    l.creation_date," +
+			"    l.fabric_execution_id," +
+			"    CASE WHEN plu.lu_parent_id IS NULL THEN 'Y' ELSE 'N' END root_indicator," +
+			"    l.num_of_copied_entities AS num_of_succeeded_entities," +
+			"    l.num_of_failed_entities," +
+			"    plu.lu_parent_name," +
+			"    ROW_NUMBER() OVER (PARTITION BY t.task_title, l.lu_id ORDER BY l.task_execution_id) AS row_number" +
+			" FROM " + getTDMDBSchema() + ".task_execution_list l" +
+			" JOIN " + getTDMDBSchema() + ".tasks t ON t.task_id = l.task_id" +
+			" LEFT JOIN " + getTDMDBSchema() + ".product_logical_units plu ON l.lu_id = plu.lu_id" +
+			" WHERE (t.task_Type" + taskTypeCondition + ")" +
+			"    AND t.source_env_name = ?" +
+			"    AND lower(l.execution_status) = 'completed' " + generationDatesCond +
+			"    AND NOT EXISTS (SELECT 1 FROM " + getTDMDBSchema() + ".tasks_logical_units tlu WHERE tlu.task_id = t.task_id)" +
+			"    AND plu.lu_name IN (" + logicalUnitList + ") " +
+			processIdConditionSimple;
+		params.add(envName);
+		if (hasDateCond) {
+			params.add(fromDate);
+			params.add(toDate);
+		}
+
+		return sql;
+	}
 
 	public static List<Map<String, Object>> fnGetRootLUs(String taskExecutionId) throws Exception {
 		String sql = "select distinct t.task_execution_id, lu_name ,l.lu_id, " +
-				"(select count(*) from " + schema + ".task_Execution_list t " +
-				"where parent_lu_id = l.lu_id and t.task_execution_id = \'" + taskExecutionId + "\')," +
+				"(select count(*) from " + getTDMDBSchema() + ".task_Execution_list t " +
+				"where parent_lu_id = l.lu_id and t.task_execution_id = ?)," +
 				"case when (num_of_failed_entities>0 or num_of_failed_ref_tables> 0) " +
-				"then \'failed\' else \'completed\' end lu_status from " + schema + ".task_Execution_list t, " +
-				"(select lu_id, lu_name from " + schema + ".product_logical_units) l " +
-				"where t.task_execution_id =\'" + taskExecutionId + "\' and " +
+				"then 'failed' else 'completed' end lu_status from " + getTDMDBSchema() + ".task_Execution_list t, " +
+				"(select lu_id, lu_name from " + getTDMDBSchema() + ".product_logical_units) l " +
+				"where t.task_execution_id =? and " +
 				"t.parent_lu_id is null and t.lu_id = l.lu_id";
-		Db.Rows rows = db(TDM).fetch(sql);
+		Db.Rows rows = db(TDM).fetch(sql, taskExecutionId, taskExecutionId);
 
 		List<Map<String, Object>> result = new ArrayList<>();
 		List<String> columnNames = rows.getColumnNames();
@@ -2028,7 +2580,7 @@ public class SharedLogic {
 			env = "_dev";
 		}
 	
-		fabric().execute("set environment='" + env + "';");
+		fabric().execute("set environment=?;", env);
 	
 		Map<Object, Object> connResMap = new HashMap<>();
 		fabric().fetch("test_connection active=true;").forEach(i -> {
@@ -2058,7 +2610,7 @@ public class SharedLogic {
 					"  End As environment_type,\n" +
 					"  'admin' As role_id,\n" +
 					"  'admin' As assignment_type\n" +
-					"From " + schema + ".environments env\n" +
+					"From " + getTDMDBSchema() + ".environments env\n" +
 					"Where env.environment_status = 'Active' and env.environment_name=(?)";
 			Db.Rows rows = db(TDM).fetch(allEnvs, envName);
 			List<String> columnNames = rows.getColumnNames();
@@ -2079,14 +2631,14 @@ public class SharedLogic {
 			String sql = "select env.environment_id, env.environment_name, " +
 					"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, " +
 					"r.role_id, 'user' as assignment_type " +
-					"from " + schema + ".environments env, " + schema + ".environment_roles r, " + schema + ".environment_role_users u " +
+					"from " + getTDMDBSchema() + ".environments env, " + getTDMDBSchema() + ".environment_roles r, " + getTDMDBSchema() + ".environment_role_users u " +
 					"where env.environment_id = r.environment_id " +
 					"and lower(r.role_status) = 'active' " +
 					"and r.role_id = u.role_id " +
 					"and ( (u.user_id = (?) and u.user_type = 'ID' or (lower(u.username) = 'all' and u.environment_id not in " +
-					"(select u1.environment_id from " + schema + ".environment_role_users u1 where u1.user_id= (?) and u.user_type = 'ID' ))) " +
+					"(select u1.environment_id from " + getTDMDBSchema() + ".environment_role_users u1 where u1.user_id= (?) and u.user_type = 'ID' ))) " +
 					"or (u.user_id = ANY (string_to_array(?, ',')) and u.user_type = 'GROUP' or (lower(u.username) = 'all' and u.environment_id not in " +
-					"(select u1.environment_id from " + schema + ".environment_role_users u1 where u1.user_id = ANY (string_to_array(?, ',')) and u.user_type = 'GROUP' ))) ) " +
+					"(select u1.environment_id from " + getTDMDBSchema() + ".environment_role_users u1 where u1.user_id = ANY (string_to_array(?, ',')) and u.user_type = 'GROUP' ))) ) " +
 					"and env.environment_status = 'Active' and env.environment_name=(?)";
 			Db.Rows rows = db(TDM).fetch(sql, userId, userId, fabricRoles, fabricRoles, envName);
 
@@ -2107,7 +2659,7 @@ public class SharedLogic {
 			String query1 = "select env.environment_id, env.environment_name, " +
 					"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, " +
 					"'owner' as role_id, 'owner' as assignment_type " +
-					"from " + schema + ".environments env, " + schema + ".environment_owners o " +
+					"from " + getTDMDBSchema() + ".environments env, " + getTDMDBSchema() + ".environment_owners o " +
 					"where env.environment_id = o.environment_id " +
 					"and ( (o.user_id = (?) and o.user_type ='ID') " +
 					"or (o.user_id = ANY (string_to_array(?, ',')) and o.user_type ='GROUP') ) " +
@@ -2135,7 +2687,7 @@ public class SharedLogic {
 			Long taskExecutionId, boolean createdByAi) throws Exception {
 		// Upsert: INSERT for new executions, UPDATE (draft=false) when promoting a draft
 		// that was pre-allocated with the same task_execution_id.
-		String sql = "INSERT INTO " + schema + ".task_execution_override_attrs " +
+		String sql = "INSERT INTO " + getTDMDBSchema() + ".task_execution_override_attrs " +
 				"(task_id, override_parameters, task_execution_id, created_by_ai, draft) VALUES (?, ?, ?, ?, false) " +
 				"ON CONFLICT (task_execution_id, task_id) DO UPDATE SET " +
 				"override_parameters = EXCLUDED.override_parameters, " +
@@ -2172,7 +2724,7 @@ public class SharedLogic {
 		entities_list_for_qry = String.join(TDM_PARAMETERS_SEPARATOR, entitiesList);
 		
 		//log.info("fnValidateReservedEntities - beID: " + beID + ", envID: " + envID);
-		String baseQuery = "SELECT * FROM " + schema + ".TDM_RESERVED_ENTITIES WHERE " +
+		String baseQuery = "SELECT * FROM " + getTDMDBSchema() + ".TDM_RESERVED_ENTITIES WHERE " +
 				"be_id = ? AND env_id = ? AND entity_id = ANY(string_to_array(?, ?)) " +
 				"AND CURRENT_TIMESTAMP >= start_datetime " +
                         "AND (end_datetime IS NULL OR CURRENT_TIMESTAMP < end_datetime)";
@@ -2227,7 +2779,7 @@ public class SharedLogic {
 		if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
 			globalName = luName + "." + globalName;
 		}
-		String sql = "INSERT INTO " + schema + ".task_globals (task_id, global_name, global_value, is_editable) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO " + getTDMDBSchema() + ".task_globals (task_id, global_name, global_value, is_editable) VALUES (?, ?, ?, ?)";
 		db(TDM).execute(sql, taskId, globalName, globalValue, isEditable);
 	}
 
@@ -2250,7 +2802,7 @@ public class SharedLogic {
 				throw new Exception("Generate parameter '" + paramName + "' is locked and must have a non-null value.");
 			}
 			if (value != null || isEditable) {
-				String sql = "INSERT INTO " + schema + ".tdm_generate_task_field_mappings"
+				String sql = "INSERT INTO " + getTDMDBSchema() + ".tdm_generate_task_field_mappings"
 						+ " values (?, ?, ?, ?, ?, ?)";
 				db(TDM).execute(sql, taskId, paramName, type, value, order, isEditable);
 			}
@@ -2259,9 +2811,16 @@ public class SharedLogic {
 
 	public static Db.Rows fnGetTasks(String task_ids, String mode) throws Exception {
 		String taskFilterCondition = "";
+		List<Object> params = new ArrayList<>();
 		// If task_ids are provided, we add the first filtering condition
 		if (task_ids != null && !task_ids.isEmpty()) {
-			taskFilterCondition = " WHERE task_id IN (" + task_ids + ") ";
+			List<Object> idParams = new ArrayList<>();
+			for (String id : task_ids.split(",")) {
+				idParams.add(id.trim());
+			}
+			String placeholders = String.join(",", Collections.nCopies(idParams.size(), "?"));
+			taskFilterCondition = " WHERE task_id IN (" + placeholders + ") ";
+			params.addAll(idParams);
 		}
 		// If mode is not "both", we add filtering for task status
 		if (!"both".equalsIgnoreCase(mode)) {
@@ -2270,36 +2829,37 @@ public class SharedLogic {
 			} else {
 				taskFilterCondition = " WHERE ";
 			}
-			taskFilterCondition += "task_status = '" + (mode.equalsIgnoreCase("active") ? "Active" : "Inactive") + "'";
+			taskFilterCondition += "task_status = ?";
+			params.add(mode.equalsIgnoreCase("active") ? "Active" : "Inactive");
 		}
 		String baseQuery =
 			"WITH pre_filtered_tasks AS ( " +
-			"   SELECT * FROM " + schema + ".tasks " + taskFilterCondition +
+			"   SELECT * FROM " + getTDMDBSchema() + ".tasks " + taskFilterCondition +
 			"), " +
 			"task_execution AS ( " +
-			"   SELECT task_id, 1 AS executioncount FROM " + schema + ".task_execution_summary " +
+			"   SELECT task_id, 1 AS executioncount FROM " + getTDMDBSchema() + ".task_execution_summary " +
 			"   WHERE UPPER(execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
 			"), " +
 			"task_references AS ( " +
-			"   SELECT DISTINCT task_id, 1 AS refcount FROM " + schema + ".task_ref_tables " +
+			"   SELECT DISTINCT task_id, 1 AS refcount FROM " + getTDMDBSchema() + ".task_ref_tables " +
 			"), " +
 			"task_processes AS ( " +
 			"   SELECT task_id, STRING_AGG(process_name::TEXT, ',') AS processnames " +
-			"   FROM " + schema + ".TASKS_EXE_PROCESS where status='Active' GROUP BY task_id " +
+			"   FROM " + getTDMDBSchema() + ".TASKS_EXE_PROCESS where status='Active' GROUP BY task_id " +
 			") " +
 			"SELECT t.*, e.*, be.*, eo.user_name AS owner, eo.user_type AS owner_type, " +
 			"eru.username AS tester, eru.user_type AS tester_type, eru.role_id AS role_id_orig, " +
 			"t.sync_mode, te.executioncount, tr.refcount, tp.processnames " +
 			"FROM pre_filtered_tasks t " +
-			"LEFT JOIN " + schema + ".environments e ON t.environment_id = e.environment_id " +
-			"LEFT JOIN " + schema + ".business_entities be ON t.be_id = be.be_id " +
-			"LEFT JOIN " + schema + ".environment_owners eo ON t.environment_id = eo.environment_id " +
-			"LEFT JOIN " + schema + ".environment_role_users eru ON t.environment_id = eru.environment_id " +
+			"LEFT JOIN " + getTDMDBSchema() + ".environments e ON t.environment_id = e.environment_id " +
+			"LEFT JOIN " + getTDMDBSchema() + ".business_entities be ON t.be_id = be.be_id " +
+			"LEFT JOIN " + getTDMDBSchema() + ".environment_owners eo ON t.environment_id = eo.environment_id " +
+			"LEFT JOIN " + getTDMDBSchema() + ".environment_role_users eru ON t.environment_id = eru.environment_id " +
 			"LEFT JOIN task_execution te ON t.task_id = te.task_id " +
 			"LEFT JOIN task_references tr ON t.task_id = tr.task_id " +
 			"LEFT JOIN task_processes tp ON t.task_id = tp.task_id " +
-			"ORDER BY t.task_id DESC";	
-		return db(TDM).fetch(baseQuery);
+			"ORDER BY t.task_id DESC";
+		return db(TDM).fetch(baseQuery, params.toArray());
 	}
 	
 	
@@ -2308,8 +2868,8 @@ public static List<HashMap<String, Object>> fnGetExecutionProcesses (Long be_id,
         try {
 			List<HashMap<String, Object>> result = new ArrayList<>();
 			if (be_id != -1) {
-				String sql = "SELECT * FROM " + schema + ".TDM_BE_EXE_PROCESS  WHERE process_type= '" + process_type + "' AND be_id = " + be_id;
-				Db.Rows rows = db(TDM).fetch(sql);
+				String sql = "SELECT * FROM " + getTDMDBSchema() + ".TDM_BE_EXE_PROCESS  WHERE process_type= ? AND be_id = ?";
+				Db.Rows rows = db(TDM).fetch(sql, process_type, be_id);
 
 				
 				HashMap<String, Object> process;
@@ -2557,9 +3117,9 @@ currentEntity.put("children", childrenRecs);
                 "CASE WHEN t.execution_status <> 'completed' THEN 'failed' " +
                      "WHEN t.execution_status IS NULL THEN 'completed' " +
                      "ELSE t.execution_status END AS luStatus " +
-                "from " + TDMDB_SCHEMA + ".task_execution_entities t where lu_name= ? and target_entity_id = ? and task_execution_id= ?";
+                "from " + getTDMDBSchema() + ".task_execution_entities t where lu_name= ? and target_entity_id = ? and task_execution_id= ?";
     
-        String sqlGetParent = "select parent_lu_name, parent_target_entity_id target_parent_id from " + TDMDB_SCHEMA + ".task_execution_entities " +
+        String sqlGetParent = "select parent_lu_name, parent_target_entity_id target_parent_id from " + getTDMDBSchema() + ".task_execution_entities " +
                 "where lu_name= ? and target_entity_id = ? and task_execution_id= ? limit 1";
     
         return fnGetParentHierarchy(i_luName, i_targetEntityID, i_children, sqlGetEntityData, sqlGetParent, i_taskExecutionID);
@@ -2582,9 +3142,9 @@ currentEntity.put("children", childrenRecs);
             "execution_status entityStatus, parent_lu_name parentLuName, parent_target_entity_id parentTargetId, " +
             "CASE WHEN t.execution_status <> 'completed' THEN 'failed' " +
             "WHEN t.execution_status IS NULL THEN 'completed' ELSE t.execution_status END AS luStatus " +
-            "FROM " + TDMDB_SCHEMA + ".task_execution_entities t WHERE lu_name= ? AND target_entity_id = ? AND task_execution_id = ?";
+            "FROM " + getTDMDBSchema() + ".task_execution_entities t WHERE lu_name= ? AND target_entity_id = ? AND task_execution_id = ?";
 
-        String sqlGetChildren = "SELECT lu_name, target_entity_id FROM " + TDMDB_SCHEMA + ".task_execution_entities " +
+        String sqlGetChildren = "SELECT lu_name, target_entity_id FROM " + getTDMDBSchema() + ".task_execution_entities " +
             "WHERE parent_lu_name= ? AND parent_target_entity_id = ? AND task_execution_id = ?";
         return fnGetChildHierarchy(i_luName, i_targetEntityID, i_taskExecutionID,sqlGetEntityData,sqlGetChildren );
 
@@ -2600,8 +3160,8 @@ currentEntity.put("children", childrenRecs);
     }
 
     public static Map<String, Object> fnGetTaskExeStatsForEntityFromTDMDB(String taskExecutionId, String luName, String targetId) throws Exception {
-        String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, execution_status luStatus from " + TDMDB_SCHEMA +".task_execution_entities where lu_name <> ? and target_entity_id = ? and entity_id = ? and task_execution_id=?";
-        String sqlGetParent = "select parent_lu_name, parent_target_entity_id target_parent_id from " + TDMDB_SCHEMA + ".task_execution_entities where lu_name= ? and target_entity_id = ? and parent_lu_name <> '' and task_execution_id=?";
+        String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, execution_status luStatus from " + getTDMDBSchema() +".task_execution_entities where lu_name <> ? and target_entity_id = ? and entity_id = ? and task_execution_id=?";
+        String sqlGetParent = "select parent_lu_name, parent_target_entity_id target_parent_id from " + getTDMDBSchema() + ".task_execution_entities where lu_name= ? and target_entity_id = ? and parent_lu_name <> '' and task_execution_id=?";
         return fnGetTaskExeStatsForEntity(taskExecutionId, luName, targetId, true,sqlGetEntityData,sqlGetParent);
 
     }

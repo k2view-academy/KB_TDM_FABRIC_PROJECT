@@ -251,6 +251,24 @@ stages:
             const: true
             schema: boolean
             mandatory: false
+  Populate Masking Report Info:
+    remark: Adds the number of records masked for this instance to the TDM DB table
+      task_execution_masking_info
+    transactional: false
+    actors:
+      Populate Task Execution Masking Info:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnPopulateTaskExecutionMaskingInfo
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
   Get Execution Mode:
     transactional: false
     actors:

@@ -369,7 +369,7 @@ stages:
             const: fabric
           sql:
             const: batch TDM_TableLevel.(${instanceList})  FABRIC_COMMAND='${@command}'
-              WITH ASYNC='true' ${@affinityStr} ${@maxWorkersStr} BATCH_ID_PREFIX='${@taskTitle}';
+              WITH ASYNC='true' ${@affinityStr} ${@maxWorkersStr} BATCH_ID_PREFIX=${taskTitle};
           command:
             link: Broadway Command/string
             schema: string

@@ -8,7 +8,7 @@ import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 
 
 @SuppressWarnings({"DefaultAnnotationParam"})
@@ -30,8 +30,8 @@ public class Logic extends UserCode {
 			// TDM 7.1- performance improvement- remove the to_char from the version_datetime in the WHERE statement
 			String sql = "SELECT rel.source_env, rel.lu_type_1, rel.lu_type_2, rel.lu_type1_eid, rel.lu_type2_eid, rel.creation_date, rel.version_task_execution_id, " +
 					"parent.target_entity_id as parent_id, child.target_entity_id as child_id " +
-					"FROM " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid rel, " + TDMDB_SCHEMA + ".task_execution_entities parent, " +
-					TDMDB_SCHEMA + ".task_execution_entities child " +
+					"FROM " + getTDMDBSchema() + ".tdm_lu_type_relation_eid rel, " + getTDMDBSchema() + ".task_execution_entities parent, " +
+					getTDMDBSchema() + ".task_execution_entities child " +
 					"where parent.task_execution_id = ? and parent.lu_name = rel.lu_type_1 " +
 					"and parent.source_env = rel.source_env and parent.iid = rel.lu_type1_eid " +
 					"and parent.version_task_execution_id = rel.version_task_execution_id " +
@@ -112,7 +112,6 @@ public class Logic extends UserCode {
 		String sql = "SELECT TASK_TYPE, REPLACE_SEQUENCES, CLONE_IND FROM TASKS";
 		String taskType = "";
 		String replaceSeq = "false";
-		Db.Rows rootList = null;
         String cloneInd = "";
 
 		Db.Row taskRow = ludb().fetch(sql).firstRow();
@@ -157,17 +156,16 @@ public class Logic extends UserCode {
 				//log.info("fnEncTaskExecutionLinkEntities - Running Step 1 query: " + insertChildSql);
 				//log.info("fnEncTaskExecutionLinkEntities - Before execute insertChildSql: " + insertChildSql);
 				fabric().execute(insertChildSql);
-				String getRootLus = "select lu_name from " + TDMDB_SCHEMA + ".task_execution_list l, " +
-						TDMDB_SCHEMA + ".product_logical_units p where l.lu_id = p.lu_id and l.task_execution_id = ? " +
+				String getRootLus = "select lu_name from " + getTDMDBSchema() + ".task_execution_list l, " +
+						getTDMDBSchema() + ".product_logical_units p where l.lu_id = p.lu_id and l.task_execution_id = ? " +
 						"and parent_lu_id is null and l.lu_id != 0";
-				rootList = db(TDM).fetch(getRootLus, ludb().fetch("SELECT IID('TDM')").firstValue());
-
-				String rootListIn = "";
-				String comma = "";
-				for(Db.Row root : rootList) {
-					rootListIn += comma + "'" + root.get("lu_name") + "'";
-					comma = ", ";
+				java.util.List<Object> rootLuNames = new java.util.ArrayList<>();
+				try (Db.Rows rootList = db(TDM).fetch(getRootLus, ludb().fetch("SELECT IID('TDM')").firstValue())) {
+					for(Db.Row root : rootList) {
+						rootLuNames.add(root.get("lu_name"));
+					}
 				}
+				String rootListIn = String.join(",", java.util.Collections.nCopies(rootLuNames.size(), "?"));
 				String insertRootSql = "insert or replace into task_execution_link_entities (LU_NAME,TARGET_ENTITY_ID,ENTITY_ID,BE_ROOT_ENTITY_ID, " +
 						"TARGET_ROOT_ENTITY_ID,EXECUTION_STATUS,ROOT_LU_NAME,VERSION_TASK_EXECUTION_ID,IID,PARENT_LU_NAME,PARENT_ENTITY_ID,TARGET_PARENT_ID) " +
 						"select t.lu_name, t.target_entity_id, t.entity_id, t.iid,t.target_entity_id, t.execution_status, t.lu_name, " +
@@ -179,7 +177,7 @@ public class Logic extends UserCode {
 				//Step 3 - Add root entities to target table
 				//log.info("fnEncTaskExecutionLinkEntities - Running step 3 query : " + insertRootSql);
 				//log.info("fnEncTaskExecutionLinkEntities - Before execute insertRootSql: " + insertRootSql);
-				fabric().execute(insertRootSql);
+				fabric().execute(insertRootSql, rootLuNames.toArray());
 				//log.info("fnEncTaskExecutionLinkEntities - after execute insertChildSql");
 			} catch (Exception e) {
 				log.error("fnEncTaskExecutionLinkEntities failed with exception: " + e.getMessage(), e);

@@ -185,7 +185,6 @@ stages:
             mandatory: false
             createdBy: table
           batch_id:
-            external: batchId
             schema: string
             mandatory: false
             createdBy: table

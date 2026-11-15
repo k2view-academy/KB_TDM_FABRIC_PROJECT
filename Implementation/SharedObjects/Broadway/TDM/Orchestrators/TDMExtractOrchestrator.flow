@@ -176,6 +176,62 @@ stages:
             const: null
             external: syncMode
             default: false
+      Get MASKING_REPORT_FLAG:
+        parent: FabricSetRead
+        in:
+          key:
+            const: MASKING_REPORT_FLAG
+            default: false
+  Set LU Type for Masking Report:
+    actors:
+      Set Masking Globals:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SetMaskingGlobals
+          TDM_USING_CATALOG_SEQUENCES:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          TDM_SEQ_REPORT:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          enable_sequences:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          TDM_TASK_EXE_ID:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          TDM_SOURCE_ENVIRONMENT_NAME:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          TARGET_ENTITY_ID:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          LU_TYPE:
+            external: luName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          ROOT_TABLE_NAME:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          ROOT_COLUMN_NAME:
+            schema: any
+            mandatory: false
+            createdBy: flowName
+          MASKING_REPORT_FLAG:
+            link: Get MASKING_REPORT_FLAG/result
+            schema: string
+            mandatory: false
+            createdBy: flowName
   Get Synthetic Entities:
     actors:
       Error Handler:
@@ -238,7 +294,7 @@ stages:
             const: PopulateTaskExecutionStatsDetailed
           luName:
             external: luName
-            schema: any
+            schema: string
             mandatory: false
       Format Current Time:
         parent: DateFormat
@@ -305,6 +361,24 @@ stages:
           handleChildren:
             const: true
             schema: boolean
+            mandatory: false
+  Populate Masking Report Info:
+    remark: Adds the number of records masked for this instance to the TDM DB table
+      task_execution_masking_info
+    transactional: false
+    actors:
+      Populate Task Execution Masking Info:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnPopulateTaskExecutionMaskingInfo
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
             mandatory: false
   Get Execution Mode:
     actors:

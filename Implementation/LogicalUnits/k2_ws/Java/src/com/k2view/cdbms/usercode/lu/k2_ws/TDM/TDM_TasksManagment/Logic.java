@@ -1,8 +1,9 @@
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_TasksManagment;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.existAnotherMapping;
+import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.fnAssignTaskToTaskGroups;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.fnGetPermissionsForTask;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getAdminTasks;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.getFavoriteThenByDateComparator;
@@ -11,7 +12,9 @@ import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogi
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.isAllowedToCreate;
 import static com.k2view.cdbms.usercode.common.TDM.TaskManagmentUtils.SharedLogic.taskGroupExist;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.INTERNAL_ONLY_OVERRIDE_KEYS;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.reduceGenerateDataParams;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetSessionUserName;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserRoles;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
@@ -47,6 +50,7 @@ import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
 import com.k2view.fabric.api.endpoint.Endpoint.webService;
 import com.k2view.fabric.common.Json;
 
+@SuppressWarnings({ "DefaultAnnotationParam", "unchecked" })
 public class Logic extends WebServiceUserCode {
 
 	private static final String favorite_item_type = "Task";
@@ -102,171 +106,22 @@ public class Logic extends WebServiceUserCode {
 				         (t.task_override_fields -> 'selection_method' ->> 'is_editable')::boolean AS selection_method_editable
 				     FROM
 				         """
-				+ TDMDB_SCHEMA + """
+				+ getTDMDBSchema() + """
 						.task_group_mapping tgm
 						    INNER JOIN
-						        """ + TDMDB_SCHEMA + """
+						        """ + getTDMDBSchema() + """
 						.tasks t ON tgm.task_id = t.task_id
 						    INNER JOIN
-						        """ + TDMDB_SCHEMA + """
+						        """ + getTDMDBSchema() + """
 						.task_groups tg ON tgm.task_group_id = tg.task_group_id
 						    LEFT JOIN
-						        """ + TDMDB_SCHEMA + """
+						        """ + getTDMDBSchema() + """
 						.task_user_favorites tuf ON (
 						            t.task_id = tuf.favorite_item_id
 						            AND tuf.favorite_item_type = 'Task'
 						            AND tuf.user_id = ?
 						        )
 						    WHERE 1=1""";
-	}
-
-	@desc("Gets relevant Tasks for assign, if the user is admin get all otherwise get the created by user tasks"
-			+ " also checking for not exist mapping for the task group id")
-	@webService(path = "getTasksForAssign", verb = {
-			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
-					Produce.JSON })
-	@resultMetaData(mediaType = Produce.JSON, example = """
-			{
-				"result": [
-				  {
-					"task_id": 5,
-					"task_title": "delete"
-				  },
-				  {
-					"task_id": 8,
-					"task_title": "RESERVE ONLY"
-				  },
-				  {
-					"task_id": 4,
-					"task_title": "tables"
-				  }
-				],
-				"errorCode": "SUCCESS",
-				"message": null
-			  }
-				""")
-
-	public static Object wsGetTasksForAssign(
-			@param(description = "Task group ID to filter out already-assigned tasks", required = true) long task_group_id)
-			throws Exception {
-		Map<String, Object> response = new LinkedHashMap<>();
-		String errorCode = "";
-		String message = null;
-
-		String permissionGroup = fnGetUserPermissionGroup("");
-
-		StringBuilder sql = new StringBuilder("""
-				SELECT t.task_id, t.task_title
-				FROM
-				 """ + TDMDB_SCHEMA + """
-				.tasks t
-				 WHERE NOT EXISTS (
-				     SELECT 1
-				     FROM
-				  """ + TDMDB_SCHEMA + """
-							.task_group_mapping tgm
-				        WHERE tgm.task_id = t.task_id
-				        AND tgm.task_group_id = ?
-				    )
-				    AND t.task_status = 'Active'
-				""");
-
-		if (!"admin".equalsIgnoreCase(permissionGroup)) {
-			sql.append(" AND split_part(t.task_created_by, '##', 1) = ?");
-		}
-
-		try {
-			List<Object> params = new ArrayList<>();
-			params.add(task_group_id);
-
-			if (!"admin".equalsIgnoreCase(permissionGroup)) {
-				params.add(sessionUser().name());
-			}
-
-			Db.Rows rows = db(TDM).fetch(sql.toString(), params.toArray());
-
-			List<Map<String, Object>> result = new ArrayList<>();
-			for (Db.Row row : rows) {
-				Map<String, Object> taskInfo = new LinkedHashMap<>();
-				long taskID = Long.parseLong(row.get("task_id").toString());
-				taskInfo.put("task_id", taskID);
-				taskInfo.put("task_title", row.get("task_title"));
-				result.add(taskInfo);
-			}
-
-			errorCode = "SUCCESS";
-			response.put("result", result);
-			if (rows != null) {
-				rows.close();
-			}
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
-		}
-
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
-	}
-
-	@desc("""
-			Assign task to a task groups.
-			The following parameters are mandatory:
-			taskID, task_group_id
-			Example of a request body:
-			{"taskID": 2,"task_group_id": [1]}
-						""")
-	@webService(path = "assignTaskToTaskGroups", verb = {
-			MethodType.POST }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
-					Produce.JSON })
-	@resultMetaData(mediaType = Produce.JSON, example = """
-
-			""")
-	public static Object wsAssignTaskToTaskGroups(
-			@param(description = "Task id.", required = true) long taskID,
-			@param(description = "Task group ids.", required = true) List<Long> taskGroupIds,
-			@param(description = "reAssign, if true first delete the current mapping for the task (relevant for update task).", required = true) boolean reAssign)
-			throws Exception {
-		Map<String, Object> response = new HashMap<>();
-		String message = null;
-		String errorCode = "";
-
-		if (reAssign) {
-			String sql = "DELETE FROM " + TDMDB_SCHEMA + ".task_group_mapping WHERE task_id = " + taskID;
-			db(TDM).execute(sql);
-		}
-
-		String username = sessionUser().name();
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-
-		String insertSQL = "INSERT INTO " + TDMDB_SCHEMA + ".task_group_mapping" +
-				"(task_id, task_group_id, creation_date, created_by) " +
-				"VALUES (?, ?, ?, ?)";
-		try {
-			for (long task_group_id : taskGroupIds) {
-				if (mappingAlreadyExist(task_group_id, taskID)) {
-					continue;
-				}
-				if (!taskGroupExist(task_group_id)) {
-					return wrapWebServiceResults("FAILED", "task group id does not exist", null);
-				}
-				db(TDM).execute(insertSQL, taskID, task_group_id, now, username);
-			}
-
-			errorCode = "SUCCESS";
-
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
-		}
-
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
 	}
 
 	@desc("""
@@ -291,7 +146,7 @@ public class Logic extends WebServiceUserCode {
 		String status = "";
 		String username = sessionUser().name();
 		boolean moveToGeneral = false;
-		String deleteSQL = "DELETE FROM " + TDMDB_SCHEMA + ".task_group_mapping" +
+		String deleteSQL = "DELETE FROM " + getTDMDBSchema() + ".task_group_mapping" +
 				" WHERE task_id = ? AND task_group_id = ?";
 
 		if (!isAllowedToCreate(username)) {
@@ -348,9 +203,9 @@ public class Logic extends WebServiceUserCode {
 
 		try {
 			String sql = "SELECT tg.task_group_id, tg.task_group_name " +
-					"FROM " + TDMDB_SCHEMA + ".task_groups tg " +
+					"FROM " + getTDMDBSchema() + ".task_groups tg " +
 					"WHERE NOT EXISTS (" +
-					"    SELECT 1 FROM " + TDMDB_SCHEMA + ".task_group_mapping tgm " +
+					"    SELECT 1 FROM " + getTDMDBSchema() + ".task_group_mapping tgm " +
 					"    WHERE tgm.task_group_id = tg.task_group_id AND tgm.task_id = ?" +
 					")";
 
@@ -410,7 +265,7 @@ public class Logic extends WebServiceUserCode {
 			}
 
 			try {
-				wsAssignTaskToTaskGroups(taskID, toTaskGroups, false);
+				fnAssignTaskToTaskGroups(taskID, toTaskGroups, false);
 
 				if (!keepCurrentGroup) {
 					wsDeleteTaskFromGroup(taskID, fromTaskGroup);
@@ -432,15 +287,6 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	private static boolean mappingAlreadyExist(long toTaskGroup, long taskID) throws SQLException {
-		String sql = "SELECT 1 "
-				+ "FROM " + TDMDB_SCHEMA + ".task_group_mapping tgm "
-				+ "WHERE " + " tgm.task_group_id = ? AND tgm.task_id = ?";
-
-		Db.Row row = db(TDM).fetch(sql, toTaskGroup, taskID).firstRow();
-		return !row.isEmpty();
-	}
-
 	@desc("Marks a task as a favourite for the current user.")
 	@webService(path = "markTaskFavorite", verb = {
 			MethodType.POST }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
@@ -457,7 +303,7 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String status = "";
-		String insertSQL = "INSERT INTO " + TDMDB_SCHEMA + ".task_user_favorites" +
+		String insertSQL = "INSERT INTO " + getTDMDBSchema() + ".task_user_favorites" +
 				"(user_id, favorite_item_type, favorite_item_id) " +
 				"VALUES (?, ?, ?)";
 		String username = sessionUser().name();
@@ -498,7 +344,7 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String status = "";
-		String sql = "DELETE FROM " + TDMDB_SCHEMA + ".task_user_favorites" +
+		String sql = "DELETE FROM " + getTDMDBSchema() + ".task_user_favorites" +
 				" WHERE user_id= ? AND favorite_item_type = ? AND favorite_item_id = ?";
 		String username = sessionUser().name();
 
@@ -527,6 +373,8 @@ public class Logic extends WebServiceUserCode {
 			----------
 			text             Free-text search. Matches against task title, task description,
 			                 task group name, and task group description (case-insensitive).
+			                 If the text is numeric, tasks whose task_id starts with it are also
+			                 returned (e.g. 12 -> 12, 121, 123, 1200).
 
 			taskTypes        Filter by task type. Multiple values are treated as a logical OR (any match included).
 			                 Valid values:
@@ -577,6 +425,8 @@ public class Logic extends WebServiceUserCode {
 			                   tables   - Table-level tasks only
 			                   both     - Entity tasks that also include reference tables
 
+			taskIds          Filter by task ID. Multiple values = OR (any match included).
+
 			Example request body:
 			{
 			  "text": "GENERAL",
@@ -587,7 +437,8 @@ public class Logic extends WebServiceUserCode {
 			  "selectionMethods": ["ENTITY_LIST", "RANDOM_LIST"],
 			  "creator": "ZIV",
 			  "isScheduled": false,
-			  "dataType": "entities"
+			  "dataType": "entities",
+			  "taskIds": [9]
 			}
 				""")
 	@webService(path = "search", verb = {
@@ -642,15 +493,15 @@ public class Logic extends WebServiceUserCode {
 	public static Object wsSearch(String text, DisplayTaskType[] taskTypes,
 			Long[] sourceEnvironmentIds, Long[] targetEnvironmentIds,
 			Long[] beIds, SelectionMethodFilter[] selectionMethods,
-			String creator, Boolean isScheduled, ProcessedData dataType)
+			String creator, Boolean isScheduled, ProcessedData dataType, Long[] taskIds)
 			throws Exception {
 		Map<String, Object> response = new LinkedHashMap<>();
 		String errorCode = "";
 		String message = null;
 		String sql = buildSearchQuery(text, taskTypes, sourceEnvironmentIds, targetEnvironmentIds,
-				beIds, selectionMethods, creator, isScheduled, dataType);
+				beIds, selectionMethods, creator, isScheduled, dataType, taskIds);
 		Object[] params = createParams(text, taskTypes, sourceEnvironmentIds, targetEnvironmentIds,
-				beIds, selectionMethods, creator);
+				beIds, selectionMethods, creator, taskIds);
 		try {
 			// Pass 1: collect search candidates.
 			// A task may be mapped to more than one group, so the join can return the same
@@ -660,7 +511,7 @@ public class Logic extends WebServiceUserCode {
 			List<long[]> taskGroupAssignments = new ArrayList<>(); // [taskId, groupId] per row
 			Map<Long, String> groupIdToName = new HashMap<>();
 			Set<Long> uniqueGroupIds = new HashSet<>();
-			String userName = sessionUser().name();
+			String userName = fnGetSessionUserName();
 
 			for (Db.Row row : db(TDM).fetch(sql, params)) {
 				long taskId = Long.parseLong(row.get("task_id").toString());
@@ -700,10 +551,8 @@ public class Logic extends WebServiceUserCode {
 				List<Map<String, Object>> allUserEnvsTypes = fnGetUserEnvs(userName);
 				userTargetEnvIds = new HashSet<>();
 				userSourceEnvIds = new HashSet<>();
-				for (Map<String, Object> envType : allUserEnvsTypes) {
-					@SuppressWarnings("unchecked")
-					List<Map<String, Object>> srcEnvs = (List<Map<String, Object>>) envType.get("source environments");
-					@SuppressWarnings("unchecked")
+				for (Map<String, Object> envType : allUserEnvsTypes) {					
+					List<Map<String, Object>> srcEnvs = (List<Map<String, Object>>) envType.get("source environments");					
 					List<Map<String, Object>> tgtEnvs = (List<Map<String, Object>>) envType.get("target environments");
 					if (srcEnvs != null)
 						for (Map<String, Object> e : srcEnvs)
@@ -820,12 +669,15 @@ public class Logic extends WebServiceUserCode {
 
 	private static Object[] createParams(String text, DisplayTaskType[] taskTypes,
 			Long[] sourceEnvironmentIds, Long[] targetEnvironmentIds,
-			Long[] beIds, SelectionMethodFilter[] selectionMethods, String creator) {
+			Long[] beIds, SelectionMethodFilter[] selectionMethods, String creator, Long[] taskIds) {
 		List<Object> params = new LinkedList<>();
-		params.add(sessionUser().name()); // favorites LEFT JOIN
+		params.add(fnGetSessionUserName()); // favorites LEFT JOIN
 
 		if (text != null && !text.isEmpty()) {
 			params.addAll(Collections.nCopies(4, text));
+			if (isNumericText(text)) {
+				params.add(text.trim()); // task_id prefix match
+			}
 		}
 		if (sourceEnvironmentIds != null && sourceEnvironmentIds.length > 0) {
 			params.addAll(Arrays.asList(sourceEnvironmentIds));
@@ -843,6 +695,9 @@ public class Logic extends WebServiceUserCode {
 		if (creator != null && !creator.isEmpty()) {
 			params.add("%" + creator + "%");
 		}
+		if (taskIds != null && taskIds.length > 0) {
+			params.addAll(Arrays.asList(taskIds));
+		}
 		// Task type params last: they bind to the outer subquery WHERE, after all inner
 		// query params
 		if (taskTypes != null && taskTypes.length > 0) {
@@ -852,10 +707,14 @@ public class Logic extends WebServiceUserCode {
 		return params.toArray();
 	}
 
+	private static boolean isNumericText(String text) {
+		return text != null && text.trim().matches("\\d+");
+	}
+
 	private static String buildSearchQuery(String text, DisplayTaskType[] taskTypes,
 			Long[] sourceEnvironmentIds, Long[] targetEnvironmentIds,
 			Long[] beIds, SelectionMethodFilter[] selectionMethods,
-			String creator, Boolean isScheduled, ProcessedData dataType) {
+			String creator, Boolean isScheduled, ProcessedData dataType, Long[] taskIds) {
 		StringBuilder sqlBuilder = new StringBuilder(baseQuery());
 
 		if (text != null && !text.isEmpty()) {
@@ -863,8 +722,13 @@ public class Logic extends WebServiceUserCode {
 						AND (t.task_title ILIKE '%%' || ? || '%%' OR
 							 t.task_description ILIKE '%%' || ? || '%%' OR
 							 tg.task_group_name ILIKE '%%' || ? || '%%' OR
-							 tg.task_group_desc ILIKE '%%' || ? || '%%')
+							 tg.task_group_desc ILIKE '%%' || ? || '%%'
 					""");
+			// Numeric text also matches task IDs starting with it (12 -> 12, 121, 1200...)
+			if (isNumericText(text)) {
+				sqlBuilder.append(" OR CAST(t.task_id AS TEXT) LIKE ? || '%'");
+			}
+			sqlBuilder.append(")\n");
 		}
 		// task_type_filter applied via subquery wrapper below — not inlined here
 		if (sourceEnvironmentIds != null && sourceEnvironmentIds.length > 0) {
@@ -911,6 +775,9 @@ public class Logic extends WebServiceUserCode {
 		if (creator != null && !creator.isEmpty()) {
 			sqlBuilder.append(" AND t.task_created_by ILIKE ?");
 		}
+		if (taskIds != null && taskIds.length > 0) {
+			sqlBuilder.append(" AND t.task_id IN (" + generatePlaceholders(taskIds.length) + ")");
+		}
 
 		if (isScheduled != null) {
 			if (isScheduled) {
@@ -948,7 +815,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	private static String existRefTablesQuery() {
-		return "select 1 from " + TDMDB_SCHEMA + ".task_ref_tables trt where trt.task_id = t.task_id";
+		return "select 1 from " + getTDMDBSchema() + ".task_ref_tables trt where trt.task_id = t.task_id";
 	}
 
 	private static String generatePlaceholders(int count) {
@@ -956,12 +823,11 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	private static boolean checkTesterHasRandomPerm(List<Map<String, Object>> allUserEnvsTypes) throws Exception {
-		String sql = "SELECT allowed_random_entity_selection FROM " + TDMDB_SCHEMA +
+		String sql = "SELECT allowed_random_entity_selection FROM " + getTDMDBSchema() +
 				".environment_roles WHERE environment_id = ? AND role_id = ? AND role_status = 'Active' LIMIT 1";
 		Set<String> checkedPairs = new HashSet<>();
 		for (Map<String, Object> envType : allUserEnvsTypes) {
-			for (String key : new String[] { "source environments", "target environments" }) {
-				@SuppressWarnings("unchecked")
+			for (String key : new String[] { "source environments", "target environments" }) {				
 				List<Map<String, Object>> envs = (List<Map<String, Object>>) envType.get(key);
 				if (envs == null)
 					continue;
@@ -970,10 +836,12 @@ public class Logic extends WebServiceUserCode {
 					String roleId = String.valueOf(env.get("role_id"));
 					if (!checkedPairs.add(envId + ":" + roleId))
 						continue;
-					for (Db.Row row : db(TDM).fetch(sql, envId, roleId)) {
-						Object val = row.get("allowed_random_entity_selection");
-						if (val != null && Boolean.parseBoolean(val.toString()))
-							return true;
+					try (Db.Rows rows = db(TDM).fetch(sql, envId, roleId)) {
+						for (Db.Row row : rows) {
+							Object val = row.get("allowed_random_entity_selection");
+							if (val != null && Boolean.parseBoolean(val.toString()))
+								return true;
+						}
 					}
 				}
 			}
@@ -1026,195 +894,6 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	@desc("""
-			insert a new entries for task_exe_permissions
-			permissions can be populated by Me,My user group,ALL, fabric role, or user ID
-			""")
-	@webService(path = "taskExecutionPermission/insertTaskExecution", verb = {
-			MethodType.POST }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
-					Produce.JSON })
-	@resultMetaData(mediaType = Produce.JSON, example = """
-			{
-				"errorCode": "SUCCESS",
-				"message": null
-			}
-				""")
-	public static Object wsInsertTaskExecution(
-			@param(description = "Task id", required = true) long task_id,
-			@param(description = "List of permissions. Each item can be a User ID, Fabric Role, or one of the special keywords: ALL, ME, or MY_GROUP.", required = true) List<Map<String, String>> permissions)
-			throws Exception {
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
-		String errorCode = "";
-
-		String insertSQL = "INSERT INTO " + TDMDB_SCHEMA + ".task_exe_permissions" +
-				"(task_id, permitted_user, user_type, creation_date, created_by) " +
-				"VALUES (?, ?, ?, ?, ?)";
-
-		String username = sessionUser().name();
-		String roles = fnGetUserRoles(username);
-		String[] currentUserRoles = roles != null ? roles.split(TDM_PARAMETERS_SEPARATOR) : new String[0];
-		String createdBy = new StringBuilder().append(username).append("##").append(roles).toString();
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-
-		try {
-			List<Map<String, String>> validPermissions = new ArrayList<>();
-			if (permissions != null) {
-				for (Map<String, String> perm : permissions) {
-					if (perm == null)
-						continue;
-					String type = perm.getOrDefault("type", "").trim().toUpperCase();
-					String value = perm.getOrDefault("value", "").trim();
-					if (!type.isEmpty() && !value.isEmpty()) {
-						validPermissions.add(Map.of("type", type, "value", value));
-					}
-				}
-			}
-
-			boolean hasAll = validPermissions.stream()
-					.anyMatch(p -> "ID".equals(p.get("type")) && "ALL".equalsIgnoreCase(p.get("value")));
-
-			if (hasAll) {
-				db(TDM).execute(insertSQL, task_id, "ALL", "ID", now, createdBy);
-			} else {
-				Set<String> inserted = new HashSet<>();
-				for (Map<String, String> perm : validPermissions) {
-					String type = perm.get("type");
-					String value = perm.get("value");
-
-					if ("ID".equals(type)) {
-						String resolvedValue = "ME".equalsIgnoreCase(value) ? username : value;
-						if (inserted.add(resolvedValue)) {
-							db(TDM).execute(insertSQL, task_id, resolvedValue, "ID", now, createdBy);
-						}
-					} else if ("GROUP".equals(type)) {
-						if ("MY_GROUP".equalsIgnoreCase(value)) {
-							for (String role : currentUserRoles) {
-								if (inserted.add(role)) {
-									db(TDM).execute(insertSQL, task_id, role, "GROUP", now, createdBy);
-								}
-							}
-						} else {
-							if (inserted.add(value)) {
-								db(TDM).execute(insertSQL, task_id, value, "GROUP", now, createdBy);
-							}
-						}
-					}
-				}
-			}
-
-			errorCode = "SUCCESS";
-
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = e.getMessage();
-			log.error(message);
-		}
-
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
-	}
-
-	@desc("""
-			update task_exe_permissions by first delete and then
-				insert a new entries for task_exe_permissions
-				permissions can be populated by me,My user group,ALL, fabric role, or user ID
-				""")
-	@webService(path = "taskExecutionPermission/updateTaskExecution", verb = {
-			MethodType.POST }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
-					Produce.JSON })
-	@resultMetaData(mediaType = Produce.JSON, example = """
-			{
-				"errorCode": "SUCCESS",
-				"message": null
-			}
-				""")
-	public static Object wsUpdateTaskExecution(
-			@param(description = "Task id", required = true) long task_id,
-			@param(description = "List of permissions. Each item can be a User ID, Fabric Role, or one of the special keywords: ALL, ME, or MY_GROUP.", required = true) List<Map<String, String>> permissions)
-			throws Exception {
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
-		String errorCode = "";
-
-		String deleteSQL = "DELETE FROM " + TDMDB_SCHEMA + ".task_exe_permissions WHERE task_id = ?";
-
-		try {
-			// Delete existing permissions for the task
-			db(TDM).execute(deleteSQL, task_id);
-
-			wsInsertTaskExecution(task_id, permissions);
-
-			errorCode = "SUCCESS";
-			message = "Task execution permission updated successfully.";
-
-		} catch (Exception e) {
-			errorCode = "FAILED";
-			message = "Error updating task execution permission: " + e.getMessage();
-			log.error(message);
-		}
-		response.put("errorCode", errorCode);
-		response.put("message", message);
-		return response;
-	}
-
-	@desc("Gets execution permission for task id")
-	@webService(path = "taskExecutionPermission/getTaskExecution", verb = {
-			MethodType.GET }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
-					Produce.JSON })
-	@resultMetaData(mediaType = Produce.JSON, example = """
-			{
-				"message": null,
-				"permittedUsers": [
-				  {
-					"permission_type": "Me (creator)",
-					"permitted_user": "ziv.genat@k2view.com"
-				  },
-				  {
-					"permission_type": "My user group",
-					"permitted_user": "k2view_k2v_user"
-				  }
-				],
-				"status": "SUCCESS"
-			  }
-				""")
-	public static Map<String, Object> wsLoadTaskExecution(
-			@param(description = "Task ID", required = true) long task_id)
-			throws Exception {
-		Map<String, Object> response = new HashMap<>();
-		String message = null;
-		String status = "SUCCESS";
-		List<Map<String, String>> permittedUsers = new ArrayList<>(); // List of Map
-
-		String selectSQL = "SELECT permitted_user FROM " + TDMDB_SCHEMA + ".task_exe_permissions WHERE task_id = ?";
-
-		try {
-			Rows results = db(TDM).fetch(selectSQL, task_id);
-			if (results != null) {
-				for (Map<String, Object> row : results) {
-					String permittedUser = (String) row.get("permitted_user");
-					String permissionType = determinePermissionType(permittedUser); // Determine the type
-					Map<String, String> userMap = new HashMap<>();
-					userMap.put("permitted_user", permittedUser);
-					userMap.put("permission_type", permissionType);
-					permittedUsers.add(userMap);
-				}
-			}
-
-		} catch (Exception e) {
-			status = "FAILED";
-			message = "An unexpected error occurred: " + e.getMessage();
-			log.error(message);
-		}
-
-		response.put("status", status);
-		response.put("message", message);
-		response.put("permittedUsers", permittedUsers);
-		return response;
-	}
-
-	@desc("""
 			Checks if the user is allowed to create tasks.
 			""")
 	@webService(path = "taskCreationPermission/canCreateTasks", verb = {
@@ -1260,18 +939,6 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	private static String determinePermissionType(String permittedUser) {
-		if ("ALL".equalsIgnoreCase(permittedUser)) {
-			return "All users";
-		} else if (sessionUser().name().equals(permittedUser)) {
-			return "Me (creator)";
-		} else if (sessionUser().roles().contains(permittedUser)) {
-			return "My user group";
-		} else {
-			return "Users/user groups";
-		}
-	}
-
 	@desc("""
 			Creates a draft override record for a task on behalf of the AI agent.
 			Allocates a task_execution_id from the standard sequence without scheduling a real job.
@@ -1294,7 +961,8 @@ public class Logic extends WebServiceUserCode {
 			""")
 	public static Object wsCreateAiDraftOverride(
 			@param(description = "Task ID", required = true) long taskId,
-			@param(description = "Override parameters. Keys must be valid OverrideParamKey enum names (e.g. SOURCE_ENVIRONMENT_NAME, ENTITY_LIST).", required = true) Map<String, Object> overrideParameters)
+			@param(description = "Override parameters. Keys must be valid OverrideParamKey enum names (e.g. SOURCE_ENVIRONMENT_NAME, ENTITY_LIST).", required = true) Map<String, Object> overrideParameters,
+			@param(description = "Optional. The aifusion session that produced this draft, recorded as its provenance. Survives onto the real execution, because starting a draft reuses this row.") String agentSessionId)
 			throws Exception {
 
 		HashMap<String, Object> response = new HashMap<>();
@@ -1302,7 +970,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 
 		try {
-			String taskCheckSql = "SELECT task_id FROM " + TDMDB_SCHEMA +
+			String taskCheckSql = "SELECT task_id FROM " + getTDMDBSchema() +
 					".tasks WHERE task_id = ? AND task_status = 'Active'";
 			Object exists = db(TDM).fetch(taskCheckSql, taskId).firstValue();
 			if (exists == null) {
@@ -1312,7 +980,7 @@ public class Logic extends WebServiceUserCode {
 			}
 
 			Long draftId = (Long) db(TDM)
-					.fetch("SELECT nextval('" + TDMDB_SCHEMA + ".tasks_task_execution_id_seq')")
+					.fetch("SELECT nextval('" + getTDMDBSchema() + ".tasks_task_execution_id_seq')")
 					.firstValue();
 			if (draftId == null)
 				throw new Exception("Failed to allocate draft execution ID.");
@@ -1328,20 +996,112 @@ public class Logic extends WebServiceUserCode {
 					}
 					if (INTERNAL_ONLY_OVERRIDE_KEYS.contains(key))
 						throw new Exception("Override parameter '" + entry.getKey() + "' is system-internal and cannot be set externally.");
-					validatedParams.put(key.name(), entry.getValue());
+					Object rawValue = entry.getValue();
+					if (key == OverrideParamKey.GENERATE_DATA_PARAMS && rawValue instanceof Map) {
+						validatedParams.put(key.name(), reduceGenerateDataParams((Map<String, Object>) rawValue));
+					} else {
+						validatedParams.put(key.name(), rawValue);
+					}
 				}
 			}
 
 			String paramsJson = Json.get().toJson(validatedParams);
-			String insertSql = "INSERT INTO " + TDMDB_SCHEMA +
-					".task_execution_override_attrs (task_id, task_execution_id, override_parameters, created_by_ai, draft) "
+			String insertSql = "INSERT INTO " + getTDMDBSchema() +
+					".task_execution_override_attrs (task_id, task_execution_id, override_parameters, created_by_ai, draft, agent_session_id) "
 					+
-					"VALUES (?, ?, ?::json, true, true)";
-			db(TDM).execute(insertSql, taskId, draftId, paramsJson);
+					"VALUES (?, ?, ?::json, true, true, ?)";
+			db(TDM).execute(insertSql, taskId, draftId, paramsJson, agentSessionId);
 
 			HashMap<String, Object> result = new HashMap<>();
 			result.put("draftId", draftId);
 			result.put("taskId", taskId);
+			response.put("result", result);
+			errorCode = "SUCCESS";
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error(message);
+		}
+
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+	@desc("""
+			Updates the override parameters of a task execution's override attrs record.
+			Only allowed while the record is still a draft (draft = true); once a draft has been
+			run/promoted (draft = false) its override parameters can no longer be updated via this API.
+			""")
+	@webService(path = "task/{taskId}/execution/{taskExecutionId}/overrideAttrs", verb = {
+			MethodType.PUT }, version = "1", isRaw = false, isCustomPayload = false, produce = { Produce.XML,
+					Produce.JSON }, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = """
+			{
+				"result": {
+					"taskId": 5,
+					"taskExecutionId": 42
+				},
+				"errorCode": "SUCCESS",
+				"message": null
+			}
+			""")
+	public static Object wsUpdateTaskExecutionOverrideAttrs(
+			@param(description = "Task ID", required = true) long taskId,
+			@param(description = "Task execution ID", required = true) long taskExecutionId,
+			@param(description = "Override parameters. Keys must be valid OverrideParamKey enum names (e.g. SOURCE_ENVIRONMENT_NAME, ENTITY_LIST).", required = true) Map<String, Object> overrideParameters)
+			throws Exception {
+
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
+
+		try {
+			Map<String, Object> validatedParams = new HashMap<>();
+			if (overrideParameters != null) {
+				for (Map.Entry<String, Object> entry : overrideParameters.entrySet()) {
+					OverrideParamKey key;
+					try {
+						key = OverrideParamKey.valueOf(entry.getKey().toUpperCase());
+					} catch (IllegalArgumentException e) {
+						throw new Exception("Unknown override parameter key: " + entry.getKey());
+					}
+					if (INTERNAL_ONLY_OVERRIDE_KEYS.contains(key))
+						throw new Exception("Override parameter '" + entry.getKey() + "' is system-internal and cannot be set externally.");
+					Object rawValue = entry.getValue();
+					if (key == OverrideParamKey.GENERATE_DATA_PARAMS && rawValue instanceof Map) {
+						validatedParams.put(key.name(), reduceGenerateDataParams((Map<String, Object>) rawValue));
+					} else {
+						validatedParams.put(key.name(), rawValue);
+					}
+				}
+			}
+
+			String paramsJson = Json.get().toJson(validatedParams);
+			String updateSql = "UPDATE " + getTDMDBSchema() +
+					".task_execution_override_attrs SET override_parameters = ?::json " +
+					"WHERE task_execution_id = ? AND task_id = ? AND draft = true RETURNING task_id";
+			Object updatedTaskId = db(TDM).fetch(updateSql, paramsJson, taskExecutionId, taskId).firstValue();
+
+			if (updatedTaskId == null) {
+				String draftCheckSql = "SELECT draft FROM " + getTDMDBSchema() +
+						".task_execution_override_attrs WHERE task_execution_id = ? AND task_id = ?";
+				Object draft = db(TDM).fetch(draftCheckSql, taskExecutionId, taskId).firstValue();
+				if (draft == null) {
+					response.put("errorCode", "FAILED");
+					response.put("message", "No override attrs found for task " + taskId + " and execution " + taskExecutionId + ".");
+					return response;
+				} else {
+					response.put("errorCode", "FAILED");
+					response.put("message", "Cannot update override parameters for task " + taskId + " and execution " + taskExecutionId + " because it is not a draft.");
+					return response;
+				}
+			}
+
+			HashMap<String, Object> result = new HashMap<>();
+			result.put("taskId", taskId);
+			result.put("taskExecutionId", taskExecutionId);
 			response.put("result", result);
 			errorCode = "SUCCESS";
 

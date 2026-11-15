@@ -1,0 +1,119 @@
+tags: TDM,Masking
+stages:
+  Build Interface Summary:
+    actors:
+      getTDMDBSchema1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getTDMDBSchema
+        out:
+          schema:
+            schema: string
+  'Get environments info ':
+    actors:
+      DbCommand1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT
+                COUNT(*) FILTER (WHERE mask_sensitive_data = true) AS "Total Number Of Sensitive Environments",
+                COUNT(*) FILTER (WHERE mask_sensitive_data = false) AS "Total Number Of Non Sensitive Environments"
+              FROM ${@TDMDB_SCHEMA}.environments
+              WHERE environment_status = 'Active' and environment_id > 0
+          TDMDB_SCHEMA:
+            link: getTDMDBSchema1/schema
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+  'Get environments per type ':
+    actors:
+      ArrayBuilder1:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: DbCommand1/result
+        out:
+          array:
+            external: environmentsSummary
+            schema: '#ref'
+  Stage 1:
+    actors:
+      environmentsPerType:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var input = [...list];
+                var row = (input && input.length > 0) ? input[0] : {};
+                var sensitive = row['Total Number Of Sensitive Environments'] || 0;
+                var nonSensitive = row['Total Number Of Non Sensitive Environments'] || 0;
+
+                [
+                  { environment_type: 'Sensitive', no_of_environments: sensitive },
+                  { environment_type: 'Non-Sensitive', no_of_environments: nonSensitive }
+                ];
+              script: |-
+                var input = [].concat(list);
+                var row = input && input.length > 0 ? input[0] : {};
+                var sensitive = row['Total Number Of Sensitive Environments'] || 0;
+                var nonSensitive = row['Total Number Of Non Sensitive Environments'] || 0;
+                [{
+                  environment_type: 'Sensitive',
+                  no_of_environments: sensitive
+                }, {
+                  environment_type: 'Non-Sensitive',
+                  no_of_environments: nonSensitive
+                }];
+          list:
+            link: ArrayBuilder1/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: environmentsPerType
+            schema: '#ref'
+schemas:
+  DbCommand1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Total Number Of Sensitive Environments:
+          type: integer
+        Total Number Of Non Sensitive Environments:
+          type: integer
+  ArrayBuilder1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        Total Number Of Sensitive Environments:
+          type: integer
+        Total Number Of Non Sensitive Environments:
+          type: integer
+  environmentsPerType.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Total Number Of Sensitive Environments:
+          type: integer
+        Total Number Of Non Sensitive Environments:
+          type: integer
+  environmentsPerType.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        environment_type:
+          type: string
+        no_of_environments:
+          type: integer

@@ -1,0 +1,23 @@
+tags: Upgrade
+stages:
+  Add new columns to Mtable:
+    actors:
+      UpgradeTableLevelDefinitions10_11:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeTableLevelDefinitions10_1
+  Handle Globals:
+    actors:
+      UpgradeGlobals:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeGlobals
+  Add Masking Tables To CleanUp:
+    actors:
+      UpgradeCleanupAddMaskingTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: UpgradeCleanupAddMaskingTables

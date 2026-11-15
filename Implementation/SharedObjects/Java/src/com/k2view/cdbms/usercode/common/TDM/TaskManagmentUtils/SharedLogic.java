@@ -6,14 +6,19 @@ import static com.k2view.cdbms.shared.user.UserCode.log;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_PARAMETERS_SEPARATOR;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.enable_sequences;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetSessionUserName;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetPermissionGroupByRoles;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserRoles;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsOwner;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
@@ -124,7 +129,7 @@ public class SharedLogic {
 	public static boolean existAnotherMapping(long taskID, long task_group_id) throws SQLException {
 		// check if there is mapping to a different group
 		String sql = "SELECT 1 "
-				+ "FROM " + TDMDB_SCHEMA + ".task_group_mapping tgm "
+				+ "FROM " + getTDMDBSchema() + ".task_group_mapping tgm "
 				+ "WHERE " + " tgm.task_group_id <> ? AND tgm.task_id = ?";
 
 		Db.Row row = db(TDM).fetch(sql, task_group_id, taskID).firstRow();
@@ -133,7 +138,7 @@ public class SharedLogic {
 
 	public static boolean taskGroupCreatedByuser(long task_group_id, String username) throws SQLException {
 		String sql = "SELECT 1 "
-				+ "FROM " + TDMDB_SCHEMA + ".task_groups tg "
+				+ "FROM " + getTDMDBSchema() + ".task_groups tg "
 				+ "WHERE " + " tg.task_group_id = ? AND tg.created_by = ?";
 
 		Db.Row row = db(TDM).fetch(sql, task_group_id, username).firstRow();
@@ -142,7 +147,7 @@ public class SharedLogic {
 
 	public static boolean taskGroupExist(long task_group_id) throws SQLException {
 		String sql = "SELECT 1 "
-				+ "FROM " + TDMDB_SCHEMA + ".task_groups tg "
+				+ "FROM " + getTDMDBSchema() + ".task_groups tg "
 				+ "WHERE " + " tg." + "task_group_id = ?";
 
 		Db.Row row = db(TDM).fetch(sql, task_group_id).firstRow();
@@ -258,13 +263,13 @@ public class SharedLogic {
 				.append("split_part(t.task_created_by, '##', 1) AS task_creator, ")
 				.append("CASE WHEN tuf.favorite_item_id IS NULL THEN FALSE ELSE TRUE END AS favorite ")
 				.append("FROM ")
-				.append(TDMDB_SCHEMA)
+				.append(getTDMDBSchema())
 				.append(".tasks t ")
 				.append("INNER JOIN ")
-				.append(TDMDB_SCHEMA)
+				.append(getTDMDBSchema())
 				.append(".task_group_mapping tgm ON tgm.task_id = t.task_id ")
 				.append("LEFT JOIN ")
-				.append(TDMDB_SCHEMA)
+				.append(getTDMDBSchema())
 				.append(".task_user_favorites tuf ON tuf.favorite_item_id = t.task_id ")
 				.append("AND tuf.favorite_item_type = 'Task' ")
 				.append("AND tuf.user_id = ? ")
@@ -356,7 +361,7 @@ public class SharedLogic {
 		return isNestedEditable(overrideParams, "selection_method", "max_entities");
 	}
 	
-	private static boolean isNestedEditable(String overrideParams, String parentName, String childName) {
+	public static boolean isNestedEditable(String overrideParams, String parentName, String childName) {
 		try {
 			Map<String, Object> map = parseOverrideParams(overrideParams);
 			if (map == null || !map.containsKey(parentName)) {
@@ -381,7 +386,7 @@ public class SharedLogic {
 		}
 	}
 	
-	private static boolean isEditable(String overrideParams, String objectName) {
+	public static boolean isEditable(String overrideParams, String objectName) {
 		try {
 			Map<String, Object> map = parseOverrideParams(overrideParams);
 			if (map == null || !map.containsKey(objectName)) {
@@ -429,15 +434,15 @@ public class SharedLogic {
 	private static Set<Long> getCandidateEnvironments(long taskId, Long currentEnvId) {
 		StringBuilder sql = new StringBuilder(400);
 		sql.append("SELECT e.environment_id ")
-				.append("FROM ").append(TDMDB_SCHEMA).append(".environments e ")
+				.append("FROM ").append(getTDMDBSchema()).append(".environments e ")
 				.append("WHERE e.environment_status = 'Active' ")
 				.append("AND e.environment_id NOT IN (-1,-2")
 				.append(currentEnvId != null ? ",?" : "")
 				.append(") ")
 				.append("AND EXISTS ( ")
-				.append("SELECT 1 FROM ").append(TDMDB_SCHEMA).append(".tasks_logical_units tlu ")
-				.append("JOIN ").append(TDMDB_SCHEMA).append(".product_logical_units plu ON plu.lu_id = tlu.lu_id ")
-				.append("JOIN ").append(TDMDB_SCHEMA).append(".environment_products ep ")
+				.append("SELECT 1 FROM ").append(getTDMDBSchema()).append(".tasks_logical_units tlu ")
+				.append("JOIN ").append(getTDMDBSchema()).append(".product_logical_units plu ON plu.lu_id = tlu.lu_id ")
+				.append("JOIN ").append(getTDMDBSchema()).append(".environment_products ep ")
 				.append("ON ep.environment_id = e.environment_id AND ep.product_id = plu.product_id ")
 				.append("WHERE tlu.task_id = ? ")
 				.append("AND plu.lu_parent_id IS NULL ")
@@ -745,7 +750,7 @@ public class SharedLogic {
 				.append("allow_read, allow_write, allowed_number_of_entities_to_read, ")
 				.append("allowed_entity_versioning, allowed_test_conn_failure, ")
 				.append("allowed_number_of_reserved_entities ")
-				.append("FROM ").append(TDMDB_SCHEMA).append(".environment_roles ")
+				.append("FROM ").append(getTDMDBSchema()).append(".environment_roles ")
 				.append("WHERE environment_id = ? AND role_id = ? AND role_status = ?");
 
 		TesterPermissions permissions = new TesterPermissions();
@@ -952,7 +957,7 @@ public class SharedLogic {
 	 */
 	public static Set<Map<String, Object>> getAdminTasks(Long groupId) throws Exception {
 		Set<Map<String, Object>> taskList = new HashSet<>();
-		String userName = sessionUser().name();
+		String userName = fnGetSessionUserName();
 		List<Map<String, Object>> userEnvs = fnGetUserEnvs(userName);
 
 		StringBuilder sql = createdByUser();
@@ -985,7 +990,7 @@ public class SharedLogic {
 	 */
 	public static Set<Map<String, Object>> getOwnerTasks(Long groupId) throws Exception {
 		Set<Map<String, Object>> taskList = new HashSet<>();
-		String userName = sessionUser().name();
+		String userName = fnGetSessionUserName();
 		List<Map<String, Object>> userEnvs = fnGetUserEnvs(userName);
 
 		taskList.addAll(fetchTasksForQuery(createdByUser().toString(), new Object[] { userName, groupId, userName },
@@ -1092,7 +1097,7 @@ public class SharedLogic {
 	 */
 	public static Set<Map<String, Object>> getTesterTasks(Long groupId) throws Exception {
 		Set<Map<String, Object>> taskList = new HashSet<>();
-		String userName = sessionUser().name();
+		String userName = fnGetSessionUserName();
 		// Case 1: Get the tasks created by user.
 		StringBuilder createdByUserQuery = createdByUser();
 		List<Map<String, Object>> allUserEnvsTypes = fnGetUserEnvs(userName);
@@ -1315,7 +1320,7 @@ public class SharedLogic {
 				
 				if (!allowRefresh) {
 					queryBuilderSource.append(" AND (t.selection_method <> 'TABLES' AND NOT EXISTS (SELECT 1 FROM ")
-							.append(TDMDB_SCHEMA)
+							.append(getTDMDBSchema())
 							.append(".task_ref_tables trt WHERE trt.task_id = t.task_id)) ");
 				}
 				if( !unlimitedEntities){
@@ -1383,7 +1388,7 @@ public class SharedLogic {
 
 				if (!allowRefresh) {
 					queryBuilderTarget.append(" AND (t.selection_method <> 'TABLES' AND NOT EXISTS (SELECT 1 FROM ")
-							.append(TDMDB_SCHEMA)
+							.append(getTDMDBSchema())
 							.append(".task_ref_tables trt WHERE trt.task_id = t.task_id)) ");
 				}
 
@@ -1433,7 +1438,7 @@ public class SharedLogic {
 			}
 		}
 		StringBuilder sql = new StringBuilder(200);
-		sql.append("SELECT permitted_user ").append("FROM ").append(TDMDB_SCHEMA).append(".task_exe_permissions ")
+		sql.append("SELECT permitted_user ").append("FROM ").append(getTDMDBSchema()).append(".task_exe_permissions ")
 				.append("WHERE task_id = ?");
 		try (Db.Rows rows = db(TDM).fetch(sql.toString(), taskId)) {
 			for (Db.Row row : rows) {
@@ -1480,7 +1485,7 @@ public class SharedLogic {
 
 	private static Map<Long, List<String>> fetchPermissionsBatch(List<Long> taskIds) {
 		Map<Long, List<String>> map = new HashMap<>();
-		String sql = "SELECT task_id, permitted_user FROM " + TDMDB_SCHEMA
+		String sql = "SELECT task_id, permitted_user FROM " + getTDMDBSchema()
 				+ ".task_exe_permissions WHERE task_id = ANY(?)";
 		Long[] ids = taskIds.toArray(new Long[0]);
 		try (Db.Rows rows = db(TDM).fetch(sql, (Object) ids)) {
@@ -1501,10 +1506,10 @@ public class SharedLogic {
 		boolean isAdmin = permessionGroup.equalsIgnoreCase("admin");
 		if (isAdmin) return true;
 		StringBuilder sql = new StringBuilder(200);
-		sql.append("SELECT task_executed_by ").append("FROM ").append(TDMDB_SCHEMA)
+		sql.append("SELECT task_executed_by ").append("FROM ").append(getTDMDBSchema())
 				.append(".task_execution_list where task_execution_id=?");
-		try {
-			for (Db.Row row : db(TDM).fetch(sql.toString(), taskExeId)) {
+		try (Db.Rows rows = db(TDM).fetch(sql.toString(), taskExeId)) {
+			for (Db.Row row : rows) {
 				String executed_by = row.get("task_executed_by").toString().split("##")[0];
 				if (executed_by.equalsIgnoreCase(currentUser)){
 					return true;
@@ -1521,33 +1526,72 @@ public class SharedLogic {
 	public static boolean isAllowedToCreate(String username) {
 		String permissionGroup = fnGetUserPermissionGroup(username);
 		String roles = fnGetUserRoles(username);
+		return isAllowedToCreateByRoles(permissionGroup, roles);
+	}
+
+	private static boolean isAllowedToCreateByRoles(String permissionGroup, String roles) {
+		if ("admin".equals(permissionGroup)) {
+			return true;
+		}
 		String created_by;
 		try {
 			created_by = "" + db(TDM).fetch(
-					"SELECT can_create_tasks FROM " + TDMDB_SCHEMA + ".permission_groups_mapping WHERE fabric_role = ANY (string_to_array(?,?)) and permission_group = ? ",
+					"SELECT can_create_tasks FROM " + getTDMDBSchema() + ".permission_groups_mapping WHERE fabric_role = ANY (string_to_array(?,?)) and permission_group = ? ",
 					roles,TDM_PARAMETERS_SEPARATOR,permissionGroup).firstValue();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return "admin".equals(permissionGroup) || "true".equalsIgnoreCase(created_by);
+		return "true".equalsIgnoreCase(created_by);
+	}
+
+	public static boolean isSessionUserAllowedToCreate() {
+		String roles = fnGetUserRoles("");
+		String permissionGroup = Util.isEmpty(roles) ? "" : Util.rte(() -> fnGetPermissionGroupByRoles(roles));
+		if (Util.isEmpty(permissionGroup)) {
+			log.error("isSessionUserAllowedToCreate - There are no roles with a permission set found for session user '"
+					+ fnGetSessionUserName() + "', roles: '" + roles + "'");
+			return false;
+		}
+		return isAllowedToCreateByRoles(permissionGroup, roles);
 	}
 
 	public static boolean isTaskCreator(String username, long taskID) {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		String created_by;
+		return "admin".equals(fnGetUserPermissionGroup("")) || username.equals(getTaskCreator(taskID));
+	}
+
+	public static boolean canSessionUserModifyTask(Long taskId) {
+		if (taskId == null) {
+			return false;
+		}
+		if ("admin".equalsIgnoreCase(fnGetUserPermissionGroup(""))) {
+			return true;
+		}
+		String creator = getTaskCreator(taskId);
+		if (Util.isEmpty(creator)) {
+			return false;
+		}
+		String sessionName = sessionUser() == null ? "" : sessionUser().name();
+		return creator.equals(sessionName) || creator.equals(fnGetSessionUserName());
+	}
+
+	public static String getTaskCreatedBy(Long taskId) {
 		try {
-			created_by = "" + db(TDM).fetch(
-					"SELECT split_part(task_created_by, '##', 1) FROM " + TDMDB_SCHEMA + ".tasks WHERE task_id=?",
-					taskID).firstValue();
+			Object createdBy = db(TDM).fetch(
+					"SELECT task_created_by FROM " + getTDMDBSchema() + ".tasks WHERE task_id = ?", taskId).firstValue();
+			return createdBy == null ? null : createdBy.toString();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return "admin".equals(permissionGroup) || username.equals(created_by);
 	}
-	
+
+	private static String getTaskCreator(Long taskId) {
+		String createdBy = getTaskCreatedBy(taskId);
+		return createdBy == null ? "" : createdBy.split("##", -1)[0];
+	}
+
 	public static Object getEnvironmentIdByName(Object name) throws Exception {
 		Object id = db(TDM)
-				.fetch("select environment_id from " + TDMDB_SCHEMA
+				.fetch("select environment_id from " + getTDMDBSchema()
 						+ ".environments where environment_name=(?) and environment_status = 'Active'", name)
 				.firstValue();
 		return id;
@@ -1575,17 +1619,17 @@ public class SharedLogic {
 		query.append("SELECT ");
 		query.append("COUNT(DISTINCT pu.product_id) AS total_systems, ");
 		query.append("COUNT(DISTINCT CASE WHEN ep.enable_product = false THEN pu.product_id END) AS disabled_systems ");
-		query.append("FROM ").append(TDMDB_SCHEMA).append(".product_logical_units pu ");
-		query.append("JOIN ").append(TDMDB_SCHEMA).append(".tasks_logical_units tu ");
+		query.append("FROM ").append(getTDMDBSchema()).append(".product_logical_units pu ");
+		query.append("JOIN ").append(getTDMDBSchema()).append(".tasks_logical_units tu ");
 		query.append("ON tu.lu_id = pu.lu_id ");
 		if (!Util.isEmpty(beId) && !"null".equalsIgnoreCase(beId)){
 			query.append("AND pu.be_id = ? ");
 		}
-		query.append("JOIN ").append(TDMDB_SCHEMA).append(".environments e ");
+		query.append("JOIN ").append(getTDMDBSchema()).append(".environments e ");
 		query.append("ON e.environment_id = ? ");
 		query.append("AND e.environment_name = ? ");
 		query.append("AND e.environment_status = ? ");
-		query.append("JOIN ").append(TDMDB_SCHEMA).append(".environment_products ep ");
+		query.append("JOIN ").append(getTDMDBSchema()).append(".environment_products ep ");
 		query.append("ON ep.environment_id = e.environment_id ");
 		query.append("AND ep.product_id = pu.product_id ");
 		query.append("AND ep.status = ? ");
@@ -1648,6 +1692,12 @@ public class SharedLogic {
 			}
 
 			boolean sourceRequired = requiresSourceCheck(taskType, syncMode, sourceEnvId);
+			// TDM 9.3 - with sync policy OFF the entities are taken only from the Test Data Store, so the
+			// source environment permissions are not checked (the tester may have no read permissions on it).
+			// While creating the task the type is still EXTRACT until a target is selected.
+			if ("EXTRACT".equalsIgnoreCase(taskType) && "OFF".equalsIgnoreCase(syncMode)) {
+				sourceRequired = false;
+			}
 			boolean targetRequired = requiresTargetCheck(taskType, targetEnvId);
 
 			String permissionGroup = fnGetUserPermissionGroup(userName);
@@ -1964,11 +2014,89 @@ public class SharedLogic {
 			return false;
 		}
 
-		if (reserveInd && (targetPerms == null || targetPerms.allowedNumberOfReservedEntities == 0)) {
+		if (targetRequired && "DELETE".equalsIgnoreCase(taskType)
+				&& (targetPerms == null || !targetPerms.allowedDeleteBeforeLoad)) {
+			return false;
+		}
+
+		if (reserveInd && targetRequired && (targetPerms == null || targetPerms.allowedNumberOfReservedEntities == 0)) {
 			return false;
 		}
 
 		return true;
+	}
+
+	public static Map<String, Object> resolveTaskSourceAndSelectionAccess(String userName, Long taskId, String overrideParams,
+			Object sourceEnvId, Object targetEnvId, String selectionMethod, String beId,
+			String taskType, String syncMode, boolean reserveInd, boolean deleteBeforeLoad,
+			boolean replaceSequences, boolean cloneInd, boolean refreshReferenceData, boolean versionInd,
+			String scheduler, long numOfEntities) throws Exception {
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("visible", true);
+		result.put("empty_source_env", false);
+		result.put("empty_selection_method", false);
+
+		String permissionGroup = fnGetUserPermissionGroup(userName);
+
+		boolean sourceEditable = isSourceEnvEditable(overrideParams);
+		boolean selectionEditable = isEditable(overrideParams, "selection_method");
+		boolean beEditable = isBeEditable(overrideParams);
+
+		String sourceEnvIdStr = sourceEnvId == null ? null : String.valueOf(sourceEnvId);
+		String targetEnvIdStr = targetEnvId == null ? null : String.valueOf(targetEnvId);
+
+		List<Map<String, Object>> userEnvs = fnGetUserEnvs(userName);
+		Map<String, TesterPermissions> testerPermsCache = new HashMap<>();
+
+		boolean comboCheck = canUserPerformTaskOperation(userName, sourceEnvIdStr, targetEnvIdStr, taskType, syncMode,
+				reserveInd, deleteBeforeLoad, replaceSequences, cloneInd, refreshReferenceData, versionInd, scheduler,
+				selectionMethod, numOfEntities, "VIEW", true, true, userEnvs, permissionGroup, testerPermsCache);
+		if (comboCheck) {
+			return result; // A: full permission for the configured combination
+		}
+
+		if (!sourceEditable && !selectionEditable) { // Fixed / Fixed
+			result.put("visible", false); // B or C -> hide
+			return result;
+		}
+
+		if (sourceEditable && !selectionEditable) { // Editable / Fixed
+			result.put("empty_source_env", true); // B or C -> identical outcome
+			return result;
+		}
+
+		boolean baseCheck = canUserPerformTaskOperation(userName, sourceEnvIdStr, targetEnvIdStr, taskType, syncMode,
+				reserveInd, deleteBeforeLoad, replaceSequences, cloneInd, refreshReferenceData, versionInd, scheduler,
+				selectionMethod, numOfEntities, "VIEW", true, false, userEnvs, permissionGroup, testerPermsCache);
+
+		if (!sourceEditable && selectionEditable) { // Fixed / Editable
+			if (!baseCheck) {
+				result.put("visible", false); // C -> hide
+				return result;
+			}
+			result.put("empty_selection_method", true); // B
+			return result;
+		}
+
+		// Editable / Editable
+		if (baseCheck) {
+			result.put("empty_selection_method", true); // B
+			return result;
+		}
+
+		// C: does another source env support the configured selection method?
+		result.put("empty_source_env", true);
+		Map<String, Boolean> envDisabledCache = new HashMap<>();
+		AlternativeEnv alt = findAlternativeEnv(userName, permissionGroup, EnvType.SOURCE,
+				sourceEnvIdStr, targetEnvIdStr, taskType, syncMode, taskId, numOfEntities, reserveInd,
+				true, true, beEditable, beId, userEnvs, deleteBeforeLoad, replaceSequences, cloneInd,
+				refreshReferenceData, versionInd, scheduler, selectionMethod, envDisabledCache, testerPermsCache);
+		if (alt == null) {
+			result.put("empty_selection_method", true); // C2: no alternative source works either
+		}
+		// else leave empty_selection_method = false, source stays emptied
+		return result;
 	}
 
 	public static boolean isAllowedTestConnFailure(String envId) throws Exception {
@@ -1995,6 +2123,182 @@ public class SharedLogic {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Assign task to a task groups.
+	 * reAssign - if true first delete the current mapping for the task (relevant
+	 * for update task).
+	 * Internal use only - kept in shared code so Fabric does not expose it as a web
+	 * service.
+	 */
+	public static Object fnAssignTaskToTaskGroups(long taskID, List<Long> taskGroupIds, boolean reAssign)
+			throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
+
+		if (reAssign) {
+			String sql = "DELETE FROM " + getTDMDBSchema() + ".task_group_mapping WHERE task_id = ?";
+			db(TDM).execute(sql, taskID);
+		}
+
+		String username = sessionUser().name();
+		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+				.withZone(ZoneOffset.UTC)
+				.format(Instant.now());
+
+		String insertSQL = "INSERT INTO " + getTDMDBSchema() + ".task_group_mapping" +
+				"(task_id, task_group_id, creation_date, created_by) " +
+				"VALUES (?, ?, ?, ?)";
+		try {
+			for (long task_group_id : taskGroupIds) {
+				if (mappingAlreadyExist(task_group_id, taskID)) {
+					continue;
+				}
+				if (!taskGroupExist(task_group_id)) {
+					return wrapWebServiceResults("FAILED", "task group id does not exist", null);
+				}
+				db(TDM).execute(insertSQL, taskID, task_group_id, now, username);
+			}
+
+			errorCode = "SUCCESS";
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error(message);
+		}
+
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+	private static boolean mappingAlreadyExist(long toTaskGroup, long taskID) throws SQLException {
+		String sql = "SELECT 1 "
+				+ "FROM " + getTDMDBSchema() + ".task_group_mapping tgm "
+				+ "WHERE " + " tgm.task_group_id = ? AND tgm.task_id = ?";
+
+		Db.Row row = db(TDM).fetch(sql, toTaskGroup, taskID).firstRow();
+		return !row.isEmpty();
+	}
+
+	/**
+	 * insert a new entries for task_exe_permissions
+	 * permissions can be populated by Me,My user group,ALL, fabric role, or user ID
+	 * Internal use only - kept in shared code so Fabric does not expose it as a web
+	 * service.
+	 */
+	public static Object fnInsertTaskExecution(long task_id, List<Map<String, String>> permissions)
+			throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
+
+		String insertSQL = "INSERT INTO " + getTDMDBSchema() + ".task_exe_permissions" +
+				"(task_id, permitted_user, user_type, creation_date, created_by) " +
+				"VALUES (?, ?, ?, ?, ?)";
+
+		String username = sessionUser().name();
+		String roles = fnGetUserRoles(username);
+		String[] currentUserRoles = roles != null ? roles.split(TDM_PARAMETERS_SEPARATOR) : new String[0];
+		String createdBy = new StringBuilder().append(username).append("##").append(roles).toString();
+		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX").withZone(ZoneOffset.UTC)
+				.format(Instant.now());
+
+		try {
+			List<Map<String, String>> validPermissions = new ArrayList<>();
+			if (permissions != null) {
+				for (Map<String, String> perm : permissions) {
+					if (perm == null)
+						continue;
+					String type = perm.getOrDefault("type", "").trim().toUpperCase();
+					String value = perm.getOrDefault("value", "").trim();
+					if (!type.isEmpty() && !value.isEmpty()) {
+						validPermissions.add(Map.of("type", type, "value", value));
+					}
+				}
+			}
+
+			boolean hasAll = validPermissions.stream()
+					.anyMatch(p -> "ID".equals(p.get("type")) && "ALL".equalsIgnoreCase(p.get("value")));
+
+			if (hasAll) {
+				db(TDM).execute(insertSQL, task_id, "ALL", "ID", now, createdBy);
+			} else {
+				Set<String> inserted = new HashSet<>();
+				for (Map<String, String> perm : validPermissions) {
+					String type = perm.get("type");
+					String value = perm.get("value");
+
+					if ("ID".equals(type)) {
+						String resolvedValue = "ME".equalsIgnoreCase(value) ? username : value;
+						if (inserted.add(resolvedValue)) {
+							db(TDM).execute(insertSQL, task_id, resolvedValue, "ID", now, createdBy);
+						}
+					} else if ("GROUP".equals(type)) {
+						if ("MY_GROUP".equalsIgnoreCase(value)) {
+							for (String role : currentUserRoles) {
+								if (inserted.add(role)) {
+									db(TDM).execute(insertSQL, task_id, role, "GROUP", now, createdBy);
+								}
+							}
+						} else {
+							if (inserted.add(value)) {
+								db(TDM).execute(insertSQL, task_id, value, "GROUP", now, createdBy);
+							}
+						}
+					}
+				}
+			}
+
+			errorCode = "SUCCESS";
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = e.getMessage();
+			log.error(message);
+		}
+
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+	// update task_exe_permissions by first delete and then
+	// insert a new entries for task_exe_permissions
+	// permissions can be populated by me,My user group,ALL, fabric role, or user ID
+	// Internal use only (called by update task) - not exposed as a web service
+
+	public static Object fnUpdateTaskExecution(long task_id, List<Map<String, String>> permissions)
+			throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
+
+		String deleteSQL = "DELETE FROM " + getTDMDBSchema() + ".task_exe_permissions WHERE task_id = ?";
+
+		try {
+			// Delete existing permissions for the task
+			db(TDM).execute(deleteSQL, task_id);
+
+			Map<String, Object> insertResult = (Map<String, Object>) fnInsertTaskExecution(task_id, permissions);
+			if (!"SUCCESS".equals(insertResult.get("errorCode"))) {
+				return insertResult;
+			}
+
+			errorCode = "SUCCESS";
+			message = "Task execution permission updated successfully.";
+
+		} catch (Exception e) {
+			errorCode = "FAILED";
+			message = "Error updating task execution permission: " + e.getMessage();
+			log.error(message);
+		}
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
 	}
 
 }

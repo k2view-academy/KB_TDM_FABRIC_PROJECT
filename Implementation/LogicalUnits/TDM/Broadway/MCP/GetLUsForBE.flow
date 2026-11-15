@@ -1,0 +1,51 @@
+description: Gets all Logical Units for a Business Entity. Returns both the structured array (for the
+  logicalUnits parameter) and a comma-separated string (for lusPerBeString).
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetLUsForBE:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetLUsForBE 'beId'=${beId}
+          beId:
+            external: beId
+            schema: integer
+            remark: Business Entity id, as returned by ListBusinessEntities (be_id).
+            mandatory: true
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      lusPerBeString:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetLUsForBE/result/lusPerBeString
+        out:
+          value:
+            external: lusPerBeString
+            schema: string
+      logicalUnits:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetLUsForBE/result/logicalUnits
+        out:
+          value:
+            external: logicalUnits
+            schema: string
+schemas:
+  Call GetLUsForBE.out.result:
+    type: object
+    properties:
+      lusPerBeString:
+        type: string
+      logicalUnits:
+        type: string

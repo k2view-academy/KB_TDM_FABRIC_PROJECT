@@ -5,6 +5,8 @@ import com.k2view.broadway.model.Data;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Log;
+import com.k2view.fabric.common.io.IoCommand;
+import com.k2view.fabric.common.io.IoSession;
 import com.k2view.fabric.session.broadway.PopulationArgsActor;
 
 import java.util.Map;
@@ -25,7 +27,13 @@ public class TDMPopulationArgs extends PopulationArgsActor {
 
     private void populateTdmArgs(Data input, Data output, Context ctx) throws Exception {
         try {
-            String params = "" + ctx.ioProvider().createSession("fabric").prepareStatement("set GENERATE_DATA_PARAMS").execute().iterator().next().get("value");
+            String params;
+            // Don't close the session: it is the flow's shared "fabric" session, Broadway closes it at the end of the flow
+            IoSession fabricSession = ctx.ioProvider().createSession("fabric");
+            try (IoCommand.Statement statement = fabricSession.prepareStatement("set GENERATE_DATA_PARAMS");
+                 IoCommand.Result result = statement.execute()) {
+                params = "" + result.iterator().next().get("value");
+            }
             
             Map<String,Object> paramsData = Json.get().fromJson(params, Map.class);
             if (paramsData != null && !(paramsData.isEmpty())) {

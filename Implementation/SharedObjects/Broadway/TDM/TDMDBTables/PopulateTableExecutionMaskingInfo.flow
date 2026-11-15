@@ -1,0 +1,114 @@
+tags: Concurrency,TDM
+stages:
+  Get Version:
+    actors:
+      Get Catalog Hash:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT catalog_hash
+              FROM ${@schema}.tdm_exe_catalog_field_info
+              WHERE interface_name = ${interfaceName}
+                AND schema_name = ${schemaName}
+              ORDER BY update_date DESC NULLS LAST
+              LIMIT 1;
+          interfaceName:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: sql
+          schemaName:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: sql
+          schema:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: string
+      Format the Current Time:
+        parent: DateFormat
+        in:
+          format:
+            const: yyyy-MMM-dd HH:mm:ss.SSS
+          date:
+            external: syncTime
+  Load Masking Info:
+    actors:
+      Table Masked?:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            link: Get Catalog Hash/result
+      Loading Masked Tables:
+        parent: DbLoad
+        in:
+          interface:
+            const: TDM
+          command:
+            const: upsert
+          schema:
+            const: null
+            external: TDMDB_SCHEMA
+          table:
+            const: task_execution_masking_info
+          fields:
+            const:
+            - task_execution_id
+            - interface_name
+            - schema_name
+            - table_name
+            - catalog_hash
+            - number_of_records
+            - sync_time
+          keys:
+            const:
+            - task_execution_id
+            - interface_name
+            - schema_name
+            - table_name
+          dialect:
+            const: postgres
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: schema
+          interface_name:
+            external: interfaceName
+            schema: string
+            mandatory: false
+            createdBy: schema
+          schema_name:
+            external: schemaName
+            schema: string
+            mandatory: false
+            createdBy: schema
+          table_name:
+            external: tableName
+            schema: string
+            mandatory: false
+            createdBy: schema
+          catalog_hash:
+            link: Get Catalog Hash/result
+            schema: string
+            mandatory: false
+            createdBy: schema
+          number_of_records:
+            external: numberOfRecords
+            schema: integer
+            mandatory: false
+            createdBy: schema
+          sync_time:
+            link: Format the Current Time/string
+            schema: string
+            mandatory: false
+            createdBy: schema

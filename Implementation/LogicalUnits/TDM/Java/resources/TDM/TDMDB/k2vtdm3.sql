@@ -379,6 +379,40 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_seq_mapping
 
 Create INDEX IF NOT EXISTS TDM_SEQ_MAPPING_IX on ${@schema}.tdm_seq_mapping (task_execution_id,lu_type,source_env);
 
+-- Table: ${@schema}.tdm_exe_catalog_field_info
+
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_exe_catalog_field_info
+(
+    interface_name text NOT NULL,
+    schema_name text NOT NULL,
+    catalog_hash text NOT NULL,
+    csv_file text,
+    update_date timestamp without time zone DEFAULT now(),
+    CONSTRAINT tdm_exe_catalog_field_info_pkey PRIMARY KEY (interface_name, schema_name, catalog_hash)
+);
+
+-- Table: ${@schema}.tdm_exe_catalog_classification_generators
+
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_exe_catalog_classification_generators
+(
+    task_execution_id bigint NOT NULL,
+    csv_file text,
+    CONSTRAINT tdm_exe_catalog_classification_generators_pkey PRIMARY KEY (task_execution_id)
+);
+
+-- Table: ${@schema}.task_execution_masking_info
+CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_masking_info
+(
+    task_execution_id bigint NOT NULL,
+    interface_name text NOT NULL,
+    schema_name text NOT NULL,
+    table_name text NOT NULL,
+    catalog_hash text,
+    number_of_records bigint DEFAULT 0,
+    sync_time timestamp without time zone,
+    CONSTRAINT task_execution_masking_info_pkey PRIMARY KEY (task_execution_id, interface_name, schema_name, table_name)
+);
+
 -- Table: ${@schema}.task_execution_entities
 
 -- DROP TABLE IF EXISTS ${@schema}.task_execution_entities;
@@ -444,7 +478,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
   filter_type text,
   target_table_prefix text,
   target_table_suffix text,
-  version_task_execution_id bigint default 0,
+  version_task_execution_id bigint DEFAULT 0,
   version_task_name text,
   gui_filter text,
   filter_parameters text,
@@ -454,6 +488,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
   source_affinity text,
   target_affinity text,
   count_ind boolean DEFAULT true,
+  records_limit bigint DEFAULT -1,
+  partitions_limit bigint DEFAULT -1,
   CONSTRAINT task_ref_tables_pkey PRIMARY KEY (task_ref_table_id) 
 );
 
@@ -505,6 +541,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_exe_stats
   filter_parameters text,
   number_of_partitions bigint default 1,
   execution_action text,
+  records_limit bigint,
+  partitions_limit bigint,
   CONSTRAINT task_ref_exe_stats_pkey PRIMARY KEY (task_id,task_execution_id,task_ref_table_id,execution_action)
   );
 
@@ -531,7 +569,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '10.0.1' 
+    select 'TDM_VERSION', '10.1.1' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -584,6 +622,9 @@ VALUES ('MAX_NO_OF_WORKERS_FOR_EXECUTION', -1) ON CONFLICT DO NOTHING;
 
 INSERT INTO ${@schema}.tdm_general_parameters (param_name, param_value)
 VALUES ('MAX_DATE_RANGE_IN_MONTHS', 12) ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.tdm_general_parameters (param_name, param_value)
+VALUES ('ENABLE_TABLE_LEVEL_PARTITION_FLOW', 'false') ON CONFLICT DO NOTHING;
 -- Table: ${@schema}.task_globals
 
 --DROP TABLE IF EXISTS ${@schema}.task_globals;
@@ -652,6 +693,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
   start_be_execution timestamp without time zone,
   end_be_execution timestamp without time zone,
   task_type_label Text,
+  sync_batch_id text,
+  sync_retry_count integer DEFAULT 0,
+  synced_to_fabric boolean DEFAULT false,
   CONSTRAINT task_execution_summary_pkey PRIMARY KEY (task_id,task_execution_id)
 );
 -- DROP INDEX IF EXISTS ${@schema}.task_exec_summary_ix1;
@@ -810,6 +854,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_override_attrs
 	override_parameters json NOT NULL,
 	created_by_ai boolean NOT NULL DEFAULT false,
 	draft boolean NOT NULL DEFAULT false,
+	agent_session_id text,
 	CONSTRAINT task_execution_override_attrs_pkey PRIMARY KEY (task_execution_id, task_id)
 );
 
@@ -1055,12 +1100,12 @@ VALUES (
     NULL, NULL, 'immediate', false, 0,
     'P', NULL, NULL, 'Active',
     'admin', NOW(), NOW(), 'admin',
-    'Active', 'Extract and Load entities', NULL, NULL, false,
+    'Active', 'Extract and load entities', NULL, NULL, false,
     NULL, '', true, 'LOAD',
     NULL, false, 'Do Not Delete', -1,
     0, 0, false, 0,
     'ON', false, 'Days', 5, NULL,
-    'OTHERS', 'Extract and Load entities', false, 'INHERITED',
+    'OTHERS', 'Extract and load entities', false, 'INHERITED',
     false, 'admin', 'admin',
     'ALL', true,
     '{"business_entity": {"is_editable": true, "field_connector": "be_name"}, "selection_method": {"random": {"is_editable": true}, "entity_list": {"is_editable": true}, "is_editable": true, "custom_logic": {"is_editable": true, "can_add_params": {"is_editable": true}}, "max_entities": {"is_editable": true}, "field_connector": "selection_method", "business_parameters": {"is_editable": true}}, "reservation_period": {"is_editable": false, "field_connector": "reservation_period"}, "source_environment": {"is_editable": true, "field_connector": "source_env_name"}, "target_environment": {"is_editable": true, "field_connector": "environment_name"}, "task_globals": {"is_editable": true, "field_connector": "task_globals"}, "retention_period": {"is_editable": true, "field_connector": "retention_period"}, "data_version_name": {"is_editable": true, "field_connector": "data_version_name"}}'
@@ -1252,7 +1297,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_group_mapping (task_id, task_group_id, creation_date, created_by)
 SELECT t.task_id, tg.task_group_id, NOW(), 'system'
 FROM ${@schema}.tasks t, ${@schema}.task_groups tg
-WHERE t.task_title IN ('Extract entities', 'Extract and Load entities', 'Load entities', 'Generate entities', 'Generate and load entities', 'Delete entities', 'Reserve entities', 'Clone entities')
+WHERE t.task_title IN ('Extract entities', 'Extract and load entities', 'Load entities', 'Generate entities', 'Generate and load entities', 'Delete entities', 'Reserve entities', 'Clone entities')
   AND tg.task_group_name = 'Product predefined tasks'
 ON CONFLICT DO NOTHING;
 
@@ -1263,7 +1308,7 @@ FROM ${@schema}.tasks t
 WHERE t.task_status = 'Active'
   AND t.task_title IN (
       'Extract entities',
-      'Extract and Load entities',
+      'Extract and load entities',
       'Load entities',
       'Generate entities',
       'Generate and load entities',
@@ -1324,7 +1369,7 @@ The entities are generated based AI training model.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load generated entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name>.
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.') ON CONFLICT DO NOTHING;
-INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load execution generation entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name> using data generation <generation_title> (created on <generation_creation_date>, <generation_number_of_entities> entities).') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load execution generation entities (AI/rule based)','Copy all pre-generated synthetic <be_name> entities (<generation_number_of_entities> total) from the Test Data Store to <environment_name>. Source generation: ''<generation_title>'' (Created: <generation_creation_date>).') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load and reserve generated entities (AI/rule based)','Copy pre-generated synthetic  <be_name> entities from the Test Data Store to <environment_name>.
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.
 Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
@@ -1337,6 +1382,9 @@ INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES
 Subset by <selection_method> using: <selection_param_value>. Process up to <num_of_entities> matching entities.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Clone entities','Clone <be_name> data from <source_env_name> to <environment_name> 
 Subset by <selection_method> using: <selection_param_value>. Clone the entity <num_of_entities> times.') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Clone and reserve entities','Clone <be_name> data from <source_env_name> to <environment_name> 
+Subset by <selection_method> using: <selection_param_value>. Clone the entity <num_of_entities> times.
+Reserve the entities for <reserve_retention_period_value> <reserve_retention_period_type>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Extract tables','Extract tables from <source_env_name>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Extract and load tables','Copy tables from <source_env_name> to <environment_name>.') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.task_execution_prompt_text(task_type, prompt_text) VALUES('Load tables','Copy <source_env_name> tables from the Test Data Store to <environment_name>.') ON CONFLICT DO NOTHING;
@@ -1363,3 +1411,44 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_agent_info (
     job_last_updated_date timestamp without time zone NOT NULL DEFAULT now(),
     CONSTRAINT tdm_agent_info_pkey PRIMARY KEY (task_id)
 );
+
+-- TDM 10.1 - AI test-data agent batch jobs (test-data-agent/createTask API)
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_ai_job (
+    job_id             text NOT NULL,
+    external_story_id  text,
+    name               text,
+    description        text,
+    source_environment text,
+    target_environment text,
+    business_entity    text,
+    status             text NOT NULL,
+    failure_reason     text,
+    submitted_by       text,
+    roles              text,
+    started_at         timestamp without time zone,
+    completed_at       timestamp without time zone,
+    CONSTRAINT tdm_ai_job_pkey PRIMARY KEY (job_id)
+);
+
+CREATE INDEX IF NOT EXISTS tdm_ai_job_story_ix ON ${@schema}.tdm_ai_job (external_story_id);
+
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_ai_job_case (
+    job_id             text NOT NULL,
+    test_case_id       text NOT NULL,
+    content            text,
+    required_count     integer,
+    status             text NOT NULL,
+    task_id            bigint,
+    draft_execution_id bigint,
+    deeplink           text,
+    explanation        text,
+    failure_reason     text,
+    report_memory_id   text,
+    agent_session_id   text,
+    started_at         timestamp without time zone,
+    completed_at       timestamp without time zone,
+    CONSTRAINT tdm_ai_job_case_pkey PRIMARY KEY (job_id, test_case_id),
+    CONSTRAINT fk_tdm_ai_job_case_job_id FOREIGN KEY (job_id) REFERENCES ${@schema}.tdm_ai_job(job_id)
+);
+
+CREATE INDEX IF NOT EXISTS tdm_ai_job_case_status_ix ON ${@schema}.tdm_ai_job_case (job_id, status);

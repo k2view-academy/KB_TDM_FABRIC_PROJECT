@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="">
   <Name>vdb</Name>
   <RootView>TASK_EXECUTION</RootView>
@@ -19,11 +19,13 @@
 	 <Table>TASK_EXECUTION</Table>
 	 <Table>TASK_EXECUTION_LINK_ENTITIES</Table>
 	 <Table>task_execution_list</Table>
+	 <Table>task_exe_masking_fields</Table>
 	 <Table>task_execution_override_attrs</Table>
 	 <Table>task_ref_exe_stats</Table>
 	 <Table>tasks</Table>
 	 <Table>tdm_generate_task_field_mappings</Table>
 	 <Table>TDM_SEQ_MAPPING</Table>
+	 <Table>task_globals</Table>
   </Tables>
   <TablesProperties>
 	 <TableProperties name="task_exe_error_detailed">
@@ -43,8 +45,8 @@
     </TableProperties>
 	 <TableProperties name="TASK_EXECUTION">
       <Populations>
-        <Population name="populationTaskExecution.flow" order="1" disabled="false" populationType="Flow" />
         <Population name="populationJMX.flow" order="999" disabled="false" populationType="Flow" />
+        <Population name="populationTaskExecution.flow" order="1" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
 	 <TableProperties name="TASK_EXECUTION_LINK_ENTITIES">
@@ -55,6 +57,11 @@
 	 <TableProperties name="task_execution_list">
       <Populations>
         <Population name="populationTaskExecutionList.flow" order="2" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="task_exe_masking_fields">
+      <Populations>
+        <Population name="populationTaskExeMaskingFields.flow" order="2" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
 	 <TableProperties name="task_execution_override_attrs">
@@ -80,6 +87,11 @@
 	 <TableProperties name="TDM_SEQ_MAPPING">
       <Populations>
         <Population name="populationTdmSeqMapping.flow" order="2" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="task_globals">
+      <Populations>
+        <Population name="population.flow" order="3" disabled="false" populationType="FLOW" />
       </Populations>
     </TableProperties>
   </TablesProperties>
@@ -119,6 +131,10 @@
         <To tableType="TableObject" table="TDM_SEQ_MAPPING" populationObjectName="populationTdmSeqMapping.flow" column="task_execution_id" columnId="tblCol_4cddafdd4da040c49dab0615a03320d3" />
       </Relation>
 	  <Relation>
+        <From tableType="TableObject" table="TASK_EXECUTION" column="TASK_EXECUTION_ID" columnId="tblCol_e38506569e27408688f8e7f46f3c3eaf" />
+        <To tableType="TableObject" table="task_exe_masking_fields" populationObjectName="populationTaskExeMaskingFields.flow" column="task_execution_id" columnId="tblCol_te1masking0000000000000000000001" />
+      </Relation>
+	  <Relation>
         <From tableType="TableObject" table="tasks" column="task_id" columnId="tblCol_0c3317c310dc40ad9b7e7ee39ecb04a1" />
         <To tableType="TableObject" table="tdm_generate_task_field_mappings" populationObjectName="population.flow" column="task_id" columnId="task_id" />
       </Relation>
@@ -130,20 +146,26 @@
         <From tableType="TableObject" table="TASK_EXECUTION" column="TASK_EXECUTION_ID" columnId="tblCol_e38506569e27408688f8e7f46f3c3eaf" />
         <To tableType="TableObject" table="TASK_EXECUTION_LINK_ENTITIES" populationObjectName="populationTaskExecutionLinkEntities.flow" column="TASK_EXECUTION_ID" columnId="TASK_EXECUTION_ID" />
       </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="tasks" column="task_id" columnId="tblCol_0c3317c310dc40ad9b7e7ee39ecb04a1" />
+        <To tableType="TableObject" table="task_globals" populationObjectName="population.flow" column="task_id" columnId="task_id" />
+      </Relation>
   </DatabaseRelations>
   <DiagramGraph>
     <Graph name="vdb.k2vdb.xml">
       <Node name="task_exe_error_detailed" pos="938 306" viewType="Table" />
-      <Node name="task_exe_stats_detailed" pos="532 756" viewType="Table" />
-      <Node name="task_exe_stats_summary" pos="532 981" viewType="Table" />
-      <Node name="TASK_EXECUTION" pos="128 1081" viewType="Table" />
-      <Node name="TASK_EXECUTION_LINK_ENTITIES" pos="532 1656" viewType="Table" />
-      <Node name="task_execution_list" pos="532 1206" viewType="Table" />
+      <Node name="task_exe_stats_detailed" pos="532 831" viewType="Table" />
+      <Node name="task_exe_stats_summary" pos="532 1056" viewType="Table" />
+      <Node name="TASK_EXECUTION" pos="128 1156" viewType="Table" />
+      <Node name="TASK_EXECUTION_LINK_ENTITIES" pos="532 1731" viewType="Table" />
+      <Node name="task_execution_list" pos="532 1281" viewType="Table" />
+      <Node name="task_exe_masking_fields" pos="938 1281" viewType="Table" />
       <Node name="task_execution_override_attrs" pos="938 81" viewType="Table" />
       <Node name="task_ref_exe_stats" pos="938 531" viewType="Table" />
-      <Node name="tasks" pos="532 531" viewType="Table" />
+      <Node name="tasks" pos="532 606" viewType="Table" />
       <Node name="tdm_generate_task_field_mappings" pos="938 756" viewType="Table" />
-      <Node name="TDM_SEQ_MAPPING" pos="532 1431" viewType="Table" />
+      <Node name="TDM_SEQ_MAPPING" pos="532 1506" viewType="Table" />
+      <Node name="task_globals" pos="938 981" viewType="Table" />
     </Graph>
   </DiagramGraph>
 </VirtualDB>

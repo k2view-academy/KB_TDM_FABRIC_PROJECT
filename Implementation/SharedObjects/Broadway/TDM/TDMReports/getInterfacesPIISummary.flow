@@ -1,0 +1,29 @@
+tags: TDM,Masking
+stages:
+  Get Interface Summary:
+    actors:
+      getInterfacesPIISummary:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfacesPIISummary
+        out:
+          result:
+            external: InterfacesWithPIIFieldsList
+            schema: '#ref'
+schemas:
+  getInterfacesPIISummary.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema Name:
+          type: string
+        Total Number Of Datasets:
+          type: integer
+        Number Of Datasets With PII Fields:
+          type: integer
+        Number Of PII Fields:
+          type: integer

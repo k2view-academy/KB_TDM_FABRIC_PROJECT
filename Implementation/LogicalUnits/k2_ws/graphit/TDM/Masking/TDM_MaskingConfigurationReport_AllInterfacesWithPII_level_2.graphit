@@ -1,0 +1,34 @@
+{
+  "name": "TDM_MASKING_CONFIGURATION_REPORT_ALL_INTERFACES_WITH_PII_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "GetInterfacesWithPIIFields",
+      "type": "sql",
+      "code": "broadway k2_ws.getInterfacesPIISummary",
+      "children": [
+        {
+          "name": "AddInterfaceSensitivityToInterfacesList",
+          "type": "function",
+          "code": "if (InterfacesWithPIIFieldsList) {\n    var interfacesWithSensitive = {};\n    InterfacesWithPIIFieldsList.forEach(function(row) {\n        if (Number(row['Number Of Datasets With PII Fields'] || 0) > 0) {\n            interfacesWithSensitive[String(row['Interface Name'])] = true;\n        }\n    });\n    InterfacesWithPIIFieldsList.forEach(function(row) {\n        row['Interface Has Sensitive Fields'] = interfacesWithSensitive[String(row['Interface Name'])] === true ? 'Sensitive Fields' : 'Non-Sensitive Fields';\n    });\n}"
+        },
+        {
+          "name": "InterfacesWithPIIFieldsList",
+          "type": "variable",
+          "code": "InterfacesWithPIIFieldsList"
+        }
+      ]
+    }
+  ],
+  "params": [],
+  "description": "Returns the full list of interfaces with their PII field coverage (drill-through target for the Interfaces With PII Fields summary chart).",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

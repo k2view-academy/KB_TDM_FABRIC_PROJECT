@@ -24,6 +24,10 @@ ADD COLUMN IF NOT EXISTS target_max_no_of_workers bigint,
 ADD COLUMN IF NOT EXISTS source_affinity text,
 ADD COLUMN IF NOT EXISTS target_affinity text;
 
+ALTER TABLE ${@schema}.task_ref_exe_stats
+    ALTER COLUMN number_of_records_to_process TYPE bigint,
+    ALTER COLUMN number_of_processed_records TYPE bigint;
+
 -- handle old records of UPDATE public.task_execution_list
 WITH AffinitySource AS (
     -- 1. Calculate the final intended affinity values for both source and target environments.

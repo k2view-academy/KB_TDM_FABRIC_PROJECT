@@ -4,42 +4,36 @@
 
 package com.k2view.cdbms.usercode.lu.TDM_TableLevel.TableLevelUtils;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDM;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
+import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.findMatchedEntry;
+import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.fnGetInterfaceInfo;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTaskReferenceTableForSpecificTable;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.isComplexCatalogField;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.isComplexFieldValue;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
 
-import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.Globals;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.common.SharedGlobals;
-import com.k2view.cdbms.usercode.lu.TDM_TableLevel.*;
-import com.k2view.fabric.events.*;
-import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
-import java.lang.reflect.Field;
-
-import com.k2view.fabric.interfaceSchema.InterfaceSchemaLogic;
-
-import com.k2view.fabric.interfaceSchema.InterfaceSchemaLogic.TableInfoResult;
-
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetTaskReferenceTableForSpecificTable;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import static com.k2view.cdbms.usercode.lu.TDM_TableLevel.Globals.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
-import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.*;
 
 
 
@@ -191,7 +185,8 @@ public class Logic extends UserCode {
         public static Map<String, Object> fnGetAllTableDefinitions(String interfaceName, String schemaName,
                 String tableName) throws Exception {
             final String[] ATTRS = { "count_indicator", "record_count_flow", "table_order", "extract_flow", "delete_flow",
-                    "load_flow", "partition_count_source", "partition_records_flow", "inplace_masking_update_flow", "commit_size" };
+                    "load_flow", "partition_count_source", "partition_records_flow", "inplace_masking_update_flow", "commit_size",
+                    "table_info_mapping_flow" };
             Map<String, Object> finalResult = new HashMap<>();
 
             // Initial Setup
@@ -240,6 +235,11 @@ public class Logic extends UserCode {
             if (commitSize == null || "".equals(commitSize.toString())) {
                 String globalDefault = getGlobal("TDM_REF_UPD_SIZE", getLuType().luName);
                 finalResult.put("commit_size", !"".equals(globalDefault) ? globalDefault : "1000");
+            }
+
+            Object sourceToTargetMappingFlow = finalResult.get("table_info_mapping_flow");
+            if (sourceToTargetMappingFlow == null || "".equals(sourceToTargetMappingFlow.toString())) {
+                finalResult.put("table_info_mapping_flow", "DefaultSourceTargetMappingData");
             }
 
             return finalResult;
@@ -414,11 +414,24 @@ public class Logic extends UserCode {
                 }
             }
 
-            // E. Load Target Database Information (Interface/Schema mappings from RefList)
-            Map<String, Object> tarInfo = fnLoadTargetInfoFromRefList(interfaceName, schemaName, tableName, luName);
+
+            // E. Load Target/Source Database Information (Interface/Schema mappings from RefList or a custom flow)
+            String mappingFlowName = sanitizeDslToken((String) defs.get("table_info_mapping_flow"));
+            Db.Row mappingRow = fabric().fetch(
+                    "broadway " + "TDM_TableLevel" + "." + mappingFlowName + " interfaceName=?, schemaName=?, tableName=?, luName=?",
+                    interfaceName, schemaName, tableName, luName).firstRow();
+            Map<String, Object> mappingResult = (Map<String, Object>) mappingRow.get("result");
+
+            Map<String, Object> tarInfo = new HashMap<>();
+            tarInfo.put("target_ref_table_name", mappingResult.get("target_ref_table_name"));
+            tarInfo.put("target_interface_name", mappingResult.get("target_interface_name"));
+            tarInfo.put("target_schema_name", mappingResult.get("target_schema_name"));
             allDataContainer.put(KEY_TAR_INFO, tarInfo);
 
-            Map<String, Object> srcInfo = fnLoadSourceInfoFromRefList(interfaceName, schemaName, tableName, luName);
+            Map<String, Object> srcInfo = new HashMap<>();
+            srcInfo.put("source_ref_table_name", mappingResult.get("source_ref_table_name"));
+            srcInfo.put("source_interface_name", mappingResult.get("source_interface_name"));
+            srcInfo.put("source_schema_name", mappingResult.get("source_schema_name"));
             allDataContainer.put(KEY_SOURCE_INFO, srcInfo);
 
             // F. Store Calculated Execution Order
@@ -443,10 +456,10 @@ public class Logic extends UserCode {
 
         private static Map<String, Object> fnGetTaskInfo(Long taskExecutionId) throws SQLException {
             Map<String, Object> taskInfo = new HashMap<>();
-            String sql = "SELECT distinct t.task_id, t.delete_before_load, t.load_entity, " +
-                    "t.retention_period_value, t.task_title, t.environment_id, t.source_environment_id, t.source_env_name, e.run_type "
+            String sql = "SELECT t.task_id, t.delete_before_load, t.load_entity, " +
+                    "t.retention_period_value, t.task_title, t.environment_id, t.source_environment_id, t.source_env_name "
                     +
-                    "FROM " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".task_execution_list e " +
+                    "FROM " + getTDMDBSchema() + ".tasks t, " + getTDMDBSchema() + ".task_execution_list e " +
                     "WHERE t.task_id = e.task_id AND e.task_execution_id = ?";
 
             Db.Row row = db(TDM).fetch(sql, taskExecutionId).firstRow();
@@ -456,11 +469,10 @@ public class Logic extends UserCode {
                 taskInfo.put("deleteBeforeLoad", row.get("delete_before_load"));
                 taskInfo.put("loadEntity", row.get("load_entity"));
                 taskInfo.put("retentionPeriodValue", row.get("retention_period_value"));
-                taskInfo.put("taskTitle", row.get("task_title"));
+                taskInfo.put("taskTitle", sanitizeDslToken((String) row.get("task_title")));
                 taskInfo.put("targetEnvId", row.get("environment_id"));
                 taskInfo.put("sourceEnvId", row.get("source_environment_id"));
                 taskInfo.put("sourceEnvName", row.get("source_env_name"));
-                taskInfo.put("runType", row.get("run_type"));
 
             }
             return taskInfo;
@@ -616,6 +628,7 @@ public class Logic extends UserCode {
                         MTable.Feature.caseInsensitive);
                 if (results != null) {
                     for (Map<String, Object> row : results) {
+                        if (isComplexCatalogField(row) || isComplexFieldValue(row)) continue;
                         Object fieldName = row.get("field");
                         if (fieldName != null && !fieldName.toString().isEmpty()) {
                             pkFields.add(fieldName.toString());
@@ -649,6 +662,8 @@ public class Logic extends UserCode {
 
                 if (results != null) {
                     for (Map<String, Object> row : results) {
+                        if (isComplexCatalogField(row) || isComplexFieldValue(row)) continue;
+
                         Object fieldName = row.get("field");
                         if (fieldName == null || fieldName.toString().isEmpty())
                             continue;
@@ -704,37 +719,14 @@ public class Logic extends UserCode {
             targetInfo.put("target_interface_name", interfaceName);
             targetInfo.put("target_schema_name", schemaName);
 
-            Map<String, Object> lookupInputs = new HashMap<>();
-            lookupInputs.put("lu_name", luName);
-            lookupInputs.put("interface_name", interfaceName);
-            lookupInputs.put("schema_name", schemaName);
-            lookupInputs.put("reference_table_name", tableName);
-
-            // 1. Try exact match lookup
-            List<Map<String, Object>> refList = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
-
-            // 2. Dynamic Schema Fallback (If exact match fails)
-            if ((refList == null || refList.isEmpty()) && schemaName != null && !schemaName.isEmpty()) {
-                lookupInputs.remove("schema_name");
-                List<Map<String, Object>> refListNoSchema = MtableLookup("RefList", lookupInputs,
-                        MTable.Feature.caseInsensitive);
-
-                Map<String, Object> matched = findMatchedEntry(refListNoSchema, luName, "schema_name");
-                if (matched != null) {
-                    updateTargetInfoMap(targetInfo, matched);
-                    return targetInfo;
-                }
+            Map<String, Object> matched = findRefListEntry(interfaceName, schemaName, tableName, luName);
+            if (matched != null) {
+                updateTargetInfoMap(targetInfo, matched);
             }
-
-            // 3. Final assignment if exact match was found
-            if (refList != null && !refList.isEmpty()) {
-                updateTargetInfoMap(targetInfo, refList.get(0));
-            }
-
             return targetInfo;
         }
 
-        private static Map<String, Object> fnLoadSourceInfoFromRefList(String interfaceName, String schemaName,
+        public static Map<String, Object> fnLoadSourceInfoFromRefList(String interfaceName, String schemaName,
                 String tableName, String luName) throws Exception {
             Map<String, Object> sourceInfo = new HashMap<>();
 
@@ -743,36 +735,80 @@ public class Logic extends UserCode {
             sourceInfo.put("source_interface_name", interfaceName);
             sourceInfo.put("source_schema_name", schemaName);
 
+            Map<String, Object> matched = findRefListEntry(interfaceName, schemaName, tableName, luName);
+            if (matched != null) {
+                updateSourceInfoMap(sourceInfo, matched);
+            }
+            return sourceInfo;
+        }
+
+        // Shared RefList lookup cascade used by both fnLoadTargetInfoFromRefList and fnLoadSourceInfoFromRefList:
+        // 1. exact match -> 2. global schema (table fixed) -> 3. schema-level default (table blank) ->
+        // 4. global schema (table blank) -> 5. interface-level default (schema dropped, table still blank)
+        private static Map<String, Object> findRefListEntry(String interfaceName, String schemaName, String tableName,
+                String luName) throws Exception {
             Map<String, Object> lookupInputs = new HashMap<>();
             lookupInputs.put("lu_name", luName);
             lookupInputs.put("interface_name", interfaceName);
             lookupInputs.put("schema_name", schemaName);
             lookupInputs.put("reference_table_name", tableName);
 
-            // 1. Try exact match lookup
+            // 1. Exact match
             List<Map<String, Object>> refList = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
+            if (refList != null && !refList.isEmpty()) {
+                return refList.get(0);
+            }
 
-            // 2. Dynamic Schema Fallback (If exact match fails)
-            if ((refList == null || refList.isEmpty()) && schemaName != null && !schemaName.isEmpty()) {
+            boolean hasSchema = schemaName != null && !schemaName.isEmpty();
+
+            // 2. Global schema fallback (table still fixed)
+            if (hasSchema) {
                 lookupInputs.remove("schema_name");
-                List<Map<String, Object>> refListNoSchema = MtableLookup("RefList", lookupInputs,
-                        MTable.Feature.caseInsensitive);
+                List<Map<String, Object>> refListNoSchema = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
+                Map<String, Object> globalMatch = findMatchedEntry(refListNoSchema, luName, "schema_name");
+                if (globalMatch != null) {
+                    return globalMatch;
+                }
+                lookupInputs.put("schema_name", schemaName);
+            }
 
-                Map<String, Object> matched = findMatchedEntry(refListNoSchema, luName, "schema_name");
-                if (matched != null) {
-                    updateSourceInfoMap(sourceInfo, matched);
-                    return sourceInfo;
+            // 3. Schema-level default row (table removed)
+            lookupInputs.put("reference_table_name", null);
+            List<Map<String, Object>> refListNoTable = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
+            Map<String, Object> schemaDefault = findEntryWithEmptyReferenceTable(refListNoTable);
+            if (schemaDefault != null) {
+                return schemaDefault;
+            }
+
+            // 4. Global schema fallback (table removed)
+            if (hasSchema) {
+                lookupInputs.remove("schema_name");
+                List<Map<String, Object>> refListNoTableNoSchema = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
+                Map<String, Object> globalDefault = findMatchedEntry(refListNoTableNoSchema, luName, "schema_name");
+                if (globalDefault != null) {
+                    return globalDefault;
                 }
             }
 
-            // 3. Final assignment if exact match was found
-            if (refList != null && !refList.isEmpty()) {
-                updateSourceInfoMap(sourceInfo, refList.get(0));
-            }
-
-            return sourceInfo;
+            // 5. Interface-level default row (schema removed entirely, reference_table_name still required blank)
+            lookupInputs.remove("schema_name");
+            List<Map<String, Object>> refListInterfaceOnly = MtableLookup("RefList", lookupInputs, MTable.Feature.caseInsensitive);
+            return findEntryWithEmptyReferenceTable(refListInterfaceOnly);
         }
 
+
+        private static Map<String, Object> findEntryWithEmptyReferenceTable(List<Map<String, Object>> entries) {
+            if (entries == null) {
+                return null;
+            }
+            for (Map<String, Object> entry : entries) {
+                Object refTable = entry.get("reference_table_name");
+                if (refTable == null || "".equals(refTable.toString())) {
+                    return entry;
+                }
+            }
+            return null;
+        }
 
         private static String resolveSchemaIfGlobal(String schemaValue, String envGlobalName) throws Exception {
             if (schemaValue == null || !schemaValue.startsWith("@")) {
@@ -977,7 +1013,7 @@ public class Logic extends UserCode {
             Integer order = 0;
             try {
                 Object orderVal = db(TDM).fetch(
-                        "SELECT table_order FROM " + TDMDB_SCHEMA + ".task_ref_exe_stats " +
+                        "SELECT table_order FROM " + getTDMDBSchema() + ".task_ref_exe_stats " +
                         "WHERE task_execution_id = ? AND interface_name = ? AND schema_name = ? AND ref_table_name = ? LIMIT 1",
                         taskExecutionId, interfaceName, schemaName, tableName).firstValue();
                 if (orderVal != null && !orderVal.toString().isEmpty()) {
@@ -990,8 +1026,8 @@ public class Logic extends UserCode {
             boolean isInPlaceMasking = false;
             try {
                 Object flag = db(TDM).fetch(
-                        "SELECT t.in_place_masking_ind FROM " + TDMDB_SCHEMA + ".tasks t " +
-                        "JOIN " + TDMDB_SCHEMA + ".task_execution_list e ON t.task_id = e.task_id " +
+                        "SELECT t.in_place_masking_ind FROM " + getTDMDBSchema() + ".tasks t " +
+                        "JOIN " + getTDMDBSchema() + ".task_execution_list e ON t.task_id = e.task_id " +
                         "WHERE e.task_execution_id = ? LIMIT 1",
                         taskExecutionId).firstValue();
                 isInPlaceMasking = flag != null && Boolean.parseBoolean(flag.toString());

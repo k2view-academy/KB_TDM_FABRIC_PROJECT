@@ -16,3 +16,13 @@ ALTER TABLE ${@schema}.task_execution_list
 
 ALTER TABLE ${@schema}.task_execution_list
 DROP COLUMN IF EXISTS clean_redis;
+
+ALTER TABLE ${@schema}.task_ref_exe_stats
+    ADD COLUMN IF NOT EXISTS table_filter text,
+    ADD COLUMN IF NOT EXISTS filter_type text;
+
+ALTER TABLE ${@schema}.tasks ALTER COLUMN source_environment_id DROP NOT NULL;
+ALTER TABLE ${@schema}.tasks ALTER COLUMN source_env_name DROP NOT NULL;
+ALTER TABLE ${@schema}.tasks ALTER COLUMN be_id DROP NOT NULL;
+ALTER TABLE ${@schema}.tasks ALTER COLUMN environment_id DROP NOT NULL;
+ALTER TABLE ${@schema}.task_execution_entities ALTER COLUMN target_entity_id DROP NOT NULL;

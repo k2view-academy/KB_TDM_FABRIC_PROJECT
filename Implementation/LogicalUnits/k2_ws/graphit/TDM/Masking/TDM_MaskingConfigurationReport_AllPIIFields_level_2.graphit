@@ -1,0 +1,42 @@
+{
+  "name": "TDM_MASKING_CONFIGURATION_REPORT_ALL_PII_FIELDS_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "GetInterfacesTableFieldsList",
+      "type": "sql",
+      "code": "broadway k2_ws.getInterfacesTableFieldsListByInterface 'interfaceName'=${INTERFACE_NAME}",
+      "collapsed": true,
+      "children": [
+        {
+          "name": "StripActorSuffixFromInterfacesTableFieldsList",
+          "type": "function",
+          "code": "if (InterfacesTableFieldsList) {\n    InterfacesTableFieldsList.forEach(function(row) {\n        var dg = row['Data Generator'];\n        if (dg && dg.length > 6 && dg.substring(dg.length - 6).toLowerCase() === '.actor') {\n            row['Data Generator'] = dg.substring(0, dg.length - 6);\n        }\n    });\n}"
+        },
+        {
+          "name": "InterfacesTableFieldsList",
+          "type": "variable",
+          "code": "InterfacesTableFieldsList"
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "INTERFACE_NAME",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "description": "Returns the full cross-interface list of PII fields (drill-through target for the PII Fields summary chart). Pass a blank INTERFACE_NAME to return all interfaces.",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

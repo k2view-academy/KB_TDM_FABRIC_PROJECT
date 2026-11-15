@@ -12,7 +12,7 @@ import com.k2view.fabric.api.endpoint.Endpoint.*;
 import java.util.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.GET_RESERVED_ENTITIES_LIMIT;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnReleaseReservedEntity;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
@@ -187,15 +187,17 @@ public class Logic extends WebServiceUserCode {
 					"re.entity_id as target_entity_id, re.reserve_owner, re.start_datetime as reserve_date, " +
 					"re.end_datetime as expiration_date,  reserve_owner, reserve_consumers, reserve_notes, reserve_tags, ";
 		 
-		String sqlFromWhere = "FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES re " +  
-                      "LEFT OUTER JOIN " + TDMDB_SCHEMA + ".TASKS t ON re.task_id = t.task_id " +  
-                      "INNER JOIN " + TDMDB_SCHEMA + ".ENVIRONMENTS e ON re.env_id = e.environment_id " +  
-                      "INNER JOIN " + TDMDB_SCHEMA + ".BUSINESS_ENTITIES be ON re.be_id = be.be_id " +  
+		String sqlFromWhere = "FROM " + getTDMDBSchema() + ".TDM_RESERVED_ENTITIES re " +  
+                      "LEFT OUTER JOIN " + getTDMDBSchema() + ".TASKS t ON re.task_id = t.task_id " +  
+                      "INNER JOIN " + getTDMDBSchema() + ".ENVIRONMENTS e ON re.env_id = e.environment_id " +  
+                      "INNER JOIN " + getTDMDBSchema() + ".BUSINESS_ENTITIES be ON re.be_id = be.be_id " +  
                       "WHERE e.environment_status = 'Active' " +  
                       "AND (re.end_datetime IS NULL OR re.end_datetime >= timezone('UTC', now())) ";
 		
+		List<Object> fromWhereParams = new ArrayList<>();
 		if(entityId != null && !"".equals(entityId)) {
-			sqlFromWhere += " and entity_id = '" + entityId + "' ";
+			sqlFromWhere += " and entity_id = ? ";
+			fromWhereParams.add(entityId);
 		}
 		List<String> testerEnvs = new ArrayList<>();
 		List<String> ownerEnvs = new ArrayList<>();
@@ -256,35 +258,43 @@ public class Logic extends WebServiceUserCode {
 		
 		if (ownerEnvs.size() > 0) {
 			envOwnerFound = true;
-			sqlOwnerEnvList = " AND e.environment_id in (" + String.join(",", ownerEnvs) + ")";
+			sqlOwnerEnvList = " AND e.environment_id in (" + String.join(",", Collections.nCopies(ownerEnvs.size(), "?")) + ")";
 			sqlAllowEdit = " true as allow_edit ";
 		} 
 		
+		List<Object> allowEditParams = new ArrayList<>();
 		if (testerEnvs.size() > 0) {
 			testerEnvs.removeAll(ownerEnvs);
 			envTesterFound = true;
-			sqlTesterEnvList = " AND e.environment_id in (" + String.join(",", testerEnvs) + ")";
+			sqlTesterEnvList = " AND e.environment_id in (" + String.join(",", Collections.nCopies(testerEnvs.size(), "?")) + ")";
 			String userName = sessionUser().name();
-			sqlAllowEdit = "CASE WHEN re.reserve_owner = '" + userName + "' THEN true ELSE FALSE END AS allow_edit ";
-		} 
+			sqlAllowEdit = "CASE WHEN re.reserve_owner = ? THEN true ELSE FALSE END AS allow_edit ";
+			allowEditParams.add(userName);
+		}
 		
 		String limit = " order by task_execution_id desc ";
 		if (!"0".equals(GET_RESERVED_ENTITIES_LIMIT)) {
 			limit += " LIMIT " + GET_RESERVED_ENTITIES_LIMIT;
 		}
 		
+		List<Object> sqlParams = new ArrayList<>(allowEditParams);
+		sqlParams.addAll(fromWhereParams);
 		Db.Rows reservedList = null;
 		if (adminInd) {
 			sql += sqlAllowEdit + sqlFromWhere + limit;
-			reservedList =  db(TDM).fetch(sql);
+			reservedList =  db(TDM).fetch(sql, sqlParams.toArray());
 		} else {
-			if (envOwnerFound) { 
+			if (envOwnerFound) {
 				sql += sqlAllowEdit + sqlFromWhere + sqlOwnerEnvList + limit;
-				reservedList =  db(TDM).fetch(sql);
+				List<Object> ownerSqlParams = new ArrayList<>(sqlParams);
+				ownerSqlParams.addAll(ownerEnvs);
+				reservedList =  db(TDM).fetch(sql, ownerSqlParams.toArray());
 			} else{
 				if(envTesterFound) {
 					sql +=  sqlAllowEdit + sqlFromWhere + sqlTesterEnvList + limit;
-					reservedList =  db(TDM).fetch(sql);
+					List<Object> testerSqlParams = new ArrayList<>(sqlParams);
+					testerSqlParams.addAll(testerEnvs);
+					reservedList =  db(TDM).fetch(sql, testerSqlParams.toArray());
 				}
 			}
 		}
@@ -349,9 +359,9 @@ public class Logic extends WebServiceUserCode {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		
 		for (Map<String, String> entityInfo : listOfEntities) {
-			String envID = "" + db(TDM).fetch("SELECT environment_id FROM " + TDMDB_SCHEMA + ".environments " +
+			String envID = "" + db(TDM).fetch("SELECT environment_id FROM " + getTDMDBSchema() + ".environments " +
 					"WHERE environment_name =? AND environment_status = 'Active'", entityInfo.get("environment_name")).firstValue();
-			String beID = "" + db(TDM).fetch("SELECT be_id FROM " + TDMDB_SCHEMA + ".business_entities " +
+			String beID = "" + db(TDM).fetch("SELECT be_id FROM " + getTDMDBSchema() + ".business_entities " +
 					"WHERE be_name =? AND be_status = 'Active'", entityInfo.get("be_name")).firstValue();
 		
 			HashMap<String, Object> map = fnReleaseReservedEntity("" + entityInfo.get("target_entity_id"), envID, beID, "");
@@ -426,7 +436,7 @@ public class Logic extends WebServiceUserCode {
 		String userId = sessionUser().name();
 		String permissionGroup = fnGetUserPermissionGroup("");
 		
-		String origUpdateSql = "UPDATE " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES SET reserve_notes=? WHERE entity_id=? AND be_id =? AND env_id =? ";
+		String origUpdateSql = "UPDATE " + getTDMDBSchema() + ".TDM_RESERVED_ENTITIES SET reserve_notes=? WHERE entity_id=? AND be_id =? AND env_id =? ";
 		
 		//Sort input list based on Environment
 		Collections.sort(listOfEntities, new Comparator<Map<String, String>>() {
@@ -447,9 +457,9 @@ public class Logic extends WebServiceUserCode {
 		
 		for (Map<String, String> entityInfo : listOfEntities) {
 			updateSql = origUpdateSql;
-			String envID = "" + db(TDM).fetch("SELECT environment_id FROM " + TDMDB_SCHEMA + ".environments " +
+			String envID = "" + db(TDM).fetch("SELECT environment_id FROM " + getTDMDBSchema() + ".environments " +
 						"WHERE environment_name =? AND environment_status = 'Active'", entityInfo.get("environment_name")).firstValue();
-			String beID = "" + db(TDM).fetch("SELECT be_id FROM " + TDMDB_SCHEMA + ".business_entities " +
+			String beID = "" + db(TDM).fetch("SELECT be_id FROM " + getTDMDBSchema() + ".business_entities " +
 						"WHERE be_name =? AND be_status = 'Active'", entityInfo.get("be_name")).firstValue();
 			String entityID = entityInfo.get("target_entity_id");
 			
@@ -543,14 +553,14 @@ public class Logic extends WebServiceUserCode {
 		String userId = sessionUser().name();
 		String permissionGroup = fnGetUserPermissionGroup("");
 		
-		String getMaxDaysSql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
+		String getMaxDaysSql = "SELECT param_value from " + getTDMDBSchema() + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
 		
 		String maxReserveDays = "" + db(TDM).fetch(getMaxDaysSql).firstValue();
 		
 		String getMaxEndDateSql = "SELECT TO_CHAR(start_datetime + INTERVAL '" + maxReserveDays + 
-				" day', 'YYYYMMDDHH24MISS') as maxEndDate from " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =? ";
+				" day', 'YYYYMMDDHH24MISS') as maxEndDate from " + getTDMDBSchema() + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =? ";
 		
-		String origUpdateSql = "UPDATE " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES SET end_datetime=TO_TIMESTAMP(?, 'YYYYMMDDHH24MISS') WHERE entity_id=? AND be_id =? AND env_id =? ";
+		String origUpdateSql = "UPDATE " + getTDMDBSchema() + ".TDM_RESERVED_ENTITIES SET end_datetime=TO_TIMESTAMP(?, 'YYYYMMDDHH24MISS') WHERE entity_id=? AND be_id =? AND env_id =? ";
 		
 		//Sort input list based on Environment
 		Collections.sort(listOfEntities, new Comparator<Map<String, String>>() {
@@ -574,9 +584,9 @@ public class Logic extends WebServiceUserCode {
 			updateSql = origUpdateSql;
 			newEndDate = origNewEndDate;
 			
-			String envID = "" + db(TDM).fetch("SELECT environment_id FROM " + TDMDB_SCHEMA + ".environments " +
+			String envID = "" + db(TDM).fetch("SELECT environment_id FROM " + getTDMDBSchema() + ".environments " +
 						"WHERE environment_name =? AND environment_status = 'Active'", entityInfo.get("environment_name")).firstValue();
-			String beID = "" + db(TDM).fetch("SELECT be_id FROM " + TDMDB_SCHEMA + ".business_entities " +
+			String beID = "" + db(TDM).fetch("SELECT be_id FROM " + getTDMDBSchema() + ".business_entities " +
 						"WHERE be_name =? AND be_status = 'Active'", entityInfo.get("be_name")).firstValue();
 			String entityID = entityInfo.get("target_entity_id");
 			
@@ -790,11 +800,11 @@ public class Logic extends WebServiceUserCode {
 				//log.info("checkRetentionInfo: " + checkRetentionInfo);
 				if (userId.equals(reserveOwner)) {
 					if (checkRetentionInfo && startDateTime != null && !"null".equals(startDateTime)) {
-						String sql = "SELECT DATE_PART('day', (to_timestamp('" + endtDateTime + "', 'YYYYMMDDhh24MISS') " + 
-							" + INTERVAL '" + retentionValue + " " + retentionUnit + "') - " +
-							"to_timestamp('" + startDateTime + "', 'YYYYMMDDhh24MISS') ) ";
+						String sql = "SELECT DATE_PART('day', (to_timestamp(?, 'YYYYMMDDhh24MISS') " +
+							" + (? || ' ' || ?)::interval) - " +
+							"to_timestamp(?, 'YYYYMMDDhh24MISS') ) ";
 						//log.info("sql for retention period: " + sql);
-						float diffInDays = Float.parseFloat("" + db(TDM).fetch(sql).firstValue());
+						float diffInDays = Float.parseFloat("" + db(TDM).fetch(sql, endtDateTime, String.valueOf(retentionValue), retentionUnit, startDateTime).firstValue());
 						//log.info("maxReserveDays: " + maxReserveDays + ", diffInDays: " + diffInDays);
 						if (diffInDays > maxReserveDays) {
 							HashMap<String, Object> map = new HashMap<>();
@@ -811,16 +821,19 @@ public class Logic extends WebServiceUserCode {
 		
 					if (!checkRetentionInfo) {
 						if (newEndDateTime != null && !"".equals(newEndDateTime)) {
-							String sql = "SELECT DATE_PART('day', to_timestamp('" + newEndDateTime + "', 'YYYYMMDDhh24MISS') - ";
-							
+							List<Object> newEndDateParams = new ArrayList<>();
+							String sql = "SELECT DATE_PART('day', to_timestamp(?, 'YYYYMMDDhh24MISS') - ";
+							newEndDateParams.add(newEndDateTime);
+
 							if (startDateTime != null && !"null".equals(startDateTime)) {
-								sql += "to_timestamp('" + startDateTime + "', 'YYYYMMDDhh24MISS') ) ";
+								sql += "to_timestamp(?, 'YYYYMMDDhh24MISS') ) ";
+								newEndDateParams.add(startDateTime);
 							} else {
 								sql += "now())";
 							}
-							
+
 							//log.info("sql for new End datetime: " + sql);
-							float diffInDays = Float.parseFloat("" + db(TDM).fetch(sql).firstValue());
+							float diffInDays = Float.parseFloat("" + db(TDM).fetch(sql, newEndDateParams.toArray()).firstValue());
 							if (diffInDays > maxReserveDays) {
 								HashMap<String, Object> map = new HashMap<>();
 								map.put("id", entityID);
@@ -989,9 +1002,9 @@ public class Logic extends WebServiceUserCode {
 			return response;
 		}
 		
-		String reserveLimit_sql = "select allowed_number_of_reserved_entities from " + TDMDB_SCHEMA + ".environment_roles " +
+		String reserveLimit_sql = "select allowed_number_of_reserved_entities from " + getTDMDBSchema() + ".environment_roles " +
 			"where role_id = ? and environment_id = ?;";
-		String getUserReserveCnt_sql = "select count(1) from " + TDMDB_SCHEMA + ".tdm_reserved_entities " + 
+		String getUserReserveCnt_sql = "select count(1) from " + getTDMDBSchema() + ".tdm_reserved_entities " + 
 			"where env_id = ? and be_id = ? and reserve_owner = ? and end_datetime > CURRENT_TIMESTAMP";
 		
 		List<Map<String,Object>> targetRolesList = new ArrayList<>();
@@ -1010,8 +1023,8 @@ public class Logic extends WebServiceUserCode {
 			if (envName.equals(role.get("environment_name"))) {
 				envFound = true;
 				String roleId = "" + role.get("role_id");
-				String envId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments where environment_name = ? and environment_status = 'Active'", envName).firstValue();
-				String beId = "" + db(TDM).fetch("select be_id from " + TDMDB_SCHEMA + ".business_entities where be_name = ? and be_status = 'Active'", beName).firstValue();
+				String envId = "" + db(TDM).fetch("select environment_id from " + getTDMDBSchema() + ".environments where environment_name = ? and environment_status = 'Active'", envName).firstValue();
+				String beId = "" + db(TDM).fetch("select be_id from " + getTDMDBSchema() + ".business_entities where be_name = ? and be_status = 'Active'", beName).firstValue();
 				//log.info("roleId: " + roleId + ", envId: " + envId + ", beId: " + beId);
 				Long reserveLimit = (Long)db(TDM).fetch(reserveLimit_sql, roleId, envId).firstValue();
 				if (reserveLimit.intValue() < noOfEntities) {

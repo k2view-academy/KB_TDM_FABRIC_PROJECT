@@ -1,0 +1,112 @@
+{
+  "name": "TDM_MASKING_EXECUTION_REPORT_ALL_INTERFACES_WITH_PII_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "BindHelper",
+      "type": "function",
+      "code": "var bind = function (name) { return '${' + name + '}'; };"
+    },
+    {
+      "name": "TDMDBSchema",
+      "type": "function",
+      "code": "var TDMDB_SCHEMA;"
+    },
+    {
+      "name": "GetTDMDBSchemaName",
+      "type": "sql",
+      "code": "broadway k2_ws.getTDMDBSchema",
+      "sessionProvider": "fabric",
+      "children": [
+        {
+          "name": "TDMDB_SCHEMA",
+          "type": "function",
+          "code": "if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(String(schema))) throw new Error('Invalid TDM DB schema');\nTDMDB_SCHEMA = String(schema);"
+        }
+      ]
+    },
+    {
+      "name": "ValidateDates",
+      "type": "function",
+      "code": "if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(FROM_DATE))) throw new Error('Invalid FROM_DATE - expected yyyy-MM-dd');\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(END_DATE))) throw new Error('Invalid END_DATE - expected yyyy-MM-dd');"
+    },
+    {
+      "type": "function",
+      "code": "var minTaskExeID;"
+    },
+    {
+      "type": "function",
+      "code": "var maxTaskExeID;"
+    },
+    {
+      "type": "function",
+      "code": "var MASKING_CATALOG;"
+    },
+    {
+      "name": "Min&MaxTaskExeIDs",
+      "type": "sqlNonPrepared",
+      "code": "select min(task_execution_id) as min_task_execution_id, max(task_execution_id) as max_task_execution_id\nfrom \"${TDMDB_SCHEMA}\".task_execution_summary\nwhere creation_date >= ${bind('FROM_DATE')}::date and creation_date <  ${bind('END_DATE')}::date + 1;",
+      "sessionProvider": "TDM",
+      "children": [
+        {
+          "name": "minTaskExeID",
+          "type": "function",
+          "code": "minTaskExeID = min_task_execution_id;"
+        },
+        {
+          "name": "maxTaskExeID",
+          "type": "function",
+          "code": "maxTaskExeID = max_task_execution_id;"
+        }
+      ]
+    },
+    {
+      "name": "MaskingCatalog",
+      "type": "sqlNonPrepared",
+      "code": "WITH masking_info_tables AS (\n    SELECT DISTINCT mi.task_execution_id, mi.interface_name, mi.schema_name, mi.table_name, mi.catalog_hash\n    FROM \"${TDMDB_SCHEMA}\".task_execution_masking_info mi\n    WHERE mi.task_execution_id >= ${bind('minTaskExeID')}::bigint AND mi.task_execution_id <= ${bind('maxTaskExeID')}::bigint\n),\ncatalog_field_lines AS (\n    SELECT c.interface_name, c.schema_name, c.catalog_hash, r.line_no,\n        CASE WHEN strpos(r.rec[1], '\"') = 0 THEN array_replace(string_to_array(r.rec[1], ','), '', NULL)\n        ELSE ARRAY(SELECT NULLIF(CASE WHEN v.val[1] LIKE '\"%' THEN replace(substr(v.val[1], 2, length(v.val[1]) - 2), '\"\"', '\"') ELSE v.val[1] END, '')\n                   FROM regexp_matches(r.rec[1], '(?:^|,)(\"(?:[^\"]|\"\")*\"|[^,]*)', 'g') WITH ORDINALITY v(val, col_no) ORDER BY v.col_no)\n        END AS cells\n    FROM \"${TDMDB_SCHEMA}\".tdm_exe_catalog_field_info c\n    CROSS JOIN LATERAL regexp_matches(replace(c.csv_file, chr(65279), '') || chr(10), '((?:\"(?:[^\"]|\"\")*\"|[^\"\\r\\n])*)\\r?\\n', 'g') WITH ORDINALITY r(rec, line_no)\n    WHERE r.rec[1] <> ''\n    AND EXISTS (SELECT 1 FROM masking_info_tables mi WHERE mi.interface_name = c.interface_name AND mi.schema_name = c.schema_name AND mi.catalog_hash = c.catalog_hash)\n),\ncatalog_field_columns AS MATERIALIZED (\n    SELECT interface_name, schema_name, catalog_hash,\n        array_position(header, 'dataset') AS dataset_pos, array_position(header, 'class') AS class_pos,\n        array_position(header, 'field') AS field_pos, array_position(header, 'sqldatatype') AS sql_data_type_pos,\n        array_position(header, 'sourcedatatype') AS source_data_type_pos, array_position(header, 'definedby') AS defined_by_pos,\n        array_position(header, 'pii') AS pii_pos, array_position(header, 'classification') AS classification_pos\n    FROM (SELECT interface_name, schema_name, catalog_hash, ARRAY(SELECT lower(h) FROM unnest(cells) h) AS header\n          FROM catalog_field_lines WHERE line_no = 1) hdr\n),\ncatalog_fields AS MATERIALIZED (\n    SELECT d.interface_name, d.schema_name, d.catalog_hash,\n        d.cells[h.dataset_pos] AS dataset,\n        d.cells[h.class_pos] AS object_name,\n        d.cells[h.field_pos] AS field_name,\n        d.cells[h.sql_data_type_pos] AS sql_data_type,\n        d.cells[h.source_data_type_pos] AS source_data_type,\n        d.cells[h.defined_by_pos] AS defined_by,\n        d.cells[h.classification_pos] AS classification,\n        lower(d.cells[h.pii_pos]) = 'true' AS pii\n    FROM catalog_field_lines d\n    JOIN catalog_field_columns h ON h.interface_name = d.interface_name AND h.schema_name = d.schema_name AND h.catalog_hash = d.catalog_hash\n    WHERE d.line_no > 1\n),\nexecution_generator_csvs AS (\n    SELECT task_execution_id, md5(csv_file) AS csv_key, csv_file\n    FROM \"${TDMDB_SCHEMA}\".tdm_exe_catalog_classification_generators\n    WHERE task_execution_id >= ${bind('minTaskExeID')}::bigint AND task_execution_id <= ${bind('maxTaskExeID')}::bigint\n),\ngenerator_lines AS (\n    SELECT c.csv_key, r.line_no,\n        CASE WHEN strpos(r.rec[1], '\"') = 0 THEN array_replace(string_to_array(r.rec[1], ','), '', NULL)\n        ELSE ARRAY(SELECT NULLIF(CASE WHEN v.val[1] LIKE '\"%' THEN replace(substr(v.val[1], 2, length(v.val[1]) - 2), '\"\"', '\"') ELSE v.val[1] END, '')\n                   FROM regexp_matches(r.rec[1], '(?:^|,)(\"(?:[^\"]|\"\")*\"|[^,]*)', 'g') WITH ORDINALITY v(val, col_no) ORDER BY v.col_no)\n        END AS cells\n    FROM (SELECT DISTINCT ON (csv_key) csv_key, csv_file FROM execution_generator_csvs) c\n    CROSS JOIN LATERAL regexp_matches(replace(c.csv_file, chr(65279), '') || chr(10), '((?:\"(?:[^\"]|\"\")*\"|[^\"\\r\\n])*)\\r?\\n', 'g') WITH ORDINALITY r(rec, line_no)\n    WHERE r.line_no = 1 OR r.rec[1] ~* 'enable_masking'\n),\ngenerator_columns AS MATERIALIZED (\n    SELECT csv_key,\n        array_position(header, 'classification') AS classification_pos, array_position(header, 'generator') AS generator_pos,\n        array_position(header, 'consistent') AS consistent_pos, array_position(header, 'unique') AS unique_pos,\n        array_position(header, 'seed') AS seed_pos, array_position(header, 'description') AS description_pos,\n        array_position(header, 'category') AS category_pos\n    FROM (SELECT csv_key, ARRAY(SELECT lower(h) FROM unnest(cells) h) AS header FROM generator_lines WHERE line_no = 1) hdr\n),\nmasking_generators AS MATERIALIZED (\n    SELECT DISTINCT ON (d.csv_key, upper(d.cells[h.classification_pos]))\n        d.csv_key,\n        upper(d.cells[h.classification_pos]) AS classification_key,\n        d.cells[h.generator_pos] AS generator,\n        lower(d.cells[h.consistent_pos]) AS consistent,\n        lower(d.cells[h.unique_pos]) AS is_unique,\n        lower(d.cells[h.seed_pos]) AS seed,\n        d.cells[h.description_pos] AS description\n    FROM generator_lines d\n    JOIN generator_columns h ON h.csv_key = d.csv_key\n    WHERE d.line_no > 1\n    AND d.cells[h.classification_pos] IS NOT NULL\n    AND lower(d.cells[h.category_pos]) IN ('enable_masking', 'enable_masking_uniqueness')\n    ORDER BY d.csv_key, upper(d.cells[h.classification_pos]), CASE lower(d.cells[h.category_pos]) WHEN 'enable_masking' THEN 1 ELSE 2 END, d.line_no\n),\nexecution_generators AS (\n    SELECT DISTINCT eg.task_execution_id, eg.csv_key\n    FROM execution_generator_csvs eg\n    JOIN masking_info_tables mi ON mi.task_execution_id = eg.task_execution_id\n),\n-- The distinct masked tables per catalog copy (hash) and generators CSV - the fields are joined once per table and not per execution\ntable_keys AS MATERIALIZED (\n    SELECT DISTINCT t.interface_name, t.schema_name, t.catalog_hash, lower(t.table_name) AS table_key, eg.csv_key\n    FROM masking_info_tables t\n    JOIN execution_generators eg ON eg.task_execution_id = t.task_execution_id\n),\n-- The system (active product) of each masked interface - looked up once per interface and not per field\ninterface_systems AS MATERIALIZED (\n    SELECT i.interface_name,\n        (SELECT p.product_name FROM \"${TDMDB_SCHEMA}\".products p\n         WHERE p.product_status = 'Active' AND EXISTS (SELECT 1 FROM unnest(p.related_interfaces) ri WHERE upper(trim(ri)) = upper(i.interface_name))\n         LIMIT 1) AS system_name\n    FROM (SELECT DISTINCT interface_name FROM table_keys) i\n),\ntable_field_definitions AS (\n    SELECT DISTINCT\n        k.interface_name,\n        k.schema_name,\n        k.catalog_hash,\n        k.table_key,\n        k.csv_key AS generators_key,\n        sy.system_name,\n        fi.dataset,\n        fi.object_name,\n        fi.field_name,\n        CASE\n            WHEN lower(fi.source_data_type) IN ('object', 'array') OR fi.defined_by LIKE '%Class' OR fi.defined_by LIKE 'Collection(%'\n                THEN COALESCE(fi.defined_by, 'COMPLEX')\n            WHEN fi.sql_data_type IS NOT NULL THEN\n                CASE\n                    WHEN fi.sql_data_type::int IN (-7, -6, 5, 4, -5, 16) THEN 'INTEGER'\n                    WHEN fi.sql_data_type::int IN (6, 7, 8, 2, 3) THEN 'REAL'\n                    WHEN fi.sql_data_type::int = 12 THEN\n                        CASE\n                            WHEN upper(fi.source_data_type) IN ('DATETIME', 'DATE') THEN upper(fi.source_data_type)\n                            WHEN upper(fi.source_data_type) LIKE 'TIMESTAMP%' THEN 'DATETIME'\n                            WHEN upper(fi.source_data_type) LIKE 'TIME%' THEN 'TIME'\n                            ELSE 'TEXT'\n                        END\n                    WHEN fi.sql_data_type::int = 91 THEN 'DATE'\n                    WHEN fi.sql_data_type::int IN (92, 2013) THEN 'TIME'\n                    WHEN fi.sql_data_type::int IN (93, 2014) THEN 'DATETIME'\n                    WHEN fi.sql_data_type::int IN (-2, -3, -4, 1111, 2000, 2001, 2002, 2003, 2004, 2005, 2006, -8, 2011, 2012) THEN 'BLOB'\n                    ELSE 'TEXT'\n                END\n            WHEN fi.defined_by IN ('STRING', 'COLLECTION', 'UNKNOWN') THEN 'TEXT'\n            WHEN fi.defined_by = 'BYTES' THEN 'BLOB'\n            WHEN fi.defined_by = 'BOOLEAN' THEN 'INTEGER'\n            ELSE fi.defined_by\n        END AS data_type,\n        CASE WHEN gen.classification_key IS NOT NULL THEN fi.classification END AS classification,\n        CASE WHEN gen.generator LIKE '%.actor' THEN LEFT(gen.generator, LENGTH(gen.generator) - 6) ELSE gen.generator END AS data_generator,\n        CASE\n            WHEN gen.classification_key IS NULL THEN NULL\n            WHEN gen.consistent = 'false' THEN 'Random'\n            WHEN gen.is_unique = 'true' THEN 'Consistent & Unique'\n            WHEN gen.seed = 'true' THEN 'Consistent Using Seed'\n            ELSE 'Consistent Using Table'\n        END AS data_consistency,\n        gen.description AS masking_description\n    FROM table_keys k\n    LEFT JOIN interface_systems sy ON sy.interface_name = k.interface_name\n    JOIN catalog_fields fi ON fi.interface_name = k.interface_name AND fi.schema_name = k.schema_name AND fi.catalog_hash = k.catalog_hash\n        AND lower(fi.dataset) = k.table_key\n    LEFT JOIN masking_generators gen ON gen.csv_key = k.csv_key AND gen.classification_key = upper(fi.classification) AND fi.pii\n),\n-- The executions (with a source environment) of each masked table and generators CSV - every field row gets them, so the reports read the fields with unnest()\n-- and do not join task_execution_masking_info and the executions again\ntable_executions AS (\n    SELECT t.interface_name, t.schema_name, t.catalog_hash, lower(t.table_name) AS table_key, eg.csv_key,\n        array_agg(t.task_execution_id ORDER BY t.task_execution_id) AS task_execution_ids\n    FROM masking_info_tables t\n    JOIN execution_generators eg ON eg.task_execution_id = t.task_execution_id\n    -- Synthetic generations (no source environment) are not reported\n    JOIN \"${TDMDB_SCHEMA}\".task_execution_summary e ON e.task_execution_id = t.task_execution_id AND e.source_environment_id > 0\n    GROUP BY t.interface_name, t.schema_name, t.catalog_hash, lower(t.table_name), eg.csv_key\n)\nSELECT jsonb_build_object(\n    'fields', COALESCE((SELECT jsonb_agg((to_jsonb(d) - 'catalog_hash' - 'table_key' - 'generators_key')\n            || jsonb_build_object('task_execution_ids', te.task_execution_ids))\n        FROM table_field_definitions d\n        JOIN table_executions te ON te.interface_name = d.interface_name AND te.schema_name = d.schema_name\n            AND te.catalog_hash = d.catalog_hash AND te.table_key = d.table_key AND te.csv_key = d.generators_key), '[]'::jsonb),\n    -- The masked executions: at least one of their tables has a sensitive field (pii = true) in its catalog -\n    -- a sensitive field is masked even when its classification has no masking generator (masked to null / empty)\n    'masked_executions', COALESCE((SELECT jsonb_agg(DISTINCT t.task_execution_id)\n        FROM masking_info_tables t\n        WHERE EXISTS (SELECT 1 FROM catalog_fields fi\n                      WHERE fi.interface_name = t.interface_name AND fi.schema_name = t.schema_name AND fi.catalog_hash = t.catalog_hash\n                      AND lower(fi.dataset) = lower(t.table_name) AND fi.pii)), '[]'::jsonb)\n)::text AS masking_catalog;",
+      "sessionProvider": "TDM",
+      "children": [
+        {
+          "type": "function",
+          "code": "MASKING_CATALOG = String(masking_catalog);"
+        }
+      ]
+    },
+    {
+      "name": "InterfacesWithPIIFieldsList",
+      "type": "sqlNonPrepared",
+      "code": "WITH masking_catalog AS (\n    SELECT ${bind('MASKING_CATALOG')}::jsonb AS catalog\n),\nexecution_fields AS (\n    SELECT x.task_execution_id, d.interface_name, d.schema_name, d.system_name, d.dataset, d.object_name, d.field_name,\n        d.data_type, d.classification, d.data_generator, d.data_consistency, d.masking_description\n    FROM masking_catalog c\n    CROSS JOIN jsonb_to_recordset(c.catalog -> 'fields') d(interface_name text, schema_name text, system_name text, dataset text,\n        object_name text, field_name text, data_type text, classification text, data_generator text, data_consistency text,\n        masking_description text, task_execution_ids bigint[])\n    CROSS JOIN LATERAL unnest(d.task_execution_ids) x(task_execution_id)\n)\nSELECT\n    m.interface_name AS \"Interface Name\",\n    m.schema_name AS \"Schema Name\",\n    e.source_env_name AS \"Source Environment\",\n    m.system_name AS \"System\",\n    COUNT(DISTINCT m.dataset) AS \"Total Number Of Datasets\",\n    COUNT(DISTINCT m.dataset) FILTER (WHERE m.classification IS NOT NULL) AS \"Number Of Datasets With PII Fields\",\n    COUNT(DISTINCT m.field_name) FILTER (WHERE m.classification IS NOT NULL) AS \"Number Of PII Fields\",\n    COUNT(DISTINCT m.task_execution_id) AS \"Total Number Of Executions\"\nFROM execution_fields m\nJOIN \"${TDMDB_SCHEMA}\".task_execution_summary e ON e.task_execution_id = m.task_execution_id\nWHERE e.source_environment_id > 0\nGROUP BY m.interface_name, m.schema_name, e.source_env_name, m.system_name\nHAVING COUNT(*) FILTER (WHERE m.classification IS NOT NULL) > 0\nORDER BY m.interface_name;",
+      "sessionProvider": "TDM"
+    }
+  ],
+  "params": [
+    {
+      "name": "TDMDB_SCHEMA",
+      "dataType": "String",
+      "description": "Ignored - the TDM DB schema is taken from the TDM.TDMDB_SCHEMA Fabric global",
+      "mandatory": false
+    },
+    {
+      "name": "FROM_DATE",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    },
+    {
+      "name": "END_DATE",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "description": "Returns the list of interfaces that had PII fields masked during executions in the given period (drill-through target for the Interfaces With PII Fields execution KPI).",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

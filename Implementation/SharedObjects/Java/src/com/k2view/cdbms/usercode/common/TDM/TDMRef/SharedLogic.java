@@ -19,23 +19,24 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
 import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.fnGetInterfaceType;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class SharedLogic {
 	private static final String TDM = "TDM";
 	private static final String TABLES = "TABLES";
-	private static final String TASKS = TDMDB_SCHEMA + ".tasks";
-	private static final String ENVIRONMENTS = TDMDB_SCHEMA + ".environments";
-	private static final String TASK_EXECUTION_LIST = TDMDB_SCHEMA + ".task_execution_list";
-	private static final String TASK_REF_TABLES = TDMDB_SCHEMA + ".TASK_REF_TABLES";
-	private static final String PRODUCT_LOGICAL_UNITS = TDMDB_SCHEMA + ".product_logical_units";
-	private static final String TASK_REF_EXE_STATS = TDMDB_SCHEMA + ".TASK_REF_EXE_STATS";
-	private static final String TASKS_LOGICAL_UNITS = TDMDB_SCHEMA + ".tasks_logical_units";
+	private static String tasks() { return getTDMDBSchema() + ".tasks"; }
+	private static String environments() { return getTDMDBSchema() + ".environments"; }
+	private static String taskExecutionList() { return getTDMDBSchema() + ".task_execution_list"; }
+	private static String taskRefTables() { return getTDMDBSchema() + ".TASK_REF_TABLES"; }
+	private static String productLogicalUnits() { return getTDMDBSchema() + ".product_logical_units"; }
+	private static String taskRefExeStats() { return getTDMDBSchema() + ".TASK_REF_EXE_STATS"; }
+	private static String tasksLogicalUnits() { return getTDMDBSchema() + ".tasks_logical_units"; }
 	private static final String TDM_REFERENCE = "fnTdmReference";
 	private static final String PENDING = "pending";
 	private static final String RUNNING = "running";
@@ -50,157 +51,155 @@ public class SharedLogic {
 	public static String fnTdmReference(String taskExecutionID, String taskType) throws Exception {
         //log.info("-- START Reference JOB for Task Type: " + taskType + " Task Execution ID: " + taskExecutionID + "---");
         Timestamp startTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc'").firstValue());
-        fabric().execute("set TDM_TASK_EXE_ID = " + taskExecutionID);
+        fabric().execute("set TDM_TASK_EXE_ID = ?", taskExecutionID);
         //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         //Date date = new Date();
         
-        Db.Rows refTabLst = null;
-        
-        String refQuery = "Select ES.* from " + TASK_REF_EXE_STATS + " ES, " + TASKS + " T where execution_status  in ('" + WAITING + "', '" + PENDING + "', '" + RESUME + "', '" + STOPPED + "') " +
+        String refQuery = "Select ES.* from " + taskRefExeStats() + " ES, " + tasks() + " T where execution_status  in ('" + WAITING + "', '" + PENDING + "', '" + RESUME + "', '" + STOPPED + "') " +
                 "and ES.TASK_ID = T.TASK_ID and lower(T.TASK_TYPE) = ? and ES.TASK_EXECUTION_ID = ? order by task_execution_id, task_id";
         
         //log.info("VVVV - refQuery: " + refQuery);
-        refTabLst = db(TDM).fetch(refQuery, taskType, taskExecutionID);
-        
         int refCount = 0;
         String batchID = "";
-        for (Db.Row row : refTabLst) {
-            refCount++;
-            Object taskRefTableID = row.get("task_ref_table_id");
-            Object refTableName = row.get("ref_table_name");
-            //log.info("fnTdmReference - refTableName: " + refTableName);
+        try (Db.Rows refTabLst = db(TDM).fetch(refQuery, taskType, taskExecutionID)) {
+            for (Db.Row row : refTabLst) {
+                refCount++;
+                Object taskRefTableID = row.get("task_ref_table_id");
+                Object refTableName = row.get("ref_table_name");
+                //log.info("fnTdmReference - refTableName: " + refTableName);
         
-            if (taskRefTableID != null && taskExecutionID != null) {
+                if (taskRefTableID != null && taskExecutionID != null) {
         
-                String luName = "" + db(TDM).fetch("Select lu_name from " + TASK_REF_TABLES + " where task_ref_table_id = ?", taskRefTableID).firstValue();
+                    String luName = "" + db(TDM).fetch("Select lu_name from " + taskRefTables() + " where task_ref_table_id = ?", taskRefTableID).firstValue();
         
-                String taskID = "" + row.get("task_id");
+                    String taskID = "" + row.get("task_id");
         
-                String execStatus = "" + row.get("execution_status");
+                    String execStatus = "" + row.get("execution_status");
         
-                //log.info("fnTdmReference - execution_status: " + execStatus);
+                    //log.info("fnTdmReference - execution_status: " + execStatus);
         
-                Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, e.environment_name as target_env_name, e.environment_id as environment_id, t.version_ind, " +
-                                "t.retention_period_type, t.retention_period_value, t.selection_method " +
-                                "from " + TASKS + " t, " + TASK_EXECUTION_LIST + " l, " + ENVIRONMENTS + " e " +
-                                "where task_execution_id = ? and l.task_id = ? and t.task_id = l.task_id and l.environment_id = e.environment_id ",
-                        taskExecutionID, taskID).firstRow();
+                    Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, e.environment_name as target_env_name, e.environment_id as environment_id, t.version_ind, " +
+                                    "t.retention_period_type, t.retention_period_value, t.selection_method " +
+                                    "from " + tasks() + " t, " + taskExecutionList() + " l, " + environments() + " e " +
+                                    "where task_execution_id = ? and l.task_id = ? and t.task_id = l.task_id and l.environment_id = e.environment_id ",
+                            taskExecutionID, taskID).firstRow();
         
-                String versionInd = "false";
-                if (taskParams.get("version_ind") != null) {
-                    versionInd = "" + taskParams.get("version_ind");
-                }
-                Object retPeriodType = taskParams.get("retention_period_type");
-                String retType = (retPeriodType != null) ? "" + retPeriodType : "";
-        
-                Object retPeriodVal = taskParams.get("retention_period_value");
-                Float retVal = (retPeriodVal != null) ? Float.valueOf(retPeriodVal.toString()) : 0;
-                Integer ttl = getRetention(retType, retVal);
-        
-                Db.Row luData = db(TDM).fetch("select p.lu_id from " + TASKS_LOGICAL_UNITS + " t, "
-                                + PRODUCT_LOGICAL_UNITS + " p where t.lu_name = ? and t.task_id = ? and t.lu_name = p.lu_name and t.lu_id = p.lu_id ",
-                        luName, taskID).firstRow();
-        
-                String luID = "" + luData.get("lu_id");
-                String uid = "";
-                if (row.get("batch_id") != null) {
-                    uid = "" + row.get("batch_id");
-                }
-        
-                String selectionMethod = "" + taskParams.get("selection_method");
-        
-                if (selectionMethod != null && selectionMethod.toString().equals(TABLES)) {
-                    Long unixTime = System.currentTimeMillis();
-                    Long unixTime_plus_retention;
-        
-                    String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis());
-                    Integer retention_in_seconds = getRetention(retType, retVal);
-        
-                    unixTime_plus_retention = (unixTime / 1000L + retention_in_seconds) * 1000;
-                    String versionExpirationDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(unixTime_plus_retention);
-        
-                    if (!STOPPED.equals(execStatus) && !RESUME.equals(execStatus)) {
-                        Object[] param;
-                        if (versionInd.equals("true")) {
-                            param = new Object[]{RUNNING, timeStamp, versionExpirationDate, taskExecutionID, taskID, luID};
-                        } else {
-                            param = new Object[]{RUNNING, null, null, taskExecutionID, taskID, luID};
-                        }
-        
-                        //log.info("fnTdmReference - Updating task to running for - task_execution_id: " + taskExecutionID +
-                        //		", task_id: " + taskID + ", lu_id: " + luID);
-        
-                        db(TDM).execute("update " + TASK_EXECUTION_LIST + " set execution_status = ?, " +
-                                "version_datetime = ?, version_expiration_date = ? " +
-                                "where task_execution_id = ? and task_id = ? and lu_id = ?", param);
+                    String versionInd = "false";
+                    if (taskParams.get("version_ind") != null) {
+                        versionInd = "" + taskParams.get("version_ind");
                     }
-                }
+                    Object retPeriodType = taskParams.get("retention_period_type");
+                    String retType = (retPeriodType != null) ? "" + retPeriodType : "";
         
-                String sourceEnv = "" + taskParams.get("source_env_name");
-                String targetEnv = "" + taskParams.get("target_env_name");
-                String environment_id = "" + taskParams.get("environment_id");
-                String selectedRefVersionTaskExeId = "";
-
-                try {
-                    switch (execStatus) {
-                        case STOPPED:
-                            //log.info("Stopping uid: " + uid);
-                            fabric().execute("batch_cancel '" + uid + "';");
-                            break;
-                        case RESUME:
-                            //log.info("Resuming uid: " + uid);
-                            if (!"".equals(uid)) {
-                                db(TDM).execute("UPDATE " + TASK_REF_EXE_STATS + " set execution_status=? where task_execution_id = ? " +
-                                        "and execution_status = 'resume' and ref_table_name = ?", RUNNING, taskExecutionID, refTableName);
-                                fabric().execute("batch_retry '" + uid + "'" + "allow_cancelled=true;");
+                    Object retPeriodVal = taskParams.get("retention_period_value");
+                    Float retVal = (retPeriodVal != null) ? Float.valueOf(retPeriodVal.toString()) : 0;
+                    Integer ttl = getRetention(retType, retVal);
+        
+                    Db.Row luData = db(TDM).fetch("select p.lu_id from " + tasksLogicalUnits() + " t, "
+                                    + productLogicalUnits() + " p where t.lu_name = ? and t.task_id = ? and t.lu_name = p.lu_name and t.lu_id = p.lu_id ",
+                            luName, taskID).firstRow();
+        
+                    String luID = "" + luData.get("lu_id");
+                    String uid = "";
+                    if (row.get("batch_id") != null) {
+                        uid = "" + row.get("batch_id");
+                    }
+        
+                    String selectionMethod = "" + taskParams.get("selection_method");
+        
+                    if (selectionMethod != null && selectionMethod.toString().equals(TABLES)) {
+                        Long unixTime = System.currentTimeMillis();
+                        Long unixTime_plus_retention;
+        
+                        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis());
+                        Integer retention_in_seconds = getRetention(retType, retVal);
+        
+                        unixTime_plus_retention = (unixTime / 1000L + retention_in_seconds) * 1000;
+                        String versionExpirationDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(unixTime_plus_retention);
+        
+                        if (!STOPPED.equals(execStatus) && !RESUME.equals(execStatus)) {
+                            Object[] param;
+                            if (versionInd.equals("true")) {
+                                param = new Object[]{RUNNING, timeStamp, versionExpirationDate, taskExecutionID, taskID, luID};
                             } else {
-                                db(TDM).execute("UPDATE " + TASK_REF_EXE_STATS + " set execution_status=? where task_execution_id = ? " +
-                                        "and execution_status = 'resume' and ref_table_name = ?", PENDING, taskExecutionID, refTableName);
+                                param = new Object[]{RUNNING, null, null, taskExecutionID, taskID, luID};
                             }
-                            //log.info("------------------------------------- After resume case ------------------------------------");
-                            break;
-                    }
-                } catch (Exception e) {
-                    log.error("Reference Table: <" + refTableName + "> handling had an exception: " + e);
-                    e.printStackTrace();
-                    if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException || e.getMessage().contains("already stopped or completed")) {
-                        throw e;
-                    }
-                    Timestamp endTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc'").firstValue());
-
-                    db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?,  updated_by = ? " +
-                                    "where task_execution_id = ? and task_ref_table_id = ? ",
-                            FAILED, e.getMessage(), TDM_REFERENCE, taskExecutionID, taskRefTableID);
-
-                    String sql = "update " + TDMDB_SCHEMA + ".task_execution_entities SET lu_name=?, entity_id=?, target_entity_id=?, creation_date=?, entity_end_time=?, entity_start_time=?, env_id=?, execution_status=?, id_type=?, fabric_execution_id=?, iid=?, source_env=?, fabric_get_time=?, total_processing_time=?, clone_no=? " +
-							"WHERE task_execution_id = ?";
-                    db(TDM).execute(sql, luName, refTableName, refTableName, startTime, endTime, startTime, environment_id, FAILED, "REFERENCE", batchID, refTableName, sourceEnv, null, null, "0",taskExecutionID);
-                    db(TDM).execute("update " + TDMDB_SCHEMA + ".task_execution_entities set total_processing_time = EXTRACT(EPOCH FROM(entity_end_time-entity_start_time)) " +
-                            "where task_execution_id = ? and entity_id = ? ", taskExecutionID, refTableName);
-
-                    String errSql= "INSERT INTO " + TDMDB_SCHEMA + ".task_exe_error_detailed(task_execution_id, lu_name, entity_id, iid, target_entity_id, error_category, error_code, error_message, creation_date) " +
-							"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)" ;
-                    db(TDM).execute(errSql, taskExecutionID, luName, refTableName, refTableName,refTableName,"Reference Failed","",e.getMessage(),startTime);
-
-                    //log.info("uid to cancel: " + uid);
-                    if (!"null".equals(uid)) {
-                        fabric().execute("cancel batch '" + uid + "';");
-                    }
-                }
         
+                            //log.info("fnTdmReference - Updating task to running for - task_execution_id: " + taskExecutionID +
+                            //		", task_id: " + taskID + ", lu_id: " + luID);
+        
+                            db(TDM).execute("update " + taskExecutionList() + " set execution_status = ?, " +
+                                    "version_datetime = ?, version_expiration_date = ? " +
+                                    "where task_execution_id = ? and task_id = ? and lu_id = ?", param);
+                        }
+                    }
+        
+                    String sourceEnv = "" + taskParams.get("source_env_name");
+                    String targetEnv = "" + taskParams.get("target_env_name");
+                    String environment_id = "" + taskParams.get("environment_id");
+                    String selectedRefVersionTaskExeId = "";
+
+                    try {
+                        switch (execStatus) {
+                            case STOPPED:
+                                //log.info("Stopping uid: " + uid);
+                                fabric().execute("batch_cancel ?;", uid);
+                                break;
+                            case RESUME:
+                                //log.info("Resuming uid: " + uid);
+                                if (!"".equals(uid)) {
+                                    db(TDM).execute("UPDATE " + taskRefExeStats() + " set execution_status=? where task_execution_id = ? " +
+                                            "and execution_status = 'resume' and ref_table_name = ?", RUNNING, taskExecutionID, refTableName);
+                                    fabric().execute("batch_retry ?" + "allow_cancelled=true;", uid);
+                                } else {
+                                    db(TDM).execute("UPDATE " + taskRefExeStats() + " set execution_status=? where task_execution_id = ? " +
+                                            "and execution_status = 'resume' and ref_table_name = ?", PENDING, taskExecutionID, refTableName);
+                                }
+                                //log.info("------------------------------------- After resume case ------------------------------------");
+                                break;
+                        }
+                    } catch (Exception e) {
+                        log.error("Reference Table: <" + refTableName + "> handling had an exception: " + e);
+                        e.printStackTrace();
+                        if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException || e.getMessage().contains("already stopped or completed")) {
+                            throw e;
+                        }
+                        Timestamp endTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc'").firstValue());
+
+                        db(TDM).execute("update " + taskRefExeStats() + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?,  updated_by = ? " +
+                                        "where task_execution_id = ? and task_ref_table_id = ? ",
+                                FAILED, e.getMessage(), TDM_REFERENCE, taskExecutionID, taskRefTableID);
+
+                        String sql = "update " + getTDMDBSchema() + ".task_execution_entities SET lu_name=?, entity_id=?, target_entity_id=?, creation_date=?, entity_end_time=?, entity_start_time=?, env_id=?, execution_status=?, id_type=?, fabric_execution_id=?, iid=?, source_env=?, fabric_get_time=?, total_processing_time=?, clone_no=? " +
+								"WHERE task_execution_id = ?";
+                        db(TDM).execute(sql, luName, refTableName, refTableName, startTime, endTime, startTime, environment_id, FAILED, "REFERENCE", batchID, refTableName, sourceEnv, null, null, "0",taskExecutionID);
+                        db(TDM).execute("update " + getTDMDBSchema() + ".task_execution_entities set total_processing_time = EXTRACT(EPOCH FROM(entity_end_time-entity_start_time)) " +
+                                "where task_execution_id = ? and entity_id = ? ", taskExecutionID, refTableName);
+
+                        String errSql= "INSERT INTO " + getTDMDBSchema() + ".task_exe_error_detailed(task_execution_id, lu_name, entity_id, iid, target_entity_id, error_category, error_code, error_message, creation_date) " +
+								"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)" ;
+                        db(TDM).execute(errSql, taskExecutionID, luName, refTableName, refTableName,refTableName,"Reference Failed","",e.getMessage(),startTime);
+
+                        //log.info("uid to cancel: " + uid);
+                        if (!"null".equals(uid)) {
+                            fabric().execute("cancel batch ?;", uid);
+                        }
+                    }
+        
+                }
+                //log.info("fnTdmReference - Handling next Ref table #" + refCount);
             }
-            //log.info("fnTdmReference - Handling next Ref table #" + refCount);
         }
         //log.info("fnTdmReference - After the loop on ref tables, refCount: " + refCount);
         //In case the task type was REF, but included LUs that do not have reference,or none of their reference were chosen, update the status to COMPLETE
         String lusWithoutRefSql = "select l.task_id, l.task_execution_id, l.lu_id " +
-                "from " + TASK_EXECUTION_LIST + " l, " + TASKS + " t, " + TASKS_LOGICAL_UNITS + " lu " +
+                "from " + taskExecutionList() + " l, " + tasks() + " t, " + tasksLogicalUnits() + " lu " +
                 "where l.task_id = t.task_id and t.selection_method = 'TABLES' and l.task_id = lu.task_id and l.lu_id = lu.lu_id and " +
                 "lower(l.execution_status) in ('pending', 'stopped') and " +
-                "not exists (select 1 from " + TASK_REF_TABLES + " r " +
+                "not exists (select 1 from " + taskRefTables() + " r " +
                 "where r.task_id = lu.task_id and r.lu_name = lu.lu_name) ";
 
-        String updateLuWithoutRefSql = "UPDATE " + TASK_EXECUTION_LIST + " SET execution_status = ?, num_of_processed_entities = 0, start_execution_time=?,  " +
+        String updateLuWithoutRefSql = "UPDATE " + taskExecutionList() + " SET execution_status = ?, num_of_processed_entities = 0, start_execution_time=?,  " +
                 "end_execution_time = current_timestamp at time zone 'utc', num_of_copied_entities = 0, num_of_failed_entities = 0, " +
                 "num_of_processed_ref_tables = 0, num_of_copied_ref_tables = 0, num_of_failed_ref_tables = 0 " +
                 "WHERE  task_id = ? AND task_execution_id = ? and lu_id = ? ";
@@ -216,8 +215,6 @@ public class SharedLogic {
                 db(TDM).execute(updateLuWithoutRefSql, COMPLETED, startTime, taskId, taskExecID, luId);
             }
         }
-        
-        refTabLst.close();
         
         lusWithoutRef.close();
         
@@ -308,6 +305,73 @@ public class SharedLogic {
 
     public static Object fnGetTableCountIndicator(String interfaceName, String schemaName, String tableName,
             String attrName, String mtableName, String luName) throws Exception {
+        Map<String, Object> row = resolveDefinitionRow(interfaceName, schemaName, tableName, mtableName, luName);
+        if (row == null) {
+            return "true";
+        }
+        Object v = row.get("count_indicator");
+        return (v != null && !v.toString().trim().isEmpty()) ? v : "true";
+    }
+
+    public static Boolean fnGetTablePartitionIndicator(String interfaceName, String schemaName, String tableName,
+            String mtableName, String luName) throws Exception {
+        return resolvePartitionCountSource(interfaceName, schemaName, tableName, mtableName, luName) != null;
+    }
+
+    public static Integer fnGetTablePartitionNum(String interfaceName, String schemaName, String tableName,
+            String mtableName, String luName) throws Exception {
+        Map<String, Object> row = resolveDefinitionRow(interfaceName, schemaName, tableName, mtableName, luName);
+        if (row == null) {
+            return null;
+        }
+        String v = partitionCountSourceOf(row);
+        if (v == null) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(v);
+        } catch (NumberFormatException e) {
+           if (!fnIsTableLevelPartitionFlowEnabled()) {
+                return null;
+            }
+            return fnRunTableLevelPartitionCountFlow(v, row, interfaceName, schemaName, tableName);
+        }
+    }
+
+    private static boolean fnIsTableLevelPartitionFlowEnabled() {
+        try {
+            Object paramValue = db(TDM)
+                    .fetch("SELECT PARAM_VALUE FROM " + getTDMDBSchema()
+                            + ".TDM_GENERAL_PARAMETERS WHERE PARAM_NAME = 'ENABLE_TABLE_LEVEL_PARTITION_FLOW'")
+                    .firstValue();
+            return paramValue != null && Boolean.parseBoolean(paramValue.toString());
+        } catch (Exception e) {
+            log.error("Error reading configuration parameter 'ENABLE_TABLE_LEVEL_PARTITION_FLOW'. Using default value: false. Error: "
+                    + e.getMessage());
+            return false;
+        }
+    }
+
+    private static Integer fnRunTableLevelPartitionCountFlow(String flowName, Map<String, Object> row,
+            String interfaceName, String schemaName, String tableName) throws Exception {
+        Object flowInputs = row.get("partition_flow_inputs");
+        Object result = fabric()
+                .fetch("broadway TDM_TableLevel." + sanitizeDslToken(flowName) + " interfaceName=?, schemaName=?, tableName=?, flowInputs=?",
+                        interfaceName, schemaName, tableName, flowInputs)
+                .firstValue();
+        return result == null ? null : Integer.parseInt(result.toString());
+    }
+
+    private static String resolvePartitionCountSource(String interfaceName, String schemaName, String tableName,
+            String mtableName, String luName) throws Exception {
+        Map<String, Object> row = resolveDefinitionRow(interfaceName, schemaName, tableName, mtableName, luName);
+        return row == null ? null : partitionCountSourceOf(row);
+    }
+
+    // Runs the table -> schema -> dynamic-schema -> schema-level -> interface-level (-> interface-type) cascade
+    // against TableLevelDefinitions (or RefList) and returns the first matched row found, or null if none matched.
+    private static Map<String, Object> resolveDefinitionRow(String interfaceName, String schemaName,
+            String tableName, String mtableName, String luName) throws Exception {
         Map<String, Object> lookupInputs = new HashMap<>();
         lookupInputs.put("interface_name", interfaceName);
         if (!"".equals(schemaName)) {
@@ -324,11 +388,7 @@ public class SharedLogic {
                 MTable.Feature.caseInsensitive);
 
         if (tableDefinitions != null && !tableDefinitions.isEmpty()) {
-            Object v = tableDefinitions.get(0).get("count_indicator");
-            if (v != null && !v.toString().trim().isEmpty()) {
-                return v;
-            } else
-                return "true";
+            return tableDefinitions.get(0);
         }
 
         // TDM 9.3.1 - dynamic schema check
@@ -340,12 +400,7 @@ public class SharedLogic {
             fabric().execute("set environment = ?", getGlobal("TDM_SOURCE_ENVIRONMENT_NAME","TDM_TableLevel"));
             Map<String, Object> matched = findMatchedEntry(tableDefinitions2, luName, "schema_name");
             if (matched != null) {
-                Object v = matched.get("count_indicator");
-                if (v != null && !v.toString().trim().isEmpty()) {
-                    return v;
-                } else {
-                    return "true";
-                }
+                return matched;
             }
             if (!"".equals(schemaName)) {
                 lookupInputs.put("schema_name", schemaName);
@@ -357,27 +412,26 @@ public class SharedLogic {
                 MTable.Feature.caseInsensitive);
 
         if (schemaDefinitions != null && !schemaDefinitions.isEmpty()) {
-            Object v = schemaDefinitions.get(0).get("count_indicator");
-            if (v != null && !v.toString().trim().isEmpty()) {
-                return v;
-            } else {
-                return "true";
-            }
+            return schemaDefinitions.get(0);
         }
 
-        // interface-level
+        // interface-level (fnGetInterfaceInfo falls back to interface-type when this is TableLevelDefinitions)
         lookupInputs.remove("schema_name");
         List<Map<String, Object>> interfaceDefinitions = fnGetInterfaceInfo(mtableName, lookupInputs, interfaceName);
         if (interfaceDefinitions != null && !interfaceDefinitions.isEmpty()) {
-            Object v = interfaceDefinitions.get(0).get("count_indicator");
-            if (v != null && !v.toString().trim().isEmpty()) {
-                return v;
-            } else {
-                return "true";
-            }
+            return interfaceDefinitions.get(0);
         }
 
-        return "true";
+        return null;
+    }
+
+    private static String partitionCountSourceOf(Map<String, Object> row) {
+        Object v = row.get("partition_count_source");
+        if (v == null) {
+            return null;
+        }
+        String s = v.toString().trim();
+        return s.isEmpty() ? null : s;
     }
 
     public static Map<String, Object> findMatchedEntry(List<Map<String, Object>> entries,
@@ -388,9 +442,7 @@ public class SharedLogic {
             Object schemaObj = entry.get(fieldName);
             String entrySchema = schemaObj != null ? schemaObj.toString() : "";
             if (entrySchema.startsWith("@")) {
-
                 return entry;
-
             }
         }
         return null;
