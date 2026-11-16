@@ -1,0 +1,312 @@
+tags: Masking
+stages:
+  PIIClassificationList:
+    actors:
+      buildPIIClassificationList:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: buildPIIClassificationList
+        out:
+          result:
+            external: PIIClassificationList
+            schema: '#ref'
+  Classifactions Count:
+    actors:
+      TotalNumberOfPIIClassifications:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var arr = [].concat(list);
+              arr.length;
+          list:
+            link: buildPIIClassificationList/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: TotalNumberOfPIIClassifications
+            schema: integer
+  Classifications Per Consistency List:
+    actors:
+      TotalNumberOfPIIClassificationsPerConsistencyList:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var arr = [].concat(list);
+              var counts = {
+                "Random": 0,
+                "Consistent Using Seed": 0,
+                "Consistent Using Table": 0,
+                "Consistent & Unique": 0
+              };
+
+              for (var i = 0; i < arr.length; i++) {
+                var consistency = arr[i]['Data Consistency'];
+                if (counts.hasOwnProperty(consistency)) {
+                  counts[consistency] = counts[consistency] + 1;
+                }
+              }
+
+              var order = ["Random", "Consistent Using Seed", "Consistent Using Table", "Consistent & Unique"];
+              var result = [];
+              for (var j = 0; j < order.length; j++) {
+                result.push({ "Consistency Type": order[j], "Count": counts[order[j]] });
+              }
+              result;
+          list:
+            link: buildPIIClassificationList/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: TotalNumberOfPIIClassificationsPerConsistencyList
+            schema: '#ref'
+  Classifications Per Generator:
+    actors:
+      MissingGenerator:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var arr = [].concat(list);
+              var counts = 0;
+
+              for (var i = 0; i < arr.length; i++) {
+                var generator = arr[i]['Data Generator'];
+                if (!generator) {
+                  counts++;
+                }
+              }
+
+              counts;
+          list:
+            link: buildPIIClassificationList/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: TotalNumberOfPIIClassificationsWithEmptyGenerators
+            schema: integer
+  Classifications Per Generator List:
+    actors:
+      TotalNumberOfPIIClassificationsPerGeneratorList:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var arr = [].concat(list);
+              var counts = {};
+
+              for (var i = 0; i < arr.length; i++) {
+                var generator = arr[i]['Data Generator'];
+                if (generator) {
+                  counts[generator] = (counts[generator] || 0) + 1;
+                }
+              }
+
+              var result = [];
+              for (var k in counts) {
+                result.push({ "Data Generator": k, "Count": counts[k] });
+              }
+              result.sort(function(a, b) {
+                return a['Data Generator'].localeCompare(b['Data Generator']);
+              });
+              result;
+          list:
+            link: buildPIIClassificationList/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: TotalNumberOfPIIClassificationsPerGeneratorList
+            schema: '#ref'
+  Data Generators Count:
+    actors:
+      TotalNumberOfDataGenerators:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var arr = [].concat(list);
+              var seen = {};
+              var count = 0;
+
+              for (var i = 0; i < arr.length; i++) {
+                var generator = arr[i]['Data Generator'];
+                if (generator && !seen[generator]) {
+                  seen[generator] = true;
+                  count++;
+                }
+              }
+
+              count;
+          list:
+            link: buildPIIClassificationList/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: TotalNumberOfDataGenerators
+            schema: integer
+schemas:
+  buildPIIClassificationList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string
+  TotalNumberOfPIIClassifications.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format: {
+          }
+  TotalNumberOfPIIClassificationsPerConsistencyList.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format: {
+          }
+  TotalNumberOfPIIClassificationsPerConsistencyList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Consistency Type:
+          type: string
+        Count:
+          type: integer
+  MissingGenerator.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format: {
+          }
+  MissingGenerator.out.result:
+    type: integer
+  TotalNumberOfPIIClassificationsPerGeneratorList.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format: {
+          }
+  TotalNumberOfPIIClassificationsPerGeneratorList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Data Generator:
+          type: string
+        Count:
+          type: integer
+  TotalNumberOfDataGenerators.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format: {
+          }

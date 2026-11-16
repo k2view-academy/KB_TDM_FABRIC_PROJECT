@@ -25,9 +25,19 @@
         {
           "name": "TDMDB_SCHEMA",
           "type": "function",
-          "code": "TDMDB_SCHEMA = schema;"
+          "code": "if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(String(schema))) throw new Error('Invalid TDM DB schema');\nTDMDB_SCHEMA = String(schema);"
         }
       ]
+    },
+    {
+      "name": "BindHelper",
+      "type": "function",
+      "code": "var bind = function (name) { return '${' + name + '}'; };"
+    },
+    {
+      "name": "ValidateDates",
+      "type": "function",
+      "code": "if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(FROM_DATE))) throw new Error('Invalid FROM_DATE - expected yyyy-MM-dd');\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(END_DATE))) throw new Error('Invalid END_DATE - expected yyyy-MM-dd');"
     },
     {
       "name": "TDMUsers",
@@ -35,7 +45,7 @@
         {
           "name": "NumberOfActiveUsers",
           "type": "sqlNonPrepared",
-          "code": "select count(*) as no_of_active_users\nfrom (\n    select distinct user_id\n    from \"${TDMDB_SCHEMA}\".activities\n    where date >= DATE '${FROM_DATE}'\n      and date <=  DATE '${END_DATE}' + 1 \n --   union\n --   select distinct task_executed_by as user_id\n --   from \"${TDMDB_SCHEMA}\".task_execution_summary\n --   where start_execution_time >= DATE '${FROM_DATE}'\n --   and start_execution_time <=  DATE '${END_DATE}' + 1 \n) a;\n",
+          "code": "select count(*) as no_of_active_users\nfrom (\n    select distinct user_id\n    from \"${TDMDB_SCHEMA}\".activities\n    where date >= ${bind('FROM_DATE')}::date\n      and date <=  ${bind('END_DATE')}::date + 1\n) a;",
           "sessionProvider": "TDM",
           "children": [
             {
@@ -48,7 +58,7 @@
         {
           "name": "NumberOfFabricRoles",
           "type": "sqlNonPrepared",
-          "code": "\tselect count(distinct fabric_role) as no_of_fabric_roles from \"${TDMDB_SCHEMA}\".permission_groups_mapping;\n\n",
+          "code": "\tselect count(distinct fabric_role) as no_of_fabric_roles from \"${TDMDB_SCHEMA}\".permission_groups_mapping;",
           "sessionProvider": "TDM"
         }
       ]
@@ -72,7 +82,7 @@
     {
       "name": "Min&MaxTasklDs",
       "type": "sqlNonPrepared",
-      "code": "select min(task_id) as min_task_id, max(task_id) as max_task_id \nfrom \"${TDMDB_SCHEMA}\".tasks \nwhere task_creation_date >= DATE '${FROM_DATE}' and task_creation_date <  DATE '${END_DATE}' + 1;",
+      "code": "select min(task_id) as min_task_id, max(task_id) as max_task_id\nfrom \"${TDMDB_SCHEMA}\".tasks\nwhere task_creation_date >= ${bind('FROM_DATE')}::date and task_creation_date <  ${bind('END_DATE')}::date + 1;",
       "sessionProvider": "TDM",
       "children": [
         {
@@ -90,7 +100,7 @@
     {
       "name": "Min&MaxTaskExelDs",
       "type": "sqlNonPrepared",
-      "code": "select min(task_execution_id) as min_task_execution_id, max(task_execution_id) as max_task_execution_id \nfrom \"${TDMDB_SCHEMA}\".task_execution_summary  \nwhere creation_date >= DATE '${FROM_DATE}' and creation_date <  DATE '${END_DATE}' + 1;",
+      "code": "select min(task_execution_id) as min_task_execution_id, max(task_execution_id) as max_task_execution_id\nfrom \"${TDMDB_SCHEMA}\".task_execution_summary\nwhere creation_date >= ${bind('FROM_DATE')}::date and creation_date <  ${bind('END_DATE')}::date + 1;",
       "sessionProvider": "TDM",
       "children": [
         {
@@ -106,12 +116,18 @@
       ]
     },
     {
+      "name": "ReportStatus",
+      "type": "sqlNonPrepared",
+      "code": "SELECT\n    CASE\n        WHEN cfg.systems = 0 AND cfg.environments = 0\n            THEN 'No TDM configuration was found. No active systems or environments are defined.'\n        WHEN cfg.systems = 0\n            THEN 'No TDM configuration was found. No active systems are defined.'\n        WHEN cfg.environments = 0\n            THEN 'No TDM configuration was found. No active environments are defined.'\n        WHEN ${bind('minTaskExeID')}::bigint IS NULL\n            THEN 'No task executions were found for the selected period.'\n        ELSE ''\n    END AS \"Message\"\nFROM (\n    SELECT\n        (SELECT count(*) FROM \"${TDMDB_SCHEMA}\".products WHERE product_status = 'Active') AS systems,\n        (SELECT count(*) FROM \"${TDMDB_SCHEMA}\".environments WHERE environment_status = 'Active') AS environments\n) cfg",
+      "sessionProvider": "TDM"
+    },
+    {
       "name": "TaskCreation",
       "children": [
         {
           "name": "TotalActiveTasks",
           "type": "sqlNonPrepared",
-          "code": "select count(*) from \"${TDMDB_SCHEMA}\".tasks  \n--and task_creation_date <  DATE '${END_DATE}' + 1;\nwhere task_id <= ${maxTaskID} \nand task_status = 'Active' ;",
+          "code": "select count(*) from \"${TDMDB_SCHEMA}\".tasks\nwhere task_id <= ${bind('maxTaskID')}::bigint\nand task_status = 'Active' ;",
           "sessionProvider": "TDM",
           "children": [
             {
@@ -124,7 +140,7 @@
         {
           "name": "TotalCrtdDuringReportPeriod",
           "type": "sqlNonPrepared",
-          "code": "select count(*) from \"${TDMDB_SCHEMA}\".tasks \n    --where  task_creation_date >= DATE '${FROM_DATE}' \n    --and task_creation_date < DATE '${END_DATE}' + 1; \n     where task_id >= ${minTaskID} \n     and task_id <= ${maxTaskID}",
+          "code": "select count(*) from \"${TDMDB_SCHEMA}\".tasks\n     where task_id >= ${bind('minTaskID')}::bigint\n     and task_id <= ${bind('maxTaskID')}::bigint",
           "sessionProvider": "TDM",
           "children": [
             {
@@ -158,7 +174,7 @@
         {
           "name": "TaskCrtdOverTimeline",
           "type": "sqlNonPrepared",
-          "code": "WITH params AS ( \n  SELECT\n    '${FROM_DATE}'::date         AS start_dt,\n    '${END_DATE}'::date          AS end_dt,\n    '${intervalValue}'::interval AS step_interval\n)\nSELECT\n  to_char(\n    CASE\n      WHEN gs + step_interval > end_dt THEN end_dt\n      ELSE gs\n    END,\n    'DD-MON'\n  ) AS exe_date,\n  COUNT(t.task_id) AS created_tasks\nFROM params\nJOIN generate_series(start_dt, end_dt, step_interval) gs ON true\nLEFT JOIN \"${TDMDB_SCHEMA}\".tasks t \n  ON t.task_creation_date >= gs\n AND t.task_creation_date < LEAST(gs + step_interval, end_dt + INTERVAL '1 day')\nGROUP BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END\nORDER BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END;\n----------------\n--WITH params AS (\n--  SELECT\n--    '${FROM_DATE}'::date      AS start_dt,\n--    '${END_DATE}'::date        AS end_dt,\n--    '${intervalValue}'::interval AS step_interval\n--)\n--SELECT\n--   LEAST(gs + step_interval, end_dt)::date AS exe_date,\n--  COUNT(t.task_id) AS created_tasks\n--FROM params\n--JOIN generate_series(start_dt, end_dt, step_interval) gs ON true\n--LEFT JOIN \"${TDMDB_SCHEMA}\".tasks t\n--  ON t.task_creation_date >= gs\n-- AND t.task_creation_date < LEAST(gs + step_interval, end_dt + INTERVAL '1 day')\n--GROUP BY gs, exe_date\n--ORDER BY gs;",
+          "code": "WITH params AS (\n  SELECT\n    ${bind('FROM_DATE')}::date         AS start_dt,\n    ${bind('END_DATE')}::date          AS end_dt,\n    ${bind('intervalValue')}::interval AS step_interval\n)\nSELECT\n  to_char(\n    CASE\n      WHEN gs + step_interval > end_dt THEN end_dt\n      ELSE gs\n    END,\n    'DD-MON'\n  ) AS exe_date,\n  COUNT(t.task_id) AS created_tasks\nFROM params\nJOIN generate_series(start_dt, end_dt, step_interval) gs ON true\nLEFT JOIN \"${TDMDB_SCHEMA}\".tasks t\n  ON t.task_creation_date >= gs\n AND t.task_creation_date < LEAST(gs + step_interval, end_dt + INTERVAL '1 day')\nGROUP BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END\nORDER BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END;",
           "sessionProvider": "TDM"
         }
       ]
@@ -169,7 +185,7 @@
         {
           "name": "TotalExeDuringReportPeriod",
           "type": "sqlNonPrepared",
-          "code": "\tselect count(*) from \"${TDMDB_SCHEMA}\".task_execution_summary \n    where task_execution_id >= ${minTaskExeID} \n     and task_execution_id <= ${maxTaskExeID} \n    --start_execution_time >= DATE '${FROM_DATE}' and start_execution_time <= DATE '${END_DATE}' + 1; ",
+          "code": "\tselect count(*) from \"${TDMDB_SCHEMA}\".task_execution_summary\n    where task_execution_id >= ${bind('minTaskExeID')}::bigint\n     and task_execution_id <= ${bind('maxTaskExeID')}::bigint",
           "sessionProvider": "TDM",
           "children": [
             {
@@ -182,19 +198,19 @@
         {
           "name": "TotalExeOverTimeline",
           "type": "sqlNonPrepared",
-          "code": "WITH params AS ( \n  SELECT\n    '${FROM_DATE}'::date         AS start_dt,\n    '${END_DATE}'::date          AS end_dt,\n    '${intervalValue}'::interval AS step_interval\n)\nSELECT\n  to_char(\n    CASE\n      WHEN gs + step_interval > end_dt THEN end_dt\n      ELSE gs\n    END,\n    'DD-MON'\n  ) AS exe_date,\n  COUNT(t.task_id) AS executed_tasks\nFROM params\nJOIN generate_series(start_dt, end_dt, step_interval) gs ON true\nLEFT JOIN \"${TDMDB_SCHEMA}\".task_execution_summary t\n  ON t.start_execution_time >= gs\n AND t.start_execution_time < LEAST(gs + step_interval, end_dt + INTERVAL '1 day')\nGROUP BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END\nORDER BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END;\n\n\n------------\n\n--WITH params AS (\n--  SELECT\n--    '${FROM_DATE}'::date      AS start_dt,\n--    '${END_DATE}'::date        AS end_dt,\n --   '${intervalValue}'::interval AS step_interval\n--)\n--SELECT\n--    LEAST(gs + step_interval, end_dt)::date AS exe_date,\n--  COUNT(t.task_id) AS executed_tasks\n--FROM params\n--JOIN generate_series(start_dt, end_dt, step_interval) gs ON true\n--LEFT JOIN \"${TDMDB_SCHEMA}\".task_execution_summary t\n--  ON t.start_execution_time >= gs\n-- AND t.start_execution_time < LEAST(gs + step_interval, end_dt + INTERVAL '1 day')\n--GROUP BY gs, exe_date\n--ORDER BY gs;\n",
+          "code": "WITH params AS (\n  SELECT\n    ${bind('FROM_DATE')}::date         AS start_dt,\n    ${bind('END_DATE')}::date          AS end_dt,\n    ${bind('intervalValue')}::interval AS step_interval\n)\nSELECT\n  to_char(\n    CASE\n      WHEN gs + step_interval > end_dt THEN end_dt\n      ELSE gs\n    END,\n    'DD-MON'\n  ) AS exe_date,\n  COUNT(t.task_id) AS executed_tasks\nFROM params\nJOIN generate_series(start_dt, end_dt, step_interval) gs ON true\nLEFT JOIN \"${TDMDB_SCHEMA}\".task_execution_summary t\n  ON t.start_execution_time >= gs\n AND t.start_execution_time < LEAST(gs + step_interval, end_dt + INTERVAL '1 day')\nGROUP BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END\nORDER BY\n  CASE\n    WHEN gs + step_interval > end_dt THEN end_dt\n    ELSE gs\n  END;",
           "sessionProvider": "TDM"
         },
         {
           "name": "NoOfExePerTaskType",
           "type": "sqlNonPrepared",
-          "code": "SELECT \n    COUNT(*) AS no_of_task_executions,\n    te.task_type,\n    te.processed_data\t\nFROM \n\t(\n        SELECT \n            e.task_execution_id,\n            e.environment_id AS target_env_id,\n            e.source_env_name,\n            e.be_id,\n            CASE \n                WHEN e.be_id < 0 THEN 'Tables'\n                WHEN e.be_id >= 0 AND tot_num_of_processed_ref_tables > 0 THEN 'Entities & Tables'\n                WHEN e.be_id > 0 THEN 'Entities'\n            END AS processed_data,\n            CASE \n                WHEN  t.in_place_masking_ind = true THEN 'In-place masking' \n      \t\t\tWHEN e.task_type = 'EXTRACT' THEN 'Extract' \n                WHEN e.task_type = 'LOAD'  AND t.sync_mode <> 'OFF' AND t.delete_before_load = true THEN 'Extract & Delete & Load' \n                WHEN e.task_type = 'LOAD' AND e.source_environment_id < 0 AND t.SELECTION_METHOD not in ('GENERATE', 'AI_GENERATED')  \n                     THEN 'Load SDG entities' \n                WHEN e.task_type = 'LOAD' AND t.SELECTION_METHOD = 'GENERATE' THEN 'Rule-based SDG & Load'\n      \t\t\tWHEN e.task_type = 'LOAD'  AND t.sync_mode <> 'OFF' THEN 'Extract & Load'\n                WHEN e.task_type = 'LOAD'  AND t.sync_mode =  'OFF' THEN 'Load only' \n                WHEN e.task_type = 'DELETE' THEN 'Delete only'\n                WHEN e.task_type = 'RESERVE' THEN 'Reserve only'\n                WHEN e.task_type = 'TRAINING' THEN 'AI training'\n                WHEN e.task_type = 'GENERATE' THEN 'Rule-based SDG'\n                WHEN e.task_type = 'AI_GENERATED' THEN 'AI-based SDG' \n                ELSE e.task_Type \n            END AS task_type\n        FROM \"${TDMDB_SCHEMA}\".task_execution_summary e\n        JOIN \"${TDMDB_SCHEMA}\".tasks t ON t.task_id = e.task_id\n        WHERE e.task_execution_id >= ${minTaskExeID} and e.task_execution_id <= ${maxTaskExeID} \n      --e.start_execution_time >= DATE '${FROM_DATE}' and e.start_execution_time <= DATE '${END_DATE}' + 1\n     ) te \nGROUP BY \n    te.task_type, te.processed_data;",
+          "code": "SELECT\n    COUNT(*) AS no_of_task_executions,\n    te.task_type,\n    te.processed_data\nFROM\n\t(\n        SELECT\n            e.task_execution_id,\n            e.environment_id AS target_env_id,\n            e.source_env_name,\n            e.be_id,\n            CASE\n                WHEN e.be_id < 0 THEN 'Tables'\n                WHEN e.be_id >= 0 AND tot_num_of_processed_ref_tables > 0 THEN 'Entities & Tables'\n                WHEN e.be_id > 0 THEN 'Entities'\n            END AS processed_data,\n            CASE\n                WHEN  t.in_place_masking_ind = true THEN 'In-place masking'\n      \t\t\tWHEN e.task_type = 'EXTRACT' THEN 'Extract'\n                WHEN e.task_type = 'LOAD'  AND t.sync_mode <> 'OFF' AND t.delete_before_load = true THEN 'Extract & Delete & Load'\n                WHEN e.task_type = 'LOAD' AND e.source_environment_id < 0 AND t.SELECTION_METHOD not in ('GENERATE', 'AI_GENERATED')\n                     THEN 'Load SDG entities'\n                WHEN e.task_type = 'LOAD' AND t.SELECTION_METHOD = 'GENERATE' THEN 'Rule-based SDG & Load'\n      \t\t\tWHEN e.task_type = 'LOAD'  AND t.sync_mode <> 'OFF' THEN 'Extract & Load'\n                WHEN e.task_type = 'LOAD'  AND t.sync_mode =  'OFF' THEN 'Load only'\n                WHEN e.task_type = 'DELETE' THEN 'Delete only'\n                WHEN e.task_type = 'RESERVE' THEN 'Reserve only'\n                WHEN e.task_type = 'TRAINING' THEN 'AI training'\n                WHEN e.task_type = 'GENERATE' THEN 'Rule-based SDG'\n                WHEN e.task_type = 'AI_GENERATED' THEN 'AI-based SDG'\n                ELSE e.task_Type\n            END AS task_type\n        FROM \"${TDMDB_SCHEMA}\".task_execution_summary e\n        JOIN \"${TDMDB_SCHEMA}\".tasks t ON t.task_id = e.task_id\n        WHERE e.task_execution_id >= ${bind('minTaskExeID')}::bigint and e.task_execution_id <= ${bind('maxTaskExeID')}::bigint\n     ) te\nGROUP BY\n    te.task_type, te.processed_data;",
           "sessionProvider": "TDM"
         },
         {
           "name": "Top5ExePerEnv",
           "type": "sqlNonPrepared",
-          "code": "WITH filtered_executions AS (\n    SELECT\n        te.task_execution_id,\n        te.environment_id,\n        te.source_environment_id,\n        te.source_env_name,\n        (te.environment_id = te.source_environment_id) AS equal_src_and_tar,\n        t.task_type,\n        t.in_place_masking_ind\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary te\n    JOIN \"${TDMDB_SCHEMA}\".tasks t\n      ON te.task_id = t.task_id\n    WHERE te.task_execution_id BETWEEN ${minTaskExeID} AND ${maxTaskExeID}\n),\n\n-- 1) One unified result set (env + env_type)\nexecutions AS (\n  -- Target or source and target env \n    SELECT\n        CASE       \n  \t\t  \tWHEN e.environment_name = 'Synthetic' THEN 'Rule-based SDG' \n          \tELSE e.environment_name\n         END AS environment_name,\n        CASE\n            WHEN fe.equal_src_and_tar THEN 'Source & target'\n            ELSE 'Target'\n        END AS env_type\n    FROM filtered_executions fe\n    JOIN \"${TDMDB_SCHEMA}\".environments e\n      ON fe.environment_id = e.environment_id\n    WHERE fe.task_type IN ('DELETE','RESERVE','LOAD','TRAINING')\n       OR fe.in_place_masking_ind = true\n\n    UNION ALL\n  -- Source env \n    SELECT\n        CASE\n            WHEN fe.source_env_name = 'Synthetic' THEN 'Rule-based SDG'\n            WHEN fe.source_env_name = 'AI' THEN 'AI-based SDG'\n            ELSE fe.source_env_name\n        END AS environment_name,\n        'Source' AS env_type\n    FROM filtered_executions fe\n    WHERE fe.in_place_masking_ind = false \n    AND fe.task_type NOT IN ('DELETE','RESERVE') \n    AND (fe.task_type in ('EXTRACT', 'GENERATE', 'AI_GENERATED') or fe.equal_src_and_tar = false)\n),\n\n-- 2) Top 5 environments by total executions\ntop_5_envs AS (\n    SELECT environment_name\n    FROM executions\n    GROUP BY environment_name\n    ORDER BY COUNT(*) DESC\n    LIMIT 5\n)\n\n-- 3) Breakdown for those 5 environments\nSELECT\n    e.environment_name,\n    e.env_type,\n    COUNT(*) AS no_of_executions\nFROM executions e\nJOIN top_5_envs t\n  ON e.environment_name = t.environment_name\nGROUP BY e.environment_name, e.env_type\nORDER BY no_of_executions DESC;",
+          "code": "WITH filtered_executions AS (\n    SELECT\n        te.task_execution_id,\n        te.environment_id,\n        te.source_environment_id,\n        te.source_env_name,\n        (te.environment_id = te.source_environment_id) AS equal_src_and_tar,\n        t.task_type,\n        t.in_place_masking_ind\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary te\n    JOIN \"${TDMDB_SCHEMA}\".tasks t\n      ON te.task_id = t.task_id\n    WHERE te.task_execution_id BETWEEN ${bind('minTaskExeID')}::bigint AND ${bind('maxTaskExeID')}::bigint\n),\n\nexecutions AS (\n    SELECT\n        CASE\n  \t\t  \tWHEN e.environment_name = 'Synthetic' THEN 'Rule-based SDG'\n          \tELSE e.environment_name\n         END AS environment_name,\n        CASE\n            WHEN fe.equal_src_and_tar THEN 'Source & target'\n            ELSE 'Target'\n        END AS env_type\n    FROM filtered_executions fe\n    JOIN \"${TDMDB_SCHEMA}\".environments e\n      ON fe.environment_id = e.environment_id\n    WHERE fe.task_type IN ('DELETE','RESERVE','LOAD','TRAINING')\n       OR fe.in_place_masking_ind = true\n\n    UNION ALL\n    SELECT\n        CASE\n            WHEN fe.source_env_name = 'Synthetic' THEN 'Rule-based SDG'\n            WHEN fe.source_env_name = 'AI' THEN 'AI-based SDG'\n            ELSE fe.source_env_name\n        END AS environment_name,\n        'Source' AS env_type\n    FROM filtered_executions fe\n    WHERE fe.in_place_masking_ind = false\n    AND fe.task_type NOT IN ('DELETE','RESERVE')\n    AND (fe.task_type in ('EXTRACT', 'GENERATE', 'AI_GENERATED') or fe.equal_src_and_tar = false)\n),\n\ntop_5_envs AS (\n    SELECT environment_name\n    FROM executions\n    GROUP BY environment_name\n    ORDER BY COUNT(*) DESC\n    LIMIT 5\n)\n\nSELECT\n    e.environment_name,\n    e.env_type,\n    COUNT(*) AS no_of_executions\nFROM executions e\nJOIN top_5_envs t\n  ON e.environment_name = t.environment_name\nGROUP BY e.environment_name, e.env_type\nORDER BY no_of_executions DESC;",
           "sessionProvider": "TDM"
         }
       ]
@@ -205,7 +221,7 @@
         {
           "name": "TotalEnvsPerType",
           "type": "sqlNonPrepared",
-          "code": "\tselect count(*) as no_of_environments, environment_type \n\tfrom \n\t(select environment_id, environment_name , \n\t  CASE \n\t\t  WHEN allow_read = true and allow_write = true THEN 'Source & target' \n\t\t  WHEN  allow_read = true and allow_write = false THEN 'Source' \n\t\t  WHEN  allow_read = false and allow_write = true THEN 'Target' \n\t   END as environment_type       \n\t from \"${TDMDB_SCHEMA}\".environments where environment_status = 'Active') e \n\t group by environment_type;",
+          "code": "\tselect count(*) as no_of_environments, environment_type\n\tfrom\n\t(select environment_id, environment_name ,\n\t  CASE\n\t\t  WHEN allow_read = true and allow_write = true THEN 'Source & target'\n\t\t  WHEN  allow_read = true and allow_write = false THEN 'Source'\n\t\t  WHEN  allow_read = false and allow_write = true THEN 'Target'\n\t   END as environment_type\n\t from \"${TDMDB_SCHEMA}\".environments where environment_status = 'Active') e\n\t group by environment_type;",
           "sessionProvider": "TDM",
           "children": [
             {
@@ -223,7 +239,7 @@
         {
           "name": "TotalSensitiveAndNonSensitiveEnvs",
           "type": "sqlNonPrepared",
-          "code": "select count(*) as no_of_environments, \n\tCASE\n\t\tWHEN mask_sensitive_data = true THEN 'Sensitive'\n        WHEN mask_sensitive_data = false THEN 'Non-sensitive'\n    END as mask_sensitive_data\nfrom \"${TDMDB_SCHEMA}\".environments where environment_status = 'Active' \ngroup by mask_sensitive_data;\n ",
+          "code": "select count(*) as no_of_environments,\n\tCASE\n\t\tWHEN mask_sensitive_data = true THEN 'Sensitive'\n        WHEN mask_sensitive_data = false THEN 'Non-sensitive'\n    END as mask_sensitive_data\nfrom \"${TDMDB_SCHEMA}\".environments where environment_status = 'Active'\ngroup by mask_sensitive_data;",
           "sessionProvider": "TDM",
           "children": [
             {
@@ -264,13 +280,13 @@
         {
           "name": "AvgLUPerBE",
           "type": "sqlNonPrepared",
-          "code": "select  ROUND(AVG(l.no_of_lus)) as avg\n\tfrom \n\t(select count(lu_id) as no_of_lus, be_id from \"${TDMDB_SCHEMA}\".product_logical_units group by be_id ) l;",
+          "code": "select  ROUND(AVG(l.no_of_lus)) as avg\n\tfrom\n\t(select count(lu_id) as no_of_lus, be_id from \"${TDMDB_SCHEMA}\".product_logical_units group by be_id ) l;",
           "sessionProvider": "TDM"
         },
         {
           "name": "NumberOfSystems",
           "type": "sqlNonPrepared",
-          "code": "\tselect count(*) as no_of_systems  from \"${TDMDB_SCHEMA}\".products where product_status = 'Active';\n",
+          "code": "\tselect count(*) as no_of_systems  from \"${TDMDB_SCHEMA}\".products where product_status = 'Active';",
           "sessionProvider": "TDM",
           "children": [
             {
@@ -288,7 +304,7 @@
         {
           "name": "TotalNumberOfTrainingAndGenerationExecutionsByMethod",
           "type": "sqlNonPrepared",
-          "code": "\tselect count(*) no_of_executions, \n\t\tCASE \n\t\t WHEN e.task_type = 'TRAINING' THEN 'AI training'\n\t\t WHEN e.task_type = 'GENERATE' THEN 'Rule-based SDG'\n\t\t WHEN e.task_type = 'AI_GENERATED' THEN 'AI-based SDG' \n\t\tEND as task_type \n\t\tfrom \"${TDMDB_SCHEMA}\".task_execution_summary e\n\t\tWHERE \n        e.task_execution_id >= ${minTaskExeID} and e.task_execution_id <= ${maxTaskExeID} \n        -- e.start_execution_time >= DATE '${FROM_DATE}'  and e.start_execution_time <= DATE '${END_DATE}' + 1 \n\t\tAND  e.task_type in ('TRAINING' , 'GENERATE', 'AI_GENERATED') \n\t\tgroup by e.task_type;",
+          "code": "\tselect count(*) no_of_executions,\n\t\tCASE\n\t\t WHEN e.task_type = 'TRAINING' THEN 'AI training'\n\t\t WHEN e.task_type = 'GENERATE' THEN 'Rule-based SDG'\n\t\t WHEN e.task_type = 'AI_GENERATED' THEN 'AI-based SDG'\n\t\tEND as task_type\n\t\tfrom \"${TDMDB_SCHEMA}\".task_execution_summary e\n\t\tWHERE\n        e.task_execution_id >= ${bind('minTaskExeID')}::bigint and e.task_execution_id <= ${bind('maxTaskExeID')}::bigint\n\t\tAND  e.task_type in ('TRAINING' , 'GENERATE', 'AI_GENERATED')\n\t\tgroup by e.task_type;",
           "sessionProvider": "TDM",
           "children": [
             {

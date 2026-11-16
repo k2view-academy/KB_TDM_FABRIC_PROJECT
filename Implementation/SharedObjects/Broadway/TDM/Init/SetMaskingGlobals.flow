@@ -101,10 +101,22 @@ stages:
         out:
           map:
             schema: '#ref'
+      MASKING_REPORT_FLAG:
+        parent: MapBuild
+        in:
+          key:
+            const: MASKING_REPORT_FLAG
+            schema: string
+          value:
+            external: MASKING_REPORT_FLAG
+        out:
+          map:
+            schema: '#ref'
   Map of Globals:
     actors:
       Create Map Of Globals:
         parent: MapMerge
+        height: 627
         in:
           maps:
             link:
@@ -126,12 +138,14 @@ stages:
               pos: 7
             - path: ROOT_COLUMN_NAME/map
               pos: 8
+            - path: MASKING_REPORT_FLAG/map
+              pos: 9
         out:
           map:
             schema: '#ref'
-  Stage 1:
+  Set Globals:
     actors:
-      TDMSetBroadwayGlobals1:
+      TDM Set Broadway Globals:
         parent: TDMSetBroadwayGlobals
         in:
           params:
@@ -182,6 +196,11 @@ schemas:
     properties:
       ROOT_COLUMN_NAME: {
         }
+  MASKING_REPORT_FLAG.out.map:
+    type: object
+    properties:
+      MASKING_REPORT_FLAG:
+        type: string
   Create Map Of Globals.out.map:
     type: object
     properties:

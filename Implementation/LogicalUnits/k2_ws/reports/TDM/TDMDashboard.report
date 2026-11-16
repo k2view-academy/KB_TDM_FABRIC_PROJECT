@@ -59,7 +59,7 @@
     ],
     "Page": {
         "PageWidth": "12.6in",
-        "PageHeight": "8.5in",
+        "PageHeight": "8.65in",
         "RightMargin": "0in",
         "LeftMargin": "0in",
         "TopMargin": "0in",
@@ -77,7 +77,7 @@
         }
     ],
     "Body": {
-        "Height": "8.15in",
+        "Height": "8.3in",
         "ReportItems": [
             {
                 "Type": "rectangle",
@@ -166,12 +166,61 @@
                             "Y": "0.5in"
                         },
                         "LineColor": "#aaaaaa"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "NoDataMessageTable",
+                        "DataSetName": "ReportStatus",
+                        "Style": {
+                            "TextAlign": "Left",
+                            "VerticalAlign": "Middle"
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "10.3in"
+                            }
+                        ],
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.24in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "NoDataMessageTextBox",
+                                                "DataElementName": "Message",
+                                                "KeepTogether": true,
+                                                "Value": "=Fields!Message.Value",
+                                                "Style": {
+                                                    "FontSize": "11pt",
+                                                    "FontWeight": "Bold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#c0392b",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "10.3in",
+                                                "Height": "0.24in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "Left": "1.73in",
+                        "Top": "0.52in",
+                        "Width": "10.3in",
+                        "Height": "0.24in"
                     }
                 ],
                 "Left": "0.2in",
                 "Top": "0.15in",
                 "Width": "12.2in",
-                "Height": "0.65in"
+                "Height": "0.8in"
             },
             {
                 "Type": "rectangle",
@@ -743,7 +792,7 @@
                     }
                 ],
                 "Left": "0.2in",
-                "Top": "0.9in",
+                "Top": "1.05in",
                 "Width": "9.1in",
                 "Height": "3.55in"
             },
@@ -1175,7 +1224,7 @@
                     }
                 ],
                 "Left": "9.4in",
-                "Top": "0.9in",
+                "Top": "1.05in",
                 "Width": "3in",
                 "Height": "2.5in"
             },
@@ -1514,7 +1563,7 @@
                     }
                 ],
                 "Left": "0.2in",
-                "Top": "4.55in",
+                "Top": "4.7in",
                 "Width": "4.45in",
                 "Height": "3.6in"
             },
@@ -1817,7 +1866,7 @@
                     }
                 ],
                 "Left": "9.4in",
-                "Top": "5.1in",
+                "Top": "5.25in",
                 "Width": "3in",
                 "Height": "3.05in"
             },
@@ -2112,7 +2161,7 @@
                     }
                 ],
                 "Left": "4.85in",
-                "Top": "4.55in",
+                "Top": "4.7in",
                 "Width": "4.45in",
                 "Height": "3.6in"
             },
@@ -2369,7 +2418,7 @@
                     }
                 ],
                 "Left": "9.4in",
-                "Top": "3.5in",
+                "Top": "3.65in",
                 "Width": "3in",
                 "Height": "1.5in"
             }
@@ -2847,6 +2896,23 @@
             "Query": {
                 "DataSourceName": "fabricApi",
                 "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.GetTDMDBSchemaName[0]\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "ReportStatus",
+            "Fields": [
+                {
+                    "Name": "Message",
+                    "DataField": "message"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=TDM_MainDashboardReport?FROM_DATE=\" & Parameters!FROM_DATE.Value & \"&TDMDB_SCHEMA=\" & Parameters!TDMDB_SCHEMA.Value & \"&END_DATE=\" & Parameters!END_DATE.Value & \";jpath=$.ReportStatus\""
             },
             "CaseSensitivity": "Auto",
             "KanatypeSensitivity": "Auto",

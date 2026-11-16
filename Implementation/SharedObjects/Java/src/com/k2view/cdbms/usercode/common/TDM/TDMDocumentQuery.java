@@ -9,6 +9,7 @@ import com.k2view.fabric.common.io.IoSession;
 import com.k2view.fabric.session.broadway.sourcedocument.DocumentQueryActor;
 
 import static com.k2view.cdbms.shared.user.UserCode.fabric;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +37,12 @@ public class TDMDocumentQuery extends DocumentQueryActor {
 
     private Object tdmDocumentQuery(Data input, Data output, Context ctx) throws Exception {
         
+        // Don't close the session: it is the flow's shared "fabric" session, Broadway closes it at the end of the flow
         IoSession fabricSession = ctx.ioProvider().createSession("fabric");
-        List<String> mainTables = new ArrayList<String>(Arrays.asList(("" + fabricSession.
-            prepareStatement("set " + ctx.externals().get("schema").toString() + ".ROOT_TABLE_NAME").execute().iterator().next().get("value")).toLowerCase()));
-            
+        String schema = sanitizeDslToken(ctx.externals().get("schema").toString());
+        List<String> mainTables = new ArrayList<String>(Arrays.asList(
+            TDMSourceDbQuery.getSetValue(fabricSession, "set " + schema + ".ROOT_TABLE_NAME").toLowerCase()));
+
         if (mainTables.contains(ctx.externals().get("table").toString().toLowerCase())) {
             return null;
         }
@@ -47,15 +50,12 @@ public class TDMDocumentQuery extends DocumentQueryActor {
             ctx.externals().get("table").toString().toLowerCase() + "_number_of_records";
         Object noOfRecsVal = ctx.globals().get(globalName);
         if (noOfRecsVal == null) {
-            String minDist = "" + fabricSession.
-                prepareStatement("set " + ctx.externals().get("schema").toString() + ".TABLE_DEFAULT_DISTRIBUTION_MIN").execute().iterator().next().get("value");
-            String maxDist = "" + fabricSession.
-                prepareStatement("set " + ctx.externals().get("schema").toString() + ".TABLE_DEFAULT_DISTRIBUTION_MAX").execute().iterator().next().get("value");
-      
+            String minDist = TDMSourceDbQuery.getSetValue(fabricSession, "set " + schema + ".TABLE_DEFAULT_DISTRIBUTION_MIN");
+            String maxDist = TDMSourceDbQuery.getSetValue(fabricSession, "set " + schema + ".TABLE_DEFAULT_DISTRIBUTION_MAX");
+
             String distJson = "{distribution=uniform,round=true,type=integer,minimum=" + minDist + ",maximum=" + maxDist + "}";
             noOfRecsVal = Json.get().fromJson(distJson);
         }
-        fabricSession.close();
         return noOfRecsVal;
 
 

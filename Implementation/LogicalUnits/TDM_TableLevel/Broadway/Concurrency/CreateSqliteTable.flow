@@ -25,6 +25,7 @@ stages:
             mandatory: false
         out:
           result:
+            external: TableFields
             schema: '#ref'
   Return Statement:
     transactional: false

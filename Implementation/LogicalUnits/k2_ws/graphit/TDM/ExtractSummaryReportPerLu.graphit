@@ -10,6 +10,12 @@
           "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  L.EXECUTION_STATUS AS execution_status,\n  IFNULL(NULLIF(json_extract(O.OVERRIDE_PARAMETERS, '$.SOURCE_ENVIRONMENT_NAME'), ''), T.SOURCE_ENV) AS source_env,\n  Case When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'TABLES' Then '' Else IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.BE_NAME'), T.BE_NAME) END AS be_name,\n  T.TASK_TYPE AS task_type,\n  Case When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'ALL' Then 'ALL'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'L' Then 'Entity List'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'R' Then 'Random Selection'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'TABLES' Then 'Table Level only'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'CLONE' Then 'Entity Clone'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'C' Then 'Custom Logic'\n    When IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.SELECTION_METHOD'), T.SELECTION_METHOD) = 'GEN' Then 'Generate Synthetic'\n    Else 'Parameters'\n  End As selection_method,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  '' AS version_expiration_date,\n  IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.DATAFLUX_RETENTION_PARAMS.units'), T.RETENTION_PERIOD_TYPE) AS retention_period_type,\n  IFNULL(json_extract(O.OVERRIDE_PARAMETERS, '$.DATAFLUX_RETENTION_PARAMS.value'), T.RETENTION_PERIOD_VALUE) AS retention_period_value,\n  L.FABRIC_EXECUTION_ID AS fabric_execution_id,\n  T.EXECUTION_MODE\nFrom TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID AND L.LU_NAME = ${i_luName}\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
         },
         {
+          "name": "Task Globals",
+          "type": "sql",
+          "code": "Select global_name, global_value from TDM.task_globals",
+          "sessionProvider": "fabric"
+        },
+        {
           "name": "Override parameters",
           "type": "sql",
           "code": "Select\n  O.OVERRIDE_PARAMETERS AS override_parameters\nFrom TDM.TASK_EXECUTION_OVERRIDE_ATTRS O\n  JOIN TDM.TASKS T ON O.TASK_EXECUTION_ID = T.TASK_EXECUTION_ID",
@@ -89,7 +95,7 @@
             {
               "name": "Number of Copied Entities",
               "type": "sql",
-              "code": "Select count(Distinct ENTITY_ID) as number_of_copied_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES \nWhere execution_status = 'completed' \nAND ID_TYPE = 'ENTITY'\nAnd LU_NAME = ${i_luName}"
+              "code": "Select count(Distinct ENTITY_ID) as number_of_copied_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere execution_status = 'completed'\nAND ID_TYPE = 'ENTITY'\nAnd LU_NAME = ${i_luName}"
             },
             {
               "name": "List of Copied Entities",
@@ -119,24 +125,24 @@
             {
               "name": "List of Copied Tables",
               "type": "sql",
-              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records, \nstart_time as start_execution_time, end_time as end_execution_time, table_filter\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records,\nstart_time as start_execution_time, end_time as end_execution_time, table_filter\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'\nAnd lu_name = ${i_luName}"
             },
             {
               "name": "Number of Failed Tables",
               "type": "sql",
-              "code": "Select Count(1) as count\nFrom task_ref_exe_stats \nWhere execution_status <> 'completed' \nAnd lu_name = ${i_luName}"
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
             },
             {
               "name": "List of Failed Tables",
               "type": "sql",
-              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records, \nstart_time as start_execution_time, end_time as end_execution_time, error_msg, table_filter\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, number_of_failed_records,\nstart_time as start_execution_time, end_time as end_execution_time, error_msg, table_filter\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
             }
           ]
         },
         {
           "name": "Error Summary",
           "type": "sql",
-          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, substr(error_message, 1, 10000) AS error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
+          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, substr(error_message, 1, 10000) AS error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed\ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
         },
         {
           "name": "Statistics Report",

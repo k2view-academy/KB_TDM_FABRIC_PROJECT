@@ -8,21 +8,55 @@
   ],
   "children": [
     {
+      "name": "BindHelper",
+      "type": "function",
+      "code": "var bind = function (name) { return '${' + name + '}'; };"
+    },
+    {
+      "name": "TDMDBSchema",
+      "type": "function",
+      "code": "var TDMDB_SCHEMA;"
+    },
+    {
+      "name": "GetTDMDBSchemaName",
+      "type": "sql",
+      "code": "broadway k2_ws.getTDMDBSchema",
+      "sessionProvider": "fabric",
+      "children": [
+        {
+          "name": "TDMDB_SCHEMA",
+          "type": "function",
+          "code": "if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(String(schema))) throw new Error('Invalid TDM DB schema');\nTDMDB_SCHEMA = String(schema);"
+        }
+      ]
+    },
+    {
+      "name": "ValidateDates",
+      "type": "function",
+      "code": "if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(FROM_DATE))) throw new Error('Invalid FROM_DATE - expected yyyy-MM-dd');\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(END_DATE))) throw new Error('Invalid END_DATE - expected yyyy-MM-dd');"
+    },
+    {
       "name": "UserActivityList",
       "type": "sqlNonPrepared",
-      "code": "  \nSELECT a.username, a.no_of_activities, a.activity_desc \n  from\n  (select username,\n    CASE\n       WHEN  action = 'update' and entity in ('Environment', 'Environments') THEN 'Update Envs' \n       WHEN action = 'update' AND entity = 'Tasks' and starts_with( lower(description), 'execution') = true THEN 'Execute Tasks' \n       WHEN entity = 'Product' THEN initcap(action) || ' Systems' \n       WHEN action = 'delete' and entity = 'Reserved Entities' THEN 'Release Reserved BEs' \n       WHEN entity = 'Environments' THEN initcap(action) || ' Envs' \n       WHEN entity = 'Business entities' THEN initcap(action) || ' BEs' \n\t  ELSE  initcap(action) || ' ' || entity\n    END AS activity_desc,\n    count(*) as no_of_activities \n    from \"${TDMDB_SCHEMA}\".activities  \n    where date >=  DATE '${FROM_DATE}' and date <= DATE '${END_DATE}' + 1  \n   -- and NOT (action = 'Update' and entity = 'Tasks' and starts_with( lower(description), 'execution') = true) \n    group by username, activity_desc \n-- UNION ALL \n--   select task_executed_by as username , 'Execute Tasks' as activity_desc, count(*) as no_of_activities   \n--   from \"${TDMDB_SCHEMA}\".task_execution_summary \n--   where start_execution_time >= DATE '${FROM_DATE}' and start_execution_time <= DATE '${END_DATE}' + 1  \n--   group by task_executed_by \n   ) a\n ORDER by a.username, a.no_of_activities desc;\n",
+      "code": "SELECT a.username, a.no_of_activities, a.activity_desc\n  from\n  (select username,\n    CASE\n       WHEN  action = 'update' and entity in ('Environment', 'Environments') THEN 'Update Envs'\n       WHEN action = 'update' AND entity = 'Tasks' and starts_with( lower(description), 'execution') = true THEN 'Execute Tasks'\n       WHEN entity = 'Product' THEN initcap(action) || ' Systems'\n       WHEN action = 'delete' and entity = 'Reserved Entities' THEN 'Release Reserved BEs'\n       WHEN entity = 'Environments' THEN initcap(action) || ' Envs'\n       WHEN entity = 'Business entities' THEN initcap(action) || ' BEs'\n\t  ELSE  initcap(action) || ' ' || entity\n    END AS activity_desc,\n    count(*) as no_of_activities\n    from \"${TDMDB_SCHEMA}\".activities\n    where date >=  ${bind('FROM_DATE')}::date and date <= ${bind('END_DATE')}::date + 1\n    group by username, activity_desc\n   ) a\n ORDER by a.username, a.no_of_activities desc;",
+      "sessionProvider": "TDM"
+    },
+    {
+      "name": "TDMSetUpActivityDetails",
+      "type": "sqlNonPrepared",
+      "code": "select username,\n    to_char(date, 'YYYY-MM-DD HH24:MI') AS date,\n    CASE\n       WHEN entity = 'Environment' AND action = 'update' AND description LIKE '%sensitivity%' THEN 'Update Env Sensitivity'\n       WHEN action = 'update' and entity in ('Environment', 'Environments') THEN 'Update Envs'\n       WHEN action = 'update' AND entity = 'Tasks' and starts_with( lower(description), 'execution') = true THEN 'Execute Tasks'\n       WHEN entity = 'Product' THEN initcap(action) || ' Systems'\n       WHEN action = 'delete' and entity = 'Reserved Entities' THEN 'Release Reserved BEs'\n       WHEN entity = 'Environments' THEN initcap(action) || ' Envs'\n       WHEN entity = 'Business entities' THEN initcap(action) || ' BEs'\n\t  ELSE  initcap(action) || ' ' || entity\n    END AS activity,\n     REPLACE(\n        REPLACE(description, 'Role ', 'Permission set '),\n        'role ', 'permission set '\n    ) AS description\n    from \"${TDMDB_SCHEMA}\".activities\n    where date >=  ${bind('FROM_DATE')}::date and date <= ${bind('END_DATE')}::date + 1\n    and entity not in ('Task', 'Tasks')\n   ORDER by date desc, username, activity;",
       "sessionProvider": "TDM"
     },
     {
       "name": "TaskCreators",
       "type": "sqlNonPrepared",
-      "code": "\t\nSELECT split_part(task_created_by, '##', 1) AS username, count(*) as no_of_task_creations \nFROM \"${TDMDB_SCHEMA}\".tasks\nWHERE task_creation_date >= DATE '${FROM_DATE}'\nAND task_creation_date <= DATE '${END_DATE}' + 1  \ngroup by username;",
+      "code": "SELECT split_part(task_created_by, '##', 1) AS username, count(*) as no_of_task_creations\nFROM \"${TDMDB_SCHEMA}\".tasks\nWHERE task_creation_date >= ${bind('FROM_DATE')}::date\nAND task_creation_date <= ${bind('END_DATE')}::date + 1\ngroup by username;",
       "sessionProvider": "TDM"
     },
     {
       "name": "ExecutingUsers",
       "type": "sqlNonPrepared",
-      "code": "WITH user_latest_perm AS (\n    SELECT DISTINCT ON (task_executed_by)\n        task_executed_by AS username,\n        permission_group\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary\n    WHERE permission_group IS NOT NULL\n    ORDER BY task_executed_by, task_execution_id DESC\n),\n\nfilled AS (\n    SELECT\n        t.task_executed_by AS username,\n        COALESCE(t.permission_group, ulp.permission_group) AS permission_group,\n        COUNT(*) OVER (PARTITION BY t.task_executed_by, COALESCE(t.permission_group, ulp.permission_group)) AS no_of_task_executions\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary t\n    LEFT JOIN user_latest_perm ulp ON ulp.username = t.task_executed_by\n    WHERE t.start_execution_time >= DATE '${FROM_DATE}'\n      AND t.start_execution_time <= DATE '${END_DATE}' + 1\n)\n\nSELECT\n    username,\n    permission_group,\n    COUNT(*) AS no_of_task_executions\nFROM filled\nGROUP BY username, permission_group\nORDER BY username;\n--SELECT task_executed_by AS username, fabric_roles as user_groups, permission_group, count(*) as no_of_task_executions\n--FROM \"${TDMDB_SCHEMA}\".task_execution_summary\n--WHERE start_execution_time >= DATE '${FROM_DATE}'\n--AND start_execution_time <= DATE '${END_DATE}' + 1  \n--group by task_executed_by, fabric_roles, permission_group;",
+      "code": "WITH user_latest_perm AS (\n    SELECT DISTINCT ON (task_executed_by)\n        task_executed_by AS username,\n        permission_group\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary\n    WHERE permission_group IS NOT NULL\n    ORDER BY task_executed_by, task_execution_id DESC\n),\n\nfilled AS (\n    SELECT\n        t.task_executed_by AS username,\n        COALESCE(t.permission_group, ulp.permission_group) AS permission_group,\n        COUNT(*) OVER (PARTITION BY t.task_executed_by, COALESCE(t.permission_group, ulp.permission_group)) AS no_of_task_executions\n    FROM \"${TDMDB_SCHEMA}\".task_execution_summary t\n    LEFT JOIN user_latest_perm ulp ON ulp.username = t.task_executed_by\n    WHERE t.start_execution_time >= ${bind('FROM_DATE')}::date\n      AND t.start_execution_time <= ${bind('END_DATE')}::date + 1\n)\n\nSELECT\n    username,\n    permission_group,\n    COUNT(*) AS no_of_task_executions\nFROM filled\nGROUP BY username, permission_group\nORDER BY username;",
       "sessionProvider": "TDM"
     }
   ],
@@ -36,8 +70,8 @@
     {
       "name": "TDMDB_SCHEMA",
       "dataType": "String",
-      "description": "",
-      "mandatory": true
+      "description": "Ignored - the TDM DB schema is taken from the TDM.TDMDB_SCHEMA Fabric global",
+      "mandatory": false
     },
     {
       "name": "END_DATE",

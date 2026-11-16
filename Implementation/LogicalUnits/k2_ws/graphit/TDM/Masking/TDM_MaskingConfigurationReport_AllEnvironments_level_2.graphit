@@ -1,0 +1,64 @@
+{
+  "name": "TDM_MASKING_CONFIGURATION_REPORT_ALLENVIRONMENTS_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "BindHelper",
+      "type": "function",
+      "code": "var bind = function (name) { return '${' + name + '}'; };"
+    },
+    {
+      "name": "TDMDBSchema",
+      "type": "function",
+      "code": "var TDMDB_SCHEMA;"
+    },
+    {
+      "name": "GetTDMDBSchemaName",
+      "type": "sql",
+      "code": "broadway k2_ws.getTDMDBSchema",
+      "sessionProvider": "fabric",
+      "children": [
+        {
+          "name": "TDMDB_SCHEMA",
+          "type": "function",
+          "code": "if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(String(schema))) throw new Error('Invalid TDM DB schema');\nTDMDB_SCHEMA = String(schema);"
+        }
+      ]
+    },
+    {
+      "name": "NormalizeParams",
+      "type": "function",
+      "code": "var SENSITIVITY_VALUE = (typeof SENSITIVITY === 'undefined' || SENSITIVITY === null) ? '' : String(SENSITIVITY);"
+    },
+    {
+      "name": "GetEnvironmentsList",
+      "type": "sqlNonPrepared",
+      "code": "SELECT\n    e.environment_name,\n    CASE\n        WHEN e.mask_sensitive_data = true THEN 'Sensitive'\n        ELSE 'Non-sensitive'\n    END AS sensitivity,\n     to_char(e.environment_creation_date, 'YYYY-MM-DD HH24:MI') AS environment_creation_date,\n     to_char(sens.date, 'YYYY-MM-DD HH24:MI') AS sensitivity_update_date,\n    sens.username AS sensitivity_updated_by\nFROM \"${TDMDB_SCHEMA}\".environments e\nLEFT JOIN LATERAL (\n    SELECT a.date, a.username\n    FROM \"${TDMDB_SCHEMA}\".activities a\n    WHERE a.entity = 'Environment'\n      AND a.action = 'update'\n      AND a.description LIKE 'Environment ' || e.environment_name || ' %'\n      AND a.description LIKE '%sensitivity%'\n    ORDER BY a.date DESC\n    LIMIT 1\n) sens ON true\nWHERE e.environment_status = 'Active'\nAND e.environment_id > 0\nAND (CASE WHEN e.mask_sensitive_data = true THEN 'Sensitive' ELSE 'Non-sensitive' END) = ${bind('SENSITIVITY_VALUE')}\nORDER BY e.environment_name;",
+      "sessionProvider": "TDM"
+    }
+  ],
+  "params": [
+    {
+      "name": "TDMDB_SCHEMA",
+      "dataType": "String",
+      "description": "Ignored - the TDM DB schema is taken from the TDM.TDMDB_SCHEMA Fabric global",
+      "mandatory": false
+    },
+    {
+      "name": "SENSITIVITY",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "description": "",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

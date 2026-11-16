@@ -309,6 +309,150 @@ stages:
     split: '--------------------'
   Do Nothing:
     dependsOn: No Count
+  Get Sampling Limits:
+    actors:
+      Get Records Limit:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: records_limit
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Get Partitions Limit:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGetCachedTableInfoBySection
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          section:
+            const: TaskRefTables
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          attrName:
+            const: partitions_limit
+            schema: string
+            mandatory: false
+            createdBy: functionName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: functionName
+        out:
+          result:
+            schema: integer
+      Get Partitions Number:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetPartitionsNumber
+          interfaceName:
+            link: Get Table Instance Fields/result/interface_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link: Get Table Instance Fields/result/schema_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link: Get Table Instance Fields/result/table_name
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            link: Get Table Instance Fields/result/task_execution_id
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          refTableID:
+            link: Get Ref Table ID/result
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+        out:
+          value:
+            schema: string
+  Apply Sampling Limit:
+    actors:
+      Sampled Count:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              // Cap the table count by the sampling limits: records_limit per partition * number of partitions to run
+              var c = Number(count), r = Number(recordsLimit), p = Number(partitionsLimit), n = Number(numPartitions);
+              if (isNaN(n) || n <= 0) n = 1;
+              (isNaN(c) || c < 0 || isNaN(r) || r <= 0) ? c : Math.min(c, r * (p > 0 ? Math.min(p, n) : n));
+          count:
+            link:
+            - -1/value
+            - Get Table Count/tableCount
+            - GetTableCountFromFabric1/result
+            schema: integer
+            mandatory: false
+          recordsLimit:
+            link: Get Records Limit/result
+            schema: integer
+            mandatory: false
+          partitionsLimit:
+            link: Get Partitions Limit/result
+            schema: integer
+            mandatory: false
+          numPartitions:
+            link: Get Partitions Number/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
   Store Table Count:
     actors:
       Set Table Count:
@@ -337,10 +481,7 @@ stages:
             mandatory: false
             createdBy: functionName
           tableCount:
-            link:
-            - -1/value
-            - Get Table Count/tableCount
-            - GetTableCountFromFabric1/result
+            link: Sampled Count/result
             schema: integer
             mandatory: false
             createdBy: functionName
@@ -363,10 +504,7 @@ stages:
             mandatory: false
             createdBy: sql
           tableCount:
-            link:
-            - -1/value
-            - Get Table Count/tableCount
-            - GetTableCountFromFabric1/result
+            link: Sampled Count/result
             schema: integer
             mandatory: false
             createdBy: sql
@@ -406,8 +544,8 @@ schemas:
             type: boolean
           retentionPeriodValue:
             type: integer
-          targetEnvId:
-            type: integer
+          targetEnvId: {
+            }
           taskTitle:
             type: string
           sourceEnvName:
@@ -429,56 +567,71 @@ schemas:
             type: string
           target_ref_table_name:
             type: string
+      SourceInfo:
+        type: object
+        properties:
+          source_schema_name:
+            type: string
+          source_ref_table_name:
+            type: string
+          source_interface_name:
+            type: string
       TaskRefTables:
         type: array
         items:
           type: object
           properties:
-            version_task_name:
-              type: string
+            version_task_name: {
+              }
             ref_table_name:
               type: string
-            filter_parameters: {
-              }
+            filter_parameters:
+              type: string
             interface_name:
               type: string
+            partitions_limit:
+              type: integer
             task_id:
               type: integer
             schema_name:
               type: string
             source_max_no_of_workers: {
               }
-            target_table_prefix: {
-              }
             target_max_no_of_workers: {
               }
-            update_date:
-              type: date
-            filter_fields: {
+            target_table_prefix: {
               }
+            records_limit:
+              type: integer
+            filter_fields:
+              type: string
             target_affinity: {
               }
             task_ref_table_id:
               type: integer
             source_affinity: {
               }
-            filter_type: {
-              }
+            filter_type:
+              type: string
             version_task_execution_id:
               type: integer
             lu_name:
               type: string
             target_table_suffix: {
               }
-            count_ind: {
-              }
-            table_filter: {
-              }
-            gui_filter: {
-              }
+            count_ind:
+              type: boolean
+            table_filter:
+              type: string
+            gui_filter:
+              type: string
+      RecordsCount:
+        type: integer
       Definitions:
         type: object
         properties:
+          table_info_mapping_flow:
+            type: string
           interface_name:
             type: string
           load_flow:
@@ -507,5 +660,14 @@ schemas:
             type: string
       PartitionFlowInputs:
         type: object
-        properties: {
-          }
+        properties:
+          PGGetDataByPhysicalPartition:
+            type: object
+            properties:
+              message:
+                type: string
+          PGGetDataByIdColumn:
+            type: object
+            properties:
+              columnName:
+                type: string

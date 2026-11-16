@@ -1,0 +1,58 @@
+{
+  "name": "TDM_MASKING_CONFIGURATION_REPORT_PII_CLASSIFICATIONS_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "GetPIIClassificationList",
+      "type": "sql",
+      "code": "broadway k2_ws.getPIIClassificationListByGenerator 'dataGenerator'=${DATA_GENERATOR}",
+      "children": [
+        {
+          "name": "StripActorSuffixFromPIIClassificationList",
+          "type": "function",
+          "code": "if (PIIClassificationList) {\n    PIIClassificationList.forEach(function(row) {\n        var dg = row['Data Generator'];\n        if (dg && dg.length > 6 && dg.substring(dg.length - 6).toLowerCase() === '.actor') {\n            row['Data Generator'] = dg.substring(0, dg.length - 6);\n        }\n    });\n}"
+        },
+        {
+          "name": "PIIClassificationList",
+          "type": "variable",
+          "code": "PIIClassificationList"
+        }
+      ]
+    },
+    {
+      "name": "GetInterfacesTableFieldsList",
+      "type": "sql",
+      "code": "broadway k2_ws.getInterfacesTableFieldsListByGenerator 'dataGenerator'=${DATA_GENERATOR}",
+      "children": [
+        {
+          "name": "StripActorSuffixFromInterfacesTableFieldsList",
+          "type": "function",
+          "code": "if (InterfacesTableFieldsList) {\n    InterfacesTableFieldsList.forEach(function(row) {\n        var dg = row['Data Generator'];\n        if (dg && dg.length > 6 && dg.substring(dg.length - 6).toLowerCase() === '.actor') {\n            row['Data Generator'] = dg.substring(0, dg.length - 6);\n        }\n    });\n}"
+        },
+        {
+          "name": "InterfacesTableFieldsList",
+          "type": "variable",
+          "code": "InterfacesTableFieldsList"
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "DATA_GENERATOR",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "description": "",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

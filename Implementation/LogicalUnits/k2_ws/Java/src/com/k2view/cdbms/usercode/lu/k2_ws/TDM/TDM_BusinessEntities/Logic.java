@@ -5,13 +5,14 @@
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM.TDM_BusinessEntities;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.isParamsCoupling;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnAddExecutionProcessForBusinessEntity;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnDeletePostExecutionForBusinessEntity;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnGetExecutionProcesses;
 import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.fnUpdateExecutionForBusinessEntity;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 import java.time.Instant;
@@ -47,7 +48,6 @@ import com.k2view.fabric.common.mtable.MTable;
 public class Logic extends WebServiceUserCode {
 	
 	public static final String TDM = "TDM";
-	public static final String schema = TDMDB_SCHEMA;
 	public static final String BE_ID = "BE_ID";
 	public static final String LU_NAME = "LU_NAME";
 	public static final String PARAM_NAME = "PARAM_NAME";
@@ -61,7 +61,7 @@ public class Logic extends WebServiceUserCode {
 	public static final String LU_PARAMS_TABLE_NAME = "LU_PARAMS_TABLE_NAME";
 	public static final String MAX_VALUE = "MAX_VALUE";
 	public static final String MIN_VALUE = "MIN_VALUE";
-	public static final String LU_SQL = "SELECT product_id as productID, product_name as productName, lu_id as logicalUnitID, lu_name as logicalUnitName FROM " + schema + ".product_logical_units WHERE be_id = ? ORDER BY lu_id";
+	private static String luSql() { return "SELECT product_id as productID, product_name as productName, lu_id as logicalUnitID, lu_name as logicalUnitName FROM " + getTDMDBSchema() + ".product_logical_units WHERE be_id = ? ORDER BY lu_id"; }
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	public enum PARAM_TYPES{
 		NUMBER, TEXT;
@@ -100,7 +100,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetBusinessEntities() throws Exception {
-		String sql = "SELECT be_id, be_description, be_name, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode FROM " + schema + ".business_entities";
+		String sql = "SELECT be_id, be_description, be_name, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode FROM " + getTDMDBSchema() + ".business_entities";
 		String errorCode="";
 		String message=null;
 		
@@ -161,7 +161,7 @@ public class Logic extends WebServiceUserCode {
 				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
-				String sql = "INSERT INTO " + schema + ".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode) " +
+				String sql = "INSERT INTO " + getTDMDBSchema() + ".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode) " +
 						"VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
 						"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status, execution_mode";
 
@@ -215,7 +215,7 @@ public class Logic extends WebServiceUserCode {
 				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
-				String sql = "UPDATE " + schema + ".business_entities " +
+				String sql = "UPDATE " + getTDMDBSchema() + ".business_entities " +
 						"SET be_description=(?)," +
                         "execution_mode=(?)," +
 						"be_last_updated_date=(?)," +
@@ -264,22 +264,22 @@ public class Logic extends WebServiceUserCode {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if ("admin".equals(permissionGroup)) {
 			try {
-				String sql = "UPDATE " + schema + ".business_entities SET be_status=(?) " +
+				String sql = "UPDATE " + getTDMDBSchema() + ".business_entities SET be_status=(?) " +
 						"WHERE be_id = ? RETURNING be_name";
 				String beName="";
 				Db.Row firstRec = db(TDM).fetch(sql, "Inactive", beId).firstRow();
 				if (!firstRec.isEmpty()) beName = "" + firstRec.get("be_name");
 
-				String updateEnvironmentProductsSql = "UPDATE " + schema + ".environment_products ep " +
+				String updateEnvironmentProductsSql = "UPDATE " + getTDMDBSchema() + ".environment_products ep " +
 						"SET status = ? " +
 						"FROM ( " +
 						"    SELECT plu.product_id " +
-						"    FROM " + schema + ".product_logical_units plu " +
-						"    JOIN " + schema + ".products p ON plu.product_id = p.product_id " +
+						"    FROM " + getTDMDBSchema() + ".product_logical_units plu " +
+						"    JOIN " + getTDMDBSchema() + ".products p ON plu.product_id = p.product_id " +
 						"    WHERE plu.be_id = ? " +
 						"      AND COALESCE(cardinality(p.related_interfaces), 0) = 0 " +
 						"      AND plu.product_id NOT IN ( " +
-						"          SELECT product_id FROM " + schema + ".product_logical_units " +
+						"          SELECT product_id FROM " + getTDMDBSchema() + ".product_logical_units " +
 						"          WHERE be_id <> ? AND product_id <> -1 " +
 						"      ) " +
 						"    GROUP BY plu.product_id " +
@@ -290,12 +290,12 @@ public class Logic extends WebServiceUserCode {
 
 				db(TDM).execute(updateEnvironmentProductsSql, "Inactive", beId, beId);
 
-				String updateProductLUsSql = "UPDATE " + schema + ".product_logical_units " +
+				String updateProductLUsSql = "UPDATE " + getTDMDBSchema() + ".product_logical_units " +
 						"SET product_id=(?) " +
 						"WHERE be_id = ?";
 				db(TDM).execute(updateProductLUsSql, -1, beId);
 
-				String updateTasksSql = "UPDATE " + schema + ".tasks " +
+				String updateTasksSql = "UPDATE " + getTDMDBSchema() + ".tasks " +
 						"SET task_status=(?) " +
 						"WHERE be_id = ?";
 				db(TDM).execute(updateTasksSql, "Inactive", beId);
@@ -463,7 +463,7 @@ public class Logic extends WebServiceUserCode {
 		Map<String, List<String>> result = new HashMap<>();
 		List<String> BeluList = new ArrayList<>();
 
-		String sql = "SELECT lu_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE BE_ID = ?";
+		String sql = "SELECT lu_name FROM " + getTDMDBSchema() + ".product_logical_units WHERE BE_ID = ?";
 	
 		db(TDM).fetch(sql, beId).each(row->{
 			BeluList.add(row.get("lu_name").toString());
@@ -530,7 +530,7 @@ public class Logic extends WebServiceUserCode {
 		Map<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		String sql="SELECT * FROM " + schema + ".product_logical_units " +
+		String sql="SELECT * FROM " + getTDMDBSchema() + ".product_logical_units " +
 		"WHERE be_id = ?";
 
 		try{
@@ -842,7 +842,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		
 		try {
-			String sql = "SELECT COUNT(be_id) as cnt FROM " + schema + ".product_logical_units " +
+			String sql = "SELECT COUNT(be_id) as cnt FROM " + getTDMDBSchema() + ".product_logical_units " +
 					"WHERE be_id = ? AND product_id <> -1";
 			Db.Rows rows= db(TDM).fetch(sql, beId);
 			int result =Integer.parseInt(rows.firstRow().get("cnt").toString());
@@ -872,7 +872,7 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			String sql="UPDATE " + schema + ".tasks " +
+			String sql="UPDATE " + getTDMDBSchema() + ".tasks " +
 					"SET task_status=(?) " +
 					"WHERE be_id = ?";
 			db(TDM).execute(sql,"Inactive", beId);
@@ -1144,7 +1144,7 @@ public class Logic extends WebServiceUserCode {
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
-		String sql = "UPDATE " + schema + ".business_entities " +
+		String sql = "UPDATE " + getTDMDBSchema() + ".business_entities " +
 				"SET be_last_updated_date=(?)," +
 				"be_last_updated_by=(?) " +
 				"WHERE be_id = ?";
@@ -1152,7 +1152,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	static void fnUpdateLogicalUnit(Map<String,Object> logicalUnit) throws Exception{
-		String sql="UPDATE " + schema + ".product_logical_units " +
+		String sql="UPDATE " + getTDMDBSchema() + ".product_logical_units " +
 				"SET lu_parent_id=(?), " +
 				"lu_parent_name=(?), " +
 				"lu_description=(?), " +
@@ -1223,12 +1223,12 @@ public class Logic extends WebServiceUserCode {
 			Map<String,Object> childLuInputs = new HashMap<>();
 			Map<String,Object> parentLuInputs = new HashMap<>();
 
-			String sql = "INSERT INTO " + schema + ".product_logical_units " +
+			String sql = "INSERT INTO " + getTDMDBSchema() + ".product_logical_units " +
 					"(lu_name, lu_description, be_id, lu_parent_id, lu_parent_name, product_id) " +
 					"VALUES (?, ?, ?, ?, ?, ?) RETURNING lu_id,lu_name";
 
 			//GET ALL LUs for BE
-			String getBeLUsSql = "SELECT lu_name, lu_id FROM " + schema + ".product_logical_units " +
+			String getBeLUsSql = "SELECT lu_name, lu_id FROM " + getTDMDBSchema() + ".product_logical_units " +
 					"WHERE be_id = ? ";
 			List <Object> productLus = new ArrayList<>();
 			try(Db.Rows beLUsRows = db(TDM).fetch(getBeLUsSql,beId)) {
@@ -1359,7 +1359,7 @@ public class Logic extends WebServiceUserCode {
 
 		if(updatedList.size()==0) return ;
 
-		String getBeLUsSql = "SELECT lu_name, lu_id FROM " + schema + ".product_logical_units " +
+		String getBeLUsSql = "SELECT lu_name, lu_id FROM " + getTDMDBSchema() + ".product_logical_units " +
 				"WHERE be_id = ? ";
 		try (Db.Rows beLUsRows = db(TDM).fetch(getBeLUsSql,beId)) {
 			for(Db.Row row : beLUsRows) {
@@ -1391,7 +1391,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			if (temp==null) break;
 			luParent.put("lu_id",temp.get("lu_id")) ;
-			String sql="UPDATE " + schema + ".product_logical_units " +
+			String sql="UPDATE " + getTDMDBSchema() + ".product_logical_units " +
 					"SET lu_parent_id=(?) " +
 					"WHERE lu_id = ?";
 			db(TDM).execute(sql,temp.get("lu_id"), logicalUnit.get("lu_id"));
@@ -1400,25 +1400,25 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	static void fnDeleteLogicalUnit(long luId,long beId) throws Exception{
-		String deleteLogicalUnitSql= "DELETE FROM " + schema + ".product_logical_units WHERE lu_id = (?) RETURNING product_id";
+		String deleteLogicalUnitSql= "DELETE FROM " + getTDMDBSchema() + ".product_logical_units WHERE lu_id = (?) RETURNING product_id";
 		Db.Row row = db(TDM).fetch(deleteLogicalUnitSql,luId).firstRow();
 
 		if(row.isEmpty()) return;
 		Object prodId = row.get("product_id");
 		if (prodId != null && !"-1".equals(prodId.toString())) {
 			
-			String sql = "UPDATE " + schema + ".environment_products " +
+			String sql = "UPDATE " + getTDMDBSchema() + ".environment_products " +
 					"SET status= (?) " +
 					"WHERE environment_products.status = 'Active' AND environment_products.product_id = ?" +
 					" AND (select count(product_logical_units.product_id) " +
-					"FROM " + schema + ".product_logical_units " +
+					"FROM " + getTDMDBSchema() + ".product_logical_units " +
 					"WHERE product_logical_units.product_id = ?) = 0 RETURNING product_id";
 
 			row = db(TDM).fetch(sql, "Inactive", prodId, prodId).firstRow();
 			if (!row.isEmpty()) {
-				 sql =  "UPDATE " + schema + ".tasks SET task_status = (?) " +
+				 sql =  "UPDATE " + getTDMDBSchema() + ".tasks SET task_status = (?) " +
 						"WHERE tasks.task_status = 'Active' " +
-                        "AND task_id in (SELECT task_id from " + schema + ".tasks_logical_units where lu_id = ?)";
+                        "AND task_id in (SELECT task_id from " + getTDMDBSchema() + ".tasks_logical_units where lu_id = ?)";
 				db(TDM).execute(sql, "Inactive", luId);
 			}
 		}
@@ -1528,15 +1528,15 @@ public class Logic extends WebServiceUserCode {
 				// Case 1: Both source and target environments are provided.
 				// Use the INTERSECT query to find common active business entities.
 				sql = "SELECT be_root_system.be_id, be_root_system.be_name, be_root_system.execution_mode FROM " +
-						"(SELECT ep.product_id FROM " + TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA
+						"(SELECT ep.product_id FROM " + getTDMDBSchema() + ".environments e, " + getTDMDBSchema()
 						+ ".environment_products ep WHERE e.environment_id = ep.environment_id AND ep.status = 'Active' AND ep.enable_product = TRUE AND e.environment_id = ?"
-						+ " INTERSECT SELECT ep.product_id FROM " + TDMDB_SCHEMA
-						+ ".environments e, " + TDMDB_SCHEMA
+						+ " INTERSECT SELECT ep.product_id FROM " + getTDMDBSchema()
+						+ ".environments e, " + getTDMDBSchema()
 						+ ".environment_products ep WHERE e.environment_id = ep.environment_id AND ep.status = 'Active' AND ep.enable_product = TRUE AND e.environment_id = ?"
 						+ ") common_system_list, " +
 						"(SELECT be.be_name, be.be_id, be.execution_mode, p.product_name AS system_name, plu.product_id FROM "
-						+ TDMDB_SCHEMA + ".business_entities be, " + TDMDB_SCHEMA + ".product_logical_units plu, "
-						+ TDMDB_SCHEMA
+						+ getTDMDBSchema() + ".business_entities be, " + getTDMDBSchema() + ".product_logical_units plu, "
+						+ getTDMDBSchema()
 						+ ".products p WHERE plu.lu_parent_name IS NULL AND be.be_id = plu.be_id AND plu.product_id = p.product_id AND be.be_status = 'Active') be_root_system "
 						+ "WHERE common_system_list.product_id = be_root_system.product_id";
 				sqlParams.add(source_environment_id);
@@ -1546,20 +1546,20 @@ public class Logic extends WebServiceUserCode {
 				// The logic is the same, just with a different parameter.
 				Long environment_id = (source_environment_id != null) ? source_environment_id : target_environment_id;
 				sql = "SELECT be_root_system.be_id, be_root_system.be_name, be_root_system.execution_mode FROM " +
-						"(SELECT ep.product_id FROM " + TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA
+						"(SELECT ep.product_id FROM " + getTDMDBSchema() + ".environments e, " + getTDMDBSchema()
 						+ ".environment_products ep WHERE e.environment_id = ep.environment_id AND ep.status = 'Active' AND ep.enable_product = TRUE AND e.environment_id = ?"
 						+ ") common_system_list, " +
 						"(SELECT be.be_name, be.be_id, be.execution_mode, p.product_name AS system_name, plu.product_id FROM "
-						+ TDMDB_SCHEMA + ".business_entities be, " + TDMDB_SCHEMA + ".product_logical_units plu, "
-						+ TDMDB_SCHEMA
+						+ getTDMDBSchema() + ".business_entities be, " + getTDMDBSchema() + ".product_logical_units plu, "
+						+ getTDMDBSchema()
 						+ ".products p WHERE plu.lu_parent_name IS NULL AND be.be_id = plu.be_id AND plu.product_id = p.product_id AND be.be_status = 'Active') be_root_system "
 						+ "WHERE common_system_list.product_id = be_root_system.product_id";
 				sqlParams.add(environment_id);
 			} else {
 				// If both are null, use the original query.
-				sql = "SELECT be_id, be_name, execution_mode FROM " + TDMDB_SCHEMA
+				sql = "SELECT be_id, be_name, execution_mode FROM " + getTDMDBSchema()
 						+ ".business_entities be WHERE EXISTS" +
-						"(SELECT be_id FROM " + TDMDB_SCHEMA
+						"(SELECT be_id FROM " + getTDMDBSchema()
 						+ ".product_logical_units plu WHERE plu.be_id=be.be_id AND plu.product_id > 0) AND be_status = 'Active'";
 			}
 
@@ -1645,12 +1645,12 @@ public class Logic extends WebServiceUserCode {
 		Db tdmDB = db(TDM);
 		int maxNumOfValues = Integer.parseInt(getGlobal("COMBO_MAX_COUNT", "TDM")) + 1;
         Boolean paramCoupling =isParamsCoupling();
-		Boolean enableParamLuName = Boolean.parseBoolean(tdmDB.fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'ADD_LU_NAME_TO_PARAM_NAME'").firstValue().toString());
-		try (Db.Rows luRes = tdmDB.fetch(LU_SQL, beID)) {
+		Boolean enableParamLuName = Boolean.parseBoolean(tdmDB.fetch("select param_value from " + getTDMDBSchema() + ".tdm_general_parameters where param_name = 'ADD_LU_NAME_TO_PARAM_NAME'").firstValue().toString());
+		try (Db.Rows luRes = tdmDB.fetch(luSql(), beID)) {
 			for(Db.Row luRow : luRes) {
 				String luName = luRow.get("logicalunitname").toString();
-				String broadway = "Broadway " +luName + ".VerifyParamsInDistinctValues luName = " + luName + " , sourceEnvName = " + sourceEnvName + " RESULT_STRUCTURE=COLUMN";
-				String query = fabric().fetch(broadway).firstValue().toString();
+				String broadway = "Broadway " + sanitizeDslToken(luName) + ".VerifyParamsInDistinctValues luName = ? , sourceEnvName = ? RESULT_STRUCTURE=COLUMN";
+				String query = fabric().fetch(broadway, luName, sourceEnvName).firstValue().toString();
 				try (Db.Rows luFieldsValues = tdmDB.fetch(query)) {
 					for (Db.Row fieldValuesRec : luFieldsValues) {
 						String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
@@ -1669,13 +1669,13 @@ public class Logic extends WebServiceUserCode {
 						String min = fieldValuesRec.get("min_value").toString();
 						String max = fieldValuesRec.get("max_value").toString();
 
-						String fieldValues = "\\N";
-						if (numOfValues < maxNumOfValues) {
+						List<String> columnDistinctValues = Collections.emptyList();
+						if (numOfValues > 0 && numOfValues < maxNumOfValues) {
 							isCombo = "true";
-							fieldValues = fieldValuesRec.get("field_values").toString();
+							String fieldValues = fieldValuesRec.get("field_values").toString();
 							fieldValues = processFieldValues(fieldValues);
+							columnDistinctValues = Arrays.asList(fieldValues.split(","));
 						}
-						List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
 
 						String paramType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
 
@@ -1713,7 +1713,7 @@ public class Logic extends WebServiceUserCode {
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 
-		String sql = "UPDATE " + schema + ".products SET " +
+		String sql = "UPDATE " + getTDMDBSchema() + ".products SET " +
 				"product_last_updated_date=(?)," +
 				"product_last_updated_by=(?) " +
 				"WHERE product_id = ?";
@@ -1726,7 +1726,7 @@ public class Logic extends WebServiceUserCode {
 				.format(Instant.now());
 		String username = sessionUser().name();
 		String userId = username;
-		String sql= "INSERT INTO " + schema + ".activities " +
+		String sql= "INSERT INTO " + getTDMDBSchema() + ".activities " +
 				"(date, action, entity, user_id, username, description) " +
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);

@@ -1,0 +1,50 @@
+description: |-
+  Returns the input parameters of a specific Custom Logic flow (one returned by GetCustomLogicFlows): what the flow expects before a task can run it.
+
+  Each parameter entry describes its name, type, whether it is mandatory, its default value, and for a parameter backed by a lookup table, `values` — the valid values it accepts.
+
+  This describes what the FLOW declares, not what any task does with it. It does not tell you which parameters a given task actually uses, or which of them that task lets you change: those are `checked` and `is_editable`, they live on the task's own saved parameters, and you read them from the task — never from here. Use this tool to discover a flow you are adopting, and to check a value is one the parameter accepts. These are flow-level input parameters, never TASK_GLOBALS.
+
+  Output: JSON array of { name, type, mandatory, default, description, values? }
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetCustomLogicParams:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetCustomLogicParams 'luName'=${luName} 'flowName'=${flowName}
+          luName:
+            external: luName
+            schema: string
+            remark: The LU the flow belongs to, from the same GetCustomLogicFlows row as flowName.
+            mandatory: true
+          flowName:
+            external: flowName
+            schema: string
+            remark: The Custom Logic flow name, from GetCustomLogicFlows.
+            mandatory: true
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      params:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetCustomLogicParams/result/params
+        out:
+          value:
+            external: params
+            schema: string
+schemas:
+  Call GetCustomLogicParams.out.result:
+    type: object
+    properties:
+      params:
+        type: string

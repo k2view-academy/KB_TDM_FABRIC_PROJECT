@@ -748,7 +748,18 @@ stages:
           result:
             schema: string
   'Replace Main Table Population ':
+    dependsOn: Get Tables Data And Attributes
     actors:
+      Replace Main Table Population?:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            external: KEEP_MAIN_POPULATION
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
       Create Root Population:
         parent: InnerFlow
         in:
@@ -786,6 +797,10 @@ stages:
             external: INTERFACE_TYPE
             schema: string
             mandatory: false
+    split: '--------------------'
+  Keep Main Table Population As Is:
+    else: true
+    dependsOn: Get Tables Data And Attributes
   Merge With Source Tables:
     actors:
       root Info:

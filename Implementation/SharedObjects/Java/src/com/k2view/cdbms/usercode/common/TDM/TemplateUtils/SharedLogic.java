@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDM_DELETE_TABLES_PREFIX;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.MtableLookup;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
 import static com.k2view.fabric.interfaceSchema.InterfaceSchemaLogic.TableInfoResult;
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
@@ -405,7 +406,7 @@ public class SharedLogic {
         
         map.put("TARGET_TABLE_PKS", keyFields);
 		
-		Object mainTableName = fabric().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue();
+		Object mainTableName = fabric().fetch("SET " + sanitizeDslToken(luName) + ".ROOT_TABLE_NAME").firstValue();
 		
 		List<String> mainTables = new ArrayList<>();
 		if (mainTableName != null) {
@@ -427,7 +428,7 @@ public class SharedLogic {
 		map.put("MAIN_TABLE_SEQ_NAME", seqName);
 
 		//log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
-		String cmd = "broadway " + luName + ".GetSequenceListForFlows luName=?, fabricTable =?, interfaceName=?, schemaName=?, tableName=?";
+		String cmd = "broadway " + sanitizeDslToken(luName) + ".GetSequenceListForFlows luName=?, fabricTable =?, interfaceName=?, schemaName=?, tableName=?";
 		//log.info("buildTemplateData - cmd: " + cmd);
 		ArrayList<Object> tableSeq = (ArrayList<Object>)(fabric().fetch(cmd, luName, luTable, targetDbInterface, targetDbSchema, targetDbTable).firstRow().get("result"));
 
@@ -548,7 +549,7 @@ public class SharedLogic {
 		luType.ludbTables.forEach((s, s2) -> {
 			Db.Rows checkTable = null;
 			try {
-				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW", 
+				checkTable = fabric().fetch("broadway " + sanitizeDslToken(finalLuType.luName) + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW",
 					s, finalLuType.luName);
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -592,7 +593,7 @@ public class SharedLogic {
             Map<String, String> map = new HashMap<>();
 			try {
                 
-				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutGenertors tableName=?, luName=?, RESULT_STRUCTURE=ROW", s, finalLuType.luName);
+				checkTable = fabric().fetch("broadway " + sanitizeDslToken(finalLuType.luName) + ".filterOutGenertors tableName=?, luName=?, RESULT_STRUCTURE=ROW", s, finalLuType.luName);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -655,8 +656,8 @@ public class SharedLogic {
 
 			String objectType = fnGetObjectType(luName, originalTableName);
 			if ("TABLE".equals(objectType)) {
-				Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=?  luName=?, RESULT_STRUCTURE=ROW", 
-					originalTableName, luType.luName);				
+				Db.Rows checkTable = fabric().fetch("broadway " + sanitizeDslToken(luType.luName) + ".filterOutTDMTables tableName=?  luName=?, RESULT_STRUCTURE=ROW",
+					originalTableName, luType.luName);
 				String tableFiltered = "";
 				if (checkTable != null && checkTable.firstValue() != null) {
 					tableFiltered = "" + checkTable.firstValue();
@@ -693,21 +694,23 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	String schema = null;
 	
 	
-	ResultSet schemas = md.getSchemas();
-	while (schemas.next()) {
-		//log.info("getDBCollection - Schema: " + schemas.getString("TABLE_SCHEM"));
-		if (catalogSchema.equalsIgnoreCase(schemas.getString("TABLE_SCHEM"))) {
-			 schema = schemas.getString("TABLE_SCHEM");
-			 break;
+	try (ResultSet schemas = md.getSchemas()) {
+		while (schemas.next()) {
+			//log.info("getDBCollection - Schema: " + schemas.getString("TABLE_SCHEM"));
+			if (catalogSchema.equalsIgnoreCase(schemas.getString("TABLE_SCHEM"))) {
+				 schema = schemas.getString("TABLE_SCHEM");
+				 break;
+			}
 		}
 	}
 	if (schema == null) {
-		ResultSet catalogs = md.getCatalogs();
-		while (catalogs.next()) {
-			//log.info("getDBCollection - Catalog: " + catalogs.getString("TABLE_CAT"));
-			if (catalogSchema.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
-				catalog = catalogs.getString("TABLE_CAT");
-				break;
+		try (ResultSet catalogs = md.getCatalogs()) {
+			while (catalogs.next()) {
+				//log.info("getDBCollection - Catalog: " + catalogs.getString("TABLE_CAT"));
+				if (catalogSchema.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
+					catalog = catalogs.getString("TABLE_CAT");
+					break;
+				}
 			}
 		}
 	}
@@ -755,19 +758,35 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	}
 
 	public static String getDBTableSourceSchema(String table) throws Exception {
-		return getDbTableAttr(table, "sourceSchema").toString();
+		Object result = getDbTableAttr(table, "sourceSchema");
+		if (result != null) {
+			return result.toString();
+		}
+		return null;
 	}
 	
 	public static String getDBTableSourceInterface(String table) throws Exception {
-		return getDbTableAttr(table, "sourceInterface").toString();
+		Object result = getDbTableAttr(table, "sourceInterface");
+		if (result != null) {
+			return result.toString();
+		}
+		return null;
 	}
 
 	public static String getDBTableTargetSchema(String table) throws Exception {
-		return getDbTableAttr(table, "targetSchema").toString();
+		Object result = getDbTableAttr(table, "targetSchema");
+		if (result != null) {
+			return result.toString();
+		}
+		return null;
 	}
 	
 	public static String getDBTableTargetInterface(String table) throws Exception {
-		return getDbTableAttr(table, "targetInterface").toString();
+		Object result = getDbTableAttr(table, "targetInterface");
+		if (result != null) {
+			return result.toString();
+		}
+		return null;
 	}
 	
 	public static void getDbTablesInfo(String luName, String envName, String targetInterface, String targetSchema, String defaultSourceInterface, String defaultSourceSchema) throws Exception {
@@ -777,13 +796,16 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		}
 
 		LUType luType = LUType.getTypeByName(luName);
-		List<String> tables = getLuTables(luName);
+		List<String> tables = new ArrayList<>();
+		luType.ludbTables.forEach((s, s2) -> {
+			tables.add(s);
+		});
 		Map<tablesKey, Set<String>> tablesSets = new HashMap<>();
 
 		luType.getPopulationCollection().forEach((tableEntry) -> {
 			String tableName = tableEntry.getTableObject().schemaAndTableName;
 			if (tables.contains(tableName)) {
-				Db.Row row = Util.rte(() ->fabric().fetch("broadway " + luName + ".GetSourceInterfaceSchema LU_NAME=?, TABLE_NAME=?, " + 
+				Db.Row row = Util.rte(() ->fabric().fetch("broadway " + sanitizeDslToken(luName) + ".GetSourceInterfaceSchema LU_NAME=?, TABLE_NAME=?, " +
 					"DEFAULT_INTERFACE=?, DEFAULT_SCHEMA=?",
 					luName, tableName, defaultSourceInterface, defaultSourceSchema).firstRow());
 
@@ -805,16 +827,21 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			Set<String> tablesList = new HashSet<>();
 			
 			String tableName = null;
-			
+			Map<String, TableInfoResult> tablesData;
 			if (!Util.isEmpty(tablesSets.get(tablesKey))) {
-				String list = String.join(",", tablesSets.get(tablesKey));
-				Map<String, String> schemaCatalog = new HashMap<>();
-				tablesList = new HashSet<>(tablesSets.get(tablesKey));
-				schemaCatalog = getInterfaceSchemaCatalog(tablesKey.interfaceName, tablesKey.SchemaName);
+				try {
+					String list = String.join(",", tablesSets.get(tablesKey));
+					Map<String, String> schemaCatalog = new HashMap<>();
+					//tablesList = new HashSet<>(tablesSets.get(tablesKey));
+					schemaCatalog = getInterfaceSchemaCatalog(tablesKey.interfaceName, tablesKey.SchemaName);
 
-				Map<String, TableInfoResult> tablesData = InterfaceSchemaLogic.INSTANCE.getTablesInfo(tablesKey.interfaceName,
+					tablesData = InterfaceSchemaLogic.INSTANCE.getTablesInfo(tablesKey.interfaceName,
 					schemaCatalog.get("catalogName"), schemaCatalog.get("schemaName"), 
 					list, envName, "true", "true", null);
+				}catch (Exception e) {
+					tablesData = null;
+					tablesList.addAll(tablesSets.get(tablesKey));
+				}
 
 				if (!Util.isEmpty(tablesData)) {
 					for (String table : tablesSets.get(tablesKey)) {
@@ -833,13 +860,21 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 								tablePKs.add(pkData.get("COLUMN_NAME").toString());
 							}
 						}
-						addToTableInfo(tableName, tableColumns,tablePKs, tablesKey.SchemaName, tablesKey.interfaceName, targetSchema, targetInterface);
-						tablesList.remove(tableName);
+						if (!tableColumns.isEmpty()) {
+							addToTableInfo(tableName, tableColumns,tablePKs, tablesKey.SchemaName, tablesKey.interfaceName, targetSchema, targetInterface);
+						} else { //Get Table's data from Fabric
+							tablePKs = getLuTablePKs(luName, tableName);
+							tableColumns = new HashSet<>(getLuTableColumns(luName, tableName));
+							addToTableInfo(tableName, tableColumns,tablePKs, tablesKey.SchemaName, tablesKey.interfaceName, targetSchema, targetInterface);
+
+						}
 					}
+				} else { //get Data from Fabric
+					tablesList.addAll(tablesSets.get(tablesKey));
 				}
 			}
 
-			if (!Util.isEmpty(tablesList)) {
+			if (!Util.isEmpty(tablesList)) { //get Data from Fabric
 				for (String table : tablesList) {
 					Set <String> tablePKs = getLuTablePKs(luName, table);
 					Set <String> tableColumns = new HashSet<>(getLuTableColumns(luName, table));
@@ -857,14 +892,11 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		DatabaseMetaData meta = getConnection(interfaceName).getMetaData();
 			
 		// Check Schema
-		try {
-			ResultSet schemas = meta.getSchemas(null, containerName);
+		try (ResultSet schemas = meta.getSchemas(null, containerName)) {
 			if (schemas.next()) {
-				schemas.close();
 				result.put("schemaName", containerName);
 				return result;
 			}
-			schemas.close();
 		} catch (SQLFeatureNotSupportedException e) {
 			return result;
 		
@@ -872,14 +904,14 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		
 		
 		// Check Catalog
-		ResultSet catalogs = meta.getCatalogs();
-		while (catalogs.next()) {
-			if (containerName.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
-				result.put("catalogName", containerName);
-				return result;
+		try (ResultSet catalogs = meta.getCatalogs()) {
+			while (catalogs.next()) {
+				if (containerName.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
+					result.put("catalogName", containerName);
+					return result;
+				}
 			}
 		}
-		catalogs.close();
 	
 		return result; 
 	}
@@ -1034,7 +1066,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			int tableOrder = tableEntry.gettablePopulationOrder();
 			Db.Rows checkTable = null;
 			try {
-				checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW",
+				checkTable = fabric().fetch("broadway " + sanitizeDslToken(luType.luName) + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW",
 					table, luType.luName);
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -1069,7 +1101,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		AtomicInteger maxTableOrder = new AtomicInteger(0);
 		luType.getPopulationCollection().forEach((tableEntry) -> {
 			String tableFiltered = "";
-			try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW",
+			try (Db.Rows checkTable = fabric().fetch("broadway " + sanitizeDslToken(luType.luName) + ".filterOutTDMTables tableName=?, luName=?, RESULT_STRUCTURE=ROW",
 					tableEntry.getTableObject().schemaAndTableName, luType.luName)) {
 
 

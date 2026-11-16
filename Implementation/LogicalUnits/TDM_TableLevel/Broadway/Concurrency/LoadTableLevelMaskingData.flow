@@ -1,0 +1,102 @@
+tags: Concurrency
+stages:
+  Get Tables:
+    actors:
+      Get List of Task's tables:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              select task_ref_table_id, ref_table_name, interface_name, schema_name, number_of_processed_records
+              from ${@schema}.task_ref_exe_stats
+              where task_execution_id = ${task_execution_id}
+              and number_of_processed_records > 0
+          task_execution_id:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: sql
+          schema:
+            external: TDMDB_SCHEMA
+            schema: string
+            mandatory: false
+            createdBy: sql
+        out:
+          result:
+            schema: '#ref'
+      Get Time:
+        parent: Now
+  Check if Table has PII:
+    actors:
+      PopulateTableExecutionMaskingInfo1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateTableExecutionMaskingInfo
+          interfaceName:
+            link:
+              path: Get List of Task's tables/result/interface_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+          schemaName:
+            link:
+              path: Get List of Task's tables/result/schema_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+          tableName:
+            link:
+              path: Get List of Task's tables/result/ref_table_name
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+          TDMDB_SCHEMA:
+            external: TDMDB_SCHEMA
+            schema: string
+            editor:
+              id: com.k2view.dbtable
+            mandatory: false
+            createdBy: flowName
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          numberOfRecords:
+            link: Get List of Task's tables/result/number_of_processed_records
+            schema: integer
+            mandatory: false
+            createdBy: flowName
+          syncTime:
+            link: Get Time/date
+            schema: date
+            mandatory: false
+            createdBy: flowName
+schemas:
+  Get List of Task's tables.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_ref_table_id:
+          type: integer
+        ref_table_name:
+          type: string
+        interface_name:
+          type: string
+        schema_name:
+          type: string
+        number_of_processed_records:
+          type: integer

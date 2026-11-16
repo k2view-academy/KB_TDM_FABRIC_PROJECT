@@ -1,0 +1,44 @@
+description: Lists the business-parameter names available for a Business Entity in a source environment
+  (e.g. 'FINANCE.LOAN BALANCE', 'CUSTOMER.STATE'). These are the fields business-parameter selection conditions
+  can filter on. Returns names only.
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetBEParameters:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetBEParameters 'beId'=${beId} 'sourceEnvName'=${sourceEnvName}
+          beId:
+            external: beId
+            schema: integer
+            remark: Business Entity id, as returned by ListBusinessEntities (be_id).
+            mandatory: true
+          sourceEnvName:
+            external: sourceEnvName
+            schema: string
+            remark: Source environment name, as returned by ListEnvironments (environment_name). The parameters
+              are read from this environment.
+            mandatory: true
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      parameter_names:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetBEParameters/result/parameter_names
+        out:
+          value:
+            external: parameter_names
+schemas:
+  Call GetBEParameters.out.result:
+    type: object
+    properties:
+      parameter_names: {}

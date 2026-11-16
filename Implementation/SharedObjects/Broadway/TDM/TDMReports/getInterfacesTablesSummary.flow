@@ -1,0 +1,103 @@
+tags: TDM,Masking
+stages:
+  Get Interfaces Tables Summary:
+    actors:
+      getInterfacesTablesSummary:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfacesTablesSummary
+        out:
+          result:
+            external: InterfacesTablesSummaryList
+            schema: '#ref'
+  PII Fields Breakdown:
+    actors:
+      PIIFieldsBreakdownList:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                var arr = [].concat(list);
+                var totalFields = 0;
+                var piiFields = 0;
+
+                for (var i = 0; i < arr.length; i++) {
+                  totalFields += (arr[i]['Number Of Fields'] || 0);
+                  piiFields += (arr[i]['Number Of Sensitive Fields'] || 0);
+                }
+
+                [
+                  { 'Field Type': 'Sensitive Fields', 'Count': piiFields },
+                  { 'Field Type': 'Non-Sensitive Fields', 'Count': totalFields - piiFields }
+                ];
+              script: |-
+                var arr = [].concat(list);
+                var totalFields = 0;
+                var piiFields = 0;
+
+                for (var i = 0; i < arr.length; i++) {
+                  totalFields += arr[i]['Number Of Fields'] || 0;
+                  piiFields += arr[i]['Number Of Sensitive Fields'] || 0;
+                }
+
+                [{
+                  'Field Type': 'Sensitive Fields',
+                  'Count': piiFields
+                }, {
+                  'Field Type': 'Non-Sensitive Fields',
+                  'Count': totalFields - piiFields
+                }];
+          list:
+            link: getInterfacesTablesSummary/result
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: PIIFieldsBreakdownList
+            schema: '#ref'
+schemas:
+  getInterfacesTablesSummary.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System:
+          type: string
+        Dataset:
+          type: string
+        Number Of Fields:
+          type: integer
+        Number Of Sensitive Fields:
+          type: integer
+  PIIFieldsBreakdownList.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System:
+          type: string
+        Dataset:
+          type: string
+        Number Of Fields:
+          type: integer
+        Number Of Sensitive Fields:
+          type: integer
+  PIIFieldsBreakdownList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Field Type:
+          type: string
+        Count:
+          type: integer

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>task_exe_masking_fields</Name>
+  <ID>tbl_task_exe_masking_fields</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
+  <Columns>
+    <Column name="task_execution_id" id="tblCol_te1masking0000000000000000000001" index="0" datatype="Integer" mandatory="true" />
+    <Column name="interface_name" id="tblCol_te1masking0000000000000000000002" index="1" datatype="text" />
+    <Column name="schema_name" id="tblCol_te1masking0000000000000000000003" index="2" datatype="text" />
+    <Column name="system_name" id="tblCol_te1masking0000000000000000000004" index="3" datatype="text" />
+    <Column name="dataset" id="tblCol_te1masking0000000000000000000005" index="4" datatype="text" mandatory="true" />
+    <Column name="object_name" id="tblCol_te1masking0000000000000000000006" index="5" datatype="text" />
+    <Column name="field_name" id="tblCol_te1masking0000000000000000000007" index="6" datatype="text" mandatory="true" />
+    <Column name="data_type" id="tblCol_te1masking0000000000000000000009" index="7" datatype="text" />
+    <Column name="classification" id="tblCol_te1masking0000000000000000000010" index="8" datatype="text" />
+    <Column name="data_generator" id="tblCol_te1masking0000000000000000000011" index="9" datatype="text" />
+    <Column name="data_consistency" id="tblCol_te1masking0000000000000000000012" index="10" datatype="text" />
+    <Column name="masking_description" id="tblCol_te1masking0000000000000000000013" index="11" datatype="text" />
+    <Column name="sensitive" id="tblCol_te1masking0000000000000000000014" index="12" datatype="text" />
+    <Column name="number_of_records" id="tblCol_te1masking0000000000000000000015" index="13" datatype="Integer" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_te1masking0000000000000000000001,tblCol_te1masking0000000000000000000002,tblCol_te1masking0000000000000000000003,tblCol_te1masking0000000000000000000005,tblCol_te1masking0000000000000000000007" />
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+</TableObject>

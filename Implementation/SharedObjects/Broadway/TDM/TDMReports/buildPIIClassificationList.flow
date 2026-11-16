@@ -1,0 +1,284 @@
+tags: TDM,Masking
+stages:
+  'Enable Masking ':
+    actors:
+      enable_masking:
+        parent: Const
+        in:
+          value:
+            const: enable_masking
+            schema: string
+        out:
+          value:
+            schema: string
+  Get Classifactions:
+    actors:
+      getPIIClassifications:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getPIIClassifications
+          category:
+            link: enable_masking/value
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+        out:
+          array:
+            schema: '#ref'
+  Uniqueness:
+    actors:
+      enable_masking_uniqueness:
+        parent: Const
+        in:
+          value:
+            const: enable_masking_uniqueness
+            schema: string
+        out:
+          value:
+            schema: string
+  'Get Classifactions   ':
+    actors:
+      'getPIIClassifications  ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getPIIClassifications
+          category:
+            link: enable_masking_uniqueness/value
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+            createdBy: flowName
+        out:
+          array:
+            schema: '#ref'
+  List:
+    actors:
+      'ArrayConcat ':
+        parent: ArrayConcat
+        in:
+          input:
+            link:
+            - path: getPIIClassifications/array
+              pos: 0
+            - path: getPIIClassifications  /array
+              pos: 1
+        out:
+          array:
+            schema: '#ref'
+  Check classification name:
+    actors:
+      JavaScript1:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: |-
+                let systemClassification = false;
+                if (classification != null && (classification === 'OPTION_SET' || classification.startsWith('DEFAULT_'))) {
+                  systemClassification = true;
+                }
+                systemClassification;
+              script: |-
+                var systemClassification = false;
+
+                if (classification != null && (classification === 'OPTION_SET' || classification.startsWith('DEFAULT_'))) {
+                  systemClassification = true;
+                }
+
+                systemClassification;
+          classification:
+            link:
+              path: ArrayConcat /array/Classification
+              iterate: Iterate
+            schema: any
+            mandatory: false
+  Filter out DEFAULT_ and OPTION_SET classifications:
+    actors:
+      Equals1:
+        parent: Equals
+        condition: result
+        in:
+          b:
+            const: false
+            schema: boolean
+          a:
+            link: JavaScript1/result
+  Stage 3:
+    last: 1
+    actors:
+      ArrayBuilder1:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: ArrayConcat /array
+              iterate: Iterate
+        out:
+          array:
+            schema: '#ref'
+  Sort By Classification:
+    actors:
+      SortByClassification:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var arr = list == null ? [] : [].concat(list);
+              arr.sort(function(a, b) {
+                var x = String((a && a['Classification']) || '').toUpperCase();
+                var y = String((b && b['Classification']) || '').toUpperCase();
+                return x < y ? -1 : (x > y ? 1 : 0);
+              });
+              arr;
+          list:
+            link: ArrayBuilder1/array
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            external: result
+            schema: '#ref'
+schemas:
+  getPIIClassifications.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string
+  getPIIClassifications  .out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string
+  ArrayConcat .out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string
+  ArrayBuilder1.out.array:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string
+  SortByClassification.in.list:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string
+  SortByClassification.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Generator Parameters:
+          type: string
+        Data Consistency:
+          type: string
+        Cross-Environment Consistency:
+          type: string
+        Cross-Execution Consistency:
+          type: string
+        Cross-Entity Consistency:
+          type: string
+        Empty Value Behavior:
+          type: string
+        Preserve Original Format:
+          type: string

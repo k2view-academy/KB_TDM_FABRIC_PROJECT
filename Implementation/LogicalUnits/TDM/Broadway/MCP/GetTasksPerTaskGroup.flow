@@ -1,0 +1,38 @@
+description: Gets all tasks belonging to a specific task group, each with its id, title and task type.
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetTasksPerTaskGroup:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetTasksPerTaskGroup 'taskGroupId'=${taskGroupId}
+          taskGroupId:
+            external: taskGroupId
+            schema: integer
+            remark: Task group id, as returned by GetTaskGroups (task_group_id).
+            mandatory: true
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      tasks:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetTasksPerTaskGroup/result/tasks
+        out:
+          value:
+            external: tasks
+            schema: string
+schemas:
+  Call GetTasksPerTaskGroup.out.result:
+    type: object
+    properties:
+      tasks:
+        type: string

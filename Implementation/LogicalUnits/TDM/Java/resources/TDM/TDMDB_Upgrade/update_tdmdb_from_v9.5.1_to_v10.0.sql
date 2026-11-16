@@ -101,7 +101,11 @@ ADD COLUMN IF NOT EXISTS lu_name text;
 ALTER TABLE ${@schema}.tdm_be_exe_process DROP CONSTRAINT
     IF EXISTS be_exe_process_pkey;
 
+ALTER TABLE ${@schema}.tdm_be_exe_process DROP CONSTRAINT
+    IF EXISTS be_post_exe_process_pkey;
+
 DROP INDEX IF EXISTS ${@schema}.tdm_be_exe_process_ix1;
+DROP INDEX IF EXISTS ${@schema}.tdm_be_post_exe_process_ix1;
 
 UPDATE ${@schema}.tdm_be_exe_process SET lu_name = '' WHERE lu_name is null;
 ALTER TABLE ${@schema}.tdm_be_exe_process ADD CONSTRAINT
@@ -114,6 +118,9 @@ ADD COLUMN IF NOT EXISTS lu_name text;
 
 ALTER TABLE ${@schema}.tasks_exe_process DROP CONSTRAINT
     IF EXISTS tasks_exe_pkey;
+
+ALTER TABLE ${@schema}.tasks_exe_process DROP CONSTRAINT
+    IF EXISTS tasks_post_exe_process_pkey;
 
 UPDATE ${@schema}.tasks_exe_process SET lu_name = '' WHERE lu_name is null;
 ALTER TABLE ${@schema}.tasks_exe_process ADD CONSTRAINT

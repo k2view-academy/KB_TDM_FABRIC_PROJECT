@@ -217,6 +217,18 @@
                     "script_id": 35,
                     "script_name": "update_tdmdb_from_v10.0_to_v10.0.1.sql",
                     "flow_name": ""
+                },
+                {
+                    "version_name": "10.1.0",
+                    "script_id": 36,
+                    "script_name": "update_tdmdb_from_v10.0.1_to_v10.1.0.sql",
+                    "flow_name": "Upgrade10_to_101.flow"
+                },
+                {
+                    "version_name": "10.1.1",
+                    "script_id": 37,
+                    "script_name": "update_tdmdb_from_v10.1.0_to_v10.1.1.sql",
+                    "flow_name": "UpgradeCleanupAddMaskingTables"
                 }
             ],
             "final": true,

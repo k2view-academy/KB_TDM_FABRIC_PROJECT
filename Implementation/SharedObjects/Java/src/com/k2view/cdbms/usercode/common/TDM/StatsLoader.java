@@ -14,11 +14,12 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static com.k2view.fabric.common.Util.safeClose;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.sanitizeDslToken;
 
 @SuppressWarnings({"unchecked"})
 public class StatsLoader implements Actor {
-    private static final String QUERY_INSERT = "INSERT INTO " + TDMDB_SCHEMA + ".task_exe_stats_detailed (" +
+    private static String queryInsert(String tdmdbSchema) {
+        return "INSERT INTO " + tdmdbSchema + ".task_exe_stats_detailed (" +
             "task_execution_id, " +
             "lu_name, " +
             "entity_id, " +
@@ -34,6 +35,7 @@ public class StatsLoader implements Actor {
             "suppressed_error_count, " +
             "results" +
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    }
 
     private IoSession fabricSession;
 
@@ -53,7 +55,7 @@ public class StatsLoader implements Actor {
         String entityIid = getQueryFirstResult("set IID;", "value", "NO_IID");
         String targetEntityID = getQueryFirstResult("set TARGET_ENTITY_ID;", "value", "NO_TARGET_IID");
         String luName = getQueryFirstResult("set LU_TYPE;", "value", "NO_LU_TYPE");
-        String mainTableName = getQueryFirstResult("set " + luName + ".ROOT_TABLE_NAME", "value", "NO_ROOT_TABLE_NAME");
+        String mainTableName = getQueryFirstResult("set " + sanitizeDslToken(luName) + ".ROOT_TABLE_NAME", "value", "NO_ROOT_TABLE_NAME");
         // Parse input stats
         Map<String, Object> statsInput = (Map<String, Object>) input.get("stats");
         Map<String, TableStats> stats = new HashMap<>();
@@ -92,8 +94,9 @@ public class StatsLoader implements Actor {
             assignStatsValue(tableStats, key, longValue, isRoot, prefix);
         });
 
+        String tdmdbSchema = getQueryFirstResult("set TDM_TASK_EXE_SCHEMA;", "value", null);
         IoSession session = context.ioProvider().createSession(input.string("interface"));
-        IoCommand.Statement statement = session.prepareStatement(QUERY_INSERT);
+        IoCommand.Statement statement = session.prepareStatement(queryInsert(tdmdbSchema));
         try {
             if (stats.isEmpty() && tableName != null && "all".equalsIgnoreCase(statisticsFlag)) {
                 try {

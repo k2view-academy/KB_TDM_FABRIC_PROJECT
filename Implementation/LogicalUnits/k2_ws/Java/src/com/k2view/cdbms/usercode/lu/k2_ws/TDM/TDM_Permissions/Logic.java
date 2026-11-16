@@ -10,7 +10,8 @@ import com.k2view.fabric.api.endpoint.Endpoint.*;
 import java.util.*;
 import com.k2view.cdbms.shared.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getTDMDBSchema;
+import static com.k2view.cdbms.usercode.common.TDM.TDMAudit.SharedLogic.tdmAudit;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -18,12 +19,12 @@ import java.time.format.DateTimeFormatter;
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode{
 	public static final String TDM = "TDM";
-	private static final String SELECT_FABRIC_ROLES = "select fabric_role from " + TDMDB_SCHEMA + ".permission_groups_mapping where permission_group=?";
-	private static final String SELECT_PERMISSION_GROUP_MAPPINGS = "select * from " + TDMDB_SCHEMA + ".permission_groups_mapping";
-	private static final String SELECT_PERMISSION_GROUP_BY_ROLE = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=?";
-	private static final String INSERT_PERMISSION_GROUP_MAPPINGS = "insert into " + TDMDB_SCHEMA + ".permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date, can_create_tasks) values (?, ?, ?, ?, ?, NOW(), NOW(), ?)";
-	private static final String UPDATE_PERMISSION_GROUP_MAPPINGS = "update " + TDMDB_SCHEMA + ".permission_groups_mapping set description=?, fabric_role=?, permission_group=?, updated_by=?, update_date=NOW(), can_create_tasks=? where fabric_role=?";
-	private static final String DELETE_PERMISSION_GROUP_MAPPINGS = "delete from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=? RETURNING permission_group";
+	private static String selectFabricRoles() { return "select fabric_role from " + getTDMDBSchema() + ".permission_groups_mapping where permission_group=?"; }
+	private static String selectPermissionGroupMappings() { return "select * from " + getTDMDBSchema() + ".permission_groups_mapping"; }
+	private static String selectPermissionGroupByRole() { return "select permission_group from " + getTDMDBSchema() + ".permission_groups_mapping where fabric_role=?"; }
+	private static String insertPermissionGroupMappings() { return "insert into " + getTDMDBSchema() + ".permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date, can_create_tasks) values (?, ?, ?, ?, ?, NOW(), NOW(), ?)"; }
+	private static String updatePermissionGroupMappings() { return "update " + getTDMDBSchema() + ".permission_groups_mapping set description=?, fabric_role=?, permission_group=?, updated_by=?, update_date=NOW(), can_create_tasks=? where fabric_role=?"; }
+	private static String deletePermissionGroupMappings() { return "delete from " + getTDMDBSchema() + ".permission_groups_mapping where fabric_role=? RETURNING permission_group"; }
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	private static final Map<String, Integer> PERMISSION_GROUPS = new HashMap() {{
 		put("admin", 3);
@@ -80,7 +81,7 @@ public class Logic extends WebServiceUserCode{
 			"}")
 	public static Object wsGetPermissionGroupMappings() throws Exception {
 		List result = new ArrayList();
-		db(TDM).fetch(SELECT_PERMISSION_GROUP_MAPPINGS).forEach(r -> {
+		db(TDM).fetch(selectPermissionGroupMappings()).forEach(r -> {
 			HashMap<String, Object> pgMapping = new HashMap<>();
 			r.keySet().forEach(col -> pgMapping.put(col, r.get(col)));
 			result.add(pgMapping);
@@ -108,16 +109,17 @@ public class Logic extends WebServiceUserCode{
 			String roleName = "" + role.get("name");
 			if (permissionGroupList!=null&&permissionGroupList.length()>0) {
 				String[] permGrpListArr = permissionGroupList.split(",");
-				String permGrpListForQry = "";
-				
-				for (int i = 0; i < permGrpListArr.length; i++) {
-		            permGrpListForQry += "'" + permGrpListArr[i].trim() + "',";
-		        }
-		        // remove last ,
-		        permGrpListForQry = permGrpListForQry.substring(0, permGrpListForQry.length() - 1);
-				String sql = "select count(1) from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role = '" + 
-						roleName + "' and permission_group in (" + permGrpListForQry + ")";
-				Long checkPermGrp = (Long) db(TDM).fetch(sql).firstValue();
+				List<Object> permGrpParams = new ArrayList<>();
+				for (String permGrp : permGrpListArr) {
+					permGrpParams.add(permGrp.trim());
+				}
+				String permGrpPlaceholders = String.join(",", Collections.nCopies(permGrpParams.size(), "?"));
+				String sql = "select count(1) from " + getTDMDBSchema() + ".permission_groups_mapping where fabric_role = ? " +
+						"and permission_group in (" + permGrpPlaceholders + ")";
+				List<Object> args = new ArrayList<>();
+				args.add(roleName);
+				args.addAll(permGrpParams);
+				Long checkPermGrp = (Long) db(TDM).fetch(sql, args.toArray()).firstValue();
 				if (checkPermGrp > 0) {
 					roles.add(roleName);
 				}
@@ -140,16 +142,35 @@ public class Logic extends WebServiceUserCode{
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsAddPermissionGroupMapping(boolean can_create_tasks, String description, @param(description="Fabric role") String role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
-		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		
+		String status = "SUCCESS";
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("can_create_tasks", can_create_tasks);
+		in.put("description", description);
+		in.put("Fabric_role", role);
+		in.put("permission_group", permission_group);
+		
 		try {
+
+			String permissionGroup = fnGetUserPermissionGroup("");
+			if (!"admin".equals(permissionGroup)) {
+				status = "FAILED";
+				message = admin_pg_access_denied_msg;
+				return wrapWebServiceResults(status,message,null);
+			}
+
 			String userName = sessionUser().name();
-			db(TDM).execute(INSERT_PERMISSION_GROUP_MAPPINGS, description, role, permission_group, userName, userName, can_create_tasks);
+			db(TDM).execute(insertPermissionGroupMappings(), description, role, permission_group, userName, userName, can_create_tasks);
 			String activityDesc = "Role '" + role + "' was mapped to permission group '" + permissionGroup + "'.";
 			fnInsertActivity("create", "Permission Groups", activityDesc);
 			return wrapWebServiceResults("SUCCESS", null, null);
 		} catch (Exception e) {
-			return wrapWebServiceResults("FAILED", "Can't add new permission group mapping: " + e.getMessage(), null);
+			status = "FAILED";
+			message = e.getMessage();
+			return wrapWebServiceResults(status, "Can't add new permission group mapping: " + message, null);
+		} finally {
+			tdmAudit("wsAddPermissionGroupMapping", in, status, message);
 		}
 	}
 
@@ -161,15 +182,28 @@ public class Logic extends WebServiceUserCode{
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdatePermissionGroupMapping(String description, String old_role, String new_role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group, boolean can_create_tasks) throws Exception {
-		String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(sessionUserPermissionGroup)) {
-			return wrapWebServiceResults("FAILED", admin_pg_access_denied_msg, null);
-		}
 		
+
+		String status = "SUCCESS";
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("description", description);
+		in.put("old_role", old_role);
+		in.put("new_role", new_role);
+		in.put("permission_group", permission_group);
+		in.put("can_create_tasks", can_create_tasks);
 		try {
+
+			String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
+			if (!"admin".equals(sessionUserPermissionGroup)) {
+				status = "FAILED";
+				message = admin_pg_access_denied_msg;
+				return wrapWebServiceResults(status, message, null);
+			}
+			
 			String userName = sessionUser().name(); //assigned to updated by
-			String OldMappingPG = (String)db(TDM).fetch("select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role=(?)",old_role).firstValue();
-			db(TDM).execute(UPDATE_PERMISSION_GROUP_MAPPINGS, description, new_role, permission_group, userName,can_create_tasks, old_role);
+			String OldMappingPG = (String)db(TDM).fetch("select permission_group from " + getTDMDBSchema() + ".permission_groups_mapping where fabric_role=(?)",old_role).firstValue();
+			db(TDM).execute(updatePermissionGroupMappings(), description, new_role, permission_group, userName,can_create_tasks, old_role);
 			String activityDesc = "Role '" + old_role + "' was updated to '" + new_role +
                       "' and mapped to permission group '" + permission_group + "'.";
 			fnInsertActivity("update", "Permission Groups", activityDesc);
@@ -177,16 +211,20 @@ public class Logic extends WebServiceUserCode{
 			List<String> roles = new ArrayList<>();
 			roles.add(old_role);										  
 			if ("owner".equals(OldMappingPG)) {
-				cleanupUsersByPermissionGroup(usersByFabricRole, "owner", "DELETE FROM " + TDMDB_SCHEMA + ".environment_owners WHERE user_name IN");
-				cleanupUserGrouspByPermissionGroup(roles, "owner", "DELETE FROM " + TDMDB_SCHEMA + ".environment_owners WHERE user_name IN");																											
+				cleanupUsersByPermissionGroup(usersByFabricRole, "owner", "DELETE FROM " + getTDMDBSchema() + ".environment_owners WHERE user_name IN");
+				cleanupUserGrouspByPermissionGroup(roles, "owner", "DELETE FROM " + getTDMDBSchema() + ".environment_owners WHERE user_name IN");																											
 			} else if ("tester".equals(OldMappingPG)) {
-				cleanupUsersByPermissionGroup(usersByFabricRole, "tester", "DELETE FROM " + TDMDB_SCHEMA + ".environment_role_users WHERE username IN");
-				cleanupUserGrouspByPermissionGroup(roles, "tester", "DELETE FROM " + TDMDB_SCHEMA + ".environment_owners WHERE user_name IN");																							 
+				cleanupUsersByPermissionGroup(usersByFabricRole, "tester", "DELETE FROM " + getTDMDBSchema() + ".environment_role_users WHERE username IN");
+				cleanupUserGrouspByPermissionGroup(roles, "tester", "DELETE FROM " + getTDMDBSchema() + ".environment_owners WHERE user_name IN");																							 
 			}
 
 			return wrapWebServiceResults("SUCCESS", null, null);
 		} catch (Exception e) {
-			return wrapWebServiceResults("FAILED", "Can't add new permission group mapping: " + e.getMessage(), null);
+			status = "FAILED";
+			message = e.getMessage();
+			return wrapWebServiceResults(status, "Can't add new permission group mapping: " + message, null);
+		} finally{
+			tdmAudit("wsUpdatePermissionGroupMapping", in, status, message);
 		}
 	}
 
@@ -198,33 +236,48 @@ public class Logic extends WebServiceUserCode{
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeletePermissionGroupMapping(@param(required=true) String role) throws Exception {
-        String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
-        if (!"admin".equals(sessionUserPermissionGroup)) {
-            return wrapWebServiceResults("FAILED", admin_pg_access_denied_msg, null);
-        }
+        
+		String status = "SUCCESS";
+		String message = null;
+		Map<String, Object> in = new LinkedHashMap<>();
+		in.put("role", role);
+		
         try {
-            String checkIfAdmin = (String) db(TDM).fetch(SELECT_PERMISSION_GROUP_BY_ROLE, role).firstValue();
+			String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
+			if (!"admin".equals(sessionUserPermissionGroup)) {
+				status = "FAILED";
+				message = admin_pg_access_denied_msg;
+				return wrapWebServiceResults(status, message, null);
+			}
+			
+            String checkIfAdmin = (String) db(TDM).fetch(selectPermissionGroupByRole(), role).firstValue();
             if("admin".equals(checkIfAdmin)){
-            return wrapWebServiceResults("FAILED", "You are not allowed to remove the permissions group mapping for Admin", null);
+				status = "FAILED";
+				message = "You are not allowed to remove the permissions group mapping for Admin";
+            	return wrapWebServiceResults(status, message, null);
             }
             List<String> usersByFabricRole = (List<String>) ((Map<String, Object>) wsGetUsersByFabricRole(role)).get("result");
-            String permissionGroup = (String) db(TDM).fetch(DELETE_PERMISSION_GROUP_MAPPINGS, role).firstValue();
+            String permissionGroup = (String) db(TDM).fetch(deletePermissionGroupMappings(), role).firstValue();
 			String activityDesc = "Role '" + role + "' was deleted from permission group '" + permissionGroup + "'.";
 			fnInsertActivity("delete", "Permission Groups", activityDesc);
             List<String> roles = new ArrayList<>();
             roles.add(role);	   
             if ("owner".equals(permissionGroup)) {
-                cleanupUsersByPermissionGroup(usersByFabricRole, "owner", "DELETE FROM " + TDMDB_SCHEMA + ".environment_owners WHERE user_name IN");
-                cleanupUserGrouspByPermissionGroup(roles, "owner", "DELETE FROM " + TDMDB_SCHEMA + ".environment_owners WHERE user_name IN");																							
+                cleanupUsersByPermissionGroup(usersByFabricRole, "owner", "DELETE FROM " + getTDMDBSchema() + ".environment_owners WHERE user_name IN");
+                cleanupUserGrouspByPermissionGroup(roles, "owner", "DELETE FROM " + getTDMDBSchema() + ".environment_owners WHERE user_name IN");																							
             } else if ("tester".equals(permissionGroup)) {
-                cleanupUsersByPermissionGroup(usersByFabricRole, "tester", "DELETE FROM " + TDMDB_SCHEMA + ".environment_role_users WHERE username IN");
-                cleanupUserGrouspByPermissionGroup(roles, "tester", "DELETE FROM " + TDMDB_SCHEMA + ".environment_owners WHERE user_name IN");																							 
+                cleanupUsersByPermissionGroup(usersByFabricRole, "tester", "DELETE FROM " + getTDMDBSchema() + ".environment_role_users WHERE username IN");
+                cleanupUserGrouspByPermissionGroup(roles, "tester", "DELETE FROM " + getTDMDBSchema() + ".environment_owners WHERE user_name IN");																							 
             }
             return wrapWebServiceResults("SUCCESS", null, null);
         } catch (Exception e) {
-            return wrapWebServiceResults("FAILED", "Can't delete new permission group mapping: " + e.getMessage(), null);
-    }
-}
+			status = "FAILED";
+			message = e.getMessage();
+            return wrapWebServiceResults(status, "Can't delete new permission group mapping: " + message, null);
+    	} finally {
+			tdmAudit("wsDeletePermissionGroupMapping", in, status, message);
+		}
+	}
 
 	private static void cleanupUsersByPermissionGroup(List<String> users, String permissionGroup, String queryPrefix) throws Exception {
 		if (users != null && !users.isEmpty()) {
@@ -236,8 +289,9 @@ public class Logic extends WebServiceUserCode{
 				}
 			}
 			if (!usersToDelete.isEmpty()) {
-				String deleteUsersSql = queryPrefix + " ('" + String.join("','", usersToDelete) + "')";
-				db(TDM).execute(deleteUsersSql);
+				String placeholders = String.join(",", Collections.nCopies(usersToDelete.size(), "?"));
+				String deleteUsersSql = queryPrefix + " (" + placeholders + ")";
+				db(TDM).execute(deleteUsersSql, usersToDelete.toArray());
 			}
 		}
 	}
@@ -252,8 +306,9 @@ public class Logic extends WebServiceUserCode{
 				}
 			}
 			if (!usersToDelete.isEmpty()) {
-				String deleteUsersSql = queryPrefix + " ('" + String.join("','", usersToDelete) + "') AND user_type = 'GROUP'";
-				db(TDM).execute(deleteUsersSql);
+				String placeholders = String.join(",", Collections.nCopies(usersToDelete.size(), "?"));
+				String deleteUsersSql = queryPrefix + " (" + placeholders + ") AND user_type = 'GROUP'";
+				db(TDM).execute(deleteUsersSql, usersToDelete.toArray());
 			}
 		}
 	}
@@ -306,7 +361,7 @@ public class Logic extends WebServiceUserCode{
 			"}")
 	public static Object wsGetUsersByPermissionGroup(@param(description = "Expect to be one of the following values: admin, owner, or tester.") String permissionGroup) throws Exception {
 		List<String> roles = new ArrayList<>();
-		db(TDM).fetch(SELECT_FABRIC_ROLES, permissionGroup).forEach(r -> roles.add((String) r.get("fabric_role")));
+		db(TDM).fetch(selectFabricRoles(), permissionGroup).forEach(r -> roles.add((String) r.get("fabric_role")));
 		
 		List<String> users = new ArrayList<>();
 		fabric().fetch("list users;").forEach(r -> {
@@ -368,7 +423,7 @@ public class Logic extends WebServiceUserCode{
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
-        String sql = "INSERT INTO " + TDMDB_SCHEMA + ".activities " +
+        String sql = "INSERT INTO " + getTDMDBSchema() + ".activities " +
                 "(date, action, entity, user_id, username, description) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         db(TDM).execute(sql, now, action, entity, userId, username, description);

@@ -1,0 +1,63 @@
+description: |-
+  Gets full details for one or more TDM tasks by their IDs. Accepts a comma-separated list
+    of task IDs (e.g. "1,2,3") and returns an array of task detail objects, each with task
+    title, description, type, business entity, source and target environments, selection
+    method, parameters (with per-rule is_editable flags), number of entities,
+    task_override_fields (which fields can be overridden at execution), params_map (a
+    field-name -> {is_editable, value} map — built server-side by wsGetTaskDetails'
+    buildParamsMap and passed through here unmodified, for callers that need per-field
+    editability+value in one lookup rather than re-deriving it from task_override_fields +
+    parameters. Its top-level-field entries — be_name, source_env_name, environment_name,
+    selection_method, num_of_entities, selection_param_value,
+    reserve_retention_period_type/value, retention_period_type/value, and data_version_name
+    (only when the task has that column at all) — are ONLY present when task_override_fields
+    itself is non-blank and not "{}"; params_map is {} for those entries on a task with no
+    override config. Its business-parameter/custom-logic rule keys are independent of
+    task_override_fields — added whenever "parameters" itself is present, regardless of
+    override config), task_groups (the predefined task groups the task
+    belongs to, each with task_group_id and task_group_name), and prompt text fields:
+      prompt_text — the task's prompt template with <placeholders>
+      base_prompt_text — the raw base template
+      prompt_text_with_params — the prompt rendered with the task's actual saved values
+    Use this to inspect existing tasks before deciding whether to reuse or start them.
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call GetTaskDetails:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.GetTaskDetails 'taskId'=${taskId} 'mode'=${mode}
+          taskId:
+            external: taskId
+            schema: string
+            remark: Comma-separated task ids to retrieve details for, e.g. "12" or "12,15,40".
+            mandatory: true
+          mode:
+            external: mode
+            const: Both
+            schema: string
+            remark: Optional. Which tasks to return by status - Active, Inactive or Both. Default Both.
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      task_details:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call GetTaskDetails/result/task_details
+        out:
+          value:
+            external: task_details
+schemas:
+  Call GetTaskDetails.out.result:
+    type: object
+    properties:
+      task_details: {}

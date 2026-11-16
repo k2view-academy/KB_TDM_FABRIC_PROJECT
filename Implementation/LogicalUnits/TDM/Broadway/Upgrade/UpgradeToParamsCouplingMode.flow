@@ -80,10 +80,10 @@ stages:
           script:
             const:
               userCode: |-
-                let name = lu ;
-                if(name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel"
-                && name !== "aifusion" && name !== "Vectors" && name !== "PipelineLu"){
-                    name=true;
+                let name = lu;
+                if (name !== "TDM" && name !== "TDM_LIBRARY" && name !== "TDM_TableLevel"
+                    && name !== "aifusion" && name !== "Vectors" && name !== "PipelineLu") {
+                    name = true;
                 }
                 name;
               script: |-

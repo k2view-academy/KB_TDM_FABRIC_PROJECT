@@ -1,0 +1,41 @@
+tags: TDM,Masking
+stages:
+  Get Interfaces Table Fields List:
+    actors:
+      getInterfacesTableFieldsList:
+        parent: LuFunction
+        in:
+          functionName:
+            const: getInterfacesTableFieldsList
+        out:
+          result:
+            external: InterfacesTableFieldsList
+            schema: '#ref'
+schemas:
+  getInterfacesTableFieldsList.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Interface Name:
+          type: string
+        Schema:
+          type: string
+        System:
+          type: string
+        Dataset:
+          type: string
+        Object Name:
+          type: string
+        Field:
+          type: string
+        Data Type:
+          type: string
+        Classification:
+          type: string
+        Data Generator:
+          type: string
+        Data Consistency:
+          type: string
+        Description:
+          type: string

@@ -4,6 +4,7 @@ stages:
     actors:
       Flow Inputs:
         parent: Const
+        remark: Flow inputs declared in the TableLevelPartitionFlow mtable.
         in:
           value:
             const: null
@@ -148,15 +149,6 @@ stages:
             schema: string
   Get Mod Method:
     actors:
-      MOD:
-        parent: Const
-        in:
-          value:
-            const: mod((hashtext(ctid::text)::bigint & 2147483647), ${partitionValue})
-            schema: string
-        out:
-          value:
-            schema: string
       Reminder:
         parent: MathAdd
         in:
@@ -164,21 +156,82 @@ stages:
             const: -1
           a:
             link: currentPartition/value
-  Prepare new query:
+  Get Partition Conditions:
     actors:
-      Mod with partition:
+      Hash Condition:
         parent: StringFormat
+        remark: |-
+          Original hash split. Used when the task has a filter: filtered rows are often
+          physically clustered (e.g. recent dates sit in the last blocks), so a block split
+          would push almost all the work to one partition. The hash spreads them evenly.
         in:
           format:
-            const: null
-            link: MOD/value
-          partitionValue:
+            const: mod((hashtext(ctid::text)::bigint & 2147483647), ${partitions})
+              = ${reminder}
+          partitions:
             link: partitionsNum/value
             schema: integer
             mandatory: false
             createdBy: format
+          reminder:
+            link: Reminder/result
+            schema: integer
+            mandatory: false
+            createdBy: format
+      Block Range Condition:
+        parent: DbFetchField
+        remark: |-
+          Used when the task has no filter. Splits the table's physical blocks into
+          partitionsNumber contiguous ranges; the last partition is open-ended.
+          The block count comes from pg_relation_size (actual size), not pg_class.relpages,
+          which is only refreshed by VACUUM/ANALYZE and caused the last partition to get
+          every block added since then.
+          Falls back to the hash condition when the server is older than PostgreSQL 14
+          (no Tid Range Scan) or the table is a partitioned parent (size 0, ranges would
+          apply per child and skew).
+        in:
+          interface:
+            const: null
+            link: Source Interface/value
+          sql:
+            const: |-
+              select case
+                       when b.legacy
+                         then format('mod((hashtext(ctid::text)::bigint & 2147483647), %s) = %s',
+                                     ${partitions}::int, ${partition}::int - 1)
+                       when ${partition}::int >= ${partitions}::int
+                         then format('ctid >= ''(%s,0)''::tid', (${partition}::int - 1) * b.per)
+                       else format('ctid >= ''(%s,0)''::tid and ctid < ''(%s,0)''::tid',
+                                   (${partition}::int - 1) * b.per, ${partition}::int * b.per)
+                     end as partition_condition
+              from (select c.relkind = 'p'
+                             or current_setting('server_version_num')::int < 140000 as legacy,
+                           greatest(ceil(pg_relation_size(c.oid)::numeric
+                                         / current_setting('block_size')::int
+                                         / ${partitions}::int), 1)::bigint as per
+                    from pg_class c
+                    where c.oid = format('%I.%I', ${schemaName}::text, ${tableName}::text)::regclass) b
+          partition:
+            link: currentPartition/value
+            schema: integer
+            mandatory: false
+          partitions:
+            link: partitionsNum/value
+            schema: integer
+            mandatory: false
+          schemaName:
+            link: Source Schema/value
+            schema: string
+            mandatory: false
+          tableName:
+            link: Source Table Name/value
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
   Query has no condition:
-    dependsOn: Prepare new query
+    dependsOn: Get Partition Conditions
     actors:
       Filter ?:
         parent: IsNull
@@ -190,62 +243,61 @@ stages:
         parent: StringFormat
         in:
           format:
-            const: ${selectStatement} where ${modCondition} = ${reminder}
+            const: ${selectStatement} where ${rangeCondition}
           selectStatement:
             link: Select Query Statement/value
             schema: string
             mandatory: false
-          modCondition:
-            link: Mod with partition/string
+          rangeCondition:
+            link: Block Range Condition/result
             schema: string
-            mandatory: false
-            createdBy: format
-          reminder:
-            link: Reminder/result
-            schema: integer
             mandatory: false
             createdBy: format
       Add partition clause for count:
         parent: StringFormat
         in:
           format:
-            const: ${selectStatement} where ${modCondition} = ${reminder}
+            const: ${selectStatement} where ${rangeCondition}
           selectStatement:
             link: Count Query Statement/value
             schema: string
             mandatory: false
-          modCondition:
-            link: Mod with partition/string
+          rangeCondition:
+            link: Block Range Condition/result
             schema: string
-            mandatory: false
-            createdBy: format
-          reminder:
-            link: Reminder/result
-            schema: integer
             mandatory: false
             createdBy: format
     split: '--------------------'
   Apply Filter:
     else: true
-    dependsOn: Prepare new query
+    dependsOn: Get Partition Conditions
     actors:
       Add partition clause for select1:
         parent: StringFormat
         in:
           format:
-            const: ${selectStatement} And ${modCondition} = ${reminder}
+            const: ${selectStatement} And (${hashCondition})
           selectStatement:
             link: Select Query Statement/value
             schema: string
             mandatory: false
-          modCondition:
-            link: Mod with partition/string
+          hashCondition:
+            link: Hash Condition/string
             schema: string
             mandatory: false
             createdBy: format
-          reminder:
-            link: Reminder/result
-            schema: integer
+      Add partition clause for count1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${selectStatement} And (${hashCondition})
+          selectStatement:
+            link: Count Query Statement/value
+            schema: string
+            mandatory: false
+          hashCondition:
+            link: Hash Condition/string
+            schema: string
             mandatory: false
             createdBy: format
   Run Select:
@@ -267,25 +319,6 @@ stages:
           result:
             external: result
             schema: '#ref'
-      Add partition clause for count1:
-        parent: StringFormat
-        in:
-          format:
-            const: ${selectStatement} And ${modCondition} = ${reminder}
-          selectStatement:
-            link: Count Query Statement/value
-            schema: string
-            mandatory: false
-          modCondition:
-            link: Mod with partition/string
-            schema: string
-            mandatory: false
-            createdBy: format
-          reminder:
-            link: Reminder/result
-            schema: integer
-            mandatory: false
-            createdBy: format
   Count Total Records:
     dependsOn: Run Select
     actors:

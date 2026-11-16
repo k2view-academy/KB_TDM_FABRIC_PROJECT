@@ -1,0 +1,177 @@
+{
+  "name": "TDM_MASKING_CONFIGURATION_REPORT_LEVEL_1",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "BindHelper",
+      "type": "function",
+      "code": "var bind = function (name) { return '${' + name + '}'; };"
+    },
+    {
+      "name": "TDMDBSchema",
+      "type": "function",
+      "code": "var TDMDB_SCHEMA;"
+    },
+    {
+      "name": "GetTDMDBSchemaName",
+      "type": "sql",
+      "code": "broadway k2_ws.getTDMDBSchema",
+      "sessionProvider": "fabric",
+      "children": [
+        {
+          "name": "TDMDB_SCHEMA",
+          "type": "function",
+          "code": "if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(String(schema))) throw new Error('Invalid TDM DB schema');\nTDMDB_SCHEMA = String(schema);"
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "code": "var PII_CLASSIFICATIONS_COUNT;"
+    },
+    {
+      "name": "getPIIDetails",
+      "type": "sql",
+      "code": "broadway k2_ws.getPIIDetails",
+      "children": [
+        {
+          "type": "function",
+          "code": "PII_CLASSIFICATIONS_COUNT = TotalNumberOfPIIClassifications;"
+        },
+        {
+          "name": "TotalNumberOfPIIClassifications",
+          "type": "variable",
+          "code": "TotalNumberOfPIIClassifications"
+        },
+        {
+          "name": "ExcludeMissingGeneratorsFromPerConsistencyList",
+          "type": "function",
+          "code": "function isMissingGenerator(dg) {\n    if (dg === null || dg === undefined) return true;\n    var s = String(dg).trim();\n    return s === '' || s.toUpperCase() === 'N/A';\n}\nif (TotalNumberOfPIIClassificationsPerConsistencyList) {\n    if (PIIClassificationList) {\n        PIIClassificationList.forEach(function(c) {\n            if (c && isMissingGenerator(c['Data Generator'])) {\n                var consistency = String(c['Data Consistency']);\n                TotalNumberOfPIIClassificationsPerConsistencyList.forEach(function(row) {\n                    if (String(row['Consistency Type']) === consistency && Number(row['Count']) > 0) {\n                        row['Count'] = (Number(row['Count']) - 1) | 0;\n                    }\n                });\n            }\n        });\n    }\n}"
+        },
+        {
+          "name": "TotalNumberOfPIIClassificationsPerConsistencyList",
+          "type": "variable",
+          "code": "TotalNumberOfPIIClassificationsPerConsistencyList"
+        },
+        {
+          "name": "AddDataGeneratorDisplayToPerGeneratorList",
+          "type": "function",
+          "code": "if (TotalNumberOfPIIClassificationsPerGeneratorList) {\n    TotalNumberOfPIIClassificationsPerGeneratorList.forEach(function(row) {\n        var dg = row['Data Generator'];\n        row['Data Generator Display'] = (dg && dg.length > 6 && dg.substring(dg.length - 6).toLowerCase() === '.actor') ? dg.substring(0, dg.length - 6) : dg;\n    });\n}"
+        },
+        {
+          "name": "TotalNumberOfPIIClassificationsPerGeneratorList",
+          "type": "variable",
+          "code": "TotalNumberOfPIIClassificationsPerGeneratorList"
+        },
+        {
+          "name": "TotalNumberOfDataGenerators",
+          "type": "variable",
+          "code": "TotalNumberOfDataGenerators"
+        },
+        {
+          "name": "TotalNumberOfPIIClassificationsWithEmptyGenerators",
+          "type": "variable",
+          "code": "TotalNumberOfPIIClassificationsWithEmptyGenerators"
+        },
+        {
+          "name": "StripActorSuffixFromPIIClassificationList",
+          "type": "function",
+          "code": "if (PIIClassificationList) {\n    PIIClassificationList.forEach(function(row) {\n        var dg = row['Data Generator'];\n        if (dg && dg.length > 6 && dg.substring(dg.length - 6).toLowerCase() === '.actor') {\n            row['Data Generator'] = dg.substring(0, dg.length - 6);\n        }\n    });\n}"
+        },
+        {
+          "name": "PIIClassificationList",
+          "type": "variable",
+          "code": "PIIClassificationList"
+        }
+      ]
+    },
+    {
+      "name": "GetInterfacesWithPIIFields",
+      "type": "sql",
+      "code": "broadway k2_ws.getInterfacesPIISummary",
+      "children": [
+        {
+          "name": "AddInterfaceSensitivityToInterfacesList",
+          "type": "function",
+          "code": "if (InterfacesWithPIIFieldsList) {\n    var interfacesWithSensitive = {};\n    InterfacesWithPIIFieldsList.forEach(function(row) {\n        if (Number(row['Number Of Datasets With PII Fields'] || 0) > 0) {\n            interfacesWithSensitive[String(row['Interface Name'])] = true;\n        }\n    });\n    InterfacesWithPIIFieldsList.forEach(function(row) {\n        row['Interface Has Sensitive Fields'] = interfacesWithSensitive[String(row['Interface Name'])] === true ? 'Sensitive Fields' : 'Non-Sensitive Fields';\n    });\n}"
+        },
+        {
+          "name": "InterfacesWithPIIFieldsList",
+          "type": "variable",
+          "code": "InterfacesWithPIIFieldsList"
+        }
+      ]
+    },
+    {
+      "name": "GetInterfacesTablesSummary",
+      "type": "sql",
+      "code": "broadway k2_ws.getInterfacesTablesSummary",
+      "children": [
+        {
+          "name": "PIIFieldsBreakdownList",
+          "type": "variable",
+          "code": "PIIFieldsBreakdownList"
+        }
+      ]
+    },
+    {
+      "name": "GetEnvironments",
+      "type": "sql",
+      "code": "broadway k2_ws.getEnvironmentSummary",
+      "children": [
+        {
+          "name": "EnvironmentsPerType",
+          "type": "variable",
+          "code": "environmentsPerType"
+        }
+      ]
+    },
+    {
+      "name": "GetEnvironmentsList",
+      "type": "sqlNonPrepared",
+      "code": "SELECT\n    e.environment_name,\n    CASE\n        WHEN e.mask_sensitive_data = true THEN 'Sensitive'\n        ELSE 'Non-sensitive'\n    END AS sensitivity,\n    to_char(e.environment_creation_date, 'YYYY-MM-DD HH24:MI') AS environment_creation_date,\n     to_char(sens.date, 'YYYY-MM-DD HH24:MI') AS sensitivity_update_date,\n    sens.username AS sensitivity_updated_by\nFROM \"${TDMDB_SCHEMA}\".environments e\nLEFT JOIN LATERAL (\n    SELECT a.date, a.username\n    FROM \"${TDMDB_SCHEMA}\".activities a\n    WHERE a.entity = 'Environment'\n      AND a.action = 'update'\n      AND a.description LIKE 'Environment ' || e.environment_name || ' %'\n      AND a.description LIKE '%sensitivity%'\n    ORDER BY a.date DESC\n    LIMIT 1\n) sens ON true\nWHERE e.environment_status = 'Active' and environment_id > 0\nORDER BY e.environment_name;",
+      "sessionProvider": "TDM"
+    },
+    {
+      "name": "GetClassificationsWithoutGenerators",
+      "type": "sql",
+      "code": "broadway k2_ws.getClassificationsWithoutGenerators",
+      "children": [
+        {
+          "name": "ClassificationsWithoutGeneratorsSummary",
+          "type": "variable",
+          "code": "ClassificationsWithoutGeneratorsSummary"
+        },
+        {
+          "name": "ClassificationsWithoutGeneratorsFieldsList",
+          "type": "variable",
+          "code": "ClassificationsWithoutGeneratorsFieldsList"
+        }
+      ]
+    },
+    {
+      "name": "ReportStatus",
+      "type": "sqlNonPrepared",
+      "sessionProvider": "TDM",
+      "code": "SELECT\n    CASE\n        WHEN ${bind('PII_CLASSIFICATIONS_COUNT')}::int = 0 AND e.environments = 0\n            THEN 'No PII fields were found in the masking catalog. No active environments are defined.'\n        WHEN ${bind('PII_CLASSIFICATIONS_COUNT')}::int = 0\n            THEN 'No PII fields were found in the masking catalog.'\n        WHEN e.environments = 0\n            THEN 'No TDM configuration was found. No active environments are defined.'\n        ELSE ''\n    END AS \"Message\"\nFROM (\n    SELECT count(*) AS environments\n    FROM \"${TDMDB_SCHEMA}\".environments\n    WHERE environment_status = 'Active' AND environment_id > 0\n) e"
+    }
+  ],
+  "params": [
+    {
+      "name": "TDMDB_SCHEMA",
+      "dataType": "String",
+      "description": "Ignored - the TDM DB schema is taken from the TDM.TDMDB_SCHEMA Fabric global",
+      "mandatory": false
+    }
+  ],
+  "description": "",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

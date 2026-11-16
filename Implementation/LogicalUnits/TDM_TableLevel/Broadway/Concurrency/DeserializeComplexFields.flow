@@ -1,0 +1,108 @@
+tags: Concurrency
+stages:
+  Flatten:
+    actors:
+      Flatten Complex Blobs:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnFlattenComplexFields
+          rows:
+            external: rows
+            schema: any
+            mandatory: false
+          fields:
+            external: fields
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Deserialize:
+    actors:
+      Deserialize Value:
+        parent: ObjectDeserialize
+        in:
+          stream:
+            link:
+              path: Flatten Complex Blobs/result/value
+              iterate: Iterate
+            schema: any
+            mandatory: false
+        out:
+          object:
+            schema: '#ref'
+  Return Statement:
+    transactional: false
+    actors:
+      Scatter One Field:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnScatterOneField
+          entry:
+            link: Flatten Complex Blobs/result
+            schema: '#ref'
+            mandatory: false
+          value:
+            link:
+              path: Deserialize Value/object/value
+            schema: any
+            mandatory: false
+        out:
+          result:
+            schema: any
+  Build Result:
+    last: 1
+    actors:
+      Build Deserialized Rows:
+        parent: ArrayBuilder
+        in:
+          input:
+            link: Scatter One Field/result
+            schema: any
+        out:
+          array:
+            external: DeserializedRows
+            schema: '#ref'
+schemas:
+  Flatten Complex Blobs.in.fields:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Flatten Complex Blobs.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        row: {
+          }
+        fieldName:
+          type: string
+        value: {
+          }
+  Deserialize Value.out.object:
+    type: object
+    properties:
+      value: {
+        }
+  Scatter One Field.in.entry:
+    type: object
+    properties:
+      row: {
+        }
+      fieldName:
+        type: string
+      value: {
+        }
+  Build Deserialized Rows.out.array:
+    type: array
+    items:
+      type: object

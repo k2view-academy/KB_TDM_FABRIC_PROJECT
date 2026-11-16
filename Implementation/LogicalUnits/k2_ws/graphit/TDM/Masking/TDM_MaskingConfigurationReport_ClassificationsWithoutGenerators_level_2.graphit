@@ -1,0 +1,34 @@
+{
+  "name": "TDM_MASKING_CONFIGURATION_REPORT_CLASSIFICATIONS_WITHOUT_GENERATORS_LEVEL_2",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "GetClassificationsWithoutGenerators",
+      "type": "sql",
+      "code": "broadway k2_ws.getClassificationsWithoutGenerators",
+      "children": [
+        {
+          "name": "ClassificationsWithoutGeneratorsSummary",
+          "type": "variable",
+          "code": "ClassificationsWithoutGeneratorsSummary"
+        },
+        {
+          "name": "ClassificationsWithoutGeneratorsFieldsList",
+          "type": "variable",
+          "code": "ClassificationsWithoutGeneratorsFieldsList"
+        }
+      ]
+    }
+  ],
+  "params": [],
+  "description": "Returns the classifications that have no data generator and the dataset fields assigned to them (drill-through target for the Classifications without Generators tile).",
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

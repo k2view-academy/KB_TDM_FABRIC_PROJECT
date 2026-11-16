@@ -150,6 +150,8 @@ stages:
         out:
           SqliteInsertStatement:
             schema: string
+          TableFields:
+            schema: '#ref'
     split: '--------------------'
   'Do Not Retain  ':
     else: true
@@ -159,9 +161,78 @@ stages:
   'Do Not Sync   ':
     transactional: false
     dependsOn: 'Do Not Sync  '
-  Populate in Sqlite:
+  Serialize Complex Fields Stage:
+    else: false
     transactional: true
     dependsOn: 'Create in Sqlite?  '
+    actors:
+      Has Complex Field ?:
+        parent: JavaScript
+        condition: result
+        in:
+          script:
+            const: |-
+              var result = false;
+              for (var i = 0; i < fields.length; i++) {
+                if (fields[i].column_type === 'COMPLEX') {
+                  result = true;
+                  break;
+                }
+              }
+              result;
+          fields:
+            link: CreateSqliteTable/TableFields
+            schema: '#ref'
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Serialize Complex Fields:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: SerializeComplexFields
+          rows:
+            link: inputRecords/value
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+          fields:
+            link: CreateSqliteTable/TableFields
+            schema: '#ref'
+            mandatory: false
+            createdBy: flowName
+        out:
+          SerializedRows:
+            schema: '#ref'
+    split: '--------------------'
+  'No Need To Serialize ':
+    else: true
+    transactional: true
+    dependsOn: 'Create in Sqlite?  '
+    actors:
+      Raw Records:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: inputRecords/value
+        out:
+          value:
+            schema: '#ref'
+    split: '--------------------'
+  'Do Not Retain     ':
+    transactional: false
+    dependsOn: 'Do Not Retain  '
+    split: '--------------------'
+  'Do Not Sync     ':
+    transactional: false
+    dependsOn: 'Do Not Sync   '
+  Populate in Sqlite:
+    transactional: true
+    dependsOn:
+    - Serialize Complex Fields Stage
+    - 'No Need To Serialize '
     actors:
       Load Patition To Fabric:
         parent: InnerFlow
@@ -179,7 +250,9 @@ stages:
             mandatory: false
             createdBy: flowName
           inputRecords:
-            link: inputRecords/value
+            link:
+            - Serialize Complex Fields/SerializedRows
+            - Raw Records/value
             schema: '#ref'
             mandatory: false
             createdBy: flowName
@@ -238,11 +311,11 @@ stages:
     split: '--------------------'
   'Do Not Retain    ':
     transactional: false
-    dependsOn: 'Do Not Retain  '
+    dependsOn: 'Do Not Retain     '
     split: '--------------------'
   'Do Not Sync    ':
     transactional: false
-    dependsOn: 'Do Not Sync   '
+    dependsOn: 'Do Not Sync     '
   Get Stream From Fabric:
     dependsOn: Populate in Sqlite
     actors:
@@ -264,6 +337,21 @@ stages:
             const: false
           tableName:
             external: sourceTableName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceInterfaceName:
+            external: sourceInterfaceName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          sourceSchemaName:
+            external: sourceSchemaName
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          catalogSchema:
+            external: catalogSchema
             schema: string
             mandatory: false
             createdBy: flowName
@@ -740,6 +828,60 @@ schemas:
           type: date
         note_text: {
           }
+  CreateSqliteTable.out.TableFields:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Has Complex Field ?.in.fields:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Serialize Complex Fields.in.rows:
+    type: array
+    items: {
+      }
+  Serialize Complex Fields.in.fields:
+    type: array
+    items:
+      type: object
+      properties:
+        column_name:
+          type: string
+        column_type:
+          type: string
+        column_sqlite_type:
+          type: string
+  Serialize Complex Fields.out.SerializedRows:
+    type: array
+    items:
+      type: object
+      properties: {
+        }
+  Raw Records.out.value:
+    type: array
+    items:
+      type: object
+      properties:
+        contract_ref_id:
+          type: integer
+        offer_ref_id:
+          type: integer
+        offer_contract_description:
+          type: string
   Load Patition To Fabric.in.inputRecords:
     type: array
     items:
@@ -760,13 +902,31 @@ schemas:
     items:
       type: object
       properties:
-        case_id:
-          type: integer
-        note_id:
-          type: integer
-        note_date:
+        _id:
           type: string
-        note_text:
+        address: {
+          }
+        age:
+          type: integer
+        balance:
+          type: string
+        createdAt:
+          type: date
+        data:
+          type: string
+        documentId:
+          type: string
+        height:
+          type: number
+        hobbies: {
+          }
+        isActive:
+          type: integer
+        name:
+          type: string
+        pattern:
+          type: string
+        profilePicture:
           type: string
   inputRecords     .out.value:
     type: array

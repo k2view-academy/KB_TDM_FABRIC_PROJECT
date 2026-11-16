@@ -1,0 +1,110 @@
+description: |-
+  Saves an execution draft of a TDM task: the task plus a set of execution overrides, stored without starting anything. Returns the draft's id and a deeplink that opens the draft in the TDM UI, where a user can review it and start it. To start it from here instead, pass the draft id to StartTaskExecution as draftExecutionId.
+
+  Read the task with GetTaskDetails first. Its be_id, selection_method, parameters and task_override_fields decide which override keys the task accepts.
+
+  Creating the draft only checks that the task is active and that every key is a valid override key. Values and per-task permissions are checked when the draft is started, so a bad value fails at start, with the reason in the start result.
+
+  Outputs: draftExecutionId (integer, null when the draft was not created), status (SUCCESS or FAILED), message (the error text when it failed), deeplink (the TDM UI link to the draft; empty when it failed).
+tags: mcp-tool
+stages:
+  Call k2_ws:
+    actors:
+      Call CreateExecutionDraft:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: broadway k2_ws.CreateExecutionDraft 'taskId'=${taskId} 'overrideParameters'=${overrideParameters}
+          taskId:
+            external: taskId
+            schema: integer
+            remark: Id of the TDM task to draft an execution of. The task must be active. Find it with
+              SearchTasks and read it with GetTaskDetails before building the overrides.
+            mandatory: true
+          overrideParameters:
+            external: overrideParameters
+            schema: string
+            remark: |-
+              A JSON object, sent as a string, of the execution settings that differ from the task's own. Leave a key out to keep the task's value; '{}' runs the task as saved. Keys are case-insensitive OverrideParamKey names; an unknown key fails the call, and BE_NAME and IMPLICIT_OVERRIDE_LOGICAL_UNITS are always refused. Only override what the task allows: GetTaskDetails returns task_override_fields, and a key whose is_editable is false is refused at start.
+              Keys and value formats:
+              - EXECUTION_NOTE: free-text note on the execution.
+              - SOURCE_ENVIRONMENT_NAME, TARGET_ENVIRONMENT_NAME: environment names from ListEnvironments.
+              - NO_OF_ENTITIES: integer number of entities; -1 means all matching entities. Not valid when the selection method is L (Entity List), except on a clone task (task_type 'Clone entities'), where it is the number of copies. Random selection (R) needs a positive number.
+              - ENTITY_LIST: comma-separated entity ids, e.g. "1,2,4". A clone task takes exactly one id.
+              - SELECTION_METHOD: switches the selection method. Only 'L' (needs ENTITY_LIST), 'ALL', 'R' (needs NO_OF_ENTITIES) and 'C' (Custom Logic; needs NO_OF_ENTITIES, and a flow either here or on the task).
+              - CUSTOM_LOGIC_FLOW and CUSTOM_LOGIC_LU_NAME: send both or neither, only when the Custom Logic flow is changing, taken from the same ListCustomLogicFlows row. Restating the task's own flow is refused unless its custom_logic override is editable.
+              - PARAMETERS: on a Custom Logic task, {"inputs":[{"name":"...","value":"...","type":"...","is_editable":true,"checked":true}]}. It REPLACES the task's list: start from the task's saved parameters (GetTaskDetails), change only the values, and send every entry back with its name, type, is_editable and checked as they were. Adding a parameter or dropping one is refused unless the task allows adding parameters; an entry with is_editable false must keep its value. On a Business Parameters task (P/PR), PARAMETERS is the full parameter group JSON and must be paired with BP_QUERY; leave both out to keep the task's own conditions.
+              - BP_QUERY: SQL WHERE clause for Business Parameters tasks (P/PR) only, paired with PARAMETERS.
+              - BE_ID: business entity id as a numeric string, e.g. "2". Only for a task whose be_id is null, where it is required; refused on a task that already has one.
+              - TASK_GLOBALS: object of global name to value, e.g. {"CUST_TYPE":"BUS"}.
+              - RESERVE_IND: true or false, whether to reserve the entities on the target environment.
+              - RESERVE_RETENTION_PARAMS: how long the reservation lasts, {"units":"Minutes|Hours|Days|Weeks|Years","value":"5"}. Only with RESERVE_IND true.
+              - DATAFLUX_RETENTION_PARAMS: how long an extracted data version is kept, same {"units","value"} shape. Extract tasks only.
+              - SELECTED_VERSION_TASK_EXE_ID: execution id of the data version to load (Data Versioning load tasks).
+              - SELECTED_SUBSET_TASK_EXE_ID: execution id of a generated subset to reload (Generate-Subset load tasks).
+              - LOGICAL_UNITS: [{"lu_id":1,"lu_name":"Customer","max_no_of_workers":5,"source_affinity":"DC1","target_affinity":"DC2"}]; lu_id and lu_name are required in each entry.
+              - TABLE_FILTERS: [{"ref_table_name":"RefT","fields":[{"field":"col1","condition":"=","value":"val1"}]}].
+              - TABLE_SAMPLING: [{"ref_table_name":"RefT","records_limit":100,"partitions_limit":2}]; a limit is a positive integer, or -1 to remove it.
+              - GENERATE_DATA_PARAMS: object of parameter name to {"value":...}, for synthetic generation tasks only.
+              - PRE_EXECUTION_PROCESSES_PARAMS, POST_EXECUTION_PROCESSES_PARAMS: [{"process_id":1,"parameter_overrides":[{"name":"p1","value":"v1"}]}].
+              Example: {"EXECUTION_NOTE":"Refresh QA","TARGET_ENVIRONMENT_NAME":"QA","NO_OF_ENTITIES":10}
+            mandatory: true
+        out:
+          result:
+            schema: '#ref'
+  Outputs:
+    actors:
+      draftExecutionId:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call CreateExecutionDraft/result/draftExecutionId
+        out:
+          value:
+            external: draftExecutionId
+            schema: integer
+      status:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call CreateExecutionDraft/result/status
+        out:
+          value:
+            external: status
+            schema: string
+      message:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call CreateExecutionDraft/result/message
+        out:
+          value:
+            external: message
+            schema: string
+      deeplink:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Call CreateExecutionDraft/result/deeplink
+        out:
+          value:
+            external: deeplink
+            schema: string
+schemas:
+  Call CreateExecutionDraft.out.result:
+    type: object
+    properties:
+      draftExecutionId:
+        type: integer
+      status:
+        type: string
+      message:
+        type: string
+      deeplink:
+        type: string

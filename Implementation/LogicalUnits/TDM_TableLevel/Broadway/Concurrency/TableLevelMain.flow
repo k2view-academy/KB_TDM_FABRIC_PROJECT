@@ -449,6 +449,38 @@ stages:
             schema: string
             mandatory: false
             createdBy: flowName
+  Load Masking Info:
+    dependsOn: Extract & Load
+    actors:
+      Data Extracted?:
+        parent: NotEquals
+        condition: result
+        in:
+          a:
+            link: syncMode/value
+            schema: string
+          b:
+            const: 'OFF'
+            schema: string
+      Load Masking Data:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: LoadTableLevelMaskingData
+          taskExecutionId:
+            link: taskExecutionId/value
+            schema: string
+            mandatory: false
+            createdBy: flowName
+          TDMDB_SCHEMA:
+            link: Get TDMDB Schema/schema
+            schema: string
+            mandatory: false
+            createdBy: flowName
+    split: '--------------------'
+  No Data Extracted:
+    else: true
+    dependsOn: Extract & Load
   Clear the cache:
     actors:
       Check if Task Has Failed Partitions:
